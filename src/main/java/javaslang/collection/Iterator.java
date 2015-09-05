@@ -236,9 +236,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @param <T>      Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
+    @SuppressWarnings("unchecked")
     static <T> Iterator<T> ofAll(java.lang.Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
-        return Iterator.ofAll(iterable.iterator());
+        if (iterable instanceof Iterator) {
+            return (Iterator<T>) iterable;
+        } else {
+            return Iterator.ofAll(iterable.iterator());
+        }
     }
 
     /**
@@ -249,23 +254,28 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @param <T>      Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
+    @SuppressWarnings("unchecked")
     static <T> Iterator<T> ofAll(java.util.Iterator<? extends T> iterator) {
         Objects.requireNonNull(iterator, "iterator is null");
-        return new AbstractIterator<T>() {
+        if (iterator instanceof Iterator) {
+            return (Iterator<T>) iterator;
+        } else {
+            return new AbstractIterator<T>() {
 
-            @Override
-            public boolean hasNext() {
-                return iterator.hasNext();
-            }
-
-            @Override
-            public T next() {
-                if (!hasNext()) {
-                    EMPTY.next();
+                @Override
+                public boolean hasNext() {
+                    return iterator.hasNext();
                 }
-                return iterator.next();
-            }
-        };
+
+                @Override
+                public T next() {
+                    if (!hasNext()) {
+                        EMPTY.next();
+                    }
+                    return iterator.next();
+                }
+            };
+        }
     }
     
     /**

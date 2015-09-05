@@ -29,7 +29,7 @@ import static javaslang.collection.RedBlackTree.Color.RED;
  *
  * @param <T> Component type
  */
-public interface RedBlackTree<T> extends Iterable<T> {
+public interface RedBlackTree<T> extends java.lang.Iterable<T> {
 
     static <T extends Comparable<T>> Empty<T> empty() {
         return new Empty<>(T::compareTo);
@@ -154,6 +154,8 @@ public interface RedBlackTree<T> extends Iterable<T> {
      * </code></post>
      *
      * Iteration order: 1, 2, 3, 4, 5, 6, 7
+     * <p>
+     * See also <a href="http://n00tc0d3r.blogspot.de/2013/08/implement-iterator-for-binarytree-i-in.html">Implement Iterator for BinaryTree I (In-order)</a>.
      */
     @Override
     default Iterator<T> iterator() {
@@ -291,9 +293,14 @@ public interface RedBlackTree<T> extends Iterable<T> {
                 return true;
             } else if (o instanceof Node) {
                 final Node<?> that = (Node<?>) o;
-                return Objects.equals(this.value, that.value)
-                        && this.left.equals(that.left)
-                        && this.right.equals(that.right);
+                final Iterator<?> iter1 = this.iterator();
+                final Iterator<?> iter2 = that.iterator();
+                while (iter1.hasNext() && iter2.hasNext()) {
+                    if (!Objects.equals(iter1.next(), iter2.next())) {
+                        return false;
+                    }
+                }
+                return iter1.hasNext() == iter2.hasNext();
             } else {
                 return false;
             }
@@ -705,6 +712,7 @@ public interface RedBlackTree<T> extends Iterable<T> {
 
         @Override
         public boolean equals(Object o) {
+            // note: it is not possible to compare the comparators because function equality is not computable
             return (o == this) || (o instanceof Empty);
         }
 

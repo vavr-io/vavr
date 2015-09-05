@@ -34,7 +34,7 @@ public class RedBlackTreeTest {
                         ).apply(random)
         );
 
-        int count = Gen.choose(1, size).apply(random);
+        int count = Gen.choose(1, 3).apply(random);
 
         RedBlackTree<Integer> tree;
 
@@ -176,6 +176,35 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> actual = t1.union(t2);
         final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty().add(3).add(5).add(7);
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldComputeUnionAndEqualTreesOfDifferentShapeButSameELements() {
+        final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty().add(-1).add(-1).add(0).add(1);
+        final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty().add(-2).add(-1).add(0).add(1);
+        final RedBlackTree<Integer> actual = t1.union(t2);
+        final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty().add(-2).add(-1).add(0).add(1);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldComputeUnion() {
+        Property.def("union")
+                .forAll(TREES, TREES)
+                .suchThat((t1, t2) -> {
+                    final List<Integer> actual = List.ofAll(t1.union(t2));
+                    final List<Integer> expected = List.ofAll(t1).appendAll(t2).distinct().sort();
+                    if (!actual.equals(expected)) {
+                        System.out.println("t1           = " + t1);
+                        System.out.println("t2           = " + t2);
+                        System.out.println("t1.union(t2) = " + t1.union(t2));
+                        System.out.println("actual       = " + actual);
+                        System.out.println("expected     = " + expected);
+                    }
+                    return actual.equals(expected);
+                })
+                .check()
+                .assertIsSatisfied();
     }
 
     // iterator()

@@ -28,6 +28,56 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
     Iterator<T> iterator();
 
     /**
+     * A <em>smoothing</em> replacement for {@code equals}. It is similar to Scala's {@code ==} but better in the way
+     * that it is not limited to collection types, e.g. `Some(1) eq List(1)`, `None eq Failure(x)` etc.
+     * <p>
+     * <pre><code>
+     * o == this                       : true
+     * o instanceof javaslang.Iterable : all iterable elements (this or that) are eq, all non-iterable elements are equal
+     * o instanceof java.lang.Iterable : this.eq(Iterator.ofAll((java.lang.Iterable&lt;?&gt;) o));
+     * otherwise                       : false
+     * </code></pre>
+     *
+     * @param o An object
+     * @return true, if this equals o according to the rules defined above, otherwise false.
+     */
+    default boolean eq(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof Iterable) {
+            final Iterable<?> that = (Iterable<?>) o;
+            final Iterator<?> iter1 = this.iterator();
+            final Iterator<?> iter2 = that.iterator();
+            // TODO: use corresponds and remove duplicate code
+            while (iter1.hasNext() && iter2.hasNext()) {
+                final Object o1 = iter1.next();
+                final Object o2 = iter2.next();
+                if (o1 instanceof Iterable) {
+                    final Iterable<?> iterable1 = (Iterable<?>) o1;
+                    if (!iterable1.eq(o2)) {
+                        return false;
+                    }
+                } else if (o2 instanceof Iterable) { // premise: symmetrie of eq
+                    final Iterable<?> iterable2 = (Iterable<?>) o2;
+                    if (!iterable2.eq(o1)) {
+                        return false;
+                    }
+                } else { // members of o1 and o2 are not necessarily compared via eq, even if applicable
+                    if (!Objects.equals(o1, o2)) {
+                        return false;
+                    }
+                }
+            }
+            return iter1.hasNext() == iter2.hasNext();
+        } else if (o instanceof java.lang.Iterable) {
+            final Iterable<?> that = Iterator.ofAll((java.lang.Iterable<?>) o);
+            return this.eq(that);
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Checks, if an element exists such that the predicate holds.
      *
      * @param predicate A Predicate
