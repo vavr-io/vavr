@@ -33,6 +33,7 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
      * Tests whether every element of this iterable relates to the corresponding element of another iterable by
      * satisfying a test predicate.
      *
+     * @param <U> Component type of that iterable
      * @param that      the other iterable
      * @param predicate the test predicate, which relates elements from both iterables
      * @return {@code true} if both iterables have the same length and {@code predicate(x, y)}
@@ -53,7 +54,7 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
     /**
      * A <em>smoothing</em> replacement for {@code equals}. It is similar to Scala's {@code ==} but better in the way
      * that it is not limited to collection types, e.g. `Some(1) eq List(1)`, `None eq Failure(x)` etc.
-     * <p>
+     *
      * <pre><code>
      * o == this                       : true
      * o instanceof javaslang.Iterable : all iterable elements (this or that) are eq, all non-iterable elements are equal

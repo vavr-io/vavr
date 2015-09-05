@@ -189,7 +189,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
      *     2   6
      *    / \ / \
      *   1  3 5  7
-     * </code></post>
+     * </code></pre>
      *
      * Iteration order: 1, 2, 3, 4, 5, 6, 7
      * <p>

@@ -2,24 +2,64 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.control.Option;
 import javaslang.control.Some;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
+import org.assertj.core.api.ObjectAssert;
 import org.junit.Test;
 
 public class IteratorTest extends AbstractTraversableOnceTest {
 
+    @Override
     protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
+            @SuppressWarnings("unchecked")
             @Override
-            public IterableAssert<T> isEqualTo(Object obj) {
-                @SuppressWarnings("unchecked")
-                java.lang.Iterable<T> expected = (java.lang.Iterable<T>) obj;
-                Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll(expected));
-                return this;
+            public IterableAssert<T> isEqualTo(Object expected) {
+                if (actual instanceof Option) {
+                    final Option<?> opt1 = ((Option<?>) actual);
+                    final Option<?> opt2 = (Option<?>) expected;
+                    Assertions.assertThat(wrapIterator(opt1)).isEqualTo(wrapIterator(opt2));
+                    return this;
+                } else {
+                    java.lang.Iterable<T> iterable = (java.lang.Iterable<T>) expected;
+                    Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll(iterable));
+                    return this;
+                }
+            }
+
+            private Option<?> wrapIterator(Option<?> option) {
+                return option.map(o -> (o instanceof Iterator) ? List.ofAll((Iterator) o) : o);
             }
         };
     }
+
+    @Override
+    protected <T> ObjectAssert<T> assertThat(T actual) {
+        return new ObjectAssert<T>(actual) {
+            @Override
+            public ObjectAssert<T> isEqualTo(Object expected) {
+                if (actual instanceof Tuple2) {
+                    final Tuple2<?, ?> t1 = ((Tuple2<?, ?>) actual).map(this::toList);
+                    final Tuple2<?, ?> t2 = ((Tuple2<?, ?>) expected).map(this::toList);
+                    Assertions.assertThat(t1).isEqualTo(t2);
+                    return this;
+                } else {
+                    return super.isEqualTo(expected);
+                }
+            }
+
+            private Tuple2<Object, Object> toList(Object o1, Object o2) {
+                return Tuple.of(wrapIterator(o1), wrapIterator(o2));
+            }
+
+            private Object wrapIterator(Object o) {
+                return (o instanceof Iterator) ? List.ofAll((Iterator<?>) o) : o;
+            }
+        };
+    }
+
 
     @Override
     protected <T> Iterator<T> empty() {
@@ -144,58 +184,6 @@ public class IteratorTest extends AbstractTraversableOnceTest {
         assertThat(Iterator.ofIterators(of(1, 2), of(), of(3))).isEqualTo(of(1, 2, 3));
     }
 
-    // -- initOption
-
-    @Override
-    @Test
-    public void shouldReturnSomeInitWhenCallingInitOptionOnNonNil() {
-        assertThat(of(1, 2, 3).initOption().map(List::ofAll)).isEqualTo(new Some<>(List.of(1, 2)));
-    }
-
-    // -- partition
-
-    @Override
-    @Test
-    public void shouldPartitionIntsInOddAndEvenHavingOddAndEvenNumbers() {
-        final Tuple2<List<Integer>, List<Integer>> actual = of(1, 2, 3, 4)
-                .partition(i -> i % 2 != 0)
-                .map(IteratorTest::toList);
-        assertThat(actual).isEqualTo(Tuple.of(List.of(1, 3), List.of(2, 4)));
-    }
-
-    @Override
-    @Test
-    public void shouldPartitionIntsInOddAndEvenHavingOnlyEvenNumbers() {
-        final Tuple2<List<Integer>, List<Integer>> actual = of(2, 4).partition(i -> i % 2 != 0)
-                .map(IteratorTest::toList);
-        assertThat(actual).isEqualTo(Tuple.of(List.empty(), List.of(2, 4)));
-    }
-
-    @Override
-    @Test
-    public void shouldPartitionIntsInOddAndEvenHavingOnlyOddNumbers() {
-        final Tuple2<List<Integer>, List<Integer>> actual = of(1, 3).partition(i -> i % 2 != 0)
-                .map(IteratorTest::toList);
-        assertThat(actual).isEqualTo(Tuple.of(List.of(1, 3), List.empty()));
-    }
-
-    // -- span
-
-    @Override
-    @Test
-    public void shouldSpanNonNil() {
-        final Tuple2<List<Integer>, List<Integer>> actual = of(0, 1, 2, 3).span(i -> i < 2).map(IteratorTest::toList);
-        assertThat(actual).isEqualTo(Tuple.of(List.of(0, 1), List.of(2, 3)));
-    }
-
-    // -- tailOption
-
-    @Override
-    @Test
-    public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
-        assertThat(of(1, 2, 3).tailOption().map(List::ofAll)).isEqualTo(new Some<>(List.of(2, 3)));
-    }
-
     // ++++++ OBJECT ++++++
 
     // -- equals
@@ -240,12 +228,6 @@ public class IteratorTest extends AbstractTraversableOnceTest {
     @Test
     public void shouldSerializeDeserializeNonNil() {
         // iterators are intermediate objects and not serializable/deserializable
-    }
-
-    // helpers
-
-    private static <T1, T2> Tuple2<List<T1>, List<T2>> toList(Iterator<T1> i1, Iterator<T2> i2) {
-        return Tuple.of(i1.toList(), i2.toList());
     }
 
 }

@@ -27,24 +27,6 @@ import static org.assertj.core.api.StrictAssertions.within;
 public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Override
-    protected <T> ObjectAssert<T> assertThat(T actual) {
-        return new ObjectAssert<T>(actual) {
-            @Override
-            public ObjectAssert<T> isEqualTo(Object expected) {
-                if (actual instanceof Iterator) {
-                    if (!(expected instanceof Iterator)) {
-                        throw new AssertionError("Expected instance of Iterator");
-                    }
-                    Assertions.assertThat(List.ofAll((Iterator<?>) actual)).isEqualTo(List.ofAll((Iterator<?>) expected));
-                } else {
-                    super.isEqualTo(expected);
-                }
-                return this;
-            }
-        };
-    }
-
-    @Override
     abstract protected <T> TraversableOnce<T> empty();
 
     @Override
