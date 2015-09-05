@@ -54,11 +54,24 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
     /**
      * A <em>smoothing</em> replacement for {@code equals}. It is similar to Scala's {@code ==} but better in the way
      * that it is not limited to collection types, e.g. `Some(1) eq List(1)`, `None eq Failure(x)` etc.
+     * <p>
+     * In a nutshell: eq checks <strong>congruence of structures</strong> and <strong>equality of contained values</strong>.
+     * <p>
+     * Example:
+     *
+     * <pre><code>
+     * // ((1, 2), ((3))) => structure: (()(())) values: 1, 2, 3
+     * final Iterable&lt;?&gt; i1 = List.of(List.of(1, 2), Arrays.asList(List.of(3)));
+     * final Iterable&lt;?&gt; i2 = Queue.of(Stream.of(1, 2), List.of(Lazy.of(() -> 3)));
+     * assertThat(i1.eq(i2)).isTrue();
+     * </code></pre>
+     *
+     * Semantics:
      *
      * <pre><code>
      * o == this                       : true
-     * o instanceof javaslang.Iterable : all iterable elements (this or that) are eq, all non-iterable elements are equal
-     * o instanceof java.lang.Iterable : this.eq(Iterator.ofAll((java.lang.Iterable&lt;?&gt;) o));
+     * o instanceof javaslang.Iterable : iterable elements are eq, non-iterable elements equals, for all (o1, o2) in (this, o)
+     * o instanceof java.lang.Iterable : this eq Iterator.ofAll((java.lang.Iterable&lt;?&gt;) o);
      * otherwise                       : false
      * </code></pre>
      *
