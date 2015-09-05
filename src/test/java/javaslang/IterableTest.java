@@ -49,5 +49,4 @@ public class IterableTest {
         assertThat(i1.eq(i3)).isFalse();
     }
 
-
 }
