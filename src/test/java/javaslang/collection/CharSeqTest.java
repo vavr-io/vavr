@@ -2120,37 +2120,37 @@ public class CharSeqTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetWithNegativeIndexOnNil() {
-        empty().set(-1, null);
+        empty().update(-1, null);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetWithNegativeIndexOnNonNil() {
-        CharSeq.of('1').set(-1, '2');
+        CharSeq.of('1').update(-1, '2');
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetOnNil() {
-        empty().set(0, null);
+        empty().update(0, null);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetWithIndexExceedingByOneOnNonNil() {
-        CharSeq.of('1').set(1, '2');
+        CharSeq.of('1').update(1, '2');
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetWithIndexExceedingByTwoOnNonNil() {
-        CharSeq.of('1').set(2, '2');
+        CharSeq.of('1').update(2, '2');
     }
 
     @Test
     public void shouldSetFirstElement() {
-        assertThat(CharSeq.of('1', '2', '3').set(0, '4')).isEqualTo(CharSeq.of('4', '2', '3'));
+        assertThat(CharSeq.of('1', '2', '3').update(0, '4')).isEqualTo(CharSeq.of('4', '2', '3'));
     }
 
     @Test
     public void shouldSetLastElement() {
-        assertThat(CharSeq.of('1', '2', '3').set(2, '4')).isEqualTo(CharSeq.of('1', '2', '4'));
+        assertThat(CharSeq.of('1', '2', '3').update(2, '4')).isEqualTo(CharSeq.of('1', '2', '4'));
     }
 
     // -- sort()

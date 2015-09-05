@@ -963,33 +963,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> set(int index, T element) {
-        if (isEmpty()) {
-            throw new IndexOutOfBoundsException("set(" + index + ", e) on Nil");
-        }
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("set(" + index + ", e)");
-        }
-        List<T> preceding = Nil.instance();
-        List<T> tail = this;
-        for (int i = index; i > 0; i--, tail = tail.tail()) {
-            if (tail.isEmpty()) {
-                throw new IndexOutOfBoundsException("set(" + index + ", e) on List of length " + length());
-            }
-            preceding = preceding.prepend(tail.head());
-        }
-        if (tail.isEmpty()) {
-            throw new IndexOutOfBoundsException("set(" + index + ", e) on List of length " + length());
-        }
-        // skip the current head element because it is replaced
-        List<T> result = tail.tail().prepend(element);
-        for (T next : preceding) {
-            result = result.prepend(next);
-        }
-        return result;
-    }
-
-    @Override
     default List<T> slice(int beginIndex) {
         if (beginIndex < 0) {
             throw new IndexOutOfBoundsException("slice(" + beginIndex + ")");
@@ -1116,6 +1089,33 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             ys = ys.prepend(t._2);
         }
         return Tuple.of(xs.reverse(), ys.reverse());
+    }
+
+    @Override
+    default List<T> update(int index, T element) {
+        if (isEmpty()) {
+            throw new IndexOutOfBoundsException("update(" + index + ", e) on Nil");
+        }
+        if (index < 0) {
+            throw new IndexOutOfBoundsException("update(" + index + ", e)");
+        }
+        List<T> preceding = Nil.instance();
+        List<T> tail = this;
+        for (int i = index; i > 0; i--, tail = tail.tail()) {
+            if (tail.isEmpty()) {
+                throw new IndexOutOfBoundsException("update(" + index + ", e) on List of length " + length());
+            }
+            preceding = preceding.prepend(tail.head());
+        }
+        if (tail.isEmpty()) {
+            throw new IndexOutOfBoundsException("update(" + index + ", e) on List of length " + length());
+        }
+        // skip the current head element because it is replaced
+        List<T> result = tail.tail().prepend(element);
+        for (T next : preceding) {
+            result = result.prepend(next);
+        }
+        return result;
     }
 
     @Override

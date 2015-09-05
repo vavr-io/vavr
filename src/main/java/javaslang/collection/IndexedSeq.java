@@ -151,9 +151,6 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> reverse();
 
     @Override
-    IndexedSeq<T> set(int index, T element);
-
-    @Override
     IndexedSeq<T> slice(int beginIndex);
 
     @Override
@@ -203,6 +200,9 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     <T1, T2> Tuple2<? extends IndexedSeq<T1>, ? extends IndexedSeq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+
+    @Override
+    IndexedSeq<T> update(int index, T element);
 
     @Override
     <U> IndexedSeq<Tuple2<T, U>> zip(java.lang.Iterable<U> that);

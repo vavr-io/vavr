@@ -955,19 +955,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> set(int index, T element) {
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("set(" + index + ")");
-        }
-        if (index >= length()) {
-            throw new IndexOutOfBoundsException("set(" + index + ")");
-        }
-        final Object[] arr = create(this);
-        arr[index] = element;
-        return wrap(arr);
-    }
-
-    @Override
     public Array<T> sort() {
         final Object[] arr = Arrays.copyOf(back, back.length);
         Arrays.sort(arr);
@@ -1098,29 +1085,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof Array) {
-            final Object[] arr1 = back;
-            final Object[] arr2 = ((Array<?>) o).back;
-            return Objects.deepEquals(arr1, arr2);
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return hashCode.get();
-    }
-
-    @Override
-    public String toString() {
-        return mkString(", ", "Array(", ")");
-    }
-
-    @Override
     public <U> Array<U> unit(java.lang.Iterable<? extends U> iterable) {
         return wrap(create(iterable));
     }
@@ -1140,6 +1104,19 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
             }
             return Tuple.of(wrap(xs), wrap(ys));
         }
+    }
+
+    @Override
+    public Array<T> update(int index, T element) {
+        if (index < 0) {
+            throw new IndexOutOfBoundsException("update(" + index + ")");
+        }
+        if (index >= length()) {
+            throw new IndexOutOfBoundsException("update(" + index + ")");
+        }
+        final Object[] arr = create(this);
+        arr[index] = element;
+        return wrap(arr);
     }
 
     @Override
@@ -1185,6 +1162,29 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
             }
             return wrap(arr);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof Array) {
+            final Object[] arr1 = back;
+            final Object[] arr2 = ((Array<?>) o).back;
+            return Objects.deepEquals(arr1, arr2);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return hashCode.get();
+    }
+
+    @Override
+    public String toString() {
+        return mkString(", ", "Array(", ")");
     }
 
     @SuppressWarnings("unchecked")

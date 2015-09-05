@@ -1021,17 +1021,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> set(int index, T element) {
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("set(" + index + ")");
-        }
-        if (index >= length()) {
-            throw new IndexOutOfBoundsException("set(" + index + ")");
-        }
-        return new Vector<>(trie.put(index, element));
-    }
-
-    @Override
     public Vector<T> tail() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty vector");
@@ -1115,6 +1104,17 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             ys = ys.put(ys.size(), t._2);
         }
         return Tuple.of(xs.size() == 0 ? empty() : new Vector<>(xs), ys.size() == 0 ? empty() : new Vector<>(ys));
+    }
+
+    @Override
+    public Vector<T> update(int index, T element) {
+        if (index < 0) {
+            throw new IndexOutOfBoundsException("update(" + index + ")");
+        }
+        if (index >= length()) {
+            throw new IndexOutOfBoundsException("update(" + index + ")");
+        }
+        return new Vector<>(trie.put(index, element));
     }
 
     @Override

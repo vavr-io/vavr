@@ -28,6 +28,7 @@ import static javaslang.collection.RedBlackTree.Color.RED;
  * </ul>
  *
  * @param <T> Component type
+ * @since 2.0.0
  */
 public interface RedBlackTree<T> extends java.lang.Iterable<T> {
 
