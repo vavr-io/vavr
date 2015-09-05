@@ -34,52 +34,38 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     public static <T extends Comparable<T>> TreeSet<T> of(T value) {
-        return new TreeSet<>(RedBlackTree.<T> empty().add(value));
+        return new TreeSet<>(RedBlackTree.of(value));
     }
 
     public static <T extends Comparable<T>> TreeSet<T> of(Comparator<? super T> comparator, T value) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return new TreeSet<>(RedBlackTree.empty(comparator).add(value));
+        return new TreeSet<>(RedBlackTree.of(comparator, value));
     }
 
+    @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     public static <T extends Comparable<T>> TreeSet<T> of(T... values) {
         Objects.requireNonNull(values, "values is null");
-        RedBlackTree<T> tree = RedBlackTree.empty();
-        for (T value : values) {
-            tree = tree.add(value);
-        }
-        return new TreeSet<>(tree);
+        return new TreeSet<>(RedBlackTree.of(values));
     }
 
+    @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     public static <T extends Comparable<T>> TreeSet<T> of(Comparator<? super T> comparator, T... values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
-        RedBlackTree<T> tree = RedBlackTree.empty(comparator);
-        for (T value : values) {
-            tree = tree.add(value);
-        }
-        return new TreeSet<>(tree);
+        return new TreeSet<>(RedBlackTree.of(comparator, values));
     }
 
     public static <T extends Comparable<T>> TreeSet<T> ofAll(java.lang.Iterable<? extends T> values) {
         Objects.requireNonNull(values, "values is null");
-        RedBlackTree<T> tree = RedBlackTree.empty();
-        for (T value : values) {
-            tree = tree.add(value);
-        }
-        return new TreeSet<>(tree);
+        return new TreeSet<>(RedBlackTree.ofAll(values));
     }
 
     public static <T extends Comparable<T>> TreeSet<T> ofAll(Comparator<? super T> comparator, java.lang.Iterable<? extends T> values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
-        RedBlackTree<T> tree = RedBlackTree.empty(comparator);
-        for (T value : values) {
-            tree = tree.add(value);
-        }
-        return new TreeSet<>(tree);
+        return new TreeSet<>(RedBlackTree.ofAll(comparator, values));
     }
 
     /**
@@ -496,7 +482,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public TreeSet<T> add(T element) {
-        return new TreeSet<>(tree.add(element));
+        return new TreeSet<>(tree.insert(element));
     }
 
     @Override

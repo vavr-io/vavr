@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.collection.RedBlackTree.Node;
 import javaslang.test.Arbitrary;
 import javaslang.test.Gen;
@@ -13,7 +14,6 @@ import javaslang.test.Property;
 import org.junit.Test;
 
 import java.util.Comparator;
-import java.util.Random;
 import java.util.function.IntUnaryOperator;
 
 import static javaslang.collection.RedBlackTree.Color.BLACK;
@@ -30,11 +30,11 @@ public class RedBlackTreeTest {
         final Gen<RedBlackTree<Integer>> gen = Gen.<RedBlackTree<Integer>> of(RedBlackTree.empty(), t ->
                         Gen.<RedBlackTree<Integer>> frequency(
                                 Tuple.of(1, rnd -> t.delete(ints.apply(rnd))),
-                                Tuple.of(3, rnd -> t.add(ints.apply(rnd)))
+                                Tuple.of(3, rnd -> t.insert(ints.apply(rnd)))
                         ).apply(random)
         );
 
-        int count = Gen.choose(1, 3).apply(random);
+        int count = Gen.choose(1, size).apply(random);
 
         RedBlackTree<Integer> tree;
 
@@ -47,11 +47,44 @@ public class RedBlackTreeTest {
 
     // Rudimentary tests
 
+    // empty tree
+
     @Test
     public void shouldCreateEmptyTree() {
         final RedBlackTree<Integer> tree = RedBlackTree.empty();
         assertThat(tree.isEmpty()).isTrue();
     }
+
+    // isEmpty
+
+    @Test
+    public void shouldRecognizeEmptyTree() {
+        assertThat(RedBlackTree.empty().isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeNonEmptyTree() {
+        assertThat(RedBlackTree.of(1).isEmpty()).isFalse();
+    }
+
+    // contains
+
+    @Test
+    public void shouldRecognizeContainedElement() {
+        assertThat(RedBlackTree.of(1, 2, 3).contains(2)).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeNonContainedElementOfEmptyTree() {
+        assertThat(RedBlackTree.<Integer> empty().contains(1)).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonContainedElementOfNonEmptyTree() {
+        assertThat(RedBlackTree.of(1, 2, 3).contains(0)).isFalse();
+    }
+
+    // insert
 
     @Test
     public void shouldInsert_2_1_4_5_9_3_6_7() {
@@ -59,34 +92,62 @@ public class RedBlackTreeTest {
         RedBlackTree<Integer> tree = RedBlackTree.empty();
         assertThat(tree.toString()).isEqualTo("()");
 
-        tree = tree.add(2);
+        tree = tree.insert(2);
         assertThat(tree.toString()).isEqualTo("(B:2)");
 
-        tree = tree.add(1);
+        tree = tree.insert(1);
         assertThat(tree.toString()).isEqualTo("(B:2 R:1)");
 
-        tree = tree.add(4);
+        tree = tree.insert(4);
         assertThat(tree.toString()).isEqualTo("(B:2 R:1 R:4)");
 
-        tree = tree.add(5);
+        tree = tree.insert(5);
         assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1) B:5)");
 
-        tree = tree.add(9);
+        tree = tree.insert(9);
         assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1) (B:5 R:9))");
 
-        tree = tree.add(3);
+        tree = tree.insert(3);
         assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1 R:3) (B:5 R:9))");
 
-        tree = tree.add(6);
+        tree = tree.insert(6);
         assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1 R:3) (R:6 B:5 B:9))");
 
-        tree = tree.add(7);
+        tree = tree.insert(7);
         assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1 R:3) (R:6 B:5 (B:9 R:7)))");
     }
 
     @Test
+    public void shouldInsertNullIntoEmptyTreeBecauseComparatorNotCalled() {
+        final RedBlackTree<Integer> actual = RedBlackTree.<Integer> empty().insert(null);
+        final RedBlackTree<Integer> expected = RedBlackTree.of((Integer) null);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldNotInsertNullTwoTimesIntoEmptyTreeBecauseComparatorCalled() {
+        RedBlackTree.<Integer> empty().insert(null).insert(null);
+    }
+
+    @Test
+    public void shouldInsertNonNullIntoEmptyTree() {
+        final RedBlackTree<Integer> actual = RedBlackTree.<Integer> empty().insert(2);
+        final RedBlackTree<Integer> expected = RedBlackTree.of(2);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReturnTheSameInstanceWhenInsertingAnAlreadyContainedELement() {
+        final RedBlackTree<Integer> testee = RedBlackTree.of(1, 2, 3);
+        final RedBlackTree<Integer> actual = testee.insert(2);
+        assertThat(actual).isEqualTo(testee);
+    }
+
+    // delete
+
+    @Test
     public void shouldDelete_2_from_2_1_4_5_9_3_6_7() {
-        final RedBlackTree<Integer> testee = RedBlackTree.<Integer> empty().add(2).add(1).add(4).add(5).add(9).add(3).add(6).add(7);
+        final RedBlackTree<Integer> testee = RedBlackTree.of(2, 1, 4, 5, 9, 3, 6, 7);
         final RedBlackTree<Integer> actual = testee.delete(2);
         assertThat(actual.toString()).isEqualTo("(B:4 (B:3 R:1) (R:6 B:5 (B:9 R:7)))");
     }
@@ -95,7 +156,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldShouldSubtractEmptyFromNonEmpty() {
-        final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty().add(3).add(5);
+        final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
         final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> actual = t1.difference(t2);
         final RedBlackTree<Integer> expected = t1;
@@ -105,7 +166,7 @@ public class RedBlackTreeTest {
     @Test
     public void shouldShouldSubtractNonEmptyFromEmpty() {
         final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty();
-        final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty().add(5).add(7);
+        final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
         final RedBlackTree<Integer> actual = t1.difference(t2);
         final RedBlackTree<Integer> expected = t1;
         assertThat(actual).isEqualTo(expected);
@@ -113,10 +174,10 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldShouldSubtractNonEmptyFromNonEmpty() {
-        final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty().add(3).add(5);
-        final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty().add(5).add(7);
+        final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
+        final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
         final RedBlackTree<Integer> actual = t1.difference(t2);
-        final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty().add(3);
+        final RedBlackTree<Integer> expected = RedBlackTree.of(3);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -124,7 +185,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldShouldIntersectOnNonEmptyGivenEmpty() {
-        final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty().add(3).add(5);
+        final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
         final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> actual = t1.intersection(t2);
         final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty();;
@@ -134,7 +195,7 @@ public class RedBlackTreeTest {
     @Test
     public void shouldShouldIntersectOnEmptyGivenNonEmpty() {
         final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty();
-        final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty().add(5).add(7);
+        final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
         final RedBlackTree<Integer> actual = t1.intersection(t2);
         final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty();;
         assertThat(actual).isEqualTo(expected);
@@ -142,10 +203,10 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldShouldIntersectOnNonEmptyGivenNonEmpty() {
-        final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty().add(3).add(5);
-        final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty().add(5).add(7);
+        final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
+        final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
         final RedBlackTree<Integer> actual = t1.intersection(t2);
-        final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty().add(5);
+        final RedBlackTree<Integer> expected = RedBlackTree.of(5);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -153,37 +214,37 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldShouldUnionOnNonEmptyGivenEmpty() {
-        final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty().add(3).add(5);
+        final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
         final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> actual = t1.union(t2);
-        final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty().add(3).add(5);
+        final RedBlackTree<Integer> expected = RedBlackTree.of(3, 5);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldShouldUnionOnEmptyGivenNonEmpty() {
         final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty();
-        final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty().add(5).add(7);
+        final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
         final RedBlackTree<Integer> actual = t1.union(t2);
-        final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty().add(5).add(7);
+        final RedBlackTree<Integer> expected = RedBlackTree.of(5, 7);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldShouldUnionOnNonEmptyGivenNonEmpty() {
-        final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty().add(3).add(5);
-        final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty().add(5).add(7);
+        final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
+        final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
         final RedBlackTree<Integer> actual = t1.union(t2);
-        final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty().add(3).add(5).add(7);
+        final RedBlackTree<Integer> expected = RedBlackTree.of(3, 5, 7);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldComputeUnionAndEqualTreesOfDifferentShapeButSameELements() {
-        final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty().add(-1).add(-1).add(0).add(1);
-        final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty().add(-2).add(-1).add(0).add(1);
+        final RedBlackTree<Integer> t1 = RedBlackTree.of(-1, -1, 0, 1);
+        final RedBlackTree<Integer> t2 = RedBlackTree.of(-2, -1, 0, 1);
         final RedBlackTree<Integer> actual = t1.union(t2);
-        final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty().add(-2).add(-1).add(0).add(1);
+        final RedBlackTree<Integer> expected = RedBlackTree.of(-2, -1, 0, 1);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -194,13 +255,6 @@ public class RedBlackTreeTest {
                 .suchThat((t1, t2) -> {
                     final List<Integer> actual = List.ofAll(t1.union(t2));
                     final List<Integer> expected = List.ofAll(t1).appendAll(t2).distinct().sort();
-                    if (!actual.equals(expected)) {
-                        System.out.println("t1           = " + t1);
-                        System.out.println("t2           = " + t2);
-                        System.out.println("t1.union(t2) = " + t1.union(t2));
-                        System.out.println("actual       = " + actual);
-                        System.out.println("expected     = " + expected);
-                    }
                     return actual.equals(expected);
                 })
                 .check()
@@ -216,7 +270,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldIterateNonEmptyTree() {
-        final RedBlackTree<Integer> testee = RedBlackTree.<Integer> empty().add(7).add(1).add(6).add(2).add(5).add(3).add(4);
+        final RedBlackTree<Integer> testee = RedBlackTree.of(7, 1, 6, 2, 5, 3, 4);
         final List<Integer> actual = testee.iterator().toList();
         assertThat(actual.toString()).isEqualTo("List(1, 2, 3, 4, 5, 6, 7)");
     }

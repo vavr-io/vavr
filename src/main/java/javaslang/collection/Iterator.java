@@ -277,7 +277,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             };
         }
     }
-    
+
     /**
      * Creates a Iterator based on the elements of a boolean array.
      *
@@ -939,7 +939,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                 public boolean hasNext() {
                     while (next == null && that.hasNext()) {
                         final T value = that.next();
-                        if(!predicate.test(value)) {
+                        if (!predicate.test(value)) {
                             next = value;
                         }
                     }
@@ -1076,7 +1076,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     @Override
     default <C> Map<C, Iterator<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        if(!hasNext()) {
+        if (!hasNext()) {
             return HashMap.empty();
         } else {
             Map<C, Stream<T>> streams = foldLeft(HashMap.empty(), (map, entry) -> {
@@ -1104,7 +1104,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     @Override
     default Iterator<T> init() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw new UnsupportedOperationException();
         } else {
             return dropRight(1);
@@ -1370,7 +1370,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                     while (next == null && !that.isEmpty()) {
                         final Tuple2<Stream<T>, Stream<T>> split = that.splitAt(size);
                         next = split._1.toVector();
-                        that = split._2.isEmpty() ? Stream.<T>empty() : that.drop(step);
+                        that = split._2.isEmpty() ? Stream.<T> empty() : that.drop(step);
                     }
                     return next != null;
                 }
@@ -1470,7 +1470,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                 public boolean hasNext() {
                     while (that.hasNext()) {
                         queue = queue.enqueue(that.next());
-                        if(queue.length() > n) {
+                        if (queue.length() > n) {
                             queue = queue.dequeue()._2;
                         }
                     }
@@ -1530,7 +1530,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     default <U> Iterator<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
-        if(isEmpty()) {
+        if (isEmpty()) {
             return empty();
         } else {
             final Iterator<T> it1 = this;
@@ -1554,7 +1554,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     default <U> Iterator<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        if(isEmpty()) {
+        if (isEmpty()) {
             return empty();
         } else {
             final Iterator<T> it1 = this;
@@ -1579,12 +1579,13 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     default Iterator<Tuple2<T, Integer>> zipWithIndex() {
-        if(isEmpty()) {
+        if (isEmpty()) {
             return empty();
         } else {
             final Iterator<T> it1 = this;
             return new AbstractIterator<Tuple2<T, Integer>>() {
                 private int index = 0;
+
                 @Override
                 public boolean hasNext() {
                     return it1.hasNext();
@@ -1675,21 +1676,15 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
+    /**
+     * Provides a common {@link Object#toString()} implementation.
+     * <p>
+     * {@code equals(Object)} and {@code hashCode()} are intentionally not overridden in order to prevent this iterator
+     * from being evaluated. In other words, equals and hashCode are implemented by Object.
+     *
+     * @param <T> Component type
+     */
     abstract class AbstractIterator<T> implements Iterator<T> {
-
-        public boolean equals(Object o) {
-            if(o instanceof Iterator) {
-                final Iterator<?> that = (Iterator<?>) o;
-                while (this.hasNext() && that.hasNext()) {
-                    if (!Objects.equals(this.next(), that.next())) {
-                        return false;
-                    }
-                }
-                return this.hasNext() == that.hasNext();
-            } else {
-                return false;
-            }
-        }
 
         @Override
         public String toString() {

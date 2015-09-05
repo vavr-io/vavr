@@ -41,17 +41,55 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
     }
 
     static <T extends Comparable<T>> Node<T> of(T value) {
-        final Empty<T> empty = empty();
-        return new Node<>(BLACK, 1, empty, value, empty, empty);
+        return of(T::compareTo, value);
     }
 
-    static <T> Node<T> of(T value, Comparator<? super T> comparator) {
+    static <T> Node<T> of(Comparator<? super T> comparator, T value) {
         Objects.requireNonNull(comparator, "comparator is null");
         final Empty<T> empty = empty(comparator);
         return new Node<>(BLACK, 1, empty, value, empty, empty);
     }
 
-    default Node<T> add(T value) {
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
+    static <T extends Comparable<T>> RedBlackTree<T> of(T... values) {
+        Objects.requireNonNull(values, "values is null");
+        return of(T::compareTo, values);
+    }
+
+    @SafeVarargs
+    static <T> RedBlackTree<T> of(Comparator<? super T> comparator, T... values) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        Objects.requireNonNull(values, "values is null");
+        RedBlackTree<T> tree = empty(comparator);
+        for (T value : values) {
+            tree = tree.insert(value);
+        }
+        return tree;
+    }
+
+    static <T extends Comparable<T>> RedBlackTree<T> ofAll(java.lang.Iterable<? extends T> values) {
+        Objects.requireNonNull(values, "values is null");
+        return ofAll(T::compareTo, values);
+    }
+
+    static <T> RedBlackTree<T> ofAll(Comparator<? super T> comparator, java.lang.Iterable<? extends T> values) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        Objects.requireNonNull(values, "values is null");
+        RedBlackTree<T> tree = empty(comparator);
+        for (T value : values) {
+            tree = tree.insert(value);
+        }
+        return tree;
+    }
+
+    /**
+     * Inserts a new value into this tree.
+     *
+     * @param value A value.
+     * @return A new tree if this tree does not contain the given value, otherwise the same tree instance.
+     */
+    default Node<T> insert(T value) {
         return Node.insert(this, value).color(BLACK);
     }
 
@@ -240,12 +278,12 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
 
         private static final long serialVersionUID = 1L;
 
-        public final Color color;
-        public final int blackHeight;
-        public final RedBlackTree<T> left;
-        public final T value;
-        public final RedBlackTree<T> right;
-        public final Empty<T> empty;
+        final Color color;
+        final int blackHeight;
+        final RedBlackTree<T> left;
+        final T value;
+        final RedBlackTree<T> right;
+        final Empty<T> empty;
 
         private final transient Lazy<Integer> hashCode;
 
@@ -511,9 +549,9 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
 
         private static <T> RedBlackTree<T> join(RedBlackTree<T> t1, T value, RedBlackTree<T> t2) {
             if (t1.isEmpty()) {
-                return t2.add(value);
+                return t2.insert(value);
             } else if (t2.isEmpty()) {
-                return t1.add(value);
+                return t1.insert(value);
             } else {
                 final Node<T> n1 = (Node<T>) t1;
                 final Node<T> n2 = (Node<T>) t2;
@@ -629,7 +667,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
                     final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(node.left, value);
                     return Tuple.of(split._1, Node.join(split._2, node.value, Node.color(node.right, BLACK)));
                 } else if (comparison > 0) {
-                    final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(node.left, value);
+                    final Tuple2<RedBlackTree<T>, RedBlackTree<T>> split = Node.split(node.right, value);
                     return Tuple.of(Node.join(Node.color(node.left, BLACK), node.value, split._1), split._2);
                 } else {
                     return Tuple.of(Node.color(node.left, BLACK), Node.color(node.right, BLACK));

@@ -4,8 +4,8 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
-import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.stream.Collector;
 
 public class IteratorTest extends AbstractTraversableTest {
@@ -29,63 +29,63 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Override
     protected <T> Iterator<T> empty() {
-        return Iterator.empty();
+        return IteratorWithEquals.lift(Iterator.empty());
     }
 
     @Override
     protected <T> Iterator<T> of(T element) {
-        return Iterator.of(element);
+        return IteratorWithEquals.lift(Iterator.of(element));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     protected <T> Iterator<T> of(T... elements) {
-        return Iterator.of(elements);
+        return IteratorWithEquals.lift(Iterator.of(elements));
     }
 
     @Override
     protected <T> Iterator<T> ofAll(java.lang.Iterable<? extends T> elements) {
-        return Iterator.ofAll(elements);
+        return IteratorWithEquals.lift(Iterator.ofAll(elements));
     }
 
     @Override
     protected Iterator<Boolean> ofAll(boolean[] array) {
-        return Iterator.ofAll(array);
+        return IteratorWithEquals.lift(Iterator.ofAll(array));
     }
 
     @Override
     protected Iterator<Byte> ofAll(byte[] array) {
-        return Iterator.ofAll(array);
+        return IteratorWithEquals.lift(Iterator.ofAll(array));
     }
 
     @Override
     protected Iterator<Character> ofAll(char[] array) {
-        return Iterator.ofAll(array);
+        return IteratorWithEquals.lift(Iterator.ofAll(array));
     }
 
     @Override
     protected Iterator<Double> ofAll(double[] array) {
-        return Iterator.ofAll(array);
+        return IteratorWithEquals.lift(Iterator.ofAll(array));
     }
 
     @Override
     protected Iterator<Float> ofAll(float[] array) {
-        return Iterator.ofAll(array);
+        return IteratorWithEquals.lift(Iterator.ofAll(array));
     }
 
     @Override
     protected Iterator<Integer> ofAll(int[] array) {
-        return Iterator.ofAll(array);
+        return IteratorWithEquals.lift(Iterator.ofAll(array));
     }
 
     @Override
     protected Iterator<Long> ofAll(long[] array) {
-        return Iterator.ofAll(array);
+        return IteratorWithEquals.lift(Iterator.ofAll(array));
     }
 
     @Override
     protected Iterator<Short> ofAll(short[] array) {
-        return Iterator.ofAll(array);
+        return IteratorWithEquals.lift(Iterator.ofAll(array));
     }
 
     @Override
@@ -175,4 +175,52 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(Iterator.ofIterators(of(1, 2), of(), of(3))).isEqualTo(of(1, 2, 3));
     }
 
+    /**
+     * Needed for unit test assertions only.
+     */
+    static class IteratorWithEquals<T> extends Iterator.AbstractIterator<T> {
+
+        private final List<T> list;
+        private final Iterator<T> delegate;
+
+        private IteratorWithEquals(Iterator<T> delegate) {
+            this.list = List.ofAll(delegate);
+            this.delegate = list.iterator();
+        }
+
+        static <T> Iterator<T> lift(Iterator<T> iterator) {
+            if (iterator.isEmpty()) {
+                return iterator;
+            } else {
+                return new IteratorWithEquals<>(iterator);
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return delegate.hasNext();
+        }
+
+        @Override
+        public T next() {
+            return delegate.next();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (o instanceof java.lang.Iterable) {
+                final java.lang.Iterable<?> that = (java.lang.Iterable<?>) o;
+                return list.equals(List.ofAll(that));
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return list.hashCode();
+        }
+    }
 }

@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.AbstractIterableTest;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Value;
@@ -22,7 +23,7 @@ import java.util.stream.Collector;
 /**
  * Tests all methods defined in {@link Traversable}.
  */
-public abstract class AbstractValueTest {
+public abstract class AbstractValueTest extends AbstractIterableTest {
 
     protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
         return new IterableAssert<T>(actual) {

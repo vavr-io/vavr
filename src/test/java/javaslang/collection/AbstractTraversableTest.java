@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.Value;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -540,8 +541,12 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldPartitionIntsInOddAndEvenHavingOddAndEventNumbers() {
-        assertThat(of(1, 2, 3, 4).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(of(1, 3), of(2, 4)));
+    public void shouldPartitionIntsInOddAndEvenHavingOddAndEvenNumbers() {
+        final TraversableOnce<Integer> testee = of(1, 2, 3, 4);
+        final Tuple2<? extends TraversableOnce<Integer>, ? extends TraversableOnce<Integer>> actual =
+                testee.partition(i -> i % 2 != 0);
+        final Tuple2<TraversableOnce<Integer>, TraversableOnce<Integer>> expected = Tuple.of(of(1, 3), of(2, 4));
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test

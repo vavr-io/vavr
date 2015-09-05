@@ -443,7 +443,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
             return true;
         } else if (o instanceof HashMap) {
             final HashMap<?,?> that = (HashMap<?,?>) o;
-            return this.iterator().equals(that.iterator());
+            return this.corresponds(that, Objects::equals);
         } else {
             return false;
         }
