@@ -24,13 +24,17 @@ import java.util.function.UnaryOperator;
  */
 public interface Set<T> extends Traversable<T> {
 
-    // TODO: additional set operations (union, intersection, etc.)
-
     Set<T> add(T element);
+
+    Set<T> difference(java.lang.Iterable<? extends T> elements);
+
+    Set<T> intersection(java.lang.Iterable<? extends T> elements);
 
     Set<T> remove(T element);
 
     Set<T> removeAll(java.lang.Iterable<? extends T> elements);
+
+    Set<T> union(java.lang.Iterable<? extends T> elements);
 
     <T1, T2> Tuple2<? extends Set<T1>, ? extends Set<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 

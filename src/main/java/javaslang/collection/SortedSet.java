@@ -22,7 +22,7 @@ import java.util.function.UnaryOperator;
  */
 public interface SortedSet<T> extends Set<T> {
 
-    // TODO: additional SortedSet methods
+    Comparator<? super T> comparator();
 
     // -- Adjusted return types of Set methods
 
@@ -31,6 +31,9 @@ public interface SortedSet<T> extends Set<T> {
 
     @Override
     SortedSet<T> clear();
+
+    @Override
+    SortedSet<T> difference(java.lang.Iterable<? extends T> elements);
 
     @Override
     SortedSet<T> distinct();
@@ -66,7 +69,10 @@ public interface SortedSet<T> extends Set<T> {
     SortedSet<T> init();
 
     @Override
-    public Option<? extends SortedSet<T>> initOption();
+    Option<? extends SortedSet<T>> initOption();
+
+    @Override
+    SortedSet<T> intersection(java.lang.Iterable<? extends T> elements);
 
     @Override
     <U> SortedSet<U> map(Function<? super T, ? extends U> mapper);
@@ -112,6 +118,9 @@ public interface SortedSet<T> extends Set<T> {
 
     @Override
     SortedSet<T> takeWhile(Predicate<? super T> predicate);
+
+    @Override
+    SortedSet<T> union(java.lang.Iterable<? extends T> elements);
 
     @Override
     <T1, T2> Tuple2<? extends SortedSet<T1>, ? extends SortedSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);

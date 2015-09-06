@@ -82,25 +82,6 @@ public interface Traversable<T> extends TraversableOnce<T> {
         return hashCode;
     }
 
-    /**
-     * Checks if this Traversable is known to have a finite size.
-     * <p>
-     * This method should be implemented by classes only, i.e. not by interfaces.
-     *
-     * @return true, if this Traversable is known to hafe a finite size, false otherwise.
-     */
-    boolean hasDefiniteSize();
-
-    /**
-     * Checks if this Traversable can be repeatedly traversed.
-     * <p>
-     * This method should be implemented by classes only, i.e. not by interfaces.
-     *
-     * @return true, if this Traversable is known to be traversable repeatedly, false otherwise.
-     */
-    boolean isTraversableAgain();
-
-
     // -- Adjusted return types of TraversableOnce
 
     @Override

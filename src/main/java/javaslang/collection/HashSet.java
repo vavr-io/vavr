@@ -32,10 +32,10 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     private static final HashSet<?> EMPTY = new HashSet<>(HashArrayMappedTrie.empty());
 
-    private final HashArrayMappedTrie<T, Object> tree;
+    private final HashArrayMappedTrie<T, T> tree;
     private final transient Lazy<Integer> hash;
 
-    private HashSet(HashArrayMappedTrie<T, Object> tree) {
+    private HashSet(HashArrayMappedTrie<T, T> tree) {
         this.tree = tree;
         this.hash = Lazy.of(() -> Traversable.hash(tree::iterator));
     }
@@ -91,30 +91,27 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @SafeVarargs
     static <T> HashSet<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        HashSet<T> result = HashSet.empty();
+        HashArrayMappedTrie<T, T> tree = HashArrayMappedTrie.empty();
         for (T element : elements) {
-            result = result.add(element);
+            tree = tree.put(element, element);
         }
-        return result;
+        return new HashSet<>(tree);
     }
 
     /**
-     * Creates a HashSet of the given entries.
+     * Creates a HashSet of the given elements.
      *
-     * @param entries Set entries
+     * @param elements Set elements
      * @param <T>     The value type
      * @return A new HashSet containing the given entries
      */
     @SuppressWarnings("unchecked")
-    public static <T> HashSet<T> ofAll(java.lang.Iterable<? extends T> entries) {
-        Objects.requireNonNull(entries, "entries is null");
-        if (entries instanceof HashSet) {
-            return (HashSet<T>) entries;
+    public static <T> HashSet<T> ofAll(java.lang.Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        if (elements instanceof HashSet) {
+            return (HashSet<T>) elements;
         } else {
-            HashArrayMappedTrie<T, Object> tree = HashArrayMappedTrie.empty();
-            for (T entry : entries) {
-                tree = tree.put(entry, entry);
-            }
+            final HashArrayMappedTrie<T, T> tree = addAll(HashArrayMappedTrie.empty(), elements);
             return tree.isEmpty() ? empty() : new HashSet<>(tree);
         }
     }
@@ -213,11 +210,6 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Iterator<T> iterator() {
-        return tree.iterator().map(t -> t._1);
-    }
-
-    @Override
     public HashSet<T> clear() {
         return empty();
     }
@@ -225,6 +217,12 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public boolean contains(T element) {
         return tree.get(element).isDefined();
+    }
+
+    @Override
+    public HashSet<T> difference(Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return removeAll(elements);
     }
 
     @Override
@@ -283,13 +281,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
         if (isEmpty()) {
             return empty();
         } else {
-            HashSet<U> set = empty();
-            for (T t : this) {
-                for (U u : mapper.apply(t)) {
-                    set = set.add(u);
-                }
-            }
-            return set;
+            final HashArrayMappedTrie<U, U> that = foldLeft(HashArrayMappedTrie.empty(), (tree, t) -> addAll(tree, mapper.apply(t)));
+            return new HashSet<>(that);
         }
     }
 
@@ -341,6 +334,12 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public HashSet<T> intersection(Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return retainAll(elements);
+    }
+
+    @Override
     public boolean isEmpty() {
         return tree.isEmpty();
     }
@@ -351,6 +350,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public Iterator<T> iterator() {
+        return tree.iterator().map(t -> t._1);
+    }
+
+    @Override
     public int length() {
         return tree.size();
     }
@@ -358,11 +362,15 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public <U> HashSet<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        HashSet<U> result = HashSet.empty();
-        for (T t : this) {
-            result = result.add(mapper.apply(t));
+        if (isEmpty()) {
+            return empty();
+        } else {
+            final HashArrayMappedTrie<U, U> that = foldLeft(HashArrayMappedTrie.empty(), (tree, t) -> {
+                final U u = mapper.apply(t);
+                return tree.put(u, u);
+            });
+            return new HashSet<>(that);
         }
-        return result;
     }
 
     @Override
@@ -400,18 +408,18 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> remove(T element) {
-        final HashArrayMappedTrie<T, Object> newTree = tree.remove(element);
+        final HashArrayMappedTrie<T, T> newTree = tree.remove(element);
         return newTree == tree ? this : new HashSet<>(newTree);
     }
 
     @Override
     public HashSet<T> removeAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        HashArrayMappedTrie<T, Object> trie = tree;
+        HashArrayMappedTrie<T, T> trie = tree;
         for (T element : elements) {
             trie = trie.remove(element);
         }
-        return trie == tree ? this : new HashSet<>(trie);
+        return (trie == tree) ? this : new HashSet<>(trie);
     }
 
     @Override
@@ -431,24 +439,25 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public HashSet<T> replaceAll(UnaryOperator<T> operator) {
         Objects.requireNonNull(operator, "operator is null");
-        HashSet<T> result = HashSet.empty();
-        for (T element : this) {
-            result = result.add(operator.apply(element));
+        HashArrayMappedTrie<T, T> that = HashArrayMappedTrie.empty();
+        for (T currElem : this) {
+            T newElem = operator.apply(currElem);
+            that = that.put(newElem, newElem);
         }
-        return result;
+        return new HashSet<>(that);
     }
 
     @Override
     public HashSet<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final HashSet<T> keeped = HashSet.ofAll(elements);
-        HashSet<T> result = HashSet.empty();
+        final HashArrayMappedTrie<T, T> keeped = addAll(HashArrayMappedTrie.empty(), elements);
+        HashArrayMappedTrie<T, T> that = HashArrayMappedTrie.empty();
         for (T element : this) {
-            if (keeped.contains(element)) {
-                result = result.add(element);
+            if (keeped.containsKey(element)) {
+                that = that.put(element, element);
             }
         }
-        return result;
+        return new HashSet<>(that);
     }
 
     @Override
@@ -496,6 +505,17 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public HashSet<T> union(Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        HashArrayMappedTrie<T, T> that = addAll(tree, elements);
+        if (that.size() == tree.size()) {
+            return this;
+        } else {
+            return new HashSet<>(that);
+        }
+    }
+
+    @Override
     public <T1, T2> Tuple2<HashSet<T1>, HashSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         Tuple2<Iterator<T1>, Iterator<T2>> t = iterator().unzip(unzipper);
@@ -519,6 +539,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return HashSet.ofAll(iterator().zipWithIndex());
     }
 
+    // -- Object
+
     @Override
     public int hashCode() {
         return hash.get();
@@ -541,6 +563,16 @@ public final class HashSet<T> implements Set<T>, Serializable {
     public String toString() {
         return mkString(", ", "HashSet(", ")");
     }
+
+    private static <T> HashArrayMappedTrie<T, T> addAll(HashArrayMappedTrie<T, T> initial, Iterable<? extends T> additional) {
+        HashArrayMappedTrie<T, T> that = initial;
+        for (T t : additional) {
+            that = that.put(t, t);
+        }
+        return that;
+    }
+
+    // -- Serialization
 
     /**
      * <p>
@@ -583,7 +615,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
         private static final long serialVersionUID = 1L;
 
         // the instance to be serialized/deserialized
-        private transient HashArrayMappedTrie<T, Object> tree;
+        private transient HashArrayMappedTrie<T, T> tree;
 
         /**
          * Constructor for the case of serialization, called by {@link HashSet#writeReplace()}.
@@ -593,7 +625,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
          *
          * @param tree a Cons
          */
-        SerializationProxy(HashArrayMappedTrie<T, Object> tree) {
+        SerializationProxy(HashArrayMappedTrie<T, T> tree) {
             this.tree = tree;
         }
 
@@ -606,7 +638,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
         private void writeObject(ObjectOutputStream s) throws IOException {
             s.defaultWriteObject();
             s.writeInt(tree.size());
-            for (Tuple2<T, Object> e : tree) {
+            for (Tuple2<T, T> e : tree) {
                 s.writeObject(e._1);
             }
         }
@@ -625,7 +657,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
             if (size < 0) {
                 throw new InvalidObjectException("No elements");
             }
-            HashArrayMappedTrie<T, Object> temp = HashArrayMappedTrie.empty();
+            HashArrayMappedTrie<T, T> temp = HashArrayMappedTrie.empty();
             for (int i = 0; i < size; i++) {
                 @SuppressWarnings("unchecked")
                 final T element = (T) s.readObject();
