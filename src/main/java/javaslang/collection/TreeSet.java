@@ -48,7 +48,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return new TreeSet<>(RedBlackTree.of(value));
     }
 
-    public static <T extends Comparable<? super T>> TreeSet<T> of(Comparator<? super T> comparator, T value) {
+    public static <T> TreeSet<T> of(Comparator<? super T> comparator, T value) {
         Objects.requireNonNull(comparator, "comparator is null");
         return new TreeSet<>(RedBlackTree.of(comparator, value));
     }
@@ -62,7 +62,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    public static <T extends Comparable<? super T>> TreeSet<T> of(Comparator<? super T> comparator, T... values) {
+    public static <T> TreeSet<T> of(Comparator<? super T> comparator, T... values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
         return new TreeSet<>(RedBlackTree.of(comparator, values));
@@ -796,6 +796,30 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         final Comparator<? super T> component1Comparator = tree.comparator();
         final Comparator<Tuple2<T, Integer>> tuple2Comparator = (t1, t2) -> component1Comparator.compare(t1._1, t2._1);
         return TreeSet.ofAll(tuple2Comparator, iterator().zipWithIndex());
+    }
+
+    // -- Object
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof TreeSet) {
+            final TreeSet<?> that = (TreeSet<?>) o;
+            return tree.equals(that.tree);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return tree.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "TreeSet" + tree.toString();
     }
 
     /**
