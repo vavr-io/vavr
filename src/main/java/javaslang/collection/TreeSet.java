@@ -807,7 +807,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * Please note that this will lead to runtime exceptions, if U is not Comparable.
      *
      * @param <U> The type
-     * @return
+     * @return The natural Comparator of type U
      */
     @SuppressWarnings("unchecked")
     private static <U> Comparator<? super U> naturalComparator() {
