@@ -283,28 +283,30 @@ public class HashSetTest extends AbstractTraversableTest {
 
     @Override
     public void shouldFoldRightNonNil() {
-        // TODO
-//        String actual = of("a", "b", "c").foldRight("", (x, xs) -> x + xs);
-//        assertThat(List.of("abc", "acb", "bac", "bca", "cab", "cba")).contains(actual);
+        final String actual = of('a', 'b', 'c').foldRight("", (x, xs) -> x + xs);
+        final List<String> expected = List.of('a', 'b', 'c').permutations().map(List::mkString);
+        assertThat(actual).isIn(expected);
     }
 
     @Override
     public void shouldReduceRightNonNil() {
-        // TODO
-//        String actual = of("a", "b", "c").reduceRight((x, xs) -> x + xs);
-//        assertThat(List.of("abc", "acb", "bac", "bca", "cab", "cba")).contains(actual);
+        final String actual = of("a", "b", "c").reduceRight((x, xs) -> x + xs);
+        final List<String> expected = List.of("a", "b", "c").permutations().map(List::mkString);
+        assertThat(actual).isIn(expected);
     }
 
     @Override
     public void shouldMkStringWithDelimiterNonNil() {
-        String actual = of('a', 'b', 'c').mkString(",");
-        assertThat(List.of("a,b,c", "a,c,b", "b,a,c", "b,c,a", "c,a,b", "c,b,a")).contains(actual);
+        final String actual = of('a', 'b', 'c').mkString(",");
+        final List<String> expected = List.of('a', 'b', 'c').permutations().map(l -> l.mkString(","));
+        assertThat(actual).isIn(expected);
     }
 
     @Override
     public void shouldMkStringWithDelimiterAndPrefixAndSuffixNonNil() {
-        String actual = of('a', 'b', 'c').mkString(",", "[", "]");
-        assertThat(List.of("[a,b,c]", "[a,c,b]", "[b,a,c]", "[b,c,a]", "[c,a,b]", "[c,b,a]")).contains(actual);
+        final String actual = of('a', 'b', 'c').mkString(",", "[", "]");
+        final List<String> expected = List.of('a', 'b', 'c').permutations().map(l -> l.mkString(",", "[", "]"));
+        assertThat(actual).isIn(expected);
     }
 
     @Override
@@ -324,9 +326,8 @@ public class HashSetTest extends AbstractTraversableTest {
 
     @Override
     public void shouldFindLastOfNonNil() {
-        // TODO
-//        int actual = of(1, 2, 3, 4).findLast(i -> i % 2 == 0).get();
-//        assertThat(List.of(1, 2, 3, 4)).contains(actual);
+        final int actual = of(1, 2, 3, 4).findLast(i -> i % 2 == 0).get();
+        assertThat(actual).isIn(List.of(1, 2, 3, 4));
     }
 
     @Override
@@ -340,63 +341,8 @@ public class HashSetTest extends AbstractTraversableTest {
     }
 
     @Override
-    public void shouldFoldRightNil() {
-        // TODO
-    }
-
-    @Override
-    public void shouldFindLastOfNil() {
-        // TODO
-    }
-
-    @Override
-    public void shouldSlide4ElementsBySize5AndStep3() {
-        // TODO
-    }
-
-    @Override
-    public void shouldSlide5ElementsBySize2AndStep3() {
-        // TODO
-    }
-
-    @Override
-    public void shouldSlide5ElementsBySize2AndStep4() {
-        // TODO
-    }
-
-    @Override
-    public void shouldSlide5ElementsBySize2AndStep5() {
-        // TODO
-    }
-
-    @Override
-    public void shouldSerializeDeserializeNonNil() {
-        // TODO
-    }
-
-    @Override
-    public void shouldSpanNonNil() {
-// TODO
-    }
-
-    @Override
     public void shouldReturnSomeInitWhenCallingInitOptionOnNonNil() {
-// TODO
-    }
-
-    @Override
-    public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
-// TODO
-    }
-
-    @Override
-    public void shouldSlideNonNilBySize1() {
-// TODO
-    }
-
-    @Override
-    public void shouldSlideNonNilBySize2() {
-// TODO
+        // TODO
     }
 
     @Test
