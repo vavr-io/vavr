@@ -5,11 +5,15 @@
  */
 package javaslang.collection;
 
+import javaslang.Lazy;
 import javaslang.Tuple2;
+import javaslang.control.None;
 import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 
@@ -19,6 +23,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     private static final long serialVersionUID = 1L;
 
     private final RedBlackTree<T> tree;
+    private final transient Lazy<Integer> length = Lazy.of(() -> iterator().length());
 
     private TreeSet(RedBlackTree<T> tree) {
         this.tree = tree;
@@ -62,7 +67,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return new TreeSet<>(RedBlackTree.ofAll(values));
     }
 
-    public static <T extends Comparable<T>> TreeSet<T> ofAll(Comparator<? super T> comparator, java.lang.Iterable<? extends T> values) {
+    public static <T> TreeSet<T> ofAll(Comparator<? super T> comparator, java.lang.Iterable<? extends T> values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
         return new TreeSet<>(RedBlackTree.ofAll(comparator, values));
@@ -507,82 +512,101 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public TreeSet<T> distinct() {
-        throw new UnsupportedOperationException("TODO");
+        return this;
     }
 
     @Override
     public TreeSet<T> distinctBy(Comparator<? super T> comparator) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(comparator, "comparator is null");
+        return TreeSet.ofAll(tree.comparator(), iterator().distinctBy(comparator));
     }
 
     @Override
     public <U> TreeSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
+        return TreeSet.ofAll(tree.comparator(), iterator().distinctBy(keyExtractor));
     }
 
     @Override
     public TreeSet<T> drop(int n) {
-        throw new UnsupportedOperationException("TODO");
+        return TreeSet.ofAll(tree.comparator(), iterator().drop(n));
     }
 
     @Override
     public TreeSet<T> dropRight(int n) {
-        throw new UnsupportedOperationException("TODO");
+        return TreeSet.ofAll(tree.comparator(), iterator().dropRight(n));
     }
 
     @Override
     public TreeSet<T> dropWhile(Predicate<? super T> predicate) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(predicate, "predicate is null");
+        return TreeSet.ofAll(tree.comparator(), iterator().dropWhile(predicate));
     }
 
     @Override
     public TreeSet<T> filter(Predicate<? super T> predicate) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(predicate, "predicate is null");
+        return TreeSet.ofAll(tree.comparator(), iterator().filter(predicate));
     }
 
     @Override
     public Option<T> findLast(Predicate<? super T> predicate) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(predicate, "predicate is null");
+        return iterator().findLast(predicate);
     }
 
     @Override
     public <U> TreeSet<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(mapper, "mapper is null");
+        // TODO: return TreeSet.ofAll(?comparator?, iterator().flatMap(mapper));
+        throw /*TODO*/ new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<Object> flatten() {
-        throw new UnsupportedOperationException("TODO");
+        throw /*TODO*/ new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(f, "f is null");
+        return iterator().foldRight(zero, f);
     }
 
     @Override
     public <C> Map<C, TreeSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(classifier, "classifier is null");
+        return iterator()
+                .groupBy(classifier)
+                .map((key, iterator) -> new Map.Entry<>(key, TreeSet.ofAll(tree.comparator(), iterator)));
     }
 
     @Override
     public T head() {
-        throw new UnsupportedOperationException("TODO");
+        if (isEmpty()) {
+            throw new NoSuchElementException("head of empty TreeSet");
+        } else {
+            return tree.min().get();
+        }
     }
 
     @Override
     public Option<T> headOption() {
-        throw new UnsupportedOperationException("TODO");
+        return tree.min();
     }
 
     @Override
     public TreeSet<T> init() {
-        throw new UnsupportedOperationException("TODO");
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("init of empty TreeSet");
+        } else {
+            return new TreeSet<>(tree.delete(tree.max().get()));
+        }
     }
 
     @Override
     public Option<TreeSet<T>> initOption() {
-        throw new UnsupportedOperationException("TODO");
+        return isEmpty() ? None.instance() : new Some<>(init());
     }
 
     @Override
@@ -592,111 +616,134 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public Iterator<T> iterator() {
-        throw new UnsupportedOperationException("TODO");
+        return tree.iterator();
     }
 
     @Override
     public int length() {
-        return 0;
+        return length.get();
     }
 
     @Override
     public <U> TreeSet<U> map(Function<? super T, ? extends U> mapper) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(mapper, "mapper is null");
+        throw /*TODO*/ new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Tuple2<TreeSet<T>, TreeSet<T>> partition(Predicate<? super T> predicate) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(predicate, "predicate is null");
+        return iterator()
+                .partition(predicate)
+                .map(i1 -> TreeSet.ofAll(tree.comparator(), i1), i2 -> TreeSet.ofAll(tree.comparator(), i2));
     }
 
     @Override
     public TreeSet<T> peek(Consumer<? super T> action) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(action, "action is null");
+        if (!isEmpty()) {
+            action.accept(head());
+        }
+        return this;
     }
 
     @Override
     public T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(op, "op is null");
+        return iterator().reduceRight(op);
     }
 
     @Override
     public TreeSet<T> remove(T element) {
-        throw new UnsupportedOperationException("TODO");
+        return new TreeSet<>(tree.delete(element));
     }
 
     @Override
     public TreeSet<T> removeAll(java.lang.Iterable<? extends T> elements) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(elements, "elements is null");
+        RedBlackTree<T> that = tree;
+        for (T element : elements) {
+            that = that.delete(element);
+        }
+        if (that == tree) {
+            return this;
+        } else {
+            return new TreeSet<>(that);
+        }
     }
 
     @Override
     public TreeSet<T> replace(T currentElement, T newElement) {
-        throw new UnsupportedOperationException("TODO");
+        throw /*TODO*/ new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> replaceAll(T currentElement, T newElement) {
-        throw new UnsupportedOperationException("TODO");
+        throw /*TODO*/ new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> replaceAll(UnaryOperator<T> operator) {
-        throw new UnsupportedOperationException("TODO");
+        throw /*TODO*/ new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> retainAll(java.lang.Iterable<? extends T> elements) {
-        throw new UnsupportedOperationException("TODO");
+        throw /*TODO*/ new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Tuple2<TreeSet<T>, TreeSet<T>> span(Predicate<? super T> predicate) {
-        throw new UnsupportedOperationException("TODO");
+        throw /*TODO*/ new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<T> tail() {
-        throw new UnsupportedOperationException("TODO");
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("tail of empty TreeSet");
+        } else {
+            return new TreeSet<>(tree.delete(tree.min().get()));
+        }
     }
 
     @Override
     public Option<TreeSet<T>> tailOption() {
-        throw new UnsupportedOperationException("TODO");
+        return isEmpty() ? None.instance() : new Some<>(tail());
     }
 
     @Override
     public TreeSet<T> take(int n) {
-        throw new UnsupportedOperationException("TODO");
+        return TreeSet.ofAll(tree.comparator(), iterator().take(n));
     }
 
     @Override
     public TreeSet<T> takeRight(int n) {
-        throw new UnsupportedOperationException("TODO");
+        return TreeSet.ofAll(tree.comparator(), iterator().takeRight(n));
     }
 
     @Override
     public TreeSet<T> takeWhile(Predicate<? super T> predicate) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(predicate, "predicate is null");
+        return TreeSet.ofAll(tree.comparator(), iterator().takeWhile(predicate));
     }
 
     @Override
     public <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        throw new UnsupportedOperationException("TODO");
+        throw /*TODO*/ new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> TreeSet<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
-        throw new UnsupportedOperationException("TODO");
+        throw /*TODO*/ new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> TreeSet<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
-        throw new UnsupportedOperationException("TODO");
+        throw /*TODO*/ new UnsupportedOperationException("TODO");
     }
 
     @Override
     public TreeSet<Tuple2<T, Integer>> zipWithIndex() {
-        throw new UnsupportedOperationException("TODO");
+        throw /*TODO*/ new UnsupportedOperationException("TODO");
     }
 }
