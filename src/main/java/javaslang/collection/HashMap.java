@@ -7,10 +7,13 @@ package javaslang.collection;
 
 import javaslang.Lazy;
 import javaslang.Tuple2;
+import javaslang.control.None;
 import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 
@@ -108,7 +111,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public boolean containsValue(V value) {
-        throw new UnsupportedOperationException("TODO");
+        return iterator().map(entry -> entry.value).contains(value);
     }
 
     @Override
@@ -118,27 +121,30 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> distinctBy(Comparator<? super Entry<K, V>> comparator) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(comparator, "comparator is null");
+        return HashMap.ofAll(iterator().distinctBy(comparator));
     }
 
     @Override
     public <U> HashMap<K, V> distinctBy(Function<? super Entry<K, V>, ? extends U> keyExtractor) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
+        return HashMap.ofAll(iterator().distinctBy(keyExtractor));
     }
 
     @Override
     public HashMap<K, V> drop(int n) {
-        throw new UnsupportedOperationException("TODO");
+        return HashMap.ofAll(iterator().drop(n));
     }
 
     @Override
     public HashMap<K, V> dropRight(int n) {
-        throw new UnsupportedOperationException("TODO");
+        return HashMap.ofAll(iterator().dropRight(n));
     }
 
     @Override
     public HashMap<K, V> dropWhile(Predicate<? super Entry<K, V>> predicate) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(predicate, "predicate is null");
+        return HashMap.ofAll(iterator().dropWhile(predicate));
     }
 
     @Override
@@ -160,7 +166,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Option<Entry<K, V>> findLast(Predicate<? super Entry<K, V>> predicate) {
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(predicate, "predicate is null");
+        return iterator().findLast(predicate);
     }
 
     @Override
@@ -187,12 +194,14 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashSet<Object> flatten() {
-        throw new UnsupportedOperationException("TODO Patryk");
+        // TODO
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> U foldRight(U zero, BiFunction<? super Entry<K, V>, ? super U, ? extends U> f) {
-        throw new UnsupportedOperationException("TODO Patryk");
+        // TODO
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -220,21 +229,27 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Entry<K, V> head() {
-        throw new UnsupportedOperationException("TODO");
+        if (isEmpty()) {
+            throw new NoSuchElementException("head of empty HashMap");
+        } else {
+            return iterator().next();
+        }
     }
 
     @Override
     public Option<Entry<K, V>> headOption() {
-        throw new UnsupportedOperationException("TODO");
+        return isEmpty() ? None.instance() : new Some<>(head());
     }
 
     @Override
     public HashMap<K, V> init() {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Option<HashMap<K, V>> initOption() {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -306,6 +321,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Tuple2<HashMap<K, V>, HashMap<K, V>> partition(Predicate<? super Entry<K, V>> predicate) {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -334,6 +350,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Entry<K, V> reduceRight(BiFunction<? super Entry<K, V>, ? super Entry<K, V>, ? extends Entry<K, V>> op) {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -344,26 +361,31 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> removeAll(java.lang.Iterable<? extends K> keys) {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public HashMap<K, V> replace(Entry<K, V> currentElement, Entry<K, V> newElement) {
-        throw new UnsupportedOperationException("TODO Patryk");
+        // TODO
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public HashMap<K, V> replaceAll(Entry<K, V> currentElement, Entry<K, V> newElement) {
-        throw new UnsupportedOperationException("TODO Patryk");
+        // TODO
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public HashMap<K, V> replaceAll(UnaryOperator<Entry<K, V>> operator) {
-        throw new UnsupportedOperationException("TODO Patryk");
+        // TODO
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public HashMap<K, V> retainAll(java.lang.Iterable<? extends Entry<K, V>> elements) {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
@@ -374,42 +396,50 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Tuple2<HashMap<K, V>, HashMap<K, V>> span(Predicate<? super Entry<K, V>> predicate) {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public HashMap<K, V> tail() {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public Option<HashMap<K, V>> tailOption() {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public HashMap<K, V> take(int n) {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public HashMap<K, V> takeRight(int n) {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public HashMap<K, V> takeWhile(Predicate<? super Entry<K, V>> predicate) {
+        // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <K1, V1, K2, V2> Tuple2<HashMap<K1, V1>, HashMap<K2, V2>> unzip(Function<? super Entry<? super K, ? super V>, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
-        throw new UnsupportedOperationException("TODO Patryk");
+        // TODO
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <K1, V1, K2, V2> Tuple2<HashMap<K1, V1>, HashMap<K2, V2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
-        throw new UnsupportedOperationException("TODO Patryk");
+        // TODO
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -419,17 +449,20 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <U> HashMap<Tuple2<K, V>, U> zip(java.lang.Iterable<U> that) {
-        throw new UnsupportedOperationException("TODO Patryk");
+        // TODO
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <U> HashMap<Tuple2<K, V>, U> zipAll(java.lang.Iterable<U> that, Entry<K, V> thisElem, U thatElem) {
-        throw new UnsupportedOperationException("TODO Patryk");
+        // TODO
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public HashMap<Tuple2<K, V>, Integer> zipWithIndex() {
-        throw new UnsupportedOperationException("TODO Patryk");
+        // TODO
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override

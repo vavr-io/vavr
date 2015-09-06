@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Function2;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
@@ -675,27 +676,38 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public TreeSet<T> replace(T currentElement, T newElement) {
-        throw /*TODO*/ new UnsupportedOperationException("TODO");
+        if (tree.contains(currentElement)) {
+            return new TreeSet<>(tree.delete(currentElement).insert(newElement));
+        } else {
+            return this;
+        }
     }
 
     @Override
     public TreeSet<T> replaceAll(T currentElement, T newElement) {
-        throw /*TODO*/ new UnsupportedOperationException("TODO");
+        // a set has only one occurrence
+        return replace(currentElement, newElement);
     }
 
     @Override
     public TreeSet<T> replaceAll(UnaryOperator<T> operator) {
-        throw /*TODO*/ new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(operator, "operator is null");
+        return TreeSet.ofAll(tree.comparator(), iterator().replaceAll(operator));
     }
 
     @Override
     public TreeSet<T> retainAll(java.lang.Iterable<? extends T> elements) {
-        throw /*TODO*/ new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(elements, "elements is null");
+        final RedBlackTree<T> kept = RedBlackTree.ofAll(tree.comparator(), elements);
+        return new TreeSet<>(tree.intersection(kept));
     }
 
     @Override
     public Tuple2<TreeSet<T>, TreeSet<T>> span(Predicate<? super T> predicate) {
-        throw /*TODO*/ new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(predicate, "predicate is null");
+        return iterator()
+                .span(predicate)
+                .map(i1 -> TreeSet.ofAll(tree.comparator(), i1), i2 -> TreeSet.ofAll(tree.comparator(), i2));
     }
 
     @Override
@@ -730,21 +742,22 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        final Comparator<? super T1> comparator1 = naturalComparator();
-        final Comparator<? super T2> comparator2 = naturalComparator();
+        Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator()
                 .unzip(unzipper)
-                .map((iter1, iter2) -> Tuple.of(TreeSet.ofAll(comparator1, iter1), TreeSet.ofAll(comparator2, iter2)));
+                .map(i1 -> TreeSet.ofAll(naturalComparator(), i1), i2 -> TreeSet.ofAll(naturalComparator(), i2));
     }
 
     @Override
     public <U> TreeSet<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
+        Objects.requireNonNull(that, "that is null");
         final Comparator<Tuple2<T, U>> tuple2Comparator = tuple2Comparator(tree.comparator());
         return TreeSet.ofAll(tuple2Comparator, iterator().zip(that));
     }
 
     @Override
     public <U> TreeSet<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
+        Objects.requireNonNull(that, "that is null");
         final Comparator<Tuple2<T, U>> tuple2Comparator = tuple2Comparator(tree.comparator());
         return TreeSet.ofAll(tuple2Comparator, iterator().zipAll(that, thisElem, thatElem));
     }
