@@ -793,6 +793,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         };
     }
 
+    // -- Additional methods of Iterator
+
     /**
      * Generates an infinitely iterator using a function to calculate the next value
      * based on the previous.
@@ -820,6 +822,130 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             }
         };
     }
+
+
+    /**
+     * Inserts an element between all elements of this Iterator.
+     *
+     * @param element An element.
+     * @return an interspersed version of this
+     */
+    default Iterator<T> intersperse(T element) {
+        if (!hasNext()) {
+            return empty();
+        } else {
+            final Iterator<T> that = this;
+            return new AbstractIterator<T>() {
+
+                boolean insertElement = false;
+
+                @Override
+                public boolean hasNext() {
+                    return that.hasNext();
+                }
+
+                @Override
+                public T next() {
+                    if (!that.hasNext()) {
+                        EMPTY.next();
+                    }
+                    if (insertElement) {
+                        insertElement = false;
+                        return element;
+                    } else {
+                        insertElement = true;
+                        return that.next();
+                    }
+                }
+            };
+        }
+    }
+
+    default <U> Iterator<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
+        Objects.requireNonNull(that, "that is null");
+        if (isEmpty()) {
+            return empty();
+        } else {
+            final Iterator<T> it1 = this;
+            final java.util.Iterator<U> it2 = that.iterator();
+            return new AbstractIterator<Tuple2<T, U>>() {
+                @Override
+                public boolean hasNext() {
+                    return it1.hasNext() && it2.hasNext();
+                }
+
+                @Override
+                public Tuple2<T, U> next() {
+                    if (!hasNext()) {
+                        EMPTY.next();
+                    }
+                    return Tuple.of(it1.next(), it2.next());
+                }
+            };
+        }
+    }
+
+    default <U> Iterator<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
+        Objects.requireNonNull(that, "that is null");
+        if (isEmpty()) {
+            return empty();
+        } else {
+            final Iterator<T> it1 = this;
+            final java.util.Iterator<U> it2 = that.iterator();
+            return new AbstractIterator<Tuple2<T, U>>() {
+                @Override
+                public boolean hasNext() {
+                    return it1.hasNext() || it2.hasNext();
+                }
+
+                @Override
+                public Tuple2<T, U> next() {
+                    if (!hasNext()) {
+                        EMPTY.next();
+                    }
+                    T v1 = it1.hasNext() ? it1.next() : thisElem;
+                    U v2 = it2.hasNext() ? it2.next() : thatElem;
+                    return Tuple.of(v1, v2);
+                }
+            };
+        }
+    }
+
+    default Iterator<Tuple2<T, Integer>> zipWithIndex() {
+        if (isEmpty()) {
+            return empty();
+        } else {
+            final Iterator<T> it1 = this;
+            return new AbstractIterator<Tuple2<T, Integer>>() {
+                private int index = 0;
+
+                @Override
+                public boolean hasNext() {
+                    return it1.hasNext();
+                }
+
+                @Override
+                public Tuple2<T, Integer> next() {
+                    if (!hasNext()) {
+                        EMPTY.next();
+                    }
+                    return Tuple.of(it1.next(), index++);
+                }
+            };
+        }
+    }
+
+    default <T1, T2> Tuple2<Iterator<T1>, Iterator<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        if (!hasNext()) {
+            return Tuple.of(empty(), empty());
+        } else {
+            final Stream<Tuple2<? extends T1, ? extends T2>> source = Stream.ofAll(this.map(unzipper::apply));
+            return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator());
+        }
+    }
+
+    // -- Overridden methods of TraversableOnce
 
     @Override
     default Iterator<T> clear() {
@@ -861,6 +987,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @param n A number
      * @return The empty iterator, if {@code n <= 0} or this is empty, otherwise a new iterator without the first n elements.
      */
+    @Override
     default Iterator<T> drop(int n) {
         if (n <= 0) {
             return this;
@@ -1020,6 +1147,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @param <U>    Component type
      * @return A new java.lang.Iterable
      */
+    @Override
     default <U> Iterator<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (!hasNext()) {
@@ -1091,6 +1219,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
+    @Override
+    default boolean hasDefiniteSize() {
+        return false;
+    }
+
+    @Override
     default T head() {
         if (!hasNext()) {
             EMPTY.next();
@@ -1098,6 +1232,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         return next();
     }
 
+    @Override
     default Option<T> headOption() {
         return hasNext() ? new Some<>(next()) : None.instance();
     }
@@ -1116,46 +1251,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         return hasNext() ? new Some<>(init()) : None.instance();
     }
 
-    /**
-     * Inserts an element between all elements of this Iterator.
-     *
-     * @param element An element.
-     * @return an interspersed version of this
-     */
-    default Iterator<T> intersperse(T element) {
-        if (!hasNext()) {
-            return empty();
-        } else {
-            final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
-
-                boolean insertElement = false;
-
-                @Override
-                public boolean hasNext() {
-                    return that.hasNext();
-                }
-
-                @Override
-                public T next() {
-                    if (!that.hasNext()) {
-                        EMPTY.next();
-                    }
-                    if (insertElement) {
-                        insertElement = false;
-                        return element;
-                    } else {
-                        insertElement = true;
-                        return that.next();
-                    }
-                }
-            };
-        }
-    }
-
     @Override
     default boolean isEmpty() {
         return !hasNext();
+    }
+
+    @Override
+    default boolean isTraversableAgain() {
+        return false;
     }
 
     @Override
@@ -1175,6 +1278,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @param <U>    Component type
      * @return A new Iterator
      */
+    @Override
     default <U> Iterator<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (!hasNext()) {
@@ -1406,6 +1510,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         return Spliterators.spliterator(stream.iterator(), stream.length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
+    @Override
     default Iterator<T> tail() {
         if (!hasNext()) {
             throw new UnsupportedOperationException();
@@ -1431,6 +1536,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @param n A number
      * @return The empty iterator, if {@code n <= 0} or this is empty, otherwise a new iterator without the first n elements.
      */
+    @Override
     default Iterator<T> take(int n) {
         if (n <= 0 || !hasNext()) {
             return empty();
@@ -1525,90 +1631,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                     return result;
                 }
             };
-        }
-    }
-
-    default <U> Iterator<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
-        Objects.requireNonNull(that, "that is null");
-        if (isEmpty()) {
-            return empty();
-        } else {
-            final Iterator<T> it1 = this;
-            final java.util.Iterator<U> it2 = that.iterator();
-            return new AbstractIterator<Tuple2<T, U>>() {
-                @Override
-                public boolean hasNext() {
-                    return it1.hasNext() && it2.hasNext();
-                }
-
-                @Override
-                public Tuple2<T, U> next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
-                    return Tuple.of(it1.next(), it2.next());
-                }
-            };
-        }
-    }
-
-    default <U> Iterator<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
-        Objects.requireNonNull(that, "that is null");
-        if (isEmpty()) {
-            return empty();
-        } else {
-            final Iterator<T> it1 = this;
-            final java.util.Iterator<U> it2 = that.iterator();
-            return new AbstractIterator<Tuple2<T, U>>() {
-                @Override
-                public boolean hasNext() {
-                    return it1.hasNext() || it2.hasNext();
-                }
-
-                @Override
-                public Tuple2<T, U> next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
-                    T v1 = it1.hasNext() ? it1.next() : thisElem;
-                    U v2 = it2.hasNext() ? it2.next() : thatElem;
-                    return Tuple.of(v1, v2);
-                }
-            };
-        }
-    }
-
-    default Iterator<Tuple2<T, Integer>> zipWithIndex() {
-        if (isEmpty()) {
-            return empty();
-        } else {
-            final Iterator<T> it1 = this;
-            return new AbstractIterator<Tuple2<T, Integer>>() {
-                private int index = 0;
-
-                @Override
-                public boolean hasNext() {
-                    return it1.hasNext();
-                }
-
-                @Override
-                public Tuple2<T, Integer> next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
-                    return Tuple.of(it1.next(), index++);
-                }
-            };
-        }
-    }
-
-    default <T1, T2> Tuple2<Iterator<T1>, Iterator<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        if (!hasNext()) {
-            return Tuple.of(empty(), empty());
-        } else {
-            final Stream<Tuple2<? extends T1, ? extends T2>> source = Stream.ofAll(this.map(unzipper::apply));
-            return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator());
         }
     }
 

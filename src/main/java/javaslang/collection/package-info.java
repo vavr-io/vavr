@@ -23,7 +23,7 @@
  *         <tr><td>{@linkplain javaslang.collection.List}</td><td><small>const</small></td><td><small>const</small></td><td><small>linear</small></td><td><small>linear</small></td><td><small>const</small></td><td><small>linear</small></td><td><small>linear</small></td></tr>
  *         <tr><td>{@linkplain javaslang.collection.Queue}</td><td><small>const</small></td><td><small>const<sup>a</sup></small></td><td><small>linear</small></td><td><small>linear</small></td><td><small>const</small></td><td><small>const</small></td><td><small>linear</small></td></tr>
  *         <tr><td>{@linkplain javaslang.collection.Stream}</td><td><small>const</small></td><td><small>const</small></td><td><small>linear</small></td><td><small>linear</small></td><td><small>const<sup>lazy</sup></small></td><td><small>const<sup>lazy</sup></small></td><td><small>linear</small></td></tr>
- *         <tr><td>{@linkplain javaslang.collection.Vector}</td><td><small>const<sup>eff</sup></small></td><td><small>linear</small></td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>linear</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>linear</small></td></tr>
+ *         <tr><td>{@linkplain javaslang.collection.Vector}</td><td><small>const<sup>eff</sup></small></td><td><small>linear</small></td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>linear</small></td><td><small>const<sup>eff</sup></small></td><td><small>linear</small></td></tr>
  *     </tbody>
  * </table>
  * <br>

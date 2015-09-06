@@ -5,7 +5,9 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple2;
+import javaslang.Value;
+import javaslang.collection.Iterator.AbstractIterator;
 import javaslang.control.Match;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -405,6 +407,15 @@ public interface TraversableOnce<T> extends Value<T> {
     <C> Map<C, ? extends TraversableOnce<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     /**
+     * Checks if this Traversable is known to have a finite size.
+     * <p>
+     * This method should be implemented by classes only, i.e. not by interfaces.
+     *
+     * @return true, if this Traversable is known to hafe a finite size, false otherwise.
+     */
+    boolean hasDefiniteSize();
+
+    /**
      * Returns the first element of a non-empty TraversableOnce.
      *
      * @return The first element of this TraversableOnce.
@@ -443,6 +454,15 @@ public interface TraversableOnce<T> extends Value<T> {
     boolean isEmpty();
 
     /**
+     * Checks if this Traversable can be repeatedly traversed.
+     * <p>
+     * This method should be implemented by classes only, i.e. not by interfaces.
+     *
+     * @return true, if this Traversable is known to be traversable repeatedly, false otherwise.
+     */
+    boolean isTraversableAgain();
+
+    /**
      * An iterator by means of head() and tail(). Subclasses may want to override this method.
      *
      * @return A new Iterator of this TraversableOnce elements.
@@ -450,7 +470,7 @@ public interface TraversableOnce<T> extends Value<T> {
     @Override
     default Iterator<T> iterator() {
         final TraversableOnce<T> that = this;
-        return new Iterator.AbstractIterator<T>() {
+        return new AbstractIterator<T>() {
 
             TraversableOnce<T> traversable = that;
 

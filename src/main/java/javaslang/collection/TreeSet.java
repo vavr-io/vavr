@@ -5,9 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Function2;
 import javaslang.Lazy;
-import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -19,6 +17,12 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 
+/**
+ * SortedSet implementation, backed by a Red/Black Tree.
+ *
+ * @param <T> Component type
+ * @since 2.0.0
+ */
 // DEV-NOTE: it is not possible to create an EMPTY TreeSet without a Comparator type in scope
 public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
@@ -44,7 +48,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return new TreeSet<>(RedBlackTree.of(value));
     }
 
-    public static <T extends Comparable<? super T>> TreeSet<T> of(Comparator<? super T> comparator, T value) {
+    public static <T> TreeSet<T> of(Comparator<? super T> comparator, T value) {
         Objects.requireNonNull(comparator, "comparator is null");
         return new TreeSet<>(RedBlackTree.of(comparator, value));
     }
@@ -58,7 +62,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    public static <T extends Comparable<? super T>> TreeSet<T> of(Comparator<? super T> comparator, T... values) {
+    public static <T> TreeSet<T> of(Comparator<? super T> comparator, T... values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
         return new TreeSet<>(RedBlackTree.of(comparator, values));
@@ -493,18 +497,20 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public boolean hasDefiniteSize() {
-        return true;
-    }
-
-    @Override
-    public boolean isTraversableAgain() {
-        return true;
-    }
-
-    @Override
     public TreeSet<T> clear() {
         return isEmpty() ? this : new TreeSet<>(tree.clear());
+    }
+
+    @Override
+    public Comparator<? super T> comparator() {
+        return tree.comparator();
+    }
+
+    @Override
+    public TreeSet<T> difference(Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        final RedBlackTree<T> that = RedBlackTree.ofAll(tree.comparator(), elements);
+        return new TreeSet<>(tree.difference(that));
     }
 
     @Override
@@ -560,13 +566,12 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public <U> TreeSet<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        // TODO: return TreeSet.ofAll(?comparator?, iterator().flatMap(mapper));
-        throw /*TODO*/ new UnsupportedOperationException("TODO");
+        return TreeSet.ofAll(naturalComparator(), iterator().flatMap(mapper));
     }
 
     @Override
     public TreeSet<Object> flatten() {
-        throw /*TODO*/ new UnsupportedOperationException("TODO");
+        return TreeSet.ofAll(naturalComparator(), iterator().flatten());
     }
 
     @Override
@@ -581,6 +586,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return iterator()
                 .groupBy(classifier)
                 .map((key, iterator) -> new Map.Entry<>(key, TreeSet.ofAll(tree.comparator(), iterator)));
+    }
+
+    @Override
+    public boolean hasDefiniteSize() {
+        return true;
     }
 
     @Override
@@ -612,8 +622,20 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
+    public TreeSet<T> intersection(Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        final RedBlackTree<T> that = RedBlackTree.ofAll(tree.comparator(), elements);
+        return new TreeSet<>(tree.intersection(that));
+    }
+
+    @Override
     public boolean isEmpty() {
         return tree.isEmpty();
+    }
+
+    @Override
+    public boolean isTraversableAgain() {
+        return true;
     }
 
     @Override
@@ -629,7 +651,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public <U> TreeSet<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        throw /*TODO*/ new UnsupportedOperationException("TODO");
+        return TreeSet.ofAll(naturalComparator(), iterator().map(mapper));
     }
 
     @Override
@@ -741,6 +763,13 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
+    public TreeSet<T> union(Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        final RedBlackTree<T> that = RedBlackTree.ofAll(tree.comparator(), elements);
+        return new TreeSet<>(tree.union(that));
+    }
+
+    @Override
     public <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator()
@@ -769,6 +798,30 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return TreeSet.ofAll(tuple2Comparator, iterator().zipWithIndex());
     }
 
+    // -- Object
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof TreeSet) {
+            final TreeSet<?> that = (TreeSet<?>) o;
+            return tree.equals(that.tree);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return tree.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "TreeSet" + tree.toString();
+    }
+
     /**
      * Returns a component-wise Tuple2 Comparator.
      * <p>
@@ -788,8 +841,8 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * </code></pre>
      *
      * @param component1Comparator Comparator for 1st tuple component
-     * @param <T> Component type 1
-     * @param <U> Component type 2
+     * @param <T>                  Component type 1
+     * @param <U>                  Component type 2
      * @return A Tuple2 comparator according to the rules described above.
      */
     private static <T, U> Comparator<Tuple2<T, U>> tuple2Comparator(Comparator<? super T> component1Comparator) {
@@ -809,7 +862,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * Please note that this will lead to runtime exceptions, if U is not Comparable.
      *
      * @param <U> The type
-     * @return
+     * @return The natural Comparator of type U
      */
     @SuppressWarnings("unchecked")
     private static <U> Comparator<? super U> naturalComparator() {
