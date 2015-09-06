@@ -10,6 +10,9 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.Iterator.AbstractIterator;
+import javaslang.control.None;
+import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -161,6 +164,24 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
      * @return true, if it is empty, false otherwise.
      */
     boolean isEmpty();
+
+    /**
+     * Returns the maximum element of this tree according to the underlying comparator.
+     *
+     * @return Some element, if this is not empty, otherwise None
+     */
+    default Option<T> max() {
+        return isEmpty() ? None.instance() : new Some<>(Node.maximum((Node<T>) this));
+    }
+
+    /**
+     * Returns the minimum element of this tree according to the underlying comparator.
+     *
+     * @return Some element, if this is not empty, otherwise None
+     */
+    default Option<T> min() {
+        return isEmpty() ? None.instance() : new Some<>(Node.minimum((Node<T>) this));
+    }
 
     default RedBlackTree<T> union(RedBlackTree<T> tree) {
         Objects.requireNonNull(tree, "tree is null");
@@ -648,6 +669,14 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
                 final Node<T> node = Node.mergeLT(n1, (Node<T>) n2.left, h1);
                 return Node.balanceLeft(n2.color, n2.blackHeight, node, n2.value, n2.right, n2.empty);
             }
+        }
+
+        private static <T> T maximum(Node<T> node) {
+            Node<T> curr = node;
+            while (!curr.right.isEmpty()) {
+                curr = (Node<T>) curr.right;
+            }
+            return curr.value;
         }
 
         private static <T> T minimum(Node<T> node) {
