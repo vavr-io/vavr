@@ -472,7 +472,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         for (int i = n; i < length(); i++) {
             trie = trie.put(i - n, get(i));
         }
-        return trie.size() == 0 ? empty() : new Vector<>(trie);
+        return trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 
     @Override
@@ -513,7 +513,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         if (trie.size() == length()) {
             return this;
         } else {
-            return trie.size() == 0 ? empty() : new Vector<>(trie);
+            return trie.isEmpty() ? empty() : new Vector<>(trie);
         }
     }
 
@@ -529,7 +529,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
                     trie = trie.put(trie.size(), u);
                 }
             }
-            return trie.size() == 0 ? empty() : new Vector<>(trie);
+            return trie.isEmpty() ? empty() : new Vector<>(trie);
         }
     }
 
@@ -653,7 +653,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             }
             trie = trie.put(trie.size(), get(i));
         }
-        return trie.size() == 0 ? empty() : new Vector<>(trie);
+        return trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 
     @Override
@@ -705,7 +705,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         for (int i = 0; i < length(); i++) {
             trie = trie.put(i, mapper.apply(get(i)));
         }
-        return trie.size() == 0 ? empty() : new Vector<>(trie);
+        return trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 
     @Override
@@ -789,7 +789,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
                 }
             }
         }
-        return trie.size() == length() ? this : trie.size() == 0 ? empty() : new Vector<>(trie);
+        return trie.size() == length() ? this : trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 
     @Override
@@ -809,7 +809,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
                 }
             }
         }
-        return trie.size() == length() ? this : trie.size() == 0 ? empty() : new Vector<>(trie);
+        return trie.size() == length() ? this : trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 
     @Override
@@ -838,7 +838,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
                 trie = trie.put(trie.size(), get(i));
             }
         }
-        return trie.size() == 0 ? empty() : new Vector<>(trie);
+        return trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 
     @Override
@@ -850,7 +850,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
                 result = result.put(result.size(), value);
             }
         }
-        return result.size() == length() ? this : (result.size() == 0 ? empty() : new Vector<>(result));
+        return result.size() == length() ? this : (result.isEmpty() ? empty() : new Vector<>(result));
 
     }
 
@@ -871,7 +871,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
                 result = result.put(result.size(), element);
             }
         }
-        return found ? (result.size() == 0 ? empty() : new Vector<>(result)) : this;
+        return found ? (result.isEmpty() ? empty() : new Vector<>(result)) : this;
     }
 
     @Override
@@ -907,7 +907,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
                 trie = trie.put(trie.size(), value);
             }
         }
-        return changed ? (trie.size() == 0 ? empty() : new Vector<>(trie)) : this;
+        return changed ? (trie.isEmpty() ? empty() : new Vector<>(trie)) : this;
     }
 
     @Override
@@ -917,7 +917,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         for (int i = 0; i < length(); i++) {
             trie = trie.put(trie.size(), operator.apply(get(i)));
         }
-        return trie.size() == 0 ? empty() : new Vector<>(trie);
+        return trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 
     @Override
@@ -930,7 +930,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
                 result = result.put(result.size(), element);
             }
         }
-        return result.size() == 0 ? empty() : new Vector<>(result);
+        return result.isEmpty() ? empty() : new Vector<>(result);
     }
 
     @Override
@@ -939,7 +939,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         for (int i = 0; i < length(); i++) {
             trie = trie.put(i, get(length() - 1 - i));
         }
-        return trie.size() == 0 ? empty() : new Vector<>(trie);
+        return trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 
     @Override
@@ -966,7 +966,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         for (int i = beginIndex; i < endIndex; i++) {
             trie = trie.put(trie.size(), get(i));
         }
-        return trie.size() == 0 ? empty() : new Vector<>(trie);
+        return trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 
     @Override
@@ -1029,7 +1029,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         for (int i = 1; i < length(); i++) {
             trie = trie.put(i - 1, get(i));
         }
-        return trie.size() == 0 ? empty() : new Vector<>(trie);
+        return trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 
     @Override
@@ -1041,7 +1041,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         for (int i = 1; i < length(); i++) {
             trie = trie.put(i - 1, get(i));
         }
-        return new Some<>(trie.size() == 0 ? empty() : new Vector<>(trie));
+        return new Some<>(trie.isEmpty() ? empty() : new Vector<>(trie));
     }
 
     @Override
@@ -1085,7 +1085,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             }
             trie = trie.put(i, get(i));
         }
-        return trie.size() == length() ? this : trie.size() == 0 ? empty() : new Vector<>(trie);
+        return trie.size() == length() ? this : trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 
     @Override
@@ -1103,8 +1103,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             xs = xs.put(xs.size(), t._1);
             ys = ys.put(ys.size(), t._2);
         }
-        return Tuple.of(xs.size() == 0 ? empty() : new Vector<>(xs), ys.size() == 0 ? empty() : new Vector<>(ys));
+        return Tuple.of(xs.isEmpty() ? empty() : new Vector<>(xs), ys.isEmpty() ? empty() : new Vector<>(ys));
     }
+
 
     @Override
     public Vector<T> update(int index, T element) {
@@ -1126,7 +1127,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         while (list1.hasNext() && list2.hasNext()) {
             result = result.put(result.size(), Tuple.of(list1.next(), list2.next()));
         }
-        return result.size() == 0 ? empty() : new Vector<>(result);
+        return result.isEmpty() ? empty() : new Vector<>(result);
     }
 
     @Override
@@ -1140,7 +1141,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             final U elem2 = list2.hasNext() ? list2.next() : thatElem;
             result = result.put(result.size(), Tuple.of(elem1, elem2));
         }
-        return result.size() == 0 ? empty() : new Vector<>(result);
+        return result.isEmpty() ? empty() : new Vector<>(result);
     }
 
     @Override
@@ -1149,7 +1150,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         for (int i = 0; i < length(); i++) {
             trie = trie.put(i, Tuple.of(get(i), i));
         }
-        return trie.size() == 0 ? empty() : new Vector<>(trie);
+        return trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 
     private Object readResolve() {

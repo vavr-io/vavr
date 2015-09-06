@@ -545,7 +545,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         if (list.size() == back.length) {
             return this;
         } else {
-            return list.size() == 0 ? empty() : wrap(list.toArray());
+            return list.isEmpty() ? empty() : wrap(list.toArray());
         }
     }
 
