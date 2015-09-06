@@ -31,10 +31,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     private final HashArrayMappedTrie<K, V> tree;
     private final transient Lazy<Integer> hash;
+    private final transient Lazy<Seq<V>> values;
 
     private HashMap(HashArrayMappedTrie<K, V> tree) {
         this.tree = tree;
         this.hash = Lazy.of(() -> Traversable.hash(tree::iterator));
+        this.values = Lazy.of(() -> iterator().map(entry -> entry.value).toList());
     }
 
     @SuppressWarnings("unchecked")
@@ -111,7 +113,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public boolean containsValue(V value) {
-        return iterator().map(entry -> entry.value).contains(value);
+        return values.get().contains(value);
     }
 
     @Override
@@ -444,7 +446,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Seq<V> values() {
-        return map(entry -> entry.value).toList();
+        return values.get();
     }
 
     @Override
