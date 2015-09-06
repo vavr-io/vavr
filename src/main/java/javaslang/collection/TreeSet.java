@@ -704,6 +704,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public Tuple2<TreeSet<T>, TreeSet<T>> span(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         return iterator()
                 .span(predicate)
                 .map(i1 -> TreeSet.ofAll(tree.comparator(), i1), i2 -> TreeSet.ofAll(tree.comparator(), i2));
@@ -741,6 +742,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator()
                 .unzip(unzipper)
                 .map(i1 -> TreeSet.ofAll(naturalComparator(), i1), i2 -> TreeSet.ofAll(naturalComparator(), i2));
@@ -748,12 +750,14 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public <U> TreeSet<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
+        Objects.requireNonNull(that, "that is null");
         final Comparator<Tuple2<T, U>> tuple2Comparator = tuple2Comparator(tree.comparator());
         return TreeSet.ofAll(tuple2Comparator, iterator().zip(that));
     }
 
     @Override
     public <U> TreeSet<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
+        Objects.requireNonNull(that, "that is null");
         final Comparator<Tuple2<T, U>> tuple2Comparator = tuple2Comparator(tree.comparator());
         return TreeSet.ofAll(tuple2Comparator, iterator().zipAll(that, thisElem, thatElem));
     }
