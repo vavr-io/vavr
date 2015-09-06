@@ -35,7 +35,7 @@ import static javaslang.collection.RedBlackTree.Color.RED;
  */
 public interface RedBlackTree<T> extends java.lang.Iterable<T> {
 
-    static <T extends Comparable<T>> Empty<T> empty() {
+    static <T extends Comparable<? super T>> Empty<T> empty() {
         return new Empty<>(T::compareTo);
     }
 
@@ -44,7 +44,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
         return new Empty<>(comparator);
     }
 
-    static <T extends Comparable<T>> Node<T> of(T value) {
+    static <T extends Comparable<? super T>> Node<T> of(T value) {
         return of(T::compareTo, value);
     }
 
@@ -56,7 +56,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
 
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    static <T extends Comparable<T>> RedBlackTree<T> of(T... values) {
+    static <T extends Comparable<? super T>> RedBlackTree<T> of(T... values) {
         Objects.requireNonNull(values, "values is null");
         return of(T::compareTo, values);
     }
@@ -72,7 +72,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
         return tree;
     }
 
-    static <T extends Comparable<T>> RedBlackTree<T> ofAll(java.lang.Iterable<? extends T> values) {
+    static <T extends Comparable<? super T>> RedBlackTree<T> ofAll(java.lang.Iterable<? extends T> values) {
         Objects.requireNonNull(values, "values is null");
         return ofAll(T::compareTo, values);
     }
