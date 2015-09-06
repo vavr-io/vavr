@@ -5,37 +5,39 @@
  */
 package javaslang.collection;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.stream.Collector;
 
-public class TreeSetTest /*TODO: extends AbstractTraversableTest*/ {
-    /*
+public class TreeSetTest extends AbstractSortedSetTest {
+
     @Override
     protected <T> Collector<T, ArrayList<T>, ? extends TreeSet<T>> collector() {
-        return null;
+        return TreeSet.collector();
     }
 
     @Override
     protected <T> TreeSet<T> empty() {
-        return TreeSet.empty(naturalComparator());
+        return TreeSet.empty(toStringComparator());
     }
 
     @Override
     protected <T> TreeSet<T> of(T element) {
-        return TreeSet.of(naturalComparator(), element);
+        return TreeSet.of(toStringComparator(), element);
     }
 
+    @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     @Override
     protected final <T> TreeSet<T> of(T... elements) {
         // Note: TreeSet.ofAll(Comparator, T...) does not work with T[]
-        return TreeSet.ofAll(naturalComparator(), Iterator.of(elements));
+        return TreeSet.ofAll(toStringComparator(), Iterator.of(elements));
     }
 
     @Override
     protected <T> TreeSet<T> ofAll(Iterable<? extends T> elements) {
-        return TreeSet.ofAll(naturalComparator(), elements);
+        return TreeSet.ofAll(toStringComparator(), elements);
     }
 
     @Override
@@ -79,19 +81,19 @@ public class TreeSetTest /*TODO: extends AbstractTraversableTest*/ {
     }
 
     @Override
-    boolean isThisLazyJavaslangObject() {
-        return false;
+    boolean useIsEqualToInsteadOfIsSameAs() {
+        return true; // we can't use length or size to compare effects because it is O(n) for TreeSet
     }
 
     @Override
     int getPeekNonNilPerformingAnAction() {
-        return 0;
+        return 1;
     }
-    */
 
-    // Duplicate of TreeSet.naturalComparator(). Don't want to expose it.
+    // -- helpers
+
     @SuppressWarnings("unchecked")
-    private static <U> Comparator<? super U> naturalComparator() {
-        return (o1, o2) -> ((Comparable<? super U>) o1).compareTo(o2);
+    private static Comparator<Object> toStringComparator() {
+        return (Comparator<Object> & Serializable) (o1, o2) -> String.valueOf(o1).compareTo(String.valueOf(o2));
     }
 }

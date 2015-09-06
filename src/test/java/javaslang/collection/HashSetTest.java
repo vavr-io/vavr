@@ -15,7 +15,7 @@ import java.util.stream.Collector;
 
 import static org.junit.Assert.assertTrue;
 
-public class HashSetTest extends AbstractTraversableTest {
+public class HashSetTest extends AbstractSetTest {
 
     @Override
     protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
@@ -78,7 +78,7 @@ public class HashSetTest extends AbstractTraversableTest {
     // -- construction
 
     @Override
-    protected <T> Collector<T, ArrayList<T>, Set<T>> collector() {
+    protected <T> Collector<T, ArrayList<T>, HashSet<T>> collector() {
         return HashSet.collector();
     }
 
@@ -310,11 +310,6 @@ public class HashSetTest extends AbstractTraversableTest {
     }
 
     @Override
-    public void shouldBeAwareOfExistingNonUniqueElement() {
-        // TODO
-    }
-
-    @Override
     public void shouldComputeDistinctByOfNonEmptyTraversableUsingComparator() {
         // TODO
     }
@@ -328,11 +323,6 @@ public class HashSetTest extends AbstractTraversableTest {
     public void shouldFindLastOfNonNil() {
         final int actual = of(1, 2, 3, 4).findLast(i -> i % 2 == 0).get();
         assertThat(actual).isIn(List.of(1, 2, 3, 4));
-    }
-
-    @Override
-    public void shouldReplaceElementOfNonNilUsingCurrNew() {
-        // TODO
     }
 
     @Override
@@ -350,7 +340,7 @@ public class HashSetTest extends AbstractTraversableTest {
         assertTrue(HashSet.of(1).equals(HashSet.of(1)));
     }
 
-    boolean isThisLazyJavaslangObject() {
+    boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
     }
 }

@@ -41,7 +41,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link CharSeq}s.
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link CharSeq}.
      *
      * @return A {@code CharSeq} Collector.
      */

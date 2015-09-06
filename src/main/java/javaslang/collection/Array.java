@@ -26,7 +26,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.Array}s.
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.Array}.
      *
      * @param <T> Component type of the Vector.
      * @return A {@link javaslang.collection.Array} Collector.

@@ -12,10 +12,12 @@ import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
+import java.util.stream.Collector;
 
 /**
  * SortedSet implementation, backed by a Red/Black Tree.
@@ -33,6 +35,24 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     private TreeSet(RedBlackTree<T> tree) {
         this.tree = tree;
+    }
+
+    /**
+     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.TreeSet}.
+     *
+     * @param <T> Component type of the List.
+     * @return A javaslang.collection.List Collector.
+     */
+    public static <T> Collector<T, ArrayList<T>, TreeSet<T>> collector() {
+        final Supplier<ArrayList<T>> supplier = ArrayList::new;
+        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
+        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
+            left.addAll(right);
+            return left;
+        };
+        final Function<ArrayList<T>, TreeSet<T>> finisher = list -> TreeSet.ofAll(naturalComparator(), list);
+        return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
     public static <T extends Comparable<? super T>> TreeSet<T> empty() {
@@ -537,12 +557,20 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public TreeSet<T> drop(int n) {
-        return TreeSet.ofAll(tree.comparator(), iterator().drop(n));
+        if (n <= 0) {
+            return this;
+        } else {
+            return TreeSet.ofAll(tree.comparator(), iterator().drop(n));
+        }
     }
 
     @Override
     public TreeSet<T> dropRight(int n) {
-        return TreeSet.ofAll(tree.comparator(), iterator().dropRight(n));
+        if (n <= 0) {
+            return this;
+        } else {
+            return TreeSet.ofAll(tree.comparator(), iterator().dropRight(n));
+        }
     }
 
     @Override
@@ -846,7 +874,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @return A Tuple2 comparator according to the rules described above.
      */
     private static <T, U> Comparator<Tuple2<T, U>> tuple2Comparator(Comparator<? super T> component1Comparator) {
-        return (t1, t2) -> {
+        return (Comparator<Tuple2<T, U>> & Serializable) (t1, t2) -> {
             final int check1 = component1Comparator.compare(t1._1, t2._1);
             if (check1 != 0) {
                 return check1;
@@ -866,6 +894,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      */
     @SuppressWarnings("unchecked")
     private static <U> Comparator<? super U> naturalComparator() {
-        return (o1, o2) -> ((Comparable<? super U>) o1).compareTo(o2);
+        return (Comparator<? super U> & Serializable) (o1, o2) -> ((Comparable<? super U>) o1).compareTo(o2);
     }
 }

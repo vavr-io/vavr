@@ -47,19 +47,19 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.Set}s.
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.HashSet}.
      *
-     * @param <T> Component type of the List.
-     * @return A javaslang.collection.List Collector.
+     * @param <T> Component type of the HashSet.
+     * @return A javaslang.collection.HashSet Collector.
      */
-    public static <T> Collector<T, ArrayList<T>, Set<T>> collector() {
+    public static <T> Collector<T, ArrayList<T>, HashSet<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
             left.addAll(right);
             return left;
         };
-        final Function<ArrayList<T>, Set<T>> finisher = HashSet::ofAll;
+        final Function<ArrayList<T>, HashSet<T>> finisher = HashSet::ofAll;
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
@@ -102,7 +102,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * Creates a HashSet of the given elements.
      *
      * @param elements Set elements
-     * @param <T>     The value type
+     * @param <T>      The value type
      * @return A new HashSet containing the given entries
      */
     @SuppressWarnings("unchecked")
@@ -395,7 +395,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public HashSet<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
-        if(!isEmpty()) {
+        if (!isEmpty()) {
             action.accept(iterator().head());
         }
         return this;

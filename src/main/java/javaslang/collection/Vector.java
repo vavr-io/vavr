@@ -48,7 +48,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.Vector}s.
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.Vector}.
      *
      * @param <T> Component type of the Vector.
      * @return A javaslang.collection.List Collector.

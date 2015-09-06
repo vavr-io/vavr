@@ -9,7 +9,6 @@ import javaslang.Tuple;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
-import org.assertj.core.api.*;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -343,7 +342,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldDropWhileNoneIfPredicateIsFalse() {
-        if(isThisLazyJavaslangObject()) {
+        if(useIsEqualToInsteadOfIsSameAs()) {
             assertThat(of(1, 2, 3).dropWhile(ignored -> false)).isEqualTo(of(1, 2, 3));
         } else {
             TraversableOnce<Integer> t = of(1, 2, 3);
@@ -964,8 +963,13 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldReplaceElementOfNonNilUsingCurrNew() {
+    public void shouldReplaceFirstOccurrenceOfNonNilUsingCurrNewWhenMultipleOccurrencesExist() {
         assertThat(of(0, 1, 2, 1).replace(1, 3)).isEqualTo(of(0, 3, 2, 1));
+    }
+
+    @Test
+    public void shouldReplaceElementOfNonNilUsingCurrNewWhenOneOccurrenceExists() {
+        assertThat(of(0, 1, 2).replace(1, 3)).isEqualTo(of(0, 3, 2));
     }
 
     // -- replaceAll(curr, new)
@@ -1234,7 +1238,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeAllIfCountExceedsSize() {
-        if(isThisLazyJavaslangObject()) {
+        if(useIsEqualToInsteadOfIsSameAs()) {
             assertThat(of(1, 2, 3).take(4)).isEqualTo(of(1, 2, 3));
         } else {
             final TraversableOnce<Integer> t = of(1, 2, 3);
@@ -1261,7 +1265,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeRightAllIfCountExceedsSize() {
-        if(isThisLazyJavaslangObject()) {
+        if(useIsEqualToInsteadOfIsSameAs()) {
             assertThat(of(1, 2, 3).takeRight(4)).isEqualTo(of(1, 2, 3));
         } else {
             final TraversableOnce<Integer> t = of(1, 2, 3);
@@ -1284,7 +1288,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
     @Test
     public void shouldTakeWhileAllOnTrueCondition() {
         final TraversableOnce<Integer> t = of(1, 2, 3);
-        if(isThisLazyJavaslangObject()) {
+        if(useIsEqualToInsteadOfIsSameAs()) {
             assertThat(of(1, 2, 3).takeWhile(x -> true)).isEqualTo(of(1, 2, 3));
         } else {
             assertThat(t.takeWhile(x -> true)).isSameAs(t);
