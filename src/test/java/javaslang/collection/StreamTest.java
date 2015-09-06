@@ -326,7 +326,7 @@ public class StreamTest extends AbstractSeqTest {
     }
 
     @Override
-    boolean isThisLazyJavaslangObject() {
+    boolean useIsEqualToInsteadOfIsSameAs() {
         return true;
     }
 

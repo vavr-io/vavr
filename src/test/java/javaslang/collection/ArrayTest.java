@@ -79,7 +79,7 @@ public class ArrayTest extends AbstractSeqTest {
     }
 
     @Override
-    boolean isThisLazyJavaslangObject() {
+    boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
     }
 

@@ -84,7 +84,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.List}s.
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.List}.
      *
      * @param <T> Component type of the List.
      * @return A javaslang.collection.List Collector.

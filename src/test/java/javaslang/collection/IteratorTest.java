@@ -123,7 +123,7 @@ public class IteratorTest extends AbstractTraversableOnceTest {
     }
 
     @Override
-    boolean isThisLazyJavaslangObject() {
+    boolean useIsEqualToInsteadOfIsSameAs() {
         return true;
     }
 

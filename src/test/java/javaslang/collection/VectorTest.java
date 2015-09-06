@@ -85,7 +85,7 @@ public class VectorTest extends AbstractSeqTest {
     }
 
     @Override
-    boolean isThisLazyJavaslangObject() {
+    boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
     }
 

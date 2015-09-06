@@ -65,7 +65,7 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
     @SuppressWarnings("unchecked")
     abstract protected <T> Value<T> of(T... elements);
 
-    abstract boolean isThisLazyJavaslangObject();
+    abstract boolean useIsEqualToInsteadOfIsSameAs();
 
     // returns the peek result of the specific Traversable implementation
     abstract int getPeekNonNilPerformingAnAction();
@@ -198,7 +198,7 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldFilterNonEmptyTraversableAllMatch() {
-        if(isThisLazyJavaslangObject()) {
+        if(useIsEqualToInsteadOfIsSameAs()) {
             final Value<Integer> v1 = of(1, 2, 3, 4);
             final Value<Integer> v2 = of(1, 2, 3, 4);
             assertThat(v1.filter(i -> true)).isEqualTo(v2);

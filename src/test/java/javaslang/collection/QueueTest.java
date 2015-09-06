@@ -171,7 +171,7 @@ public class QueueTest extends AbstractSeqTest {
     }
 
     @Override
-    boolean isThisLazyJavaslangObject() {
+    boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
     }
 

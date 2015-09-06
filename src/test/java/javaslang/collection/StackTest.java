@@ -127,7 +127,7 @@ public class StackTest extends AbstractSeqTest {
     }
 
     @Override
-    boolean isThisLazyJavaslangObject() {
+    boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
     }
 
