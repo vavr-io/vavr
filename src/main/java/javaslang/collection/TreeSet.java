@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Lazy;
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -29,7 +30,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         this.tree = tree;
     }
 
-    public static <T extends Comparable<T>> TreeSet<T> empty() {
+    public static <T extends Comparable<? super T>> TreeSet<T> empty() {
         return new TreeSet<>(RedBlackTree.<T> empty());
     }
 
@@ -38,31 +39,31 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return new TreeSet<>(RedBlackTree.empty(comparator));
     }
 
-    public static <T extends Comparable<T>> TreeSet<T> of(T value) {
+    public static <T extends Comparable<? super T>> TreeSet<T> of(T value) {
         return new TreeSet<>(RedBlackTree.of(value));
     }
 
-    public static <T extends Comparable<T>> TreeSet<T> of(Comparator<? super T> comparator, T value) {
+    public static <T extends Comparable<? super T>> TreeSet<T> of(Comparator<? super T> comparator, T value) {
         Objects.requireNonNull(comparator, "comparator is null");
         return new TreeSet<>(RedBlackTree.of(comparator, value));
     }
 
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    public static <T extends Comparable<T>> TreeSet<T> of(T... values) {
+    public static <T extends Comparable<? super T>> TreeSet<T> of(T... values) {
         Objects.requireNonNull(values, "values is null");
         return new TreeSet<>(RedBlackTree.of(values));
     }
 
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    public static <T extends Comparable<T>> TreeSet<T> of(Comparator<? super T> comparator, T... values) {
+    public static <T extends Comparable<? super T>> TreeSet<T> of(Comparator<? super T> comparator, T... values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
         return new TreeSet<>(RedBlackTree.of(comparator, values));
     }
 
-    public static <T extends Comparable<T>> TreeSet<T> ofAll(java.lang.Iterable<? extends T> values) {
+    public static <T extends Comparable<? super T>> TreeSet<T> ofAll(java.lang.Iterable<? extends T> values) {
         Objects.requireNonNull(values, "values is null");
         return new TreeSet<>(RedBlackTree.ofAll(values));
     }
@@ -729,21 +730,76 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        throw /*TODO*/ new UnsupportedOperationException("TODO");
+        final Comparator<? super T1> comparator1 = naturalComparator();
+        final Comparator<? super T2> comparator2 = naturalComparator();
+        return iterator()
+                .unzip(unzipper)
+                .map((iter1, iter2) -> Tuple.of(TreeSet.ofAll(comparator1, iter1), TreeSet.ofAll(comparator2, iter2)));
     }
 
     @Override
     public <U> TreeSet<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
-        throw /*TODO*/ new UnsupportedOperationException("TODO");
+        final Comparator<Tuple2<T, U>> tuple2Comparator = tuple2Comparator(tree.comparator());
+        return TreeSet.ofAll(tuple2Comparator, iterator().zip(that));
     }
 
     @Override
     public <U> TreeSet<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
-        throw /*TODO*/ new UnsupportedOperationException("TODO");
+        final Comparator<Tuple2<T, U>> tuple2Comparator = tuple2Comparator(tree.comparator());
+        return TreeSet.ofAll(tuple2Comparator, iterator().zipAll(that, thisElem, thatElem));
     }
 
     @Override
     public TreeSet<Tuple2<T, Integer>> zipWithIndex() {
-        throw /*TODO*/ new UnsupportedOperationException("TODO");
+        final Comparator<? super T> component1Comparator = tree.comparator();
+        final Comparator<Tuple2<T, Integer>> tuple2Comparator = (t1, t2) -> component1Comparator.compare(t1._1, t2._1);
+        return TreeSet.ofAll(tuple2Comparator, iterator().zipWithIndex());
+    }
+
+    /**
+     * Returns a component-wise Tuple2 Comparator.
+     * <p>
+     * It works like this (informal):
+     * <pre><code>
+     * Let tuple1 = (t1, u1), tuple2 = (t2, u2).
+     *
+     * // compare 1st component
+     * Let check1 = component1Comparator.compare(t1, t2);
+     * if (check1 != 0) {
+     *     return check1;
+     * }
+     *
+     * // compare 2nd component
+     * Let component2Comparator = (Comparator&lt;? super U&gt;) naturalComparator();
+     * return component2Comparator.compare(u1, u2);
+     * </code></pre>
+     *
+     * @param component1Comparator Comparator for 1st tuple component
+     * @param <T> Component type 1
+     * @param <U> Component type 2
+     * @return A Tuple2 comparator according to the rules described above.
+     */
+    private static <T, U> Comparator<Tuple2<T, U>> tuple2Comparator(Comparator<? super T> component1Comparator) {
+        return (t1, t2) -> {
+            final int check1 = component1Comparator.compare(t1._1, t2._1);
+            if (check1 != 0) {
+                return check1;
+            }
+            final Comparator<? super U> component2Comparator = naturalComparator();
+            return component2Comparator.compare(t1._2, t2._2);
+        };
+    }
+
+    /**
+     * Returns the natural comparator for type U, i.e. treating it as {@code Comparable<? super U>}.
+     * <p>
+     * Please note that this will lead to runtime exceptions, if U is not Comparable.
+     *
+     * @param <U> The type
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    private static <U> Comparator<? super U> naturalComparator() {
+        return (o1, o2) -> ((Comparable<? super U>) o1).compareTo(o2);
     }
 }
