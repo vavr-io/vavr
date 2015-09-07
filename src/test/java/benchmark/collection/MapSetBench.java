@@ -3,11 +3,11 @@
  *  _/  // _\  \  \/  / _\  \\_  \/  // _\  \  /\  \__/  /   Copyright 2014-2015 Daniel Dietrich
  * /___/ \_____/\____/\_____/____/\___\_____/_/  \_/____/    Licensed under the Apache License, Version 2.0
  */
-package performance.collection;
+package benchmark.collection;
 
 import javaslang.collection.HashMap;
 import javaslang.collection.TreeSet;
-import performance.Benchmark;
+import benchmark.Benchmark;
 
 public class MapSetBench {
 
