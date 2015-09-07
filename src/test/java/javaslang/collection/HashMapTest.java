@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.StrictAssertions.assertThat;
 
-public class HashMapTest {
+public class HashMapTest extends AbstractMapTest {
 
     // -- map
 
@@ -57,5 +57,25 @@ public class HashMapTest {
         final Map<?, ?> map1 = HashMap.empty().put(1, 'a').put(2, 'b').put(3, 'c');
         final Map<?, ?> map2 = HashMap.empty().put(3, 'c').put(2, 'b').put(1, 'a').remove(2).put(2, 'b');
         assertThat(map1).isEqualTo(map2);
+    }
+
+    @Override
+    protected <T> AbstractIntMap<T> mapOf(T element) {
+        return AbstractIntMap.of(HashMap.of(new Map.Entry<>(0, element)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected <T> AbstractIntMap<T> mapOf(T... elements) {
+        HashMap<Integer, T> map = HashMap.empty();
+        for (T element : elements) {
+            map = map.put(map.size(), element);
+        }
+        return AbstractIntMap.of(map);
+    }
+
+    @Override
+    protected <T> AbstractIntMap<T> emptyMap() {
+        return AbstractIntMap.<T>of(HashMap.empty());
     }
 }
