@@ -12,26 +12,26 @@ import benchmark.Benchmark;
 public class MapSetBench {
 
     private static final int COUNT = 1_000_000;
-    private static final int WARMUP_COUNT = 1000;
+    private static final int WARMUP = 1000;
 
     public static void main(String[] args) {
 
         // -- Java
 
-        Benchmark.bench("Java HashMap", COUNT, WARMUP_COUNT, new java.util.HashMap<>(), (i, map) -> {
+        Benchmark.bench("Java HashMap", COUNT, WARMUP, new java.util.HashMap<>(), (i, map) -> {
             map.put(i, i);
             return map;
         });
 
-        Benchmark.bench("Java TreeSet", COUNT, WARMUP_COUNT, new java.util.TreeSet<>(), (i, set) -> {
+        Benchmark.bench("Java TreeSet", COUNT, WARMUP, new java.util.TreeSet<>(), (i, set) -> {
             set.add(i);
             return set;
         });
 
         // -- Javaslang
 
-        Benchmark.bench("Javaslang HashMap", COUNT, WARMUP_COUNT, HashMap.empty(), (i, map) -> map.put(i, i));
+        Benchmark.bench("Javaslang HashMap", COUNT, WARMUP, HashMap.empty(), (i, map) -> map.put(i, i));
 
-        Benchmark.bench("Javaslang TreeSet", COUNT, WARMUP_COUNT, TreeSet.<Integer> empty(), (i, set) -> set.add(i));
+        Benchmark.bench("Javaslang TreeSet", COUNT, WARMUP, TreeSet.<Integer> empty(), (i, set) -> set.add(i));
     }
 }
