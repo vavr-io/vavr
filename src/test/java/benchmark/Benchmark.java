@@ -13,13 +13,15 @@ public final class Benchmark {
     }
 
     public static <T> void bench(String name, int count, int warmup, T seed, BiFunction<Integer, T, T> calculation) {
-        run(warmup, seed, calculation);
-        System.out.printf("%s bench took %s sec.\n", name, run(count, seed, calculation) / 1000.0d);
+        System.out.printf("%s bench took %s sec.\n", name, run(count, warmup, seed, calculation) / 1000.0d);
     }
 
-    private static <T> long run(int count, T seed, BiFunction<Integer, T, T> calculation) {
-        final long start = System.currentTimeMillis();
+    private static <T> long run(int count, int warmup, T seed, BiFunction<Integer, T, T> calculation) {
         T value = seed;
+        for (int i = 0; i < warmup; i++) {
+            value = calculation.apply(i, value);
+        }
+        final long start = System.currentTimeMillis();
         for (int i = 0; i < count; i++) {
             value = calculation.apply(i, value);
         }
