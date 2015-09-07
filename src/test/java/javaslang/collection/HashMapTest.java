@@ -60,22 +60,7 @@ public class HashMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <T> AbstractIntMap<T> mapOf(T element) {
-        return AbstractIntMap.of(HashMap.of(new Map.Entry<>(0, element)));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    protected <T> AbstractIntMap<T> mapOf(T... elements) {
-        HashMap<Integer, T> map = HashMap.empty();
-        for (T element : elements) {
-            map = map.put(map.size(), element);
-        }
-        return AbstractIntMap.of(map);
-    }
-
-    @Override
-    protected <T> AbstractIntMap<T> emptyMap() {
-        return AbstractIntMap.<T>of(HashMap.empty());
+    protected <T> Map<Integer, T> emptyMap() {
+        return HashMap.empty();
     }
 }

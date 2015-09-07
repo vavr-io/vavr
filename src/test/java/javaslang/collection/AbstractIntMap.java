@@ -1,9 +1,11 @@
 package javaslang.collection;
 
 import javaslang.Tuple2;
+import javaslang.control.None;
 import javaslang.control.Option;
 
 import java.util.Comparator;
+import java.util.Spliterator;
 import java.util.function.*;
 
 public class AbstractIntMap<T> implements Traversable<Map.Entry<Integer, T>> {
@@ -16,6 +18,41 @@ public class AbstractIntMap<T> implements Traversable<Map.Entry<Integer, T>> {
 
     private AbstractIntMap(Map<Integer, T> original) {
         this.original = original;
+    }
+
+    @Override
+    public int hashCode() {
+        return original.hashCode();
+    }
+
+    @Override
+    public Spliterator<Map.Entry<Integer, T>> spliterator() {
+        return original.spliterator();
+    }
+
+    @Override
+    public Number sum() {
+        return original.iterator().map(e -> e.value).sum();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof AbstractIntMap) {
+            final AbstractIntMap<?> that = (AbstractIntMap<?>) o;
+            return original.values().equals(that.original.values());
+        } else if (o instanceof Iterable) {
+            final Iterable<?> that = (Iterable<?>) o;
+            return original.values().equals(that);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public Option<Double> average() {
+        return original.iterator().map(e -> e.value).average();
     }
 
     @Override
@@ -128,6 +165,26 @@ public class AbstractIntMap<T> implements Traversable<Map.Entry<Integer, T>> {
         return original.map(mapper);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Option<Map.Entry<Integer, T>> max() {
+        if(isEmpty() || !(head().value instanceof Comparable)) {
+            return None.instance();
+        } else {
+            return original.iterator().maxBy((o1, o2) -> ((Comparable) o1.value).compareTo(o2.value));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Option<Map.Entry<Integer, T>> min() {
+        if(isEmpty() || !(head().value instanceof Comparable)) {
+            return None.instance();
+        } else {
+            return original.iterator().minBy((o1, o2) -> ((Comparable) o1.value).compareTo(o2.value));
+        }
+    }
+
     @Override
     public Tuple2<? extends Traversable<Map.Entry<Integer, T>>, ? extends Traversable<Map.Entry<Integer, T>>> partition(Predicate<? super Map.Entry<Integer, T>> predicate) {
         return original.partition(predicate);
@@ -136,6 +193,11 @@ public class AbstractIntMap<T> implements Traversable<Map.Entry<Integer, T>> {
     @Override
     public Traversable<Map.Entry<Integer, T>> peek(Consumer<? super Map.Entry<Integer, T>> action) {
         return original.peek(action);
+    }
+
+    @Override
+    public Number product() {
+        return original.iterator().map(e -> e.value).product();
     }
 
     @Override

@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Lazy;
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -200,8 +201,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <U> U foldRight(U zero, BiFunction<? super Entry<K, V>, ? super U, ? extends U> f) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        return foldLeft(zero, (u, t) -> f.apply(t, u));
     }
 
     @Override
@@ -321,8 +321,9 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Tuple2<HashMap<K, V>, HashMap<K, V>> partition(Predicate<? super Entry<K, V>> predicate) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(predicate, "predicate is null");
+        final Tuple2<Iterator<Map.Entry<K, V>>, Iterator<Map.Entry<K, V>>> p = iterator().partition(predicate);
+        return Tuple.of(HashMap.ofAll(p._1), HashMap.ofAll(p._2));
     }
 
     @Override
@@ -396,48 +397,60 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Tuple2<HashMap<K, V>, HashMap<K, V>> span(Predicate<? super Entry<K, V>> predicate) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(predicate, "predicate is null");
+        final Tuple2<Iterator<Map.Entry<K, V>>, Iterator<Map.Entry<K, V>>> t = iterator().span(predicate);
+        return Tuple.of(HashMap.ofAll(t._1), HashMap.ofAll(t._2));
     }
 
     @Override
     public HashMap<K, V> tail() {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        if (tree.isEmpty()) {
+            throw new UnsupportedOperationException("tail of empty map");
+        } else {
+            HashArrayMappedTrie<K, V> trie = tree.remove(head().key);
+            return new HashMap<>(trie);
+        }
     }
 
     @Override
     public Option<HashMap<K, V>> tailOption() {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        if (tree.isEmpty()) {
+            return None.instance();
+        } else {
+            return new Some<>(tail());
+        }
     }
 
     @Override
     public HashMap<K, V> take(int n) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        if (tree.size() <= n) {
+            return this;
+        }
+        return HashMap.ofAll(tree.iterator().map(Entry::of).take(n));
     }
 
     @Override
     public HashMap<K, V> takeRight(int n) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        return take(n);
     }
 
     @Override
     public HashMap<K, V> takeWhile(Predicate<? super Entry<K, V>> predicate) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(predicate, "predicate is null");
+        HashMap<K, V> taken = HashMap.ofAll(iterator().takeWhile(predicate));
+        return taken.length() == length() ? this : taken;
     }
 
     @Override
     public <K1, V1, K2, V2> Tuple2<HashMap<K1, V1>, HashMap<K2, V2>> unzip(Function<? super Entry<? super K, ? super V>, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
         // TODO
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
     public <K1, V1, K2, V2> Tuple2<HashMap<K1, V1>, HashMap<K2, V2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
         // TODO
         throw new UnsupportedOperationException("TODO");
     }
