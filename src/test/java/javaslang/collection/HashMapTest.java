@@ -5,11 +5,14 @@
  */
 package javaslang.collection;
 
+import javaslang.control.Some;
 import org.junit.Test;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import java.util.ArrayList;
+import java.util.stream.Collector;
 
-public class HashMapTest {
+
+public class HashMapTest extends AbstractMapTest {
 
     // -- map
 
@@ -57,5 +60,22 @@ public class HashMapTest {
         final Map<?, ?> map1 = HashMap.empty().put(1, 'a').put(2, 'b').put(3, 'c');
         final Map<?, ?> map2 = HashMap.empty().put(3, 'c').put(2, 'b').put(1, 'a').remove(2).put(2, 'b');
         assertThat(map1).isEqualTo(map2);
+    }
+
+    // ==---===
+
+    @Override
+    public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
+        assertThat(of(1, 2, 3).tailOption().get()).isEqualTo(new Some<>(of(2, 3)).get());
+    }
+
+    @Override
+    protected <T> Map<Integer, T> emptyMap() {
+        return HashMap.empty();
+    }
+
+    @Override
+    protected <T> Collector<Map.Entry<Integer, T>, ArrayList<Map.Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
+        return HashMap.<Integer, T>collector();
     }
 }

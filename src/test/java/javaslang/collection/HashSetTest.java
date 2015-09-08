@@ -266,17 +266,17 @@ public class HashSetTest extends AbstractSetTest {
 
     // HashSet special cases
 
-    @Test
+    @Override
     public void shouldDropRightAsExpectedIfCountIsLessThanSize() {
         assertThat(of(1, 2, 3).dropRight(2)).isEqualTo(of(3));
     }
 
-    @Test
+    @Override
     public void shouldTakeRightAsExpectedIfCountIsLessThanSize() {
         assertThat(of(1, 2, 3).takeRight(2)).isEqualTo(of(1, 2));
     }
 
-    @Test
+    @Override
     public void shouldGetInitOfNonNil() {
         assertThat(of(1, 2, 3).init()).isEqualTo(of(2, 3));
     }
