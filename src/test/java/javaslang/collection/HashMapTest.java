@@ -5,9 +5,12 @@
  */
 package javaslang.collection;
 
+import javaslang.control.Some;
 import org.junit.Test;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import java.util.ArrayList;
+import java.util.stream.Collector;
+
 
 public class HashMapTest extends AbstractMapTest {
 
@@ -59,8 +62,20 @@ public class HashMapTest extends AbstractMapTest {
         assertThat(map1).isEqualTo(map2);
     }
 
+    // ==---===
+
+    @Override
+    public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
+        assertThat(of(1, 2, 3).tailOption().get()).isEqualTo(new Some<>(of(2, 3)).get());
+    }
+
     @Override
     protected <T> Map<Integer, T> emptyMap() {
         return HashMap.empty();
+    }
+
+    @Override
+    protected <T> Collector<Map.Entry<Integer, T>, ArrayList<Map.Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
+        return HashMap.<Integer, T>collector();
     }
 }

@@ -4,11 +4,16 @@ import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
 
-import java.util.Comparator;
-import java.util.Spliterator;
+import java.io.Serializable;
+import java.util.*;
 import java.util.function.*;
 
-public class AbstractIntMap<T> implements Traversable<T> {
+public class AbstractIntMap<T> implements Traversable<T>, Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    // TODO why HashMap?
+    private static final AbstractIntMap<?> EMPTY = AbstractIntMap.of(HashMap.empty());
 
     private final Map<Integer, T> original;
 
@@ -18,6 +23,10 @@ public class AbstractIntMap<T> implements Traversable<T> {
 
     private AbstractIntMap(Map<Integer, T> original) {
         this.original = original;
+    }
+
+    Map<Integer, T> original() {
+        return original;
     }
 
     @Override
@@ -38,6 +47,10 @@ public class AbstractIntMap<T> implements Traversable<T> {
         } else {
             return false;
         }
+    }
+
+    private Object readResolve() {
+        return original.isEmpty() ? EMPTY : this;
     }
 
     @Override
@@ -62,12 +75,14 @@ public class AbstractIntMap<T> implements Traversable<T> {
 
     @Override
     public AbstractIntMap<T> drop(int n) {
-        return AbstractIntMap.of(original.drop(n));
+        final Map<Integer, T> dropped = original.drop(n);
+        return dropped == original ? this : AbstractIntMap.of(dropped);
     }
 
     @Override
     public AbstractIntMap<T> dropRight(int n) {
-        return AbstractIntMap.of(original.dropRight(n));
+        final Map<Integer, T> dropped = original.dropRight(n);
+        return dropped == original ? this : AbstractIntMap.of(dropped);
     }
 
     @Override
@@ -97,6 +112,7 @@ public class AbstractIntMap<T> implements Traversable<T> {
 
     @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
         return original.foldRight(zero, (e, u) -> f.apply(e.value, u));
     }
 
@@ -152,6 +168,7 @@ public class AbstractIntMap<T> implements Traversable<T> {
 
     @Override
     public Tuple2<AbstractIntMap<T>, AbstractIntMap<T>> partition(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         return original.partition(p -> predicate.test(p.value)).map(AbstractIntMap::of, AbstractIntMap::of);
     }
 
@@ -162,8 +179,8 @@ public class AbstractIntMap<T> implements Traversable<T> {
 
     @Override
     public T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        // TODO
-        return null;
+        Objects.requireNonNull(op, "op is null");
+        return original.reduceRight((t1, t2) -> Map.Entry.of(t2.key, op.apply(t1.value, t2.value))).value;
     }
 
     @Override
@@ -179,8 +196,11 @@ public class AbstractIntMap<T> implements Traversable<T> {
 
     @Override
     public AbstractIntMap<T> replaceAll(T currentElement, T newElement) {
-        // TODO
-        return null;
+        Map<Integer, T> result = original;
+        for (Map.Entry<Integer, T> entry : original.filter(e -> e.value.equals(currentElement))) {
+            result = result.replaceAll(entry, Map.Entry.of(entry.key, newElement));
+        }
+        return AbstractIntMap.of(result);
     }
 
     @Override
@@ -190,13 +210,44 @@ public class AbstractIntMap<T> implements Traversable<T> {
 
     @Override
     public AbstractIntMap<T> retainAll(Iterable<? extends T> elements) {
-        // TODO
-        return null;
+        final Set<T> elementsSet = HashSet.ofAll(elements);
+        return AbstractIntMap.of(original.retainAll(original.filter(e -> elementsSet.contains(e.value))));
     }
 
     @Override
     public Tuple2<? extends AbstractIntMap<T>, ? extends AbstractIntMap<T>> span(Predicate<? super T> predicate) {
         return original.span(p -> predicate.test(p.value)).map(AbstractIntMap::of, AbstractIntMap::of);
+    }
+
+    public Spliterator<T> spliterator() {
+        class SpliteratorProxy implements Spliterator<T> {
+            private final Spliterator<Map.Entry<Integer, T>> spliterator;
+
+            SpliteratorProxy(Spliterator<Map.Entry<Integer, T>> spliterator) {
+                this.spliterator = spliterator;
+            }
+
+            @Override
+            public boolean tryAdvance(Consumer<? super T> action) {
+                return spliterator.tryAdvance(a -> action.accept(a.value));
+            }
+
+            @Override
+            public Spliterator<T> trySplit() {
+                return new SpliteratorProxy(spliterator.trySplit());
+            }
+
+            @Override
+            public long estimateSize() {
+                return spliterator.estimateSize();
+            }
+
+            @Override
+            public int characteristics() {
+                return spliterator.characteristics();
+            }
+        }
+        return new SpliteratorProxy(original.spliterator());
     }
 
     @Override
@@ -205,7 +256,7 @@ public class AbstractIntMap<T> implements Traversable<T> {
     }
 
     @Override
-    public Option<? extends AbstractIntMap<T>> tailOption() {
+    public Option<AbstractIntMap<T>> tailOption() {
         return original.tailOption().map(AbstractIntMap::of);
     }
 
