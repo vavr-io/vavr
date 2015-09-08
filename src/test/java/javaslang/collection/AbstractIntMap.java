@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.Spliterator;
 import java.util.function.*;
 
-public class AbstractIntMap<T> implements Traversable<Map.Entry<Integer, T>> {
+public class AbstractIntMap<T> implements Traversable<T> {
 
     private final Map<Integer, T> original;
 
@@ -23,16 +23,6 @@ public class AbstractIntMap<T> implements Traversable<Map.Entry<Integer, T>> {
     @Override
     public int hashCode() {
         return original.hashCode();
-    }
-
-    @Override
-    public Spliterator<Map.Entry<Integer, T>> spliterator() {
-        return original.spliterator();
-    }
-
-    @Override
-    public Number sum() {
-        return original.iterator().map(e -> e.value).sum();
     }
 
     @Override
@@ -51,58 +41,53 @@ public class AbstractIntMap<T> implements Traversable<Map.Entry<Integer, T>> {
     }
 
     @Override
-    public Option<Double> average() {
-        return original.iterator().map(e -> e.value).average();
+    public AbstractIntMap<T> clear() {
+        return AbstractIntMap.of(original.clear());
     }
 
     @Override
-    public Traversable<Map.Entry<Integer, T>> clear() {
-        return original.clear();
+    public AbstractIntMap<T> distinct() {
+        return AbstractIntMap.of(original.distinct());
     }
 
     @Override
-    public Traversable<Map.Entry<Integer, T>> distinct() {
-        return original.distinct();
+    public AbstractIntMap<T> distinctBy(Comparator<? super T> comparator) {
+        return AbstractIntMap.of(original.distinctBy((o1, o2) -> comparator.compare(o1.value, o2.value)));
     }
 
     @Override
-    public Traversable<Map.Entry<Integer, T>> distinctBy(Comparator<? super Map.Entry<Integer, T>> comparator) {
-        return original.distinctBy(comparator);
+    public <U> AbstractIntMap<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+        return AbstractIntMap.of(original.distinctBy(f -> keyExtractor.apply(f.value)));
     }
 
     @Override
-    public <U> Traversable<Map.Entry<Integer, T>> distinctBy(Function<? super Map.Entry<Integer, T>, ? extends U> keyExtractor) {
-        return original.distinctBy(keyExtractor);
+    public AbstractIntMap<T> drop(int n) {
+        return AbstractIntMap.of(original.drop(n));
     }
 
     @Override
-    public Traversable<Map.Entry<Integer, T>> drop(int n) {
-        return original.drop(n);
+    public AbstractIntMap<T> dropRight(int n) {
+        return AbstractIntMap.of(original.dropRight(n));
     }
 
     @Override
-    public Traversable<Map.Entry<Integer, T>> dropRight(int n) {
-        return original.dropRight(n);
+    public AbstractIntMap<T> dropWhile(Predicate<? super T> predicate) {
+        return AbstractIntMap.of(original.dropWhile(p -> predicate.test(p.value)));
     }
 
     @Override
-    public Traversable<Map.Entry<Integer, T>> dropWhile(Predicate<? super Map.Entry<Integer, T>> predicate) {
-        return original.dropWhile(predicate);
+    public AbstractIntMap<T> filter(Predicate<? super T> predicate) {
+        return AbstractIntMap.of(original.filter(p -> predicate.test(p.value)));
     }
 
     @Override
-    public Traversable<Map.Entry<Integer, T>> filter(Predicate<? super Map.Entry<Integer, T>> predicate) {
-        return original.filter(predicate);
+    public Option<T> findLast(Predicate<? super T> predicate) {
+        return original.findLast(p -> predicate.test(p.value)).map(o -> o.value);
     }
 
     @Override
-    public Option<Map.Entry<Integer, T>> findLast(Predicate<? super Map.Entry<Integer, T>> predicate) {
-        return original.findLast(predicate);
-    }
-
-    @Override
-    public <U> Traversable<U> flatMap(Function<? super Map.Entry<Integer, T>, ? extends Iterable<? extends U>> mapper) {
-        return original.flatMap(mapper);
+    public <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        return original.flatMap(e -> mapper.apply(e.value));
     }
 
     @Override
@@ -111,13 +96,13 @@ public class AbstractIntMap<T> implements Traversable<Map.Entry<Integer, T>> {
     }
 
     @Override
-    public <U> U foldRight(U zero, BiFunction<? super Map.Entry<Integer, T>, ? super U, ? extends U> f) {
-        return original.foldRight(zero, f);
+    public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+        return original.foldRight(zero, (e, u) -> f.apply(e.value, u));
     }
 
     @Override
-    public <C> Map<C, ? extends Traversable<Map.Entry<Integer, T>>> groupBy(Function<? super Map.Entry<Integer, T>, ? extends C> classifier) {
-        return original.groupBy(classifier);
+    public <C> Map<C, ? extends AbstractIntMap<T>> groupBy(Function<? super T, ? extends C> classifier) {
+        return original.groupBy(e -> classifier.apply(e.value)).map((k, v) -> Map.Entry.of(k, AbstractIntMap.of(v)));
     }
 
     @Override
@@ -126,23 +111,23 @@ public class AbstractIntMap<T> implements Traversable<Map.Entry<Integer, T>> {
     }
 
     @Override
-    public Map.Entry<Integer, T> head() {
-        return original.head();
+    public T head() {
+        return original.head().value;
     }
 
     @Override
-    public Option<Map.Entry<Integer, T>> headOption() {
-        return original.headOption();
+    public Option<T> headOption() {
+        return original.headOption().map(o -> o.value);
     }
 
     @Override
-    public Traversable<Map.Entry<Integer, T>> init() {
-        return original.init();
+    public AbstractIntMap<T> init() {
+        return AbstractIntMap.of(original.init());
     }
 
     @Override
-    public Option<? extends Traversable<Map.Entry<Integer, T>>> initOption() {
-        return original.initOption();
+    public Option<? extends AbstractIntMap<T>> initOption() {
+        return original.initOption().map(AbstractIntMap::of);
     }
 
     @Override
@@ -161,97 +146,81 @@ public class AbstractIntMap<T> implements Traversable<Map.Entry<Integer, T>> {
     }
 
     @Override
-    public <U> Traversable<U> map(Function<? super Map.Entry<Integer, T>, ? extends U> mapper) {
-        return original.map(mapper);
+    public <U> Traversable<U> map(Function<? super T, ? extends U> mapper) {
+        return original.map(e -> mapper.apply(e.value));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Option<Map.Entry<Integer, T>> max() {
-        if(isEmpty() || !(head().value instanceof Comparable)) {
-            return None.instance();
+    public Tuple2<AbstractIntMap<T>, AbstractIntMap<T>> partition(Predicate<? super T> predicate) {
+        return original.partition(p -> predicate.test(p.value)).map(AbstractIntMap::of, AbstractIntMap::of);
+    }
+
+    @Override
+    public AbstractIntMap<T> peek(Consumer<? super T> action) {
+        return AbstractIntMap.of(original.peek(e -> action.accept(e.value)));
+    }
+
+    @Override
+    public T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public AbstractIntMap<T> replace(T currentElement, T newElement) {
+        final Option<Map.Entry<Integer, T>> currentEntryOpt = original.findFirst(e -> e.value.equals(currentElement));
+        if (currentEntryOpt.isDefined()) {
+            final Map.Entry<Integer, T> currentEntry = currentEntryOpt.get();
+            return AbstractIntMap.of(original.replace(currentEntry, Map.Entry.of(currentEntry.key, newElement)));
         } else {
-            return original.iterator().maxBy((o1, o2) -> ((Comparable) o1.value).compareTo(o2.value));
+            return this;
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Option<Map.Entry<Integer, T>> min() {
-        if(isEmpty() || !(head().value instanceof Comparable)) {
-            return None.instance();
-        } else {
-            return original.iterator().minBy((o1, o2) -> ((Comparable) o1.value).compareTo(o2.value));
-        }
+    public AbstractIntMap<T> replaceAll(T currentElement, T newElement) {
+        // TODO
+        return null;
     }
 
     @Override
-    public Tuple2<? extends Traversable<Map.Entry<Integer, T>>, ? extends Traversable<Map.Entry<Integer, T>>> partition(Predicate<? super Map.Entry<Integer, T>> predicate) {
-        return original.partition(predicate);
+    public AbstractIntMap<T> replaceAll(UnaryOperator<T> operator) {
+        return AbstractIntMap.of(original.replaceAll(o -> Map.Entry.of(o.key, operator.apply(o.value))));
     }
 
     @Override
-    public Traversable<Map.Entry<Integer, T>> peek(Consumer<? super Map.Entry<Integer, T>> action) {
-        return original.peek(action);
+    public AbstractIntMap<T> retainAll(Iterable<? extends T> elements) {
+        // TODO
+        return null;
     }
 
     @Override
-    public Number product() {
-        return original.iterator().map(e -> e.value).product();
+    public Tuple2<? extends AbstractIntMap<T>, ? extends AbstractIntMap<T>> span(Predicate<? super T> predicate) {
+        return original.span(p -> predicate.test(p.value)).map(AbstractIntMap::of, AbstractIntMap::of);
     }
 
     @Override
-    public Map.Entry<Integer, T> reduceRight(BiFunction<? super Map.Entry<Integer, T>, ? super Map.Entry<Integer, T>, ? extends Map.Entry<Integer, T>> op) {
-        return original.reduceRight(op);
+    public AbstractIntMap<T> tail() {
+        return AbstractIntMap.of(original.tail());
     }
 
     @Override
-    public Traversable<Map.Entry<Integer, T>> replace(Map.Entry<Integer, T> currentElement, Map.Entry<Integer, T> newElement) {
-        return original.replace(currentElement, newElement);
+    public Option<? extends AbstractIntMap<T>> tailOption() {
+        return original.tailOption().map(AbstractIntMap::of);
     }
 
     @Override
-    public Traversable<Map.Entry<Integer, T>> replaceAll(Map.Entry<Integer, T> currentElement, Map.Entry<Integer, T> newElement) {
-        return original.replaceAll(currentElement, newElement);
+    public AbstractIntMap<T> take(int n) {
+        return AbstractIntMap.of(original.take(n));
     }
 
     @Override
-    public Traversable<Map.Entry<Integer, T>> replaceAll(UnaryOperator<Map.Entry<Integer, T>> operator) {
-        return original.replaceAll(operator);
+    public AbstractIntMap<T> takeRight(int n) {
+        return AbstractIntMap.of(original.takeRight(n));
     }
 
     @Override
-    public Traversable<Map.Entry<Integer, T>> retainAll(Iterable<? extends Map.Entry<Integer, T>> elements) {
-        return original.retainAll(elements);
-    }
-
-    @Override
-    public Tuple2<? extends Traversable<Map.Entry<Integer, T>>, ? extends Traversable<Map.Entry<Integer, T>>> span(Predicate<? super Map.Entry<Integer, T>> predicate) {
-        return original.span(predicate);
-    }
-
-    @Override
-    public Traversable<Map.Entry<Integer, T>> tail() {
-        return original.tail();
-    }
-
-    @Override
-    public Option<? extends Traversable<Map.Entry<Integer, T>>> tailOption() {
-        return original.tailOption();
-    }
-
-    @Override
-    public Traversable<Map.Entry<Integer, T>> take(int n) {
-        return original.take(n);
-    }
-
-    @Override
-    public Traversable<Map.Entry<Integer, T>> takeRight(int n) {
-        return original.takeRight(n);
-    }
-
-    @Override
-    public Traversable<Map.Entry<Integer, T>> takeWhile(Predicate<? super Map.Entry<Integer, T>> predicate) {
-        return original.takeWhile(predicate);
+    public AbstractIntMap<T> takeWhile(Predicate<? super T> predicate) {
+        return AbstractIntMap.of(original.takeWhile(p -> predicate.test(p.value)));
     }
 }

@@ -195,8 +195,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashSet<Object> flatten() {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        return flatMap(t -> (t.value instanceof java.lang.Iterable) ? Stream.ofAll((java.lang.Iterable<?>) t.value).flatten() : Stream.of(t.value));
     }
 
     @Override
