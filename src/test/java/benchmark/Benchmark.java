@@ -6,6 +6,7 @@
 package benchmark;
 
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public final class Benchmark {
 
@@ -13,7 +14,21 @@ public final class Benchmark {
     }
 
     public static <T> void bench(String name, int count, int warmup, T seed, BiFunction<Integer, T, T> calculation) {
-        System.out.printf("%s bench took %s sec.\n", name, run(count, warmup, seed, calculation) / 1000.0d);
+        System.out.printf("%s bench(%s) took %s sec.\n", name, count, run(count, warmup, seed, calculation) / 1000.0d);
+    }
+
+    public static <T> void bench(String name, int count, int warmup, Runnable unit) {
+        bench(name, count, warmup, null, (i, ignored) -> {
+            unit.run();
+            return null;
+        });
+    }
+
+    public static <T> void bench(String name, int count, int warmup, Consumer<Integer> consumer) {
+        bench(name, count, warmup, null, (i, ignored) -> {
+            consumer.accept(i);
+            return null;
+        });
     }
 
     private static <T> long run(int count, int warmup, T seed, BiFunction<Integer, T, T> calculation) {

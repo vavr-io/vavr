@@ -77,14 +77,20 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
         return ofAll(T::compareTo, values);
     }
 
+    @SuppressWarnings("unchecked")
     static <T> RedBlackTree<T> ofAll(Comparator<? super T> comparator, java.lang.Iterable<? extends T> values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
-        RedBlackTree<T> tree = empty(comparator);
-        for (T value : values) {
-            tree = tree.insert(value);
+        // function equality is not computable => same object check
+        if (values instanceof RedBlackTree &&  ((RedBlackTree<T>) values).comparator() == comparator) {
+            return (RedBlackTree<T>) values;
+        } else {
+            RedBlackTree<T> tree = empty(comparator);
+            for (T value : values) {
+                tree = tree.insert(value);
+            }
+            return tree;
         }
-        return tree;
     }
 
     /**

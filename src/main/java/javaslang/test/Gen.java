@@ -15,6 +15,7 @@ import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * <p>Generators are the building blocks for providing arbitrary objects.</p>
@@ -30,7 +31,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Gen<T> extends Value<T> {
+public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
 
     int FILTER_THRESHOLD = Integer.MAX_VALUE;
 
