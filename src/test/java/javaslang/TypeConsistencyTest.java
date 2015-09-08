@@ -45,6 +45,11 @@ public class TypeConsistencyTest {
 
     static final List<String> WHITELIST = List.of(
 
+            // javaslang.test.Gen
+            "javaslang.test.Gen//public default java.util.function.Function java.util.function.Function.andThen(java.util.function.Function)",
+            "javaslang.test.Gen//public default java.util.function.Function java.util.function.Function.compose(java.util.function.Function)",
+
+
             // javaslang.control.Match
             "javaslang.control.Match//public default java.util.function.Function java.util.function.Function.andThen(java.util.function.Function)",
             "javaslang.control.Match//public default java.util.function.Function java.util.function.Function.compose(java.util.function.Function)",
