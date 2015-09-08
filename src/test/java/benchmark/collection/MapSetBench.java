@@ -60,7 +60,9 @@ public class MapSetBench {
     public static void main(String[] args) {
         benchHashSet_put();
         benchTreeSet_add();
-        benchTreeSet_difference_vs_removeAll();
+        benchTreeSet_diff_vs_removeAll();
+        benchTreeSet_intersect_vs_retainAll();
+        benchTreeSet_union_vs_addAll();
     }
 
     static void benchHashSet_put() {
@@ -79,10 +81,18 @@ public class MapSetBench {
         bench("TreeSet.add", ELEMENT_COUNT, WARMUP, TreeSet.<Integer> empty(), (i, set) -> set.add(i));
     }
 
-    static void benchTreeSet_difference_vs_removeAll() {
+    static void benchTreeSet_diff_vs_removeAll() {
         for (int i = TREE_COUNT; i > 0; i -= TREE_COUNT / 10) {
-            bench("TreeSet.difference(TreeSet)", i, 0, j -> trees.next().difference(trees.next()));
+            bench("TreeSet.diff(TreeSet)", i, 0, j -> trees.next().diff(trees.next()));
             bench("TreeSet.removeAll(TreeSet)", i, 0, j -> trees.next().removeAll(trees.next()));
         }
+    }
+
+    static void benchTreeSet_union_vs_addAll() {
+        // TODO
+    }
+
+    static void benchTreeSet_intersect_vs_retainAll() {
+        // TODO
     }
 }

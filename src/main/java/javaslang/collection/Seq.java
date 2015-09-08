@@ -761,7 +761,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> takeWhile(Predicate<? super T> predicate);
 
     /**
-     * Unzips this elements by mapping this elements to pairs which are subsequentially split into to distinct
+     * Unzips this elements by mapping this elements to pairs which are subsequentially split into two distinct
      * traversables.
      *
      * @param unzipper a function which converts elements of this to pairs
@@ -780,7 +780,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      *
      * @param <U>  The type of the second half of the returned pairs.
      * @param that The java.lang.Iterable providing the second half of each result pair.
-     * @return a new Seq containing pairs consisting of corresponding elements of this list and that.
+     * @return a new Seq containing pairs consisting of corresponding elements of this seq and that.
      * @throws NullPointerException if {@code that} is null
      */
     <U> Seq<Tuple2<T, U>> zip(java.lang.Iterable<U> that);
@@ -791,6 +791,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * shorter collection to the length of the longer.
      * <p>
      * The length of the returned Traversable is the maximum of the lengths of this Traversable and that.
+     * <p>
      * If this Traversable is shorter than that, thisElem values are used to fill the result.
      * If that is shorter than this Traversable, thatElem values are used to fill the result.
      *
@@ -804,9 +805,9 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     <U> Seq<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem);
 
     /**
-     * Zips this List with its indices.
+     * Zips this seq with its indices.
      *
-     * @return A new List containing all elements of this List paired with their index, starting with 0.
+     * @return A new seq containing all elements of this seq paired with their index, starting with 0.
      */
     Seq<Tuple2<T, Integer>> zipWithIndex();
 }

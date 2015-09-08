@@ -516,6 +516,24 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return new TreeSet<>(tree.insert(element));
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public TreeSet<T> addAll(java.lang.Iterable<? extends T> elements) {
+        if (isEmpty() && elements instanceof TreeSet) {
+            return (TreeSet<T>) elements;
+        } else {
+            RedBlackTree<T> that = tree;
+            for (T element : elements) {
+                that = that.insert(element);
+            }
+            if (tree == that) {
+                return this;
+            } else {
+                return new TreeSet<>(that);
+            }
+        }
+    }
+
     @Override
     public TreeSet<T> clear() {
         return isEmpty() ? this : new TreeSet<>(tree.clear());
@@ -526,11 +544,16 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return tree.comparator();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public TreeSet<T> difference(Iterable<? extends T> elements) {
+    public TreeSet<T> diff(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final RedBlackTree<T> that = RedBlackTree.ofAll(tree.comparator(), elements);
-        return new TreeSet<>(tree.difference(that));
+        if (elements instanceof TreeSet) {
+            final RedBlackTree<T> that = ((TreeSet<T>) elements).tree;
+            return new TreeSet<>(tree.difference(that));
+        } else {
+            return removeAll(elements);
+        }
     }
 
     @Override
@@ -649,11 +672,16 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return isEmpty() ? None.instance() : new Some<>(init());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public TreeSet<T> intersection(Iterable<? extends T> elements) {
+    public TreeSet<T> intersect(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final RedBlackTree<T> that = RedBlackTree.ofAll(tree.comparator(), elements);
-        return new TreeSet<>(tree.intersection(that));
+        if (elements instanceof TreeSet) {
+            final RedBlackTree<T> that = ((TreeSet<T>) elements).tree;
+            return new TreeSet<>(tree.intersection(that));
+        } else {
+            return retainAll(elements);
+        }
     }
 
     @Override
@@ -748,8 +776,12 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public TreeSet<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final RedBlackTree<T> kept = RedBlackTree.ofAll(tree.comparator(), elements);
-        return new TreeSet<>(tree.intersection(kept));
+        if (isEmpty()) {
+            return this;
+        } else {
+            final RedBlackTree<T> kept = RedBlackTree.ofAll(tree.comparator(), elements);
+            return new TreeSet<>(tree.intersection(kept));
+        }
     }
 
     @Override
@@ -790,11 +822,16 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return TreeSet.ofAll(tree.comparator(), iterator().takeWhile(predicate));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public TreeSet<T> union(Iterable<? extends T> elements) {
+    public TreeSet<T> union(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final RedBlackTree<T> that = RedBlackTree.ofAll(tree.comparator(), elements);
-        return new TreeSet<>(tree.union(that));
+        if (elements instanceof TreeSet) {
+            final RedBlackTree<T> that = ((TreeSet<T>) elements).tree;
+            return new TreeSet<>(tree.union(that));
+        } else {
+            return addAll(elements);
+        }
     }
 
     @Override
