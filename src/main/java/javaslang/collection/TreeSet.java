@@ -519,6 +519,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public TreeSet<T> addAll(java.lang.Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
         if (isEmpty() && elements instanceof TreeSet) {
             return (TreeSet<T>) elements;
         } else {
@@ -741,14 +742,19 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public TreeSet<T> removeAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        RedBlackTree<T> that = tree;
-        for (T element : elements) {
-            that = that.delete(element);
-        }
-        if (that == tree) {
+        if (isEmpty()) {
             return this;
         } else {
-            return new TreeSet<>(that);
+            RedBlackTree<T> that = tree;
+            final java.util.Iterator<? extends T> iter = elements.iterator();
+            while (!that.isEmpty() && iter.hasNext()) {
+                that = that.delete(iter.next());
+            }
+            if (that == tree) {
+                return this;
+            } else {
+                return new TreeSet<>(that);
+            }
         }
     }
 
