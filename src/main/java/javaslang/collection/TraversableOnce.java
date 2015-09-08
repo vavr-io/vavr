@@ -8,7 +8,6 @@ package javaslang.collection;
 import javaslang.Tuple2;
 import javaslang.Value;
 import javaslang.collection.Iterator.AbstractIterator;
-import javaslang.control.Match;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -18,7 +17,6 @@ import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.OptionalDouble;
 import java.util.function.*;
 
 /**
@@ -144,16 +142,19 @@ public interface TraversableOnce<T> extends Value<T> {
         if (isEmpty()) {
             return None.instance();
         } else {
-            final Stream<Number> numbers = Stream.ofAll((javaslang.Iterable) iterator());
-            return Match.of(numbers.head())
-                    .whenTypeIn(Byte.class, Integer.class, Short.class).then(() -> numbers.toJavaStream().mapToInt(Number::intValue).average())
-                    .whenTypeIn(Double.class, Float.class, BigDecimal.class).then(() -> numbers.toJavaStream().mapToDouble(Number::doubleValue).average())
-                    .whenTypeIn(Long.class, BigInteger.class).then(() -> numbers.toJavaStream().mapToLong(Number::longValue).average())
-                    .otherwise(() -> {
-                        throw new UnsupportedOperationException("not numeric");
-                    })
-                    .map(OptionalDouble::getAsDouble)
-                    .toOption();
+            final TraversableOnce<?> objects = isTraversableAgain() ? this : toStream();
+            final Object head = objects.head();
+            final double d;
+            if (head instanceof Integer || head instanceof Short || head instanceof Byte) {
+                d = ((TraversableOnce<Number>) objects).toJavaStream().mapToInt(Number::intValue).average().getAsDouble();
+            } else if (head instanceof Double || head instanceof Float || head instanceof BigDecimal) {
+                d = ((TraversableOnce<Number>) objects).toJavaStream().mapToDouble(Number::doubleValue).average().getAsDouble();
+            } else if (head instanceof Long || head instanceof BigInteger) {
+                d = ((TraversableOnce<Number>) objects).toJavaStream().mapToLong(Number::longValue).average().getAsDouble();
+            } else {
+                throw new UnsupportedOperationException("not numeric");
+            }
+            return new Some<>(d);
         }
     }
 
@@ -667,8 +668,8 @@ public interface TraversableOnce<T> extends Value<T> {
      * @return a new String
      */
     default String mkString(CharSequence delimiter,
-                        CharSequence prefix,
-                        CharSequence suffix) {
+                            CharSequence prefix,
+                            CharSequence suffix) {
         final StringBuilder builder = new StringBuilder(prefix);
         iterator().map(String::valueOf).intersperse(String.valueOf(delimiter)).forEach(builder::append);
         return builder.append(suffix).toString();
@@ -709,12 +710,17 @@ public interface TraversableOnce<T> extends Value<T> {
         if (isEmpty()) {
             return 1;
         } else {
-            final Stream<Number> numbers = Stream.ofAll((javaslang.Iterable) iterator());
-            return Match.of(numbers.head()).as(Number.class)
-                    .whenTypeIn(Byte.class, Integer.class, Short.class).then(() -> numbers.toJavaStream().mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2))
-                    .whenTypeIn(Double.class, Float.class, BigDecimal.class).then(() -> numbers.toJavaStream().mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2))
-                    .whenTypeIn(Long.class, BigInteger.class).then(ignored -> numbers.toJavaStream().mapToLong(Number::longValue).reduce(1L, (l1, l2) -> l1 * l2))
-                    .orElseThrow(() -> new UnsupportedOperationException("not numeric"));
+            final TraversableOnce<?> objects = isTraversableAgain() ? this : toStream();
+            final Object head = objects.head();
+            if (head instanceof Integer || head instanceof Short || head instanceof Byte) {
+                return ((TraversableOnce<Number>) objects).toJavaStream().mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2);
+            } else if (head instanceof Double || head instanceof Float || head instanceof BigDecimal) {
+                return ((TraversableOnce<Number>) objects).toJavaStream().mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2);
+            } else if (head instanceof Long || head instanceof BigInteger) {
+                return ((TraversableOnce<Number>) objects).toJavaStream().mapToLong(Number::longValue).reduce(1L, (l1, l2) -> l1 * l2);
+            } else {
+                throw new UnsupportedOperationException("not numeric");
+            }
         }
     }
 
@@ -827,12 +833,17 @@ public interface TraversableOnce<T> extends Value<T> {
         if (isEmpty()) {
             return 0;
         } else {
-            final Stream<Number> numbers = Stream.ofAll((javaslang.Iterable) iterator());
-            return Match.of(numbers.head()).as(Number.class)
-                    .whenTypeIn(Byte.class, Integer.class, Short.class).then(() -> numbers.toJavaStream().mapToInt(Number::intValue).sum())
-                    .whenTypeIn(Double.class, Float.class, BigDecimal.class).then(() -> numbers.toJavaStream().mapToDouble(Number::doubleValue).sum())
-                    .whenTypeIn(Long.class, BigInteger.class).then(ignored -> numbers.toJavaStream().mapToLong(Number::longValue).sum())
-                    .orElseThrow(() -> new UnsupportedOperationException("not numeric"));
+            final TraversableOnce<?> objects = isTraversableAgain() ? this : toStream();
+            final Object head = objects.head();
+            if (head instanceof Integer || head instanceof Short || head instanceof Byte) {
+                return ((TraversableOnce<Number>) objects).toJavaStream().mapToInt(Number::intValue).sum();
+            } else if (head instanceof Double || head instanceof Float || head instanceof BigDecimal) {
+                return ((TraversableOnce<Number>) objects).toJavaStream().mapToDouble(Number::doubleValue).sum();
+            } else if (head instanceof Long || head instanceof BigInteger) {
+                return ((TraversableOnce<Number>) objects).toJavaStream().mapToLong(Number::longValue).sum();
+            } else {
+                throw new UnsupportedOperationException("not numeric");
+            }
         }
     }
 

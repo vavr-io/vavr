@@ -92,6 +92,14 @@ public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, 
             return bitCount(bitmap & (bit - 1));
         }
 
+        static <K, V> int size(Iterable<AbstractNode<K, V>> subNodes) {
+            int size = 0;
+            for (AbstractNode<?, ?> subNode : subNodes) {
+                size += subNode.size();
+            }
+            return size;
+        }
+
         abstract boolean isLeaf();
 
         abstract Option<V> lookup(int shift, K key);
@@ -273,12 +281,10 @@ public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, 
 
         private final int bitmap;
         private final List<AbstractNode<K, V>> subNodes;
-        private final int size;
 
         private IndexedNode(int bitmap, List<AbstractNode<K, V>> subNodes) {
             this.bitmap = bitmap;
             this.subNodes = subNodes;
-            this.size = subNodes.map(HashArrayMappedTrie::size).sum().intValue();
         }
 
         @Override
@@ -352,7 +358,7 @@ public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, 
 
         @Override
         public int size() {
-            return size;
+            return size(subNodes);
         }
 
         @Override
@@ -374,12 +380,10 @@ public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, 
 
         private final Array<AbstractNode<K, V>> subNodes;
         private final int count;
-        private final int size;
 
         private ArrayNode(int count, Array<AbstractNode<K, V>> subNodes) {
             this.subNodes = subNodes;
             this.count = count;
-            this.size = subNodes.map(HashArrayMappedTrie::size).sum().intValue();
         }
 
         @Override
@@ -427,7 +431,7 @@ public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, 
 
         @Override
         public int size() {
-            return size;
+            return size(subNodes);
         }
 
         @Override

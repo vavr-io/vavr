@@ -141,6 +141,7 @@ public interface Tree<T> extends Traversable<T> {
             return List.empty();
         } else {
             final Traversal traversal = new Traversal();
+            // TODO: use functional strategy pattern instead of Match.of (https://dzone.com/articles/strategy-pattern-implemented-as-an-enum-using-lamb)
             return Match.of(order)
                     .whenIs(Order.PRE_ORDER).then(() -> traversal.preOrder(this))
                     .whenIs(Order.IN_ORDER).then(() -> traversal.inOrder(this))
