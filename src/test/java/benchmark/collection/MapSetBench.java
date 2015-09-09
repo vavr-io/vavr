@@ -89,10 +89,16 @@ public class MapSetBench {
     }
 
     static void benchTreeSet_union_vs_addAll() {
-        // TODO
+        for (int i = TREE_COUNT; i > 0; i -= TREE_COUNT / 10) {
+            bench("TreeSet.union(TreeSet)", i, 0, j -> trees.next().union(trees.next()));
+            bench("TreeSet.addAll(TreeSet)", i, 0, j -> trees.next().addAll(trees.next()));
+        }
     }
 
     static void benchTreeSet_intersect_vs_retainAll() {
-        // TODO
+        for (int i = TREE_COUNT; i > 0; i -= TREE_COUNT / 10) {
+            bench("TreeSet.intersect(TreeSet)", i, 0, j -> trees.next().intersect(trees.next()));
+            bench("TreeSet.retainAll(TreeSet)", i, 0, j -> trees.next().retainAll(trees.next()));
+        }
     }
 }
