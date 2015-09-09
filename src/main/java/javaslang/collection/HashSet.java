@@ -210,6 +210,17 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public HashSet<T> addAll(java.lang.Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        final HashArrayMappedTrie<T, T> that = addAll(tree, elements);
+        if (that.size() == tree.size()) {
+            return this;
+        } else {
+            return new HashSet<>(that);
+        }
+    }
+
+    @Override
     public HashSet<T> clear() {
         return empty();
     }
@@ -220,9 +231,13 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> difference(Iterable<? extends T> elements) {
+    public HashSet<T> diff(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return removeAll(elements);
+        if (isEmpty() || elements.isEmpty()) {
+            return this;
+        } else {
+            return removeAll(elements);
+        }
     }
 
     @Override
@@ -334,9 +349,13 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> intersection(Iterable<? extends T> elements) {
+    public HashSet<T> intersect(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return retainAll(elements);
+        if (isEmpty() || elements.isEmpty()) {
+            return empty();
+        } else {
+            return retainAll(elements);
+        }
     }
 
     @Override
@@ -504,14 +523,25 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return taken.length() == length() ? this : taken;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public HashSet<T> union(Iterable<? extends T> elements) {
+    public HashSet<T> union(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        HashArrayMappedTrie<T, T> that = addAll(tree, elements);
-        if (that.size() == tree.size()) {
+        if (isEmpty()) {
+            if (elements instanceof HashSet) {
+                return (HashSet<T>) elements;
+            } else {
+                return HashSet.ofAll(elements);
+            }
+        } else if (elements.isEmpty()) {
             return this;
         } else {
-            return new HashSet<>(that);
+            final HashArrayMappedTrie<T, T> that = addAll(tree, elements);
+            if (that.size() == tree.size()) {
+                return this;
+            } else {
+                return new HashSet<>(that);
+            }
         }
     }
 
