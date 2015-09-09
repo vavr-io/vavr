@@ -230,16 +230,4 @@ public class IteratorTest extends AbstractTraversableOnceTest {
         // iterators are intermediate objects and not serializable/deserializable
     }
 
-    // output
-
-    @Override
-    public void shouldWriteToPrintStream() {
-        /* ignore */
-    }
-
-    @Override
-    public void shouldWriteToPrintWriter() {
-        /* ignore */
-    }
-
 }

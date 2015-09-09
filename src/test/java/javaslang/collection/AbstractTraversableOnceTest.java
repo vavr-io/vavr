@@ -1171,9 +1171,8 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
     public void shouldWriteToPrintStream() {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
         final PrintStream out = new PrintStream(baos);
-        final TraversableOnce<Integer> value = of(1, 2, 3);
-        value.out(out);
-        assertThat(baos.toString()).isEqualTo(value.mkString("\n", "", "\n"));
+        of(1, 2, 3).out(out);
+        assertThat(baos.toString()).isEqualTo(of(1, 2, 3).mkString("\n", "", "\n"));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -1189,9 +1188,8 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
     public void shouldWriteToPrintWriter() {
         final StringWriter sw = new StringWriter();
         final PrintWriter out = new PrintWriter(sw);
-        final TraversableOnce<Integer> value = of(1, 2, 3);
-        value.out(out);
-        assertThat(sw.toString()).isEqualTo(value.mkString("\n", "", "\n"));
+        of(1, 2, 3).out(out);
+        assertThat(sw.toString()).isEqualTo(of(1, 2, 3).mkString("\n", "", "\n"));
     }
 
     @Test(expected = IllegalStateException.class)
