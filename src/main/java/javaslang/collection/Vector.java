@@ -675,18 +675,17 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
-            private int index = 0;
+            private int index = indexShift;
+            private final int size = trie.size() + indexShift;
 
             @Override
             public boolean hasNext() {
-                return index < trie.size();
+                return index < size;
             }
 
             @Override
             public T next() {
-                final int trieIndex = index + indexShift;
-                index++;
-                return trie.get(trieIndex).get();
+                return trie.get(index++).get();
             }
         };
     }
@@ -782,8 +781,8 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         List<T> list = List.ofAll(elements);
         final int newIndexShift = indexShift - list.length();
         HashArrayMappedTrie<Integer, T> newTrie = trie;
-        for (int i = 0; !list.isEmpty(); i++) {
-            newTrie = newTrie.put(newIndexShift + i, list.head());
+        for (int i = newIndexShift; !list.isEmpty(); i++) {
+            newTrie = newTrie.put(i, list.head());
             list = list.tail();
         }
         return new Vector<>(newIndexShift, newTrie);
