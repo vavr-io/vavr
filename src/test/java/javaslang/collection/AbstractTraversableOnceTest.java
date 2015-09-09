@@ -11,9 +11,7 @@ import javaslang.control.Option;
 import javaslang.control.Some;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -1167,6 +1165,42 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
         }
     }
 
+    // -- PrintStream
+
+    @Test
+    public void shouldWriteToPrintStream() {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+        final PrintStream out = new PrintStream(baos);
+        final TraversableOnce<Integer> value = of(1, 2, 3);
+        value.out(out);
+        assertThat(baos.toString()).isEqualTo(value.mkString("\n", "", "\n"));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldHandlePrintStreamIOException() {
+        try (PrintStream failingPrintStream = failingPrintStream()) {
+            of(0).out(failingPrintStream);
+        }
+    }
+
+    // -- PrintWriter
+
+    @Test
+    public void shouldWriteToPrintWriter() {
+        final StringWriter sw = new StringWriter();
+        final PrintWriter out = new PrintWriter(sw);
+        final TraversableOnce<Integer> value = of(1, 2, 3);
+        value.out(out);
+        assertThat(sw.toString()).isEqualTo(value.mkString("\n", "", "\n"));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldHandlePrintWriterIOException() {
+        try (PrintWriter failingPrintWriter = failingPrintWriter()) {
+            of(0).out(failingPrintWriter);
+        }
+    }
+
     // -- sum
 
     @Test
@@ -1476,6 +1510,15 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     static PrintStream failingPrintStream() {
         return new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                throw new IOException();
+            }
+        });
+    }
+
+    static PrintWriter failingPrintWriter() {
+        return new PrintWriter(new OutputStream() {
             @Override
             public void write(int b) throws IOException {
                 throw new IOException();
