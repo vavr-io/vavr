@@ -11,6 +11,8 @@ import javaslang.control.Option;
 import javaslang.control.Some;
 import javaslang.control.Try;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -36,6 +38,8 @@ import java.util.stream.StreamSupport;
  * <ul>
  * <li>{@link #forEach(Consumer)}</li>
  * <li>{@link #peek(Consumer)}</li>
+ * <li>{@link #out(PrintStream)}</li>
+ * <li>{@link #out(PrintWriter)}</li>
  * <li>{@link #stderr()}</li>
  * <li>{@link #stdout()}</li>
  * </ul>
@@ -483,7 +487,7 @@ public interface Value<T> extends javaslang.Iterable<T> {
 
     // --
     // --
-    // -- Console output
+    // -- Output
     // --
     // --
 
@@ -494,12 +498,7 @@ public interface Value<T> extends javaslang.Iterable<T> {
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
      */
     default void stderr() {
-        for (T t : this) {
-            System.err.println(String.valueOf(t));
-            if (System.err.checkError()) {
-                throw new IllegalStateException("Error writing to stderr");
-            }
-        }
+        out(System.err);
     }
 
     /**
@@ -509,10 +508,35 @@ public interface Value<T> extends javaslang.Iterable<T> {
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
      */
     default void stdout() {
+        out(System.out);
+    }
+
+    /**
+     * Sends the string representations of this value to the {@link PrintStream}.
+     * If this value consists of multiple elements, each element is displayed in a new line.
+     *
+     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stream.
+     */
+    default void out(PrintStream out) {
         for (T t : this) {
-            System.out.println(String.valueOf(t));
-            if (System.out.checkError()) {
-                throw new IllegalStateException("Error writing to stdout");
+            out.println(String.valueOf(t));
+            if (out.checkError()) {
+                throw new IllegalStateException("Error writing to PrintStream");
+            }
+        }
+    }
+
+    /**
+     * Sends the string representations of this value to the {@link PrintWriter}.
+     * If this value consists of multiple elements, each element is displayed in a new line.
+     *
+     * @throws IllegalStateException if {@code PrintWriter.checkError()} is true after writing to writer.
+     */
+    default void out(PrintWriter writer) {
+        for (T t : this) {
+            writer.println(String.valueOf(t));
+            if (writer.checkError()) {
+                throw new IllegalStateException("Error writing to PrintWriter");
             }
         }
     }
