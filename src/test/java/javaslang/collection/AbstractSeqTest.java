@@ -806,7 +806,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldRemoveLastElementByPredicateNonExisting() {
         final Seq<Integer> t = of(1, 2, 3);
-        assertThat(t.removeLast(v -> v == 4)).isSameAs(t);
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(t.removeLast(v -> v == 4)).isEqualTo(t);
+        } else {
+            assertThat(t.removeLast(v -> v == 4)).isSameAs(t);
+        }
     }
 
     // -- removeAll(Iterable)

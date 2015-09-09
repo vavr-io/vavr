@@ -451,6 +451,13 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
         assertThat(of("a", "b", "c").foldRight("", (x, xs) -> x + xs)).isEqualTo("abc");
     }
 
+    // -- hasDefiniteSize
+
+    @Test
+    public void shouldReturnSomethingOnHasDefiniteSize() {
+        empty().hasDefiniteSize();
+    }
+
     // -- head
 
     @Test(expected = NoSuchElementException.class)
@@ -509,6 +516,13 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
     @Test
     public void shouldRecognizeNonNil() {
         assertThat(of(1).isEmpty()).isFalse();
+    }
+
+    // -- isTraversableAgain
+
+    @Test
+    public void shouldReturnSomethingOnIsTraversableAgain() {
+        empty().isTraversableAgain();
     }
 
     // -- iterator
