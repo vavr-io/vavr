@@ -29,10 +29,16 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     private static final Vector<?> EMPTY = new Vector<>(HashArrayMappedTrie.empty());
 
     private final HashArrayMappedTrie<Integer, T> trie;
+    private final int indexShift;
     private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
 
     private Vector(HashArrayMappedTrie<Integer, T> trie) {
+        this(0, trie);
+    }
+
+    private Vector(int indexShift, HashArrayMappedTrie<Integer, T> trie) {
         this.trie = trie;
+        this.indexShift = indexShift;
     }
 
     /**
@@ -394,16 +400,16 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Vector<T> append(T element) {
-        return new Vector<>(trie.put(trie.size(), element));
+        return new Vector<>(indexShift, trie.put(length() + indexShift, element));
     }
 
     @Override
     public Vector<T> appendAll(java.lang.Iterable<? extends T> elements) {
         HashArrayMappedTrie<Integer, T> result = trie;
         for (T element : elements) {
-            result = result.put(result.size(), element);
+            result = result.put(result.size() + indexShift, element);
         }
-        return new Vector<>(result);
+        return new Vector<>(indexShift, result);
     }
 
     @Override
@@ -543,7 +549,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         if (index < 0 || index >= length()) {
             throw new IndexOutOfBoundsException("get(" + index + ")");
         }
-        return trie.get(index).get();
+        return trie.get(index + indexShift).get();
     }
 
     @Override
@@ -590,7 +596,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         if (isEmpty()) {
             throw new UnsupportedOperationException("init of empty vector");
         }
-        return new Vector<>(trie.remove(length() - 1));
+        return new Vector<>(indexShift, trie.remove(length() + indexShift - 1));
     }
 
     @Override
@@ -669,11 +675,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
-            private int index = 0;
+            private int index = indexShift;
+            private final int size = trie.size() + indexShift;
 
             @Override
             public boolean hasNext() {
-                return index < trie.size();
+                return index < size;
             }
 
             @Override
@@ -765,12 +772,20 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Vector<T> prepend(T element) {
-        return insert(0, element);
+        final int newIndexShift = indexShift - 1;
+        return new Vector<>(newIndexShift, trie.put(newIndexShift, element));
     }
 
     @Override
     public Vector<T> prependAll(java.lang.Iterable<? extends T> elements) {
-        return insertAll(0, elements);
+        List<T> list = List.ofAll(elements);
+        final int newIndexShift = indexShift - list.length();
+        HashArrayMappedTrie<Integer, T> newTrie = trie;
+        for (int i = newIndexShift; !list.isEmpty(); i++) {
+            newTrie = newTrie.put(i, list.head());
+            list = list.tail();
+        }
+        return new Vector<>(newIndexShift, newTrie);
     }
 
     @Override
@@ -1025,11 +1040,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty vector");
         }
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = 1; i < length(); i++) {
-            trie = trie.put(i - 1, get(i));
+        if(length() == 1) {
+            return empty();
+        } else {
+            final int newIndexShift = indexShift + 1;
+            return new Vector<>(newIndexShift, trie.remove(indexShift));
         }
-        return trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 
     @Override
@@ -1037,11 +1053,11 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         if (isEmpty()) {
             return None.instance();
         }
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = 1; i < length(); i++) {
-            trie = trie.put(i - 1, get(i));
+        if(length() == 1) {
+            return new Some<>(empty());
+        } else {
+            return new Some<>(tail());
         }
-        return new Some<>(trie.isEmpty() ? empty() : new Vector<>(trie));
     }
 
     @Override
@@ -1115,7 +1131,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         if (index >= length()) {
             throw new IndexOutOfBoundsException("update(" + index + ")");
         }
-        return new Vector<>(trie.put(index, element));
+        return new Vector<>(indexShift, trie.put(index + indexShift, element));
     }
 
     @Override
