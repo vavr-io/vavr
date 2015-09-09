@@ -1058,9 +1058,6 @@ public interface Stream<T> extends LinearSeq<T> {
         private final Lazy<T> head;
         private final Lazy<Stream<T>> tail;
 
-        private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
-        private final transient Lazy<Integer> length = Lazy.of(() -> foldLeft(0, (n, ignored) -> n + 1));
-
         /**
          * Creates a new {@code Stream} consisting of a head element and a lazy trailing {@code Stream}.
          *
@@ -1185,7 +1182,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
         @Override
         public int length() {
-            return length.get();
+            return foldLeft(0, (n, ignored) -> n + 1);
         }
 
         @Override
@@ -1318,7 +1315,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
         @Override
         public int hashCode() {
-            return hashCode.get();
+            return Traversable.hash(this);
         }
 
         @Override
