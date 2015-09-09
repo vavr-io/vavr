@@ -628,10 +628,24 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> dropRight(int n) {
+        // TODO(FIXME): inner class leaks reference of outer class to the outside
+        // works with infinite streams by buffering elements
+        class Util {
+            Stream<T> dropRight(List<T> front, List<T> rear, Stream<T> remaining) {
+                if (remaining.isEmpty()) {
+                    return remaining;
+                } else if (front.isEmpty()) {
+                    return dropRight(rear.reverse(), List.empty(), remaining);
+                } else {
+                    return new Cons<>(front::head, () -> dropRight(front.tail(), rear.prepend(remaining.head()), remaining.tail()));
+                }
+            }
+        }
+
         if (n <= 0) {
             return this;
         } else {
-            return reverse().drop(n).reverse();
+            return new Util().dropRight(take(n).toList(), List.empty(), drop(n));
         }
     }
 
