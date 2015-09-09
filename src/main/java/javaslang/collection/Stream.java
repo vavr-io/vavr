@@ -630,8 +630,6 @@ public interface Stream<T> extends LinearSeq<T> {
     default Stream<T> dropRight(int n) {
         if (n <= 0) {
             return this;
-        } else if (length() <= n) {
-            return empty();
         } else {
             return reverse().drop(n).reverse();
         }
@@ -761,10 +759,12 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> padTo(int length, T element) {
-        if(length <= length()) {
+        if (length <= 0) {
             return this;
+        } else if (isEmpty()) {
+            return Stream.ofAll(Iterator.constant(element).take(length));
         } else {
-            return appendAll(Iterator.constant(element).take(length - length()));
+            return new Cons<>(((Cons<T>) this).head, () -> tail().padTo(length - 1, element));
         }
     }
 
@@ -823,8 +823,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> removeLast(Predicate<T> predicate) {
-        final Stream<T> removed = reverse().removeFirst(predicate);
-        return removed.length() == length() ? this : removed.reverse();
+        return isEmpty() ? this : reverse().removeFirst(predicate).reverse();
     }
 
     @Override
@@ -955,13 +954,13 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> takeRight(int n) {
-        if (n <= 0) {
-            return empty();
-        } else if (length() <= n) {
-            return this;
-        } else {
-            return Stream.ofAll(iterator().takeRight(n));
+        Stream<T> right = this;
+        Stream<T> remaining = drop(n);
+        while (!remaining.isEmpty()) {
+            right = right.tail();
+            remaining = remaining.tail();
         }
+        return right;
     }
 
     @Override
@@ -993,12 +992,12 @@ public interface Stream<T> extends LinearSeq<T> {
         Stream<T> tail = this;
         for (int i = index; i > 0; i--, tail = tail.tail()) {
             if (tail.isEmpty()) {
-                throw new IndexOutOfBoundsException("update(" + index + ", e) on Stream of size " + length());
+                throw new IndexOutOfBoundsException("update at " + index);
             }
             preceding = preceding.prepend(tail.head());
         }
         if (tail.isEmpty()) {
-            throw new IndexOutOfBoundsException("update(" + index + ", e) on Stream of size " + length());
+            throw new IndexOutOfBoundsException("update at " + index);
         }
         // skip the current head element because it is replaced
         return preceding.reverse().appendAll(tail.tail().prepend(element));
@@ -1244,15 +1243,17 @@ public interface Stream<T> extends LinearSeq<T> {
 
         @Override
         public boolean startsWith(java.lang.Iterable<? extends T> that, int offset) {
-            if (offset > 0) {
-                if (offset >= length()) {
-                    throw new IndexOutOfBoundsException("startsWith(" + this + ", " + offset + ")");
-                } else {
-                    return drop(offset).startsWith(that);
-                }
+            Objects.requireNonNull(that, "that is null");
+            Stream<T> stream = this;
+            int index = offset;
+            while (index > 0 && !stream.isEmpty()) {
+                stream = stream.tail();
+                index--;
+            }
+            if (index > 0) {
+                throw new IndexOutOfBoundsException("startsWith(" + that + ", " + offset + ")");
             }
             final java.util.Iterator<? extends T> it = that.iterator();
-            Stream<T> stream = this;
             while (it.hasNext() && !stream.isEmpty()) {
                 if (Objects.equals(it.next(), stream.head())) {
                     stream = stream.tail();
