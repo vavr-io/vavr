@@ -1,6 +1,8 @@
 package javaslang.collection;
 
+import javaslang.control.Some;
 import org.assertj.core.api.IterableAssert;
+import org.junit.Test;
 
 import java.util.*;
 import java.util.Set;
@@ -160,9 +162,78 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         return ofAll(Iterator.ofAll(array));
     }
 
+    // -- apply
+
+    @Test
+    public void shouldApplyExistingKey() {
+        assertThat(emptyMap().put(1, 2).apply(1)).isEqualTo(2);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldApplyNonExistingKey() {
+        emptyMap().put(1, 2).apply(3);
+    }
+
+    // -- contains
+
+    @Test
+    public void shouldFindKey() {
+        assertThat(emptyMap().put(1, 2).containsKey(1)).isTrue();
+        assertThat(emptyMap().put(1, 2).containsKey(2)).isFalse();
+    }
+
+    @Test
+    public void shouldFindValue() {
+        assertThat(emptyMap().put(1, 2).containsValue(2)).isTrue();
+        assertThat(emptyMap().put(1, 2).containsValue(1)).isFalse();
+    }
+
+    // -- map
+
+    @Test
+    public void shouldMapEmpty() {
+        final javaslang.collection.Set<Integer> expected = HashSet.empty();
+        final javaslang.collection.Set<Integer> actual = emptyMap().map(entry -> entry.key);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldMapNonEmpty() {
+        final javaslang.collection.Set<Integer> expected = HashSet.of(1, 2);
+        final javaslang.collection.Set<Integer> actual = emptyMap().put(1, "1").put(2, "2").map(entry -> entry.key);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReturnEmptySetWhenAskedForEntrySetOfAnEmptyMap() {
+        assertThat(emptyMap().entrySet()).isEqualTo(HashSet.empty());
+    }
+
+    @Test
+    public void shouldReturnEntrySetOfANonEmptyMap() {
+        assertThat(emptyMap().put(1, "1").put(2, "2").entrySet()).isEqualTo(
+                HashSet.of(Map.Entry.of(1, "1"), Map.Entry.of(2, "2")));
+    }
+
+    // equality
+
+    @Test
+    public void shouldIgnoreOrderOfEntriesWhenComparingForEquality() {
+        final Map<?, ?> map1 = emptyMap().put(1, 'a').put(2, 'b').put(3, 'c');
+        final Map<?, ?> map2 = emptyMap().put(3, 'c').put(2, 'b').put(1, 'a').remove(2).put(2, 'b');
+        assertThat(map1).isEqualTo(map2);
+    }
+
+    // -- special cases
+
     @Override
     public void shouldComputeDistinctOfNonEmptyTraversable() {
         /* ignore */
+    }
+
+    @Override
+    public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
+        assertThat(of(1, 2, 3).tailOption().get()).isEqualTo(new Some<>(of(2, 3)).get());
     }
 
     @Override
