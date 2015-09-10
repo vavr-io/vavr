@@ -6,6 +6,8 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
+import javaslang.control.Success;
+import javaslang.control.Try;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
@@ -328,4 +330,40 @@ public class StreamTest extends AbstractSeqTest {
         return true;
     }
 
+    @Test // See #327, #594
+    public void shouldNotEvaluateHeadOfTailWhenCallingIteratorHasNext() {
+
+        final StringBuilder result1 = new StringBuilder();
+        final List<Integer> vals1 = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        flatTryWithJavaslangStream(vals1, i -> doStuff(i, result1));
+
+        final StringBuilder result2 = new StringBuilder();
+        final Integer[] vals2 = new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        flatTryWithJavaStream(vals2, i -> doStuff(i, result2));
+
+        assertThat(result1.toString()).isEqualTo(result2.toString());
+    }
+
+    private <T> Try<Void> flatTryWithJavaslangStream(List<T> vals, Try.CheckedConsumer<T> func) {
+        return vals.toStream()
+                .map(v -> Try.run(() -> func.accept(v)))
+                .findFirst(Try::isFailure)
+                .orElseGet(() -> new Success<>(null));
+    }
+
+    private <T> Try<Void> flatTryWithJavaStream(Integer[] vals, Try.CheckedConsumer<Integer> func) {
+        return java.util.stream.Stream.of(vals)
+                .map(v -> Try.run(() -> func.accept(v)))
+                .filter(Try::isFailure)
+                .findFirst()
+                .orElseGet(() -> new Success<>(null));
+    }
+
+    private String doStuff(int i, StringBuilder builder) throws Exception {
+        builder.append(i);
+        if (i == 5) {
+            throw new Exception("Some error !!!");
+        }
+        return i + " Value";
+    }
 }
