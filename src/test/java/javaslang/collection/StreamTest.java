@@ -6,8 +6,6 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
-import javaslang.collection.Stream.Cons;
-import javaslang.collection.Stream.Nil;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
@@ -288,7 +286,7 @@ public class StreamTest extends AbstractSeqTest {
 
     @Test(expected = InvalidObjectException.class)
     public void shouldNotSerializeEnclosingClassOfCons() throws Throwable {
-        Serializables.callReadObject(new Cons<>(() -> 1, Nil::instance));
+        Serializables.callReadObject(Stream.cons(1, Stream::empty));
     }
 
     @Test(expected = InvalidObjectException.class)
