@@ -400,8 +400,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> removeAll(java.lang.Iterable<? extends K> keys) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        Objects.requireNonNull(keys, "keys is null");
+        HashArrayMappedTrie<K, V> result = tree;
+        for (K key : keys) {
+            result = result.remove(key);
+        }
+        return HashMap.of(result);
     }
 
     @Override
@@ -493,15 +497,27 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <K1, V1, K2, V2> Tuple2<HashMap<K1, V1>, HashMap<K2, V2>> unzip(Function<? super Entry<? super K, ? super V>, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        HashArrayMappedTrie<K1, V1> trie1 = HashArrayMappedTrie.empty();
+        HashArrayMappedTrie<K2, V2> trie2 = HashArrayMappedTrie.empty();
+        for (Entry<K, V> entry : this) {
+            Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>> t = unzipper.apply(entry);
+            trie1 = trie1.put(t._1.key, t._1.value);
+            trie2 = trie2.put(t._2.key, t._2.value);
+        }
+        return Tuple.of(HashMap.of(trie1), HashMap.of(trie2));
     }
 
     @Override
     public <K1, V1, K2, V2> Tuple2<HashMap<K1, V1>, HashMap<K2, V2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        HashArrayMappedTrie<K1, V1> trie1 = HashArrayMappedTrie.empty();
+        HashArrayMappedTrie<K2, V2> trie2 = HashArrayMappedTrie.empty();
+        for (Entry<K, V> entry : this) {
+            Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>> t = unzipper.apply(entry.key, entry.value);
+            trie1 = trie1.put(t._1.key, t._1.value);
+            trie2 = trie2.put(t._2.key, t._2.value);
+        }
+        return Tuple.of(HashMap.of(trie1), HashMap.of(trie2));
     }
 
     @Override
@@ -511,8 +527,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <U> HashMap<Tuple2<K, V>, U> zip(java.lang.Iterable<U> that) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        return HashMap.ofAll(iterator().zip(that).map(t -> Entry.of(Tuple.of(t._1.key, t._1.value), t._2)));
     }
 
     @Override
@@ -523,8 +538,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<Tuple2<K, V>, Integer> zipWithIndex() {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        return HashMap.ofAll(iterator().zipWithIndex().map(t -> Entry.of(Tuple.of(t._1.key, t._1.value), t._2)));
     }
 
     @Override
