@@ -12,7 +12,7 @@ import java.util.stream.Collector;
 public class HashMapTest extends AbstractMapTest {
 
     @Override
-    protected <T> Map<Integer, T> emptyMap() {
+    protected <T1, T2> Map<T1, T2> emptyMap() {
         return HashMap.empty();
     }
 

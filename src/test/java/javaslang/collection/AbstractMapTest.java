@@ -1,5 +1,7 @@
 package javaslang.collection;
 
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.Some;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
@@ -79,7 +81,15 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         return AbstractIntMap.of(emptyMap());
     }
 
-    abstract protected <T> Map<Integer, T> emptyMap();
+    private <T> Map<Integer, T> emptyInt() {
+        return emptyMap();
+    }
+
+    private Map<Integer, Integer> emptyIntInt() {
+        return emptyMap();
+    }
+
+    abstract protected <T1, T2> Map<T1, T2> emptyMap();
 
     abstract protected <T> Collector<Map.Entry<Integer, T>, ArrayList<Map.Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector();
 
@@ -193,14 +203,14 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldMapEmpty() {
         final javaslang.collection.Set<Integer> expected = HashSet.empty();
-        final javaslang.collection.Set<Integer> actual = emptyMap().map(entry -> entry.key);
+        final javaslang.collection.Set<Integer> actual = emptyInt().map(entry -> entry.key);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldMapNonEmpty() {
         final javaslang.collection.Set<Integer> expected = HashSet.of(1, 2);
-        final javaslang.collection.Set<Integer> actual = emptyMap().put(1, "1").put(2, "2").map(entry -> entry.key);
+        final javaslang.collection.Set<Integer> actual = emptyInt().put(1, "1").put(2, "2").map(entry -> entry.key);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -215,13 +225,92 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 HashSet.of(Map.Entry.of(1, "1"), Map.Entry.of(2, "2")));
     }
 
-    // equality
+    // -- equality
 
     @Test
     public void shouldIgnoreOrderOfEntriesWhenComparingForEquality() {
         final Map<?, ?> map1 = emptyMap().put(1, 'a').put(2, 'b').put(3, 'c');
         final Map<?, ?> map2 = emptyMap().put(3, 'c').put(2, 'b').put(1, 'a').remove(2).put(2, 'b');
         assertThat(map1).isEqualTo(map2);
+    }
+
+    // -- removeAll
+
+    @Test
+    public void shouldRmoveAll() {
+        assertThat(emptyMap().put(1, 'a').put(2, 'b').put(3, 'c').removeAll(List.of(1, 3))).isEqualTo(emptyMap().put(2, 'b'));
+    }
+
+    // -- unzip
+
+    @Test
+    public void shouldUnzipNil() {
+        assertThat(emptyMap().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(emptyMap(), emptyMap()));
+        assertThat(emptyMap().unzip((k, v) -> Tuple.of(Map.Entry.of(k, v), Map.Entry.of(k, v)))).isEqualTo(Tuple.of(emptyMap(), emptyMap()));
+    }
+
+    @Test
+    public void shouldUnzipNonNil() {
+        Map<Integer, Integer> map = emptyIntInt().put(0, 0).put(1, 1);
+        final Tuple actual = map.unzip(i -> Tuple.of(i, Map.Entry.of(i.key, (Integer)i.value + 1)));
+        final Tuple expected = Tuple.of(map, emptyMap().put(0, 1).put(1, 2));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- zip
+
+    @Test
+    public void shouldZipNils() {
+        final Map<?, ?> actual = emptyMap().zip(emptyMap());
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldZipEmptyAndNonNil() {
+        final Map<?, ?> actual = emptyMap().zip(emptyIntInt().put(0, 1));
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldZipNonEmptyAndNil() {
+        final Map<?, ?> actual = emptyIntInt().put(0, 1).zip(emptyMap());
+        assertThat(actual).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldZipNonNilsIfThisIsSmaller() {
+        final Map<Tuple2<Integer, Integer>, Integer> actual = emptyIntInt().put(0, 0).put(1, 1).zip(List.of(5, 6, 7));
+        assertThat(actual).isEqualTo(emptyMap().put(Tuple.of(0, 0), 5).put(Tuple.of(1, 1), 6));
+    }
+
+    @Test
+    public void shouldZipNonNilsIfThatIsSmaller() {
+        final Map<Tuple2<Integer, Integer>, Integer> actual = emptyIntInt().put(0, 0).put(1, 1).put(2, 2).zip(List.of(5, 6));
+        assertThat(actual).isEqualTo(emptyMap().put(Tuple.of(0, 0), 5).put(Tuple.of(1, 1), 6));
+    }
+
+    @Test
+    public void shouldZipNonNilsOfSameSize() {
+        final Map<Tuple2<Integer, Integer>, Integer> actual = emptyIntInt().put(0, 0).put(1, 1).put(2, 2).zip(List.of(5, 6, 7));
+        assertThat(actual).isEqualTo(emptyMap().put(Tuple.of(0, 0), 5).put(Tuple.of(1, 1), 6).put(Tuple.of(2, 2), 7));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowIfZipWithThatIsNull() {
+        emptyMap().zip(null);
+    }
+
+    // -- zipWithIndex
+
+    @Test
+    public void shouldZipNilWithIndex() {
+        assertThat(emptyMap().zipWithIndex()).isEqualTo(emptyMap());
+    }
+
+    @Test
+    public void shouldZipNonNilWithIndex() {
+        final Map<Tuple2<Integer, Integer>, Integer> actual = emptyIntInt().put(0, 0).put(1, 1).put(2, 2).zipWithIndex();
+        assertThat(actual).isEqualTo(emptyMap().put(Tuple.of(0, 0), 0).put(Tuple.of(1, 1), 1).put(Tuple.of(2, 2), 2));
     }
 
     // -- special cases
