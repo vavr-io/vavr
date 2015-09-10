@@ -167,12 +167,18 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     default boolean startsWith(java.lang.Iterable<? extends T> that, int offset) {
-        if (offset > length()) {
+        Objects.requireNonNull(that, "that is null");
+        final java.util.Iterator<? extends T> thatIter = that.iterator();
+        if (!thatIter.hasNext()) {
+            return true;
+        }
+        final int length = length();
+        if (offset < 0 || offset > length) {
             return false;
         }
         int index = offset;
         for (T t : that) {
-            if (index >= length() || !Objects.equals(get(index), t)) {
+            if (index >= length || !Objects.equals(get(index), t)) {
                 return false;
             }
             index++;

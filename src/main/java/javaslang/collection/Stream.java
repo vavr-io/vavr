@@ -1093,29 +1093,6 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default boolean startsWith(java.lang.Iterable<? extends T> that, int offset) {
-        Objects.requireNonNull(that, "that is null");
-        Stream<T> stream = this;
-        int index = offset;
-        while (index > 0 && !stream.isEmpty()) {
-            stream = stream.tail();
-            index--;
-        }
-        if (index > 0) {
-            return false;
-        }
-        final java.util.Iterator<? extends T> it = that.iterator();
-        while (it.hasNext() && !stream.isEmpty()) {
-            if (Objects.equals(it.next(), stream.head())) {
-                stream = stream.tail();
-            } else {
-                return false;
-            }
-        }
-        return !it.hasNext();
-    }
-
-    @Override
     Stream<T> tail();
 
     @Override

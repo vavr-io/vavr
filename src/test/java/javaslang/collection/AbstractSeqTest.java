@@ -1026,7 +1026,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldStartsNilOfNilWithOffsetCalculate() {
-        assertThat(empty().startsWith(empty(), 1)).isFalse();
+        assertThat(empty().startsWith(empty(), 1)).isTrue();
     }
 
     @Test
@@ -1053,9 +1053,37 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     }
 
     @Test
-    public void shouldStartsNonNilOfNonNilWithOffsetCalculate() {
+    public void shouldNotStartsNonNilOfNonNilWithNegativeOffsetCalculate() {
+        assertThat(of(1, 2, 3).startsWith(of(1), -1)).isFalse();
+    }
+
+    @Test
+    public void shouldNotStartsNonNilOfNonNilWithOffsetEqualLengthCalculate() {
+        assertThat(of(1, 2, 3).startsWith(of(3), 3)).isFalse();
+    }
+
+    @Test
+    public void shouldNotStartsNonNilOfNonNilWithOffsetEndCalculate() {
+        assertThat(of(1, 2, 3).startsWith(of(3), 2)).isTrue();
+    }
+
+    @Test
+    public void shouldStartsNonNilOfNonNilWithOffsetAtStartCalculate() {
+        assertThat(of(1, 2, 3).startsWith(of(1), 0)).isTrue();
+    }
+
+    @Test
+    public void shouldStartsNonNilOfNonNilWithOffsetCalculate1() {
         assertThat(of(1, 2, 3).startsWith(of(2, 3), 1)).isTrue();
+    }
+
+    @Test
+    public void shouldStartsNonNilOfNonNilWithOffsetCalculate2() {
         assertThat(of(1, 2, 3).startsWith(of(2, 3, 4), 1)).isFalse();
+    }
+
+    @Test
+    public void shouldStartsNonNilOfNonNilWithOffsetCalculate3() {
         assertThat(of(1, 2, 3).startsWith(of(2, 4), 1)).isFalse();
     }
 
