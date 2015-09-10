@@ -33,8 +33,13 @@ public class MapEntryTest {
     }
 
     @Test
-    public void testNonEquals() {
+    public void testNonEqualsEntry() {
         assertThat(Map.Entry.of(1, 2)).isNotEqualTo(Map.Entry.of(3, 2));
+    }
+
+    @Test
+    public void testNonEqualsNonEntry() {
+        assertThat(Map.Entry.of(1, 2)).isNotEqualTo(1);
     }
 
     @Test

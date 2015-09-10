@@ -174,6 +174,20 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         emptyMap().put(1, 2).apply(3);
     }
 
+    // -- contains
+
+    @Test
+    public void shouldFindKey() {
+        assertThat(emptyMap().put(1, 2).containsKey(1)).isTrue();
+        assertThat(emptyMap().put(1, 2).containsKey(2)).isFalse();
+    }
+
+    @Test
+    public void shouldFindValue() {
+        assertThat(emptyMap().put(1, 2).containsValue(2)).isTrue();
+        assertThat(emptyMap().put(1, 2).containsValue(1)).isFalse();
+    }
+
     // -- map
 
     @Test
