@@ -9,6 +9,7 @@ import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -163,6 +164,31 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> span(Predicate<? super T> predicate);
+
+    @Override
+    default boolean startsWith(Iterable<? extends T> that, int offset) {
+        Objects.requireNonNull(that, "that is null");
+        final java.util.Iterator<? extends T> thatIter = that.iterator();
+        if (!thatIter.hasNext()) {
+            return true;
+        }
+        final int length = length();
+        if (offset < 0 || offset >= length) {
+            return false;
+        }
+        LinearSeq<T> seq = this;
+        for (int i = offset; i > 0; i--) {
+            seq = seq.tail();
+        }
+        while (thatIter.hasNext() && !seq.isEmpty()) {
+            if (Objects.equals(thatIter.next(), seq.head())) {
+                seq = seq.tail();
+            } else {
+                return false;
+            }
+        }
+        return !thatIter.hasNext();
+    }
 
     @Override
     LinearSeq<T> tail();
