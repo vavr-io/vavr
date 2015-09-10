@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.collection.Iterator.AbstractIterator;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -825,6 +826,11 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    default Iterator<T> iterator() {
+        return new StreamIterator<>(this);
+    }
+
+    @Override
     default int lastIndexOf(T element, int end) {
         int result = -1, index = 0;
         for (Stream<T> stream = this; index <= end && !stream.isEmpty(); stream = stream.tail(), index++) {
@@ -1496,5 +1502,29 @@ final class AppendSelf<T> {
 
     Cons<T> stream() {
         return self;
+    }
+}
+
+final class StreamIterator<T> extends AbstractIterator<T> {
+
+    Lazy<Stream<T>> stream;
+
+    StreamIterator(Stream<T> stream) {
+        this.stream = Lazy.of(() -> stream);
+    }
+
+    @Override
+    public boolean hasNext() {
+        return stream.get().isDefined();
+    }
+
+    @Override
+    public T next() {
+        if (!hasNext()) {
+            Iterator.empty().next();
+        }
+        final Stream<T> current = stream.get();
+        stream = Lazy.of(current::tail);
+        return current.head();
     }
 }
