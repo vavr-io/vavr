@@ -175,7 +175,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static <T> Stream<T> cons(T head, Supplier<? extends Stream<T>> tailSupplier) {
         Objects.requireNonNull(tailSupplier, "tailSupplier is null");
-        return new Cons<>(() -> head, tailSupplier);
+        return new Cons<>(head, tailSupplier);
     }
 
     /**
@@ -199,7 +199,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream instance containing the given element
      */
     static <T> Stream<T> of(T element) {
-        return new Cons<>(() -> element, Nil::instance);
+        return new Cons<>(element, Nil::instance);
     }
 
     /**
@@ -252,7 +252,7 @@ public interface Stream<T> extends LinearSeq<T> {
                     if (iterator.hasNext()) {
                         // we need to get the head, otherwise a tail call would get the head instead
                         final T head = iterator.next();
-                        return new Cons<>(() -> head, () -> create(iterator));
+                        return new Cons<>(head, () -> create(iterator));
                     } else {
                         return Nil.instance();
                     }
@@ -644,7 +644,7 @@ public interface Stream<T> extends LinearSeq<T> {
                 } else if (front.isEmpty()) {
                     return dropRight(rear.reverse(), List.empty(), remaining);
                 } else {
-                    return new Cons<>(front::head, () -> dropRight(front.tail(), rear.prepend(remaining.head()), remaining.tail()));
+                    return new Cons<>(front.head(), () -> dropRight(front.tail(), rear.prepend(remaining.head()), remaining.tail()));
                 }
             }
         }
@@ -674,7 +674,7 @@ public interface Stream<T> extends LinearSeq<T> {
             stream = stream.tail();
         }
         final Stream<T> finalStream = stream;
-        return stream.isEmpty() ? stream : new Cons<>(stream::head, () -> finalStream.tail().filter(predicate));
+        return stream.isEmpty() ? stream : new Cons<>(stream.head(), () -> finalStream.tail().filter(predicate));
     }
 
     @Override
@@ -785,7 +785,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e)");
         } else if (index == 0) {
-            return new Cons<>(() -> element, () -> this);
+            return new Cons<>(element, () -> this);
         } else if (isEmpty()) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e) on Nil");
         } else {
@@ -814,7 +814,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else {
             return new Cons<>(((Cons<T>) this).head, () -> {
                 final Stream<T> tail = tail();
-                return tail.isEmpty() ? tail : new Cons<>(() -> element, () -> tail.intersperse(element));
+                return tail.isEmpty() ? tail : new Cons<>(element, () -> tail.intersperse(element));
             });
         }
     }
@@ -846,7 +846,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (isEmpty()) {
             return Nil.instance();
         } else {
-            return new Cons<>(() -> mapper.apply(head()), () -> tail().map(mapper));
+            return new Cons<>(mapper.apply(head()), () -> tail().map(mapper));
         }
     }
 
@@ -886,7 +886,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else {
             final T head = head();
             action.accept(head);
-            return new Cons<>(() -> head, () -> tail().peek(action));
+            return new Cons<>(head, () -> tail().peek(action));
         }
     }
 
@@ -908,7 +908,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> prepend(T element) {
-        return new Cons<>(() -> element, () -> this);
+        return new Cons<>(element, () -> this);
     }
 
     @Override
@@ -923,7 +923,7 @@ public interface Stream<T> extends LinearSeq<T> {
             return this;
         } else {
             final T head = head();
-            return Objects.equals(head, element) ? tail() : new Cons<>(() -> head, () -> tail().remove(element));
+            return Objects.equals(head, element) ? tail() : new Cons<>(head, () -> tail().remove(element));
         }
     }
 
@@ -934,7 +934,7 @@ public interface Stream<T> extends LinearSeq<T> {
             return this;
         } else {
             final T head = head();
-            return predicate.test(head) ? tail() : new Cons<>(() -> head, () -> tail().removeFirst(predicate));
+            return predicate.test(head) ? tail() : new Cons<>(head, () -> tail().removeFirst(predicate));
         }
     }
 
@@ -975,9 +975,9 @@ public interface Stream<T> extends LinearSeq<T> {
         } else {
             final T head = head();
             if (Objects.equals(head, currentElement)) {
-                return new Cons<>(() -> newElement, this::tail);
+                return new Cons<>(newElement, this::tail);
             } else {
-                return new Cons<>(() -> head, () -> tail().replace(currentElement, newElement));
+                return new Cons<>(head, () -> tail().replace(currentElement, newElement));
             }
         }
     }
@@ -987,10 +987,8 @@ public interface Stream<T> extends LinearSeq<T> {
         if (isEmpty()) {
             return this;
         } else {
-            final Supplier<T> newHead = () -> {
-                final T head = head();
-                return Objects.equals(head, currentElement) ? newElement : head;
-            };
+            final T head = head();
+            final T newHead = Objects.equals(head, currentElement) ? newElement : head;
             return new Cons<>(newHead, () -> tail().replaceAll(currentElement, newElement));
         }
     }
@@ -1000,7 +998,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (isEmpty()) {
             return this;
         } else {
-            return new Cons<>(() -> operator.apply(head()), () -> tail().replaceAll(operator));
+            return new Cons<>(operator.apply(head()), () -> tail().replaceAll(operator));
         }
     }
 
@@ -1044,7 +1042,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else if (isEmpty()) {
             throw new IndexOutOfBoundsException("subsequence of Nil");
         } else if (beginIndex == 0) {
-            return new Cons<>(() -> head(), () -> tail().slice(0, endIndex - 1));
+            return new Cons<>(head(), () -> tail().slice(0, endIndex - 1));
         } else {
             return tail().slice(beginIndex - 1, endIndex - 1);
         }
@@ -1130,7 +1128,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (n < 1 || isEmpty()) {
             return Nil.instance();
         } else {
-            return new Cons<>(() -> head(), () -> tail().take(n - 1));
+            return new Cons<>(head(), () -> tail().take(n - 1));
         }
     }
 
@@ -1153,7 +1151,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else {
             final T head = head();
             if (predicate.test(head)) {
-                return new Cons<>(() -> head, () -> tail().takeWhile(predicate));
+                return new Cons<>(head, () -> tail().takeWhile(predicate));
             } else {
                 return Nil.instance();
             }
@@ -1205,7 +1203,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (this.isEmpty() || that.isEmpty()) {
             return Nil.instance();
         } else {
-            return new Cons<>(() -> Tuple.of(this.head(), that.head()), () -> this.tail().zip(that.tail()));
+            return new Cons<>(Tuple.of(this.head(), that.head()), () -> this.tail().zip(that.tail()));
         }
     }
 
@@ -1218,7 +1216,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (isThisEmpty && isThatEmpty) {
             return Nil.instance();
         } else {
-            final Supplier<Tuple2<T, U>> zippedHead = () -> Tuple.of(
+            final Tuple2<T, U> zippedHead = Tuple.of(
                     isThisEmpty ? thisElem : this.head(),
                     isThatEmpty ? thatElem : that.head()
             );
@@ -1320,7 +1318,7 @@ final class Cons<T> implements Stream<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    final Lazy<T> head;
+    final T head;
     final Lazy<Stream<T>> tail;
 
     /**
@@ -1329,14 +1327,14 @@ final class Cons<T> implements Stream<T>, Serializable {
      * @param head A head element
      * @param tail A tail {@code Stream} supplier, {@linkplain Nil} denotes the end of the {@code Stream}
      */
-    public Cons(Supplier<? extends T> head, Supplier<? extends Stream<T>> tail) {
-        this.head = Lazy.of(head);
+    public Cons(T head, Supplier<? extends Stream<T>> tail) {
+        this.head = head;
         this.tail = Lazy.of(Objects.requireNonNull(tail, "tail is null"));
     }
 
     @Override
     public T head() {
-        return head.get();
+        return head;
     }
 
     @Override
@@ -1381,7 +1379,7 @@ final class Cons<T> implements Stream<T>, Serializable {
         Stream<T> stream = this;
         while (stream != null && !stream.isEmpty()) {
             final Cons<T> cons = (Cons<T>) stream;
-            builder.append(cons.head.get());
+            builder.append(cons.head);
             if (cons.tail.isEvaluated()) {
                 stream = cons.tail.get();
                 if (!stream.isEmpty()) {
