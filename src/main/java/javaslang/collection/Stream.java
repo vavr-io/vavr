@@ -248,18 +248,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (elements instanceof Stream) {
             return (Stream<T>) elements;
         } else {
-            class StreamFactory {
-                <T> Stream<T> create(java.util.Iterator<? extends T> iterator) {
-                    if (iterator.hasNext()) {
-                        // we need to get the head, otherwise a tail call would get the head instead
-                        final T head = iterator.next();
-                        return new Cons<>(head, () -> create(iterator));
-                    } else {
-                        return Nil.instance();
-                    }
-                }
-            }
-            return new StreamFactory().create(elements.iterator());
+            return StreamFactory.create(elements.iterator());
         }
     }
 
@@ -596,16 +585,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<Stream<T>> combinations(int k) {
-        // TODO(FIXME): move to auxilliary class Combinations
-        class Recursion {
-            Stream<Stream<T>> combinations(Stream<T> elements, int k) {
-                return (k == 0) ? Stream.of(Stream.empty()) :
-                        elements.zipWithIndex().flatMap(t ->
-                                combinations(elements.drop(t._2 + 1), (k - 1))
-                                        .map((Stream<T> c) -> c.prepend(t._1)));
-            }
-        }
-        return new Recursion().combinations(this, Math.max(k, 0));
+        return Combinations.apply(this, Math.max(k, 0));
     }
 
     @Override
@@ -637,24 +617,10 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> dropRight(int n) {
-        // TODO(FIXME): inner class leaks reference of outer class to the outside
-        // works with infinite streams by buffering elements
-        class Util {
-            Stream<T> dropRight(List<T> front, List<T> rear, Stream<T> remaining) {
-                if (remaining.isEmpty()) {
-                    return remaining;
-                } else if (front.isEmpty()) {
-                    return dropRight(rear.reverse(), List.empty(), remaining);
-                } else {
-                    return new Cons<>(front.head(), () -> dropRight(front.tail(), rear.prepend(remaining.head()), remaining.tail()));
-                }
-            }
-        }
-
         if (n <= 0) {
             return this;
         } else {
-            return new Util().dropRight(take(n).toList(), List.empty(), drop(n));
+            return DropRight.apply(take(n).toList(), List.empty(), drop(n));
         }
     }
 
@@ -1485,9 +1451,50 @@ final class AppendSelf<T> {
     }
 }
 
+final class Combinations {
+
+    private Combinations() {
+    }
+
+    static <T> Stream<Stream<T>> apply(Stream<T> elements, int k) {
+        return (k == 0) ? Stream.of(Stream.empty()) :
+                elements.zipWithIndex().flatMap(t ->
+                        apply(elements.drop(t._2 + 1), (k - 1))
+                                .map((Stream<T> c) -> c.prepend(t._1)));
+
+    }
+}
+
+final class DropRight {
+
+    private DropRight() {
+    }
+
+    // works with infinite streams by buffering elements
+    static <T> Stream<T> apply(List<T> front, List<T> rear, Stream<T> remaining) {
+        if (remaining.isEmpty()) {
+            return remaining;
+        } else if (front.isEmpty()) {
+            return apply(rear.reverse(), List.empty(), remaining);
+        } else {
+            return new Cons<>(front.head(), () -> apply(front.tail(), rear.prepend(remaining.head()), remaining.tail()));
+        }
+    }
+}
+
+final class StreamFactory {
+
+    private StreamFactory() {
+    }
+
+    static <T> Stream<T> create(java.util.Iterator<? extends T> iterator) {
+        return iterator.hasNext() ? new Cons<>(iterator.next(), () -> create(iterator)) : Nil.instance();
+    }
+}
+
 final class StreamIterator<T> extends AbstractIterator<T> {
 
-    Lazy<Stream<T>> stream;
+    private Lazy<Stream<T>> stream;
 
     StreamIterator(Stream<T> stream) {
         this.stream = Lazy.of(() -> stream);
