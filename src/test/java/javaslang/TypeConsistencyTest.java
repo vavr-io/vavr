@@ -103,7 +103,8 @@ public class TypeConsistencyTest {
                     return !name.startsWith("javaslang.Function") &&
                             !name.startsWith("javaslang.CheckedFunction") &&
                             !name.startsWith("javaslang.collection.Cons") &&
-                            !name.startsWith("javaslang.collection.Nil");
+                            !name.startsWith("javaslang.collection.Nil") &&
+                            !name.startsWith("javaslang.collection.AbstractIterator");
                 });
 
         final Stream<String> unoveriddenMethods = relevantClasses

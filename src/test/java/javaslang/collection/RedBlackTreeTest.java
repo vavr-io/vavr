@@ -6,14 +6,11 @@
 package javaslang.collection;
 
 import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.collection.RedBlackTree.Node;
 import javaslang.test.Arbitrary;
 import javaslang.test.Gen;
 import javaslang.test.Property;
 import org.junit.Test;
 
-import java.util.Comparator;
 import java.util.function.IntUnaryOperator;
 
 import static javaslang.collection.RedBlackTree.Color.BLACK;
@@ -40,7 +37,7 @@ public class RedBlackTreeTest {
 
         do {
             tree = gen.apply(random);
-        } while(--count > 0);
+        } while (--count > 0);
 
         return tree;
     };
@@ -159,8 +156,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
         final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> actual = t1.difference(t2);
-        final RedBlackTree<Integer> expected = t1;
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(t1);
     }
 
     @Test
@@ -168,8 +164,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
         final RedBlackTree<Integer> actual = t1.difference(t2);
-        final RedBlackTree<Integer> expected = t1;
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(t1);
     }
 
     @Test
@@ -188,7 +183,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
         final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> actual = t1.intersection(t2);
-        final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty();;
+        final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty();
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -197,7 +192,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
         final RedBlackTree<Integer> actual = t1.intersection(t2);
-        final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty();;
+        final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty();
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -290,13 +285,12 @@ public class RedBlackTreeTest {
         if (tree.isEmpty()) {
             return true;
         } else {
-            final Node<?> node = (Node<?>) tree;
-            if (node.color == RED && ((!node.left.isEmpty() && ((Node<?>) node.left).color == RED) ||
-                    (!node.right.isEmpty() && ((Node<?>) node.right).color == RED))) {
-                return false;
-            } else {
-                return invariant1(node.left) && invariant1(node.right);
-            }
+            final boolean isRed = tree.color() == RED;
+            final RedBlackTree<?> left = tree.left();
+            final RedBlackTree<?> right = tree.right();
+            final boolean isLeftRed = !left.isEmpty() && left.color() == RED;
+            final boolean isRightRed = !right.isEmpty() && right.color() == RED;
+            return !(isRed && (isLeftRed || isRightRed)) && invariant1(left) && invariant1(right);
         }
     }
 
@@ -311,7 +305,7 @@ public class RedBlackTreeTest {
 
     private static boolean invariant2(RedBlackTree<?> tree) {
         return TreeUtil.paths(tree)
-                .map(path -> path.filter(node -> node.color == BLACK).length())
+                .map(path -> path.filter(node -> node.color() == BLACK).length())
                 .distinct()
                 .length() <= 1;
     }
@@ -332,8 +326,7 @@ public class RedBlackTreeTest {
             return true;
         } else {
             final List<T> values = TreeUtil.values(tree);
-            final Comparator<? super T> comparator = ((Node<T>) tree).empty.comparator;
-            return values.length() == values.distinctBy(comparator).length();
+            return values.length() == values.distinctBy(tree.comparator()).length();
         }
     }
 
@@ -356,31 +349,29 @@ public class RedBlackTreeTest {
     // some helpful tree functions
     static class TreeUtil {
 
-        static List<List<Node<?>>> paths(RedBlackTree<?> tree) {
+        static List<List<RedBlackTree<?>>> paths(RedBlackTree<?> tree) {
             if (tree.isEmpty()) {
                 return List.empty();
             } else {
-                final Node<?> node = (Node<?>) tree;
-                final boolean isLeaf = node.left.isEmpty() && node.right.isEmpty();
+                final boolean isLeaf = tree.left().isEmpty() && tree.right().isEmpty();
                 if (isLeaf) {
-                    return List.of(List.of(node));
+                    return List.of(List.of(tree));
                 } else {
-                    return paths(node.left).prependAll(paths(node.right)).map(path -> path.prepend(node));
+                    return paths(tree.left()).prependAll(paths(tree.right())).map(path -> path.prepend(tree));
                 }
             }
         }
 
-        static <T> List<Node<T>> nodes(RedBlackTree<T> tree) {
+        static <T> List<RedBlackTree<T>> nodes(RedBlackTree<T> tree) {
             if (tree.isEmpty()) {
                 return List.empty();
             } else {
-                final Node<T> node = (Node<T>) tree;
-                return nodes(node.left).prependAll(nodes(node.right)).prepend(node);
+                return nodes(tree.left()).prependAll(nodes(tree.right())).prepend(tree);
             }
         }
 
         static <T> List<T> values(RedBlackTree<T> tree) {
-            return nodes(tree).map(node -> node.value);
+            return nodes(tree).map(RedBlackTree::value);
         }
 
         static int size(RedBlackTree<?> tree) {

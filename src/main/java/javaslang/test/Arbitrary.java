@@ -6,8 +6,8 @@
 package javaslang.test;
 
 import javaslang.Value;
+import javaslang.collection.AbstractIterator;
 import javaslang.collection.Iterator;
-import javaslang.collection.Iterator.AbstractIterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 

@@ -9,13 +9,15 @@ import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
-import javaslang.collection.Iterator.AbstractIterator;
+import javaslang.collection.RedBlackTreeModule.Empty;
+import javaslang.collection.RedBlackTreeModule.Node;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import static javaslang.collection.RedBlackTree.Color.BLACK;
@@ -82,7 +84,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
         // function equality is not computable => same object check
-        if (values instanceof RedBlackTree &&  ((RedBlackTree<T>) values).comparator() == comparator) {
+        if (values instanceof RedBlackTree && ((RedBlackTree<T>) values).comparator() == comparator) {
             return (RedBlackTree<T>) values;
         } else {
             RedBlackTree<T> tree = empty(comparator);
@@ -109,6 +111,15 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
      * @return An empty ReadBlackTree
      */
     Empty<T> clear();
+
+    /**
+     * Return the {@link Color} of this Red/Black Tree node.
+     * <p>
+     * An empty node is {@code BLACK} by definition.
+     *
+     * @return Either {@code RED} or {@code BLACK}.
+     */
+    Color color();
 
     /**
      * Returns the underlying {@link java.util.Comparator} of this RedBlackTree.
@@ -172,6 +183,14 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
     boolean isEmpty();
 
     /**
+     * Returns the left child if this is a non-empty node, otherwise throws.
+     *
+     * @return The left child.
+     * @throws UnsupportedOperationException if this RedBlackTree is empty
+     */
+    RedBlackTree<T> left();
+
+    /**
      * Returns the maximum element of this tree according to the underlying comparator.
      *
      * @return Some element, if this is not empty, otherwise None
@@ -189,6 +208,20 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
         return isEmpty() ? None.instance() : new Some<>(Node.minimum((Node<T>) this));
     }
 
+    /**
+     * Returns the right child if this is a non-empty node, otherwise throws.
+     *
+     * @return The right child.
+     * @throws UnsupportedOperationException if this RedBlackTree is empty
+     */
+    RedBlackTree<T> right();
+
+    /**
+     * Adds all of the elements of the given {@code tree} to this tree, if not already present.
+     *
+     * @param tree The RedBlackTree to form the union with.
+     * @return A new RedBlackTree that contains all distinct elements of this and the given {@code tree}.
+     */
     default RedBlackTree<T> union(RedBlackTree<T> tree) {
         Objects.requireNonNull(tree, "tree is null");
         if (tree.isEmpty()) {
@@ -203,6 +236,14 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
             }
         }
     }
+
+    /**
+     * Returns the value of the current tree node or throws if this is empty.
+     *
+     * @return The value.
+     * @throws NoSuchElementException if this is the empty node.
+     */
+    T value();
 
     /**
      * Returns an Iterator that iterates elements in the order induced by the underlying Comparator.
@@ -296,13 +337,16 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
             return (this == RED) ? "R" : "B";
         }
     }
+}
+
+interface RedBlackTreeModule {
 
     /**
      * A non-empty tree node.
      *
      * @param <T> Component type
      */
-    class Node<T> implements RedBlackTree<T>, Serializable {
+    final class Node<T> implements RedBlackTree<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -316,7 +360,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
         private final transient Lazy<Integer> hashCode;
 
         // This is no public API! The RedBlackTree takes care of passing the correct Comparator.
-        private Node(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Empty<T> empty) {
+        Node(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Empty<T> empty) {
             this.color = color;
             this.blackHeight = blackHeight;
             this.left = left;
@@ -329,6 +373,11 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
         @Override
         public Empty<T> clear() {
             return empty;
+        }
+
+        @Override
+        public Color color() {
+            return color;
         }
 
         @Override
@@ -351,6 +400,21 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
         @Override
         public boolean isEmpty() {
             return false;
+        }
+
+        @Override
+        public RedBlackTree<T> left() {
+            return left;
+        }
+
+        @Override
+        public RedBlackTree<T> right() {
+            return right;
+        }
+
+        @Override
+        public T value() {
+            return value;
         }
 
         @Override
@@ -402,11 +466,11 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
             return left.isEmpty() && right.isEmpty();
         }
 
-        private Node<T> color(Color color) {
+        Node<T> color(Color color) {
             return (this.color == color) ? this : new Node<>(color, blackHeight, left, value, right, empty);
         }
 
-        private static <T> RedBlackTree<T> color(RedBlackTree<T> tree, Color color) {
+        static <T> RedBlackTree<T> color(RedBlackTree<T> tree, Color color) {
             return tree.isEmpty() ? tree : ((Node<T>) tree).color(color);
         }
 
@@ -474,7 +538,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
             return Tuple.of(tree, true);
         }
 
-        private static <T> Tuple2<? extends RedBlackTree<T>, Boolean> delete(RedBlackTree<T> tree, T value) {
+        static <T> Tuple2<? extends RedBlackTree<T>, Boolean> delete(RedBlackTree<T> tree, T value) {
             if (tree.isEmpty()) {
                 return Tuple.of(tree, false);
             } else {
@@ -552,7 +616,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
             }
         }
 
-        private static <T> Node<T> insert(RedBlackTree<T> tree, T value) {
+        static <T> Node<T> insert(RedBlackTree<T> tree, T value) {
             if (tree.isEmpty()) {
                 final Empty<T> empty = (Empty<T>) tree;
                 return new Node<>(RED, 1, empty, value, empty, empty);
@@ -575,7 +639,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
             return !tree.isEmpty() && ((Node<?>) tree).color == RED;
         }
 
-        private static <T> RedBlackTree<T> join(RedBlackTree<T> t1, T value, RedBlackTree<T> t2) {
+        static <T> RedBlackTree<T> join(RedBlackTree<T> t1, T value, RedBlackTree<T> t2) {
             if (t1.isEmpty()) {
                 return t2.insert(value);
             } else if (t2.isEmpty()) {
@@ -612,7 +676,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
             }
         }
 
-        private static <T> RedBlackTree<T> merge(RedBlackTree<T> t1, RedBlackTree<T> t2) {
+        static <T> RedBlackTree<T> merge(RedBlackTree<T> t1, RedBlackTree<T> t2) {
             if (t1.isEmpty()) {
                 return t2;
             } else if (t2.isEmpty()) {
@@ -635,27 +699,23 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
         }
 
         private static <T> Node<T> mergeEQ(Node<T> n1, Node<T> n2) {
-            if (n1.isEmpty() && n2.isEmpty()) {
-                return n1;
+            final T m = Node.minimum(n2);
+            final RedBlackTree<T> t2 = Node.deleteMin(n2)._1;
+            final int h2 = t2.isEmpty() ? 0 : ((Node<T>) t2).blackHeight;
+            final RedBlackTree<T> rl = ((Node<T>) n1.right).left;
+            final T rx = ((Node<T>) n1.right).value;
+            final RedBlackTree<T> rr = ((Node<T>) n1.right).right;
+            if (n1.blackHeight == h2) {
+                return new Node<>(RED, n1.blackHeight + 1, n1, m, t2, n1.empty);
+            } else if (isRed(n1.left)) {
+                final Node<T> node = new Node<>(BLACK, n1.blackHeight, n1.right, m, t2, n1.empty);
+                return new Node<>(RED, n1.blackHeight, Node.color(n1.left, BLACK), n1.value, node, n1.empty);
+            } else if (isRed(n1.right)) {
+                final Node<T> left = new Node<>(RED, n1.blackHeight, n1.left, n1.value, rl, n1.empty);
+                final Node<T> right = new Node<>(RED, n1.blackHeight, rr, m, t2, n1.empty);
+                return new Node<>(BLACK, n1.blackHeight, left, rx, right, n1.empty);
             } else {
-                final T m = Node.minimum(n2);
-                final RedBlackTree<T> t2 = Node.deleteMin(n2)._1;
-                final int h2 = t2.isEmpty() ? 0 : ((Node<T>) t2).blackHeight;
-                final RedBlackTree<T> rl = ((Node<T>) n1.right).left;
-                final T rx = ((Node<T>) n1.right).value;
-                final RedBlackTree<T> rr = ((Node<T>) n1.right).right;
-                if (n1.blackHeight == h2) {
-                    return new Node<>(RED, n1.blackHeight + 1, n1, m, t2, n1.empty);
-                } else if (isRed(n1.left)) {
-                    final Node<T> node = new Node<>(BLACK, n1.blackHeight, n1.right, m, t2, n1.empty);
-                    return new Node<>(RED, n1.blackHeight, Node.color(n1.left, BLACK), n1.value, node, n1.empty);
-                } else if (isRed(n1.right)) {
-                    final Node<T> left = new Node<>(RED, n1.blackHeight, n1.left, n1.value, rl, n1.empty);
-                    final Node<T> right = new Node<>(RED, n1.blackHeight, rr, m, t2, n1.empty);
-                    return new Node<>(BLACK, n1.blackHeight, left, rx, right, n1.empty);
-                } else {
-                    return new Node<>(BLACK, n1.blackHeight, n1.color(RED), m, t2, n1.empty);
-                }
+                return new Node<>(BLACK, n1.blackHeight, n1.color(RED), m, t2, n1.empty);
             }
         }
 
@@ -677,7 +737,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
             }
         }
 
-        private static <T> T maximum(Node<T> node) {
+        static <T> T maximum(Node<T> node) {
             Node<T> curr = node;
             while (!curr.right.isEmpty()) {
                 curr = (Node<T>) curr.right;
@@ -685,7 +745,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
             return curr.value;
         }
 
-        private static <T> T minimum(Node<T> node) {
+        static <T> T minimum(Node<T> node) {
             Node<T> curr = node;
             while (!curr.left.isEmpty()) {
                 curr = (Node<T>) curr.left;
@@ -693,7 +753,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
             return curr.value;
         }
 
-        private static <T> Tuple2<RedBlackTree<T>, RedBlackTree<T>> split(RedBlackTree<T> tree, T value) {
+        static <T> Tuple2<RedBlackTree<T>, RedBlackTree<T>> split(RedBlackTree<T> tree, T value) {
             if (tree.isEmpty()) {
                 return Tuple.of(tree, tree);
             } else {
@@ -753,20 +813,25 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
      *
      * @param <T> Component type
      */
-    class Empty<T> implements RedBlackTree<T>, Serializable {
+    final class Empty<T> implements RedBlackTree<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        public final Comparator<? super T> comparator;
+        final Comparator<? super T> comparator;
 
         // This is no public API! The RedBlackTree takes care of passing the correct Comparator.
-        private Empty(Comparator<? super T> comparator) {
+        Empty(Comparator<? super T> comparator) {
             this.comparator = comparator;
         }
 
         @Override
         public Empty<T> clear() {
             return this;
+        }
+
+        @Override
+        public Color color() {
+            return BLACK;
         }
 
         @Override
@@ -782,6 +847,21 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
         @Override
         public boolean isEmpty() {
             return true;
+        }
+
+        @Override
+        public RedBlackTree<T> left() {
+            throw new UnsupportedOperationException("left on empty");
+        }
+
+        @Override
+        public RedBlackTree<T> right() {
+            throw new UnsupportedOperationException("right on empty");
+        }
+
+        @Override
+        public T value() {
+            throw new NoSuchElementException("value on empty");
         }
 
         @Override

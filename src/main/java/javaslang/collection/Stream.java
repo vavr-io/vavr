@@ -8,7 +8,6 @@ package javaslang.collection;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.collection.Iterator.AbstractIterator;
 import javaslang.collection.StreamModule.*;
 import javaslang.collection.StreamModule.Cons;
 import javaslang.control.None;

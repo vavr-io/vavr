@@ -77,7 +77,7 @@ public interface Set<T> extends Traversable<T> {
     Set<T> removeAll(java.lang.Iterable<? extends T> elements);
 
     /**
-     * Adds all of the the elements of {@code that} set to this set, if not already present.
+     * Adds all of the elements of {@code that} set to this set, if not already present.
      * <p>
      * See also {@link #addAll(Iterable)}.
      *
