@@ -7,6 +7,8 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.collection.ListModule.Combinations;
+import javaslang.collection.ListModule.SplitAt;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -495,7 +497,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<List<T>> combinations(int k) {
-        return ListCombinations.apply(this, Math.max(k, 0));
+        return Combinations.apply(this, Math.max(k, 0));
     }
 
     @Override
@@ -1088,7 +1090,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         if (isEmpty()) {
             return Tuple.of(empty(), empty());
         } else {
-            final Tuple2<List<T>, List<T>> t = ListSplitAt.splitByPredicateReversed(this, predicate);
+            final Tuple2<List<T>, List<T>> t = SplitAt.splitByPredicateReversed(this, predicate);
             if (t._2.isEmpty()) {
                 return Tuple.of(this, empty());
             } else {
@@ -1102,7 +1104,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         if (isEmpty()) {
             return Tuple.of(empty(), empty());
         } else {
-            final Tuple2<List<T>, List<T>> t = ListSplitAt.splitByPredicateReversed(this, predicate);
+            final Tuple2<List<T>, List<T>> t = SplitAt.splitByPredicateReversed(this, predicate);
             if (t._2.isEmpty() || t._2.tail().isEmpty()) {
                 return Tuple.of(this, empty());
             } else {
@@ -1225,32 +1227,35 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 }
 
-final class ListCombinations {
+interface ListModule {
 
-    private ListCombinations() {
-    }
+    final class Combinations {
 
-    static <T> List<List<T>> apply(List<T> elements, int k) {
-        return (k == 0)
-                ? List.of(List.empty())
-                : elements.zipWithIndex().flatMap(t -> apply(elements.drop(t._2 + 1), (k - 1))
-                .map((List<T> c) -> c.prepend(t._1)));
-    }
-}
-
-final class ListSplitAt {
-
-    private ListSplitAt() {
-    }
-
-    static <T> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        List<T> init = Nil.instance();
-        List<T> tail = source;
-        while (!tail.isEmpty() && !predicate.test(tail.head())) {
-            init = init.prepend(tail.head());
-            tail = tail.tail();
+        private Combinations() {
         }
-        return Tuple.of(init, tail);
+
+        static <T> List<List<T>> apply(List<T> elements, int k) {
+            return (k == 0)
+                    ? List.of(List.empty())
+                    : elements.zipWithIndex().flatMap(t -> apply(elements.drop(t._2 + 1), (k - 1))
+                    .map((List<T> c) -> c.prepend(t._1)));
+        }
+    }
+
+    final class SplitAt {
+
+        private SplitAt() {
+        }
+
+        static <T> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, Predicate<? super T> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            List<T> init = Nil.instance();
+            List<T> tail = source;
+            while (!tail.isEmpty() && !predicate.test(tail.head())) {
+                init = init.prepend(tail.head());
+                tail = tail.tail();
+            }
+            return Tuple.of(init, tail);
+        }
     }
 }
