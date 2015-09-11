@@ -529,8 +529,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq removeAt(int indx) {
-        final java.lang.String removed = back.substring(0, indx) + back.substring(indx + 1);
+    public CharSeq removeAt(int index) {
+        final java.lang.String removed = back.substring(0, index) + back.substring(index + 1);
         return removed.isEmpty() ? EMPTY : of(removed);
     }
 

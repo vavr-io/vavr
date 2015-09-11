@@ -840,16 +840,16 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> removeAt(int indx) {
-        if (indx < 0) {
-            throw new IndexOutOfBoundsException("removeAt(" + indx + ")");
+    public Vector<T> removeAt(int index) {
+        if (index < 0) {
+            throw new IndexOutOfBoundsException("removeAt(" + index + ")");
         }
-        if (indx >= length()) {
-            throw new IndexOutOfBoundsException("removeAt(" + indx + ")");
+        if (index >= length()) {
+            throw new IndexOutOfBoundsException("removeAt(" + index + ")");
         }
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = 0; i < length(); i++) {
-            if (i != indx) {
+            if (i != index) {
                 trie = trie.put(trie.size(), get(i));
             }
         }

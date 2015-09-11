@@ -5,6 +5,11 @@
  */
 package javaslang.collection;
 
-// TODO
+/**
+ * SortedMap implementation, backed by a Red/Black Tree.
+ *
+ * @param <T> Component type
+ * @since 2.0.0
+ */
 public class TreeMap<T> {
 }
