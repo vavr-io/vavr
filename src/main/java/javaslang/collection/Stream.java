@@ -26,8 +26,8 @@ import java.util.stream.Collector;
  * <p>
  * There are two implementations of the {@code Stream} interface:
  * <ul>
- * <li>{@link Nil}, which represents the empty {@code Stream}.</li>
- * <li>{@link Cons}, which represents a {@code Stream} containing one or more elements.</li>
+ * <li>{@link StreamEmpty}, which represents the empty {@code Stream}.</li>
+ * <li>{@link StreamCons}, which represents a {@code Stream} containing one or more elements.</li>
  * </ul>
  * Methods to obtain a {@code Stream}:
  * <pre>
@@ -176,20 +176,20 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static <T> Stream<T> cons(T head, Supplier<? extends Stream<T>> tailSupplier) {
         Objects.requireNonNull(tailSupplier, "tailSupplier is null");
-        return new Cons<>(head, tailSupplier);
+        return new StreamCons<>(head, tailSupplier);
     }
 
     /**
      * Returns the single instance of Nil. Convenience method for {@code Nil.instance()}.
      * <p>
      * Note: this method intentionally returns type {@code Stream} and not {@code Nil}. This comes handy when folding.
-     * If you explicitly need type {@code Nil} use {@linkplain Nil#instance()}.
+     * If you explicitly need type {@code Nil} use {@linkplain StreamEmpty#instance()}.
      *
      * @param <T> Component type of Nil, determined by type inference in the particular context.
      * @return The empty list.
      */
     static <T> Stream<T> empty() {
-        return Nil.instance();
+        return StreamEmpty.instance();
     }
 
     /**
@@ -200,7 +200,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream instance containing the given element
      */
     static <T> Stream<T> of(T element) {
-        return new Cons<>(element, Nil::instance);
+        return new StreamCons<>(element, StreamEmpty::instance);
     }
 
     /**
@@ -248,18 +248,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (elements instanceof Stream) {
             return (Stream<T>) elements;
         } else {
-            class StreamFactory {
-                <T> Stream<T> create(java.util.Iterator<? extends T> iterator) {
-                    if (iterator.hasNext()) {
-                        // we need to get the head, otherwise a tail call would get the head instead
-                        final T head = iterator.next();
-                        return new Cons<>(head, () -> create(iterator));
-                    } else {
-                        return Nil.instance();
-                    }
-                }
-            }
-            return new StreamFactory().create(elements.iterator());
+            return StreamFactory.create(elements.iterator());
         }
     }
 
@@ -537,13 +526,13 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> append(T element) {
-        return isEmpty() ? Stream.of(element) : new Cons<>(((Cons<T>) this).head, () -> tail().append(element));
+        return isEmpty() ? Stream.of(element) : new StreamCons<>(((StreamCons<T>) this).head, () -> tail().append(element));
     }
 
     @Override
     default Stream<T> appendAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return isEmpty() ? Stream.ofAll(elements) : new Cons<>(((Cons<T>) this).head, () -> tail().appendAll(elements));
+        return isEmpty() ? Stream.ofAll(elements) : new StreamCons<>(((StreamCons<T>) this).head, () -> tail().appendAll(elements));
     }
 
     /**
@@ -569,7 +558,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     default Stream<T> appendSelf(Function<? super Stream<T>, ? extends Stream<T>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? this : new AppendSelf<>((Cons<T>) this, mapper).stream();
+        return isEmpty() ? this : new StreamAppendSelf<>((StreamCons<T>) this, mapper).stream();
     }
 
     @Override
@@ -586,7 +575,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> clear() {
-        return Nil.instance();
+        return StreamEmpty.instance();
     }
 
     @Override
@@ -596,15 +585,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<Stream<T>> combinations(int k) {
-        class Recursion {
-            Stream<Stream<T>> combinations(Stream<T> elements, int k) {
-                return (k == 0) ? Stream.of(Stream.empty()) :
-                        elements.zipWithIndex().flatMap(t ->
-                                combinations(elements.drop(t._2 + 1), (k - 1))
-                                        .map((Stream<T> c) -> c.prepend(t._1)));
-            }
-        }
-        return new Recursion().combinations(this, Math.max(k, 0));
+        return StreamCombinations.apply(this, Math.max(k, 0));
     }
 
     @Override
@@ -636,24 +617,10 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> dropRight(int n) {
-        // TODO(FIXME): inner class leaks reference of outer class to the outside
-        // works with infinite streams by buffering elements
-        class Util {
-            Stream<T> dropRight(List<T> front, List<T> rear, Stream<T> remaining) {
-                if (remaining.isEmpty()) {
-                    return remaining;
-                } else if (front.isEmpty()) {
-                    return dropRight(rear.reverse(), List.empty(), remaining);
-                } else {
-                    return new Cons<>(front.head(), () -> dropRight(front.tail(), rear.prepend(remaining.head()), remaining.tail()));
-                }
-            }
-        }
-
         if (n <= 0) {
             return this;
         } else {
-            return new Util().dropRight(take(n).toList(), List.empty(), drop(n));
+            return StreamDropRight.apply(take(n).toList(), List.empty(), drop(n));
         }
     }
 
@@ -675,13 +642,13 @@ public interface Stream<T> extends LinearSeq<T> {
             stream = stream.tail();
         }
         final Stream<T> finalStream = stream;
-        return stream.isEmpty() ? stream : new Cons<>(stream.head(), () -> finalStream.tail().filter(predicate));
+        return stream.isEmpty() ? stream : new StreamCons<>(stream.head(), () -> finalStream.tail().filter(predicate));
     }
 
     @Override
     default <U> Stream<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? Nil.instance() : Stream.ofAll(() -> new Iterator<U>() {
+        return isEmpty() ? StreamEmpty.instance() : Stream.ofAll(() -> new Iterator<U>() {
 
             final Iterator<? extends T> inputs = Stream.this.iterator();
             java.util.Iterator<? extends U> current = Collections.emptyIterator();
@@ -769,9 +736,9 @@ public interface Stream<T> extends LinearSeq<T> {
         } else {
             final Stream<T> tail = tail();
             if (tail.isEmpty()) {
-                return Nil.instance();
+                return StreamEmpty.instance();
             } else {
-                return new Cons<>(((Cons<T>) this).head, tail::init);
+                return new StreamCons<>(((StreamCons<T>) this).head, tail::init);
             }
         }
     }
@@ -786,11 +753,11 @@ public interface Stream<T> extends LinearSeq<T> {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e)");
         } else if (index == 0) {
-            return new Cons<>(element, () -> this);
+            return new StreamCons<>(element, () -> this);
         } else if (isEmpty()) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e) on Nil");
         } else {
-            return new Cons<>(((Cons<T>) this).head, () -> tail().insert(index - 1, element));
+            return new StreamCons<>(((StreamCons<T>) this).head, () -> tail().insert(index - 1, element));
         }
     }
 
@@ -804,7 +771,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else if (isEmpty()) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on Nil");
         } else {
-            return new Cons<>(((Cons<T>) this).head, () -> tail().insertAll(index - 1, elements));
+            return new StreamCons<>(((StreamCons<T>) this).head, () -> tail().insertAll(index - 1, elements));
         }
     }
 
@@ -813,9 +780,9 @@ public interface Stream<T> extends LinearSeq<T> {
         if (isEmpty()) {
             return this;
         } else {
-            return new Cons<>(((Cons<T>) this).head, () -> {
+            return new StreamCons<>(((StreamCons<T>) this).head, () -> {
                 final Stream<T> tail = tail();
-                return tail.isEmpty() ? tail : new Cons<>(element, () -> tail.intersperse(element));
+                return tail.isEmpty() ? tail : new StreamCons<>(element, () -> tail.intersperse(element));
             });
         }
     }
@@ -850,9 +817,9 @@ public interface Stream<T> extends LinearSeq<T> {
     default <U> Stream<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
-            return Nil.instance();
+            return StreamEmpty.instance();
         } else {
-            return new Cons<>(mapper.apply(head()), () -> tail().map(mapper));
+            return new StreamCons<>(mapper.apply(head()), () -> tail().map(mapper));
         }
     }
 
@@ -863,7 +830,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else if (isEmpty()) {
             return Stream.ofAll(Iterator.constant(element).take(length));
         } else {
-            return new Cons<>(((Cons<T>) this).head, () -> tail().padTo(length - 1, element));
+            return new StreamCons<>(((StreamCons<T>) this).head, () -> tail().padTo(length - 1, element));
         }
     }
 
@@ -892,20 +859,20 @@ public interface Stream<T> extends LinearSeq<T> {
         } else {
             final T head = head();
             action.accept(head);
-            return new Cons<>(head, () -> tail().peek(action));
+            return new StreamCons<>(head, () -> tail().peek(action));
         }
     }
 
     @Override
     default Stream<Stream<T>> permutations() {
         if (isEmpty()) {
-            return Nil.instance();
+            return StreamEmpty.instance();
         } else {
             final Stream<T> tail = tail();
             if (tail.isEmpty()) {
                 return Stream.of(this);
             } else {
-                final Stream<Stream<T>> zero = Nil.instance();
+                final Stream<Stream<T>> zero = StreamEmpty.instance();
                 // TODO: IntelliJ IDEA 14.1.3 needs a redundant cast here, jdk 1.8.0_40 compiles fine
                 return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map((Function<Stream<T>, Stream<T>>) l -> l.prepend(x))));
             }
@@ -914,7 +881,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> prepend(T element) {
-        return new Cons<>(element, () -> this);
+        return new StreamCons<>(element, () -> this);
     }
 
     @Override
@@ -929,7 +896,7 @@ public interface Stream<T> extends LinearSeq<T> {
             return this;
         } else {
             final T head = head();
-            return Objects.equals(head, element) ? tail() : new Cons<>(head, () -> tail().remove(element));
+            return Objects.equals(head, element) ? tail() : new StreamCons<>(head, () -> tail().remove(element));
         }
     }
 
@@ -940,7 +907,7 @@ public interface Stream<T> extends LinearSeq<T> {
             return this;
         } else {
             final T head = head();
-            return predicate.test(head) ? tail() : new Cons<>(head, () -> tail().removeFirst(predicate));
+            return predicate.test(head) ? tail() : new StreamCons<>(head, () -> tail().removeFirst(predicate));
         }
     }
 
@@ -958,7 +925,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else if (isEmpty()) {
             throw new IndexOutOfBoundsException("removeAt() on Nil");
         } else {
-            return new Cons<>(((Cons<T>) this).head, () -> tail().removeAt(index - 1));
+            return new StreamCons<>(((StreamCons<T>) this).head, () -> tail().removeAt(index - 1));
         }
     }
 
@@ -981,9 +948,9 @@ public interface Stream<T> extends LinearSeq<T> {
         } else {
             final T head = head();
             if (Objects.equals(head, currentElement)) {
-                return new Cons<>(newElement, this::tail);
+                return new StreamCons<>(newElement, this::tail);
             } else {
-                return new Cons<>(head, () -> tail().replace(currentElement, newElement));
+                return new StreamCons<>(head, () -> tail().replace(currentElement, newElement));
             }
         }
     }
@@ -995,7 +962,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else {
             final T head = head();
             final T newHead = Objects.equals(head, currentElement) ? newElement : head;
-            return new Cons<>(newHead, () -> tail().replaceAll(currentElement, newElement));
+            return new StreamCons<>(newHead, () -> tail().replaceAll(currentElement, newElement));
         }
     }
 
@@ -1004,7 +971,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (isEmpty()) {
             return this;
         } else {
-            return new Cons<>(operator.apply(head()), () -> tail().replaceAll(operator));
+            return new StreamCons<>(operator.apply(head()), () -> tail().replaceAll(operator));
         }
     }
 
@@ -1044,11 +1011,11 @@ public interface Stream<T> extends LinearSeq<T> {
             throw new IndexOutOfBoundsException(String.format("subsequence(%s, %s)", beginIndex, endIndex));
         }
         if (beginIndex == endIndex) {
-            return Nil.instance();
+            return StreamEmpty.instance();
         } else if (isEmpty()) {
             throw new IndexOutOfBoundsException("subsequence of Nil");
         } else if (beginIndex == 0) {
-            return new Cons<>(head(), () -> tail().slice(0, endIndex - 1));
+            return new StreamCons<>(head(), () -> tail().slice(0, endIndex - 1));
         } else {
             return tail().slice(beginIndex - 1, endIndex - 1);
         }
@@ -1109,9 +1076,9 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default Stream<T> take(int n) {
         if (n < 1 || isEmpty()) {
-            return Nil.instance();
+            return StreamEmpty.instance();
         } else {
-            return new Cons<>(head(), () -> tail().take(n - 1));
+            return new StreamCons<>(head(), () -> tail().take(n - 1));
         }
     }
 
@@ -1130,13 +1097,13 @@ public interface Stream<T> extends LinearSeq<T> {
     default Stream<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
-            return Nil.instance();
+            return StreamEmpty.instance();
         } else {
             final T head = head();
             if (predicate.test(head)) {
-                return new Cons<>(head, () -> tail().takeWhile(predicate));
+                return new StreamCons<>(head, () -> tail().takeWhile(predicate));
             } else {
-                return Nil.instance();
+                return StreamEmpty.instance();
             }
         }
     }
@@ -1164,7 +1131,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (index < 0) {
             throw new IndexOutOfBoundsException("update(" + index + ", e)");
         }
-        Stream<T> preceding = Nil.instance();
+        Stream<T> preceding = StreamEmpty.instance();
         Stream<T> tail = this;
         for (int i = index; i > 0; i--, tail = tail.tail()) {
             if (tail.isEmpty()) {
@@ -1205,14 +1172,14 @@ public interface Stream<T> extends LinearSeq<T> {
  * @param <T> Component type of the Stream.
  * @since 1.1.0
  */
-final class Nil<T> implements Stream<T>, Serializable {
+final class StreamEmpty<T> implements Stream<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Nil<?> INSTANCE = new Nil<>();
+    private static final StreamEmpty<?> INSTANCE = new StreamEmpty<>();
 
     // hidden
-    private Nil() {
+    private StreamEmpty() {
     }
 
     /**
@@ -1222,8 +1189,8 @@ final class Nil<T> implements Stream<T>, Serializable {
      * @return The empty Stream
      */
     @SuppressWarnings("unchecked")
-    public static <T> Nil<T> instance() {
-        return (Nil<T>) INSTANCE;
+    public static <T> StreamEmpty<T> instance() {
+        return (StreamEmpty<T>) INSTANCE;
     }
 
     @Override
@@ -1276,7 +1243,7 @@ final class Nil<T> implements Stream<T>, Serializable {
  */
 // DEV NOTE: class declared final because of serialization proxy pattern.
 // (see Effective Java, 2nd ed., p. 315)
-final class Cons<T> implements Stream<T>, Serializable {
+final class StreamCons<T> implements Stream<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -1287,9 +1254,9 @@ final class Cons<T> implements Stream<T>, Serializable {
      * Creates a new {@code Stream} consisting of a head element and a lazy trailing {@code Stream}.
      *
      * @param head A head element
-     * @param tail A tail {@code Stream} supplier, {@linkplain Nil} denotes the end of the {@code Stream}
+     * @param tail A tail {@code Stream} supplier, {@linkplain StreamEmpty} denotes the end of the {@code Stream}
      */
-    public Cons(T head, Supplier<? extends Stream<T>> tail) {
+    public StreamCons(T head, Supplier<? extends Stream<T>> tail) {
         this.head = head;
         this.tail = Lazy.of(Objects.requireNonNull(tail, "tail is null"));
     }
@@ -1340,7 +1307,7 @@ final class Cons<T> implements Stream<T>, Serializable {
         final StringBuilder builder = new StringBuilder("Stream(");
         Stream<T> stream = this;
         while (stream != null && !stream.isEmpty()) {
-            final Cons<T> cons = (Cons<T>) stream;
+            final StreamCons<T> cons = (StreamCons<T>) stream;
             builder.append(cons.head);
             if (cons.tail.isEvaluated()) {
                 stream = cons.tail.get();
@@ -1394,18 +1361,18 @@ final class Cons<T> implements Stream<T>, Serializable {
         private static final long serialVersionUID = 1L;
 
         // the instance to be serialized/deserialized
-        private transient Cons<T> stream;
+        private transient StreamCons<T> stream;
 
         /**
          * <p>
-         * Constructor for the case of serialization, called by {@link Cons#writeReplace()}.
+         * Constructor for the case of serialization, called by {@link StreamCons#writeReplace()}.
          * </p>
          * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
          * an instance of the enclosing class.
          *
          * @param stream a Cons
          */
-        SerializationProxy(Cons<T> stream) {
+        SerializationProxy(StreamCons<T> stream) {
             this.stream = stream;
         }
 
@@ -1438,14 +1405,14 @@ final class Cons<T> implements Stream<T>, Serializable {
             if (size <= 0) {
                 throw new InvalidObjectException("No elements");
             }
-            Stream<T> temp = Nil.instance();
+            Stream<T> temp = StreamEmpty.instance();
             for (int i = 0; i < size; i++) {
                 @SuppressWarnings("unchecked")
                 final T element = (T) s.readObject();
                 temp = temp.append(element);
             }
             // DEV-NOTE: Cons is deserialized
-            stream = (Cons<T>) temp;
+            stream = (StreamCons<T>) temp;
         }
 
         /**
@@ -1464,29 +1431,70 @@ final class Cons<T> implements Stream<T>, Serializable {
     }
 }
 
-final class AppendSelf<T> {
+final class StreamAppendSelf<T> {
 
-    private final Cons<T> self;
+    private final StreamCons<T> self;
 
-    AppendSelf(Cons<T> self, Function<? super Stream<T>, ? extends Stream<T>> mapper) {
+    StreamAppendSelf(StreamCons<T> self, Function<? super Stream<T>, ? extends Stream<T>> mapper) {
         this.self = appendAll(self, mapper);
     }
 
-    private Cons<T> appendAll(Cons<T> stream, Function<? super Stream<T>, ? extends Stream<T>> mapper) {
-        return new Cons<>(stream.head, () -> {
+    private StreamCons<T> appendAll(StreamCons<T> stream, Function<? super Stream<T>, ? extends Stream<T>> mapper) {
+        return new StreamCons<>(stream.head, () -> {
             final Stream<T> tail = stream.tail();
-            return tail.isEmpty() ? mapper.apply(self) : appendAll((Cons<T>) tail, mapper);
+            return tail.isEmpty() ? mapper.apply(self) : appendAll((StreamCons<T>) tail, mapper);
         });
     }
 
-    Cons<T> stream() {
+    StreamCons<T> stream() {
         return self;
+    }
+}
+
+final class StreamCombinations {
+
+    private StreamCombinations() {
+    }
+
+    static <T> Stream<Stream<T>> apply(Stream<T> elements, int k) {
+        return (k == 0) ? Stream.of(Stream.empty()) :
+                elements.zipWithIndex().flatMap(t ->
+                        apply(elements.drop(t._2 + 1), (k - 1))
+                                .map((Stream<T> c) -> c.prepend(t._1)));
+
+    }
+}
+
+final class StreamDropRight {
+
+    private StreamDropRight() {
+    }
+
+    // works with infinite streams by buffering elements
+    static <T> Stream<T> apply(List<T> front, List<T> rear, Stream<T> remaining) {
+        if (remaining.isEmpty()) {
+            return remaining;
+        } else if (front.isEmpty()) {
+            return apply(rear.reverse(), List.empty(), remaining);
+        } else {
+            return new StreamCons<>(front.head(), () -> apply(front.tail(), rear.prepend(remaining.head()), remaining.tail()));
+        }
+    }
+}
+
+final class StreamFactory {
+
+    private StreamFactory() {
+    }
+
+    static <T> Stream<T> create(java.util.Iterator<? extends T> iterator) {
+        return iterator.hasNext() ? new StreamCons<>(iterator.next(), () -> create(iterator)) : StreamEmpty.instance();
     }
 }
 
 final class StreamIterator<T> extends AbstractIterator<T> {
 
-    Lazy<Stream<T>> stream;
+    private Lazy<Stream<T>> stream;
 
     StreamIterator(Stream<T> stream) {
         this.stream = Lazy.of(() -> stream);
