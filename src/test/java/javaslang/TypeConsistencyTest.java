@@ -43,6 +43,7 @@ import java.util.Objects;
  */
 public class TypeConsistencyTest {
 
+    // TODO: put packages and/or classes only on whitelist
     static final List<String> WHITELIST = List.of(
 
             // javaslang.test.Gen
@@ -85,13 +86,13 @@ public class TypeConsistencyTest {
 
             // javaslang.collection.SortedMap
             "javaslang.collection.SortedMap//public abstract javaslang.collection.Map javaslang.collection.Map.groupBy(java.util.function.Function)"
-
     );
 
     /**
      * CAUTION: Non-reifiable types (like {@code Tuple2<? extends Traversable<T>, ? extends Traversable<T>>})
      * are not recognized by this test because there is no runtime information available via reflection.
      */
+    // TODO: gather/check inner classes
     @Test
     public void shouldHaveAConsistentTypeSystem() {
 
@@ -100,7 +101,9 @@ public class TypeConsistencyTest {
                 .filter(c -> {
                     final String name = c.getName();
                     return !name.startsWith("javaslang.Function") &&
-                            !name.startsWith("javaslang.CheckedFunction");
+                            !name.startsWith("javaslang.CheckedFunction") &&
+                            !name.startsWith("javaslang.collection.Cons") &&
+                            !name.startsWith("javaslang.collection.Nil");
                 });
 
         final Stream<String> unoveriddenMethods = relevantClasses

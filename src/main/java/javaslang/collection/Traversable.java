@@ -52,9 +52,9 @@ public interface Traversable<T> extends TraversableOnce<T> {
      * </code>
      * </pre>
      *
-     * <strong>Note:</strong> In the case of an empty collection, such as {@code List.Nil} it is recommended to
+     * <strong>Note:</strong> In the case of an empty collection, such as {@code Nil} it is recommended to
      * directly return {@code Traversable.hash(this)} instead of asking a {@code Lazy} value:
-     * <pre>
+     * <pre>ype
      * <code>
      * interface List&lt;T&gt; {
      *
