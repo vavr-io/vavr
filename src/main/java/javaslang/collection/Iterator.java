@@ -7,6 +7,8 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.collection.IteratorModule.ConcatIterator;
+import javaslang.collection.IteratorModule.DistinctIterator;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -157,7 +159,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     @SuppressWarnings({ "unchecked", "varargs" })
     static <T> Iterator<T> ofIterators(Iterator<? extends T>... iterators) {
         Objects.requireNonNull(iterators, "iterators is null");
-        return iterators.length == 0 ? empty() : new ConcatIterator<>(Stream.of(iterators).iterator());
+        return (iterators.length == 0) ? empty() : new ConcatIterator<>(Stream.of(iterators).iterator());
     }
 
     /**
@@ -171,7 +173,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     @SuppressWarnings({ "unchecked", "varargs" })
     static <T> Iterator<T> ofIterables(java.lang.Iterable<? extends T>... iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
-        return iterables.length == 0 ? empty() : new ConcatIterator<>(Stream.of(iterables).map(Iterator::ofAll).iterator());
+        return (iterables.length == 0) ? empty() : new ConcatIterator<>(Stream.of(iterables).map(Iterator::ofAll).iterator());
     }
 
     /**
@@ -1633,14 +1635,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             };
         }
     }
+}
 
-    class ConcatIterator<T> extends AbstractIterator<T> {
+interface IteratorModule {
+
+    final class ConcatIterator<T> extends AbstractIterator<T> {
 
         private final Iterator<? extends Iterator<? extends T>> iterators;
         private Iterator<? extends T> current;
 
-        private ConcatIterator(Iterator<? extends Iterator<? extends T>> iterators) {
-            this.current = empty();
+        ConcatIterator(Iterator<? extends Iterator<? extends T>> iterators) {
+            this.current = Iterator.empty();
             this.iterators = iterators;
         }
 
@@ -1661,14 +1666,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
-    class DistinctIterator<T, U> extends AbstractIterator<T> {
+    final class DistinctIterator<T, U> extends AbstractIterator<T> {
 
         private final Iterator<? extends T> that;
-        Set<U> known;
-        Function<? super T, ? extends U> keyExtractor;
-        T next = null;
+        private Set<U> known;
+        private Function<? super T, ? extends U> keyExtractor;
+        private T next = null;
 
-        private DistinctIterator(Iterator<? extends T> that, Set<U> set, Function<? super T, ? extends U> keyExtractor) {
+        DistinctIterator(Iterator<? extends T> that, Set<U> set, Function<? super T, ? extends U> keyExtractor) {
             this.that = that;
             this.known = set;
             this.keyExtractor = keyExtractor;
@@ -1677,8 +1682,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         @Override
         public boolean hasNext() {
             while (next == null && that.hasNext()) {
-                T elem = that.next();
-                U key = keyExtractor.apply(elem);
+                final T elem = that.next();
+                final U key = keyExtractor.apply(elem);
                 if (!known.contains(key)) {
                     known = known.add(key);
                     next = elem;
@@ -1695,22 +1700,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
             final T result = next;
             next = null;
             return result;
-        }
-    }
-
-    /**
-     * Provides a common {@link Object#toString()} implementation.
-     * <p>
-     * {@code equals(Object)} and {@code hashCode()} are intentionally not overridden in order to prevent this iterator
-     * from being evaluated. In other words, equals and hashCode are implemented by Object.
-     *
-     * @param <T> Component type
-     */
-    abstract class AbstractIterator<T> implements Iterator<T> {
-
-        @Override
-        public String toString() {
-            return (isEmpty() ? "" : "non-") + "empty iterator";
         }
     }
 }
