@@ -1121,38 +1121,19 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default <U> List<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
-        List<Tuple2<T, U>> result = Nil.instance();
-        List<T> list1 = this;
-        java.util.Iterator<U> list2 = that.iterator();
-        while (!list1.isEmpty() && list2.hasNext()) {
-            result = result.prepend(Tuple.of(list1.head(), list2.next()));
-            list1 = list1.tail();
-        }
-        return result.reverse();
+        return List.ofAll(iterator().zip(that));
     }
 
     @Override
     default <U> List<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        List<Tuple2<T, U>> result = Nil.instance();
-        Iterator<T> list1 = this.iterator();
-        java.util.Iterator<U> list2 = that.iterator();
-        while (list1.hasNext() || list2.hasNext()) {
-            final T elem1 = list1.hasNext() ? list1.next() : thisElem;
-            final U elem2 = list2.hasNext() ? list2.next() : thatElem;
-            result = result.prepend(Tuple.of(elem1, elem2));
-        }
-        return result.reverse();
+        return List.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
 
     @Override
     default List<Tuple2<T, Integer>> zipWithIndex() {
         List<Tuple2<T, Integer>> result = Nil.instance();
-        int index = 0;
-        for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
-            result = result.prepend(Tuple.of(list.head(), index++));
-        }
-        return result.reverse();
+        return List.ofAll(iterator().zipWithIndex());
     }
 
     /**
