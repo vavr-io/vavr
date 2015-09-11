@@ -1137,36 +1137,18 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public <U> Vector<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
-        HashArrayMappedTrie<Integer, Tuple2<T, U>> result = HashArrayMappedTrie.empty();
-        Iterator<T> list1 = iterator();
-        java.util.Iterator<U> list2 = that.iterator();
-        while (list1.hasNext() && list2.hasNext()) {
-            result = result.put(result.size(), Tuple.of(list1.next(), list2.next()));
-        }
-        return result.isEmpty() ? empty() : new Vector<>(result);
+        return Vector.ofAll(iterator().zip(that));
     }
 
     @Override
     public <U> Vector<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        HashArrayMappedTrie<Integer, Tuple2<T, U>> result = HashArrayMappedTrie.empty();
-        Iterator<T> list1 = iterator();
-        java.util.Iterator<U> list2 = that.iterator();
-        while (list1.hasNext() || list2.hasNext()) {
-            final T elem1 = list1.hasNext() ? list1.next() : thisElem;
-            final U elem2 = list2.hasNext() ? list2.next() : thatElem;
-            result = result.put(result.size(), Tuple.of(elem1, elem2));
-        }
-        return result.isEmpty() ? empty() : new Vector<>(result);
+        return Vector.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
 
     @Override
     public Vector<Tuple2<T, Integer>> zipWithIndex() {
-        HashArrayMappedTrie<Integer, Tuple2<T, Integer>> trie = HashArrayMappedTrie.empty();
-        for (int i = 0; i < length(); i++) {
-            trie = trie.put(i, Tuple.of(get(i), i));
-        }
-        return trie.isEmpty() ? empty() : new Vector<>(trie);
+        return Vector.ofAll(iterator().zipWithIndex());
     }
 
     private Object readResolve() {

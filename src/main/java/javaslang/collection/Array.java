@@ -1122,46 +1122,18 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     @Override
     public <U> Array<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
-        final Object[] thatArr = create(that);
-        if (isEmpty() || thatArr.length == 0) {
-            return empty();
-        } else {
-            final Object[] arr = new Object[Math.min(back.length, thatArr.length)];
-            for (int i = 0; i < arr.length; i++) {
-                arr[i] = Tuple.of(back[i], thatArr[i]);
-            }
-            return wrap(arr);
-        }
+        return Array.ofAll(iterator().zip(that));
     }
 
     @Override
     public <U> Array<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        final Object[] thatArr = create(that);
-        if (isEmpty() && thatArr.length == 0) {
-            return empty();
-        } else {
-            final Object[] arr = new Object[Math.max(back.length, thatArr.length)];
-            for (int i = 0; i < arr.length; i++) {
-                final Object elem1 = i < back.length ? back[i] : thisElem;
-                final Object elem2 = i < thatArr.length ? thatArr[i] : thatElem;
-                arr[i] = Tuple.of(elem1, elem2);
-            }
-            return wrap(arr);
-        }
+        return Array.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
 
     @Override
     public Array<Tuple2<T, Integer>> zipWithIndex() {
-        if (isEmpty()) {
-            return empty();
-        } else {
-            final Object[] arr = new Object[back.length];
-            for (int i = 0; i < back.length; i++) {
-                arr[i] = Tuple.of(back[i], i);
-            }
-            return wrap(arr);
-        }
+        return Array.ofAll(iterator().zipWithIndex());
     }
 
     @Override
