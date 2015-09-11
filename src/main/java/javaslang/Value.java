@@ -531,7 +531,7 @@ public interface Value<T> extends javaslang.Iterable<T> {
      * Sends the string representations of this value to the {@link PrintWriter}.
      * If this value consists of multiple elements, each element is displayed in a new line.
      *
-     * @param out The PrintWriter to write to
+     * @param writer The PrintWriter to write to
      * @throws IllegalStateException if {@code PrintWriter.checkError()} is true after writing to writer.
      */
     default void out(PrintWriter writer) {
