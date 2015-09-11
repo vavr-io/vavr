@@ -154,7 +154,7 @@ public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, 
 
         @Override
         AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
-            return value.isEmpty() ? this : new LeafNode<>(key.hashCode(), key, value.get());
+            return value.isEmpty() ? this : new LeafNode<>(Objects.hashCode(key), key, value.get());
         }
 
         @Override

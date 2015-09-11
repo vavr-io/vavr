@@ -532,8 +532,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <U> HashMap<Tuple2<K, V>, U> zipAll(java.lang.Iterable<U> that, Entry<K, V> thisElem, U thatElem) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+        return HashMap.ofAll(iterator().zipAll(that, thisElem, thatElem).map(t -> Entry.of(t._1 == null ? null : Tuple.of(t._1.key, t._1.value), t._2)));
     }
 
     @Override

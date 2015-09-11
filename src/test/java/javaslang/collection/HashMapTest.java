@@ -12,6 +12,11 @@ import java.util.stream.Collector;
 public class HashMapTest extends AbstractMapTest {
 
     @Override
+    protected String className() {
+        return "HashMap";
+    }
+
+    @Override
     protected <T1, T2> Map<T1, T2> emptyMap() {
         return HashMap.empty();
     }
