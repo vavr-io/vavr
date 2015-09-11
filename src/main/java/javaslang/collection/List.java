@@ -1221,7 +1221,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<Tuple2<T, Integer>> zipWithIndex() {
-        List<Tuple2<T, Integer>> result = Nil.instance();
         return List.ofAll(iterator().zipWithIndex());
     }
 }
