@@ -908,7 +908,25 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    List<T> removeAt(int index);
+    default List<T> removeAt(int index) {
+        if (index < 0) {
+            throw new IndexOutOfBoundsException("removeAt(" + index + ")");
+        }
+        if (isEmpty()) {
+            throw new IndexOutOfBoundsException("removeAt(" + index + ") on Nil");
+        }
+        List<T> init = Nil.instance();
+        List<T> tail = this;
+        while (index > 0 && !tail.isEmpty()) {
+            init = init.prepend(tail.head());
+            tail = tail.tail();
+            index--;
+        }
+        if (index > 0 && tail.isEmpty()) {
+            throw new IndexOutOfBoundsException("removeAt() on Nil");
+        }
+        return init.reverse().appendAll(tail.tail());
+    }
 
     @Override
     default List<T> removeAll(T removed) {
@@ -1052,13 +1070,48 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    Tuple2<List<T>, List<T>> splitAt(int n);
+    default Tuple2<List<T>, List<T>> splitAt(int n) {
+        if (isEmpty()) {
+            return Tuple.of(empty(), empty());
+        } else {
+            List<T> init = Nil.instance();
+            List<T> tail = this;
+            while (n > 0 && !tail.isEmpty()) {
+                init = init.prepend(tail.head());
+                tail = tail.tail();
+                n--;
+            }
+            return Tuple.of(init.reverse(), tail);
+        }
+    }
 
     @Override
-    Tuple2<List<T>, List<T>> splitAt(Predicate<? super T> predicate);
+    default Tuple2<List<T>, List<T>> splitAt(Predicate<? super T> predicate) {
+        if (isEmpty()) {
+            return Tuple.of(empty(), empty());
+        } else {
+            final Tuple2<List<T>, List<T>> t = ListSplitAt.splitByPredicateReversed(this, predicate);
+            if (t._2.isEmpty()) {
+                return Tuple.of(this, empty());
+            } else {
+                return Tuple.of(t._1.reverse(), t._2);
+            }
+        }
+    }
 
     @Override
-    Tuple2<List<T>, List<T>> splitAtInclusive(Predicate<? super T> predicate);
+    default Tuple2<List<T>, List<T>> splitAtInclusive(Predicate<? super T> predicate) {
+        if (isEmpty()) {
+            return Tuple.of(empty(), empty());
+        } else {
+            final Tuple2<List<T>, List<T>> t = ListSplitAt.splitByPredicateReversed(this, predicate);
+            if (t._2.isEmpty() || t._2.tail().isEmpty()) {
+                return Tuple.of(this, empty());
+            } else {
+                return Tuple.of(t._1.prepend(t._2.head()).reverse(), t._2.tail());
+            }
+        }
+    }
 
     @Override
     default Spliterator<T> spliterator() {
@@ -1069,7 +1122,9 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     List<T> tail();
 
     @Override
-    Option<List<T>> tailOption();
+    default Option<List<T>> tailOption() {
+        return isEmpty() ? None.instance() : new Some<>(tail());
+    }
 
     @Override
     default List<T> take(int n) {
@@ -1212,74 +1267,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
 
         @Override
-        public Tuple2<List<T>, List<T>> splitAt(int n) {
-            List<T> init = Nil.instance();
-            List<T> tail = this;
-            while (n > 0 && !tail.isEmpty()) {
-                init = init.prepend(tail.head());
-                tail = tail.tail();
-                n--;
-            }
-            return Tuple.of(init.reverse(), tail);
-        }
-
-        @Override
-        public Tuple2<List<T>, List<T>> splitAt(Predicate<? super T> predicate) {
-            final Tuple2<List<T>, List<T>> t = splitByPredicateReversed(this, predicate);
-            if (t._2.isEmpty()) {
-                return Tuple.of(this, empty());
-            } else {
-                return Tuple.of(t._1.reverse(), t._2);
-            }
-        }
-
-        @Override
-        public Tuple2<List<T>, List<T>> splitAtInclusive(Predicate<? super T> predicate) {
-            final Tuple2<List<T>, List<T>> t = splitByPredicateReversed(this, predicate);
-            if (t._2.isEmpty() || t._2.tail().isEmpty()) {
-                return Tuple.of(this, empty());
-            } else {
-                return Tuple.of(t._1.prepend(t._2.head()).reverse(), t._2.tail());
-            }
-        }
-
-        private static <T> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, Predicate<? super T> predicate) {
-            Objects.requireNonNull(predicate, "predicate is null");
-            List<T> init = Nil.instance();
-            List<T> tail = source;
-            while (!tail.isEmpty() && !predicate.test(tail.head())) {
-                init = init.prepend(tail.head());
-                tail = tail.tail();
-            }
-            return Tuple.of(init, tail);
-        }
-
-        @Override
-        public List<T> removeAt(int index) {
-            if (index < 0) {
-                throw new IndexOutOfBoundsException("removeAt(" + index + ")");
-            }
-            List<T> init = Nil.instance();
-            List<T> tail = this;
-            while (index > 0 && !tail.isEmpty()) {
-                init = init.prepend(tail.head());
-                tail = tail.tail();
-                index--;
-            }
-            if (index > 0 && tail.isEmpty()) {
-                throw new IndexOutOfBoundsException("removeAt() on Nil");
-            }
-            return init.reverse().appendAll(tail.tail());
-        }
-
-        @Override
         public List<T> tail() {
             return tail;
-        }
-
-        @Override
-        public Some<List<T>> tailOption() {
-            return new Some<>(tail);
         }
 
         @Override
@@ -1464,33 +1453,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
 
         @Override
-        public Tuple2<List<T>, List<T>> splitAt(int n) {
-            return Tuple.of(empty(), empty());
-        }
-
-        @Override
-        public Tuple2<List<T>, List<T>> splitAt(Predicate<? super T> predicate) {
-            return Tuple.of(empty(), empty());
-        }
-
-        @Override
-        public Tuple2<List<T>, List<T>> splitAtInclusive(Predicate<? super T> predicate) {
-            return Tuple.of(empty(), empty());
-        }
-
-        @Override
-        public List<T> removeAt(int index) {
-            throw new IndexOutOfBoundsException("removeAt() on Nil");
-        }
-
-        @Override
         public List<T> tail() {
             throw new UnsupportedOperationException("tail of empty list");
-        }
-
-        @Override
-        public None<List<T>> tailOption() {
-            return None.instance();
         }
 
         @Override
@@ -1535,5 +1499,22 @@ final class ListCombinations {
                 ? List.of(List.empty())
                 : elements.zipWithIndex().flatMap(t -> apply(elements.drop(t._2 + 1), (k - 1))
                 .map((List<T> c) -> c.prepend(t._1)));
+    }
+}
+
+final class ListSplitAt {
+
+    private ListSplitAt() {
+    }
+
+    static <T> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        List<T> init = List.Nil.instance();
+        List<T> tail = source;
+        while (!tail.isEmpty() && !predicate.test(tail.head())) {
+            init = init.prepend(tail.head());
+            tail = tail.tail();
+        }
+        return Tuple.of(init, tail);
     }
 }
