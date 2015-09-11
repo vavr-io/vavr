@@ -596,6 +596,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<Stream<T>> combinations(int k) {
+        // TODO(FIXME): move to auxilliary class Combinations
         class Recursion {
             Stream<Stream<T>> combinations(Stream<T> elements, int k) {
                 return (k == 0) ? Stream.of(Stream.empty()) :
