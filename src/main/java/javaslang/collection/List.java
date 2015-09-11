@@ -497,15 +497,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<List<T>> combinations(int k) {
-        class Recursion {
-            List<List<T>> combinations(List<T> elements, int k) {
-                return (k == 0)
-                        ? List.of(List.empty())
-                        : elements.zipWithIndex().flatMap(t -> combinations(elements.drop(t._2 + 1), (k - 1))
-                        .map((List<T> c) -> c.prepend(t._1)));
-            }
-        }
-        return new Recursion().combinations(this, Math.max(k, 0));
+        return ListCombinations.apply(this, Math.max(k, 0));
     }
 
     @Override
@@ -581,7 +573,19 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    List<Object> flatten();
+    default List<Object> flatten() {
+        if (isEmpty()) {
+            return Nil.instance();
+        } else {
+            return flatMap(t -> {
+                if (t instanceof java.lang.Iterable) {
+                    return List.ofAll((java.lang.Iterable<?>) t).flatten();
+                } else {
+                    return List.of(t);
+                }
+            });
+        }
+    }
 
     @Override
     default void forEach(Consumer<? super T> action) {
@@ -620,6 +624,16 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default boolean hasDefiniteSize() {
+        return true;
+    }
+
+    @Override
+    default Option<T> headOption() {
+        return isEmpty() ? None.instance() : new Some<>(head());
+    }
+
+    @Override
     default int indexOf(T element, int from) {
         int index = 0;
         for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
@@ -631,10 +645,18 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    List<T> init();
+    default List<T> init() {
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("init of empty list");
+        } else {
+            return dropRight(1);
+        }
+    }
 
     @Override
-    Option<List<T>> initOption();
+    default Option<List<T>> initOption() {
+        return isEmpty() ? None.instance() : new Some<>(init());
+    }
 
     @Override
     int length();
@@ -683,6 +705,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default List<T> intersperse(T element) {
         return isEmpty() ? Nil.instance() : foldRight(empty(), (x, xs) -> xs.isEmpty() ? xs.prepend(x) : xs.prepend(element).prepend(x));
+    }
+
+    @Override
+    default boolean isTraversableAgain() {
+        return true;
     }
 
     @Override
@@ -740,6 +767,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return head();
     }
 
+    @Override
+    default Option<T> peekOption() {
+        return isEmpty() ? None.instance() : new Some<>(head());
+    }
+
     /**
      * Performs an action on the head element of this {@code List}.
      *
@@ -777,7 +809,9 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    Option<List<T>> popOption();
+    default Option<List<T>> popOption() {
+        return isEmpty() ? None.instance() : new Some<>(tail());
+    }
 
     @Override
     default Tuple2<T, List<T>> pop2() {
@@ -785,7 +819,9 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    Option<Tuple2<T, List<T>>> pop2Option();
+    default Option<Tuple2<T, List<T>>> pop2Option() {
+        return isEmpty() ? None.instance() : new Some<>(Tuple.of(head(), tail()));
+    }
 
     @Override
     default List<T> prepend(T element) {
@@ -1166,38 +1202,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
 
         @Override
-        public List<Object> flatten() {
-            return flatMap(t -> (t instanceof java.lang.Iterable) ? List.ofAll((java.lang.Iterable<?>) t).flatten() : List.of(t));
-        }
-
-        @Override
-        public boolean hasDefiniteSize() {
-            return true;
-        }
-
-        @Override
         public T head() {
             return head;
-        }
-
-        @Override
-        public Some<T> headOption() {
-            return new Some<>(head);
-        }
-
-        @Override
-        public List<T> init() {
-            return dropRight(1);
-        }
-
-        @Override
-        public Some<List<T>> initOption() {
-            return new Some<>(init());
-        }
-
-        @Override
-        public boolean isTraversableAgain() {
-            return true;
         }
 
         @Override
@@ -1246,21 +1252,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
                 tail = tail.tail();
             }
             return Tuple.of(init, tail);
-        }
-
-        @Override
-        public Some<T> peekOption() {
-            return new Some<>(head());
-        }
-
-        @Override
-        public Some<List<T>> popOption() {
-            return new Some<>(tail());
-        }
-
-        @Override
-        public Some<Tuple2<T, List<T>>> pop2Option() {
-            return new Some<>(Tuple.of(head(), tail()));
         }
 
         @Override
@@ -1463,38 +1454,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
 
         @Override
-        public Nil<Object> flatten() {
-            return Nil.instance();
-        }
-
-        @Override
-        public boolean hasDefiniteSize() {
-            return true;
-        }
-
-        @Override
         public T head() {
             throw new NoSuchElementException("head of empty list");
-        }
-
-        @Override
-        public None<T> headOption() {
-            return None.instance();
-        }
-
-        @Override
-        public List<T> init() {
-            throw new UnsupportedOperationException("init of empty list");
-        }
-
-        @Override
-        public None<List<T>> initOption() {
-            return None.instance();
-        }
-
-        @Override
-        public boolean isTraversableAgain() {
-            return true;
         }
 
         @Override
@@ -1515,21 +1476,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         @Override
         public Tuple2<List<T>, List<T>> splitAtInclusive(Predicate<? super T> predicate) {
             return Tuple.of(empty(), empty());
-        }
-
-        @Override
-        public None<T> peekOption() {
-            return None.instance();
-        }
-
-        @Override
-        public None<List<T>> popOption() {
-            return None.instance();
-        }
-
-        @Override
-        public None<Tuple2<T, List<T>>> pop2Option() {
-            return None.instance();
         }
 
         @Override
@@ -1576,5 +1522,18 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         private Object readResolve() {
             return INSTANCE;
         }
+    }
+}
+
+final class ListCombinations {
+
+    private ListCombinations() {
+    }
+
+    static <T> List<List<T>> apply(List<T> elements, int k) {
+        return (k == 0)
+                ? List.of(List.empty())
+                : elements.zipWithIndex().flatMap(t -> apply(elements.drop(t._2 + 1), (k - 1))
+                .map((List<T> c) -> c.prepend(t._1)));
     }
 }
