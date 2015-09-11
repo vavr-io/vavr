@@ -908,7 +908,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    List<T> removeAt(int indx);
+    List<T> removeAt(int index);
 
     @Override
     default List<T> removeAll(T removed) {
@@ -1255,18 +1255,18 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
 
         @Override
-        public List<T> removeAt(int indx) {
-            if (indx < 0) {
-                throw new IndexOutOfBoundsException("removeAt(" + indx + ")");
+        public List<T> removeAt(int index) {
+            if (index < 0) {
+                throw new IndexOutOfBoundsException("removeAt(" + index + ")");
             }
             List<T> init = Nil.instance();
             List<T> tail = this;
-            while (indx > 0 && !tail.isEmpty()) {
+            while (index > 0 && !tail.isEmpty()) {
                 init = init.prepend(tail.head());
                 tail = tail.tail();
-                indx--;
+                index--;
             }
-            if (indx > 0 && tail.isEmpty()) {
+            if (index > 0 && tail.isEmpty()) {
                 throw new IndexOutOfBoundsException("removeAt() on Nil");
             }
             return init.reverse().appendAll(tail.tail());
@@ -1479,7 +1479,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
 
         @Override
-        public List<T> removeAt(int indx) {
+        public List<T> removeAt(int index) {
             throw new IndexOutOfBoundsException("removeAt() on Nil");
         }
 

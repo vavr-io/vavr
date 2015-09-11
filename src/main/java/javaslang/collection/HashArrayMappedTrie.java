@@ -298,10 +298,10 @@ public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, 
         AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
             final int frag = hashFragment(shift, key.hashCode());
             final int bit = toBitmap(frag);
-            final int indx = fromBitmap(bitmap, bit);
+            final int index = fromBitmap(bitmap, bit);
             final int mask = bitmap;
             final boolean exists = (mask & bit) != 0;
-            final AbstractNode<K, V> atIndx = exists ? subNodes.get(indx) : null;
+            final AbstractNode<K, V> atIndx = exists ? subNodes.get(index) : null;
             AbstractNode<K, V> child = exists ? atIndx.modify(shift + SIZE, key, value)
                     : EmptyNode.<K, V> instance().modify(shift + SIZE, key, value);
             boolean removed = exists && child.isEmpty();
@@ -310,22 +310,22 @@ public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, 
             if (newBitmap == 0) {
                 return EmptyNode.instance();
             } else if (removed) {
-                if (subNodes.length() <= 2 && subNodes.get(indx ^ 1).isLeaf()) {
-                    return subNodes.get(indx ^ 1); // collapse
+                if (subNodes.length() <= 2 && subNodes.get(index ^ 1).isLeaf()) {
+                    return subNodes.get(index ^ 1); // collapse
                 } else {
-                    return new IndexedNode<>(newBitmap, size - atIndx.size(), subNodes.removeAt(indx));
+                    return new IndexedNode<>(newBitmap, size - atIndx.size(), subNodes.removeAt(index));
                 }
             } else if (added) {
                 if (subNodes.length() >= MAX_INDEX_NODE) {
                     return expand(frag, child, mask, subNodes);
                 } else {
-                    return new IndexedNode<>(newBitmap, size + child.size(), subNodes.insert(indx, child));
+                    return new IndexedNode<>(newBitmap, size + child.size(), subNodes.insert(index, child));
                 }
             } else {
                 if (!exists) {
                     return this;
                 } else {
-                    return new IndexedNode<>(newBitmap, size - atIndx.size() + child.size(), subNodes.update(indx, child));
+                    return new IndexedNode<>(newBitmap, size - atIndx.size() + child.size(), subNodes.update(index, child));
                 }
             }
         }

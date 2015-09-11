@@ -482,11 +482,11 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * Removes the element at the specified position in this sequence. Shifts any subsequent elements to the left
      * (subtracts one from their indices).
      *
-     * @param indx position of element to remove
+     * @param index position of element to remove
      * @return a sequence containing all elements of this without the element at the specified position.
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
-    Seq<T> removeAt(int indx);
+    Seq<T> removeAt(int index);
 
     /**
      * Removes the first occurrence that satisfy predicate

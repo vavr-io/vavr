@@ -127,7 +127,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> removeLast(Predicate<T> predicate);
 
     @Override
-    LinearSeq<T> removeAt(int indx);
+    LinearSeq<T> removeAt(int index);
 
     @Override
     LinearSeq<T> removeAll(T element);

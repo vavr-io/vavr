@@ -829,16 +829,16 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> removeAt(int indx) {
-        if (indx < 0) {
-            throw new IndexOutOfBoundsException("removeAt(" + indx + ")");
+    public Array<T> removeAt(int index) {
+        if (index < 0) {
+            throw new IndexOutOfBoundsException("removeAt(" + index + ")");
         }
-        if (indx >= length()) {
-            throw new IndexOutOfBoundsException("removeAt(" + indx + ")");
+        if (index >= length()) {
+            throw new IndexOutOfBoundsException("removeAt(" + index + ")");
         }
         final Object[] arr = new Object[length() - 1];
-        System.arraycopy(back, 0, arr, 0, indx);
-        System.arraycopy(back, indx + 1, arr, indx, length() - indx - 1);
+        System.arraycopy(back, 0, arr, 0, index);
+        System.arraycopy(back, index + 1, arr, index, length() - index - 1);
         return wrap(arr);
     }
 
