@@ -1182,39 +1182,18 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default <U> Stream<Tuple2<T, U>> zip(java.lang.Iterable<U> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
-        final Stream<U> that = Stream.ofAll(iterable);
-        if (this.isEmpty() || that.isEmpty()) {
-            return Nil.instance();
-        } else {
-            return new Cons<>(Tuple.of(this.head(), that.head()), () -> this.tail().zip(that.tail()));
-        }
+        return Stream.ofAll(iterator().zip(iterable));
     }
 
     @Override
     default <U> Stream<Tuple2<T, U>> zipAll(java.lang.Iterable<U> iterable, T thisElem, U thatElem) {
         Objects.requireNonNull(iterable, "iterable is null");
-        final Stream<U> that = Stream.ofAll(iterable);
-        final boolean isThisEmpty = this.isEmpty();
-        final boolean isThatEmpty = that.isEmpty();
-        if (isThisEmpty && isThatEmpty) {
-            return Nil.instance();
-        } else {
-            final Tuple2<T, U> zippedHead = Tuple.of(
-                    isThisEmpty ? thisElem : this.head(),
-                    isThatEmpty ? thatElem : that.head()
-            );
-            final Supplier<Stream<Tuple2<T, U>>> zippedTail = () -> {
-                final Stream<T> tail1 = isThisEmpty ? this : this.tail();
-                final Stream<U> tail2 = isThatEmpty ? that : that.tail();
-                return tail1.zipAll(tail2, thisElem, thatElem);
-            };
-            return new Cons<>(zippedHead, zippedTail);
-        }
+        return Stream.ofAll(iterator().zipAll(iterable, thisElem, thatElem));
     }
 
     @Override
     default Stream<Tuple2<T, Integer>> zipWithIndex() {
-        return zip(Stream.from(0));
+        return Stream.ofAll(iterator().zipWithIndex());
     }
 }
 

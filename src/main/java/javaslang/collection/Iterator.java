@@ -887,15 +887,15 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     default <U> Iterator<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        if (isEmpty()) {
+        final java.util.Iterator<U> thatIt = that.iterator();
+        if (isEmpty() && !thatIt.hasNext()) {
             return empty();
         } else {
-            final Iterator<T> it1 = this;
-            final java.util.Iterator<U> it2 = that.iterator();
+            final Iterator<T> thisIt = this;
             return new AbstractIterator<Tuple2<T, U>>() {
                 @Override
                 public boolean hasNext() {
-                    return it1.hasNext() || it2.hasNext();
+                    return thisIt.hasNext() || thatIt.hasNext();
                 }
 
                 @Override
@@ -903,8 +903,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                     if (!hasNext()) {
                         EMPTY.next();
                     }
-                    T v1 = it1.hasNext() ? it1.next() : thisElem;
-                    U v2 = it2.hasNext() ? it2.next() : thatElem;
+                    T v1 = thisIt.hasNext() ? thisIt.next() : thisElem;
+                    U v2 = thatIt.hasNext() ? thatIt.next() : thatElem;
                     return Tuple.of(v1, v2);
                 }
             };
