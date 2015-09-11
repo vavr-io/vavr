@@ -656,38 +656,38 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public List.Nil<T> distinct() {
-            return List.Nil.instance();
+        public Nil<T> distinct() {
+            return Nil.instance();
         }
 
         @Override
-        public List.Nil<T> distinctBy(Comparator<? super T> comparator) {
-            return List.Nil.instance();
+        public Nil<T> distinctBy(Comparator<? super T> comparator) {
+            return Nil.instance();
         }
 
         @Override
-        public <U> List.Nil<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-            return List.Nil.instance();
+        public <U> Nil<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+            return Nil.instance();
         }
 
         @Override
-        public List.Nil<T> drop(int n) {
-            return List.Nil.instance();
+        public Nil<T> drop(int n) {
+            return Nil.instance();
         }
 
         @Override
-        public List.Nil<T> dropRight(int n) {
-            return List.Nil.instance();
+        public Nil<T> dropRight(int n) {
+            return Nil.instance();
         }
 
         @Override
-        public List.Nil<T> dropWhile(Predicate<? super T> predicate) {
-            return List.Nil.instance();
+        public Nil<T> dropWhile(Predicate<? super T> predicate) {
+            return Nil.instance();
         }
 
         @Override
         public List<Node<T>> getChildren() {
-            return List.Nil.instance();
+            return Nil.instance();
         }
 
         @Override
@@ -746,8 +746,8 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public List.Nil<T> retainAll(java.lang.Iterable<? extends T> elements) {
-            return List.Nil.instance();
+        public Nil<T> retainAll(java.lang.Iterable<? extends T> elements) {
+            return Nil.instance();
         }
 
         @Override
@@ -766,23 +766,23 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public List.Nil<T> take(int n) {
-            return List.Nil.instance();
+        public Nil<T> take(int n) {
+            return Nil.instance();
         }
 
         @Override
-        public List.Nil<T> takeRight(int n) {
-            return List.Nil.instance();
+        public Nil<T> takeRight(int n) {
+            return Nil.instance();
         }
 
         @Override
-        public List.Nil<T> takeWhile(Predicate<? super T> predicate) {
-            return List.Nil.instance();
+        public Nil<T> takeWhile(Predicate<? super T> predicate) {
+            return Nil.instance();
         }
 
         @Override
-        public List.Nil<T> filter(Predicate<? super T> predicate) {
-            return List.Nil.instance();
+        public Nil<T> filter(Predicate<? super T> predicate) {
+            return Nil.instance();
         }
 
         @Override
