@@ -249,7 +249,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a an Iterator based on the given Iterator by
+     * Creates an Iterator based on the given Iterator by
      * delegating calls of {@code hasNext()} and {@code next()} to it.
      *
      * @param iterator A {@link java.util.Iterator}
@@ -281,7 +281,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a Iterator based on the elements of a boolean array.
+     * Creates an Iterator based on the elements of a boolean array.
      *
      * @param array a boolean array
      * @return A new Iterator of Boolean values
@@ -304,7 +304,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a Iterator based on the elements of a byte array.
+     * Creates an Iterator based on the elements of a byte array.
      *
      * @param array a byte array
      * @return A new Iterator of Byte values
@@ -327,7 +327,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a Iterator based on the elements of a char array.
+     * Creates an Iterator based on the elements of a char array.
      *
      * @param array a char array
      * @return A new Iterator of Character values
@@ -350,7 +350,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a Iterator based on the elements of a double array.
+     * Creates ann Iterator based on the elements of a double array.
      *
      * @param array a double array
      * @return A new Iterator of Double values
@@ -373,7 +373,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a Iterator based on the elements of a float array.
+     * Creates an Iterator based on the elements of a float array.
      *
      * @param array a float array
      * @return A new Iterator of Float values
@@ -396,7 +396,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a Iterator based on the elements of an int array.
+     * Creates an Iterator based on the elements of an int array.
      *
      * @param array an int array
      * @return A new Iterator of Integer values
@@ -419,7 +419,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a Iterator based on the elements of a long array.
+     * Creates an Iterator based on the elements of a long array.
      *
      * @param array a long array
      * @return A new Iterator of Long values
@@ -442,7 +442,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a Iterator based on the elements of a short array.
+     * Creates an Iterator based on the elements of a short array.
      *
      * @param array a short array
      * @return A new Iterator of Short values
@@ -465,14 +465,57 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a List of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * Creates an Iterator of characters starting from {@code from}, extending to {@code toExclusive - 1}.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * List.range(0, 0)  // = List()
-     * List.range(2, 0)  // = List()
-     * List.range(-2, 2) // = List(-2, -1, 0, 1)
+     * Iterator.range('a', 'c')  // = ('a', 'b')
+     * Iterator.range('c', 'a')  // = ()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first character
+     * @param toExclusive the successor of the last character
+     * @return a range of characters as specified or the empty range if {@code from >= toExclusive}
+     */
+    static Iterator<Character> range(char from, char toExclusive) {
+        return rangeBy(from, toExclusive, 1);
+    }
+
+    /**
+     * Creates an Iterator of characters starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Iterator.rangeBy('a', 'c', 1)  // = ('a', 'b')
+     * Iterator.rangeBy('a', 'd', 2)  // = ('a', 'c')
+     * Iterator.rangeBy('d', 'a', -2) // = ('d', 'b')
+     * Iterator.rangeBy('d', 'a', 2)  // = ()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first character
+     * @param toExclusive the successor of the last character if step &gt; 0, the predecessor of the last character if step &lt; 0
+     * @param step        the step
+     * @return a range of characters as specified or the empty range if {@code (from == toExclusive) || (step * (from - toExclusive) > 0)}.
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static Iterator<Character> rangeBy(char from, char toExclusive, int step){
+        return Iterator.rangeBy((int) from, (int) toExclusive, step).map(i -> (char) i.shortValue());
+    }
+
+    /**
+     * Creates an Iterator of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Iterator.range(0, 0)  // = ()
+     * Iterator.range(2, 0)  // = ()
+     * Iterator.range(-2, 2) // = (-2, -1, 0, 1)
      * </code>
      * </pre>
      *
@@ -485,25 +528,23 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a List of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * Creates an Iterator of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
      * with {@code step}.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * List.rangeBy(1, 3, 1)  // = List(1, 2)
-     * List.rangeBy(1, 4, 2)  // = List(1, 3)
-     * List.rangeBy(4, 1, -2) // = List(4, 2)
-     * List.rangeBy(4, 1, 2)  // = List()
+     * Iterator.rangeBy(1, 3, 1)  // = (1, 2)
+     * Iterator.rangeBy(1, 4, 2)  // = (1, 3)
+     * Iterator.rangeBy(4, 1, -2) // = (4, 2)
+     * Iterator.rangeBy(4, 1, 2)  // = ()
      * </code>
      * </pre>
      *
      * @param from        the first number
-     * @param toExclusive the last number + 1
+     * @param toExclusive the last number + 1 if step &gt; 0, the last number - 1 if step &lt; 0
      * @param step        the step
-     * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * @return a range of long values as specified or the empty range if {@code (from == toExclusive) || (step * (from - toExclusive) > 0)}.
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Integer> rangeBy(int from, int toExclusive, int step) {
@@ -518,14 +559,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a List of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * Creates an Iterator of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * List.range(0L, 0L)  // = List()
-     * List.range(2L, 0L)  // = List()
-     * List.range(-2L, 2L) // = List(-2L, -1L, 0L, 1L)
+     * Iterator.range(0L, 0L)  // = ()
+     * Iterator.range(2L, 0L)  // = ()
+     * Iterator.range(-2L, 2L) // = (-2L, -1L, 0L, 1L)
      * </code>
      * </pre>
      *
@@ -538,25 +579,23 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a List of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * Creates an Iterator of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
      * with {@code step}.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * List.rangeBy(1L, 3L, 1L)  // = List(1L, 2L)
-     * List.rangeBy(1L, 4L, 2L)  // = List(1L, 3L)
-     * List.rangeBy(4L, 1L, -2L) // = List(4L, 2L)
-     * List.rangeBy(4L, 1L, 2L)  // = List()
+     * Iterator.rangeBy(1L, 3L, 1L)  // = (1L, 2L)
+     * Iterator.rangeBy(1L, 4L, 2L)  // = (1L, 3L)
+     * Iterator.rangeBy(4L, 1L, -2L) // = (4L, 2L)
+     * Iterator.rangeBy(4L, 1L, 2L)  // = ()
      * </code>
      * </pre>
      *
      * @param from        the first number
-     * @param toExclusive the last number + 1
+     * @param toExclusive the last number + 1 if step &gt; 0, the last number - 1 if step &lt; 0
      * @param step        the step
-     * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * @return a range of long values as specified or the empty range if {@code (from == toExclusive) || (step * (from - toExclusive) > 0)}.
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Long> rangeBy(long from, long toExclusive, long step) {
@@ -571,14 +610,57 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a List of int numbers starting from {@code from}, extending to {@code toInclusive}.
+     * Creates an Iterator of characters starting from {@code from}, extending to {@code toInclusive}.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * List.rangeClosed(0, 0)  // = List(0)
-     * List.rangeClosed(2, 0)  // = List()
-     * List.rangeClosed(-2, 2) // = List(-2, -1, 0, 1, 2)
+     * Iterator.rangeClosed('a', 'c')  // = ('a', 'b', 'c')
+     * Iterator.rangeClosed('c', 'a')  // = ()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first character
+     * @param toInclusive the last character
+     * @return a range of characters as specified or the empty range if {@code from > toInclusive}
+     */
+    static Iterator<Character> rangeClosed(char from, char toInclusive) {
+        return rangeClosedBy(from, toInclusive, 1);
+    }
+
+    /**
+     * Creates an Iterator of characters starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Iterator.rangeClosedBy('a', 'c', 1)  // = ('a', 'b', 'c')
+     * Iterator.rangeClosedBy('a', 'd', 2)  // = ('a', 'c')
+     * Iterator.rangeClosedBy('d', 'a', -2) // = ('d', 'b')
+     * Iterator.rangeClosedBy('d', 'a', 2)  // = ()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first character
+     * @param toInclusive the last character
+     * @param step        the step
+     * @return a range of characters as specified or the empty range if {@code step * (from - toInclusive) > 0}.
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static Iterator<Character> rangeClosedBy(char from, char toInclusive, int step){
+        return Iterator.rangeClosedBy((int) from, (int) toInclusive, step).map(i -> (char) i.shortValue());
+    }
+
+    /**
+     * Creates an Iterator of int numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * Iterator.rangeClosed(0, 0)  // = (0)
+     * Iterator.rangeClosed(2, 0)  // = ()
+     * Iterator.rangeClosed(-2, 2) // = (-2, -1, 0, 1, 2)
      * </code>
      * </pre>
      *
@@ -591,25 +673,23 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a List of int numbers starting from {@code from}, extending to {@code toInclusive},
+     * Creates an Iterator of int numbers starting from {@code from}, extending to {@code toInclusive},
      * with {@code step}.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * List.rangeClosedBy(1, 3, 1)  // = List(1, 2, 3)
-     * List.rangeClosedBy(1, 4, 2)  // = List(1, 3)
-     * List.rangeClosedBy(4, 1, -2) // = List(4, 2)
-     * List.rangeClosedBy(4, 1, 2)  // = List()
+     * Iterator.rangeClosedBy(1, 3, 1)  // = (1, 2, 3)
+     * Iterator.rangeClosedBy(1, 4, 2)  // = (1, 3)
+     * Iterator.rangeClosedBy(4, 1, -2) // = (4, 2)
+     * Iterator.rangeClosedBy(4, 1, 2)  // = ()
      * </code>
      * </pre>
      *
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or the empty range if<br>
-     * {@code from > toInclusive} and {@code step > 0} or<br>
-     * {@code from < toInclusive} and {@code step < 0}
+     * @return a range of int values as specified or the empty range if {@code step * (from - toInclusive) > 0}.
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Integer> rangeClosedBy(int from, int toInclusive, int step) {
@@ -648,14 +728,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a List of long numbers starting from {@code from}, extending to {@code toInclusive}.
+     * Creates an Iterator of long numbers starting from {@code from}, extending to {@code toInclusive}.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * List.rangeClosed(0L, 0L)  // = List(0L)
-     * List.rangeClosed(2L, 0L)  // = List()
-     * List.rangeClosed(-2L, 2L) // = List(-2L, -1L, 0L, 1L, 2L)
+     * Iterator.rangeClosed(0L, 0L)  // = (0L)
+     * Iterator.rangeClosed(2L, 0L)  // = ()
+     * Iterator.rangeClosed(-2L, 2L) // = (-2L, -1L, 0L, 1L, 2L)
      * </code>
      * </pre>
      *
@@ -668,25 +748,23 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     /**
-     * Creates a List of long numbers starting from {@code from}, extending to {@code toInclusive},
+     * Creates an Iterator of long numbers starting from {@code from}, extending to {@code toInclusive},
      * with {@code step}.
      * <p>
      * Examples:
      * <pre>
      * <code>
-     * List.rangeClosedBy(1L, 3L, 1L)  // = List(1L, 2L, 3L)
-     * List.rangeClosedBy(1L, 4L, 2L)  // = List(1L, 3L)
-     * List.rangeClosedBy(4L, 1L, -2L) // = List(4L, 2L)
-     * List.rangeClosedBy(4L, 1L, 2L)  // = List()
+     * Iterator.rangeClosedBy(1L, 3L, 1L)  // = (1L, 2L, 3L)
+     * Iterator.rangeClosedBy(1L, 4L, 2L)  // = (1L, 3L)
+     * Iterator.rangeClosedBy(4L, 1L, -2L) // = (4L, 2L)
+     * Iterator.rangeClosedBy(4L, 1L, 2L)  // = ()
      * </code>
      * </pre>
      *
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or the empty range if<br>
-     * {@code from > toInclusive} and {@code step > 0} or<br>
-     * {@code from < toInclusive} and {@code step < 0}
+     * @return a range of int values as specified or the empty range if {@code step * (from - toInclusive) > 0}.
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Long> rangeClosedBy(long from, long toInclusive, long step) {
