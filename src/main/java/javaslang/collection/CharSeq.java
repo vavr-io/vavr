@@ -123,6 +123,72 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return new CharSeq(String.valueOf(array));
     }
 
+    /**
+     * Creates a CharSeq starting from character {@code from}, extending to character {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * CharSeq.range('a', 'c')  // = "ab"
+     * CharSeq.range('c', 'a')  // = ""
+     * </code>
+     * </pre>
+     *
+     * @param from        the first character
+     * @param toExclusive the successor of the last character
+     * @return a range of characters as specified or the empty range if {@code from >= toExclusive}
+     */
+    static CharSeq range(char from, char toExclusive) {
+        return new CharSeq(Iterator.range(from ,toExclusive).mkString());
+    }
+
+    static CharSeq rangeBy(char from, char toExclusive, int step){
+        return new CharSeq(Iterator.rangeBy(from, toExclusive, step).mkString());
+    }
+
+    /**
+     * Creates a CharSeq starting from character {@code from}, extending to character {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * CharSeq.rangeClosed('a', 'c')  // = "abc"
+     * CharSeq.rangeClosed('c', 'a')  // = ""
+     * </code>
+     * </pre>
+     *
+     * @param from        the first character
+     * @param toInclusive the last character
+     * @return a range of characters as specified or the empty range if {@code from > toInclusive}
+     */
+    static CharSeq rangeClosed(char from, char toInclusive) {
+        return new CharSeq(Iterator.rangeClosed(from, toInclusive).mkString());
+    }
+
+    /**
+     * Creates a CharSeq starting from character {@code from}, extending to character {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * CharSeq.rangeClosedBy('a', 'c', 1)  // = ('a', 'b', 'c')
+     * CharSeq.rangeClosedBy('a', 'd', 2)  // = ('a', 'c')
+     * CharSeq.rangeClosedBy('d', 'a', -2) // = ('d', 'b')
+     * CharSeq.rangeClosedBy('d', 'a', 2)  // = ()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first character
+     * @param toInclusive the last character
+     * @param step        the step
+     * @return a range of characters as specified or the empty range if {@code step * (from - toInclusive) > 0}.
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    static CharSeq rangeClosedBy(char from, char toInclusive, int step) {
+        return new CharSeq(Iterator.rangeClosedBy(from, toInclusive, step).mkString());
+    }
+
     //
     //
     // IndexedSeq
