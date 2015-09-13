@@ -471,6 +471,9 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<Tuple2<T, T>> crossProduct();
 
     @Override
+    Stack<IndexedSeq<T>> crossProduct(int power);
+
+    @Override
     <U> Stack<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
 
     @Override

@@ -446,6 +446,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Array<IndexedSeq<T>> crossProduct(int power) {
+        return toStream().crossProduct(power).toArray();
+    }
+
+    @Override
     public <U> Array<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final Array<? extends U> other = unit(that);

@@ -423,6 +423,11 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Vector<IndexedSeq<T>> crossProduct(int power) {
+        return toStream().crossProduct(power).toVector();
+    }
+
+    @Override
     public <U> Vector<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final Vector<? extends U> other = Vector.ofAll(that);

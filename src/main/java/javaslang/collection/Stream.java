@@ -568,6 +568,15 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    default Stream<IndexedSeq<T>> crossProduct(int power) {
+        if (power < 0) {
+            throw new IllegalArgumentException("negative power");
+        }
+        return Iterator.range(1, power)
+                .foldLeft(sliding(1).toStream(), (product, ignored) -> product.flatMap(tuple -> map(tuple::append)));
+    }
+
+    @Override
     default <U> Stream<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final Stream<? extends U> other = Stream.ofAll(that);

@@ -40,6 +40,9 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<Tuple2<T, T>> crossProduct();
 
     @Override
+    IndexedSeq<IndexedSeq<T>> crossProduct(int power);
+
+    @Override
     <U> IndexedSeq<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
 
     @Override
