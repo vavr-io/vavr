@@ -121,7 +121,10 @@ public interface Option<T> extends Value<T> {
      * @return {@code Some(value)} or {@code None} as specified
      */
     @Override
-    Option<T> filter(Predicate<? super T> predicate);
+    default Option<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return (isEmpty() || predicate.test(get())) ? this : None.instance();
+    }
 
     /**
      * Maps the value to a new {@code Option} if this is a {@code Some}, otherwise returns {@code None}.
@@ -130,11 +133,35 @@ public interface Option<T> extends Value<T> {
      * @param <U>    Component type of the resulting Option
      * @return a new {@code Option}
      */
+    @SuppressWarnings("unchecked")
     @Override
-    <U> Option<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+    default <U> Option<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        if (isEmpty()) {
+            return None.instance();
+        } else {
+            final Iterable<? extends U> iterable = mapper.apply(get());
+            if (iterable instanceof Value) {
+                return ((Value<U>) iterable).toOption();
+            } else {
+                final java.util.Iterator<? extends U> iterator = iterable.iterator();
+                if (iterator.hasNext()) {
+                    return new Some<>(iterator.next());
+                } else {
+                    return None.instance();
+                }
+            }
+        }
+    }
 
     @Override
-    Option<Object> flatten();
+    default Option<Object> flatten() {
+        if (isEmpty()) {
+            return None.instance();
+        } else {
+            return flatMap(value -> (value instanceof Option) ? ((Option<?>) value).flatten() : this);
+        }
+    }
 
     /**
      * Maps the value and wraps it in a new {@code Some} if this is a {@code Some}, returns {@code None}.
@@ -143,7 +170,15 @@ public interface Option<T> extends Value<T> {
      * @param <U>    The new value type
      * @return a new {@code Some} containing the mapped value if this Option is defined, otherwise {@code None}, if this is empty.
      */
-    <U> Option<U> map(Function<? super T, ? extends U> mapper);
+    @Override
+    default <U> Option<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        if (isEmpty()) {
+            return None.instance();
+        } else {
+            return new Some<>(mapper.apply(get()));
+        }
+    }
 
     /**
      * Applies an action to this value, if this option is defined, otherwise does nothing.
@@ -152,7 +187,13 @@ public interface Option<T> extends Value<T> {
      * @return this {@code Option}
      */
     @Override
-    Option<T> peek(Consumer<? super T> action);
+    default Option<T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+        if (isDefined()) {
+            action.accept(get());
+        }
+        return this;
+    }
 
     @Override
     default Iterator<T> iterator() {

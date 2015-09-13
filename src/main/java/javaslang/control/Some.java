@@ -62,47 +62,6 @@ public final class Some<T> implements Option<T>, Serializable {
     }
 
     @Override
-    public Option<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return predicate.test(value) ? this : None.instance();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Option<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        final Iterable<? extends U> iterable = mapper.apply(value);
-        if (iterable instanceof Value) {
-            return ((Value<U>) iterable).toOption();
-        } else {
-            final Iterator<? extends U> iterator = iterable.iterator();
-            if (iterator.hasNext()) {
-                return new Some<>(iterator.next());
-            } else {
-                return None.instance();
-            }
-        }
-    }
-
-    @Override
-    public Option<Object> flatten() {
-        return flatMap(value -> (value instanceof Option) ? ((Option<?>) value).flatten() : this);
-    }
-
-    @Override
-    public <U> Some<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return new Some<>(mapper.apply(get()));
-    }
-
-    @Override
-    public Some<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        action.accept(get());
-        return this;
-    }
-
-    @Override
     public boolean equals(Object obj) {
         return (obj == this) || (obj instanceof Some && Objects.equals(value, ((Some<?>) obj).value));
     }
