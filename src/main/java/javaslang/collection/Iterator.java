@@ -17,20 +17,21 @@ import java.util.*;
 import java.util.function.*;
 
 /**
- * {@code javaslang.collection.Iterator} is a powerful replacement for {@code java.util.Iterator}.
- * Javaslang's {@code Iterator} extends Java's, so it integrates seemlessly in existing code.
- * Both are data structures whose purpose is to iterate <em>once</em> over a sequence of elements.
+ * {@code javaslang.collection.Iterator} is a compositional replacement for {@code java.util.Iterator}
+ * whose purpose is to iterate <em>once</em> over a sequence of elements.
+ * <p>
+ * It is recommended to create instances using {@link AbstractIterator} in favor of {@code Iterator}.
  * <p>
  * <strong>Note:</strong> Iterators encapsulate mutable state.
- * They are not meant to used concurrently by differnet threads.
+ * They are not meant to be used concurrently by differnet threads.
  * <p>
  * There are two abstract methods: {@code hasNext} for checking if there is a next element available,
  * and {@code next} which removes the next element from the iterator and returns it. They can be called
  * an arbitrary amount of times. If {@code hasNext} returns false, a call of {@code next} will throw
  * a {@code NoSuchElementException}.
  * <p>
- * <strong>Caution:</strong> Other methods than {@code hasNext} and {@code next} can be called only once (exclusively).
- * More specifically, after calling a method it cannot be guaranteed that the next call will succeed.
+ * <strong>Caution: Other methods than {@code hasNext} and {@code next} can be called only once (exclusively).
+ * More specifically, after calling a method it cannot be guaranteed that the next call will succeed.</strong>
  *
  * An Iterator that can be only used once because it is a traversal pointer into a collection, and not a collection
  * itself.
