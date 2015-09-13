@@ -8,8 +8,9 @@ package javaslang.collection;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.collection.Stream.Cons;
+import javaslang.collection.Stream.Empty;
 import javaslang.collection.StreamModule.*;
-import javaslang.collection.StreamModule.Cons;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -1178,9 +1179,6 @@ public interface Stream<T> extends LinearSeq<T> {
     default Stream<Tuple2<T, Integer>> zipWithIndex() {
         return Stream.ofAll(iterator().zipWithIndex());
     }
-}
-
-interface StreamModule {
 
     /**
      * The empty Stream.
@@ -1259,8 +1257,8 @@ interface StreamModule {
      * @param <T> Component type of the Stream.
      * @since 1.1.0
      */
-// DEV NOTE: class declared final because of serialization proxy pattern.
-// (see Effective Java, 2nd ed., p. 315)
+    // DEV NOTE: class declared final because of serialization proxy pattern.
+    // (see Effective Java, 2nd ed., p. 315)
     final class Cons<T> implements Stream<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
@@ -1448,6 +1446,9 @@ interface StreamModule {
             }
         }
     }
+}
+
+interface StreamModule {
 
     final class AppendSelf<T> {
 

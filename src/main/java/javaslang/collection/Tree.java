@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.collection.List.Nil;
 import javaslang.control.Match;
 import javaslang.control.None;
 import javaslang.control.Option;
