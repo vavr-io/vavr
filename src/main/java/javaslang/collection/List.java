@@ -1159,6 +1159,12 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default List<T> takeUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeWhile(predicate.negate());
+    }
+
+    @Override
     default List<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         List<T> result = Nil.instance();

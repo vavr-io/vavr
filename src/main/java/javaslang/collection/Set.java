@@ -231,6 +231,9 @@ public interface Set<T> extends Traversable<T> {
     Set<T> takeRight(int n);
 
     @Override
+    Set<T> takeUntil(Predicate<? super T> predicate);
+
+    @Override
     Set<T> takeWhile(Predicate<? super T> predicate);
 
 }

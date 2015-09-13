@@ -186,6 +186,9 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     Map<K, V> takeRight(int n);
 
     @Override
+    Map<K, V> takeUntil(Predicate<? super Entry<K, V>> predicate);
+
+    @Override
     Map<K, V> takeWhile(Predicate<? super Entry<K, V>> predicate);
 
     /**

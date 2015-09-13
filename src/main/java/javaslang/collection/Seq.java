@@ -776,6 +776,9 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> takeRight(int n);
 
     @Override
+    Seq<T> takeUntil(Predicate<? super T> predicate);
+
+    @Override
     Seq<T> takeWhile(Predicate<? super T> predicate);
 
     /**

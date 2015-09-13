@@ -1078,6 +1078,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Array<T> takeUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeWhile(predicate.negate());
+    }
+
+    @Override
     public Array<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (int i = 0; i < back.length; i++) {

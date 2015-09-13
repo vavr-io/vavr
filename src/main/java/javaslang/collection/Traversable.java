@@ -160,6 +160,9 @@ public interface Traversable<T> extends TraversableOnce<T> {
     Traversable<T> takeRight(int n);
 
     @Override
+    Traversable<T> takeUntil(Predicate<? super T> predicate);
+
+    @Override
     Traversable<T> takeWhile(Predicate<? super T> predicate);
 
 }

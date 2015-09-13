@@ -488,6 +488,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public HashMap<K, V> takeUntil(Predicate<? super Entry<K, V>> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeWhile(predicate.negate());
+    }
+
+    @Override
     public HashMap<K, V> takeWhile(Predicate<? super Entry<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         HashMap<K, V> taken = HashMap.ofAll(iterator().takeWhile(predicate));

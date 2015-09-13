@@ -132,6 +132,9 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> takeRight(int n);
 
     @Override
+    SortedMap<K, V> takeUntil(Predicate<? super Entry<K, V>> predicate);
+
+    @Override
     SortedMap<K, V> takeWhile(Predicate<? super Entry<K, V>> predicate);
 
     @Override
