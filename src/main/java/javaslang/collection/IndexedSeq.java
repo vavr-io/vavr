@@ -202,6 +202,9 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> takeRight(int n);
 
     @Override
+    IndexedSeq<T> takeUntil(Predicate<? super T> predicate);
+
+    @Override
     IndexedSeq<T> takeWhile(Predicate<? super T> predicate);
 
     @Override

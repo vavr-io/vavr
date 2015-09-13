@@ -118,7 +118,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @param array a char array
      * @return A new List of Character values
      */
-    static CharSeq ofAll(char[] array) {
+    public static CharSeq ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
         return new CharSeq(String.valueOf(array));
     }
@@ -138,11 +138,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @param toExclusive the successor of the last character
      * @return a range of characters as specified or the empty range if {@code from >= toExclusive}
      */
-    static CharSeq range(char from, char toExclusive) {
+    public static CharSeq range(char from, char toExclusive) {
         return new CharSeq(Iterator.range(from ,toExclusive).mkString());
     }
 
-    static CharSeq rangeBy(char from, char toExclusive, int step){
+    public static CharSeq rangeBy(char from, char toExclusive, int step){
         return new CharSeq(Iterator.rangeBy(from, toExclusive, step).mkString());
     }
 
@@ -161,7 +161,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @param toInclusive the last character
      * @return a range of characters as specified or the empty range if {@code from > toInclusive}
      */
-    static CharSeq rangeClosed(char from, char toInclusive) {
+    public static CharSeq rangeClosed(char from, char toInclusive) {
         return new CharSeq(Iterator.rangeClosed(from, toInclusive).mkString());
     }
 
@@ -185,8 +185,39 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return a range of characters as specified or the empty range if {@code step * (from - toInclusive) > 0}.
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static CharSeq rangeClosedBy(char from, char toInclusive, int step) {
+    public static CharSeq rangeClosedBy(char from, char toInclusive, int step) {
         return new CharSeq(Iterator.rangeClosedBy(from, toInclusive, step).mkString());
+    }
+
+    /**
+     * Repeats a character {@code times} times.
+     *
+     * @param character A character
+     * @param times Repetition count
+     * @return A CharSeq representing {@code character * times}
+     */
+    public static CharSeq repeat(char character, int times) {
+        final int length = Math.max(times, 0);
+        final char[] characters = new char[length];
+        Arrays.fill(characters, character);
+        return new CharSeq(String.valueOf(characters));
+    }
+
+    /**
+     * Repeats a character sequences {@code times} times.
+     *
+     * @param characters A character sequence
+     * @param times Repetition count
+     * @return A CharSeq representing {@code characters * times}
+     * @throws NullPointerException if characters is null
+     */
+    public static CharSeq repeat(CharSequence characters, int times) {
+        Objects.requireNonNull(characters, "characters is null");
+        final StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < times; i++) {
+            builder.append(characters);
+        }
+        return new CharSeq(builder.toString());
     }
 
     //
@@ -798,6 +829,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         } else {
             return of(back.substring(length() - n));
         }
+    }
+
+    @Override
+    public CharSeq takeUntil(Predicate<? super Character> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeWhile(predicate);
     }
 
     @Override

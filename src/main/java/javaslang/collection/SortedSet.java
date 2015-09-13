@@ -125,6 +125,9 @@ public interface SortedSet<T> extends Set<T> {
     SortedSet<T> takeRight(int n);
 
     @Override
+    SortedSet<T> takeUntil(Predicate<? super T> predicate);
+
+    @Override
     SortedSet<T> takeWhile(Predicate<? super T> predicate);
 
     @Override

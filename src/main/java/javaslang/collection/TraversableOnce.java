@@ -888,11 +888,22 @@ public interface TraversableOnce<T> extends Value<T> {
     TraversableOnce<T> takeRight(int n);
 
     /**
+     * Takes elements until the predicate holds for the current element.
+     * <p>
+     * Note: This is essentially the same as {@code takeWhile(predicate.negate())}. It is intended to be used with
+     * method references, which cannot be negated directly.
+     *
+     * @param predicate A condition tested subsequently for this elements.
+     * @return a new instance consisting of all elements until the first which does satisfy the given predicate.
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    TraversableOnce<T> takeUntil(Predicate<? super T> predicate);
+
+    /**
      * Takes elements while the predicate holds for the current element.
      *
-     * @param predicate A condition tested subsequently for this elements starting with the last.
-     * @return a new instance consisting of all elements starting from the last one which does not satisfy the
-     * given predicate.
+     * @param predicate A condition tested subsequently for the contained elements.
+     * @return a new instance consisting of all elements until the first which does not satisfy the given predicate.
      * @throws NullPointerException if {@code predicate} is null
      */
     TraversableOnce<T> takeWhile(Predicate<? super T> predicate);

@@ -624,6 +624,9 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> takeRight(int n);
 
     @Override
+    Stack<T> takeUntil(Predicate<? super T> predicate);
+
+    @Override
     Stack<T> takeWhile(Predicate<? super T> predicate);
 
     @Override

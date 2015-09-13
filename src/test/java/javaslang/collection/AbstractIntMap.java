@@ -271,6 +271,12 @@ public class AbstractIntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
+    public Traversable<T> takeUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeWhile(predicate.negate());
+    }
+
+    @Override
     public AbstractIntMap<T> takeWhile(Predicate<? super T> predicate) {
         return AbstractIntMap.of(original.takeWhile(p -> predicate.test(p.value)));
     }

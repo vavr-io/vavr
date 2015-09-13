@@ -206,6 +206,9 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> takeRight(int n);
 
     @Override
+    LinearSeq<T> takeUntil(Predicate<? super T> predicate);
+
+    @Override
     LinearSeq<T> takeWhile(Predicate<? super T> predicate);
 
     @Override

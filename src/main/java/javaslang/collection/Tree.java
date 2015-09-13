@@ -45,8 +45,6 @@ public interface Tree<T> extends Traversable<T> {
         return new Node<>(value, List.ofAll(children));
     }
 
-    <U> Tree<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
-
     /**
      * Gets the value of this tree.
      *
@@ -166,18 +164,7 @@ public interface Tree<T> extends Traversable<T> {
      */
     @Override
     default boolean contains(T element) {
-        if (isEmpty()) {
-            return false;
-        } else if (Objects.equals(getValue(), element)) {
-            return true;
-        } else {
-            for (Tree<T> child : getChildren()) {
-                if (child.contains(element)) {
-                    return true;
-                }
-            }
-            return false;
-        }
+        return iterator().contains(element);
     }
 
     @Override
@@ -202,8 +189,10 @@ public interface Tree<T> extends Traversable<T> {
     List<T> filter(Predicate<? super T> predicate);
 
     @Override
-    Tree<Object> flatten();
+    <U> Tree<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
+    @Override
+    Tree<Object> flatten();
 
     @Override
     <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier);
@@ -270,6 +259,12 @@ public interface Tree<T> extends Traversable<T> {
 
     @Override
     List<T> takeRight(int n);
+
+    @Override
+    default List<T> takeUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeWhile(predicate.negate());
+    }
 
     @Override
     List<T> takeWhile(Predicate<? super T> predicate);
@@ -892,7 +887,7 @@ public interface Tree<T> extends Traversable<T> {
      * <li>See <a href="http://rosettacode.org/wiki/Tree_traversal">Tree traversal</a> (rosetta code)</li>
      * </ul>
      */
-// see http://programmers.stackexchange.com/questions/138766/in-order-traversal-of-m-way-trees
+    // see http://programmers.stackexchange.com/questions/138766/in-order-traversal-of-m-way-trees
     enum Order {
 
         /**
