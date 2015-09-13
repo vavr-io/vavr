@@ -9,7 +9,7 @@ package javaslang.collection;
  * Provides a common {@link Object#toString()} implementation.
  * <p>
  * {@code equals(Object)} and {@code hashCode()} are intentionally not overridden in order to prevent this iterator
- * from being evaluated. In other words, equals and hashCode are implemented by Object.
+ * from being evaluated. In other words, (identity-)equals and hashCode are implemented by Object.
  *
  * @param <T> Component type
  */
