@@ -12,6 +12,7 @@ package javaslang;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import javaslang.CheckedFunction1Module.Memoized;
 import javaslang.control.Try;
 
 /**
@@ -135,7 +136,7 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
 
     @Override
     default CheckedFunction1<T1, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
             final Lazy<R> forNull = Lazy.of(Try.of(() -> apply(null))::get);
@@ -151,6 +152,11 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
                 }
             };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -209,5 +215,14 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
         public Class<T1> parameterType1() {
             return (Class<T1>) parameterTypes()[0];
         }
+    }
+}
+
+interface CheckedFunction1Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

@@ -12,6 +12,7 @@ package javaslang;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import javaslang.Function4Module.Memoized;
 
 /**
  * Represents a function with 4 arguments.
@@ -184,7 +185,7 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
 
     @Override
     default Function4<T1, T2, T3, T4, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
             final Object lock = new Object();
@@ -196,6 +197,11 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
                 }
             };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -258,5 +264,14 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
         public Class<T4> parameterType4() {
             return (Class<T4>) parameterTypes()[3];
         }
+    }
+}
+
+interface Function4Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

@@ -70,13 +70,11 @@ public interface λ<R> extends Serializable {
     λ<R> memoized();
 
     /**
-     * Checks if this function is memoizing computed values.
+     * Checks if this function is memoizing (= caching) computed values.
      *
-     * @return true, if this instance implements {@link Memoized}, false otherwise
+     * @return true, if this function is memoizing, false otherwise
      */
-    default boolean isMemoized() {
-        return this instanceof Memoized;
-    }
+    boolean isMemoized();
 
     /**
      * Get reflective type information about lambda parameters and return type.
@@ -172,11 +170,5 @@ public interface λ<R> extends Serializable {
                     + " -> "
                     + returnType.getName();
         }
-    }
-
-    /**
-     * Tagging ZAM interface for Memoized functions.
-     */
-    interface Memoized {
     }
 }

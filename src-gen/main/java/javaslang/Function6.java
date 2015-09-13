@@ -12,6 +12,7 @@ package javaslang;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import javaslang.Function6Module.Memoized;
 
 /**
  * Represents a function with 6 arguments.
@@ -229,7 +230,7 @@ public interface Function6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
 
     @Override
     default Function6<T1, T2, T3, T4, T5, T6, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
             final Object lock = new Object();
@@ -241,6 +242,11 @@ public interface Function6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
                 }
             };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -315,5 +321,14 @@ public interface Function6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
         public Class<T6> parameterType6() {
             return (Class<T6>) parameterTypes()[5];
         }
+    }
+}
+
+interface Function6Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }
