@@ -62,6 +62,7 @@ import java.util.function.*;
  *
  * <ul>
  * <li>{@link #crossProduct()}</li>
+ * <li>{@link #crossProduct(int)}</li>
  * <li>{@link #crossProduct(java.lang.Iterable)}</li>
  * <li>{@link #combinations()}</li>
  * <li>{@link #combinations(int)}</li>
@@ -131,9 +132,26 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * </code>
      * </pre>
      *
-     * @return a new Traversable containing the square of {@code this}
+     * @return a new Seq containing the square of {@code this}
      */
     Seq<Tuple2<T, T>> crossProduct();
+
+    /**
+     * Calculates the n-ary cartesian power (or <em>cross product</em> or simply <em>product</em>) of this.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * // = ((A,A), (A,B), (A,C), ..., (B,A), (B,B), ..., (Z,Y), (Z,Z))
+     * CharSeq.rangeClosed('A', 'Z').crossProduct(2);
+     * </code>
+     * </pre>
+     *
+     * @return a new Seq containing the n-ary cartesian product of {@code this}
+     * @param power the number of cartesian multiplications
+     * @return A new Seq representing the n-ary cartesian power of this
+     */
+    Seq<IndexedSeq<T>> crossProduct(int power);
 
     /**
      * Calculates the cross product {@code this x that}.
@@ -146,9 +164,9 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * </code>
      * </pre>
      *
-     * @param that Another Traversable
+     * @param that Another iterable
      * @param <U>  Component type
-     * @return a new Traversable containing the cross product {@code this x that}
+     * @return a new Seq containing the cross product {@code this x that}
      * @throws NullPointerException if that is null
      */
     <U> Seq<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
@@ -613,7 +631,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * <p>
      * Note: If the both the receiver object this and the argument that are infinite sequences this method may not terminate.
      *
-     * @param that the sequence to test
+     * @param that   the sequence to test
      * @param offset the index where the sequence is searched.
      * @return true if that is empty or that is prefix of this collection starting from the given offset, false otherwise.
      */
@@ -697,7 +715,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     /**
      * A copy of this sequence with an element appended until a given target length is reached.
      *
-     * @param length the target length
+     * @param length  the target length
      * @param element the padding element
      * @return a new sequence consisting of all elements of this sequence followed by the minimal number
      * of occurrences of <code>element</code> so that the resulting sequence has a length of at least <code>length</code>.
@@ -707,8 +725,8 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     /**
      * Produces a new list where a slice of elements in this list is replaced by another sequence.
      *
-     * @param from the index of the first replaced element
-     * @param that sequence for replacement
+     * @param from     the index of the first replaced element
+     * @param that     sequence for replacement
      * @param replaced the number of elements to drop in the original list
      * @return a new sequence.
      */

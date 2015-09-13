@@ -535,6 +535,11 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
+    public Queue<IndexedSeq<T>> crossProduct(int power) {
+        return toStream().crossProduct(power).toQueue();
+    }
+
+    @Override
     public <U> Queue<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
         return toList().crossProduct(that).toQueue();
     }

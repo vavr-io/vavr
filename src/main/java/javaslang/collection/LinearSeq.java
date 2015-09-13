@@ -40,6 +40,9 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<Tuple2<T, T>> crossProduct();
 
     @Override
+    LinearSeq<IndexedSeq<T>> crossProduct(int power);
+
+    @Override
     <U> LinearSeq<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
 
     @Override

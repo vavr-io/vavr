@@ -479,6 +479,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default List<IndexedSeq<T>> crossProduct(int power) {
+        return toStream().crossProduct(power).toList();
+    }
+
+    @Override
     default <U> List<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final List<? extends U> other = unit(that);

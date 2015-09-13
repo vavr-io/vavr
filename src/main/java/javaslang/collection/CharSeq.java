@@ -221,6 +221,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
+    public Vector<IndexedSeq<Character>> crossProduct(int power) {
+        return toStream().crossProduct(power).toVector();
+    }
+
+    @Override
     public <U> Vector<Tuple2<Character, U>> crossProduct(java.lang.Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final Vector<U> other = Vector.ofAll(that);

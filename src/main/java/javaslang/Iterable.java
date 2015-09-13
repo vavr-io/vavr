@@ -9,7 +9,6 @@ import javaslang.collection.IndexedSeq;
 import javaslang.collection.Iterator;
 
 import java.util.Objects;
-import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -33,7 +32,7 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
      * Tests whether every element of this iterable relates to the corresponding element of another iterable by
      * satisfying a test predicate.
      *
-     * @param <U> Component type of that iterable
+     * @param <U>       Component type of that iterable
      * @param that      the other iterable
      * @param predicate the test predicate, which relates elements from both iterables
      * @return {@code true} if both iterables have the same length and {@code predicate(x, y)}
@@ -83,7 +82,7 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
             return true;
         } else if (o instanceof Iterable) {
             final Iterable<?> that = (Iterable<?>) o;
-            return this.iterator().corresponds(that.iterator(), (o1, o2) ->  {
+            return this.iterator().corresponds(that.iterator(), (o1, o2) -> {
                 if (o1 instanceof Iterable) {
                     return ((Iterable<?>) o1).eq(o2);
                 } else if (o2 instanceof Iterable) {
@@ -143,14 +142,14 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
     }
 
     /**
-     * Groups this {@code Traversable} into fixed size blocks like so:
+     * Groups this {@code Traversable} into fixed size blocks.
+     * <p>
+     * Let length be the length of this Iterable. Then grouped is defined as follows:
      * <ul>
-     * <li>If {@code this.isEmpty()}, the resulting {@code Traversable} is empty.</li>
-     * <li>If {@code size <= this.length()}, the resulting {@code Traversable} will contain {@code this.length() / size}
-     * blocks of size {@code size} and maybe a non-empty block of size {@code this.length() % size}, if there are
-     * remaining elements.</li>
-     * <li>If {@code size > this.length()}, the resulting {@code Traversable} will contain one block of size
-     * {@code this.length()}.</li>
+     * <li>If {@code this.isEmpty()}, the resulting {@code Iterator} is empty.</li>
+     * <li>If {@code size <= length}, the resulting {@code Iterator} will contain {@code length / size} blocks of size
+     * {@code size} and maybe a non-empty block of size {@code length % size}, if there are remaining elements.</li>
+     * <li>If {@code size > length}, the resulting {@code Iterator} will contain one block of size {@code length}.</li>
      * </ul>
      * Examples:
      * <pre>
@@ -168,7 +167,7 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
      * {@code grouped(size)} is the same as {@code sliding(size, size)}.
      *
      * @param size a positive block size
-     * @return A new Traversable of sliced blocks of the given size
+     * @return A new Iterator of grouped blocks of the given size
      * @throws IllegalArgumentException if {@code size} is negative or zero
      */
     default Iterator<IndexedSeq<T>> grouped(int size) {
@@ -177,11 +176,11 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
 
 
     /**
-     * Slides a window of a specific {@code size} and step size 1 over this {@code TraversableOnce} by calling
+     * Slides a window of a specific {@code size} and step size 1 over this {@code Iterable} by calling
      * {@link #sliding(int, int)}.
      *
      * @param size a positive window size
-     * @return a new TraversableOnce of windows of a specific size using step size 1
+     * @return a new Iterator of windows of a specific size using step size 1
      * @throws IllegalArgumentException if {@code size} is negative or zero
      */
     default Iterator<IndexedSeq<T>> sliding(int size) {
@@ -189,7 +188,7 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
     }
 
     /**
-     * Slides a window of a specific {@code size} and {@code step} size over this {@code TraversableOnce}.
+     * Slides a window of a specific {@code size} and {@code step} size over this {@code Iterable}.
      * <p>
      * Examples:
      * <pre>
@@ -204,7 +203,7 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
      *
      * @param size a positive window size
      * @param step a positive step size
-     * @return a new TraversableOnce of windows of a specific size using a specific step size
+     * @return a new Iterator of windows of a specific size using a specific step size
      * @throws IllegalArgumentException if {@code size} or {@code step} are negative or zero
      */
     default Iterator<IndexedSeq<T>> sliding(int size, int step) {
