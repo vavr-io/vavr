@@ -12,6 +12,7 @@ package javaslang;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import javaslang.Function8Module.Memoized;
 
 /**
  * Represents a function with 8 arguments.
@@ -278,7 +279,7 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
 
     @Override
     default Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
             final Object lock = new Object();
@@ -290,6 +291,11 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
                 }
             };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -376,5 +382,14 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
         public Class<T8> parameterType8() {
             return (Class<T8>) parameterTypes()[7];
         }
+    }
+}
+
+interface Function8Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

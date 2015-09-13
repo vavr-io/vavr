@@ -298,6 +298,7 @@ def generateMainClasses(): Unit = {
 
         // imports
 
+        val Memoized = im.getType(s"javaslang.${className}Module.Memoized")
         val Objects = im.getType("java.util.Objects")
         val Try = if (checked) im.getType("javaslang.control.Try") else ""
         val additionalExtends = (checked, i) match {
@@ -485,7 +486,7 @@ def generateMainClasses(): Unit = {
 
               @Override
               default $className$fullGenerics memoized() {
-                  if (this instanceof Memoized) {
+                  if (isMemoized()) {
                       return this;
                   } else {
                       ${val mappingFunction = (checked, i) match {
@@ -502,12 +503,12 @@ def generateMainClasses(): Unit = {
                           case _ => null
                         }
                         if (i == 0) xs"""
-                          return ($className$fullGenerics & Memoized) Lazy.of($mappingFunction)::get;
+                          return ($className$fullGenerics & $Memoized) Lazy.of($mappingFunction)::get;
                         """ else if (i == 1) xs"""
                           final Lazy<R> forNull = Lazy.of($forNull);
                           final Object lock = new Object();
                           final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.HashMap")}<>();
-                          return ($className$fullGenerics & Memoized) t1 -> {
+                          return ($className$fullGenerics & $Memoized) t1 -> {
                               if (t1 == null) {
                                   return forNull.get();
                               } else {
@@ -520,7 +521,7 @@ def generateMainClasses(): Unit = {
                           final Object lock = new Object();
                           final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.HashMap")}<>();
                           final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
-                          return ($className$fullGenerics & Memoized) ($params) -> {
+                          return ($className$fullGenerics & $Memoized) ($params) -> {
                               synchronized (lock) {
                                   return cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
                               }
@@ -528,6 +529,11 @@ def generateMainClasses(): Unit = {
                         """
                       }
                   }
+              }
+
+              @Override
+              default boolean isMemoized() {
+                  return this instanceof $Memoized;
               }
 
               /$javadoc
@@ -589,6 +595,15 @@ def generateMainClasses(): Unit = {
                         return (Class<T$j>) parameterTypes()[${j-1}];
                     }
                   """)("\n\n")}
+              }
+          }
+
+          interface ${className}Module {
+
+              /**
+               * Tagging ZAM interface for Memoized functions.
+               */
+              interface Memoized {
               }
           }
         """

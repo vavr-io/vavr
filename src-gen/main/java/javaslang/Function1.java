@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import javaslang.Function1Module.Memoized;
 
 /**
  * Represents a function with one argument.
@@ -135,7 +136,7 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
 
     @Override
     default Function1<T1, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
             final Lazy<R> forNull = Lazy.of(() -> apply(null));
@@ -151,6 +152,11 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
                 }
             };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -209,5 +215,14 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
         public Class<T1> parameterType1() {
             return (Class<T1>) parameterTypes()[0];
         }
+    }
+}
+
+interface Function1Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

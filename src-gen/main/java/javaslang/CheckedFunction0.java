@@ -10,6 +10,7 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
+import javaslang.CheckedFunction0Module.Memoized;
 import javaslang.control.Try;
 
 /**
@@ -92,11 +93,16 @@ public interface CheckedFunction0<R> extends λ<R> {
 
     @Override
     default CheckedFunction0<R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
             return (CheckedFunction0<R> & Memoized) Lazy.of(() -> Try.of(this::apply).get())::get;
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -136,5 +142,14 @@ public interface CheckedFunction0<R> extends λ<R> {
             super(λ);
         }
 
+    }
+}
+
+interface CheckedFunction0Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

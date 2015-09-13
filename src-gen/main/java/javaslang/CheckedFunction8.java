@@ -12,6 +12,7 @@ package javaslang;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import javaslang.CheckedFunction8Module.Memoized;
 import javaslang.control.Try;
 
 /**
@@ -279,7 +280,7 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
 
     @Override
     default CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
             final Object lock = new Object();
@@ -291,6 +292,11 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
                 }
             };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -377,5 +383,14 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
         public Class<T8> parameterType8() {
             return (Class<T8>) parameterTypes()[7];
         }
+    }
+}
+
+interface CheckedFunction8Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

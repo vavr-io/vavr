@@ -12,6 +12,7 @@ package javaslang;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import javaslang.CheckedFunction7Module.Memoized;
 import javaslang.control.Try;
 
 /**
@@ -254,7 +255,7 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
 
     @Override
     default CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
             final Object lock = new Object();
@@ -266,6 +267,11 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
                 }
             };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -346,5 +352,14 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
         public Class<T7> parameterType7() {
             return (Class<T7>) parameterTypes()[6];
         }
+    }
+}
+
+interface CheckedFunction7Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

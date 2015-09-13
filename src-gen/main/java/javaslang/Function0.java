@@ -11,6 +11,7 @@ package javaslang;
 
 import java.util.Objects;
 import java.util.function.Supplier;
+import javaslang.Function0Module.Memoized;
 
 /**
  * Represents a function with no arguments.
@@ -102,11 +103,16 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
 
     @Override
     default Function0<R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
             return (Function0<R> & Memoized) Lazy.of(this::apply)::get;
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -146,5 +152,14 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
             super(λ);
         }
 
+    }
+}
+
+interface Function0Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

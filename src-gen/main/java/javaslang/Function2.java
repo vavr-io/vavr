@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import javaslang.Function2Module.Memoized;
 
 /**
  * Represents a function with two arguments.
@@ -144,7 +145,7 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
 
     @Override
     default Function2<T1, T2, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
             final Object lock = new Object();
@@ -156,6 +157,11 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
                 }
             };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -206,5 +212,14 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
         public Class<T2> parameterType2() {
             return (Class<T2>) parameterTypes()[1];
         }
+    }
+}
+
+interface Function2Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }
