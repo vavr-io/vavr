@@ -57,27 +57,27 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     /**
-     * Returns a singleton {@code CharSeq}, i.e. a {@code CharSeq} of one element.
+     * Returns a singleton {@code CharSeq}, i.e. a {@code CharSeq} of one character.
      *
-     * @param element An element.
+     * @param character A character.
      * @return A new {@code CharSeq} instance containing the given element
      */
-    public static CharSeq of(Character element) {
-        return new CharSeq(new java.lang.String(new char[] { element }));
+    public static CharSeq of(char character) {
+        return new CharSeq(new java.lang.String(new char[] { character }));
     }
 
     /**
-     * Creates a String of the given elements.
+     * Creates a String of the given characters.
      *
-     * @param elements Zero or more elements.
-     * @return A string containing the given elements in the same order.
+     * @param characters Zero or more characters.
+     * @return A string containing the given characters in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    public static CharSeq of(Character... elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        final char[] chrs = new char[elements.length];
-        for (int i = 0; i < elements.length; i++) {
-            chrs[i] = elements[i];
+    public static CharSeq of(char... characters) {
+        Objects.requireNonNull(characters, "characters is null");
+        final char[] chrs = new char[characters.length];
+        for (int i = 0; i < characters.length; i++) {
+            chrs[i] = characters[i];
         }
         return new CharSeq(new java.lang.String(chrs));
     }
@@ -90,7 +90,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      */
     public static CharSeq of(CharSequence sequence) {
         Objects.requireNonNull(sequence, "sequence is null");
-        return sequence.length() == 0 ? empty() : new CharSeq(sequence.toString());
+        if (sequence instanceof CharSeq) {
+            return (CharSeq) sequence;
+        } else {
+            return sequence.length() == 0 ? empty() : new CharSeq(sequence.toString());
+        }
     }
 
     /**
@@ -204,18 +208,17 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     /**
-     * Repeats a character sequences {@code times} times.
+     * Repeats this CharSeq {@code times} times.
+     * <p>
+     * Example: {@code CharSeq.of("ja").repeat(13) = "jajajajajajajajajajajajaja"}
      *
-     * @param characters A character sequence
      * @param times Repetition count
-     * @return A CharSeq representing {@code characters * times}
-     * @throws NullPointerException if characters is null
+     * @return A CharSeq representing {@code this * times}
      */
-    public static CharSeq repeat(CharSequence characters, int times) {
-        Objects.requireNonNull(characters, "characters is null");
+    public CharSeq repeat(int times) {
         final StringBuilder builder = new StringBuilder();
         for (int i = 0; i < times; i++) {
-            builder.append(characters);
+            builder.append(back);
         }
         return new CharSeq(builder.toString());
     }
