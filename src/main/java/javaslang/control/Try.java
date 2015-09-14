@@ -57,7 +57,9 @@ public interface Try<T> extends Value<T> {
      *
      * @return true, if this is a Failure, otherwise false, if this is a Success
      */
-    boolean isFailure();
+    default boolean isFailure() {
+        return !isSuccess();
+    }
 
     /**
      * Checks if this is a Success.
@@ -66,11 +68,29 @@ public interface Try<T> extends Value<T> {
      */
     boolean isSuccess();
 
-    T orElseGet(Function<? super Throwable, ? extends T> other);
+    Failure.NonFatal getCause();
 
-    void orElseRun(Consumer<? super Throwable> action);
+    default T orElseGet(Function<? super Throwable, ? extends T> other) {
+        if (isEmpty()) {
+            return other.apply(getCause().getCause());
+        } else {
+            return get();
+        }
+    }
 
-    <X extends Throwable> T orElseThrow(Function<? super Throwable, X> exceptionProvider) throws X;
+    default void orElseRun(Consumer<? super Throwable> action) {
+        if (isEmpty()) {
+            action.accept(getCause().getCause());
+        }
+    }
+
+    default <X extends Throwable> T orElseThrow(Function<? super Throwable, X> exceptionProvider) throws X {
+        if (isEmpty()) {
+            throw exceptionProvider.apply(getCause().getCause());
+        } else {
+            return get();
+        }
+    }
 
     /**
      * Returns {@code this}, if this is a {@code Success}, otherwise tries to recover the exception of the failure with {@code f},
@@ -108,7 +128,13 @@ public interface Try<T> extends Value<T> {
      */
     Try<T> onFailure(Consumer<Throwable> f);
 
-    Either<Throwable, T> toEither();
+    default Either<Throwable, T> toEither() {
+        if (isEmpty()) {
+            return new Left<>(getCause().getCause());
+        } else {
+            return new Right<>(get());
+        }
+    }
 
     /**
      * <p>Returns {@code this} if this is a Failure or this is a Success and the value satisfies the predicate.</p>
@@ -235,7 +261,14 @@ public interface Try<T> extends Value<T> {
      * @param consumer A checked consumer taking a single argument.
      * @return a new {@code Try}
      */
-    Try<T> andThen(CheckedConsumer<? super T> consumer);
+    @SuppressWarnings("unchecked")
+    default Try<T> andThen(CheckedConsumer<? super T> consumer) {
+        if (isFailure()) {
+            return this;
+        } else {
+            return Try.run(() -> consumer.accept(get())).flatMap(ignored -> this);
+        }
+    }
 
     @Override
     boolean equals(Object o);

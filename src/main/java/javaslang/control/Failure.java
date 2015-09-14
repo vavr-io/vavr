@@ -48,11 +48,6 @@ public final class Failure<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public boolean isFailure() {
-        return true;
-    }
-
-    @Override
     public boolean isSuccess() {
         return false;
     }
@@ -64,23 +59,8 @@ public final class Failure<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public T orElse(T other) {
-        return other;
-    }
-
-    @Override
-    public T orElseGet(Function<? super Throwable, ? extends T> other) {
-        return other.apply(cause.getCause());
-    }
-
-    @Override
-    public void orElseRun(Consumer<? super Throwable> action) {
-        action.accept(cause.getCause());
-    }
-
-    @Override
-    public <X extends Throwable> T orElseThrow(Function<? super Throwable, X> exceptionProvider) throws X {
-        throw exceptionProvider.apply(cause.getCause());
+    public NonFatal getCause() {
+        return cause;
     }
 
     @Override
@@ -105,21 +85,6 @@ public final class Failure<T> implements Try<T>, Serializable {
         } catch (Throwable t) {
             return new Failure<>(t);
         }
-    }
-
-    @Override
-    public None<T> toOption() {
-        return None.instance();
-    }
-
-    @Override
-    public Optional<T> toJavaOptional() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Left<Throwable, T> toEither() {
-        return new Left<>(cause.getCause());
     }
 
     @Override
@@ -169,12 +134,6 @@ public final class Failure<T> implements Try<T>, Serializable {
 
     @Override
     public Failure<T> peek(Consumer<? super T> action) {
-        return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Failure<T> andThen(CheckedConsumer<? super T> f) {
         return this;
     }
 
