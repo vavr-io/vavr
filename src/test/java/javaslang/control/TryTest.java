@@ -321,8 +321,7 @@ public class TryTest {
         }).andThen(() -> {
             throw new Error("err2");
         });
-        final Try<Void> expected = new Failure<>(new Error("err1"));
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual.toString()).isEqualTo("Failure(java.lang.Error: err1)");
     }
 
     @Test
@@ -341,9 +340,7 @@ public class TryTest {
                 .mapTry(x -> x + 100)
                 .mapTry(x -> Integer.parseInt("aaa") + x)   //Throws exception.
                 .mapTry(x -> x / 2);
-
-        final Try<Integer> expected = new Failure<>(new NumberFormatException("For input string: \"aaa\""));
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual.toString()).isEqualTo("Failure(java.lang.NumberFormatException: For input string: \"aaa\")");
     }
 
     @Test
@@ -365,9 +362,7 @@ public class TryTest {
                 .andThen(arr -> arr.add(Integer.parseInt("aaa"))) //Throws exception.
                 .andThen(arr -> arr.add(20))
                 .mapTry(arr -> arr.get(1));
-
-        final Try<Integer> expected = new Failure<>(new NumberFormatException("For input string: \"aaa\""));
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual.toString()).isEqualTo("Failure(java.lang.NumberFormatException: For input string: \"aaa\")");
     }
 
     // peek
@@ -560,8 +555,7 @@ public class TryTest {
         }).andThen(() -> {
             throw new Error("failure");
         });
-        final Try<Void> expected = new Failure<>(new Error("failure"));
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual.toString()).isEqualTo("Failure(java.lang.Error: failure)");
     }
 
     @Test
