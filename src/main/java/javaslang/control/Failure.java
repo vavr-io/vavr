@@ -6,6 +6,7 @@
 package javaslang.control;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -44,21 +45,23 @@ public final class Failure<T> implements Try<T>, Serializable {
     }
 
     @Override
+    public boolean isEmpty() {
+        return true;
+    }
+
+    @Override
     public boolean isFailure() {
         return true;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return (obj == this) || (obj instanceof Failure && equals(cause.getCause(), ((Failure<?>) obj).cause.getCause()));
+    public boolean isSuccess() {
+        return false;
     }
 
-    // DEV-NOTE: no cycle-detection, intentionally
-    private boolean equals(Throwable thisCause, Throwable thatCause) {
-        return (thisCause == thatCause) || (thisCause != null && thatCause != null
-                && Objects.equals(thisCause.getClass(), thatCause.getClass())
-                && Objects.equals(thisCause.getMessage(), thatCause.getMessage())
-                && equals(thisCause.getCause(), thatCause.getCause()));
+    @Override
+    public boolean equals(Object obj) {
+        return (obj == this) || (obj instanceof Failure && Objects.equals(cause, ((Failure<?>) obj).cause));
     }
 
     @Override
@@ -75,11 +78,11 @@ public final class Failure<T> implements Try<T>, Serializable {
      * An unchecked wrapper for non-fatal/recoverable exceptions. The underlying exception can
      * be accessed via {@link #getCause()}.
      * <p>
-     * The following exceptions are considered as fatal/non-recoverable:
+     * The following exceptions are considered to be fatal/non-recoverable:
      * <ul>
-     * <li>LinkageError</li>
-     * <li>ThreadDeath</li>
-     * <li>VirtualMachineError (i.e. OutOfMemoryError or StackOverflowError)</li>
+     * <li>{@linkplain LinkageError}</li>
+     * <li>{@linkplain ThreadDeath}</li>
+     * <li>{@linkplain VirtualMachineError} (i.e. {@linkplain OutOfMemoryError} or {@linkplain StackOverflowError})</li>
      * </ul>
      */
     public static final class NonFatal extends RuntimeException implements Serializable {
@@ -100,8 +103,10 @@ public final class Failure<T> implements Try<T>, Serializable {
          * @param exception A Throwable
          * @return A new {@code NonFatal} if the given exception is recoverable
          * @throws Error if the given exception is fatal, i.e. not recoverable
+         * @throws NullPointerException if exception is null
          */
         static NonFatal of(Throwable exception) {
+            Objects.requireNonNull(exception, "exception is null");
             if (exception instanceof NonFatal) {
                 return (NonFatal) exception;
             }
@@ -113,6 +118,28 @@ public final class Failure<T> implements Try<T>, Serializable {
             } else {
                 return new NonFatal(exception);
             }
+        }
+
+        /**
+         * Two NonFatal exceptions are equal, if they have the same stack trace.
+         *
+         * @param o An object
+         * @return true, if o equals this, false otherwise.
+         */
+        @Override
+        public boolean equals(Object o) {
+            return (o == this) || (o instanceof NonFatal
+                    && Arrays.deepEquals(getCause().getStackTrace(), ((NonFatal) o).getCause().getStackTrace()));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(getCause());
+        }
+
+        @Override
+        public String toString() {
+            return "NonFatal(" + getCause() + ")";
         }
     }
 }

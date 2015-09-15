@@ -230,9 +230,7 @@ public interface Try<T> extends Value<T> {
      * @return true if this is a Failure, returns false if this is a Success.
      */
     @Override
-    default boolean isEmpty() {
-        return isFailure();
-    }
+    boolean isEmpty();
 
     /**
      * Checks if this is a Failure.
@@ -246,9 +244,7 @@ public interface Try<T> extends Value<T> {
      *
      * @return true, if this is a Success, otherwise false, if this is a Failure
      */
-    default boolean isSuccess() {
-        return !isFailure();
-    }
+    boolean isSuccess();
 
     @Override
     default Iterator<T> iterator() {

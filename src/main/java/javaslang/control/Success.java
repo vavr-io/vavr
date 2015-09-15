@@ -28,9 +28,9 @@ public final class Success<T> implements Try<T>, Serializable {
     private final T value;
 
     /**
-     * Constructs a Failure.
+     * Constructs a Success.
      *
-     * @param value A value
+     * @param value The value of this Success.
      */
     public Success(T value) {
         this.value = value;
@@ -47,8 +47,18 @@ public final class Success<T> implements Try<T>, Serializable {
     }
 
     @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
     public boolean isFailure() {
         return false;
+    }
+
+    @Override
+    public boolean isSuccess() {
+        return true;
     }
 
     @Override
