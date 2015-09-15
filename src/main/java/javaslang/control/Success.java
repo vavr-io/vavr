@@ -11,7 +11,6 @@ import javaslang.Value;
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -38,152 +37,18 @@ public final class Success<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public boolean isFailure() {
-        return false;
-    }
-
-    @Override
-    public boolean isSuccess() {
-        return true;
-    }
-
-    @Override
     public T get() {
         return value;
     }
 
     @Override
-    public T orElse(T other) {
-        return value;
+    public Failure.NonFatal getCause() {
+        throw new UnsupportedOperationException("getCause on Success");
     }
 
     @Override
-    public T orElseGet(Function<? super Throwable, ? extends T> other) {
-        return value;
-    }
-
-    @Override
-    public void orElseRun(Consumer<? super Throwable> action) {
-        // nothing to do
-    }
-
-    @Override
-    public <X extends Throwable> T orElseThrow(Function<? super Throwable, X> exceptionProvider) throws X {
-        return value;
-    }
-
-    @Override
-    public Success<T> recover(Function<Throwable, ? extends T> f) {
-        return this;
-    }
-
-    @Override
-    public Success<T> recoverWith(Function<Throwable, Try<T>> f) {
-        return this;
-    }
-
-    @Override
-    public Success<T> onFailure(Consumer<Throwable> f) {
-        return this;
-    }
-
-    @Override
-    public Failure<Throwable> failed() {
-        return new Failure<>(new UnsupportedOperationException("Success.failed()"));
-    }
-
-    @Override
-    public Try<T> filter(Predicate<? super T> predicate) {
-        try {
-            if (predicate.test(value)) {
-                return this;
-            } else {
-                return new Failure<>(new NoSuchElementException("Predicate does not hold for " + value));
-            }
-        } catch (Throwable t) {
-            return new Failure<>(t);
-        }
-    }
-
-    @Override
-    public Try<T> filterTry(CheckedPredicate<? super T> predicate) {
-        return Try.of(() -> predicate.test(value)).flatMap(b -> filter(ignored -> b));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Try<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
-        return flatMapTry((CheckedFunction<T, java.lang.Iterable<? extends U>>) mapper::apply);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
-        try {
-            final Iterable<? extends U> iterable = mapper.apply(value);
-            if (iterable instanceof Value) {
-                return ((Value<U>) iterable).toTry();
-            } else {
-                return Try.of(() -> Value.get(iterable));
-            }
-        } catch (Throwable t) {
-            return new Failure<>(t);
-        }
-    }
-
-    @Override
-    public Try<Object> flatten() {
-        return flatMap(value -> (value instanceof Try) ? ((Try<?>) value).flatten() : this);
-    }
-
-    @Override
-    public <U> Try<U> map(Function<? super T, ? extends U> mapper) {
-        try {
-            return new Success<>(mapper.apply(value));
-        } catch (Throwable t) {
-            return new Failure<>(t);
-        }
-    }
-
-    @Override
-    public <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> f) {
-        return Try.of(() -> f.apply(value));
-    }
-
-    @Override
-    public Try<T> peek(Consumer<? super T> action) {
-        try {
-            action.accept(value);
-            return this;
-        } catch (Throwable t) {
-            return new Failure<>(t);
-        }
-    }
-
-    @Override
-    public Some<T> toOption() {
-        return new Some<>(value);
-    }
-
-    @Override
-    public Right<Throwable, T> toEither() {
-        return new Right<>(value);
-    }
-
-    @Override
-    public Optional<T> toJavaOptional() {
-        return Optional.ofNullable(value);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Try<T> andThen(CheckedConsumer<? super T> consumer) {
-        return Try.run(() -> consumer.accept(value)).flatMap(ignored -> this);
+    public boolean isFailure() {
+        return false;
     }
 
     @Override
