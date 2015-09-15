@@ -24,6 +24,7 @@ import java.util.stream.Collector;
  * An immutable {@code HashSet} implementation.
  *
  * @param <T> Component type
+ * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  * @since 2.0.0
  */
 public final class HashSet<T> implements Set<T>, Serializable {
@@ -393,15 +394,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public String mkString(CharSequence delimiter,
-                           CharSequence prefix,
-                           CharSequence suffix) {
-        final StringBuilder builder = new StringBuilder(prefix);
-        forEach(t -> builder.append(String.valueOf(t)).append(String.valueOf(delimiter)));
-        if (!isEmpty()) {
-            builder.delete(builder.length() - delimiter.length(), builder.length());
-        }
-        return builder.append(suffix).toString();
+    public String mkString(CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
+        return iterator().mkString(delimiter, prefix, suffix);
     }
 
     @Override
@@ -428,7 +422,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public HashSet<T> remove(T element) {
         final HashArrayMappedTrie<T, T> newTree = tree.remove(element);
-        return newTree == tree ? this : new HashSet<>(newTree);
+        return (newTree == tree) ? this : new HashSet<>(newTree);
     }
 
     @Override

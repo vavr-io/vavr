@@ -24,6 +24,7 @@ import javaslang.control.Try;
  * @param <T4> argument 4 of the function
  * @param <T5> argument 5 of the function
  * @param <R> return type of the function
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -257,6 +258,7 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends λ<R> {
      * @param <T4> the 4th parameter type of the function
      * @param <T5> the 5th parameter type of the function
      * @param <R> the return type of the function
+     * @author Daniel Dietrich
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")

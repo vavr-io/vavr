@@ -34,6 +34,7 @@ import java.util.stream.Collector;
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 7 ff.). Cambridge, 2003.
  *
  * @param <T> component type
+ * @author Daniel Dietrich
  * @since 2.0.0
  */
 public interface Stack<T> extends LinearSeq<T> {

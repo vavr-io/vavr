@@ -114,6 +114,7 @@ import java.util.function.*;
  * </ul>
  *
  * @param <T> Component type
+ * @author Daniel Dietrich and others
  * @since 2.0.0
  */
 public interface TraversableOnce<T> extends Value<T> {

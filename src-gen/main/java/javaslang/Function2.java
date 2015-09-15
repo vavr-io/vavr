@@ -21,6 +21,7 @@ import javaslang.Function2Module.Memoized;
  * @param <T1> argument 1 of the function
  * @param <T2> argument 2 of the function
  * @param <R> return type of the function
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -191,6 +192,7 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
      * @param <T1> the 1st parameter type of the function
      * @param <T2> the 2nd parameter type of the function
      * @param <R> the return type of the function
+     * @author Daniel Dietrich
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")

@@ -19,6 +19,7 @@ import java.util.Objects;
  * @param <T2> type of the 2nd element
  * @param <T3> type of the 3rd element
  * @param <T4> type of the 4th element
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 public final class Tuple4<T1, T2, T3, T4> implements Tuple, Serializable {

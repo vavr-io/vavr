@@ -28,6 +28,7 @@ import java.util.function.Supplier;
  * href="http://www.scala-lang.org/api/current/#scala.Option">Scala</a>.
  *
  * @param <T> The type of the optional value.
+ * @author Daniel Dietrich
  * @since 1.0.0
  */
 public interface Option<T> extends Value<T> {

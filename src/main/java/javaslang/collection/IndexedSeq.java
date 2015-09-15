@@ -21,6 +21,7 @@ import java.util.function.UnaryOperator;
  * Efficient random access is characteristic for indexed sequences.
  *
  * @param <T> component type
+ * @author Daniel Dietrich
  * @since 2.0.0
  */
 public interface IndexedSeq<T> extends Seq<T> {

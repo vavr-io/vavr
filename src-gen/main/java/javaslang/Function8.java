@@ -26,6 +26,7 @@ import javaslang.Function8Module.Memoized;
  * @param <T7> argument 7 of the function
  * @param <T8> argument 8 of the function
  * @param <R> return type of the function
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -331,6 +332,7 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
      * @param <T7> the 7th parameter type of the function
      * @param <T8> the 8th parameter type of the function
      * @param <R> the return type of the function
+     * @author Daniel Dietrich
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")

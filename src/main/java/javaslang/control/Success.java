@@ -19,6 +19,7 @@ import java.util.function.Predicate;
  * A succeeded Try.
  *
  * @param <T> component type of this Success
+ * @author Daniel Dietrich
  * @since 1.0.0
  */
 public final class Success<T> implements Try<T>, Serializable {

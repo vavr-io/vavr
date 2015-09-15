@@ -12,6 +12,8 @@ package javaslang.collection;
  * from being evaluated. In other words, (identity-)equals and hashCode are implemented by Object.
  *
  * @param <T> Component type
+ * @author Daniel Dietrich
+ * @since 2.0.0
  */
 public abstract class AbstractIterator<T> implements Iterator<T> {
 

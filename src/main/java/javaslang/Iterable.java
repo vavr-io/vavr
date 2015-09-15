@@ -17,6 +17,8 @@ import java.util.function.Predicate;
  * A rich extension of {@code java.lang.Iterable} and basis of all {@link Value} types, e.g. controls, collections et al.
  *
  * @param <T> Component type
+ * @author Daniel Dietrich
+ * @since 2.0.0
  */
 public interface Iterable<T> extends java.lang.Iterable<T> {
 

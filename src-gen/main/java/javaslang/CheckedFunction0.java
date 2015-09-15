@@ -17,6 +17,7 @@ import javaslang.control.Try;
  * Represents a function with no arguments.
  *
  * @param <R> return type of the function
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -130,6 +131,7 @@ public interface CheckedFunction0<R> extends λ<R> {
      *
      *
      * @param <R> the return type of the function
+     * @author Daniel Dietrich
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")

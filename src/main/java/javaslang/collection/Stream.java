@@ -95,6 +95,7 @@ import java.util.stream.Collector;
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 34 ff.). Cambridge, 2003.
  *
  * @param <T> component type of this Stream
+ * @author Daniel Dietrich, Jörgen Andersson, Ruslan Sennov
  * @since 1.1.0
  */
 public interface Stream<T> extends LinearSeq<T> {

@@ -87,6 +87,7 @@ import java.util.function.*;
  * </ul>
  *
  * @param <T> Component type
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 public interface Seq<T> extends Traversable<T>, IntFunction<T> {

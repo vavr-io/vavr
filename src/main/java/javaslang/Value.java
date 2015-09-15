@@ -52,6 +52,7 @@ import java.util.stream.StreamSupport;
  * </ul>
  *
  * @param <T> The type of the wrapped value.
+ * @author Daniel Dietrich
  * @since 2.0.0
  */
 public interface Value<T> extends javaslang.Iterable<T> {

@@ -17,6 +17,7 @@ import java.util.function.*;
  *
  * @param <K> Key type
  * @param <V> Value type
+ * @author Daniel Dietrich, Ruslan Sennov
  * @since 2.0.0
  */
 public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> {

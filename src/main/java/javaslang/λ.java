@@ -21,6 +21,7 @@ import java.util.Arrays;
  * because Java cannot calculate type bounds on function composition.
  *
  * @param <R> Return type of the function.
+ * @author Daniel Dietrich
  * @since 1.0.0
  */
 public interface λ<R> extends Serializable {

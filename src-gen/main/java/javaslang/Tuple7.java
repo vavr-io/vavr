@@ -22,6 +22,7 @@ import java.util.Objects;
  * @param <T5> type of the 5th element
  * @param <T6> type of the 6th element
  * @param <T7> type of the 7th element
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Serializable {

@@ -14,6 +14,7 @@ import java.util.function.Function;
  *
  * @param <L> left component type
  * @param <R> right component type
+ * @author Daniel Dietrich
  * @since 1.0.0
  */
 public final class Right<L, R> implements Either<L, R>, Serializable {

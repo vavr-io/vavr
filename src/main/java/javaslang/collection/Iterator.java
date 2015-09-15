@@ -37,6 +37,7 @@ import java.util.function.*;
  * itself.
  *
  * @param <T> Component type
+ * @author Daniel Dietrich
  * @since 2.0.0
  */
 public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {

@@ -20,6 +20,7 @@ import java.util.function.Predicate;
  * Represents an arbitrary object of type T.
  *
  * @param <T> The type of the arbitrary object.
+ * @author Daniel Dietrich
  * @since 1.2.0
  */
 @FunctionalInterface
