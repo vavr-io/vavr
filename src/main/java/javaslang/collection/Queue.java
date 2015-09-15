@@ -41,6 +41,7 @@ import java.util.stream.Collector;
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 42 ff.). Cambridge, 2003.
  *
  * @param <T> Component type of the Queue
+ * @author Daniel Dietrich
  * @since 2.0.0
  */
 public class Queue<T> implements LinearSeq<T>, Serializable {

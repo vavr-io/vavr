@@ -18,6 +18,7 @@ import java.util.function.UnaryOperator;
  * An immutable {@code SortedSet} interface.
  *
  * @param <T> Component type
+ * @author Daniel Dietrich
  * @since 2.0.0
  */
 public interface SortedSet<T> extends Set<T> {

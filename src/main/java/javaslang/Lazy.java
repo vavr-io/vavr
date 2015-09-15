@@ -37,6 +37,7 @@ import java.util.function.Supplier;
  *
  * <pre><code>final CharSequence chars = Lazy.of(() -&gt; "Yay!", CharSequence.class);</code></pre>
  *
+ * @author Daniel Dietrich
  * @since 1.2.1
  */
 public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {

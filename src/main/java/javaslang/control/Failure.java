@@ -13,6 +13,7 @@ import java.util.Objects;
  * A failed Try.
  *
  * @param <T> component type of this Failure
+ * @author Daniel Dietrich
  * @since 1.0.0
  */
 public final class Failure<T> implements Try<T>, Serializable {

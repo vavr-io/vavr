@@ -45,6 +45,8 @@ def generateMainClasses(): Unit = {
     def genProperty(im: ImportManager, packageName: String, className: String): String = xs"""
       /**
        * A property builder which provides a fluent API to build checkable properties.
+       *
+       * @author Daniel Dietrich
        * @since 1.2.0
        */
       public class $className {
@@ -118,6 +120,7 @@ def generateMainClasses(): Unit = {
                    * Represents a logical for all quantor.
                    *
                    ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} variable type of this for all quantor")("\n")}
+                   * @author Daniel Dietrich
                    * @since 1.2.0
                    */
                   public static class ForAll$i<$generics> {
@@ -165,6 +168,8 @@ def generateMainClasses(): Unit = {
               xs"""
                   /$javadoc
                    * Represents a $i-ary checkable property.
+                   *
+                   * @author Daniel Dietrich
                    * @since 1.2.0
                    */
                   public static class Property$i<$generics> implements Checkable {
@@ -334,6 +339,7 @@ def generateMainClasses(): Unit = {
            * Represents a function with ${arguments(i)}.
            ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> argument $j of the function")("\n")}
            * @param <R> return type of the function
+           * @author Daniel Dietrich
            * @since 1.1.0
            */
           @FunctionalInterface
@@ -577,6 +583,7 @@ def generateMainClasses(): Unit = {
                *
                ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> the ${j.ordinal} parameter type of the function")("\n")}
                * @param <R> the return type of the function
+               * @author Daniel Dietrich
                * @since 2.0.0
                */
               @SuppressWarnings("deprecation")
@@ -639,6 +646,7 @@ def generateMainClasses(): Unit = {
         /**
          * A tuple of ${i.numerus("element")} which can be seen as cartesian product of ${i.numerus("component")}.
          ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
+         * @author Daniel Dietrich
          * @since 1.1.0
          */
         public final class $className<$generics> implements Tuple, ${im.getType("java.io.Serializable")} {
@@ -730,6 +738,8 @@ def generateMainClasses(): Unit = {
       xs"""
         /$javadoc
          * The base interface of all tuples.
+         *
+         * @author Daniel Dietrich
          * @since 1.1.0
          */
         public interface $className {

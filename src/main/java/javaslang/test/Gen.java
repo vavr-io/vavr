@@ -28,6 +28,7 @@ import java.util.function.Supplier;
  *
  * @param <T> type of generated objects
  * @see javaslang.test.Arbitrary
+ * @author Daniel Dietrich
  * @since 1.2.0
  */
 @FunctionalInterface

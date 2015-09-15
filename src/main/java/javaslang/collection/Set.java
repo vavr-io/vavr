@@ -20,6 +20,7 @@ import java.util.function.UnaryOperator;
  * An immutable {@code Set} interface.
  *
  * @param <T> Component type
+ * @author Daniel Dietrich, Ruslan Sennov
  * @since 2.0.0
  */
 public interface Set<T> extends Traversable<T> {

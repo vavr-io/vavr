@@ -23,6 +23,7 @@ import java.util.function.Predicate;
  * See {@link Promise} if you want Futures that can be success by some other method.
  *
  * @param <T> The type of this Future's eventual value.
+ * @author Dillon Jett Callis, Daniel Dietrich
  * @since 2.0.0
  */
 public class Future<T> {

@@ -20,6 +20,7 @@ import java.util.function.Predicate;
  * {@link Option#of(Object)} is sufficient.
  *
  * @param <T> The type of the optional value.
+ * @author Daniel Dietrich
  * @since 1.0.0
  */
 public final class Some<T> implements Option<T>, Serializable {

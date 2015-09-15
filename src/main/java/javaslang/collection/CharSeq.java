@@ -22,6 +22,9 @@ import java.util.stream.Collector;
 
 /**
  * TODO javadoc
+ *
+ * @author Ruslan Sennov, Daniel Dietrich
+ * @since 2.0.0
  */
 public final class CharSeq implements CharSequence, IndexedSeq<Character>, Serializable {
 

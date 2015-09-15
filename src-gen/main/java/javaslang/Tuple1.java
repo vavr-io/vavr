@@ -16,6 +16,7 @@ import java.util.Objects;
  * A tuple of one element which can be seen as cartesian product of one component.
  *
  * @param <T1> type of the 1st element
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 public final class Tuple1<T1> implements Tuple, Serializable {

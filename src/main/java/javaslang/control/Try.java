@@ -19,6 +19,8 @@ import java.util.function.Predicate;
  * An implementation similar to Scala's Try control.
  *
  * @param <T> Value type in the case of success.
+ * @author Daniel Dietrich
+ * @since 1.0.0
  */
 public interface Try<T> extends Value<T> {
 

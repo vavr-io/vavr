@@ -17,6 +17,7 @@ import java.util.Objects;
  *
  * @param <T1> type of the 1st element
  * @param <T2> type of the 2nd element
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 public final class Tuple2<T1, T2> implements Tuple, Serializable {

@@ -17,7 +17,7 @@ import java.util.concurrent.CancellationException;
  * The Future can be obtained with {@link #future()} and success with {@link #success(Object)} or {@link #failure(Throwable)}.
  *
  * @param <T> The type of this Promise and Future's return type.
- *
+ * @author Dillon Jett Callis, Daniel Dietrich
  * @since 2.0.0
  */
 public class Promise<T> {

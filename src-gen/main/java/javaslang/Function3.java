@@ -21,6 +21,7 @@ import javaslang.Function3Module.Memoized;
  * @param <T2> argument 2 of the function
  * @param <T3> argument 3 of the function
  * @param <R> return type of the function
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -211,6 +212,7 @@ public interface Function3<T1, T2, T3, R> extends λ<R> {
      * @param <T2> the 2nd parameter type of the function
      * @param <T3> the 3rd parameter type of the function
      * @param <R> the return type of the function
+     * @author Daniel Dietrich
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")

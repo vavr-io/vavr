@@ -17,6 +17,7 @@ import javaslang.Function0Module.Memoized;
  * Represents a function with no arguments.
  *
  * @param <R> return type of the function
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -140,6 +141,7 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
      *
      *
      * @param <R> the return type of the function
+     * @author Daniel Dietrich
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")

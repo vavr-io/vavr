@@ -19,6 +19,7 @@ import java.util.Objects;
 /**
  * An immutable <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
  *
+ * @author Ruslan Sennov
  * @since 2.0.0
  */
 public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, V>> {

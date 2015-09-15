@@ -22,6 +22,7 @@ import java.util.function.*;
  * <p>A general Tree interface.</p>
  *
  * @param <T> component type of this Tree
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 public interface Tree<T> extends Traversable<T> {

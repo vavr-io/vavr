@@ -21,6 +21,8 @@ import java.util.stream.Collector;
  * TODO javadoc
  *
  * @param <T> Component type of the Vector.
+ * @author Ruslan Sennov
+ * @since 2.0.0
  */
 public final class Vector<T> implements IndexedSeq<T>, Serializable {
 

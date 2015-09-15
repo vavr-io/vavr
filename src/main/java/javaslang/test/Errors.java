@@ -8,6 +8,7 @@ package javaslang.test;
 /**
  * Error messages used internally within {@code Property.check}.
  *
+ * @author Daniel Dietrich
  * @since 1.2.0
  */
 interface Errors {

@@ -17,6 +17,7 @@ import java.util.function.Predicate;
  * calling {@link #instance()}.
  *
  * @param <T> The type of the optional value.
+ * @author Daniel Dietrich
  * @since 1.0.0
  */
 public final class None<T> implements Option<T>, Serializable {

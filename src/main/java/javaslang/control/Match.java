@@ -62,6 +62,7 @@ import java.util.function.Supplier;
  * </code></pre>
  *
  * @param <R> The result type of the {@code Match}.
+ * @author Daniel Dietrich
  * @since 1.0.0
  */
 public interface Match<R> extends Function<Object, R> {

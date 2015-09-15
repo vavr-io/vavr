@@ -29,6 +29,7 @@ import java.util.function.UnaryOperator;
  * </ul>
  *
  * @param <T> Component type
+ * @author Daniel Dietrich and others
  * @since 1.1.0
  */
 public interface Traversable<T> extends TraversableOnce<T> {

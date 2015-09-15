@@ -37,6 +37,7 @@ import java.util.function.Predicate;
  *
  * @param <L> The type of the Left value of an Either.
  * @param <R> The type of the Right value of an Either.
+ * @author Daniel Dietrich
  * @since 1.0.0
  */
 public interface Either<L, R> {

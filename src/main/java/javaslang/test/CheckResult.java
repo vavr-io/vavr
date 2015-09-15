@@ -26,6 +26,7 @@ import java.util.Objects;
  * and no sample could be found that satisfied the pre-condition. In this case the post-condition is satisfied by
  * definition (see <a href="http://en.wikipedia.org/wiki/Principle_of_explosion">ex falso quodlibet</a>).
  *
+ * @author Daniel Dietrich
  * @since 1.2.0
  */
 public interface CheckResult {

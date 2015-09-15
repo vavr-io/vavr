@@ -16,6 +16,7 @@ import java.util.function.*;
  *
  * @param <K> Key type
  * @param <V> Value type
+ * @author Daniel Dietrich
  * @since 2.0.0
  */
 public interface SortedMap<K, V> extends Map<K, V> {
