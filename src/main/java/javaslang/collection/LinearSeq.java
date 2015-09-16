@@ -195,6 +195,12 @@ public interface LinearSeq<T> extends Seq<T> {
     }
 
     @Override
+    LinearSeq<T> subSequence(int beginIndex);
+
+    @Override
+    LinearSeq<T> subSequence(int beginIndex, int endIndex);
+
+    @Override
     LinearSeq<T> tail();
 
     @Override

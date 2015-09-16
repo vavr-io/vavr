@@ -1005,31 +1005,29 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> slice(int beginIndex) {
-        if (beginIndex < 0) {
-            throw new IndexOutOfBoundsException("subsequence(" + beginIndex + ")");
-        }
-        Stream<T> result = this;
-        for (int i = 0; i < beginIndex; i++, result = result.tail()) {
-            if (result.isEmpty()) {
-                throw new IndexOutOfBoundsException(String.format("subsequence(%s) on Stream of size %s", beginIndex, i));
+        if (isEmpty()) {
+            return this;
+        } else {
+            Stream<T> result = this;
+            final int lowerBound = Math.max(beginIndex, 0);
+            for (int i = 0; i < lowerBound && !result.isEmpty(); i++) {
+                result = result.tail();
             }
+            return result;
         }
-        return result;
     }
 
     @Override
     default Stream<T> slice(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || beginIndex > endIndex) {
-            throw new IndexOutOfBoundsException(String.format("subsequence(%s, %s)", beginIndex, endIndex));
-        }
-        if (beginIndex == endIndex) {
-            return Empty.instance();
-        } else if (isEmpty()) {
-            throw new IndexOutOfBoundsException("subsequence of Nil");
-        } else if (beginIndex == 0) {
-            return new Cons<>(head(), () -> tail().slice(0, endIndex - 1));
+        if (beginIndex >= endIndex || isEmpty()) {
+            return empty();
         } else {
-            return tail().slice(beginIndex - 1, endIndex - 1);
+            final int lowerBound = Math.max(beginIndex, 0);
+            if (lowerBound == 0) {
+                return new Cons<>(head(), () -> tail().slice(0, endIndex - 1));
+            } else {
+                return tail().slice(lowerBound - 1, endIndex - 1);
+            }
         }
     }
 
@@ -1075,6 +1073,36 @@ public interface Stream<T> extends LinearSeq<T> {
     default Spliterator<T> spliterator() {
         // the focus of the Stream API is on random-access collections of *known size*
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
+    }
+
+    @Override
+    default Stream<T> subSequence(int beginIndex) {
+        if (beginIndex < 0) {
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
+        }
+        Stream<T> result = this;
+        for (int i = 0; i < beginIndex; i++, result = result.tail()) {
+            if (result.isEmpty()) {
+                throw new IndexOutOfBoundsException(String.format("subSequence(%s) on Stream of size %s", beginIndex, i));
+            }
+        }
+        return result;
+    }
+
+    @Override
+    default Stream<T> subSequence(int beginIndex, int endIndex) {
+        if (beginIndex < 0 || beginIndex > endIndex) {
+            throw new IndexOutOfBoundsException(String.format("subSequence(%s, %s)", beginIndex, endIndex));
+        }
+        if (beginIndex == endIndex) {
+            return Empty.instance();
+        } else if (isEmpty()) {
+            throw new IndexOutOfBoundsException("subSequence of Nil");
+        } else if (beginIndex == 0) {
+            return new Cons<>(head(), () -> tail().subSequence(0, endIndex - 1));
+        } else {
+            return tail().subSequence(beginIndex - 1, endIndex - 1);
+        }
     }
 
     @Override

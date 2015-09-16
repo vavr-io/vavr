@@ -151,7 +151,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldComputeKCombinationsOfEmptyList() {
-        assertThat(empty().combinations(1)).isEqualTo(empty());
+        assertThat(empty().combinations(1)).isEmpty();
     }
 
     @SuppressWarnings("unchecked")
@@ -190,7 +190,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldCalculateCrossProductOfNil() {
         final Traversable<Tuple2<Object, Object>> actual = empty().crossProduct();
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
     @SuppressWarnings("unchecked")
@@ -209,19 +209,19 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldCalculateCrossProductOfNilAndNil() {
         final Traversable<Tuple2<Object, Object>> actual = empty().crossProduct(empty());
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test
     public void shouldCalculateCrossProductOfNilAndNonNil() {
         final Traversable<Tuple2<Object, Object>> actual = empty().crossProduct(of(1, 2, 3));
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test
     public void shouldCalculateCrossProductOfNonNilAndNil() {
         final Traversable<Tuple2<Integer, Integer>> actual = of(1, 2, 3).crossProduct(empty());
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
     @SuppressWarnings("unchecked")
@@ -510,7 +510,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldIntersperseNil() {
-        assertThat(this.<Character> empty().intersperse(',')).isEqualTo(empty());
+        assertThat(this.<Character> empty().intersperse(',')).isEmpty();
     }
 
     @Test
@@ -573,11 +573,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldPatchEmptyByEmpty() {
-        assertThat(empty().patch(0, empty(), 0)).isEqualTo(empty());
-        assertThat(empty().patch(-1, empty(), -1)).isEqualTo(empty());
-        assertThat(empty().patch(-1, empty(), 1)).isEqualTo(empty());
-        assertThat(empty().patch(1, empty(), -1)).isEqualTo(empty());
-        assertThat(empty().patch(1, empty(), 1)).isEqualTo(empty());
+        assertThat(empty().patch(0, empty(), 0)).isEmpty();
+        assertThat(empty().patch(-1, empty(), -1)).isEmpty();
+        assertThat(empty().patch(-1, empty(), 1)).isEmpty();
+        assertThat(empty().patch(1, empty(), -1)).isEmpty();
+        assertThat(empty().patch(1, empty(), 1)).isEmpty();
     }
 
     @Test
@@ -596,11 +596,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(s.patch(-1, empty(), -1)).isEqualTo(of('1', '2', '3'));
         assertThat(s.patch(-1, empty(), 0)).isEqualTo(of('1', '2', '3'));
         assertThat(s.patch(-1, empty(), 1)).isEqualTo(of('2', '3'));
-        assertThat(s.patch(-1, empty(), 3)).isEqualTo(empty());
+        assertThat(s.patch(-1, empty(), 3)).isEmpty();
         assertThat(s.patch(0, empty(), -1)).isEqualTo(of('1', '2', '3'));
         assertThat(s.patch(0, empty(), 0)).isEqualTo(of('1', '2', '3'));
         assertThat(s.patch(0, empty(), 1)).isEqualTo(of('2', '3'));
-        assertThat(s.patch(0, empty(), 3)).isEqualTo(empty());
+        assertThat(s.patch(0, empty(), 3)).isEmpty();
         assertThat(s.patch(1, empty(), -1)).isEqualTo(of('1', '2', '3'));
         assertThat(s.patch(1, empty(), 0)).isEqualTo(of('1', '2', '3'));
         assertThat(s.patch(1, empty(), 1)).isEqualTo(of('1', '3'));
@@ -637,7 +637,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldComputePermutationsOfEmptyList() {
-        assertThat(empty().permutations()).isEqualTo(empty());
+        assertThat(empty().permutations()).isEmpty();
     }
 
     @SuppressWarnings("unchecked")
@@ -701,7 +701,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldRemoveElementFromNil() {
-        assertThat(empty().remove(null)).isEqualTo(empty());
+        assertThat(empty().remove(null)).isEmpty();
     }
 
     @Test
@@ -733,7 +733,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldRemoveFirstElementByPredicateFromNil() {
-        assertThat(empty().removeFirst(v -> true)).isEqualTo(empty());
+        assertThat(empty().removeFirst(v -> true)).isEmpty();
     }
 
     @Test
@@ -775,7 +775,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldRemoveLastElementByPredicateFromNil() {
-        assertThat(empty().removeLast(v -> true)).isEqualTo(empty());
+        assertThat(empty().removeLast(v -> true)).isEmpty();
     }
 
     @Test
@@ -817,7 +817,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldRemoveAllElementsFromNil() {
-        assertThat(empty().removeAll(of(1, 2, 3))).isEqualTo(empty());
+        assertThat(empty().removeAll(of(1, 2, 3))).isEmpty();
     }
 
     @Test
@@ -839,7 +839,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldRemoveAllObjectsFromNil() {
-        assertThat(empty().removeAll(1)).isEqualTo(empty());
+        assertThat(empty().removeAll(1)).isEmpty();
     }
 
     @Test
@@ -861,7 +861,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldReverseNil() {
-        assertThat(empty().reverse()).isEqualTo(empty());
+        assertThat(empty().reverse()).isEmpty();
     }
 
     @Test
@@ -910,7 +910,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldSortNil() {
-        assertThat(empty().sort()).isEqualTo(empty());
+        assertThat(empty().sort()).isEmpty();
     }
 
     @Test
@@ -922,7 +922,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldSortNilUsingComparator() {
-        assertThat(this.<Integer> empty().sort((i, j) -> j - i)).isEqualTo(empty());
+        assertThat(this.<Integer> empty().sort((i, j) -> j - i)).isEmpty();
     }
 
     @Test
@@ -1091,7 +1091,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldRemoveIndxAtNil() {
-        assertThat(empty().removeAt(1)).isEqualTo(empty());
+        assertThat(empty().removeAt(1)).isEmpty();
     }
 
     @Test
@@ -1124,7 +1124,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnNilWhenSliceFrom0OnNil() {
         final Seq<Integer> actual = this.<Integer> empty().slice(0);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test
@@ -1136,7 +1136,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnNilWhenSliceFrom1OnSeqOf1() {
         final Seq<Integer> actual = of(1).slice(1);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test
@@ -1148,22 +1148,22 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnNilWhenSliceBeginningWithSize() {
         final Seq<Integer> actual = of(1, 2, 3).slice(3);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenSliceOnNil() {
-        empty().slice(1);
+        assertThat(empty().slice(1)).isEmpty();
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenSliceWithOutOfLowerBound() {
-        of(1, 2, 3).slice(-1);
+        assertThat(of(1, 2, 3).slice(-1)).isEqualTo(of(1, 2, 3));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenSliceWithOutOfUpperBound() {
-        of(1, 2, 3).slice(4);
+        assertThat(of(1, 2, 3).slice(4)).isEmpty();
     }
 
     // -- slice(beginIndex, endIndex)
@@ -1171,13 +1171,13 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnNilWhenSliceFrom0To0OnNil() {
         final Seq<Integer> actual = this.<Integer> empty().slice(0, 0);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test
     public void shouldReturnNilWhenSliceFrom0To0OnNonNil() {
         final Seq<Integer> actual = of(1).slice(0, 0);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test
@@ -1189,7 +1189,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnNilWhenSliceFrom1To1OnNonNil() {
         final Seq<Integer> actual = of(1).slice(1, 1);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test
@@ -1199,39 +1199,164 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     }
 
     @Test
-    public void shouldReturnNilWhenIndicesBothAreUpperBound() {
+    public void shouldReturnNilOnSliceWhenIndicesBothAreUpperBound() {
         final Seq<Integer> actual = of(1, 2, 3).slice(3, 3);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowOnSliceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
-        of(1, 2, 3).slice(1, 0);
+        assertThat(of(1, 2, 3).slice(1, 0)).isEmpty();
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowOnSliceOnNilWhenBeginIndexIsGreaterThanEndIndex() {
-        empty().slice(1, 0);
+        assertThat(empty().slice(1, 0)).isEmpty();
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowOnSliceOnNonNilWhenBeginIndexExceedsLowerBound() {
-        of(1, 2, 3).slice(-1, 2);
+        assertThat(of(1, 2, 3).slice(-1, 2)).isEqualTo(of(1, 2, 3));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowOnSliceOnNilWhenBeginIndexExceedsLowerBound() {
-        empty().slice(-1, 2);
+        assertThat(empty().slice(-1, 2)).isEmpty();
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenSlice2OnNil() {
-        empty().slice(0, 1);
+        assertThat(empty().slice(0, 1)).isEmpty();
+    }
+
+    @Test
+    public void shouldThrowOnSliceWhenEndIndexExceedsUpperBound() {
+        assertThat(of(1, 2, 3).slice(1, 4)).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    public void shouldThrowOnSliceWhenBeginIndexIsGreaterThanEndIndex() {
+        assertThat(of(1, 2, 3).slice(2, 1)).isEmpty();
+    }
+
+    // -- subSequence(beginIndex)
+
+    @Test
+    public void shouldReturnNilWhenSubSequenceFrom0OnNil() {
+        final Seq<Integer> actual = this.<Integer> empty().subSequence(0);
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnIdentityWhenSubSequenceFrom0OnNonNil() {
+        final Seq<Integer> actual = of(1).subSequence(0);
+        assertThat(actual).isEqualTo(of(1));
+    }
+
+    @Test
+    public void shouldReturnNilWhenSubSequenceFrom1OnSeqOf1() {
+        final Seq<Integer> actual = of(1).subSequence(1);
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnSubSequenceWhenIndexIsWithinRange() {
+        final Seq<Integer> actual = of(1, 2, 3).subSequence(1);
+        assertThat(actual).isEqualTo(of(2, 3));
+    }
+
+    @Test
+    public void shouldReturnNilWhenSubSequenceBeginningWithSize() {
+        final Seq<Integer> actual = of(1, 2, 3).subSequence(3);
+        assertThat(actual).isEmpty();
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowOnSliceWhenEndIndexExceedsUpperBound() {
-        of(1, 2, 3).slice(1, 4).mkString(); // force computation of last element, e.g. because Stream is lazy
+    public void shouldThrowWhenSubSequenceOnNil() {
+        empty().subSequence(1);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldThrowWhenSubSequenceWithOutOfLowerBound() {
+        of(1, 2, 3).subSequence(-1);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldThrowWhenSubSequenceWithOutOfUpperBound() {
+        of(1, 2, 3).subSequence(4);
+    }
+
+    // -- subSequence(beginIndex, endIndex)
+
+    @Test
+    public void shouldReturnNilWhenSubSequenceFrom0To0OnNil() {
+        final Seq<Integer> actual = this.<Integer> empty().subSequence(0, 0);
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnNilWhenSubSequenceFrom0To0OnNonNil() {
+        final Seq<Integer> actual = of(1).subSequence(0, 0);
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnSeqWithFirstElementWhenSubSequenceFrom0To1OnNonNil() {
+        final Seq<Integer> actual = of(1).subSequence(0, 1);
+        assertThat(actual).isEqualTo(of(1));
+    }
+
+    @Test
+    public void shouldReturnNilWhenSubSequenceFrom1To1OnNonNil() {
+        final Seq<Integer> actual = of(1).subSequence(1, 1);
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnSubSequenceWhenIndicesAreWithinRange() {
+        final Seq<Integer> actual = of(1, 2, 3).subSequence(1, 3);
+        assertThat(actual).isEqualTo(of(2, 3));
+    }
+
+    @Test
+    public void shouldReturnNilWhenOnSubSequenceIndicesBothAreUpperBound() {
+        final Seq<Integer> actual = of(1, 2, 3).subSequence(3, 3);
+        assertThat(actual).isEmpty();
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldThrowOnSubSequenceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
+        of(1, 2, 3).subSequence(1, 0);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldThrowOnSubSequenceOnNilWhenBeginIndexIsGreaterThanEndIndex() {
+        empty().subSequence(1, 0);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldThrowOnSubSequenceOnNonNilWhenBeginIndexExceedsLowerBound() {
+        of(1, 2, 3).subSequence(-1, 2);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldThrowOnSubSequenceOnNilWhenBeginIndexExceedsLowerBound() {
+        empty().subSequence(-1, 2);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldThrowWhenSubSequence2OnNil() {
+        empty().subSequence(0, 1);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldThrowOnSubSequenceWhenEndIndexExceedsUpperBound() {
+        of(1, 2, 3).subSequence(1, 4).mkString(); // force computation of last element, e.g. because Stream is lazy
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldThrowOnSubSequenceWhenBeginIndexIsGreaterThanEndIndex() {
+        of(1, 2, 3).subSequence(2, 1).mkString(); // force computation of last element, e.g. because Stream is lazy
     }
 
     // -- unzip
@@ -1253,19 +1378,19 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldZipNils() {
         final Seq<?> actual = empty().zip(empty());
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test
     public void shouldZipEmptyAndNonNil() {
         final Seq<?> actual = empty().zip(of(1));
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test
     public void shouldZipNonEmptyAndNil() {
         final Seq<?> actual = of(1).zip(empty());
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test
@@ -1302,7 +1427,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     @Test
     public void shouldZipAllNils() {
         final Seq<?> actual = empty().zipAll(empty(), null, null);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test
@@ -1369,8 +1494,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldCreateRangeWhereFromIsGreaterThanTo() {
-        assertThat(rangeClosed(1, 0)).isEqualTo(empty());
-        assertThat(rangeClosed(1L, 0L)).isEqualTo(empty());
+        assertThat(rangeClosed(1, 0)).isEmpty();
+        assertThat(rangeClosed(1L, 0L)).isEmpty();
     }
 
     @Test
@@ -1401,14 +1526,14 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldCreateRangeByWhereFromIsGreaterThanTo() {
-        assertThat(rangeClosedBy(1, 0, 1)).isEqualTo(empty());
-        assertThat(rangeClosedBy(1, 0, 3)).isEqualTo(empty());
-        assertThat(rangeClosedBy(0, 1, -1)).isEqualTo(empty());
-        assertThat(rangeClosedBy(0, 1, -3)).isEqualTo(empty());
-        assertThat(rangeClosedBy(1L, 0L, 1)).isEqualTo(empty());
-        assertThat(rangeClosedBy(1L, 0L, 3)).isEqualTo(empty());
-        assertThat(rangeClosedBy(0L, 1L, -1)).isEqualTo(empty());
-        assertThat(rangeClosedBy(0L, 1L, -3)).isEqualTo(empty());
+        assertThat(rangeClosedBy(1, 0, 1)).isEmpty();
+        assertThat(rangeClosedBy(1, 0, 3)).isEmpty();
+        assertThat(rangeClosedBy(0, 1, -1)).isEmpty();
+        assertThat(rangeClosedBy(0, 1, -3)).isEmpty();
+        assertThat(rangeClosedBy(1L, 0L, 1)).isEmpty();
+        assertThat(rangeClosedBy(1L, 0L, 3)).isEmpty();
+        assertThat(rangeClosedBy(0L, 1L, -1)).isEmpty();
+        assertThat(rangeClosedBy(0L, 1L, -3)).isEmpty();
     }
 
     @Test
@@ -1424,7 +1549,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     }
 
     @Test
-    public void  shouldCreateRangeByWhereFromIsLessThanTo() {
+    public void shouldCreateRangeByWhereFromIsLessThanTo() {
         assertThat(rangeClosedBy(1, 3, 1)).isEqualTo(of(1, 2, 3));
         assertThat(rangeClosedBy(1, 5, 2)).isEqualTo(of(1, 3, 5));
         assertThat(rangeClosedBy(1, 6, 2)).isEqualTo(of(1, 3, 5));
@@ -1475,14 +1600,14 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldCreateStreamOfUntilWhereFromIsGreaterThanTo() {
-        assertThat(range(1, 0)).isEqualTo(empty());
-        assertThat(range(1L, 0L)).isEqualTo(empty());
+        assertThat(range(1, 0)).isEmpty();
+        assertThat(range(1L, 0L)).isEmpty();
     }
 
     @Test
     public void shouldCreateStreamOfUntilWhereFromEqualsTo() {
-        assertThat(range(0, 0)).isEqualTo(empty());
-        assertThat(range(0L, 0L)).isEqualTo(empty());
+        assertThat(range(0, 0)).isEmpty();
+        assertThat(range(0L, 0L)).isEmpty();
     }
 
     @Test
@@ -1493,40 +1618,40 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldCreateStreamOfUntilWhereFromEqualsToEquals_MIN_VALUE() {
-        assertThat(range(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEqualTo(empty());
-        assertThat(range(Long.MIN_VALUE, Long.MIN_VALUE)).isEqualTo(empty());
+        assertThat(range(Integer.MIN_VALUE, Integer.MIN_VALUE)).isEmpty();
+        assertThat(range(Long.MIN_VALUE, Long.MIN_VALUE)).isEmpty();
     }
 
     @Test
     public void shouldCreateStreamOfUntilWhereFromEqualsToEquals_MAX_VALUE() {
-        assertThat(range(Integer.MAX_VALUE, Integer.MAX_VALUE)).isEqualTo(empty());
-        assertThat(range(Long.MAX_VALUE, Long.MAX_VALUE)).isEqualTo(empty());
+        assertThat(range(Integer.MAX_VALUE, Integer.MAX_VALUE)).isEmpty();
+        assertThat(range(Long.MAX_VALUE, Long.MAX_VALUE)).isEmpty();
     }
 
     // -- static rangeBy(int, int, int), rangeBy(long, long, long)
 
     @Test
     public void shouldCreateStreamOfUntilByWhereFromIsGreaterThanTo() {
-        assertThat(rangeBy(1, 0, 1)).isEqualTo(empty());
-        assertThat(rangeBy(1, 0, 3)).isEqualTo(empty());
-        assertThat(rangeBy(0, 1, -1)).isEqualTo(empty());
-        assertThat(rangeBy(0, 1, -3)).isEqualTo(empty());
-        assertThat(rangeBy(1L, 0L, 1L)).isEqualTo(empty());
-        assertThat(rangeBy(1L, 0L, 3L)).isEqualTo(empty());
-        assertThat(rangeBy(0L, 1L, -1L)).isEqualTo(empty());
-        assertThat(rangeBy(0L, 1L, -3L)).isEqualTo(empty());
+        assertThat(rangeBy(1, 0, 1)).isEmpty();
+        assertThat(rangeBy(1, 0, 3)).isEmpty();
+        assertThat(rangeBy(0, 1, -1)).isEmpty();
+        assertThat(rangeBy(0, 1, -3)).isEmpty();
+        assertThat(rangeBy(1L, 0L, 1L)).isEmpty();
+        assertThat(rangeBy(1L, 0L, 3L)).isEmpty();
+        assertThat(rangeBy(0L, 1L, -1L)).isEmpty();
+        assertThat(rangeBy(0L, 1L, -3L)).isEmpty();
     }
 
     @Test
     public void shouldCreateStreamOfUntilByWhereFromEqualsTo() {
-        assertThat(rangeBy(0, 0, 1)).isEqualTo(empty());
-        assertThat(rangeBy(0, 0, 3)).isEqualTo(empty());
-        assertThat(rangeBy(0, 0, -1)).isEqualTo(empty());
-        assertThat(rangeBy(0, 0, -3)).isEqualTo(empty());
-        assertThat(rangeBy(0L, 0L, 1L)).isEqualTo(empty());
-        assertThat(rangeBy(0L, 0L, 3L)).isEqualTo(empty());
-        assertThat(rangeBy(0L, 0L, -1L)).isEqualTo(empty());
-        assertThat(rangeBy(0L, 0L, -3L)).isEqualTo(empty());
+        assertThat(rangeBy(0, 0, 1)).isEmpty();
+        assertThat(rangeBy(0, 0, 3)).isEmpty();
+        assertThat(rangeBy(0, 0, -1)).isEmpty();
+        assertThat(rangeBy(0, 0, -3)).isEmpty();
+        assertThat(rangeBy(0L, 0L, 1L)).isEmpty();
+        assertThat(rangeBy(0L, 0L, 3L)).isEmpty();
+        assertThat(rangeBy(0L, 0L, -1L)).isEmpty();
+        assertThat(rangeBy(0L, 0L, -3L)).isEmpty();
     }
 
     @Test
@@ -1543,26 +1668,26 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     @Test
     public void shouldCreateStreamOfUntilByWhereFromEqualsToEquals_MIN_VALUE() {
-        assertThat(rangeBy(Integer.MIN_VALUE, Integer.MIN_VALUE, 1)).isEqualTo(empty());
-        assertThat(rangeBy(Integer.MIN_VALUE, Integer.MIN_VALUE, 3)).isEqualTo(empty());
-        assertThat(rangeBy(Integer.MIN_VALUE, Integer.MIN_VALUE, -1)).isEqualTo(empty());
-        assertThat(rangeBy(Integer.MIN_VALUE, Integer.MIN_VALUE, -3)).isEqualTo(empty());
-        assertThat(rangeBy(Long.MIN_VALUE, Long.MIN_VALUE, 1L)).isEqualTo(empty());
-        assertThat(rangeBy(Long.MIN_VALUE, Long.MIN_VALUE, 3L)).isEqualTo(empty());
-        assertThat(rangeBy(Long.MIN_VALUE, Long.MIN_VALUE, -1L)).isEqualTo(empty());
-        assertThat(rangeBy(Long.MIN_VALUE, Long.MIN_VALUE, -3L)).isEqualTo(empty());
+        assertThat(rangeBy(Integer.MIN_VALUE, Integer.MIN_VALUE, 1)).isEmpty();
+        assertThat(rangeBy(Integer.MIN_VALUE, Integer.MIN_VALUE, 3)).isEmpty();
+        assertThat(rangeBy(Integer.MIN_VALUE, Integer.MIN_VALUE, -1)).isEmpty();
+        assertThat(rangeBy(Integer.MIN_VALUE, Integer.MIN_VALUE, -3)).isEmpty();
+        assertThat(rangeBy(Long.MIN_VALUE, Long.MIN_VALUE, 1L)).isEmpty();
+        assertThat(rangeBy(Long.MIN_VALUE, Long.MIN_VALUE, 3L)).isEmpty();
+        assertThat(rangeBy(Long.MIN_VALUE, Long.MIN_VALUE, -1L)).isEmpty();
+        assertThat(rangeBy(Long.MIN_VALUE, Long.MIN_VALUE, -3L)).isEmpty();
     }
 
     @Test
     public void shouldCreateStreamOfUntilByWhereFromEqualsToEquals_MAX_VALUE() {
-        assertThat(rangeBy(Integer.MAX_VALUE, Integer.MAX_VALUE, 1)).isEqualTo(empty());
-        assertThat(rangeBy(Integer.MAX_VALUE, Integer.MAX_VALUE, 3)).isEqualTo(empty());
-        assertThat(rangeBy(Integer.MAX_VALUE, Integer.MAX_VALUE, -1)).isEqualTo(empty());
-        assertThat(rangeBy(Integer.MAX_VALUE, Integer.MAX_VALUE, -3)).isEqualTo(empty());
-        assertThat(rangeBy(Long.MAX_VALUE, Long.MAX_VALUE, 1L)).isEqualTo(empty());
-        assertThat(rangeBy(Long.MAX_VALUE, Long.MAX_VALUE, 3L)).isEqualTo(empty());
-        assertThat(rangeBy(Long.MAX_VALUE, Long.MAX_VALUE, -1L)).isEqualTo(empty());
-        assertThat(rangeBy(Long.MAX_VALUE, Long.MAX_VALUE, -3L)).isEqualTo(empty());
+        assertThat(rangeBy(Integer.MAX_VALUE, Integer.MAX_VALUE, 1)).isEmpty();
+        assertThat(rangeBy(Integer.MAX_VALUE, Integer.MAX_VALUE, 3)).isEmpty();
+        assertThat(rangeBy(Integer.MAX_VALUE, Integer.MAX_VALUE, -1)).isEmpty();
+        assertThat(rangeBy(Integer.MAX_VALUE, Integer.MAX_VALUE, -3)).isEmpty();
+        assertThat(rangeBy(Long.MAX_VALUE, Long.MAX_VALUE, 1L)).isEmpty();
+        assertThat(rangeBy(Long.MAX_VALUE, Long.MAX_VALUE, 3L)).isEmpty();
+        assertThat(rangeBy(Long.MAX_VALUE, Long.MAX_VALUE, -1L)).isEmpty();
+        assertThat(rangeBy(Long.MAX_VALUE, Long.MAX_VALUE, -3L)).isEmpty();
     }
 
     // -- static rangeBy and rangeClosedBy: step = 0

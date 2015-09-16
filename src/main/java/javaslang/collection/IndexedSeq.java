@@ -191,6 +191,12 @@ public interface IndexedSeq<T> extends Seq<T> {
     }
 
     @Override
+    IndexedSeq<T> subSequence(int beginIndex);
+
+    @Override
+    IndexedSeq<T> subSequence(int beginIndex, int endIndex);
+
+    @Override
     IndexedSeq<T> tail();
 
     @Override

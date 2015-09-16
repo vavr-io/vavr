@@ -1027,37 +1027,35 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> slice(int beginIndex) {
-        if (beginIndex < 0) {
-            throw new IndexOutOfBoundsException("slice(" + beginIndex + ")");
-        }
-        List<T> result = this;
-        for (int i = 0; i < beginIndex; i++, result = result.tail()) {
-            if (result.isEmpty()) {
-                throw new IndexOutOfBoundsException(
-                        String.format("slice(%s) on List of length %s", beginIndex, i));
+        if (beginIndex >= length() || isEmpty()) {
+            return empty();
+        } else {
+            List<T> result = this;
+            final int lowerBound = Math.max(beginIndex, 0);
+            for (int i = 0; i < lowerBound && !result.isEmpty(); i++) {
+                result = result.tail();
             }
+            return result;
         }
-        return result;
     }
 
     @Override
     default List<T> slice(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || beginIndex > endIndex) {
-            throw new IndexOutOfBoundsException(
-                    String.format("slice(%s, %s) on List of length %s", beginIndex, endIndex, length()));
-        }
-        List<T> result = Nil.instance();
-        List<T> list = this;
-        for (int i = 0; i < endIndex; i++, list = list.tail()) {
-            if (list.isEmpty()) {
-                throw new IndexOutOfBoundsException(
-                        String.format("slice(%s, %s) on List of length %s", beginIndex, endIndex, i));
+        if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
+            return empty();
+        } else {
+            List<T> result = Nil.instance();
+            List<T> list = this;
+            final int lowerBound = Math.max(beginIndex, 0);
+            final int upperBound = Math.min(endIndex, length());
+            for (int i = 0; i < upperBound && !list.isEmpty(); i++) {
+                if (i >= lowerBound) {
+                    result = result.prepend(list.head());
+                }
+                list = list.tail();
             }
-            if (i >= beginIndex) {
-                result = result.prepend(list.head());
-            }
+            return result.reverse();
         }
-        return result.reverse();
     }
 
     @Override
@@ -1125,6 +1123,41 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default Spliterator<T> spliterator() {
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
+    }
+
+    @Override
+    default List<T> subSequence(int beginIndex) {
+        if (beginIndex < 0) {
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
+        }
+        List<T> result = this;
+        for (int i = 0; i < beginIndex; i++, result = result.tail()) {
+            if (result.isEmpty()) {
+                throw new IndexOutOfBoundsException(
+                        String.format("subSequence(%s) on List of length %s", beginIndex, i));
+            }
+        }
+        return result;
+    }
+
+    @Override
+    default List<T> subSequence(int beginIndex, int endIndex) {
+        if (beginIndex < 0 || beginIndex > endIndex) {
+            throw new IndexOutOfBoundsException(
+                    String.format("subSequence(%s, %s) on List of length %s", beginIndex, endIndex, length()));
+        }
+        List<T> result = Nil.instance();
+        List<T> list = this;
+        for (int i = 0; i < endIndex; i++, list = list.tail()) {
+            if (list.isEmpty()) {
+                throw new IndexOutOfBoundsException(
+                        String.format("subSequence(%s, %s) on List of length %s", beginIndex, endIndex, i));
+            }
+            if (i >= beginIndex) {
+                result = result.prepend(list.head());
+            }
+        }
+        return result.reverse();
     }
 
     @Override
