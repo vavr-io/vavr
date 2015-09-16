@@ -76,11 +76,48 @@ public final class Failure<T> implements Try<T>, Serializable {
     }
 
     /**
+     * An unchecked wrapper for Fatal exceptions.
+     * <p>
+     * See {@link javaslang.control.Failure.NonFatal}.
+     */
+    public static final class Fatal extends RuntimeException implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private Fatal(Throwable exception) {
+            super(exception);
+        }
+
+        /**
+         * Two Fatal exceptions are equal, if they have the same stack trace.
+         *
+         * @param o An object
+         * @return true, if o equals this, false otherwise.
+         */
+        @Override
+        public boolean equals(Object o) {
+            return (o == this) || (o instanceof Fatal
+                    && Arrays.deepEquals(getCause().getStackTrace(), ((Fatal) o).getCause().getStackTrace()));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(getCause());
+        }
+
+        @Override
+        public String toString() {
+            return "Fatal(" + getCause() + ")";
+        }
+    }
+
+    /**
      * An unchecked wrapper for non-fatal/recoverable exceptions. The underlying exception can
      * be accessed via {@link #getCause()}.
      * <p>
      * The following exceptions are considered to be fatal/non-recoverable:
      * <ul>
+     * <li>{@linkplain InterruptedException}</li>
      * <li>{@linkplain LinkageError}</li>
      * <li>{@linkplain ThreadDeath}</li>
      * <li>{@linkplain VirtualMachineError} (i.e. {@linkplain OutOfMemoryError} or {@linkplain StackOverflowError})</li>
@@ -103,21 +140,25 @@ public final class Failure<T> implements Try<T>, Serializable {
          *
          * @param exception A Throwable
          * @return A new {@code NonFatal} if the given exception is recoverable
-         * @throws Error if the given exception is fatal, i.e. not recoverable
+         * @throws Error                if the given exception is fatal, i.e. not recoverable
          * @throws NullPointerException if exception is null
          */
         static NonFatal of(Throwable exception) {
             Objects.requireNonNull(exception, "exception is null");
             if (exception instanceof NonFatal) {
                 return (NonFatal) exception;
-            }
-            final boolean isFatal = exception instanceof VirtualMachineError
-                    || exception instanceof ThreadDeath
-                    || exception instanceof LinkageError;
-            if (isFatal) {
-                throw (Error) exception;
+            } else if (exception instanceof Fatal) {
+                throw (Fatal) exception;
             } else {
-                return new NonFatal(exception);
+                final boolean isFatal = exception instanceof InterruptedException
+                        || exception instanceof LinkageError
+                        || exception instanceof ThreadDeath
+                        || exception instanceof VirtualMachineError;
+                if (isFatal) {
+                    throw new Fatal(exception);
+                } else {
+                    return new NonFatal(exception);
+                }
             }
         }
 
