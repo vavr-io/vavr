@@ -54,8 +54,9 @@ import java.util.function.*;
  * <li>{@link #indexOf(Object, int)}</li>
  * <li>{@link #lastIndexOf(Object)}</li>
  * <li>{@link #lastIndexOf(Object, int)}</li>
- * <li>{@link #slice(int)}</li>
  * <li>{@link #slice(int, int)}</li>
+ * <li>{@link #subSequence(int)}</li>
+ * <li>{@link #subSequence(int, int)}</li>
  * </ul>
  *
  * Transformation:
@@ -327,14 +328,14 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     /**
      * Returns an iterator of this elements starting at the given index.
-     * The result is equivalent to {@code this.slice(index).iterator()}.
+     * The result is equivalent to {@code this.subSequence(index).iterator()}.
      *
      * @param index an index
      * @return a new Iterator, starting with the element at the given index or the empty Iterator, if index = length()
      * @throws IndexOutOfBoundsException if index &lt; 0 or index &gt; length()
      */
     default Iterator<T> iterator(int index) {
-        return slice(index).iterator();
+        return subSequence(index).iterator();
     }
 
     /**
@@ -531,6 +532,30 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> reverse();
 
     /**
+     * Returns a Seq that is a <em>slice</em> of this. The slice begins with the element at the specified
+     * {@code beginIndex} and extends to the element at index {@code endIndex - 1}.
+     * <p>
+     * Examples:
+     *
+     * <pre>
+     * <code>
+     * List.of(1, 2, 3, 4).slice(1, 3); // = (2, 3)
+     * List.of(1, 2, 3, 4).slice(0, 4); // = (1, 2, 3, 4)
+     * List.of(1, 2, 3, 4).slice(2, 2); // = ()
+     * List.of(1, 2).slice(1, 0);       // = ()
+     * List.of(1, 2).slice(-10, 10);    // = (1, 2)
+     * </code>
+     * </pre>
+     *
+     * See also {@link #subSequence(int, int)} which throws in some cases instead of returning a sequence.
+     *
+     * @param beginIndex the beginning index, inclusive
+     * @param endIndex   the end index, exclusive
+     * @return the specified slice
+     */
+    Seq<T> slice(int beginIndex, int endIndex);
+
+    /**
      * Sorts this elements according to their natural order. If this elements are not
      * {@code Comparable}, a {@code java.lang.ClassCastException} may be thrown.
      *
@@ -595,53 +620,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     boolean startsWith(Iterable<? extends T> that, int offset);
 
     /**
-     * Returns a Seq that is a <em>slice</em> of this. The slice begins with the element at the specified
-     * {@code beginIndex} and extends to the end of this Seq.
-     * <p>
-     * Examples:
-     *
-     * <pre>
-     * <code>
-     * List.of(1, 2).slice(0);   // = (1, 2)
-     * List.of(1, 2).slice(1);   // = (2)
-     * List.of(1, 2).slice(2);   // = ()
-     * List.of(1, 2).slice(10);  // = ()
-     * List.of(1, 2).slice(-10); // = (1, 2)
-     * </code>
-     * </pre>
-     *
-     * See also {@link #subSequence(int)} which throws in some cases instead of returning a sequence.
-     *
-     * @param beginIndex the beginning index, inclusive
-     * @return the specified slice
-     */
-    Seq<T> slice(int beginIndex);
-
-    /**
-     * Returns a Seq that is a <em>slice</em> of this. The slice begins with the element at the specified
-     * {@code beginIndex} and extends to the element at index {@code endIndex - 1}.
-     * <p>
-     * Examples:
-     *
-     * <pre>
-     * <code>
-     * List.of(1, 2, 3, 4).slice(1, 3); // = (2, 3)
-     * List.of(1, 2, 3, 4).slice(0, 4); // = (1, 2, 3, 4)
-     * List.of(1, 2, 3, 4).slice(2, 2); // = ()
-     * List.of(1, 2).slice(1, 0);       // = ()
-     * List.of(1, 2).slice(-10, 10);    // = (1, 2)
-     * </code>
-     * </pre>
-     *
-     * See also {@link #subSequence(int, int)} which throws in some cases instead of returning a sequence.
-     *
-     * @param beginIndex the beginning index, inclusive
-     * @param endIndex   the end index, exclusive
-     * @return the specified slice
-     */
-    Seq<T> slice(int beginIndex, int endIndex);
-
-    /**
      * Returns a Seq that is a subsequence of this. The subsequence begins with the element at the specified
      * {@code beginIndex} and extends to the end of this Seq.
      * <p>
@@ -657,7 +635,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * </code>
      * </pre>
      *
-     * See also {@link #slice(int)} which returns an empty sequence instead of throwing.
+     * See also {@link #drop(int)} which is similar but does not throw.
      *
      * @param beginIndex the beginning index, inclusive
      * @return the specified subsequence

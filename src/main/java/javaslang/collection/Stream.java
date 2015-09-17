@@ -1004,20 +1004,6 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> slice(int beginIndex) {
-        if (isEmpty()) {
-            return this;
-        } else {
-            Stream<T> result = this;
-            final int lowerBound = Math.max(beginIndex, 0);
-            for (int i = 0; i < lowerBound && !result.isEmpty(); i++) {
-                result = result.tail();
-            }
-            return result;
-        }
-    }
-
-    @Override
     default Stream<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || isEmpty()) {
             return empty();

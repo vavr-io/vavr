@@ -155,9 +155,6 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> reverse();
 
     @Override
-    LinearSeq<T> slice(int beginIndex);
-
-    @Override
     LinearSeq<T> slice(int beginIndex, int endIndex);
 
     @Override

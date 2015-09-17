@@ -1119,53 +1119,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(of(1, 2, 3).removeAt(5)).isEqualTo(of(1, 2, 3));
     }
 
-    // -- slice(beginIndex)
-
-    @Test
-    public void shouldReturnNilWhenSliceFrom0OnNil() {
-        final Seq<Integer> actual = this.<Integer> empty().slice(0);
-        assertThat(actual).isEmpty();
-    }
-
-    @Test
-    public void shouldReturnIdentityWhenSliceFrom0OnNonNil() {
-        final Seq<Integer> actual = of(1).slice(0);
-        assertThat(actual).isEqualTo(of(1));
-    }
-
-    @Test
-    public void shouldReturnNilWhenSliceFrom1OnSeqOf1() {
-        final Seq<Integer> actual = of(1).slice(1);
-        assertThat(actual).isEmpty();
-    }
-
-    @Test
-    public void shouldReturnSliceWhenIndexIsWithinRange() {
-        final Seq<Integer> actual = of(1, 2, 3).slice(1);
-        assertThat(actual).isEqualTo(of(2, 3));
-    }
-
-    @Test
-    public void shouldReturnNilWhenSliceBeginningWithSize() {
-        final Seq<Integer> actual = of(1, 2, 3).slice(3);
-        assertThat(actual).isEmpty();
-    }
-
-    @Test
-    public void shouldThrowWhenSliceOnNil() {
-        assertThat(empty().slice(1)).isEmpty();
-    }
-
-    @Test
-    public void shouldThrowWhenSliceWithOutOfLowerBound() {
-        assertThat(of(1, 2, 3).slice(-1)).isEqualTo(of(1, 2, 3));
-    }
-
-    @Test
-    public void shouldThrowWhenSliceWithOutOfUpperBound() {
-        assertThat(of(1, 2, 3).slice(4)).isEmpty();
-    }
-
     // -- slice(beginIndex, endIndex)
 
     @Test
@@ -1205,22 +1158,22 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     }
 
     @Test
-    public void shouldThrowOnSliceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
+    public void shouldComputeSliceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
         assertThat(of(1, 2, 3).slice(1, 0)).isEmpty();
     }
 
     @Test
-    public void shouldThrowOnSliceOnNilWhenBeginIndexIsGreaterThanEndIndex() {
+    public void shouldComputeSliceOnNilWhenBeginIndexIsGreaterThanEndIndex() {
         assertThat(empty().slice(1, 0)).isEmpty();
     }
 
     @Test
-    public void shouldThrowOnSliceOnNonNilWhenBeginIndexExceedsLowerBound() {
-        assertThat(of(1, 2, 3).slice(-1, 2)).isEqualTo(of(1, 2, 3));
+    public void shouldComputeSliceOnNonNilWhenBeginIndexExceedsLowerBound() {
+        assertThat(of(1, 2, 3).slice(-1, 2)).isEqualTo(of(1, 2));
     }
 
     @Test
-    public void shouldThrowOnSliceOnNilWhenBeginIndexExceedsLowerBound() {
+    public void shouldComputeSliceOnNilWhenBeginIndexExceedsLowerBound() {
         assertThat(empty().slice(-1, 2)).isEmpty();
     }
 
@@ -1230,13 +1183,18 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
     }
 
     @Test
-    public void shouldThrowOnSliceWhenEndIndexExceedsUpperBound() {
-        assertThat(of(1, 2, 3).slice(1, 4)).isEqualTo(of(1, 2, 3));
+    public void shouldComputeSliceWhenEndIndexExceedsUpperBound() {
+        assertThat(of(1, 2, 3).slice(1, 4)).isEqualTo(of(2, 3));
     }
 
     @Test
-    public void shouldThrowOnSliceWhenBeginIndexIsGreaterThanEndIndex() {
+    public void shouldComputeSliceWhenBeginIndexIsGreaterThanEndIndex() {
         assertThat(of(1, 2, 3).slice(2, 1)).isEmpty();
+    }
+
+    @Test
+    public void shouldComputeSliceWhenBeginIndexAndEndIndexAreBothOutOfBounds() {
+        assertThat(of(1, 2, 3).slice(-10, 10)).isEqualTo(of(1, 2, 3));
     }
 
     // -- subSequence(beginIndex)
