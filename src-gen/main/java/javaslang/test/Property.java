@@ -19,6 +19,13 @@ import javaslang.control.Try;
 
 /**
  * A property builder which provides a fluent API to build checkable properties.
+ * <p>
+ * Usage:
+ * <pre><code>Property.def("name")
+ *         .forAll(...)
+ *         .suchThat(...)
+ *         .check()
+ *         .assertIsSatisfied();</code></pre>
  *
  * @author Daniel Dietrich
  * @since 1.2.0
@@ -65,6 +72,40 @@ public class Property {
 
     private static void log(String msg) {
         System.out.println(msg);
+    }
+
+    /**
+     * Creates an Error caused by an exception when obtaining a generator.
+     *
+     * @param position The position of the argument within the argument list of the property, starting with 1.
+     * @param size     The size hint passed to the {@linkplain Arbitrary} which caused the error.
+     * @param cause    The error which occured when the {@linkplain Arbitrary} tried to obtain the generator {@linkplain Gen}.
+     * @return a new Error instance.
+     */
+    private static Error arbitraryError(int position, int size, Throwable cause) {
+        return new Error(String.format("Arbitrary %s of size %s: %s", position, size, cause.getMessage()), cause);
+    }
+
+    /**
+     * Creates an Error caused by an exception when generating a value.
+     *
+     * @param position The position of the argument within the argument list of the property, starting with 1.
+     * @param size     The size hint of the arbitrary which called the generator {@linkplain Gen} which caused the error.
+     * @param cause    The error which occured when the {@linkplain Gen} tried to generate a random value.
+     * @return a new Error instance.
+     */
+    private static Error genError(int position, int size, Throwable cause) {
+        return new Error(String.format("Gen %s of size %s: %s", position, size, cause.getMessage()), cause);
+    }
+
+    /**
+     * Creates an Error caused by an exception when testing a Predicate.
+     *
+     * @param cause The error which occured when applying the {@linkplain java.util.function.Predicate}.
+     * @return a new Error instance.
+     */
+    private static Error predicateError(Throwable cause) {
+        return new Error("Applying predicate: " + cause.getMessage(), cause);
     }
 
     /**
@@ -571,13 +612,13 @@ public class Property {
             }
             final long startTime = System.currentTimeMillis();
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1)).recover(x -> { throw predicateError(x); }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
@@ -649,15 +690,15 @@ public class Property {
             }
             final long startTime = System.currentTimeMillis();
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw arbitraryError(2, size, x); }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw genError(2, size, x); }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2)).recover(x -> { throw predicateError(x); }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
@@ -731,17 +772,17 @@ public class Property {
             }
             final long startTime = System.currentTimeMillis();
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw arbitraryError(3, size, x); }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw genError(3, size, x); }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3)).recover(x -> { throw predicateError(x); }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
@@ -817,19 +858,19 @@ public class Property {
             }
             final long startTime = System.currentTimeMillis();
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
-                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw arbitraryError(4, size, x); }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw genError(4, size, x); }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4)).recover(x -> { throw predicateError(x); }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
@@ -907,21 +948,21 @@ public class Property {
             }
             final long startTime = System.currentTimeMillis();
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
-                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
-                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw arbitraryError(5, size, x); }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw genError(5, size, x); }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5)).recover(x -> { throw predicateError(x); }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
@@ -1001,23 +1042,23 @@ public class Property {
             }
             final long startTime = System.currentTimeMillis();
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
-                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
-                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
-                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw arbitraryError(6, size, x); }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw genError(6, size, x); }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6)).recover(x -> { throw predicateError(x); }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
@@ -1099,25 +1140,25 @@ public class Property {
             }
             final long startTime = System.currentTimeMillis();
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
-                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
-                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
-                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
-                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw arbitraryError(7, size, x); }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw genError(7, size, x); }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7)).recover(x -> { throw predicateError(x); }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
@@ -1201,27 +1242,27 @@ public class Property {
             }
             final long startTime = System.currentTimeMillis();
             try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw Errors.arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw Errors.arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw Errors.arbitraryError(3, size, x); }).get();
-                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw Errors.arbitraryError(4, size, x); }).get();
-                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw Errors.arbitraryError(5, size, x); }).get();
-                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw Errors.arbitraryError(6, size, x); }).get();
-                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw Errors.arbitraryError(7, size, x); }).get();
-                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw Errors.arbitraryError(8, size, x); }).get();
+                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
+                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw arbitraryError(2, size, x); }).get();
+                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw arbitraryError(3, size, x); }).get();
+                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw arbitraryError(4, size, x); }).get();
+                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw arbitraryError(5, size, x); }).get();
+                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw arbitraryError(6, size, x); }).get();
+                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw arbitraryError(7, size, x); }).get();
+                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw arbitraryError(8, size, x); }).get();
                 boolean exhausted = true;
                 for (int i = 1; i <= tries; i++) {
                     try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw Errors.genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw Errors.genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw Errors.genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw Errors.genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw Errors.genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw Errors.genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw Errors.genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw Errors.genError(8, size, x); }).get();
+                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
+                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw genError(2, size, x); }).get();
+                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw genError(3, size, x); }).get();
+                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw genError(4, size, x); }).get();
+                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw genError(5, size, x); }).get();
+                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw genError(6, size, x); }).get();
+                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw genError(7, size, x); }).get();
+                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw genError(8, size, x); }).get();
                         try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8)).recover(x -> { throw Errors.predicateError(x); }).get();
+                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8)).recover(x -> { throw predicateError(x); }).get();
                             if (condition.precondition) {
                                 exhausted = false;
                                 if (!condition.postcondition) {
