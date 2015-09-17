@@ -134,7 +134,7 @@ public class TryTest {
 
     // -- Failure.Cause
 
-    @Test(expected = Error.class)
+    @Test(expected = Failure.Fatal.class)
     public void shouldDetectFatalException() throws Exception {
         NonFatal.of(new OutOfMemoryError());
     }
@@ -154,8 +154,10 @@ public class TryTest {
         try {
             Try.of(outer::get).get();
             Assertions.fail("Exception expected");
+        } catch (Failure.Fatal x) {
+            Assertions.assertThat(x.getCause().getMessage()).isEqualTo("\uD83D\uDCA9");
         } catch (Throwable x) {
-            Assertions.assertThat(x.getMessage()).isEqualTo("\uD83D\uDCA9");
+            Assertions.fail("Unexpected exception type: " + x.getClass().getName());
         }
     }
 
@@ -168,7 +170,7 @@ public class TryTest {
         }).isFailure()).isTrue();
     }
 
-    @Test(expected = Error.class)
+    @Test(expected = Failure.Fatal.class)
     public void shouldPassThroughFatalException() {
         Try.of(() -> {
             throw new UnknownError();

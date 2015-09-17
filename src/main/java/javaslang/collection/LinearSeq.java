@@ -155,9 +155,6 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> reverse();
 
     @Override
-    LinearSeq<T> slice(int beginIndex);
-
-    @Override
     LinearSeq<T> slice(int beginIndex, int endIndex);
 
     @Override
@@ -193,6 +190,12 @@ public interface LinearSeq<T> extends Seq<T> {
         }
         return !thatIter.hasNext();
     }
+
+    @Override
+    LinearSeq<T> subSequence(int beginIndex);
+
+    @Override
+    LinearSeq<T> subSequence(int beginIndex, int endIndex);
 
     @Override
     LinearSeq<T> tail();

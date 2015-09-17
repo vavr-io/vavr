@@ -308,11 +308,10 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public CharSeq drop(int n) {
-        if (n >= length()) {
-            return EMPTY;
-        }
         if (n <= 0) {
             return this;
+        } else if (n >= length()) {
+            return EMPTY;
         } else {
             return of(back.substring(n));
         }
@@ -320,11 +319,10 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public CharSeq dropRight(int n) {
-        if (n >= length()) {
-            return EMPTY;
-        }
         if (n <= 0) {
             return this;
+        } else if (n >= length()) {
+            return EMPTY;
         } else {
             return of(back.substring(0, length() - n));
         }
@@ -736,26 +734,14 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq slice(int beginIndex) {
-        if (beginIndex < 0) {
-            throw new IndexOutOfBoundsException("slice(" + beginIndex + ")");
-        }
-        if (beginIndex > length()) {
-            throw new IndexOutOfBoundsException("slice(" + beginIndex + ")");
-        }
-        return of(back.substring(beginIndex));
-    }
-
-    @Override
     public CharSeq slice(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
-            throw new IndexOutOfBoundsException(
-                    java.lang.String.format("slice(%s, %s) on List of length %s", beginIndex, endIndex, length()));
-        }
-        if (beginIndex == endIndex) {
+        if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
             return EMPTY;
         }
-        return of(back.substring(beginIndex, endIndex));
+        if (beginIndex <= 0 && endIndex >= length()) {
+            return this;
+        }
+        return CharSeq.of(back.substring(beginIndex, endIndex));
     }
 
     @Override
@@ -786,7 +772,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         } else if (sb.length() == length()) {
             return Tuple.of(this, EMPTY);
         } else {
-            return Tuple.of(of(sb.toString()), of(back.substring(sb.length())));
+            return Tuple.of(of(sb.toString()), CharSeq.of(back.substring(sb.length())));
         }
     }
 
@@ -796,11 +782,25 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
+    public CharSeq subSequence(int beginIndex) {
+        if (beginIndex < 0 || beginIndex > length()) {
+            throw new IndexOutOfBoundsException("begin index " + beginIndex + " < 0");
+        }
+        if (beginIndex == 0) {
+            return this;
+        } else if (beginIndex == length()) {
+            return EMPTY;
+        } else {
+            return CharSeq.of(back.substring(beginIndex));
+        }
+    }
+
+    @Override
     public CharSeq tail() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty string");
         } else {
-            return of(back.substring(1));
+            return CharSeq.of(back.substring(1));
         }
     }
 
@@ -809,31 +809,29 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         if (isEmpty()) {
             return None.instance();
         } else {
-            return new Some<>(of(back.substring(1)));
+            return new Some<>(CharSeq.of(back.substring(1)));
         }
     }
 
     @Override
     public CharSeq take(int n) {
-        if (n >= length()) {
-            return this;
-        }
         if (n <= 0) {
             return EMPTY;
+        } else if (n >= length()) {
+            return this;
         } else {
-            return of(back.substring(0, n));
+            return CharSeq.of(back.substring(0, n));
         }
     }
 
     @Override
     public CharSeq takeRight(int n) {
-        if (n >= length()) {
-            return this;
-        }
         if (n <= 0) {
             return EMPTY;
+        } else if (n >= length()) {
+            return this;
         } else {
-            return of(back.substring(length() - n));
+            return CharSeq.of(back.substring(length() - n));
         }
     }
 
@@ -1497,7 +1495,21 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public CharSeq subSequence(int beginIndex, int endIndex) {
-        return slice(beginIndex, endIndex);
+        if (beginIndex < 0) {
+            throw new IndexOutOfBoundsException("begin index " + beginIndex + " < 0");
+        }
+        if (endIndex > length()) {
+            throw new IndexOutOfBoundsException("endIndex " + endIndex + " > length " + length());
+        }
+        int subLen = endIndex - beginIndex;
+        if (subLen < 0) {
+            throw new IndexOutOfBoundsException("beginIndex " + beginIndex + " > endIndex " + endIndex);
+        }
+        if (beginIndex == 0 && endIndex == length()) {
+            return this;
+        } else {
+            return CharSeq.of(back.subSequence(beginIndex, endIndex));
+        }
     }
 
     /**
@@ -1783,7 +1795,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *                                   length of this {@code CharSeq} object.
      */
     public CharSeq substring(int beginIndex) {
-        return of(back.substring(beginIndex));
+        return CharSeq.of(back.substring(beginIndex));
     }
 
     /**
@@ -1809,7 +1821,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *                                   {@code endIndex}.
      */
     public CharSeq substring(int beginIndex, int endIndex) {
-        return of(back.substring(beginIndex, endIndex));
+        return CharSeq.of(back.substring(beginIndex, endIndex));
     }
 
     /**
@@ -1845,7 +1857,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * characters followed by the string argument's characters.
      */
     public CharSeq concat(CharSeq str) {
-        return of(back.concat(str.back));
+        return CharSeq.of(back.concat(str.back));
     }
 
     /**
@@ -1915,7 +1927,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @see java.util.regex.Pattern
      */
     public CharSeq replaceFirst(java.lang.String regex, java.lang.String replacement) {
-        return of(back.replaceFirst(regex, replacement));
+        return CharSeq.of(back.replaceFirst(regex, replacement));
     }
 
     /**
@@ -1951,7 +1963,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @see java.util.regex.Pattern
      */
     public CharSeq replaceAll(java.lang.String regex, java.lang.String replacement) {
-        return of(back.replaceAll(regex, replacement));
+        return CharSeq.of(back.replaceAll(regex, replacement));
     }
 
     /**
@@ -1966,7 +1978,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return The resulting string
      */
     public CharSeq replace(CharSequence target, CharSequence replacement) {
-        return of(back.replace(target, replacement));
+        return CharSeq.of(back.replace(target, replacement));
     }
 
     /**
@@ -2138,7 +2150,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @see java.lang.String#toUpperCase(Locale)
      */
     public CharSeq toLowerCase(Locale locale) {
-        return of(back.toLowerCase(locale));
+        return CharSeq.of(back.toLowerCase(locale));
     }
 
     /**
@@ -2162,7 +2174,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @see java.lang.String#toLowerCase(Locale)
      */
     public CharSeq toLowerCase() {
-        return toLowerCase(Locale.getDefault());
+        return CharSeq.of(back.toLowerCase(Locale.getDefault()));
     }
 
     /**
@@ -2214,7 +2226,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @see java.lang.String#toLowerCase(Locale)
      */
     public CharSeq toUpperCase(Locale locale) {
-        return of(back.toUpperCase(locale));
+        return CharSeq.of(back.toUpperCase(locale));
     }
 
     /**
@@ -2238,7 +2250,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @see java.lang.String#toUpperCase(Locale)
      */
     public CharSeq toUpperCase() {
-        return toUpperCase(Locale.getDefault());
+        return CharSeq.of(back.toUpperCase(Locale.getDefault()));
     }
 
     /**

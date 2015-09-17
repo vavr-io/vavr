@@ -155,9 +155,6 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> reverse();
 
     @Override
-    IndexedSeq<T> slice(int beginIndex);
-
-    @Override
     IndexedSeq<T> slice(int beginIndex, int endIndex);
 
     @Override
@@ -189,6 +186,12 @@ public interface IndexedSeq<T> extends Seq<T> {
         }
         return true;
     }
+
+    @Override
+    IndexedSeq<T> subSequence(int beginIndex);
+
+    @Override
+    IndexedSeq<T> subSequence(int beginIndex, int endIndex);
 
     @Override
     IndexedSeq<T> tail();

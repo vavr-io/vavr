@@ -967,6 +967,21 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Array<T> slice(int beginIndex, int endIndex) {
+        if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
+            return Array.empty();
+        }
+        if (beginIndex <= 0 && endIndex >= length()) {
+            return this;
+        }
+        final int index = Math.max(beginIndex, 0);
+        final int length = Math.min(endIndex, length()) - index;
+        final Object[] arr = new Object[length];
+        System.arraycopy(back, index, arr, 0, length);
+        return wrap(arr);
+    }
+
+    @Override
     public Array<T> sort() {
         final Object[] arr = Arrays.copyOf(back, back.length);
         Arrays.sort(arr);
@@ -1021,21 +1036,21 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> slice(int beginIndex) {
+    public Array<T> subSequence(int beginIndex) {
         if (beginIndex < 0) {
-            throw new IndexOutOfBoundsException("slice(" + beginIndex + ")");
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
         }
         if (beginIndex > length()) {
-            throw new IndexOutOfBoundsException("slice(" + beginIndex + ")");
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
         }
         return drop(beginIndex);
     }
 
     @Override
-    public Array<T> slice(int beginIndex, int endIndex) {
+    public Array<T> subSequence(int beginIndex, int endIndex) {
         if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
             throw new IndexOutOfBoundsException(
-                    String.format("slice(%s, %s) on List of length %s", beginIndex, endIndex, length()));
+                    String.format("subSequence(%s, %s) on List of length %s", beginIndex, endIndex, length()));
         }
         if (beginIndex == endIndex) {
             return Array.empty();
