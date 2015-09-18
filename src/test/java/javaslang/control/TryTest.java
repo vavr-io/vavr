@@ -315,6 +315,12 @@ public class TryTest {
     }
 
     @Test
+    public void shouldFlatMapTryOnFailure(){
+        final Try<String> actual = failure();
+        assertThat(actual.flatMapTry(s -> Try.of(() -> s + "!"))).isEqualTo(actual);
+    }
+
+    @Test
     public void shouldForEachOnFailure() {
         final List<String> actual = new ArrayList<>();
         TryTest.<String> failure().forEach(actual::add);
@@ -540,6 +546,18 @@ public class TryTest {
     @Test
     public void shouldFlatMapOnSuccess() {
         assertThat(success().flatMap(s -> Try.of(() -> s + "!")).get()).isEqualTo(OK + "!");
+    }
+
+    @Test
+    public void shouldFlatMapOnIterable() {
+        final java.lang.Iterable<Integer> iterable = Arrays.asList(1, 2, 3);
+        assertThat(success().flatMap(s -> iterable).get()).isEqualTo(1);
+    }
+
+    @Test(expected = NonFatal.class)
+    public void shouldFlatMapOnEmptyIterable() {
+        final java.lang.Iterable<Integer> iterable = Collections.emptyList();
+        success().flatMap(s -> iterable).get();
     }
 
     @Test(expected = RuntimeException.class)
