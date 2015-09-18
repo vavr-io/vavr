@@ -106,12 +106,12 @@ public class TryTest {
     // -- Try.of
 
     @Test
-    public void shouldCreateFailureWhenCallingTryOfSupplier() {
+    public void shouldCreateSuccessWhenCallingTryOfSupplier() {
         assertThat(Try.of(() -> 1) instanceof Success).isTrue();
     }
 
     @Test
-    public void shouldCreateSuccessWhenCallingTryOfSupplier() {
+    public void shouldCreateFailureWhenCallingTryOfSupplier() {
         assertThat(Try.of(() -> {
             throw new Error("error");
         }) instanceof Failure).isTrue();
@@ -120,13 +120,13 @@ public class TryTest {
     // -- Try.run
 
     @Test
-    public void shouldCreateFailureWhenCallingTryRunRunnable() {
+    public void shouldCreateSuccessWhenCallingTryRunRunnable() {
         assertThat(Try.run(() -> {
         }) instanceof Success).isTrue();
     }
 
     @Test
-    public void shouldCreateSuccessWhenCallingTryRunRunnable() {
+    public void shouldCreateFailureWhenCallingTryRunRunnable() {
         assertThat(Try.run(() -> {
             throw new Error("error");
         }) instanceof Failure).isTrue();
@@ -549,6 +549,11 @@ public class TryTest {
     @Test(expected = NonFatal.class)
     public void shouldThrowWhenCallingFailedOnSuccess() {
         success().failed().get();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenCallingGetCauseOnSuccess() {
+        success().getCause();
     }
 
     @Test
