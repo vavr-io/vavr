@@ -9,9 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
+import javaslang.CheckedFunction2Module.Memoized;
 import javaslang.control.Try;
 
 /**
@@ -20,6 +21,7 @@ import javaslang.control.Try;
  * @param <T1> argument 1 of the function
  * @param <T2> argument 2 of the function
  * @param <R> return type of the function
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -144,13 +146,23 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
 
     @Override
     default CheckedFunction2<T1, T2, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
-            final Map<Tuple2<T1, T2>, R> cache = new ConcurrentHashMap<>();
+            final Object lock = new Object();
+            final Map<Tuple2<T1, T2>, R> cache = new HashMap<>();
             final CheckedFunction1<Tuple2<T1, T2>, R> tupled = tupled();
-            return (CheckedFunction2<T1, T2, R> & Memoized) (t1, t2) -> cache.computeIfAbsent(Tuple.of(t1, t2), t -> Try.of(() -> tupled.apply(t)).get());
+            return (CheckedFunction2<T1, T2, R> & Memoized) (t1, t2) -> {
+                synchronized (lock) {
+                    return cache.computeIfAbsent(Tuple.of(t1, t2), t -> Try.of(() -> tupled.apply(t)).get());
+                }
+            };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -180,6 +192,7 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
      * @param <T1> the 1st parameter type of the function
      * @param <T2> the 2nd parameter type of the function
      * @param <R> the return type of the function
+     * @author Daniel Dietrich
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")
@@ -201,5 +214,14 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
         public Class<T2> parameterType2() {
             return (Class<T2>) parameterTypes()[1];
         }
+    }
+}
+
+interface CheckedFunction2Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

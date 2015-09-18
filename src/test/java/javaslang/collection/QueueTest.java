@@ -12,11 +12,6 @@ import java.util.stream.Collector;
 
 public class QueueTest extends AbstractSeqTest {
 
-    @Override
-    public void shouldSerializeDeserializeNonNil() {
-        // ignored
-    }
-
     // -- construction
 
     @Override
@@ -42,7 +37,7 @@ public class QueueTest extends AbstractSeqTest {
     }
 
     @Override
-    protected <T> Queue<T> ofAll(Iterable<? extends T> elements) {
+    protected <T> Queue<T> ofAll(java.lang.Iterable<? extends T> elements) {
         return Queue.ofAll(elements);
     }
 
@@ -174,4 +169,10 @@ public class QueueTest extends AbstractSeqTest {
     int getPeekNonNilPerformingAnAction() {
         return 1;
     }
+
+    @Override
+    boolean useIsEqualToInsteadOfIsSameAs() {
+        return false;
+    }
+
 }

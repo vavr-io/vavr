@@ -9,9 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
+import javaslang.CheckedFunction7Module.Memoized;
 import javaslang.control.Try;
 
 /**
@@ -25,6 +26,7 @@ import javaslang.control.Try;
  * @param <T6> argument 6 of the function
  * @param <T7> argument 7 of the function
  * @param <R> return type of the function
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -254,13 +256,23 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
 
     @Override
     default CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
-            final Map<Tuple7<T1, T2, T3, T4, T5, T6, T7>, R> cache = new ConcurrentHashMap<>();
+            final Object lock = new Object();
+            final Map<Tuple7<T1, T2, T3, T4, T5, T6, T7>, R> cache = new HashMap<>();
             final CheckedFunction1<Tuple7<T1, T2, T3, T4, T5, T6, T7>, R> tupled = tupled();
-            return (CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> & Memoized) (t1, t2, t3, t4, t5, t6, t7) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5, t6, t7), t -> Try.of(() -> tupled.apply(t)).get());
+            return (CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> & Memoized) (t1, t2, t3, t4, t5, t6, t7) -> {
+                synchronized (lock) {
+                    return cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5, t6, t7), t -> Try.of(() -> tupled.apply(t)).get());
+                }
+            };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -295,6 +307,7 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
      * @param <T6> the 6th parameter type of the function
      * @param <T7> the 7th parameter type of the function
      * @param <R> the return type of the function
+     * @author Daniel Dietrich
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")
@@ -341,5 +354,14 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
         public Class<T7> parameterType7() {
             return (Class<T7>) parameterTypes()[6];
         }
+    }
+}
+
+interface CheckedFunction7Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

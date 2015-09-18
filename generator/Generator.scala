@@ -45,6 +45,8 @@ def generateMainClasses(): Unit = {
     def genProperty(im: ImportManager, packageName: String, className: String): String = xs"""
       /**
        * A property builder which provides a fluent API to build checkable properties.
+       *
+       * @author Daniel Dietrich
        * @since 1.2.0
        */
       public class $className {
@@ -91,6 +93,40 @@ def generateMainClasses(): Unit = {
               System.out.println(msg);
           }
 
+          /**
+           * Creates an Error caused by an exception when obtaining a generator.
+           *
+           * @param position The position of the argument within the argument list of the property, starting with 1.
+           * @param size     The size hint passed to the {@linkplain Arbitrary} which caused the error.
+           * @param cause    The error which occured when the {@linkplain Arbitrary} tried to obtain the generator {@linkplain Gen}.
+           * @return a new Error instance.
+           */
+          private static Error arbitraryError(int position, int size, Throwable cause) {
+              return new Error(String.format("Arbitrary %s of size %s: %s", position, size, cause.getMessage()), cause);
+          }
+
+          /**
+           * Creates an Error caused by an exception when generating a value.
+           *
+           * @param position The position of the argument within the argument list of the property, starting with 1.
+           * @param size     The size hint of the arbitrary which called the generator {@linkplain Gen} which caused the error.
+           * @param cause    The error which occured when the {@linkplain Gen} tried to generate a random value.
+           * @return a new Error instance.
+           */
+          private static Error genError(int position, int size, Throwable cause) {
+              return new Error(String.format("Gen %s of size %s: %s", position, size, cause.getMessage()), cause);
+          }
+
+          /**
+           * Creates an Error caused by an exception when testing a Predicate.
+           *
+           * @param cause The error which occured when applying the {@linkplain java.util.function.Predicate}.
+           * @return a new Error instance.
+           */
+          private static Error predicateError(Throwable cause) {
+              return new Error("Applying predicate: " + cause.getMessage(), cause);
+          }
+
           ${(1 to N).gen(i => {
               val generics = (1 to i).gen(j => s"T$j")(", ")
               val parameters = (1 to i).gen(j => s"a$j")(", ")
@@ -118,6 +154,7 @@ def generateMainClasses(): Unit = {
                    * Represents a logical for all quantor.
                    *
                    ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} variable type of this for all quantor")("\n")}
+                   * @author Daniel Dietrich
                    * @since 1.2.0
                    */
                   public static class ForAll$i<$generics> {
@@ -165,6 +202,8 @@ def generateMainClasses(): Unit = {
               xs"""
                   /$javadoc
                    * Represents a $i-ary checkable property.
+                   *
+                   * @author Daniel Dietrich
                    * @since 1.2.0
                    */
                   public static class Property$i<$generics> implements Checkable {
@@ -210,16 +249,16 @@ def generateMainClasses(): Unit = {
                           final long startTime = System.currentTimeMillis();
                           try {
                               ${(1 to i).gen(j => {
-                                  s"""final Gen<T$j> gen$j = $tryType.of(() -> a$j.apply(size)).recover(x -> { throw Errors.arbitraryError($j, size, x); }).get();"""
+                                  s"""final Gen<T$j> gen$j = $tryType.of(() -> a$j.apply(size)).recover(x -> { throw arbitraryError($j, size, x); }).get();"""
                               })("\n")}
                               boolean exhausted = true;
                               for (int i = 1; i <= tries; i++) {
                                   try {
                                       ${(1 to i).gen(j => {
-                                        s"""final T$j val$j = $tryType.of(() -> gen$j.apply(random)).recover(x -> { throw Errors.genError($j, size, x); }).get();"""
+                                        s"""final T$j val$j = $tryType.of(() -> gen$j.apply(random)).recover(x -> { throw genError($j, size, x); }).get();"""
                                       })("\n")}
                                       try {
-                                          final Condition condition = $tryType.of(() -> predicate.apply(${(1 to i).gen(j => s"val$j")(", ")})).recover(x -> { throw Errors.predicateError(x); }).get();
+                                          final Condition condition = $tryType.of(() -> predicate.apply(${(1 to i).gen(j => s"val$j")(", ")})).recover(x -> { throw predicateError(x); }).get();
                                           if (condition.precondition) {
                                               exhausted = false;
                                               if (!condition.postcondition) {
@@ -298,6 +337,7 @@ def generateMainClasses(): Unit = {
 
         // imports
 
+        val Memoized = im.getType(s"javaslang.${className}Module.Memoized")
         val Objects = im.getType("java.util.Objects")
         val Try = if (checked) im.getType("javaslang.control.Try") else ""
         val additionalExtends = (checked, i) match {
@@ -333,6 +373,7 @@ def generateMainClasses(): Unit = {
            * Represents a function with ${arguments(i)}.
            ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> argument $j of the function")("\n")}
            * @param <R> return type of the function
+           * @author Daniel Dietrich
            * @since 1.1.0
            */
           @FunctionalInterface
@@ -485,7 +526,7 @@ def generateMainClasses(): Unit = {
 
               @Override
               default $className$fullGenerics memoized() {
-                  if (this instanceof Memoized) {
+                  if (isMemoized()) {
                       return this;
                   } else {
                       ${val mappingFunction = (checked, i) match {
@@ -502,18 +543,37 @@ def generateMainClasses(): Unit = {
                           case _ => null
                         }
                         if (i == 0) xs"""
-                          return ($className$fullGenerics & Memoized) Lazy.of($mappingFunction)::get;
+                          return ($className$fullGenerics & $Memoized) Lazy.of($mappingFunction)::get;
                         """ else if (i == 1) xs"""
                           final Lazy<R> forNull = Lazy.of($forNull);
-                          final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
-                          return ($className$fullGenerics & Memoized) t1 -> (t1 == null) ? forNull.get() : cache.computeIfAbsent(t1, $mappingFunction);
+                          final Object lock = new Object();
+                          final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.HashMap")}<>();
+                          return ($className$fullGenerics & $Memoized) t1 -> {
+                              if (t1 == null) {
+                                  return forNull.get();
+                              } else {
+                                  synchronized (lock) {
+                                      return cache.computeIfAbsent(t1, $mappingFunction);
+                                  }
+                              }
+                          };
                         """ else xs"""
-                          final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.concurrent.ConcurrentHashMap")}<>();
+                          final Object lock = new Object();
+                          final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.HashMap")}<>();
                           final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
-                          return ($className$fullGenerics & Memoized) ($params) -> cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
+                          return ($className$fullGenerics & $Memoized) ($params) -> {
+                              synchronized (lock) {
+                                  return cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
+                              }
+                          };
                         """
                       }
                   }
+              }
+
+              @Override
+              default boolean isMemoized() {
+                  return this instanceof $Memoized;
               }
 
               /$javadoc
@@ -557,6 +617,7 @@ def generateMainClasses(): Unit = {
                *
                ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> the ${j.ordinal} parameter type of the function")("\n")}
                * @param <R> the return type of the function
+               * @author Daniel Dietrich
                * @since 2.0.0
                */
               @SuppressWarnings("deprecation")
@@ -575,6 +636,15 @@ def generateMainClasses(): Unit = {
                         return (Class<T$j>) parameterTypes()[${j-1}];
                     }
                   """)("\n\n")}
+              }
+          }
+
+          interface ${className}Module {
+
+              /**
+               * Tagging ZAM interface for Memoized functions.
+               */
+              interface Memoized {
               }
           }
         """
@@ -610,6 +680,7 @@ def generateMainClasses(): Unit = {
         /**
          * A tuple of ${i.numerus("element")} which can be seen as cartesian product of ${i.numerus("component")}.
          ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
+         * @author Daniel Dietrich
          * @since 1.1.0
          */
         public final class $className<$generics> implements Tuple, ${im.getType("java.io.Serializable")} {
@@ -701,6 +772,8 @@ def generateMainClasses(): Unit = {
       xs"""
         /$javadoc
          * The base interface of all tuples.
+         *
+         * @author Daniel Dietrich
          * @since 1.1.0
          */
         public interface $className {
@@ -751,7 +824,7 @@ def generateTestClasses(): Unit = {
 
       def genFunctionTest(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
-        val AtomicInteger = im.getType("java.util.concurrent.atomic.AtomicInteger");
+        val AtomicInteger = im.getType("java.util.concurrent.atomic.AtomicInteger")
 
         val functionArgsDecl = (1 to i).gen(j => s"Object o$j")(", ")
         val functionArgs = (1 to i).gen(j => s"o$j")(", ")
@@ -759,6 +832,7 @@ def generateTestClasses(): Unit = {
 
         val test = im.getType("org.junit.Test")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+        val recFuncF1 = if (i == 0) "11;" else s"i1 <= 0 ? i1 : $className.recurrent2.apply(${(1 to i).gen(j => s"i$j" + (j == 1).gen(s" - 1"))(", ")}) + 1;"
 
         def curriedType(max: Int, function: String): String = {
           if (max == 0) {
@@ -885,6 +959,15 @@ def generateTestClasses(): Unit = {
                   $assertThat(memo.isMemoized()).isTrue();
               }
 
+              private static $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> recurrent1 = (${(1 to i).gen(j => s"i$j")(", ")}) -> $recFuncF1
+              private static $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> recurrent2 = $className.recurrent1.memoized();
+
+              @$test
+              public void shouldCalculatedRecursively()${checked.gen(" throws Throwable")} {
+                  assertThat(recurrent1.apply(${(1 to i).gen(j => "11")(", ")})).isEqualTo(11);
+                  ${(i > 0).gen(s"assertThat(recurrent1.apply(${(1 to i).gen(j => "22")(", ")})).isEqualTo(22);")}
+              }
+
               @$test
               public void shouldComposeWithAndThen() {
                   final $name$i<$generics> f = ($functionArgs) -> null;
@@ -907,6 +990,7 @@ def generateTestClasses(): Unit = {
               public void shouldGetType() {
                   final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
                   final $name$i.Type<${(1 to i + 1).gen(j => "Integer")(", ")}> type = f.getType();
+                  ${(1 to i).gen(j => s"assertThat(type.parameterType$j()).isEqualTo(Integer.class);")("\n")}
                   $assertThat(type.toString()).isEqualTo("(${(1 to i).gen(j => "java.lang.Integer")(", ")}) -> java.lang.Integer");
               }
           }

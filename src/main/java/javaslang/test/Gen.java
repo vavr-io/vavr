@@ -5,19 +5,17 @@
  */
 package javaslang.test;
 
-import javaslang.FilterMonadic;
-import javaslang.Kind;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.Stream;
-import javaslang.collection.TraversableOnce;
-import javaslang.control.Some;
 
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * <p>Generators are the building blocks for providing arbitrary objects.</p>
@@ -30,11 +28,11 @@ import java.util.function.Predicate;
  *
  * @param <T> type of generated objects
  * @see javaslang.test.Arbitrary
+ * @author Daniel Dietrich
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Gen<T> extends TraversableOnce<T>,
-        FilterMonadic<Gen<?>, T>, Kind<Gen<?>, T> {
+public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
 
     int FILTER_THRESHOLD = Integer.MAX_VALUE;
 
@@ -295,13 +293,6 @@ public interface Gen<T> extends TraversableOnce<T>,
         };
     }
 
-    @Override
-    default Gen<Some<T>> filterOption(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final Gen<T> gen = filter(predicate);
-        return random -> new Some<>(gen.apply(random));
-    }
-
     /**
      * Maps generated Ts to Us.
      *
@@ -309,15 +300,18 @@ public interface Gen<T> extends TraversableOnce<T>,
      * @param <U>    Type of generated objects of the new generator
      * @return A new generator
      */
-    default <U> Gen<U> flatMap(Function<? super T, ? extends Gen<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return random -> mapper.apply(apply(random)).apply(random);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Gen<U> flatMapM(Function<? super T, ? extends Kind<? extends Gen<?>, ? extends U>> mapper) {
-        return flatMap((Function<? super T, ? extends Gen<? extends U>>) mapper);
+    default <U> Gen<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return random -> {
+            final Iterable<? extends U> iterable = mapper.apply(apply(random));
+            if (iterable instanceof Gen) {
+                return ((Gen<U>) iterable).apply(random);
+            } else {
+                return Value.get(iterable);
+            }
+        };
     }
 
     @Override
@@ -335,7 +329,6 @@ public interface Gen<T> extends TraversableOnce<T>,
      * @param <U>    Type of the mapped object
      * @return A new generator
      */
-    @Override
     default <U> Gen<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return random -> mapper.apply(apply(random));
@@ -348,6 +341,11 @@ public interface Gen<T> extends TraversableOnce<T>,
             action.accept(t);
             return t;
         };
+    }
+
+    @Override
+    default T get() {
+        return apply(Checkable.RNG.get());
     }
 
     @Override

@@ -9,16 +9,18 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import javaslang.Function1Module.Memoized;
 
 /**
  * Represents a function with one argument.
  *
  * @param <T1> argument 1 of the function
  * @param <R> return type of the function
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -135,13 +137,27 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
 
     @Override
     default Function1<T1, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
             final Lazy<R> forNull = Lazy.of(() -> apply(null));
-            final Map<T1, R> cache = new ConcurrentHashMap<>();
-            return (Function1<T1, R> & Memoized) t1 -> (t1 == null) ? forNull.get() : cache.computeIfAbsent(t1, this::apply);
+            final Object lock = new Object();
+            final Map<T1, R> cache = new HashMap<>();
+            return (Function1<T1, R> & Memoized) t1 -> {
+                if (t1 == null) {
+                    return forNull.get();
+                } else {
+                    synchronized (lock) {
+                        return cache.computeIfAbsent(t1, this::apply);
+                    }
+                }
+            };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -184,6 +200,7 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
      *
      * @param <T1> the 1st parameter type of the function
      * @param <R> the return type of the function
+     * @author Daniel Dietrich
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")
@@ -200,5 +217,14 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
         public Class<T1> parameterType1() {
             return (Class<T1>) parameterTypes()[0];
         }
+    }
+}
+
+interface Function1Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

@@ -80,6 +80,15 @@ public class Function0Test {
         assertThat(memo.isMemoized()).isTrue();
     }
 
+    private static Function0<Integer> recurrent1 = () -> 11;
+    private static Function0<Integer> recurrent2 = Function0Test.recurrent1.memoized();
+
+    @Test
+    public void shouldCalculatedRecursively() {
+        assertThat(recurrent1.apply()).isEqualTo(11);
+
+    }
+
     @Test
     public void shouldComposeWithAndThen() {
         final Function0<Object> f = () -> null;
@@ -92,6 +101,7 @@ public class Function0Test {
     public void shouldGetType() {
         final Function0<Integer> f = () -> null;
         final Function0.Type<Integer> type = f.getType();
+
         assertThat(type.toString()).isEqualTo("() -> java.lang.Integer");
     }
 }

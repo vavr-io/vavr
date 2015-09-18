@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
@@ -25,13 +24,22 @@ import java.util.stream.Collector;
  * An immutable {@code HashSet} implementation.
  *
  * @param <T> Component type
+ * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  * @since 2.0.0
  */
-final class HashSet<T> implements Set<T>, Serializable {
+public final class HashSet<T> implements Set<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private static final HashSet<?> EMPTY = new HashSet<>(HashArrayMappedTrie.empty());
+
+    private final HashArrayMappedTrie<T, T> tree;
+    private final transient Lazy<Integer> hash;
+
+    private HashSet(HashArrayMappedTrie<T, T> tree) {
+        this.tree = tree;
+        this.hash = Lazy.of(() -> Traversable.hash(tree::iterator));
+    }
 
     @SuppressWarnings("unchecked")
     public static <T> HashSet<T> empty() {
@@ -40,19 +48,19 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.Set}s.
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.HashSet}.
      *
-     * @param <T> Component type of the List.
-     * @return A javaslang.collection.List Collector.
+     * @param <T> Component type of the HashSet.
+     * @return A javaslang.collection.HashSet Collector.
      */
-    public static <T> Collector<T, ArrayList<T>, Set<T>> collector() {
+    public static <T> Collector<T, ArrayList<T>, HashSet<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
             left.addAll(right);
             return left;
         };
-        final Function<ArrayList<T>, Set<T>> finisher = HashSet::ofAll;
+        final Function<ArrayList<T>, HashSet<T>> finisher = HashSet::ofAll;
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
@@ -84,43 +92,117 @@ final class HashSet<T> implements Set<T>, Serializable {
     @SafeVarargs
     static <T> HashSet<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        HashSet<T> result = HashSet.empty();
+        HashArrayMappedTrie<T, T> tree = HashArrayMappedTrie.empty();
         for (T element : elements) {
-            result = result.add(element);
+            tree = tree.put(element, element);
         }
-        return result;
+        return new HashSet<>(tree);
     }
 
     /**
-     * Creates a HashSet of the given entries.
+     * Creates a HashSet of the given elements.
      *
-     * @param entries Set entries
-     * @param <T>     The value type
+     * @param elements Set elements
+     * @param <T>      The value type
      * @return A new HashSet containing the given entries
      */
     @SuppressWarnings("unchecked")
-    public static <T> HashSet<T> ofAll(Iterable<? extends T> entries) {
-        Objects.requireNonNull(entries, "entries is null");
-        if (entries instanceof HashSet) {
-            return (HashSet<T>) entries;
+    public static <T> HashSet<T> ofAll(java.lang.Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        if (elements instanceof HashSet) {
+            return (HashSet<T>) elements;
         } else {
-            HashArrayMappedTrie<T, Object> tree = HashArrayMappedTrie.empty();
-            for (T entry : entries) {
-                tree = tree.put(entry, entry);
-            }
+            final HashArrayMappedTrie<T, T> tree = addAll(HashArrayMappedTrie.empty(), elements);
             return tree.isEmpty() ? empty() : new HashSet<>(tree);
         }
     }
 
-    private final HashArrayMappedTrie<T, Object> tree;
-    // TODO: get rid of this (mid-term)
-    private final transient Lazy<List<T>> list;
-    private final transient Lazy<Integer> hash;
+    /**
+     * Creates a HashSet based on the elements of a boolean array.
+     *
+     * @param array a boolean array
+     * @return A new HashSet of Boolean values
+     */
+    static HashSet<Boolean> ofAll(boolean[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
+    }
 
-    private HashSet(HashArrayMappedTrie<T, Object> tree) {
-        this.tree = tree;
-        this.list = Lazy.of(() -> List.ofAll(() -> tree.iterator().map(t -> t._1)));
-        this.hash = Lazy.of(() -> Traversable.hash(tree::iterator));
+    /**
+     * Creates a HashSet based on the elements of a byte array.
+     *
+     * @param array a byte array
+     * @return A new HashSet of Byte values
+     */
+    static HashSet<Byte> ofAll(byte[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
+    }
+
+    /**
+     * Creates a HashSet based on the elements of a char array.
+     *
+     * @param array a char array
+     * @return A new HashSet of Character values
+     */
+    static HashSet<Character> ofAll(char[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
+    }
+
+    /**
+     * Creates a HashSet based on the elements of a double array.
+     *
+     * @param array a double array
+     * @return A new HashSet of Double values
+     */
+    static HashSet<Double> ofAll(double[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
+    }
+
+    /**
+     * Creates a HashSet based on the elements of a float array.
+     *
+     * @param array a float array
+     * @return A new HashSet of Float values
+     */
+    static HashSet<Float> ofAll(float[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
+    }
+
+    /**
+     * Creates a HashSet based on the elements of an int array.
+     *
+     * @param array an int array
+     * @return A new HashSet of Integer values
+     */
+    static HashSet<Integer> ofAll(int[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
+    }
+
+    /**
+     * Creates a HashSet based on the elements of a long array.
+     *
+     * @param array a long array
+     * @return A new HashSet of Long values
+     */
+    static HashSet<Long> ofAll(long[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
+    }
+
+    /**
+     * Creates a HashSet based on the elements of a short array.
+     *
+     * @param array a short array
+     * @return A new HashSet of Short values
+     */
+    static HashSet<Short> ofAll(short[] array) {
+        Objects.requireNonNull(array, "array is null");
+        return HashSet.ofAll(Iterator.ofAll(array));
     }
 
     @Override
@@ -129,23 +211,13 @@ final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Iterator<T> iterator() {
-        return tree.iterator().map(t -> t._1);
-    }
-
-    @Override
-    public int hashCode() {
-        return hash.get();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof HashSet) {
-            return list.equals(((HashSet) o).list);
+    public HashSet<T> addAll(java.lang.Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        final HashArrayMappedTrie<T, T> that = addAll(tree, elements);
+        if (that.size() == tree.size()) {
+            return this;
         } else {
-            return false;
+            return new HashSet<>(that);
         }
     }
 
@@ -155,119 +227,108 @@ final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<Tuple2<T, T>> cartesianProduct() {
-        return cartesianProduct(this);
-    }
-
-    @Override
-    public <U> HashSet<Tuple2<T, U>> cartesianProduct(Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
-        return HashSet.ofAll(list.get().cartesianProduct(that));
-    }
-
-    @Override
     public boolean contains(T element) {
         return tree.get(element).isDefined();
     }
 
     @Override
+    public HashSet<T> diff(Set<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        if (isEmpty() || elements.isEmpty()) {
+            return this;
+        } else {
+            return removeAll(elements);
+        }
+    }
+
+    @Override
     public HashSet<T> distinct() {
-        return HashSet.ofAll(list.get());
+        return this;
     }
 
     @Override
     public HashSet<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return HashSet.ofAll(list.get().distinctBy(comparator));
+        return HashSet.ofAll(iterator().distinctBy(comparator));
     }
 
     @Override
     public <U> HashSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return HashSet.ofAll(list.get().distinctBy(keyExtractor));
+        return HashSet.ofAll(iterator().distinctBy(keyExtractor));
     }
 
     @Override
     public HashSet<T> drop(int n) {
-        return HashSet.ofAll(() -> iterator().drop(n));
+        if (n <= 0) {
+            return this;
+        } else {
+            return HashSet.ofAll(iterator().drop(n));
+        }
     }
 
     @Override
     public HashSet<T> dropRight(int n) {
-        return HashSet.ofAll(list.get().dropRight(n));
+        return drop(n);
     }
 
     @Override
     public HashSet<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return HashSet.ofAll(list.get().dropWhile(predicate));
+        final HashSet<T> dropped = HashSet.ofAll(iterator().dropWhile(predicate));
+        return dropped.length() == length() ? this : dropped;
     }
 
     @Override
     public HashSet<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return HashSet.ofAll(list.get().filter(predicate));
+        final HashSet<T> filtered = HashSet.ofAll(iterator().filter(predicate));
+        return filtered.length() == length() ? this : filtered;
     }
 
     @Override
-    public HashSet<Some<T>> filterOption(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return HashSet.ofAll(list.get().filterOption(predicate));
+    public Option<T> findLast(Predicate<? super T> predicate) {
+        return findFirst(predicate);
     }
 
     @Override
-    public HashSet<T> findAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate);
-    }
-
-    @Override
-    public <U> HashSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U> HashSet<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
         } else {
-            HashSet<U> set = empty();
-            for (T t : this) {
-                for (U u : mapper.apply(t)) {
-                    set = set.add(u);
-                }
-            }
-            return set;
+            final HashArrayMappedTrie<U, U> that = foldLeft(HashArrayMappedTrie.empty(), (tree, t) -> addAll(tree, mapper.apply(t)));
+            return new HashSet<>(that);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> HashSet<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return flatMap((Function<? super T, ? extends Iterable<? extends U>>) mapper);
     }
 
     @Override
     public HashSet<Object> flatten() {
-        return flatMap(t -> (t instanceof Iterable) ? HashSet.ofAll((Iterable<?>) t).flatten() : HashSet.of(t));
+        return flatMap(t -> (t instanceof java.lang.Iterable) ? HashSet.ofAll((java.lang.Iterable<?>) t).flatten() : HashSet.of(t));
+    }
+
+    @Override
+    public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+        return foldLeft(zero, (u, t) -> f.apply(t, u));
     }
 
     @Override
     public <C> Map<C, HashSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        Map<C, HashSet<T>> result = HashMap.empty();
-        for (T t : this) {
+        return foldLeft(HashMap.empty(), (map, t) -> {
             final C key = classifier.apply(t);
-            final HashSet<T> set = result.get(key);
-            result = result.put(key, (set == null) ? HashSet.of(t) : set.add(t));
-        }
-        return result;
+            final HashSet<T> values = map.get(key).map(ts -> ts.add(t)).orElse(HashSet.of(t));
+            return map.put(key, values);
+        });
     }
 
     @Override
-    public HashSet<HashSet<T>> grouped(int size) {
-        return HashSet.ofAll(list.get().grouped(size).map(HashSet::ofAll));
+    public boolean hasDefiniteSize() {
+        return true;
     }
 
     @Override
     public T head() {
-        if(tree.isEmpty()) {
+        if (tree.isEmpty()) {
             throw new NoSuchElementException("head of empty set");
         }
         return iterator().next();
@@ -275,41 +336,27 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public Option<T> headOption() {
-        return list.get().headOption();
+        return iterator().headOption();
     }
 
     @Override
     public HashSet<T> init() {
-        return HashSet.ofAll(list.get().init());
+        return tail();
     }
 
     @Override
-    public Option<? extends Set<T>> initOption() {
-        Option<List<T>> opt = list.get().initOption();
-        return opt.isDefined() ? new Some<>(HashSet.ofAll(opt.get())) : None.instance();
+    public Option<HashSet<T>> initOption() {
+        return tailOption();
     }
 
     @Override
-    public HashSet<T> intersperse(T element) {
-        // TODO strange behaviour for this collection
-        return HashSet.ofAll(list.get().intersperse(element));
-    }
-
-    @Override
-    public String join(CharSequence delimiter,
-                CharSequence prefix,
-                CharSequence suffix) {
-        final StringBuilder builder = new StringBuilder(prefix);
-        forEach(t -> builder.append(String.valueOf(t)).append(String.valueOf(delimiter)));
-        if (!isEmpty()) {
-            builder.delete(builder.length() - delimiter.length(), builder.length());
+    public HashSet<T> intersect(Set<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        if (isEmpty() || elements.isEmpty()) {
+            return empty();
+        } else {
+            return retainAll(elements);
         }
-        return builder.append(suffix).toString();
-    }
-
-    @Override
-    public int length() {
-        return tree.size();
     }
 
     @Override
@@ -318,54 +365,74 @@ final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public boolean isTraversableAgain() {
+        return true;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return tree.iterator().map(t -> t._1);
+    }
+
+    @Override
+    public int length() {
+        return tree.size();
+    }
+
+    @Override
     public <U> HashSet<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        HashSet<U> result = HashSet.empty();
-        for (T t : this) {
-            result = result.add(mapper.apply(t));
+        if (isEmpty()) {
+            return empty();
+        } else {
+            final HashArrayMappedTrie<U, U> that = foldLeft(HashArrayMappedTrie.empty(), (tree, t) -> {
+                final U u = mapper.apply(t);
+                return tree.put(u, u);
+            });
+            return new HashSet<>(that);
         }
-        return result;
+    }
+
+    @Override
+    public String mkString(CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
+        return iterator().mkString(delimiter, prefix, suffix);
     }
 
     @Override
     public Tuple2<HashSet<T>, HashSet<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        HashSet<T> first = HashSet.empty();
-        HashSet<T> second = HashSet.empty();
-        for (T t : this) {
-            if (predicate.test(t)) {
-                first = first.add(t);
-            } else {
-                second = second.add(t);
-            }
-        }
-        return Tuple.of(first, second);
+        final Tuple2<Iterator<T>, Iterator<T>> p = iterator().partition(predicate);
+        return Tuple.of(HashSet.ofAll(p._1), HashSet.ofAll(p._2));
     }
 
     @Override
     public HashSet<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
-        return HashSet.ofAll(list.get().peek(action));
+        if (!isEmpty()) {
+            action.accept(iterator().head());
+        }
+        return this;
+    }
+
+    @Override
+    public T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
+        return reduceLeft(op);
     }
 
     @Override
     public HashSet<T> remove(T element) {
-        return new HashSet<>(tree.remove(element));
+        final HashArrayMappedTrie<T, T> newTree = tree.remove(element);
+        return (newTree == tree) ? this : new HashSet<>(newTree);
     }
 
     @Override
-    public HashSet<T> removeAll(T element) {
-        return remove(element);
-    }
-
-    @Override
-    public HashSet<T> removeAll(Iterable<? extends T> elements) {
+    public HashSet<T> removeAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        HashArrayMappedTrie<T, Object> trie = tree;
+        HashArrayMappedTrie<T, T> trie = tree;
         for (T element : elements) {
             trie = trie.remove(element);
         }
-        return new HashSet<>(trie);
+        return (trie == tree) ? this : new HashSet<>(trie);
     }
 
     @Override
@@ -385,52 +452,37 @@ final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public HashSet<T> replaceAll(UnaryOperator<T> operator) {
         Objects.requireNonNull(operator, "operator is null");
-        HashSet<T> result = HashSet.empty();
-        for (T element : this) {
-            result = result.add(operator.apply(element));
+        HashArrayMappedTrie<T, T> that = HashArrayMappedTrie.empty();
+        for (T currElem : this) {
+            T newElem = operator.apply(currElem);
+            that = that.put(newElem, newElem);
         }
-        return result;
+        return new HashSet<>(that);
     }
 
     @Override
-    public HashSet<T> retainAll(Iterable<? extends T> elements) {
+    public HashSet<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final HashSet<T> keeped = HashSet.ofAll(elements);
-        HashSet<T> result = HashSet.empty();
+        final HashArrayMappedTrie<T, T> keeped = addAll(HashArrayMappedTrie.empty(), elements);
+        HashArrayMappedTrie<T, T> that = HashArrayMappedTrie.empty();
         for (T element : this) {
-            if (keeped.contains(element)) {
-                result = result.add(element);
+            if (keeped.containsKey(element)) {
+                that = that.put(element, element);
             }
         }
-        return result.reverse();
-    }
-
-    @Override
-    public HashSet<T> reverse() {
-        return this;
-    }
-
-    @Override
-    public HashSet<? extends Set<T>> sliding(int size) {
-        return sliding(size, 1);
-    }
-
-    @Override
-    public HashSet<HashSet<T>> sliding(int size, int step) {
-        List<HashSet<T>> l = list.get().sliding(size, step).map(HashSet::ofAll);
-        return HashSet.ofAll(l);
+        return new HashSet<>(that);
     }
 
     @Override
     public Tuple2<HashSet<T>, HashSet<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        Tuple2<List<T>, List<T>> t = list.get().span(predicate);
+        final Tuple2<Iterator<T>, Iterator<T>> t = iterator().span(predicate);
         return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2));
     }
 
     @Override
     public HashSet<T> tail() {
-        if(tree.isEmpty()) {
+        if (tree.isEmpty()) {
             throw new UnsupportedOperationException("tail of empty set");
         }
         return remove(head());
@@ -438,7 +490,7 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public Option<HashSet<T>> tailOption() {
-        if(tree.isEmpty()) {
+        if (tree.isEmpty()) {
             return None.instance();
         } else {
             return new Some<>(tail());
@@ -447,48 +499,110 @@ final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> take(int n) {
+        if (tree.size() <= n) {
+            return this;
+        }
         return HashSet.ofAll(() -> iterator().take(n));
     }
 
     @Override
     public HashSet<T> takeRight(int n) {
-        return HashSet.ofAll(list.get().takeRight(n));
+        return take(n);
+    }
+
+    @Override
+    public HashSet<T> takeUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeWhile(predicate.negate());
     }
 
     @Override
     public HashSet<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return HashSet.ofAll(list.get().takeWhile(predicate));
+        HashSet<T> taken = HashSet.ofAll(iterator().takeWhile(predicate));
+        return taken.length() == length() ? this : taken;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <U> HashSet<U> unit(Iterable<? extends U> iterable) {
-        return HashSet.ofAll(iterable);
+    public HashSet<T> union(Set<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        if (isEmpty()) {
+            if (elements instanceof HashSet) {
+                return (HashSet<T>) elements;
+            } else {
+                return HashSet.ofAll(elements);
+            }
+        } else if (elements.isEmpty()) {
+            return this;
+        } else {
+            final HashArrayMappedTrie<T, T> that = addAll(tree, elements);
+            if (that.size() == tree.size()) {
+                return this;
+            } else {
+                return new HashSet<>(that);
+            }
+        }
     }
 
     @Override
     public <T1, T2> Tuple2<HashSet<T1>, HashSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        Tuple2<List<T1>, List<T2>> t = list.get().unzip(unzipper);
+        Tuple2<Iterator<T1>, Iterator<T2>> t = iterator().unzip(unzipper);
         return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2));
     }
 
     @Override
-    public <U> HashSet<Tuple2<T, U>> zip(Iterable<U> that) {
+    public <U> HashSet<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
-        return HashSet.ofAll(list.get().zip(that));
+        return HashSet.ofAll(iterator().zip(that));
     }
 
     @Override
-    public <U> HashSet<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    public <U> HashSet<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        return HashSet.ofAll(list.get().zipAll(that, thisElem, thatElem));
+        return HashSet.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
 
     @Override
     public HashSet<Tuple2<T, Integer>> zipWithIndex() {
-        return HashSet.ofAll(list.get().zipWithIndex());
+        return HashSet.ofAll(iterator().zipWithIndex());
     }
+
+    // -- Object
+
+    @Override
+    public int hashCode() {
+        return hash.get();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof HashSet) {
+            final HashSet<?> that = (HashSet<?>) o;
+            return this.length() == that.length() && ((HashSet<Object>) this).containsAll(that);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return mkString(", ", "HashSet(", ")");
+    }
+
+    private static <T> HashArrayMappedTrie<T, T> addAll(HashArrayMappedTrie<T, T> initial, Iterable<? extends T> additional) {
+        HashArrayMappedTrie<T, T> that = initial;
+        for (T t : additional) {
+            that = that.put(t, t);
+        }
+        return that;
+    }
+
+    // -- Serialization
 
     /**
      * <p>
@@ -502,7 +616,7 @@ final class HashSet<T> implements Set<T>, Serializable {
      * @return A SerialiationProxy for this enclosing class.
      */
     private Object writeReplace() {
-        return new SerializationProxy<>(this.list.get());
+        return new SerializationProxy<>(this.tree);
     }
 
     /**
@@ -531,7 +645,7 @@ final class HashSet<T> implements Set<T>, Serializable {
         private static final long serialVersionUID = 1L;
 
         // the instance to be serialized/deserialized
-        private transient List<T> list;
+        private transient HashArrayMappedTrie<T, T> tree;
 
         /**
          * Constructor for the case of serialization, called by {@link HashSet#writeReplace()}.
@@ -539,10 +653,10 @@ final class HashSet<T> implements Set<T>, Serializable {
          * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
          * an instance of the enclosing class.
          *
-         * @param list a Cons
+         * @param tree a Cons
          */
-        SerializationProxy(List<T> list) {
-            this.list = list;
+        SerializationProxy(HashArrayMappedTrie<T, T> tree) {
+            this.tree = tree;
         }
 
         /**
@@ -553,9 +667,9 @@ final class HashSet<T> implements Set<T>, Serializable {
          */
         private void writeObject(ObjectOutputStream s) throws IOException {
             s.defaultWriteObject();
-            s.writeInt(list.length());
-            for (List<T> l = list; !l.isEmpty(); l = l.tail()) {
-                s.writeObject(l.head());
+            s.writeInt(tree.size());
+            for (Tuple2<T, T> e : tree) {
+                s.writeObject(e._1);
             }
         }
 
@@ -573,13 +687,13 @@ final class HashSet<T> implements Set<T>, Serializable {
             if (size < 0) {
                 throw new InvalidObjectException("No elements");
             }
-            List<T> temp = List.empty();
+            HashArrayMappedTrie<T, T> temp = HashArrayMappedTrie.empty();
             for (int i = 0; i < size; i++) {
                 @SuppressWarnings("unchecked")
                 final T element = (T) s.readObject();
-                temp = temp.prepend(element);
+                temp = temp.put(element, element);
             }
-            list = temp.reverse();
+            tree = temp;
         }
 
         /**
@@ -593,7 +707,7 @@ final class HashSet<T> implements Set<T>, Serializable {
          * @return A deserialized instance of the enclosing class.
          */
         private Object readResolve() {
-            return HashSet.ofAll(list);
+            return tree.isEmpty() ? HashSet.empty() : new HashSet<>(tree);
         }
     }
 }

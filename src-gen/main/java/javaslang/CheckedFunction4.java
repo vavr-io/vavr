@@ -9,9 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
+import javaslang.CheckedFunction4Module.Memoized;
 import javaslang.control.Try;
 
 /**
@@ -22,6 +23,7 @@ import javaslang.control.Try;
  * @param <T3> argument 3 of the function
  * @param <T4> argument 4 of the function
  * @param <R> return type of the function
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -185,13 +187,23 @@ public interface CheckedFunction4<T1, T2, T3, T4, R> extends λ<R> {
 
     @Override
     default CheckedFunction4<T1, T2, T3, T4, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
-            final Map<Tuple4<T1, T2, T3, T4>, R> cache = new ConcurrentHashMap<>();
+            final Object lock = new Object();
+            final Map<Tuple4<T1, T2, T3, T4>, R> cache = new HashMap<>();
             final CheckedFunction1<Tuple4<T1, T2, T3, T4>, R> tupled = tupled();
-            return (CheckedFunction4<T1, T2, T3, T4, R> & Memoized) (t1, t2, t3, t4) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4), t -> Try.of(() -> tupled.apply(t)).get());
+            return (CheckedFunction4<T1, T2, T3, T4, R> & Memoized) (t1, t2, t3, t4) -> {
+                synchronized (lock) {
+                    return cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4), t -> Try.of(() -> tupled.apply(t)).get());
+                }
+            };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -223,6 +235,7 @@ public interface CheckedFunction4<T1, T2, T3, T4, R> extends λ<R> {
      * @param <T3> the 3rd parameter type of the function
      * @param <T4> the 4th parameter type of the function
      * @param <R> the return type of the function
+     * @author Daniel Dietrich
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")
@@ -254,5 +267,14 @@ public interface CheckedFunction4<T1, T2, T3, T4, R> extends λ<R> {
         public Class<T4> parameterType4() {
             return (Class<T4>) parameterTypes()[3];
         }
+    }
+}
+
+interface CheckedFunction4Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

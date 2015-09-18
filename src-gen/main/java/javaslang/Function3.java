@@ -9,9 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
+import javaslang.Function3Module.Memoized;
 
 /**
  * Represents a function with three arguments.
@@ -20,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <T2> argument 2 of the function
  * @param <T3> argument 3 of the function
  * @param <R> return type of the function
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -163,13 +165,23 @@ public interface Function3<T1, T2, T3, R> extends λ<R> {
 
     @Override
     default Function3<T1, T2, T3, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
-            final Map<Tuple3<T1, T2, T3>, R> cache = new ConcurrentHashMap<>();
+            final Object lock = new Object();
+            final Map<Tuple3<T1, T2, T3>, R> cache = new HashMap<>();
             final Function1<Tuple3<T1, T2, T3>, R> tupled = tupled();
-            return (Function3<T1, T2, T3, R> & Memoized) (t1, t2, t3) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3), tupled::apply);
+            return (Function3<T1, T2, T3, R> & Memoized) (t1, t2, t3) -> {
+                synchronized (lock) {
+                    return cache.computeIfAbsent(Tuple.of(t1, t2, t3), tupled::apply);
+                }
+            };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -200,6 +212,7 @@ public interface Function3<T1, T2, T3, R> extends λ<R> {
      * @param <T2> the 2nd parameter type of the function
      * @param <T3> the 3rd parameter type of the function
      * @param <R> the return type of the function
+     * @author Daniel Dietrich
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")
@@ -226,5 +239,14 @@ public interface Function3<T1, T2, T3, R> extends λ<R> {
         public Class<T3> parameterType3() {
             return (Class<T3>) parameterTypes()[2];
         }
+    }
+}
+
+interface Function3Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

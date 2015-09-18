@@ -14,6 +14,7 @@ import java.io.Serializable;
  * Please use {@linkplain Tuple0#instance()} or {@linkplain Tuple#empty()} to obtain the single instance.
  * </p>
  *
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 public final class Tuple0 implements Tuple, Serializable {

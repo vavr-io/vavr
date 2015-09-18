@@ -9,9 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
+import javaslang.Function6Module.Memoized;
 
 /**
  * Represents a function with 6 arguments.
@@ -23,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <T5> argument 5 of the function
  * @param <T6> argument 6 of the function
  * @param <R> return type of the function
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -229,13 +231,23 @@ public interface Function6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
 
     @Override
     default Function6<T1, T2, T3, T4, T5, T6, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
-            final Map<Tuple6<T1, T2, T3, T4, T5, T6>, R> cache = new ConcurrentHashMap<>();
+            final Object lock = new Object();
+            final Map<Tuple6<T1, T2, T3, T4, T5, T6>, R> cache = new HashMap<>();
             final Function1<Tuple6<T1, T2, T3, T4, T5, T6>, R> tupled = tupled();
-            return (Function6<T1, T2, T3, T4, T5, T6, R> & Memoized) (t1, t2, t3, t4, t5, t6) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5, t6), tupled::apply);
+            return (Function6<T1, T2, T3, T4, T5, T6, R> & Memoized) (t1, t2, t3, t4, t5, t6) -> {
+                synchronized (lock) {
+                    return cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5, t6), tupled::apply);
+                }
+            };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -269,6 +281,7 @@ public interface Function6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
      * @param <T5> the 5th parameter type of the function
      * @param <T6> the 6th parameter type of the function
      * @param <R> the return type of the function
+     * @author Daniel Dietrich
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")
@@ -310,5 +323,14 @@ public interface Function6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
         public Class<T6> parameterType6() {
             return (Class<T6>) parameterTypes()[5];
         }
+    }
+}
+
+interface Function6Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

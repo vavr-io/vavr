@@ -5,8 +5,6 @@
  */
 package javaslang.control;
 
-import javaslang.Kind;
-
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -19,6 +17,7 @@ import java.util.function.Predicate;
  * calling {@link #instance()}.
  *
  * @param <T> The type of the optional value.
+ * @author Daniel Dietrich
  * @since 1.0.0
  */
 public final class None<T> implements Option<T>, Serializable {
@@ -61,47 +60,6 @@ public final class None<T> implements Option<T>, Serializable {
     @Override
     public boolean isEmpty() {
         return true;
-    }
-
-    @Override
-    public None<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return this;
-    }
-
-    @Override
-    public None<Some<T>> filterOption(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return None.instance();
-    }
-
-    @Override
-    public <U> None<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return None.instance();
-    }
-
-    @Override
-    public <U> None<U> flatMapM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return None.instance();
-    }
-
-    @Override
-    public None<Object> flatten() {
-        return None.instance();
-    }
-
-    @Override
-    public <U> None<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return None.instance();
-    }
-
-    @Override
-    public None<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        return this;
     }
 
     @Override

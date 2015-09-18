@@ -5,11 +5,11 @@
  */
 package javaslang.control;
 
-import javaslang.*;
+import javaslang.Function1;
+import javaslang.Lazy;
+import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
-import javaslang.collection.Stream;
-import javaslang.collection.TraversableOnce;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -62,6 +62,7 @@ import java.util.function.Supplier;
  * </code></pre>
  *
  * @param <R> The result type of the {@code Match}.
+ * @author Daniel Dietrich
  * @since 1.0.0
  */
 public interface Match<R> extends Function<Object, R> {
@@ -239,7 +240,7 @@ public interface Match<R> extends Function<Object, R> {
             @SuppressWarnings({ "unchecked", "varargs" })
             @SafeVarargs
             private static <T> Predicate<? super Object> isIn(T... prototypes) {
-                return value -> Stream.of(prototypes).findFirst(prototype -> is(prototype).test(value)).isDefined();
+                return value -> Iterator.of(prototypes).findFirst(prototype -> is(prototype).test(value)).isDefined();
             }
 
             private static <T> Predicate<? super Object> type(Class<T> type) {
@@ -247,7 +248,7 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             private static <T> Predicate<? super Object> typeIn(Class<?>... types) {
-                return value -> Stream.of(types).findFirst(type -> type(type).test(value)).isDefined();
+                return value -> Iterator.of(types).findFirst(type -> type(type).test(value)).isDefined();
             }
 
             public static final class Then<R> implements Match<R> {
@@ -388,31 +389,19 @@ public interface Match<R> extends Function<Object, R> {
     /**
      * @since 2.0.0
      */
-    interface MatchMonad<R> extends TraversableOnce<R>, Value<R>,
-            FilterMonadic<MatchMonad<?>, R>, Kind<MatchMonad<?>, R> {
+    interface MatchMonad<R> extends Value<R> {
 
         @Override
         MatchMonad<R> filter(Predicate<? super R> predicate);
 
         @Override
-        default MatchMonad<Some<R>> filterOption(Predicate<? super R> predicate) {
-            return map(Some::new);
-        }
-
-        <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper);
-
-        @SuppressWarnings("unchecked")
-        @Override
-        default <U> MatchMonad<U> flatMapM(Function<? super R, ? extends Kind<? extends MatchMonad<?>, ? extends U>> mapper) {
-            return flatMap((Function<? super R, ? extends MatchMonad<? extends U>>) mapper);
-        }
+        <U> MatchMonad<U> flatMap(Function<? super R, ? extends java.lang.Iterable<? extends U>> mapper);
 
         @Override
         default MatchMonad<Object> flatten() {
             return flatMap(result -> (result instanceof MatchMonad) ? ((MatchMonad<?>) result).flatten() : this);
         }
 
-        @Override
         <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper);
 
         @Override
@@ -649,10 +638,10 @@ public interface Match<R> extends Function<Object, R> {
 
                 @SuppressWarnings("unchecked")
                 @Override
-                public <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper) {
+                public <U> MatchMonad<U> flatMap(Function<? super R, ? extends java.lang.Iterable<? extends U>> mapper) {
                     Objects.requireNonNull(mapper, "mapper is null");
                     return result
-                            .map(supplier -> (MatchMonad<U>) new Then<>(value, new Some<>(() -> mapper.apply(supplier.get()).get())))
+                            .map(supplier -> (MatchMonad<U>) new Then<>(value, new Some<>(() -> Value.get(mapper.apply(supplier.get())))))
                             .orElse((MatchMonad<U>) this);
                 }
 
@@ -735,8 +724,8 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             @Override
-            public <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper) {
-                return new Otherwise<>(() -> mapper.apply(result.get()).get());
+            public <U> MatchMonad<U> flatMap(Function<? super R, ? extends java.lang.Iterable<? extends U>> mapper) {
+                return new Otherwise<>(() -> Value.get(mapper.apply(result.get())));
             }
 
             @Override

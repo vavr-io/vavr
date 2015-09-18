@@ -5,26 +5,27 @@
  */
 package javaslang.collection;
 
-import javaslang.FilterMonadic;
-import javaslang.Kind;
-import javaslang.Kind.IterableKind;
 import javaslang.Lazy;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.collection.List.Nil;
 import javaslang.control.Match;
-import javaslang.control.Some;
+import javaslang.control.None;
+import javaslang.control.Option;
 
 import java.io.*;
+import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * <p>A general Tree interface.</p>
  *
  * @param <T> component type of this Tree
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
-public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<?>, T> {
+public interface Tree<T> extends Traversable<T> {
 
     static <T> Empty<T> empty() {
         return Empty.instance();
@@ -41,9 +42,9 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
         return new Node<>(value, List.of(children));
     }
 
-    static <T> Node<T> of(T value, List<Node<T>> children) {
+    static <T> Node<T> of(T value, java.lang.Iterable<? extends Node<T>> children) {
         Objects.requireNonNull(children, "children is null");
-        return new Node<>(value, children);
+        return new Node<>(value, List.ofAll(children));
     }
 
     /**
@@ -60,13 +61,6 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
      * @return the tree's children
      */
     List<? extends Tree<T>> getChildren();
-
-    /**
-     * Checks if this tree is the empty tree.
-     *
-     * @return true, if this tree is empty, false otherwise.
-     */
-    boolean isEmpty();
 
     /**
      * Checks if this Tree is a leaf. A tree is a leaf if it is a Node with no children.
@@ -86,31 +80,12 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
         return !(isEmpty() || isLeaf());
     }
 
-    /**
-     * Checks whether the given element occurs in this tree.
-     *
-     * @param element An element.
-     * @return true, if this tree contains
-     */
-    default boolean contains(T element) {
-        if (isEmpty()) {
-            return false;
-        } else if (Objects.equals(getValue(), element)) {
-            return true;
-        } else {
-            for (Tree<T> child : getChildren()) {
-                if (child.contains(element)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
+    <U> Tree<U> map(Function<? super T, ? extends U> mapper);
 
     /**
      * Traverses the Tree in pre-order.
      *
-     * @return A List containing all elements of this tree, which is List.Nil if this tree is empty.
+     * @return A List containing all elements of this tree, which is List if this tree is empty.
      * @throws java.lang.NullPointerException if order is null
      */
     default List<T> traverse() {
@@ -121,7 +96,7 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
      * Traverses the Tree in a specific order.
      *
      * @param order the tree traversal order
-     * @return A List containing all elements of this tree, which is List.Nil if this tree is empty.
+     * @return A List containing all elements of this tree, which is List if this tree is empty.
      * @throws java.lang.NullPointerException if order is null
      */
     default List<T> traverse(Order order) {
@@ -132,6 +107,7 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
                         .foldLeft(List.of(tree.getValue()), (acc, child) -> acc.appendAll(preOrder(child)));
             }
 
+            // see RedBlackTree.iterator() for in-order traversal without recursion
             List<T> inOrder(Tree<T> tree) {
                 if (tree.isLeaf()) {
                     return List.of(tree.getValue());
@@ -165,6 +141,7 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
             return List.empty();
         } else {
             final Traversal traversal = new Traversal();
+            // TODO: use functional strategy pattern instead of Match.of (https://dzone.com/articles/strategy-pattern-implemented-as-an-enum-using-lamb)
             return Match.of(order)
                     .whenIs(Order.PRE_ORDER).then(() -> traversal.preOrder(this))
                     .whenIs(Order.IN_ORDER).then(() -> traversal.inOrder(this))
@@ -174,25 +151,73 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
         }
     }
 
-    @Override
-    Tree<T> peek(Consumer<? super T> action);
+    // -- Methods inherited from Traversable
 
     @Override
-    Tree<T> filter(Predicate<? super T> predicate);
+    default Empty<T> clear() {
+        return Tree.empty();
+    }
+
+    /**
+     * Checks whether the given element occurs in this tree.
+     *
+     * @param element An element.
+     * @return true, if this tree contains
+     */
+    @Override
+    default boolean contains(T element) {
+        return iterator().contains(element);
+    }
 
     @Override
-    Tree<Some<T>> filterOption(Predicate<? super T> predicate);
-
-    <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+    List<T> distinct();
 
     @Override
-    <U> Tree<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper);
+    List<T> distinctBy(Comparator<? super T> comparator);
+
+    @Override
+    <U> List<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
+
+    @Override
+    List<T> drop(int n);
+
+    @Override
+    List<T> dropRight(int n);
+
+    @Override
+    List<T> dropWhile(Predicate<? super T> predicate);
+
+    @Override
+    List<T> filter(Predicate<? super T> predicate);
+
+    @Override
+    <U> Tree<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
     Tree<Object> flatten();
 
     @Override
-    <U> Tree<U> map(Function<? super T, ? extends U> mapper);
+    <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier);
+
+    @Override
+    T head();
+
+    @Override
+    Option<T> headOption();
+
+    @Override
+    List<T> init();
+
+    @Override
+    Option<List<T>> initOption();
+
+    /**
+     * Checks if this tree is the empty tree.
+     *
+     * @return true, if this tree is empty, false otherwise.
+     */
+    @Override
+    boolean isEmpty();
 
     /**
      * Iterates over the elements of this tree in pre-order.
@@ -203,6 +228,48 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
     default Iterator<T> iterator() {
         return traverse().iterator();
     }
+
+    @Override
+    Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate);
+
+    @Override
+    Tree<T> peek(Consumer<? super T> action);
+
+    @Override
+    Tree<T> replace(T currentElement, T newElement);
+
+    @Override
+    Tree<T> replaceAll(T currentElement, T newElement);
+
+    @Override
+    Tree<T> replaceAll(UnaryOperator<T> operator);
+
+    @Override
+    List<T> retainAll(java.lang.Iterable<? extends T> elements);
+
+    @Override
+    Tuple2<List<T>, List<T>> span(Predicate<? super T> predicate);
+
+    @Override
+    List<T> tail();
+
+    @Override
+    Option<List<T>> tailOption();
+
+    @Override
+    List<T> take(int n);
+
+    @Override
+    List<T> takeRight(int n);
+
+    @Override
+    default List<T> takeUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeWhile(predicate.negate());
+    }
+
+    @Override
+    List<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
     boolean equals(Object o);
@@ -224,6 +291,7 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
 
         private final T value;
         private final List<Node<T>> children;
+        private final Lazy<Integer> size;
 
         private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
 
@@ -239,6 +307,62 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
             Objects.requireNonNull(children, "children is null");
             this.value = value;
             this.children = children;
+            this.size = Lazy.of(() -> 1 + children.foldLeft(0, (acc, child) -> acc + child.length()));
+        }
+
+        @Override
+        public List<T> distinct() {
+            return traverse().distinct();
+        }
+
+        @Override
+        public List<T> distinctBy(Comparator<? super T> comparator) {
+            return traverse().distinctBy(comparator);
+        }
+
+        @Override
+        public <U> List<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+            return traverse().distinctBy(keyExtractor);
+        }
+
+        @Override
+        public List<T> drop(int n) {
+            return traverse().drop(n);
+        }
+
+        @Override
+        public List<T> dropRight(int n) {
+            return traverse().dropRight(n);
+        }
+
+        @Override
+        public List<T> dropWhile(Predicate<? super T> predicate) {
+            return traverse().dropWhile(predicate);
+        }
+
+        @Override
+        public List<T> filter(Predicate<? super T> predicate) {
+            return traverse().filter(predicate);
+        }
+
+        @Override
+        public Option<T> findLast(Predicate<? super T> predicate) {
+            return traverse().findLast(predicate);
+        }
+
+        @Override
+        public <U> Tree<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+            return null; // TODO
+        }
+
+        @Override
+        public Tree<Object> flatten() {
+            return null; // TODO
+        }
+
+        @Override
+        public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+            return traverse().foldRight(zero, f);
         }
 
         @Override
@@ -247,13 +371,53 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
         }
 
         @Override
+        public boolean hasDefiniteSize() {
+            return true;
+        }
+
+        @Override
         public boolean isEmpty() {
             return false;
         }
 
         @Override
+        public int length() {
+            return 0;
+        }
+
+        @Override
         public boolean isLeaf() {
             return children.isEmpty();
+        }
+
+        @Override
+        public boolean isTraversableAgain() {
+            return true;
+        }
+
+        @Override
+        public <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
+            return traverse().groupBy(classifier);
+        }
+
+        @Override
+        public T head() {
+            return traverse().head(); // TODO: use iterator (in traverse order)
+        }
+
+        @Override
+        public Option<T> headOption() {
+            return traverse().headOption(); // TODO: use iterator (in traverse order)
+        }
+
+        @Override
+        public List<T> init() {
+            return traverse().init();
+        }
+
+        @Override
+        public Option<List<T>> initOption() {
+            return traverse().initOption();
         }
 
         @Override
@@ -263,40 +427,73 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
 
         @Override
         public Node<T> peek(Consumer<? super T> action) {
-            return null;
+            traverse().peek(action); // TODO: use iterator (in traverse order)
+            return this;
         }
 
         @Override
-        public Tree<T> filter(Predicate<? super T> predicate) {
+        public T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
+            return traverse().reduceRight(op);
+        }
+
+        @Override
+        public Tree<T> replace(T currentElement, T newElement) {
             return null; // TODO
         }
 
         @Override
-        public Tree<Some<T>> filterOption(Predicate<? super T> predicate) {
+        public Tree<T> replaceAll(T currentElement, T newElement) {
             return null; // TODO
         }
 
         @Override
-        public <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        public Tree<T> replaceAll(UnaryOperator<T> operator) {
             return null; // TODO
         }
 
-        @SuppressWarnings("unchecked")
         @Override
-        public <U> Tree<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
-            return flatMap((Function<? super T, ? extends IterableKind<? extends U>>) mapper);
+        public List<T> retainAll(java.lang.Iterable<? extends T> elements) {
+            return traverse().retainAll(elements);
         }
 
         @Override
-        public Node<Object> flatten() {
-            return null; // TODO
+        public Tuple2<List<T>, List<T>> span(Predicate<? super T> predicate) {
+            return traverse().span(predicate);
+        }
+
+        @Override
+        public List<T> tail() {
+            return traverse().tail();
+        }
+
+        @Override
+        public Option<List<T>> tailOption() {
+            return traverse().tailOption();
+        }
+
+        @Override
+        public List<T> take(int n) {
+            return traverse().take(n);
+        }
+
+        @Override
+        public List<T> takeRight(int n) {
+            return traverse().takeRight(n);
+        }
+
+        @Override
+        public List<T> takeWhile(Predicate<? super T> predicate) {
+            return traverse().takeWhile(predicate);
         }
 
         @Override
         public <U> Node<U> map(Function<? super T, ? extends U> mapper) {
-            final U value = mapper.apply(getValue());
-            final List<Node<U>> children = getChildren().map(tree -> tree.map(mapper));
-            return new Node<>(value, children);
+            return new Node<>(mapper.apply(value), children.map(child -> child.map(mapper)));
+        }
+
+        @Override
+        public Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate) {
+            return traverse().partition(predicate);
         }
 
         @Override
@@ -327,7 +524,7 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
             if (node.isLeaf()) {
                 return value;
             } else {
-                return String.format("(%s %s)", value, node.children.map(Node::toLispString).join(" "));
+                return String.format("(%s %s)", value, node.children.map(Node::toLispString).mkString(" "));
             }
         }
 
@@ -456,8 +653,48 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
         }
 
         @Override
+        public Nil<T> distinct() {
+            return Nil.instance();
+        }
+
+        @Override
+        public Nil<T> distinctBy(Comparator<? super T> comparator) {
+            return Nil.instance();
+        }
+
+        @Override
+        public <U> Nil<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+            return Nil.instance();
+        }
+
+        @Override
+        public Nil<T> drop(int n) {
+            return Nil.instance();
+        }
+
+        @Override
+        public Nil<T> dropRight(int n) {
+            return Nil.instance();
+        }
+
+        @Override
+        public Nil<T> dropWhile(Predicate<? super T> predicate) {
+            return Nil.instance();
+        }
+
+        @Override
+        public List<Node<T>> getChildren() {
+            return Nil.instance();
+        }
+
+        @Override
         public T getValue() {
-            throw new UnsupportedOperationException("getValue of Nil");
+            throw new UnsupportedOperationException("getValue of empty Tree");
+        }
+
+        @Override
+        public boolean hasDefiniteSize() {
+            return true;
         }
 
         @Override
@@ -466,13 +703,18 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
         }
 
         @Override
+        public int length() {
+            return 0;
+        }
+
+        @Override
         public boolean isLeaf() {
             return false;
         }
 
         @Override
-        public List<Node<T>> getChildren() {
-            return List.empty();
+        public boolean isTraversableAgain() {
+            return true;
         }
 
         @Override
@@ -481,22 +723,72 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
         }
 
         @Override
-        public Empty<T> filter(Predicate<? super T> predicate) {
-            return this;
+        public T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
+            throw new UnsupportedOperationException("reduceRight of empty Tree");
         }
 
         @Override
-        public Empty<Some<T>> filterOption(Predicate<? super T> predicate) {
-            return Empty.instance();
+        public Tree<T> replace(T currentElement, T newElement) {
+            return Tree.empty();
         }
 
         @Override
-        public <U> Empty<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-            return Empty.instance();
+        public Tree<T> replaceAll(T currentElement, T newElement) {
+            return Tree.empty();
         }
 
         @Override
-        public <U> Empty<U> flatMapM(Function<? super T, ? extends Kind<? extends IterableKind<?>, ? extends U>> mapper) {
+        public Tree<T> replaceAll(UnaryOperator<T> operator) {
+            return Tree.empty();
+        }
+
+        @Override
+        public Nil<T> retainAll(java.lang.Iterable<? extends T> elements) {
+            return Nil.instance();
+        }
+
+        @Override
+        public Tuple2<List<T>, List<T>> span(Predicate<? super T> predicate) {
+            return Tuple.of(List.empty(), List.empty());
+        }
+
+        @Override
+        public List<T> tail() {
+            throw new UnsupportedOperationException("tail of empty tree");
+        }
+
+        @Override
+        public None<List<T>> tailOption() {
+            return None.instance();
+        }
+
+        @Override
+        public Nil<T> take(int n) {
+            return Nil.instance();
+        }
+
+        @Override
+        public Nil<T> takeRight(int n) {
+            return Nil.instance();
+        }
+
+        @Override
+        public Nil<T> takeWhile(Predicate<? super T> predicate) {
+            return Nil.instance();
+        }
+
+        @Override
+        public Nil<T> filter(Predicate<? super T> predicate) {
+            return Nil.instance();
+        }
+
+        @Override
+        public None<T> findLast(Predicate<? super T> predicate) {
+            return None.instance();
+        }
+
+        @Override
+        public <U> Empty<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
             return Empty.instance();
         }
 
@@ -506,8 +798,43 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
         }
 
         @Override
+        public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+            throw new UnsupportedOperationException("foldRight of empty tree");
+        }
+
+        @Override
+        public <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
+            return HashMap.empty();
+        }
+
+        @Override
+        public T head() {
+            throw new UnsupportedOperationException("head of empty tree");
+        }
+
+        @Override
+        public None<T> headOption() {
+            return None.instance();
+        }
+
+        @Override
+        public List<T> init() {
+            throw new UnsupportedOperationException("init of empty tree");
+        }
+
+        @Override
+        public None<List<T>> initOption() {
+            return None.instance();
+        }
+
+        @Override
         public <U> Empty<U> map(Function<? super T, ? extends U> mapper) {
             return Empty.instance();
+        }
+
+        @Override
+        public Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate) {
+            return Tuple.of(List.empty(), List.empty());
         }
 
         @Override
@@ -562,7 +889,7 @@ public interface Tree<T> extends TraversableOnce<T>, FilterMonadic<IterableKind<
      * <li>See <a href="http://rosettacode.org/wiki/Tree_traversal">Tree traversal</a> (rosetta code)</li>
      * </ul>
      */
-// see http://programmers.stackexchange.com/questions/138766/in-order-traversal-of-m-way-trees
+    // see http://programmers.stackexchange.com/questions/138766/in-order-traversal-of-m-way-trees
     enum Order {
 
         /**

@@ -8,6 +8,7 @@ package javaslang.control;
 /**
  * A {@link Match} throws a MatchError if no case matches the applied object.
  *
+ * @author Daniel Dietrich
  * @since 1.0.0
  */
 public class MatchError extends RuntimeException {

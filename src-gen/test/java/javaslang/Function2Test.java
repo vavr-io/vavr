@@ -114,6 +114,15 @@ public class Function2Test {
         assertThat(memo.isMemoized()).isTrue();
     }
 
+    private static Function2<Integer, Integer, Integer> recurrent1 = (i1, i2) -> i1 <= 0 ? i1 : Function2Test.recurrent2.apply(i1 - 1, i2) + 1;
+    private static Function2<Integer, Integer, Integer> recurrent2 = Function2Test.recurrent1.memoized();
+
+    @Test
+    public void shouldCalculatedRecursively() {
+        assertThat(recurrent1.apply(11, 11)).isEqualTo(11);
+        assertThat(recurrent1.apply(22, 22)).isEqualTo(22);
+    }
+
     @Test
     public void shouldComposeWithAndThen() {
         final Function2<Object, Object, Object> f = (o1, o2) -> null;
@@ -126,6 +135,8 @@ public class Function2Test {
     public void shouldGetType() {
         final Function2<Integer, Integer, Integer> f = (i1, i2) -> null;
         final Function2.Type<Integer, Integer, Integer> type = f.getType();
+        assertThat(type.parameterType1()).isEqualTo(Integer.class);
+        assertThat(type.parameterType2()).isEqualTo(Integer.class);
         assertThat(type.toString()).isEqualTo("(java.lang.Integer, java.lang.Integer) -> java.lang.Integer");
     }
 }

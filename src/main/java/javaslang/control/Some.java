@@ -5,9 +5,10 @@
  */
 package javaslang.control;
 
-import javaslang.Kind;
+import javaslang.Value;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -19,6 +20,7 @@ import java.util.function.Predicate;
  * {@link Option#of(Object)} is sufficient.
  *
  * @param <T> The type of the optional value.
+ * @author Daniel Dietrich
  * @since 1.0.0
  */
 public final class Some<T> implements Option<T>, Serializable {
@@ -58,49 +60,6 @@ public final class Some<T> implements Option<T>, Serializable {
     @Override
     public boolean isEmpty() {
         return false;
-    }
-
-    @Override
-    public Option<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return predicate.test(value) ? this : None.instance();
-    }
-
-    @Override
-    public Option<Some<T>> filterOption(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate).map(Some::new);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Option<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return (Option<U>) mapper.apply(value);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Option<U> flatMapM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> mapper) {
-        return flatMap((Function<? super T, ? extends Option<? extends U>>) mapper);
-    }
-
-    @Override
-    public Option<Object> flatten() {
-        return flatMap(value -> (value instanceof Option) ? ((Option<?>) value).flatten() : this);
-    }
-
-    @Override
-    public <U> Some<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return new Some<>(mapper.apply(get()));
-    }
-
-    @Override
-    public Some<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        action.accept(get());
-        return this;
     }
 
     @Override

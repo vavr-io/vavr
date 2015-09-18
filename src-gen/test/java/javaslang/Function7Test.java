@@ -144,6 +144,15 @@ public class Function7Test {
         assertThat(memo.isMemoized()).isTrue();
     }
 
+    private static Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> recurrent1 = (i1, i2, i3, i4, i5, i6, i7) -> i1 <= 0 ? i1 : Function7Test.recurrent2.apply(i1 - 1, i2, i3, i4, i5, i6, i7) + 1;
+    private static Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> recurrent2 = Function7Test.recurrent1.memoized();
+
+    @Test
+    public void shouldCalculatedRecursively() {
+        assertThat(recurrent1.apply(11, 11, 11, 11, 11, 11, 11)).isEqualTo(11);
+        assertThat(recurrent1.apply(22, 22, 22, 22, 22, 22, 22)).isEqualTo(22);
+    }
+
     @Test
     public void shouldComposeWithAndThen() {
         final Function7<Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7) -> null;
@@ -156,6 +165,13 @@ public class Function7Test {
     public void shouldGetType() {
         final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
         final Function7.Type<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> type = f.getType();
+        assertThat(type.parameterType1()).isEqualTo(Integer.class);
+        assertThat(type.parameterType2()).isEqualTo(Integer.class);
+        assertThat(type.parameterType3()).isEqualTo(Integer.class);
+        assertThat(type.parameterType4()).isEqualTo(Integer.class);
+        assertThat(type.parameterType5()).isEqualTo(Integer.class);
+        assertThat(type.parameterType6()).isEqualTo(Integer.class);
+        assertThat(type.parameterType7()).isEqualTo(Integer.class);
         assertThat(type.toString()).isEqualTo("(java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer) -> java.lang.Integer");
     }
 }

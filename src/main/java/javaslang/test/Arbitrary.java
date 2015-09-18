@@ -5,13 +5,11 @@
  */
 package javaslang.test;
 
-import javaslang.FilterMonadic;
-import javaslang.Kind;
+import javaslang.Value;
+import javaslang.collection.AbstractIterator;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
-import javaslang.collection.TraversableOnce;
-import javaslang.control.Some;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -22,11 +20,11 @@ import java.util.function.Predicate;
  * Represents an arbitrary object of type T.
  *
  * @param <T> The type of the arbitrary object.
+ * @author Daniel Dietrich
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Arbitrary<T> extends TraversableOnce<T>,
-        FilterMonadic<Arbitrary<?>, T>, Kind<Arbitrary<?>, T> {
+public interface Arbitrary<T> extends Value<T> {
 
     /**
      * <p>
@@ -78,15 +76,6 @@ public interface Arbitrary<T> extends TraversableOnce<T>,
         return size -> apply(size).filter(predicate);
     }
 
-    @Override
-    default Arbitrary<Some<T>> filterOption(Predicate<? super T> predicate) {
-        final Arbitrary<T> arbitrary = filter(predicate);
-        return size -> {
-            final Gen<T> gen = arbitrary.apply(size);
-            return random -> new Some<>(gen.apply(random));
-        };
-    }
-
     /**
      * Maps arbitrary objects T to arbitrary object U.
      *
@@ -94,17 +83,20 @@ public interface Arbitrary<T> extends TraversableOnce<T>,
      * @param <U>    New type of arbitrary objects
      * @return A new Arbitrary
      */
-    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Arbitrary<? extends U>> mapper) {
-        return size -> {
-            final Gen<T> gen = apply(size);
-            return random -> mapper.apply(gen.apply(random)).apply(size).apply(random);
-        };
-    }
-
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Arbitrary<U> flatMapM(Function<? super T, ? extends Kind<? extends Arbitrary<?>, ? extends U>> mapper) {
-        return flatMap((Function<? super T, ? extends Arbitrary<? extends U>>) mapper);
+    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+        return size -> {
+            final Gen<T> gen = apply(size);
+            return random -> {
+                final Iterable<? extends U> iterable = mapper.apply(gen.apply(random));
+                if (iterable instanceof Arbitrary) {
+                    return ((Arbitrary<U>) iterable).apply(size).apply(random);
+                } else {
+                    return Value.get(iterable);
+                }
+            };
+        };
     }
 
     @Override
@@ -122,7 +114,6 @@ public interface Arbitrary<T> extends TraversableOnce<T>,
      * @param <U>    Type of the mapped object
      * @return A new generator
      */
-    @Override
     default <U> Arbitrary<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return n -> {
@@ -134,6 +125,11 @@ public interface Arbitrary<T> extends TraversableOnce<T>,
     @Override
     default Arbitrary<T> peek(Consumer<? super T> action) {
         return size -> apply(size).peek(action);
+    }
+
+    @Override
+    default T get() {
+        return apply(Checkable.DEFAULT_SIZE).get();
     }
 
     @Override
@@ -224,7 +220,7 @@ public interface Arbitrary<T> extends TraversableOnce<T>,
     static <T> Arbitrary<Stream<T>> stream(Arbitrary<T> arbitraryT) {
         return size -> {
             final Gen<T> genT = arbitraryT.apply(size);
-            return random -> Gen.choose(0, size).map(i -> Stream.ofAll(() -> new Iterator<T>() {
+            return random -> Gen.choose(0, size).map(i -> Stream.ofAll(new AbstractIterator<T>() {
 
                 int count = i;
 

@@ -9,9 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
+import javaslang.CheckedFunction8Module.Memoized;
 import javaslang.control.Try;
 
 /**
@@ -26,6 +27,7 @@ import javaslang.control.Try;
  * @param <T7> argument 7 of the function
  * @param <T8> argument 8 of the function
  * @param <R> return type of the function
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -279,13 +281,23 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
 
     @Override
     default CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
-            final Map<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> cache = new ConcurrentHashMap<>();
+            final Object lock = new Object();
+            final Map<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> cache = new HashMap<>();
             final CheckedFunction1<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> tupled = tupled();
-            return (CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> & Memoized) (t1, t2, t3, t4, t5, t6, t7, t8) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8), t -> Try.of(() -> tupled.apply(t)).get());
+            return (CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> & Memoized) (t1, t2, t3, t4, t5, t6, t7, t8) -> {
+                synchronized (lock) {
+                    return cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8), t -> Try.of(() -> tupled.apply(t)).get());
+                }
+            };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -321,6 +333,7 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
      * @param <T7> the 7th parameter type of the function
      * @param <T8> the 8th parameter type of the function
      * @param <R> the return type of the function
+     * @author Daniel Dietrich
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")
@@ -372,5 +385,14 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
         public Class<T8> parameterType8() {
             return (Class<T8>) parameterTypes()[7];
         }
+    }
+}
+
+interface CheckedFunction8Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

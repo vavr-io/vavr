@@ -6,15 +6,14 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
-import javaslang.collection.Stream.Cons;
-import javaslang.collection.Stream.Nil;
+import javaslang.control.Success;
+import javaslang.control.Try;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
+import java.util.function.Function;
 import java.util.stream.Collector;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class StreamTest extends AbstractSeqTest {
 
@@ -42,7 +41,7 @@ public class StreamTest extends AbstractSeqTest {
     }
 
     @Override
-    protected <T> Stream<T> ofAll(Iterable<? extends T> elements) {
+    protected <T> Stream<T> ofAll(java.lang.Iterable<? extends T> elements) {
         return Stream.ofAll(elements);
     }
 
@@ -211,11 +210,6 @@ public class StreamTest extends AbstractSeqTest {
         return 3;
     }
 
-    @Test
-    public void shouldComputeKCombinationsOfNegativeK() {
-        assertThat(Stream.of(1).combinations(-1)).isEqualTo(Stream.of(Stream.empty()));
-    }
-
     // -- permutations
 
     @Test
@@ -282,11 +276,19 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(stream.toString()).isEqualTo("Stream(1, 2, ?)");
     }
 
+    @Test
+    public void shouldGroupByAndMapProperly() {
+        assertThat(Stream.of(1)
+                .groupBy(Function.identity())
+                .map(entry -> entry.key)
+                .toList()).isEqualTo(List.of(1));
+    }
+
     // -- Serializable
 
     @Test(expected = InvalidObjectException.class)
     public void shouldNotSerializeEnclosingClassOfCons() throws Throwable {
-        Serializables.callReadObject(new Cons<>(() -> 1, Nil::instance));
+        Serializables.callReadObject(Stream.cons(1, Stream::empty));
     }
 
     @Test(expected = InvalidObjectException.class)
@@ -321,5 +323,47 @@ public class StreamTest extends AbstractSeqTest {
         } catch (IllegalStateException x) {
             throw (x.getCause() != null) ? x.getCause() : x;
         }
+    }
+
+    @Override
+    boolean useIsEqualToInsteadOfIsSameAs() {
+        return true;
+    }
+
+    @Test // See #327, #594
+    public void shouldNotEvaluateHeadOfTailWhenCallingIteratorHasNext() {
+
+        final StringBuilder result1 = new StringBuilder();
+        final List<Integer> vals1 = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        flatTryWithJavaslangStream(vals1, i -> doStuff(i, result1));
+
+        final StringBuilder result2 = new StringBuilder();
+        final Integer[] vals2 = new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        flatTryWithJavaStream(vals2, i -> doStuff(i, result2));
+
+        assertThat(result1.toString()).isEqualTo(result2.toString());
+    }
+
+    private <T> Try<Void> flatTryWithJavaslangStream(List<T> vals, Try.CheckedConsumer<T> func) {
+        return vals.toStream()
+                .map(v -> Try.run(() -> func.accept(v)))
+                .findFirst(Try::isFailure)
+                .orElseGet(() -> new Success<>(null));
+    }
+
+    private <T> Try<Void> flatTryWithJavaStream(Integer[] vals, Try.CheckedConsumer<Integer> func) {
+        return java.util.stream.Stream.of(vals)
+                .map(v -> Try.run(() -> func.accept(v)))
+                .filter(Try::isFailure)
+                .findFirst()
+                .orElseGet(() -> new Success<>(null));
+    }
+
+    private String doStuff(int i, StringBuilder builder) throws Exception {
+        builder.append(i);
+        if (i == 5) {
+            throw new Exception("Some error !!!");
+        }
+        return i + " Value";
     }
 }

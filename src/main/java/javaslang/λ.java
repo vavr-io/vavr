@@ -21,6 +21,7 @@ import java.util.Arrays;
  * because Java cannot calculate type bounds on function composition.
  *
  * @param <R> Return type of the function.
+ * @author Daniel Dietrich
  * @since 1.0.0
  */
 public interface λ<R> extends Serializable {
@@ -70,13 +71,11 @@ public interface λ<R> extends Serializable {
     λ<R> memoized();
 
     /**
-     * Checks if this function is memoizing computed values.
+     * Checks if this function is memoizing (= caching) computed values.
      *
-     * @return true, if this instance implements {@link Memoized}, false otherwise
+     * @return true, if this function is memoizing, false otherwise
      */
-    default boolean isMemoized() {
-        return this instanceof Memoized;
-    }
+    boolean isMemoized();
 
     /**
      * Get reflective type information about lambda parameters and return type.
@@ -168,15 +167,9 @@ public interface λ<R> extends Serializable {
 
         @Override
         public String toString() {
-            return List.of(parameterTypes).map(Class::getName).join(", ", "(", ")")
+            return List.of(parameterTypes).map(Class::getName).mkString(", ", "(", ")")
                     + " -> "
                     + returnType.getName();
         }
-    }
-
-    /**
-     * Tagging ZAM interface for Memoized functions.
-     */
-    interface Memoized {
     }
 }

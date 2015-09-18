@@ -9,9 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
+import javaslang.Function5Module.Memoized;
 
 /**
  * Represents a function with 5 arguments.
@@ -22,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <T4> argument 4 of the function
  * @param <T5> argument 5 of the function
  * @param <R> return type of the function
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -206,13 +208,23 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends λ<R> {
 
     @Override
     default Function5<T1, T2, T3, T4, T5, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
-            final Map<Tuple5<T1, T2, T3, T4, T5>, R> cache = new ConcurrentHashMap<>();
+            final Object lock = new Object();
+            final Map<Tuple5<T1, T2, T3, T4, T5>, R> cache = new HashMap<>();
             final Function1<Tuple5<T1, T2, T3, T4, T5>, R> tupled = tupled();
-            return (Function5<T1, T2, T3, T4, T5, R> & Memoized) (t1, t2, t3, t4, t5) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5), tupled::apply);
+            return (Function5<T1, T2, T3, T4, T5, R> & Memoized) (t1, t2, t3, t4, t5) -> {
+                synchronized (lock) {
+                    return cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5), tupled::apply);
+                }
+            };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -245,6 +257,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends λ<R> {
      * @param <T4> the 4th parameter type of the function
      * @param <T5> the 5th parameter type of the function
      * @param <R> the return type of the function
+     * @author Daniel Dietrich
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")
@@ -281,5 +294,14 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends λ<R> {
         public Class<T5> parameterType5() {
             return (Class<T5>) parameterTypes()[4];
         }
+    }
+}
+
+interface Function5Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }

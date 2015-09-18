@@ -30,13 +30,13 @@ public class Euler05Test {
     }
 
     private static long smallestPositiveNumberEvenlyDivisibleByAllNumbersFrom1To(int max) {
-        final long smallestStepsNeeded = max * (max - 1);
-        return Stream.gen(smallestStepsNeeded, prev -> prev + smallestStepsNeeded)
-                .findFirst(val -> isEvenlyDivisibleByAllNumbersFrom1To(max, val))
-                .get();
+        return Stream.rangeClosed(2, max)
+                .map(PrimeNumbers::factorization)
+                .reduce((m1, m2) -> m1.merge(m2, Math::max))
+                .foldLeft(1L, (xs, x) -> xs * pow(x.key, x.value));
     }
 
-    private static boolean isEvenlyDivisibleByAllNumbersFrom1To(int max, long val) {
-        return !Stream.rangeClosed(1, max).exists(d -> val % d != 0);
+    private static long pow(long a, long p) {
+        return Stream.rangeClosed(1, p).fold(1L, (xs, x) -> xs * a);
     }
 }

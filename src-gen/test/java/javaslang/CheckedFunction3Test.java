@@ -120,6 +120,15 @@ public class CheckedFunction3Test {
         assertThat(memo.isMemoized()).isTrue();
     }
 
+    private static CheckedFunction3<Integer, Integer, Integer, Integer> recurrent1 = (i1, i2, i3) -> i1 <= 0 ? i1 : CheckedFunction3Test.recurrent2.apply(i1 - 1, i2, i3) + 1;
+    private static CheckedFunction3<Integer, Integer, Integer, Integer> recurrent2 = CheckedFunction3Test.recurrent1.memoized();
+
+    @Test
+    public void shouldCalculatedRecursively() throws Throwable {
+        assertThat(recurrent1.apply(11, 11, 11)).isEqualTo(11);
+        assertThat(recurrent1.apply(22, 22, 22)).isEqualTo(22);
+    }
+
     @Test
     public void shouldComposeWithAndThen() {
         final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
@@ -132,6 +141,9 @@ public class CheckedFunction3Test {
     public void shouldGetType() {
         final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
         final CheckedFunction3.Type<Integer, Integer, Integer, Integer> type = f.getType();
+        assertThat(type.parameterType1()).isEqualTo(Integer.class);
+        assertThat(type.parameterType2()).isEqualTo(Integer.class);
+        assertThat(type.parameterType3()).isEqualTo(Integer.class);
         assertThat(type.toString()).isEqualTo("(java.lang.Integer, java.lang.Integer, java.lang.Integer) -> java.lang.Integer");
     }
 }

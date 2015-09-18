@@ -9,9 +9,10 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
+import javaslang.Function4Module.Memoized;
 
 /**
  * Represents a function with 4 arguments.
@@ -21,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <T3> argument 3 of the function
  * @param <T4> argument 4 of the function
  * @param <R> return type of the function
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 @FunctionalInterface
@@ -184,13 +186,23 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
 
     @Override
     default Function4<T1, T2, T3, T4, R> memoized() {
-        if (this instanceof Memoized) {
+        if (isMemoized()) {
             return this;
         } else {
-            final Map<Tuple4<T1, T2, T3, T4>, R> cache = new ConcurrentHashMap<>();
+            final Object lock = new Object();
+            final Map<Tuple4<T1, T2, T3, T4>, R> cache = new HashMap<>();
             final Function1<Tuple4<T1, T2, T3, T4>, R> tupled = tupled();
-            return (Function4<T1, T2, T3, T4, R> & Memoized) (t1, t2, t3, t4) -> cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4), tupled::apply);
+            return (Function4<T1, T2, T3, T4, R> & Memoized) (t1, t2, t3, t4) -> {
+                synchronized (lock) {
+                    return cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4), tupled::apply);
+                }
+            };
         }
+    }
+
+    @Override
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**
@@ -222,6 +234,7 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
      * @param <T3> the 3rd parameter type of the function
      * @param <T4> the 4th parameter type of the function
      * @param <R> the return type of the function
+     * @author Daniel Dietrich
      * @since 2.0.0
      */
     @SuppressWarnings("deprecation")
@@ -253,5 +266,14 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
         public Class<T4> parameterType4() {
             return (Class<T4>) parameterTypes()[3];
         }
+    }
+}
+
+interface Function4Module {
+
+    /**
+     * Tagging ZAM interface for Memoized functions.
+     */
+    interface Memoized {
     }
 }
