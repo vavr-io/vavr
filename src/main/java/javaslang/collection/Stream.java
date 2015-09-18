@@ -223,7 +223,7 @@ public interface Stream<T> extends LinearSeq<T> {
     @SafeVarargs
     static <T> Stream<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.ofAll(() -> new Iterator<T>() {
+        return Stream.ofAll(new Iterator<T>() {
             int i = 0;
 
             @Override
@@ -660,7 +660,7 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default <U> Stream<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? Empty.instance() : Stream.ofAll(() -> new Iterator<U>() {
+        return isEmpty() ? Empty.instance() : Stream.ofAll(new Iterator<U>() {
 
             final Iterator<? extends T> inputs = Stream.this.iterator();
             java.util.Iterator<? extends U> current = Collections.emptyIterator();
@@ -840,7 +840,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (length <= 0) {
             return this;
         } else if (isEmpty()) {
-            return Stream.ofAll(Iterator.constant(element).take(length));
+            return Stream.ofAll(Iterator.gen(() -> element).take(length));
         } else {
             return new Cons<>(((Cons<T>) this).head, () -> tail().padTo(length - 1, element));
         }

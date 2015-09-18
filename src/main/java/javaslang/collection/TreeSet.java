@@ -108,7 +108,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      */
     public static TreeSet<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(() -> new Iterator<Boolean>() {
+        return TreeSet.ofAll(new Iterator<Boolean>() {
             int i = 0;
 
             @Override
@@ -131,7 +131,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      */
     public static TreeSet<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(() -> new Iterator<Byte>() {
+        return TreeSet.ofAll(new Iterator<Byte>() {
             int i = 0;
 
             @Override
@@ -154,7 +154,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      */
     public static TreeSet<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(() -> new Iterator<Character>() {
+        return TreeSet.ofAll(new Iterator<Character>() {
             int i = 0;
 
             @Override
@@ -177,7 +177,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      */
     public static TreeSet<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(() -> new Iterator<Double>() {
+        return TreeSet.ofAll(new Iterator<Double>() {
             int i = 0;
 
             @Override
@@ -200,7 +200,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      */
     public static TreeSet<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(() -> new Iterator<Float>() {
+        return TreeSet.ofAll(new Iterator<Float>() {
             int i = 0;
 
             @Override
@@ -223,7 +223,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      */
     public static TreeSet<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(() -> new Iterator<Integer>() {
+        return TreeSet.ofAll(new Iterator<Integer>() {
             int i = 0;
 
             @Override
@@ -246,7 +246,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      */
     public static TreeSet<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(() -> new Iterator<Long>() {
+        return TreeSet.ofAll(new Iterator<Long>() {
             int i = 0;
 
             @Override
@@ -269,7 +269,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      */
     public static TreeSet<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(() -> new Iterator<Short>() {
+        return TreeSet.ofAll(new Iterator<Short>() {
             int i = 0;
 
             @Override
