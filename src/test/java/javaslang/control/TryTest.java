@@ -161,6 +161,28 @@ public class TryTest {
         }
     }
 
+    // -- Failure.NonFatal
+
+    @Test
+    public void shouldReturnAndNotThrowOnNonFatal(){
+        final NonFatal cause = NonFatal.of(new Exception());
+        assertThat(NonFatal.of(cause) instanceof NonFatal).isTrue();
+    }
+
+    @Test
+    public void shouldReturnToStringOnNonFatal() {
+        final Exception exception = new java.lang.Exception();
+        final NonFatal cause = NonFatal.of(exception);
+        assertThat(cause.toString()).isEqualTo("NonFatal(" + exception.toString() + ")");
+    }
+
+    @Test
+    public void shouldReturnHasCodeOnNonFatal(){
+        final Exception exception = new java.lang.Exception();
+        final NonFatal cause = NonFatal.of(exception);
+        assertThat(cause.hashCode()).isEqualTo(Objects.hashCode(exception));
+    }
+
     // -- Failure
 
     @Test
