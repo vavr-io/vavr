@@ -7,6 +7,7 @@ package javaslang.concurrent;
 
 import javaslang.*;
 import javaslang.collection.List;
+import javaslang.collection.Queue;
 import javaslang.control.*;
 import javaslang.control.Try.CheckedSupplier;
 
@@ -28,7 +29,7 @@ import java.util.function.Predicate;
  */
 public class Future<T> {
 
-    private final ConcurrentLinkedQueue<Tuple2<Executor, Consumer<Try<T>>>> callBacks = new ConcurrentLinkedQueue<>();
+    private Queue<Tuple2<Executor, Consumer<Try<T>>>> callBacks = Queue.empty();
     private volatile Option<Try<T>> value = Option.none();
 
 
@@ -94,7 +95,7 @@ public class Future<T> {
      * @return a new Future
 	 */
 	public static <T> Future<T> of(CheckedSupplier<T> source) {
-		return new Future<>(source);
+		return of(source, ForkJoinPool.commonPool());
 	}
 
     /**
@@ -122,7 +123,7 @@ public class Future<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> Future<T> of(java.util.concurrent.Future<? extends T> source) {
-	    if(source instanceof   CompletableFuture)
+	    if(source instanceof CompletableFuture)
 		    return new Future<>((CompletableFuture<T>) source);
 	    else {
 		    Promise<T> result = new Promise<>();
@@ -171,14 +172,19 @@ public class Future<T> {
         return result;
     }
 
+    private synchronized void accessQueue(Function<Queue<Tuple2<Executor, Consumer<Try<T>>>>, Queue<Tuple2<Executor, Consumer<Try<T>>>>> func){
+        callBacks = func.apply(callBacks);
+    }
+
     synchronized void complete(Try<T> result) {
         if (value.isEmpty()) {
             value = new Some<>(result);
 
-            while (!callBacks.isEmpty()) {
-                Tuple2<Executor, Consumer<Try<T>>> pair = callBacks.poll();
-                pair._1.execute(() -> pair._2.accept(result));
-            }
+            accessQueue(queue -> {
+                for(Tuple2<Executor, Consumer<Try<T>>> pair : queue)
+                    pair._1.execute(() -> pair._2.accept(result));
+               return null;
+            });
 
 	        notifyAll();
 
@@ -188,12 +194,12 @@ public class Future<T> {
 //            } catch (Throwable t){
 //                throw new RuntimeException(t);
 //            }
-//
-//            assert callBacks.isEmpty();
+
+            // Not sure if this assert should stay in the code or be removed after we're positive everything works
+            assert callBacks == null;
         }
 	    else
 	        throw new IllegalStateException("This Future has already been completed!");
-        //TODO: else throw exception maybe?
     }
 
     /**
@@ -301,8 +307,8 @@ public class Future<T> {
         Promise<R> result = new Promise<>();
 
         onCompletedTry(t -> func.apply(t).onCompletedTry(maybe -> {
-	        maybe.forEach(result::complete);
-	        maybe.onFailure(result::failure);
+            maybe.forEach(result::complete);
+            maybe.onFailure(result::failure);
         }, ex), ex);
 
         return result.future();
@@ -340,7 +346,7 @@ public class Future<T> {
      * @param func Function to be applied when the Future completes.
      */
     public void forEach(Consumer<? super T> func) {
-        onSuccess(func);
+        forEach(func, ForkJoinPool.commonPool());
     }
 
     /**
@@ -473,17 +479,19 @@ public class Future<T> {
     public void onCompletedTry(Consumer<Try<T>> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
         //TODO: Test the heck out this to make sure that the synchronization works properly.
+
         if (value.isEmpty()) {
-            synchronized (callBacks) {
+            accessQueue(queue -> {
                 if (value.isEmpty()) {
-                    callBacks.add(Tuple.of(ex, func));
-                    return;
+                    return queue.enqueue(Tuple.of(ex, func));
+                } else {
+                    value.forEach(func);
+                    return queue;
                 }
-            }
-
+            });
         }
-
-        value.forEach(func);
+        else
+            value.forEach(func);
     }
 
     /**
@@ -733,8 +741,11 @@ public class Future<T> {
 
         protected <T> void addFuture(java.util.concurrent.Future<? extends T> in, Promise<T> out) {
             ex.execute(() -> {
-                if (in.isDone()) out.complete(Try.of(in::get));
-                else addFuture(in, out);
+
+                if (in.isDone()) {
+                    out.complete(Try.of(in::get));
+                } else
+                    addFuture(in, out);
             });
         }
 
