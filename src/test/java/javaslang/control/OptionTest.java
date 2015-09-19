@@ -8,12 +8,7 @@ package javaslang.control;
 import javaslang.Serializables;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -133,15 +128,15 @@ public class OptionTest {
 
     @Test
     public void shouldConsumePresentValueOnIsPresentWhenValueIsPresent() {
-        final int[] actual = new int[]{-1};
+        final int[] actual = new int[] { -1 };
         Option.of(1).forEach(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(1);
     }
 
     @Test
     public void shouldNotConsumeAnythingOnIsPresentWhenValueIsNotPresent() {
-        final int[] actual = new int[]{-1};
-        Option.<Integer>none().forEach(i -> actual[0] = i);
+        final int[] actual = new int[] { -1 };
+        Option.<Integer> none().forEach(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(-1);
     }
 
@@ -159,7 +154,7 @@ public class OptionTest {
 
     @Test
     public void shouldReturnNoneOnFilterWhenValueIsNotPresentAndPredicateNotMatches() {
-        assertThat(Option.<Integer>none().filter(i -> i == 1)).isEqualTo(Option.none());
+        assertThat(Option.<Integer> none().filter(i -> i == 1)).isEqualTo(Option.none());
     }
 
     // -- flatten()
@@ -193,7 +188,7 @@ public class OptionTest {
 
     @Test
     public void shouldMapNone() {
-        assertThat(Option.<Integer>none().map(String::valueOf)).isEqualTo(Option.none());
+        assertThat(Option.<Integer> none().map(String::valueOf)).isEqualTo(Option.none());
     }
 
     // -- flatMap
@@ -205,19 +200,19 @@ public class OptionTest {
 
     @Test
     public void shouldFlatMapNone() {
-        assertThat(Option.<Integer>none().flatMap(i -> Option.of(String.valueOf(i)))).isEqualTo(Option.none());
+        assertThat(Option.<Integer> none().flatMap(i -> Option.of(String.valueOf(i)))).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldFlatMapNonEmptyIterable() {
         final java.lang.Iterable<Integer> iterable = Arrays.asList(2, 3, 4);
-        assertThat(Option.of(1).<Integer>flatMap(i -> iterable)).isEqualTo(Option.of(2));
+        assertThat(Option.of(1).<Integer> flatMap(i -> iterable)).isEqualTo(Option.of(2));
     }
 
     @Test
     public void shouldFlatMapEmptyIterable() {
         final java.lang.Iterable<Integer> iterable = Collections.emptyList();
-        assertThat(Option.of(1).<Integer>flatMap(i -> iterable)).isEqualTo(Option.<Integer>none());
+        assertThat(Option.of(1).<Integer> flatMap(i -> iterable)).isEqualTo(Option.<Integer> none());
     }
 
     // -- exists
@@ -258,15 +253,15 @@ public class OptionTest {
 
     @Test
     public void shouldConsumePresentValueOnForEachWhenValueIsPresent() {
-        final int[] actual = new int[]{-1};
+        final int[] actual = new int[] { -1 };
         Option.of(1).forEach(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(1);
     }
 
     @Test
     public void shouldNotConsumeAnythingOnForEachWhenValueIsNotPresent() {
-        final int[] actual = new int[]{-1};
-        Option.<Integer>none().forEach(i -> actual[0] = i);
+        final int[] actual = new int[] { -1 };
+        Option.<Integer> none().forEach(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(-1);
     }
 
@@ -274,7 +269,7 @@ public class OptionTest {
 
     @Test
     public void shouldConsumePresentValueOnPeekWhenValueIsPresent() {
-        final int[] actual = new int[]{-1};
+        final int[] actual = new int[] { -1 };
         final Option<Integer> testee = Option.of(1).peek(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(1);
         assertThat(testee).isEqualTo(Option.of(1));
@@ -282,8 +277,8 @@ public class OptionTest {
 
     @Test
     public void shouldNotConsumeAnythingOnPeekWhenValueIsNotPresent() {
-        final int[] actual = new int[]{-1};
-        final Option<Integer> testee = Option.<Integer>none().peek(i -> actual[0] = i);
+        final int[] actual = new int[] { -1 };
+        final Option<Integer> testee = Option.<Integer> none().peek(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(-1);
         assertThat(testee).isEqualTo(Option.none());
     }

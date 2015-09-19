@@ -164,7 +164,7 @@ public class TryTest {
     // -- Failure.NonFatal
 
     @Test
-    public void shouldReturnAndNotThrowOnNonFatal(){
+    public void shouldReturnAndNotThrowOnNonFatal() {
         final NonFatal cause = NonFatal.of(new Exception());
         assertThat(NonFatal.of(cause) instanceof NonFatal).isTrue();
     }
@@ -177,7 +177,7 @@ public class TryTest {
     }
 
     @Test
-    public void shouldReturnHasCodeOnNonFatal(){
+    public void shouldReturnHasCodeOnNonFatal() {
         final Exception exception = new java.lang.Exception();
         final NonFatal cause = NonFatal.of(exception);
         assertThat(cause.hashCode()).isEqualTo(Objects.hashCode(exception));
@@ -315,7 +315,7 @@ public class TryTest {
     }
 
     @Test
-    public void shouldFlatMapTryOnFailure(){
+    public void shouldFlatMapTryOnFailure() {
         final Try<String> actual = failure();
         assertThat(actual.flatMapTry(s -> Try.of(() -> s + "!"))).isEqualTo(actual);
     }
