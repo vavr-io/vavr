@@ -74,6 +74,21 @@ public class ArrayTest extends AbstractSeqTest {
     }
 
     @Override
+    protected Array<Character> range(char from, char toExclusive) {
+        throw new UnsupportedOperationException("TODO");
+    }
+
+    @Override
+    protected Array<Character> rangeBy(char from, char toExclusive, int step) {
+        throw new UnsupportedOperationException("TODO");
+    }
+
+    @Override
+    protected Array<Double> rangeBy(double from, double toExclusive, double step) {
+        throw new UnsupportedOperationException("TODO");
+    }
+
+    @Override
     int getPeekNonNilPerformingAnAction() {
         return 1;
     }
@@ -101,6 +116,21 @@ public class ArrayTest extends AbstractSeqTest {
     @Override
     protected Array<Long> rangeBy(long from, long toExclusive, long step) {
         return Array.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected Array<Character> rangeClosed(char from, char toExclusive) {
+        throw new UnsupportedOperationException("TODO");
+    }
+
+    @Override
+    protected Array<Character> rangeClosedBy(char from, char toExclusive, int step) {
+        throw new UnsupportedOperationException("TODO");
+    }
+
+    @Override
+    protected Array<Double> rangeClosedBy(double from, double toExclusive, double step) {
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override

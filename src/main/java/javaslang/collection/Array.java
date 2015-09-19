@@ -19,7 +19,7 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * TODO javadoc
+ * Array is a Traversable wrapper for {@code Object[]} containing elements of type {@code T}.
  *
  * @param <T> Component type
  * @author Ruslan Sennov, Daniel Dietrich
@@ -30,6 +30,13 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final Array<?> EMPTY = new Array<>(new Object[0]);
+
+    private final Object[] back;
+    private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
+
+    private Array(Object[] back) {
+        this.back = back;
+    }
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -47,6 +54,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         };
         final Function<ArrayList<T>, Array<T>> finisher = Array::ofAll;
         return Collector.of(supplier, accumulator, combiner, finisher);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Array<T> empty() {
+        return (Array<T>) EMPTY;
     }
 
     /**
@@ -192,18 +204,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         } else {
             return new Array<>(array);
         }
-    }
-
-    private final Object[] back;
-    private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
-
-    private Array(Object[] back) {
-        this.back = back;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> Array<T> empty() {
-        return (Array<T>) EMPTY;
     }
 
     /**

@@ -61,6 +61,40 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     };
 
     /**
+     * Creates an Iterator which traverses along the concatenation of the given iterables.
+     *
+     * @param iterables The iterables
+     * @param <T>       Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
+    static <T> Iterator<T> concat(java.lang.Iterable<? extends T>... iterables) {
+        Objects.requireNonNull(iterables, "iterables is null");
+        if (iterables.length == 0) {
+            return empty();
+        } else {
+            return new ConcatIterator<>(Stream.of(iterables).map(Iterator::ofAll).iterator());
+        }
+    }
+
+    /**
+     * Creates an Iterator which traverses along the concatenation of the given iterables.
+     *
+     * @param iterables The iterable of iterables
+     * @param <T>       Component type.
+     * @return A new {@code javaslang.collection.Iterator}
+     */
+    static <T> Iterator<T> concat(java.lang.Iterable<? extends java.lang.Iterable<? extends T>> iterables) {
+        Objects.requireNonNull(iterables, "iterables is null");
+        if (!iterables.iterator().hasNext()) {
+            return empty();
+        } else {
+            return new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
+        }
+    }
+
+    /**
      * Returns the empty Iterator.
      *
      * @param <T> Component type
@@ -126,88 +160,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                 return elements[index++];
             }
         };
-    }
-
-    /**
-     * Creates an Iterator which traverses along all given iterators.
-     *
-     * @param iterators The list of iterators
-     * @param <T>       Component type.
-     * @return A new {@code javaslang.collection.Iterator}
-     */
-    @SafeVarargs
-    @SuppressWarnings({ "unchecked", "varargs" })
-    static <T> Iterator<T> ofIterators(Iterator<? extends T>... iterators) {
-        Objects.requireNonNull(iterators, "iterators is null");
-        return (iterators.length == 0) ? empty() : new ConcatIterator<>(Stream.of(iterators).iterator());
-    }
-
-    /**
-     * Creates an Iterator which traverses along all given iterables.
-     *
-     * @param iterables The list of iterables
-     * @param <T>       Component type.
-     * @return A new {@code javaslang.collection.Iterator}
-     */
-    @SafeVarargs
-    @SuppressWarnings({ "unchecked", "varargs" })
-    static <T> Iterator<T> ofIterables(java.lang.Iterable<? extends T>... iterables) {
-        Objects.requireNonNull(iterables, "iterables is null");
-        return (iterables.length == 0) ? empty() : new ConcatIterator<>(Stream.of(iterables).map(Iterator::ofAll).iterator());
-    }
-
-    /**
-     * Creates an Iterator which traverses along all given iterators.
-     *
-     * @param iterators The iterator over iterators
-     * @param <T>       Component type.
-     * @return A new {@code javaslang.collection.Iterator}
-     */
-    static <T> Iterator<T> ofIterators(Iterator<? extends Iterator<? extends T>> iterators) {
-        Objects.requireNonNull(iterators, "iterators is null");
-        return iterators.isEmpty() ? empty() : new ConcatIterator<>(Stream.ofAll(iterators).iterator());
-    }
-
-    /**
-     * Creates an Iterator which traverses along all given iterables.
-     *
-     * @param iterables The iterator over iterables
-     * @param <T>       Component type.
-     * @return A new {@code javaslang.collection.Iterator}
-     */
-    static <T> Iterator<T> ofIterables(Iterator<? extends java.lang.Iterable<? extends T>> iterables) {
-        Objects.requireNonNull(iterables, "iterables is null");
-        return iterables.isEmpty() ? empty() : new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
-    }
-
-    /**
-     * Creates an Iterator which traverses along all given iterators.
-     *
-     * @param iterators The iterable of iterators
-     * @param <T>       Component type.
-     * @return A new {@code javaslang.collection.Iterator}
-     */
-    static <T> Iterator<T> ofIterators(java.lang.Iterable<? extends Iterator<? extends T>> iterators) {
-        Objects.requireNonNull(iterators, "iterators is null");
-        if (!iterators.iterator().hasNext()) {
-            return empty();
-        }
-        return new ConcatIterator<>(Stream.ofAll(iterators).iterator());
-    }
-
-    /**
-     * Creates an Iterator which traverses along all given iterables.
-     *
-     * @param iterables The iterable of iterables
-     * @param <T>       Component type.
-     * @return A new {@code javaslang.collection.Iterator}
-     */
-    static <T> Iterator<T> ofIterables(java.lang.Iterable<? extends java.lang.Iterable<? extends T>> iterables) {
-        Objects.requireNonNull(iterables, "iterables is null");
-        if (!iterables.iterator().hasNext()) {
-            return empty();
-        }
-        return new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
     }
 
     /**
@@ -460,7 +412,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @return a range of characters as specified or the empty range if {@code from >= toExclusive}
      */
     static Iterator<Character> range(char from, char toExclusive) {
-        return rangeBy(from, toExclusive, 1);
+        return rangeBy('a', 'b', 1);
     }
 
     /**
@@ -483,7 +435,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @return a range of characters as specified or the empty range if {@code (from == toExclusive) || (step * (from - toExclusive) > 0)}.
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static Iterator<Character> rangeBy(char from, char toExclusive, int step){
+    static Iterator<Character> rangeBy(char from, char toExclusive, int step) {
         return Iterator.rangeBy((int) from, (int) toExclusive, step).map(i -> (char) i.shortValue());
     }
 
@@ -628,7 +580,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @return a range of characters as specified or the empty range if {@code step * (from - toInclusive) > 0}.
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static Iterator<Character> rangeClosedBy(char from, char toInclusive, int step){
+    static Iterator<Character> rangeClosedBy(char from, char toInclusive, int step) {
         return Iterator.rangeClosedBy((int) from, (int) toInclusive, step).map(i -> (char) i.shortValue());
     }
 
@@ -748,17 +700,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        if (step == 0) {
+        if (step == 0L) {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
             return Iterator.of(from);
-        } else if (step * (from - toInclusive) > 0) {
+        } else if (step * (from - toInclusive) > 0L) {
             return Iterator.empty();
         } else {
             return new AbstractIterator<Long>() {
 
                 long i = from;
-                boolean hasNext = (step > 0) ? i <= toInclusive : i >= toInclusive;
+                boolean hasNext = (step > 0L) ? i <= toInclusive : i >= toInclusive;
 
                 @Override
                 public boolean hasNext() {
@@ -771,7 +723,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                         EMPTY.next();
                     }
                     final long next = i;
-                    if ((step > 0 && i > toInclusive - step) || (step < 0 && i < toInclusive - step)) {
+                    if ((step > 0L && i > toInclusive - step) || (step < 0L && i < toInclusive - step)) {
                         hasNext = false;
                     } else {
                         i += step;
@@ -853,8 +805,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         };
     }
 
-    // -- Additional methods of Iterator
-
     /**
      * Generates an infinitely iterator using a function to calculate the next value
      * based on the previous.
@@ -883,6 +833,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         };
     }
 
+    // -- Additional methods of Iterator
 
     /**
      * Inserts an element between all elements of this Iterator.
