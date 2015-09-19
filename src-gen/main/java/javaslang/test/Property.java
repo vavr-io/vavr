@@ -19,13 +19,6 @@ import javaslang.control.Try;
 
 /**
  * A property builder which provides a fluent API to build checkable properties.
- * <p>
- * Usage:
- * <pre><code>Property.def("name")
- *         .forAll(...)
- *         .suchThat(...)
- *         .check()
- *         .assertIsSatisfied();</code></pre>
  *
  * @author Daniel Dietrich
  * @since 1.2.0

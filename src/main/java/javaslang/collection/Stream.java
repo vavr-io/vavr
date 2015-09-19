@@ -223,7 +223,7 @@ public interface Stream<T> extends LinearSeq<T> {
     @SafeVarargs
     static <T> Stream<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.ofAll(() -> new Iterator<T>() {
+        return Stream.ofAll(new Iterator<T>() {
             int i = 0;
 
             @Override
@@ -343,6 +343,18 @@ public interface Stream<T> extends LinearSeq<T> {
         return Stream.ofAll(Iterator.ofAll(array));
     }
 
+    static Stream<Character> range(char from, char toExclusive) {
+        return Stream.ofAll(Iterator.range(from, toExclusive));
+    }
+
+    static Stream<Character> rangeBy(char from, char toExclusive, int step) {
+        return Stream.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    static Stream<Double> rangeBy(double from, double toExclusive, double step) {
+        return Stream.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
     /**
      * Creates a Stream of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
      * <p>
@@ -433,6 +445,18 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Long> rangeBy(long from, long toExclusive, long step) {
         return Stream.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    static Stream<Character> rangeClosed(char from, char toInclusive) {
+        return Stream.ofAll(Iterator.rangeClosed(from, toInclusive));
+    }
+
+    static Stream<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return Stream.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+    }
+
+    static Stream<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return Stream.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -660,7 +684,7 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default <U> Stream<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? Empty.instance() : Stream.ofAll(() -> new Iterator<U>() {
+        return isEmpty() ? Empty.instance() : Stream.ofAll(new Iterator<U>() {
 
             final Iterator<? extends T> inputs = Stream.this.iterator();
             java.util.Iterator<? extends U> current = Collections.emptyIterator();
@@ -840,7 +864,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (length <= 0) {
             return this;
         } else if (isEmpty()) {
-            return Stream.ofAll(Iterator.constant(element).take(length));
+            return Stream.ofAll(Iterator.gen(() -> element).take(length));
         } else {
             return new Cons<>(((Cons<T>) this).head, () -> tail().padTo(length - 1, element));
         }

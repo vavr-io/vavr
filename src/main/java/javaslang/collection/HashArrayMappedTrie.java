@@ -394,7 +394,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            return Iterator.ofIterables(subNodes);
+            return Iterator.concat(subNodes);
         }
     }
 
@@ -475,7 +475,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            return Iterator.ofIterables(subNodes);
+            return Iterator.concat(subNodes);
         }
     }
 }

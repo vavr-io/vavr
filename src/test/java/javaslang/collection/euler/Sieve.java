@@ -16,7 +16,7 @@ public class Sieve {
     }
 
     public Stream<Integer> streamOfIntegers() {
-        return Stream.ofAll(() -> new Iterator<Integer>() {
+        return Stream.ofAll(new Iterator<Integer>() {
                     int index = 0;
 
                     @Override
@@ -33,7 +33,7 @@ public class Sieve {
     }
 
     public Stream<Long> streamOfLongs() {
-        return Stream.ofAll(() -> new Iterator<Long>() {
+        return Stream.ofAll(new Iterator<Long>() {
                     int index = 0;
 
                     @Override

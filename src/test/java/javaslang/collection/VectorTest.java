@@ -80,6 +80,21 @@ public class VectorTest extends AbstractSeqTest {
     }
 
     @Override
+    protected Vector<Character> range(char from, char toExclusive) {
+        return Vector.range(from, toExclusive);
+    }
+
+    @Override
+    protected Vector<Character> rangeBy(char from, char toExclusive, int step) {
+        return Vector.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected Vector<Double> rangeBy(double from, double toExclusive, double step) {
+        return Vector.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
     int getPeekNonNilPerformingAnAction() {
         return 1;
     }
@@ -107,6 +122,21 @@ public class VectorTest extends AbstractSeqTest {
     @Override
     protected Vector<Long> rangeBy(long from, long toExclusive, long step) {
         return Vector.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected Vector<Character> rangeClosed(char from, char toInclusive) {
+        return Vector.rangeClosed(from, toInclusive);
+    }
+
+    @Override
+    protected Vector<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return Vector.rangeClosedBy(from, toInclusive, step);
+    }
+
+    @Override
+    protected Vector<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return Vector.rangeClosedBy(from, toInclusive, step);
     }
 
     @Override

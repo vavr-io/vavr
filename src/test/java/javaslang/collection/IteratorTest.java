@@ -172,18 +172,6 @@ public class IteratorTest extends AbstractTraversableOnceTest {
         assertThat(Iterator.gen(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
     }
 
-    @Test
-    public void shouldConcatenateListOfEmptyIterators() {
-        assertThat(Iterator.ofIterators().isEmpty()).isTrue();
-        assertThat(Iterator.ofIterators(Iterator.empty()).isEmpty()).isTrue();
-        assertThat(Iterator.ofIterators(Iterator.empty(), Iterator.empty()).isEmpty()).isTrue();
-    }
-
-    @Test
-    public void shouldConcatenateListOfNonEmptyIterators() {
-        assertThat(Iterator.ofIterators(of(1, 2), of(), of(3))).isEqualTo(of(1, 2, 3));
-    }
-
     // ++++++ OBJECT ++++++
 
     // -- equals

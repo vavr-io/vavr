@@ -242,6 +242,18 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
         return Queue.ofAll(List.ofAll(array));
     }
 
+    public static Queue<Character> range(char from, char toExclusive) {
+        return Queue.ofAll(Iterator.range(from, toExclusive));
+    }
+
+    public static Queue<Character> rangeBy(char from, char toExclusive, int step) {
+        return Queue.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    public static Queue<Double> rangeBy(double from, double toExclusive, double step) {
+        return Queue.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
     /**
      * Creates a Queue of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
      * <p>
@@ -332,6 +344,18 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      */
     public static Queue<Long> rangeBy(long from, long toExclusive, long step) {
         return Queue.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    public static Queue<Character> rangeClosed(char from, char toInclusive) {
+        return Queue.ofAll(Iterator.rangeClosed(from, toInclusive));
+    }
+
+    public static Queue<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return Queue.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+    }
+
+    public static Queue<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return Queue.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**

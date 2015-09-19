@@ -19,7 +19,7 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * TODO javadoc
+ * Array is a Traversable wrapper for {@code Object[]} containing elements of type {@code T}.
  *
  * @param <T> Component type
  * @author Ruslan Sennov, Daniel Dietrich
@@ -30,6 +30,13 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final Array<?> EMPTY = new Array<>(new Object[0]);
+
+    private final Object[] back;
+    private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
+
+    private Array(Object[] back) {
+        this.back = back;
+    }
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -47,6 +54,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         };
         final Function<ArrayList<T>, Array<T>> finisher = Array::ofAll;
         return Collector.of(supplier, accumulator, combiner, finisher);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Array<T> empty() {
+        return (Array<T>) EMPTY;
     }
 
     /**
@@ -194,16 +206,16 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         }
     }
 
-    private final Object[] back;
-    private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
-
-    private Array(Object[] back) {
-        this.back = back;
+    public static Array<Character> range(char from, char toExclusive) {
+        return Array.ofAll(Iterator.range(from, toExclusive));
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Array<T> empty() {
-        return (Array<T>) EMPTY;
+    public static Array<Character> rangeBy(char from, char toExclusive, int step) {
+        return Array.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    public static Array<Double> rangeBy(double from, double toExclusive, double step) {
+        return Array.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -222,7 +234,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @param toExclusive the last number + 1
      * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
      */
-    static Array<Integer> range(int from, int toExclusive) {
+    public static Array<Integer> range(int from, int toExclusive) {
         return Array.ofAll(Iterator.range(from, toExclusive));
     }
 
@@ -248,7 +260,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * {@code from <= toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static Array<Integer> rangeBy(int from, int toExclusive, int step) {
+    public static Array<Integer> rangeBy(int from, int toExclusive, int step) {
         return Array.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
@@ -268,7 +280,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @param toExclusive the last number + 1
      * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
      */
-    static Array<Long> range(long from, long toExclusive) {
+    public static Array<Long> range(long from, long toExclusive) {
         return Array.ofAll(Iterator.range(from, toExclusive));
     }
 
@@ -294,8 +306,20 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * {@code from <= toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static Array<Long> rangeBy(long from, long toExclusive, long step) {
+    public static Array<Long> rangeBy(long from, long toExclusive, long step) {
         return Array.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    public static Array<Character> rangeClosed(char from, char toInclusive) {
+        return Array.ofAll(Iterator.rangeClosed(from, toInclusive));
+    }
+
+    public static Array<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return Array.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+    }
+
+    public static Array<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return Array.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -314,7 +338,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @param toInclusive the last number
      * @return a range of int values as specified or the empty range if {@code from > toInclusive}
      */
-    static Array<Integer> rangeClosed(int from, int toInclusive) {
+    public static Array<Integer> rangeClosed(int from, int toInclusive) {
         return Array.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
@@ -340,7 +364,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static Array<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+    public static Array<Integer> rangeClosedBy(int from, int toInclusive, int step) {
         return Array.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
@@ -360,7 +384,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @param toInclusive the last number
      * @return a range of long values as specified or the empty range if {@code from > toInclusive}
      */
-    static Array<Long> rangeClosed(long from, long toInclusive) {
+    public static Array<Long> rangeClosed(long from, long toInclusive) {
         return Array.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
@@ -386,7 +410,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static Array<Long> rangeClosedBy(long from, long toInclusive, long step) {
+    public static Array<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return Array.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
@@ -728,7 +752,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         if(length <= length()) {
             return this;
         } else {
-            return appendAll(Iterator.constant(element).take(length - length()));
+            return appendAll(Iterator.gen(() -> element).take(length - length()));
         }
     }
 

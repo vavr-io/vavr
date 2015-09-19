@@ -216,6 +216,18 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         return Vector.ofAll(Iterator.ofAll(array));
     }
 
+    public static Vector<Character> range(char from, char toExclusive) {
+        return Vector.ofAll(Iterator.range(from, toExclusive));
+    }
+
+    public static Vector<Character> rangeBy(char from, char toExclusive, int step) {
+        return Vector.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    public static Vector<Double> rangeBy(double from, double toExclusive, double step) {
+        return Vector.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
     /**
      * Creates a Vector of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
      * <p>
@@ -306,6 +318,18 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      */
     public static Vector<Long> rangeBy(long from, long toExclusive, long step) {
         return Vector.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    public static Vector<Character> rangeClosed(char from, char toInclusive) {
+        return Vector.ofAll(Iterator.rangeClosed(from, toInclusive));
+    }
+
+    public static Vector<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return Vector.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+    }
+
+    public static Vector<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return Vector.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -727,7 +751,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         if(length <= length()) {
             return this;
         } else {
-            return appendAll(Iterator.constant(element).take(length - length()));
+            return appendAll(Iterator.gen(() -> element).take(length - length()));
         }
     }
 

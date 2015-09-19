@@ -83,6 +83,21 @@ public class ListTest extends AbstractSeqTest {
     }
 
     @Override
+    protected List<Character> range(char from, char toExclusive) {
+        return List.range(from, toExclusive);
+    }
+
+    @Override
+    protected List<Character> rangeBy(char from, char toExclusive, int step) {
+        return List.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected List<Double> rangeBy(double from, double toExclusive, double step) {
+        return List.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
     protected List<Integer> range(int from, int toExclusive) {
         return List.range(from, toExclusive);
     }
@@ -100,6 +115,21 @@ public class ListTest extends AbstractSeqTest {
     @Override
     protected List<Long> rangeBy(long from, long toExclusive, long step) {
         return List.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected List<Character> rangeClosed(char from, char toInclusive) {
+        return List.rangeClosed(from, toInclusive);
+    }
+
+    @Override
+    protected List<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return List.rangeClosedBy(from, toInclusive, step);
+    }
+
+    @Override
+    protected List<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return List.rangeClosedBy(from, toInclusive, step);
     }
 
     @Override

@@ -82,6 +82,21 @@ public class QueueTest extends AbstractSeqTest {
     }
 
     @Override
+    protected Queue<Character> range(char from, char toExclusive) {
+        return Queue.range(from, toExclusive);
+    }
+
+    @Override
+    protected Queue<Character> rangeBy(char from, char toExclusive, int step) {
+        return Queue.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected Queue<Double> rangeBy(double from, double toExclusive, double step) {
+        return Queue.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
     protected Queue<Integer> range(int from, int toExclusive) {
         return Queue.range(from, toExclusive);
     }
@@ -99,6 +114,21 @@ public class QueueTest extends AbstractSeqTest {
     @Override
     protected Queue<Long> rangeBy(long from, long toExclusive, long step) {
         return Queue.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected Queue<Character> rangeClosed(char from, char toInclusive) {
+        return Queue.rangeClosed(from, toInclusive);
+    }
+
+    @Override
+    protected Queue<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return Queue.rangeClosedBy(from, toInclusive, step);
+    }
+
+    @Override
+    protected Queue<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return Queue.rangeClosedBy(from, toInclusive, step);
     }
 
     @Override

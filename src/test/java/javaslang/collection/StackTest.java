@@ -80,6 +80,21 @@ public class StackTest extends AbstractSeqTest {
     }
 
     @Override
+    protected Stack<Character> range(char from, char toExclusive) {
+        return Stack.range(from, toExclusive);
+    }
+
+    @Override
+    protected Stack<Character> rangeBy(char from, char toExclusive, int step) {
+        return Stack.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected Stack<Double> rangeBy(double from, double toExclusive, double step) {
+        return Stack.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
     protected Stack<Integer> range(int from, int toExclusive) {
         return Stack.range(from, toExclusive);
     }
@@ -97,6 +112,21 @@ public class StackTest extends AbstractSeqTest {
     @Override
     protected Stack<Long> rangeBy(long from, long toExclusive, long step) {
         return Stack.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected Stack<Character> rangeClosed(char from, char toInclusive) {
+        return Stack.rangeClosed(from, toInclusive);
+    }
+
+    @Override
+    protected Stack<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return Stack.rangeClosedBy(from, toInclusive, step);
+    }
+
+    @Override
+    protected Stack<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return Stack.rangeClosedBy(from, toInclusive, step);
     }
 
     @Override

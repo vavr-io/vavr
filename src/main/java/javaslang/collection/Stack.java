@@ -202,6 +202,18 @@ public interface Stack<T> extends LinearSeq<T> {
         return List.ofAll(array);
     }
 
+    static Stack<Character> range(char from, char toExclusive) {
+        return List.range(from, toExclusive);
+    }
+
+    static Stack<Character> rangeBy(char from, char toExclusive, int step) {
+        return List.rangeBy(from, toExclusive, step);
+    }
+
+    static Stack<Double> rangeBy(double from, double toExclusive, double step) {
+        return List.rangeBy(from, toExclusive, step);
+    }
+
     /**
      * Creates a Stack of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
      * <p>
@@ -292,6 +304,18 @@ public interface Stack<T> extends LinearSeq<T> {
      */
     static Stack<Long> rangeBy(long from, long toExclusive, long step) {
         return List.rangeBy(from, toExclusive, step);
+    }
+
+    static Stack<Character> rangeClosed(char from, char toInclusive) {
+        return List.rangeClosed(from, toInclusive);
+    }
+
+    static Stack<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return List.rangeClosedBy(from, toInclusive, step);
+    }
+
+    static Stack<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return List.rangeClosedBy(from, toInclusive, step);
     }
 
     /**
