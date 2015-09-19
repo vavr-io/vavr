@@ -8,6 +8,7 @@ package javaslang.control;
 import javaslang.Serializables;
 import javaslang.control.Failure.NonFatal;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.StrictAssertions;
 import org.junit.Test;
 
 import java.util.*;
@@ -15,6 +16,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.StrictAssertions.fail;
 
 public class TryTest {
 
@@ -106,12 +108,12 @@ public class TryTest {
     // -- Try.of
 
     @Test
-    public void shouldCreateFailureWhenCallingTryOfSupplier() {
+    public void shouldCreateSuccessWhenCallingTryOfSupplier() {
         assertThat(Try.of(() -> 1) instanceof Success).isTrue();
     }
 
     @Test
-    public void shouldCreateSuccessWhenCallingTryOfSupplier() {
+    public void shouldCreateFailureWhenCallingTryOfSupplier() {
         assertThat(Try.of(() -> {
             throw new Error("error");
         }) instanceof Failure).isTrue();
@@ -120,13 +122,13 @@ public class TryTest {
     // -- Try.run
 
     @Test
-    public void shouldCreateFailureWhenCallingTryRunRunnable() {
+    public void shouldCreateSuccessWhenCallingTryRunRunnable() {
         assertThat(Try.run(() -> {
         }) instanceof Success).isTrue();
     }
 
     @Test
-    public void shouldCreateSuccessWhenCallingTryRunRunnable() {
+    public void shouldCreateFailureWhenCallingTryRunRunnable() {
         assertThat(Try.run(() -> {
             throw new Error("error");
         }) instanceof Failure).isTrue();
@@ -158,6 +160,74 @@ public class TryTest {
             Assertions.assertThat(x.getCause().getMessage()).isEqualTo("\uD83D\uDCA9");
         } catch (Throwable x) {
             Assertions.fail("Unexpected exception type: " + x.getClass().getName());
+        }
+    }
+
+    // -- Failure.NonFatal
+
+    @Test
+    public void shouldReturnAndNotThrowOnNonFatal() {
+        final NonFatal cause = NonFatal.of(new Exception());
+        assertThat(NonFatal.of(cause) instanceof NonFatal).isTrue();
+    }
+
+    @Test
+    public void shouldReturnToStringOnNonFatal() {
+        final Exception exception = new java.lang.Exception();
+        final NonFatal cause = NonFatal.of(exception);
+        assertThat(cause.toString()).isEqualTo("NonFatal(" + exception.toString() + ")");
+    }
+
+    @Test
+    public void shouldReturnHasCodeOnNonFatal() {
+        final Exception exception = new java.lang.Exception();
+        final NonFatal cause = NonFatal.of(exception);
+        assertThat(cause.hashCode()).isEqualTo(Objects.hashCode(exception));
+    }
+
+    // -- Failure.Fatal
+    @Test
+    public void shouldReturnToStringOnFatal() {
+        try {
+            Try.of(() -> {
+                throw new UnknownError();
+            });
+            fail("Exception Expected");
+        }catch (Failure.Fatal x){
+            assertThat(x.toString()).isEqualTo("Fatal(java.lang.UnknownError)");
+        }
+    }
+
+    @Test
+    public void shouldReturnHashCodeOnFatal() {
+        UnknownError error = new UnknownError();
+        try {
+            Try.of(() -> {
+                throw error;
+            });
+            fail("Exception Expected");
+        } catch (Failure.Fatal x) {
+            assertThat(x.hashCode()).isEqualTo(Objects.hashCode(error));
+        }
+    }
+
+    @Test
+    public void shouldReturnEqualsOnFatal() {
+        UnknownError error = new UnknownError();
+        try {
+            Try.of(() -> {
+                throw error;
+            });
+            fail("Exception Expected");
+        } catch (Failure.Fatal x) {
+            try{
+                Try.of(() -> {
+                    throw error;
+                });
+                fail("Exception Expected");
+            }catch (Failure.Fatal fatal){
+                assertThat(x.equals(fatal)).isEqualTo(true);
+            }
         }
     }
 
@@ -281,6 +351,12 @@ public class TryTest {
     }
 
     @Test
+    public void shouldReturnIdentityWhenFilterTryOnFailure() {
+        final Try<String> identity = failure();
+        assertThat(identity.filterTry(s -> true)).isEqualTo(identity);
+    }
+
+    @Test
     public void shouldFlatMapOnFailure() {
         final Try<String> actual = failure();
         assertThat(actual.flatMap(s -> Try.of(() -> s + "!"))).isEqualTo(actual);
@@ -290,6 +366,12 @@ public class TryTest {
     public void shouldFlatMapWithExceptionOnFailure() {
         final Try<String> actual = failure();
         assertThat(actual.flatMap(this::flatMap)).isEqualTo(actual);
+    }
+
+    @Test
+    public void shouldFlatMapTryOnFailure() {
+        final Try<String> actual = failure();
+        assertThat(actual.flatMapTry(s -> Try.of(() -> s + "!"))).isEqualTo(actual);
     }
 
     @Test
@@ -499,6 +581,11 @@ public class TryTest {
     }
 
     @Test
+    public void shouldFilterTryMatchingPredicateOnSuccess() {
+        assertThat(success().filterTry(s -> true).get()).isEqualTo(OK);
+    }
+
+    @Test
     public void shouldFilterMatchingPredicateOnSuccess() {
         assertThat(success().filter(s -> true).get()).isEqualTo(OK);
     }
@@ -518,6 +605,18 @@ public class TryTest {
     @Test
     public void shouldFlatMapOnSuccess() {
         assertThat(success().flatMap(s -> Try.of(() -> s + "!")).get()).isEqualTo(OK + "!");
+    }
+
+    @Test
+    public void shouldFlatMapOnIterable() {
+        final java.lang.Iterable<Integer> iterable = Arrays.asList(1, 2, 3);
+        assertThat(success().flatMap(s -> iterable).get()).isEqualTo(1);
+    }
+
+    @Test(expected = NonFatal.class)
+    public void shouldFlatMapOnEmptyIterable() {
+        final java.lang.Iterable<Integer> iterable = Collections.emptyList();
+        success().flatMap(s -> iterable).get();
     }
 
     @Test(expected = RuntimeException.class)
@@ -549,6 +648,11 @@ public class TryTest {
     @Test(expected = NonFatal.class)
     public void shouldThrowWhenCallingFailedOnSuccess() {
         success().failed().get();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenCallingGetCauseOnSuccess() {
+        success().getCause();
     }
 
     @Test

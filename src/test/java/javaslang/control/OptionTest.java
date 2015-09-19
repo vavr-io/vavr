@@ -8,10 +8,7 @@ package javaslang.control;
 import javaslang.Serializables;
 import org.junit.Test;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -204,6 +201,18 @@ public class OptionTest {
     @Test
     public void shouldFlatMapNone() {
         assertThat(Option.<Integer> none().flatMap(i -> Option.of(String.valueOf(i)))).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldFlatMapNonEmptyIterable() {
+        final java.lang.Iterable<Integer> iterable = Arrays.asList(2, 3, 4);
+        assertThat(Option.of(1).<Integer> flatMap(i -> iterable)).isEqualTo(Option.of(2));
+    }
+
+    @Test
+    public void shouldFlatMapEmptyIterable() {
+        final java.lang.Iterable<Integer> iterable = Collections.emptyList();
+        assertThat(Option.of(1).<Integer> flatMap(i -> iterable)).isEqualTo(Option.<Integer> none());
     }
 
     // -- exists
