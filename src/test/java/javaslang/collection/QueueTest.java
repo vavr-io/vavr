@@ -83,17 +83,17 @@ public class QueueTest extends AbstractSeqTest {
 
     @Override
     protected Queue<Character> range(char from, char toExclusive) {
-        throw new UnsupportedOperationException("TODO");
+        return Queue.range(from, toExclusive);
     }
 
     @Override
     protected Queue<Character> rangeBy(char from, char toExclusive, int step) {
-        throw new UnsupportedOperationException("TODO");
+        return Queue.rangeBy(from, toExclusive, step);
     }
 
     @Override
     protected Queue<Double> rangeBy(double from, double toExclusive, double step) {
-        throw new UnsupportedOperationException("TODO");
+        return Queue.rangeBy(from, toExclusive, step);
     }
 
     @Override
@@ -117,18 +117,18 @@ public class QueueTest extends AbstractSeqTest {
     }
 
     @Override
-    protected Queue<Character> rangeClosed(char from, char toExclusive) {
-        throw new UnsupportedOperationException("TODO");
+    protected Queue<Character> rangeClosed(char from, char toInclusive) {
+        return Queue.rangeClosed(from, toInclusive);
     }
 
     @Override
-    protected Queue<Character> rangeClosedBy(char from, char toExclusive, int step) {
-        throw new UnsupportedOperationException("TODO");
+    protected Queue<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return Queue.rangeClosedBy(from, toInclusive, step);
     }
 
     @Override
-    protected Queue<Double> rangeClosedBy(double from, double toExclusive, double step) {
-        throw new UnsupportedOperationException("TODO");
+    protected Queue<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return Queue.rangeClosedBy(from, toInclusive, step);
     }
 
     @Override

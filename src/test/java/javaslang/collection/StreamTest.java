@@ -87,17 +87,17 @@ public class StreamTest extends AbstractSeqTest {
 
     @Override
     protected Stream<Character> range(char from, char toExclusive) {
-        throw new UnsupportedOperationException("TODO");
+        return Stream.range(from, toExclusive);
     }
 
     @Override
     protected Stream<Character> rangeBy(char from, char toExclusive, int step) {
-        throw new UnsupportedOperationException("TODO");
+        return Stream.rangeBy(from, toExclusive, step);
     }
 
     @Override
     protected Stream<Double> rangeBy(double from, double toExclusive, double step) {
-        throw new UnsupportedOperationException("TODO");
+        return Stream.rangeBy(from, toExclusive, step);
     }
 
     @Override
@@ -121,18 +121,18 @@ public class StreamTest extends AbstractSeqTest {
     }
 
     @Override
-    protected Stream<Character> rangeClosed(char from, char toExclusive) {
-        throw new UnsupportedOperationException("TODO");
+    protected Stream<Character> rangeClosed(char from, char toInclusive) {
+        return Stream.rangeClosed(from, toInclusive);
     }
 
     @Override
-    protected Stream<Character> rangeClosedBy(char from, char toExclusive, int step) {
-        throw new UnsupportedOperationException("TODO");
+    protected Stream<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return Stream.rangeClosedBy(from, toInclusive, step);
     }
 
     @Override
-    protected Stream<Double> rangeClosedBy(double from, double toExclusive, double step) {
-        throw new UnsupportedOperationException("TODO");
+    protected Stream<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return Stream.rangeClosedBy(from, toInclusive, step);
     }
 
     @Override

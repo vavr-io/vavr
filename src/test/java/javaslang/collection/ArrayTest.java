@@ -75,27 +75,17 @@ public class ArrayTest extends AbstractSeqTest {
 
     @Override
     protected Array<Character> range(char from, char toExclusive) {
-        throw new UnsupportedOperationException("TODO");
+        return Array.range(from, toExclusive);
     }
 
     @Override
     protected Array<Character> rangeBy(char from, char toExclusive, int step) {
-        throw new UnsupportedOperationException("TODO");
+        return Array.rangeBy(from, toExclusive, step);
     }
 
     @Override
     protected Array<Double> rangeBy(double from, double toExclusive, double step) {
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    @Override
-    int getPeekNonNilPerformingAnAction() {
-        return 1;
-    }
-
-    @Override
-    boolean useIsEqualToInsteadOfIsSameAs() {
-        return false;
+        return Array.rangeBy(from, toExclusive, step);
     }
 
     @Override
@@ -119,18 +109,18 @@ public class ArrayTest extends AbstractSeqTest {
     }
 
     @Override
-    protected Array<Character> rangeClosed(char from, char toExclusive) {
-        throw new UnsupportedOperationException("TODO");
+    protected Array<Character> rangeClosed(char from, char toInclusive) {
+        return Array.rangeClosed(from, toInclusive);
     }
 
     @Override
-    protected Array<Character> rangeClosedBy(char from, char toExclusive, int step) {
-        throw new UnsupportedOperationException("TODO");
+    protected Array<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return Array.rangeClosedBy(from, toInclusive, step);
     }
 
     @Override
-    protected Array<Double> rangeClosedBy(double from, double toExclusive, double step) {
-        throw new UnsupportedOperationException("TODO");
+    protected Array<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return Array.rangeClosedBy(from, toInclusive, step);
     }
 
     @Override
@@ -151,6 +141,16 @@ public class ArrayTest extends AbstractSeqTest {
     @Override
     protected Array<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return Array.rangeClosedBy(from, toInclusive, step);
+    }
+
+    @Override
+    int getPeekNonNilPerformingAnAction() {
+        return 1;
+    }
+
+    @Override
+    boolean useIsEqualToInsteadOfIsSameAs() {
+        return false;
     }
 
     // -- toString

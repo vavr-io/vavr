@@ -81,17 +81,17 @@ public class StackTest extends AbstractSeqTest {
 
     @Override
     protected Stack<Character> range(char from, char toExclusive) {
-        throw new UnsupportedOperationException("TODO");
+        return Stack.range(from, toExclusive);
     }
 
     @Override
     protected Stack<Character> rangeBy(char from, char toExclusive, int step) {
-        throw new UnsupportedOperationException("TODO");
+        return Stack.rangeBy(from, toExclusive, step);
     }
 
     @Override
     protected Stack<Double> rangeBy(double from, double toExclusive, double step) {
-        throw new UnsupportedOperationException("TODO");
+        return Stack.rangeBy(from, toExclusive, step);
     }
 
     @Override
@@ -115,18 +115,18 @@ public class StackTest extends AbstractSeqTest {
     }
 
     @Override
-    protected Stack<Character> rangeClosed(char from, char toExclusive) {
-        throw new UnsupportedOperationException("TODO");
+    protected Stack<Character> rangeClosed(char from, char toInclusive) {
+        return Stack.rangeClosed(from, toInclusive);
     }
 
     @Override
-    protected Stack<Character> rangeClosedBy(char from, char toExclusive, int step) {
-        throw new UnsupportedOperationException("TODO");
+    protected Stack<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return Stack.rangeClosedBy(from, toInclusive, step);
     }
 
     @Override
-    protected Stack<Double> rangeClosedBy(double from, double toExclusive, double step) {
-        throw new UnsupportedOperationException("TODO");
+    protected Stack<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return Stack.rangeClosedBy(from, toInclusive, step);
     }
 
     @Override

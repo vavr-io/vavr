@@ -74,11 +74,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
 
     abstract protected Seq<Long> rangeBy(long from, long toExclusive, long step);
 
-    abstract protected Seq<Character> rangeClosed(char from, char toExclusive);
+    abstract protected Seq<Character> rangeClosed(char from, char toInclusive);
 
-    abstract protected Seq<Character> rangeClosedBy(char from, char toExclusive, int step);
+    abstract protected Seq<Character> rangeClosedBy(char from, char toInclusive, int step);
 
-    abstract protected Seq<Double> rangeClosedBy(double from, double toExclusive, double step);
+    abstract protected Seq<Double> rangeClosedBy(double from, double toInclusive, double step);
 
     abstract protected Seq<Integer> rangeClosed(int from, int toInclusive);
 
@@ -1966,5 +1966,5 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         rangeClosedBy(Double.NaN, Double.NaN, 1.0);
     }
 
-    // TODO: POSITIVE_INFINITY, NEGATIVE_INFINITY
+    // TODO: Double NaN, POSITIVE_INFINITY, NEGATIVE_INFINITY, ...
 }

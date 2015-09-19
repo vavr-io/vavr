@@ -282,6 +282,18 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return List.ofAll(Iterator.ofAll(array));
     }
 
+    static List<Character> range(char from, char toExclusive) {
+        return List.ofAll(Iterator.range(from, toExclusive));
+    }
+
+    static List<Character> rangeBy(char from, char toExclusive, int step) {
+        return List.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    static List<Double> rangeBy(double from, double toExclusive, double step) {
+        return List.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
     /**
      * Creates a List of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
      * <p>
@@ -372,6 +384,18 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static List<Long> rangeBy(long from, long toExclusive, long step) {
         return List.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    static List<Character> rangeClosed(char from, char toInclusive) {
+        return List.ofAll(Iterator.rangeClosed(from, toInclusive));
+    }
+
+    static List<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return List.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+    }
+
+    static List<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return List.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**

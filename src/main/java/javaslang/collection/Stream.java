@@ -343,6 +343,18 @@ public interface Stream<T> extends LinearSeq<T> {
         return Stream.ofAll(Iterator.ofAll(array));
     }
 
+    static Stream<Character> range(char from, char toExclusive) {
+        return Stream.ofAll(Iterator.range(from, toExclusive));
+    }
+
+    static Stream<Character> rangeBy(char from, char toExclusive, int step) {
+        return Stream.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    static Stream<Double> rangeBy(double from, double toExclusive, double step) {
+        return Stream.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
     /**
      * Creates a Stream of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
      * <p>
@@ -433,6 +445,18 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Long> rangeBy(long from, long toExclusive, long step) {
         return Stream.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    static Stream<Character> rangeClosed(char from, char toInclusive) {
+        return Stream.ofAll(Iterator.rangeClosed(from, toInclusive));
+    }
+
+    static Stream<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return Stream.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+    }
+
+    static Stream<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return Stream.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**

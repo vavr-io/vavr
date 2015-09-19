@@ -84,17 +84,17 @@ public class ListTest extends AbstractSeqTest {
 
     @Override
     protected List<Character> range(char from, char toExclusive) {
-        throw new UnsupportedOperationException("TODO");
+        return List.range(from, toExclusive);
     }
 
     @Override
     protected List<Character> rangeBy(char from, char toExclusive, int step) {
-        throw new UnsupportedOperationException("TODO");
+        return List.rangeBy(from, toExclusive, step);
     }
 
     @Override
     protected List<Double> rangeBy(double from, double toExclusive, double step) {
-        throw new UnsupportedOperationException("TODO");
+        return List.rangeBy(from, toExclusive, step);
     }
 
     @Override
@@ -118,18 +118,18 @@ public class ListTest extends AbstractSeqTest {
     }
 
     @Override
-    protected List<Character> rangeClosed(char from, char toExclusive) {
-        throw new UnsupportedOperationException("TODO");
+    protected List<Character> rangeClosed(char from, char toInclusive) {
+        return List.rangeClosed(from, toInclusive);
     }
 
     @Override
-    protected List<Character> rangeClosedBy(char from, char toExclusive, int step) {
-        throw new UnsupportedOperationException("TODO");
+    protected List<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return List.rangeClosedBy(from, toInclusive, step);
     }
 
     @Override
-    protected List<Double> rangeClosedBy(double from, double toExclusive, double step) {
-        throw new UnsupportedOperationException("TODO");
+    protected List<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return List.rangeClosedBy(from, toInclusive, step);
     }
 
     @Override

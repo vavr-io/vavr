@@ -412,7 +412,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @return a range of characters as specified or the empty range if {@code from >= toExclusive}
      */
     static Iterator<Character> range(char from, char toExclusive) {
-        return rangeBy('a', 'b', 1);
+        return Iterator.rangeBy(from, toExclusive, 1);
     }
 
     /**
@@ -437,6 +437,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     static Iterator<Character> rangeBy(char from, char toExclusive, int step) {
         return Iterator.rangeBy((int) from, (int) toExclusive, step).map(i -> (char) i.shortValue());
+    }
+
+    static Iterator<Double> rangeBy(double from, double toExclusive, double step) {
+        throw new UnsupportedOperationException("TODO");
     }
 
     /**
@@ -557,7 +561,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @return a range of characters as specified or the empty range if {@code from > toInclusive}
      */
     static Iterator<Character> rangeClosed(char from, char toInclusive) {
-        return rangeClosedBy(from, toInclusive, 1);
+        return Iterator.rangeClosedBy(from, toInclusive, 1);
     }
 
     /**
@@ -582,6 +586,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      */
     static Iterator<Character> rangeClosedBy(char from, char toInclusive, int step) {
         return Iterator.rangeClosedBy((int) from, (int) toInclusive, step).map(i -> (char) i.shortValue());
+    }
+
+    static Iterator<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        throw new UnsupportedOperationException("TODO");
     }
 
     /**
