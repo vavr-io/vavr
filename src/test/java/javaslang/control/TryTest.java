@@ -8,6 +8,7 @@ package javaslang.control;
 import javaslang.Serializables;
 import javaslang.control.Failure.NonFatal;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.StrictAssertions;
 import org.junit.Test;
 
 import java.util.*;
@@ -15,6 +16,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.StrictAssertions.fail;
 
 public class TryTest {
 
@@ -183,6 +185,52 @@ public class TryTest {
         assertThat(cause.hashCode()).isEqualTo(Objects.hashCode(exception));
     }
 
+    // -- Failure.Fatal
+    @Test
+    public void shouldReturnToStringOnFatal() {
+        try {
+            Try.of(() -> {
+                throw new UnknownError();
+            });
+            fail("Exception Expected");
+        }catch (Failure.Fatal x){
+            assertThat(x.toString()).isEqualTo("Fatal(java.lang.UnknownError)");
+        }
+    }
+
+    @Test
+    public void shouldReturnHashCodeOnFatal() {
+        UnknownError error = new UnknownError();
+        try {
+            Try.of(() -> {
+                throw error;
+            });
+            fail("Exception Expected");
+        } catch (Failure.Fatal x) {
+            assertThat(x.hashCode()).isEqualTo(Objects.hashCode(error));
+        }
+    }
+
+    @Test
+    public void shouldReturnEqualsOnFatal() {
+        UnknownError error = new UnknownError();
+        try {
+            Try.of(() -> {
+                throw error;
+            });
+            fail("Exception Expected");
+        } catch (Failure.Fatal x) {
+            try{
+                Try.of(() -> {
+                    throw error;
+                });
+                fail("Exception Expected");
+            }catch (Failure.Fatal fatal){
+                assertThat(x.equals(fatal)).isEqualTo(true);
+            }
+        }
+    }
+
     // -- Failure
 
     @Test
@@ -300,6 +348,12 @@ public class TryTest {
     public void shouldFilterWithExceptionOnFailure() {
         final Try<String> actual = failure();
         assertThat(actual.filter(this::filter)).isEqualTo(actual);
+    }
+
+    @Test
+    public void shouldReturnIdentityWhenFilterTryOnFailure() {
+        final Try<String> identity = failure();
+        assertThat(identity.filterTry(s -> true)).isEqualTo(identity);
     }
 
     @Test
@@ -524,6 +578,11 @@ public class TryTest {
     @Test
     public void shouldConvertSuccessToJavaOptional() {
         assertThat(success().toJavaOptional().get()).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldFilterTryMatchingPredicateOnSuccess() {
+        assertThat(success().filterTry(s -> true).get()).isEqualTo(OK);
     }
 
     @Test
