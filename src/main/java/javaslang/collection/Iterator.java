@@ -440,7 +440,47 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     static Iterator<Double> rangeBy(double from, double toExclusive, double step) {
-        throw new UnsupportedOperationException("TODO");
+        if (Double.isNaN(from * toExclusive * step)) {
+            throw new IllegalArgumentException("NaN");
+        } else if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        } else if (step * (from - toExclusive) >= 0) {
+            return Iterator.empty();
+        } else {
+            final double left = (from == Double.NEGATIVE_INFINITY) ? Double.MIN_VALUE :
+                    (from == Double.POSITIVE_INFINITY) ? Double.MAX_VALUE : from;
+            final double right = (toExclusive == Double.NEGATIVE_INFINITY) ? Double.MIN_VALUE :
+                    (toExclusive == Double.POSITIVE_INFINITY) ? Double.MAX_VALUE : toExclusive;
+            return new AbstractIterator<Double>() {
+
+                double prev = Double.NaN;
+                double curr = left;
+                boolean hasNext = (step > 0) ? curr < toExclusive : curr > toExclusive;
+
+                @Override
+                public boolean hasNext() {
+                    return hasNext;
+                }
+
+                @Override
+                public Double next() {
+                    if (!hasNext()) {
+                        EMPTY.next();
+                    }
+                    final double next = curr;
+                    if ((step > 0 && curr + step >= toExclusive) || (step < 0 && curr + step <= toExclusive)) {
+                        hasNext = false;
+                    } else {
+                        prev = curr;
+                        curr += step;
+                        if (curr == prev) {
+                            hasNext = false;
+                        }
+                    }
+                    return next;
+                }
+            };
+        }
     }
 
     /**
@@ -589,7 +629,47 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     static Iterator<Double> rangeClosedBy(double from, double toInclusive, double step) {
-        throw new UnsupportedOperationException("TODO");
+        if (Double.isNaN(from * toInclusive * step)) {
+            throw new IllegalArgumentException("NaN");
+        } else if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        } else if (Double.isInfinite(from) || Double.isInfinite(toInclusive)) {
+            throw new IllegalArgumentException("cannot close over infinity");
+        } else if (from == toInclusive) {
+            return Iterator.of(from);
+        } else if (step * (from - toInclusive) > 0) {
+            return Iterator.empty();
+        } else {
+            return new AbstractIterator<Double>() {
+
+                double prev = Double.NaN;
+                double curr = from;
+                boolean hasNext = (step > 0) ? curr <= toInclusive : curr >= toInclusive;
+
+                @Override
+                public boolean hasNext() {
+                    return hasNext;
+                }
+
+                @Override
+                public Double next() {
+                    if (!hasNext()) {
+                        EMPTY.next();
+                    }
+                    final double next = curr;
+                    if ((step > 0 && curr + step > toInclusive) || (step < 0 && curr + step < toInclusive)) {
+                        hasNext = false;
+                    } else {
+                        prev = curr;
+                        curr += step;
+                        if (curr == prev) {
+                            hasNext = false;
+                        }
+                    }
+                    return next;
+                }
+            };
+        }
     }
 
     /**

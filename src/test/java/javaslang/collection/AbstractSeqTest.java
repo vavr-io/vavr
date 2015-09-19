@@ -1608,13 +1608,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(rangeClosedBy(1.0, 3.0, 1.0)).isEqualTo(of(1.0, 2.0, 3.0));
         assertThat(rangeClosedBy(1.0, 5.0, 2.0)).isEqualTo(of(1.0, 3.0, 5.0));
         assertThat(rangeClosedBy(1.0, 6.0, 2.0)).isEqualTo(of(1.0, 3.0, 5.0));
-        assertThat(rangeClosedBy(Double.MAX_VALUE - 2.0, Double.MAX_VALUE, 3.0)).isEqualTo(of(Double.MAX_VALUE - 2.0));
-        assertThat(rangeClosedBy(Double.MAX_VALUE - 3.0, Double.MAX_VALUE, 3.0)).isEqualTo(of(Double.MAX_VALUE - 3.0, Double.MAX_VALUE));
+        assertThat(rangeClosedBy(Double.MAX_VALUE - 2.0E307, Double.MAX_VALUE, 3.0E307)).isEqualTo(of(Double.MAX_VALUE - 2.0E307));
         assertThat(rangeClosedBy(3.0, 1.0, -1.0)).isEqualTo(of(3.0, 2.0, 1.0));
         assertThat(rangeClosedBy(5.0, 1.0, -2.0)).isEqualTo(of(5.0, 3.0, 1.0));
         assertThat(rangeClosedBy(5.0, 0.0, -2.0)).isEqualTo(of(5.0, 3.0, 1.0));
-        assertThat(rangeClosedBy(Double.MIN_VALUE + 2.0, Double.MIN_VALUE, -3.0)).isEqualTo(of(Double.MIN_VALUE + 2.0));
-        assertThat(rangeClosedBy(Double.MIN_VALUE + 3.0, Double.MIN_VALUE, -3.0)).isEqualTo(of(Double.MIN_VALUE + 3.0, Double.MIN_VALUE));
+        assertThat(rangeClosedBy(Double.MIN_VALUE + 2.0E307, Double.MIN_VALUE, -3.0E307)).isEqualTo(of(Double.MIN_VALUE + 2.0E307));
 
         // int
         assertThat(rangeClosedBy(1, 3, 1)).isEqualTo(of(1, 2, 3));
@@ -1801,19 +1799,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(rangeBy('c', 'a', -1)).isEqualTo(of('c', 'b'));
         assertThat(rangeBy('d', 'a', -2)).isEqualTo(of('d', 'b'));
         assertThat(rangeBy((char) (Character.MAX_VALUE - 3), Character.MAX_VALUE, 3)).isEqualTo(of((char) (Character.MAX_VALUE - 3)));
-        assertThat(rangeBy((char) (Character.MAX_VALUE - 4), Character.MAX_VALUE, 3)).isEqualTo(of((char) (Character.MAX_VALUE - 4), Character.MAX_VALUE));
+        assertThat(rangeBy((char) (Character.MAX_VALUE - 4), Character.MAX_VALUE, 3)).isEqualTo(of((char) (Character.MAX_VALUE - 4), (char) (Character.MAX_VALUE - 1)));
         assertThat(rangeBy((char) (Character.MIN_VALUE + 3), Character.MIN_VALUE, -3)).isEqualTo(of((char) (Character.MIN_VALUE + 3)));
-        assertThat(rangeBy((char) (Character.MIN_VALUE + 4), Character.MIN_VALUE, -3)).isEqualTo(of((char) (Character.MIN_VALUE + 4), Character.MIN_VALUE));
+        assertThat(rangeBy((char) (Character.MIN_VALUE + 4), Character.MIN_VALUE, -3)).isEqualTo(of((char) (Character.MIN_VALUE + 4), (char) (Character.MIN_VALUE + 1)));
 
         // double
         assertThat(rangeBy(1.0, 3.0, 1.0)).isEqualTo(of(1.0, 2.0));
         assertThat(rangeBy(1.0, 4.0, 2.0)).isEqualTo(of(1.0, 3.0));
         assertThat(rangeBy(3.0, 1.0, -1.0)).isEqualTo(of(3.0, 2.0));
         assertThat(rangeBy(4.0, 1.0, -2.0)).isEqualTo(of(4.0, 2.0));
-        assertThat(rangeBy(Double.MAX_VALUE - 3, Double.MAX_VALUE, 3)).isEqualTo(of(Double.MAX_VALUE - 3));
-        assertThat(rangeBy(Double.MAX_VALUE - 4, Double.MAX_VALUE, 3)).isEqualTo(of(Double.MAX_VALUE - 4, Double.MAX_VALUE));
-        assertThat(rangeBy(Double.MIN_VALUE + 3, Double.MIN_VALUE, -3)).isEqualTo(of(Double.MIN_VALUE + 3));
-        assertThat(rangeBy(Double.MIN_VALUE + 4, Double.MIN_VALUE, -3)).isEqualTo(of(Double.MIN_VALUE + 4, Double.MIN_VALUE));
+        assertThat(rangeBy(Double.MAX_VALUE - 3.0E307, Double.MAX_VALUE, 3.0E307)).isEqualTo(of(Double.MAX_VALUE - 3.0E307));
+        assertThat(rangeBy(Double.MIN_VALUE + 3.0E307, Double.MIN_VALUE, -3.0E307)).isEqualTo(of(Double.MIN_VALUE + 3.0E307));
 
         // int
         assertThat(rangeBy(1, 3, 1)).isEqualTo(of(1, 2));
@@ -1821,9 +1817,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(rangeBy(3, 1, -1)).isEqualTo(of(3, 2));
         assertThat(rangeBy(4, 1, -2)).isEqualTo(of(4, 2));
         assertThat(rangeBy(Integer.MAX_VALUE - 3, Integer.MAX_VALUE, 3)).isEqualTo(of(Integer.MAX_VALUE - 3));
-        assertThat(rangeBy(Integer.MAX_VALUE - 4, Integer.MAX_VALUE, 3)).isEqualTo(of(Integer.MAX_VALUE - 4, Integer.MAX_VALUE));
+        assertThat(rangeBy(Integer.MAX_VALUE - 4, Integer.MAX_VALUE, 3)).isEqualTo(of(Integer.MAX_VALUE - 4, Integer.MAX_VALUE - 1));
         assertThat(rangeBy(Integer.MIN_VALUE + 3, Integer.MIN_VALUE, -3)).isEqualTo(of(Integer.MIN_VALUE + 3));
-        assertThat(rangeBy(Integer.MIN_VALUE + 4, Integer.MIN_VALUE, -3)).isEqualTo(of(Integer.MIN_VALUE + 4, Integer.MIN_VALUE));
+        assertThat(rangeBy(Integer.MIN_VALUE + 4, Integer.MIN_VALUE, -3)).isEqualTo(of(Integer.MIN_VALUE + 4, Integer.MIN_VALUE + 1));
 
         // long
         assertThat(rangeBy(1L, 3L, 1L)).isEqualTo(of(1L, 2L));
@@ -1831,9 +1827,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableTest {
         assertThat(rangeBy(3L, 1L, -1L)).isEqualTo(of(3L, 2L));
         assertThat(rangeBy(4L, 1L, -2L)).isEqualTo(of(4L, 2L));
         assertThat(rangeBy(Long.MAX_VALUE - 3, Long.MAX_VALUE, 3)).isEqualTo(of(Long.MAX_VALUE - 3));
-        assertThat(rangeBy(Long.MAX_VALUE - 4, Long.MAX_VALUE, 3)).isEqualTo(of(Long.MAX_VALUE - 4, Long.MAX_VALUE));
+        assertThat(rangeBy(Long.MAX_VALUE - 4, Long.MAX_VALUE, 3)).isEqualTo(of(Long.MAX_VALUE - 4, Long.MAX_VALUE - 1));
         assertThat(rangeBy(Long.MIN_VALUE + 3, Long.MIN_VALUE, -3)).isEqualTo(of(Long.MIN_VALUE + 3));
-        assertThat(rangeBy(Long.MIN_VALUE + 4, Long.MIN_VALUE, -3)).isEqualTo(of(Long.MIN_VALUE + 4, Long.MIN_VALUE));
+        assertThat(rangeBy(Long.MIN_VALUE + 4, Long.MIN_VALUE, -3)).isEqualTo(of(Long.MIN_VALUE + 4, Long.MIN_VALUE + 1));
     }
 
     @Test
