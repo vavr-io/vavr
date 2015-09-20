@@ -7,6 +7,8 @@
 
 Feature-rich & self-contained functional programming in Java&trade; 8 and above.
 
+There's also a [blog](http://blog.javaslang.com).
+
 ## Using Javaslang
 
 Projects that include Javaslang need to target Java 1.8 at minimum.
