@@ -85,12 +85,12 @@ public interface λ<R> extends Serializable {
     Type<R> getType();
 
     /**
-    /**
      * Represents the type of a function which consists of <em>parameter types</em> and a <em>return type</em>.
      *
      * @param <R> the return type of the function
      * @since 2.0.0
      */
+    // DEV-NOTE: implicitly static and therefore not leaking implicit this reference of enclosing instance
     abstract class Type<R> implements Serializable {
 
         private static final long serialVersionUID = 1L;
