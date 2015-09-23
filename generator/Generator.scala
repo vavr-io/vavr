@@ -673,8 +673,10 @@ def generateMainClasses(): Unit = {
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
       val resultType = if (i == 1) "? extends U1" else s"Tuple$i<${(1 to i).gen(j => s"U$j")(", ")}>"
       val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
+      val comparableGenerics = (1 to i).gen(j => s"U$j extends Comparable<? super U$j>")(", ")
       val untyped = (1 to i).gen(j => "?")(", ")
       val functionType = s"Function$i"
+      val Comparator = im.getType("java.util.Comparator")
 
       xs"""
         /**
@@ -683,7 +685,7 @@ def generateMainClasses(): Unit = {
          * @author Daniel Dietrich
          * @since 1.1.0
          */
-        public final class $className<$generics> implements Tuple, ${im.getType("java.io.Serializable")} {
+        public final class $className<$generics> implements Tuple, Comparable<$className<$generics>>, ${im.getType("java.io.Serializable")} {
 
             private static final long serialVersionUID = 1L;
 
@@ -705,6 +707,43 @@ def generateMainClasses(): Unit = {
             @Override
             public int arity() {
                 return $i;
+            }
+
+            public static <$generics> $Comparator<$className<$generics>> comparator(${(1 to i).gen(j => s"$Comparator<? super T$j> t${j}Comp")(", ")}) {
+                return (Comparator<$className<$generics>> & Serializable) (t1, t2) -> {
+
+                    ${(1 to i).gen(j => xs"""
+                      final int check$j = t${j}Comp.compare(t1._$j, t2._$j);
+                      if (check$j != 0) {
+                          return check$j;
+                      }
+                    """)("\n\n")}
+
+                    // all components are equal
+                    return 0;
+                };
+            }
+
+            @Override
+            public int compareTo($className<$generics> that) {
+                return $className.compareTo(this, that);
+            }
+
+            @SuppressWarnings("unchecked")
+            private static <$comparableGenerics> int compareTo($className<$untyped> o1, $className<$untyped> o2) {
+
+                final $className<$resultGenerics> t1 = ($className<$resultGenerics>) o1;
+                final $className<$resultGenerics> t2 = ($className<$resultGenerics>) o2;
+
+                ${(1 to i).gen(j => xs"""
+                  final int check$j = t1._$j.compareTo(t2._$j);
+                  if (check$j != 0) {
+                      return check$j;
+                  }
+                """)("\n\n")}
+
+                // all components are equal
+                return 0;
             }
 
             public <$resultGenerics> $className<$resultGenerics> map($functionType<$paramTypes, $resultType> f) {

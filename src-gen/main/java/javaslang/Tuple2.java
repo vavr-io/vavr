@@ -10,6 +10,7 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Objects;
 
 /**
@@ -20,7 +21,7 @@ import java.util.Objects;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public final class Tuple2<T1, T2> implements Tuple, Serializable {
+public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,6 +49,49 @@ public final class Tuple2<T1, T2> implements Tuple, Serializable {
     @Override
     public int arity() {
         return 2;
+    }
+
+    public static <T1, T2> Comparator<Tuple2<T1, T2>> comparator(Comparator<? super T1> t1Comp, Comparator<? super T2> t2Comp) {
+        return (Comparator<Tuple2<T1, T2>> & Serializable) (t1, t2) -> {
+
+            final int check1 = t1Comp.compare(t1._1, t2._1);
+            if (check1 != 0) {
+                return check1;
+            }
+
+            final int check2 = t2Comp.compare(t1._2, t2._2);
+            if (check2 != 0) {
+                return check2;
+            }
+
+            // all components are equal
+            return 0;
+        };
+    }
+
+    @Override
+    public int compareTo(Tuple2<T1, T2> that) {
+        return Tuple2.compareTo(this, that);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <U1 extends Comparable<? super U1>, U2 extends Comparable<? super U2>> int compareTo(Tuple2<?, ?> o1, Tuple2<?, ?> o2) {
+
+        final Tuple2<U1, U2> t1 = (Tuple2<U1, U2>) o1;
+        final Tuple2<U1, U2> t2 = (Tuple2<U1, U2>) o2;
+
+        final int check1 = t1._1.compareTo(t2._1);
+        if (check1 != 0) {
+            return check1;
+        }
+
+        final int check2 = t1._2.compareTo(t2._2);
+        if (check2 != 0) {
+            return check2;
+        }
+
+        // all components are equal
+        return 0;
     }
 
     public <U1, U2> Tuple2<U1, U2> map(Function2<? super T1, ? super T2, Tuple2<U1, U2>> f) {
