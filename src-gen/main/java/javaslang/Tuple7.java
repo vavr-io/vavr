@@ -10,6 +10,7 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Objects;
 
 /**
@@ -25,7 +26,7 @@ import java.util.Objects;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Serializable {
+public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparable<Tuple7<T1, T2, T3, T4, T5, T6, T7>>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -88,6 +89,99 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Serializ
     @Override
     public int arity() {
         return 7;
+    }
+
+    public static <T1, T2, T3, T4, T5, T6, T7> Comparator<Tuple7<T1, T2, T3, T4, T5, T6, T7>> comparator(Comparator<? super T1> t1Comp, Comparator<? super T2> t2Comp, Comparator<? super T3> t3Comp, Comparator<? super T4> t4Comp, Comparator<? super T5> t5Comp, Comparator<? super T6> t6Comp, Comparator<? super T7> t7Comp) {
+        return (Comparator<Tuple7<T1, T2, T3, T4, T5, T6, T7>> & Serializable) (t1, t2) -> {
+
+            final int check1 = t1Comp.compare(t1._1, t2._1);
+            if (check1 != 0) {
+                return check1;
+            }
+
+            final int check2 = t2Comp.compare(t1._2, t2._2);
+            if (check2 != 0) {
+                return check2;
+            }
+
+            final int check3 = t3Comp.compare(t1._3, t2._3);
+            if (check3 != 0) {
+                return check3;
+            }
+
+            final int check4 = t4Comp.compare(t1._4, t2._4);
+            if (check4 != 0) {
+                return check4;
+            }
+
+            final int check5 = t5Comp.compare(t1._5, t2._5);
+            if (check5 != 0) {
+                return check5;
+            }
+
+            final int check6 = t6Comp.compare(t1._6, t2._6);
+            if (check6 != 0) {
+                return check6;
+            }
+
+            final int check7 = t7Comp.compare(t1._7, t2._7);
+            if (check7 != 0) {
+                return check7;
+            }
+
+            // all components are equal
+            return 0;
+        };
+    }
+
+    @Override
+    public int compareTo(Tuple7<T1, T2, T3, T4, T5, T6, T7> that) {
+        return Tuple7.compareTo(this, that);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <U1 extends Comparable<? super U1>, U2 extends Comparable<? super U2>, U3 extends Comparable<? super U3>, U4 extends Comparable<? super U4>, U5 extends Comparable<? super U5>, U6 extends Comparable<? super U6>, U7 extends Comparable<? super U7>> int compareTo(Tuple7<?, ?, ?, ?, ?, ?, ?> o1, Tuple7<?, ?, ?, ?, ?, ?, ?> o2) {
+
+        final Tuple7<U1, U2, U3, U4, U5, U6, U7> t1 = (Tuple7<U1, U2, U3, U4, U5, U6, U7>) o1;
+        final Tuple7<U1, U2, U3, U4, U5, U6, U7> t2 = (Tuple7<U1, U2, U3, U4, U5, U6, U7>) o2;
+
+        final int check1 = t1._1.compareTo(t2._1);
+        if (check1 != 0) {
+            return check1;
+        }
+
+        final int check2 = t1._2.compareTo(t2._2);
+        if (check2 != 0) {
+            return check2;
+        }
+
+        final int check3 = t1._3.compareTo(t2._3);
+        if (check3 != 0) {
+            return check3;
+        }
+
+        final int check4 = t1._4.compareTo(t2._4);
+        if (check4 != 0) {
+            return check4;
+        }
+
+        final int check5 = t1._5.compareTo(t2._5);
+        if (check5 != 0) {
+            return check5;
+        }
+
+        final int check6 = t1._6.compareTo(t2._6);
+        if (check6 != 0) {
+            return check6;
+        }
+
+        final int check7 = t1._7.compareTo(t2._7);
+        if (check7 != 0) {
+            return check7;
+        }
+
+        // all components are equal
+        return 0;
     }
 
     public <U1, U2, U3, U4, U5, U6, U7> Tuple7<U1, U2, U3, U4, U5, U6, U7> map(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Tuple7<U1, U2, U3, U4, U5, U6, U7>> f) {

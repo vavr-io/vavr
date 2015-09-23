@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public final class Tuple0 implements Tuple, Serializable {
+public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -41,6 +41,11 @@ public final class Tuple0 implements Tuple, Serializable {
 
     @Override
     public int arity() {
+        return 0;
+    }
+
+    @Override
+    public int compareTo(Tuple0 that) {
         return 0;
     }
 

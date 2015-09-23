@@ -19,6 +19,8 @@ import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+import static javaslang.collection.Comparators.naturalComparator;
+
 /**
  * SortedSet implementation, backed by a Red/Black Tree.
  *
@@ -858,14 +860,14 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public <U> TreeSet<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
-        final Comparator<Tuple2<T, U>> tuple2Comparator = tuple2Comparator(tree.comparator());
+        final Comparator<Tuple2<T, U>> tuple2Comparator = Tuple2.comparator(tree.comparator(), naturalComparator());
         return TreeSet.ofAll(tuple2Comparator, iterator().zip(that));
     }
 
     @Override
     public <U> TreeSet<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        final Comparator<Tuple2<T, U>> tuple2Comparator = tuple2Comparator(tree.comparator());
+        final Comparator<Tuple2<T, U>> tuple2Comparator = Tuple2.comparator(tree.comparator(), naturalComparator());
         return TreeSet.ofAll(tuple2Comparator, iterator().zipAll(that, thisElem, thatElem));
     }
 
@@ -898,52 +900,5 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public String toString() {
         return "TreeSet" + tree.toString();
-    }
-
-    /**
-     * Returns a component-wise Tuple2 Comparator.
-     * <p>
-     * It works like this (informal):
-     * <pre><code>
-     * Let tuple1 = (t1, u1), tuple2 = (t2, u2).
-     *
-     * // compare 1st component
-     * Let check1 = component1Comparator.compare(t1, t2);
-     * if (check1 != 0) {
-     *     return check1;
-     * }
-     *
-     * // compare 2nd component
-     * Let component2Comparator = (Comparator&lt;? super U&gt;) naturalComparator();
-     * return component2Comparator.compare(u1, u2);
-     * </code></pre>
-     *
-     * @param component1Comparator Comparator for 1st tuple component
-     * @param <T>                  Component type 1
-     * @param <U>                  Component type 2
-     * @return A Tuple2 comparator according to the rules described above.
-     */
-    private static <T, U> Comparator<Tuple2<T, U>> tuple2Comparator(Comparator<? super T> component1Comparator) {
-        return (Comparator<Tuple2<T, U>> & Serializable) (t1, t2) -> {
-            final int check1 = component1Comparator.compare(t1._1, t2._1);
-            if (check1 != 0) {
-                return check1;
-            }
-            final Comparator<? super U> component2Comparator = naturalComparator();
-            return component2Comparator.compare(t1._2, t2._2);
-        };
-    }
-
-    /**
-     * Returns the natural comparator for type U, i.e. treating it as {@code Comparable<? super U>}.
-     * <p>
-     * Please note that this will lead to runtime exceptions, if U is not Comparable.
-     *
-     * @param <U> The type
-     * @return The natural Comparator of type U
-     */
-    @SuppressWarnings("unchecked")
-    private static <U> Comparator<? super U> naturalComparator() {
-        return (Comparator<? super U> & Serializable) (o1, o2) -> ((Comparable<? super U>) o1).compareTo(o2);
     }
 }
