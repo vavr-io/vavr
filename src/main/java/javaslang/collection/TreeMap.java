@@ -115,6 +115,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
      * @param entries Map entries
      * @return A new TreeMap containing the given entries.
      */
+    @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Entry<? extends K, ? extends V>... entries) {
         return of(K::compareTo, entries);
@@ -156,9 +157,10 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     /**
      * Creates a {@code TreeMap} of the given entries.
      *
-     * @param <K>     The key type
-     * @param <V>     The value type
-     * @param entries Map entries
+     * @param <K>           The key type
+     * @param <V>           The value type
+     * @param entries       Map entries
+     * @param keyComparator A key comparator
      * @return A new TreeMap containing the given entries.
      */
     @SuppressWarnings("unchecked")
@@ -490,9 +492,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
      * Internal factory method, used with Entry comparator instead of a key comparator.
      *
      * @param comparator An Entry comparator
-     * @param entries Map entries
-     * @param <K> Key type
-     * @param <V> Value type
+     * @param entries    Map entries
+     * @param <K>        Key type
+     * @param <V>        Value type
      * @return A new TreeMap.
      */
     private static <K, V> TreeMap<K, V> createTreeMap(Comparator<? super Entry<K, V>> comparator, java.lang.Iterable<? extends Entry<? extends K, ? extends V>> entries) {
