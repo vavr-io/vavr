@@ -33,12 +33,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     private static final HashMap<?, ?> EMPTY = new HashMap<>(HashArrayMappedTrie.empty());
 
-    private final HashArrayMappedTrie<K, V> tree;
+    private final HashArrayMappedTrie<K, V> trie;
     private final transient Lazy<Integer> hash;
 
-    private HashMap(HashArrayMappedTrie<K, V> tree) {
-        this.tree = tree;
-        this.hash = Lazy.of(() -> Traversable.hash(tree::iterator));
+    private HashMap(HashArrayMappedTrie<K, V> trie) {
+        this.trie = trie;
+        this.hash = Lazy.of(() -> Traversable.hash(trie::iterator));
     }
 
     private static <K, V> HashMap<K, V> of(HashArrayMappedTrie<K, V> trie) {
@@ -53,8 +53,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.HashMap}.
      *
-     * @param <K> Component type.
-     * @param <V> Component type.
+     * @param <K> The key type
+     * @param <V> The value type
      * @return A {@link javaslang.collection.HashMap} Collector.
      */
     public static <K, V> Collector<Entry<K, V>, ArrayList<Entry<K, V>>, HashMap<K, V>> collector() {
@@ -137,7 +137,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public boolean containsKey(K key) {
-        return tree.containsKey(key);
+        return trie.containsKey(key);
     }
 
     @Override
@@ -192,7 +192,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        return tree.iterator().map(Entry::of).toSet();
+        return trie.iterator().map(Entry::of).toSet();
     }
 
     @Override
@@ -248,7 +248,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Option<V> get(K key) {
-        return tree.get(key);
+        return trie.get(key);
     }
 
     @Override
@@ -295,7 +295,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public boolean isEmpty() {
-        return tree.isEmpty();
+        return trie.isEmpty();
     }
 
     @Override
@@ -305,7 +305,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Iterator<Entry<K, V>> iterator() {
-        return tree.iterator().map(Entry::of);
+        return trie.iterator().map(Entry::of);
     }
 
     @Override
@@ -315,7 +315,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public int length() {
-        return tree.size();
+        return trie.size();
     }
 
     @Override
@@ -376,7 +376,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> put(K key, V value) {
-        return new HashMap<>(tree.put(key, value));
+        return new HashMap<>(trie.put(key, value));
     }
 
     @Override
@@ -396,13 +396,13 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> remove(K key) {
-        return new HashMap<>(tree.remove(key));
+        return new HashMap<>(trie.remove(key));
     }
 
     @Override
     public HashMap<K, V> removeAll(java.lang.Iterable<? extends K> keys) {
         Objects.requireNonNull(keys, "keys is null");
-        HashArrayMappedTrie<K, V> result = tree;
+        HashArrayMappedTrie<K, V> result = trie;
         for (K key : keys) {
             result = result.remove(key);
         }
@@ -412,8 +412,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<K, V> replace(Entry<K, V> currentElement, Entry<K, V> newElement) {
         final Option<V> value = get(currentElement.key);
-        if(value.isDefined()) {
-            return HashMap.of(tree.remove(currentElement.key).put(newElement.key, newElement.value));
+        if (value.isDefined()) {
+            return HashMap.of(trie.remove(currentElement.key).put(newElement.key, newElement.value));
         } else {
             return this;
         }
@@ -437,7 +437,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     public HashMap<K, V> retainAll(java.lang.Iterable<? extends Entry<K, V>> elements) {
         HashMap<K, V> result = empty();
         for (Entry<K, V> entry : elements) {
-            if(contains(entry)) {
+            if (contains(entry)) {
                 result = result.put(entry);
             }
         }
@@ -446,7 +446,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public int size() {
-        return tree.size();
+        return trie.size();
     }
 
     @Override
@@ -458,17 +458,17 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> tail() {
-        if (tree.isEmpty()) {
+        if (trie.isEmpty()) {
             throw new UnsupportedOperationException("tail of empty map");
         } else {
-            HashArrayMappedTrie<K, V> trie = tree.remove(head().key);
+            HashArrayMappedTrie<K, V> trie = this.trie.remove(head().key);
             return new HashMap<>(trie);
         }
     }
 
     @Override
     public Option<HashMap<K, V>> tailOption() {
-        if (tree.isEmpty()) {
+        if (trie.isEmpty()) {
             return None.instance();
         } else {
             return new Some<>(tail());
@@ -477,10 +477,10 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> take(int n) {
-        if (tree.size() <= n) {
+        if (trie.size() <= n) {
             return this;
         }
-        return HashMap.ofAll(tree.iterator().map(Entry::of).take(n));
+        return HashMap.ofAll(trie.iterator().map(Entry::of).take(n));
     }
 
     @Override
@@ -557,7 +557,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         if (o == this) {
             return true;
         } else if (o instanceof HashMap) {
-            final HashMap<?,?> that = (HashMap<?,?>) o;
+            final HashMap<?, ?> that = (HashMap<?, ?>) o;
             return this.corresponds(that, Objects::equals);
         } else {
             return false;
