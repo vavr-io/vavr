@@ -15,7 +15,7 @@ public final class PrimeNumbers {
     }
 
     public static Stream<Long> primes() {
-        return Sieve.INSTANCE.streamOfLongs();
+        return Sieve.INSTANCE.stream();
     }
 
     public static long prime(int index) {

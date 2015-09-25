@@ -1,72 +1,33 @@
 package javaslang.collection.euler;
 
-import javaslang.collection.Iterator;
 import javaslang.collection.Stream;
 
-public class Sieve {
+public enum Sieve {
 
-    public static final Sieve INSTANCE = new Sieve(2_000_000);
+    INSTANCE(2_000_000);
 
-    public int count() {
-        return nPrimes;
+    private final long[] primes;
+
+    Sieve(int limit) {
+        primes = calculatePrimes(limit);
     }
 
-    public int[] array() {
+    public long[] array() {
         return primes;
     }
 
-    public Stream<Integer> streamOfIntegers() {
-        return Stream.ofAll(new Iterator<Integer>() {
-                    int index = 0;
-
-                    @Override
-                    public boolean hasNext() {
-                        return index < nPrimes;
-                    }
-
-                    @Override
-                    public Integer next() {
-                        return primes[index++];
-                    }
-                }
-        );
+    public Stream<Long> stream() {
+        return Stream.ofAll(primes);
     }
 
-    public Stream<Long> streamOfLongs() {
-        return Stream.ofAll(new Iterator<Long>() {
-                    int index = 0;
+    private static long[] calculatePrimes(int limit) {
 
-                    @Override
-                    public boolean hasNext() {
-                        return index < nPrimes;
-                    }
-
-                    @Override
-                    public Long next() {
-                        return (long) primes[index++];
-                    }
-                }
-        );
-    }
-
-    private final int[] primes;
-    private final int nPrimes;
-
-    private Sieve(int limit) {
-        boolean[] sieve = new boolean[limit];
-        primes = new int[limit];
-        nPrimes = makePrimes(sieve, primes);
-    }
-
-    private static int makePrimes(boolean[] sieve, int[] primes) {
-        int limit = sieve.length;
-        int root = (int) Math.ceil(Math.sqrt(limit));
-        int nPrimes = 2;
-        primes[0] = 2;
-        primes[1] = 3;
+        // init sieve
+        final boolean[] sieve = new boolean[limit];
         for (int z = 0; z < limit; z++) {
             sieve[z] = false;
         }
+        final int root = (int) Math.ceil(Math.sqrt(limit));
         for (int x = 1; x <= root; x++) {
             for (int y = 1; y <= root; y++) {
                 int n = (4 * x * x) + (y * y);
@@ -91,11 +52,18 @@ public class Sieve {
                 }
             }
         }
+
+        // calculate primes
+        final long[] primes = new long[limit];
+        primes[0] = 2;
+        primes[1] = 3;
+        int index = 2;
         for (int p = 5; p < limit; p++) {
             if (sieve[p]) {
-                primes[nPrimes++] = p;
+                primes[index++] = p;
             }
         }
-        return nPrimes;
+
+        return primes;
     }
 }
