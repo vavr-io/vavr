@@ -2,11 +2,13 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.collection.Map.Entry;
 import javaslang.control.Some;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -42,9 +44,9 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector() {
-        final Collector<Map.Entry<Integer, T>, ArrayList<Map.Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector = mapCollector();
-        return new Collector<T, ArrayList<T>, Traversable<T>>() {
+    protected <T> Collector<T, ArrayList<T>, AbstractIntMap<T>> collector() {
+        final Collector<Entry<Integer, T>, ArrayList<Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector = mapCollector();
+        return new Collector<T, ArrayList<T>, AbstractIntMap<T>>() {
             @Override
             public Supplier<ArrayList<T>> supplier() {
                 return ArrayList::new;
@@ -64,7 +66,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
             }
 
             @Override
-            public Function<ArrayList<T>, Traversable<T>> finisher() {
+            public Function<ArrayList<T>, AbstractIntMap<T>> finisher() {
                 return AbstractMapTest.this::ofAll;
             }
 
@@ -93,7 +95,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     abstract protected <T1, T2> Map<T1, T2> emptyMap();
 
-    abstract protected <T> Collector<Map.Entry<Integer, T>, ArrayList<Map.Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector();
+    abstract protected <T> Collector<Entry<Integer, T>, ArrayList<Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector();
 
     @Override
     boolean useIsEqualToInsteadOfIsSameAs() {
@@ -108,7 +110,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <T> Traversable<T> of(T element) {
+    protected <T> AbstractIntMap<T> of(T element) {
         Map<Integer, T> map = emptyMap();
         map = map.put(0, element);
         return AbstractIntMap.of(map);
@@ -116,7 +118,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <T> Traversable<T> of(T... elements) {
+    protected <T> AbstractIntMap<T> of(T... elements) {
         Map<Integer, T> map = emptyMap();
         for (T element : elements) {
             map = map.put(map.size(), element);
@@ -126,51 +128,51 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <T> Traversable<T> ofAll(Iterable<? extends T> elements) {
+    protected <T> AbstractIntMap<T> ofAll(Iterable<? extends T> elements) {
         Map<Integer, T> map = emptyMap();
         for (T element : elements) {
             map = map.put(map.size(), element);
         }
-        return (Traversable<T>) AbstractIntMap.of(map);
+        return AbstractIntMap.of(map);
     }
 
     @Override
-    protected Traversable<Boolean> ofAll(boolean[] array) {
+    protected AbstractIntMap<Boolean> ofAll(boolean[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected Traversable<Byte> ofAll(byte[] array) {
+    protected AbstractIntMap<Byte> ofAll(byte[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected Traversable<Character> ofAll(char[] array) {
+    protected AbstractIntMap<Character> ofAll(char[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected Traversable<Double> ofAll(double[] array) {
+    protected AbstractIntMap<Double> ofAll(double[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected Traversable<Float> ofAll(float[] array) {
+    protected AbstractIntMap<Float> ofAll(float[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected Traversable<Integer> ofAll(int[] array) {
+    protected AbstractIntMap<Integer> ofAll(int[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected Traversable<Long> ofAll(long[] array) {
+    protected AbstractIntMap<Long> ofAll(long[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected Traversable<Short> ofAll(short[] array) {
+    protected AbstractIntMap<Short> ofAll(short[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
@@ -179,7 +181,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldMakeString() {
         assertThat(emptyMap().toString()).isEqualTo(className() + "()");
-        assertThat(emptyMap().put(1, 2).toString()).isEqualTo(className() + "(" + Map.Entry.of(1, 2) + ")");
+        assertThat(emptyMap().put(1, 2).toString()).isEqualTo(className() + "(" + Entry.of(1, 2) + ")");
     }
 
     // -- apply
@@ -213,14 +215,14 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldMapEmpty() {
         final javaslang.collection.Set<Integer> expected = HashSet.empty();
-        final javaslang.collection.Set<Integer> actual = emptyInt().map(entry -> entry.key);
+        final javaslang.collection.Set<Integer> actual = emptyInt().map(Entry::key);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldMapNonEmpty() {
         final javaslang.collection.Set<Integer> expected = HashSet.of(1, 2);
-        final javaslang.collection.Set<Integer> actual = emptyInt().put(1, "1").put(2, "2").map(entry -> entry.key);
+        final javaslang.collection.Set<Integer> actual = emptyInt().put(1, "1").put(2, "2").map(Entry::key);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -232,7 +234,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnEntrySetOfANonEmptyMap() {
         assertThat(emptyMap().put(1, "1").put(2, "2").entrySet()).isEqualTo(
-                HashSet.of(Map.Entry.of(1, "1"), Map.Entry.of(2, "2")));
+                HashSet.of(Entry.of(1, "1"), Entry.of(2, "2")));
     }
 
     // -- equality
@@ -256,13 +258,13 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldUnzipNil() {
         assertThat(emptyMap().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(emptyMap(), emptyMap()));
-        assertThat(emptyMap().unzip((k, v) -> Tuple.of(Map.Entry.of(k, v), Map.Entry.of(k, v)))).isEqualTo(Tuple.of(emptyMap(), emptyMap()));
+        assertThat(emptyMap().unzip((k, v) -> Tuple.of(Entry.of(k, v), Entry.of(k, v)))).isEqualTo(Tuple.of(emptyMap(), emptyMap()));
     }
 
     @Test
     public void shouldUnzipNonNil() {
         Map<Integer, Integer> map = emptyIntInt().put(0, 0).put(1, 1);
-        final Tuple actual = map.unzip(i -> Tuple.of(i, Map.Entry.of(i.key, (Integer) i.value + 1)));
+        final Tuple actual = map.unzip(i -> Tuple.of(i, Entry.of(i.key, (Integer) i.value + 1)));
         final Tuple expected = Tuple.of(map, emptyMap().put(0, 1).put(1, 2));
         assertThat(actual).isEqualTo(expected);
     }
@@ -348,35 +350,35 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipAllNonNilsIfThisIsSmaller() {
-        final Map<?,?> actual = emptyMap().put(1, 1).put(2, 2).zipAll(of("a", "b", "c"), Map.Entry.of(9, 10), "z");
+        final Map<?,?> actual = emptyMap().put(1, 1).put(2, 2).zipAll(of("a", "b", "c"), Entry.of(9, 10), "z");
         final Map<?,?> expected = emptyMap().put(Tuple.of(1, 1), "a").put(Tuple.of(2, 2), "b").put(Tuple.of(9, 10), "c");
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsIfThisIsMoreSmaller() {
-        final Map<?,?> actual = emptyMap().put(1, 1).put(2, 2).zipAll(of("a", "b", "c", "d"), Map.Entry.of(9, 10), "z");
+        final Map<?,?> actual = emptyMap().put(1, 1).put(2, 2).zipAll(of("a", "b", "c", "d"), Entry.of(9, 10), "z");
         final Map<?,?> expected = emptyMap().put(Tuple.of(1, 1), "a").put(Tuple.of(2, 2), "b").put(Tuple.of(9, 10), "d");
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsIfThatIsSmaller() {
-        final Map<?,?> actual = emptyMap().put(1, 1).put(2, 2).put(3, 3).zipAll(of("a", "b"), Map.Entry.of(9, 10), "z");
+        final Map<?,?> actual = emptyMap().put(1, 1).put(2, 2).put(3, 3).zipAll(of("a", "b"), Entry.of(9, 10), "z");
         final Map<?,?> expected = emptyMap().put(Tuple.of(1, 1), "a").put(Tuple.of(2, 2), "b").put(Tuple.of(3, 3), "z");
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsIfThatIsMoreSmaller() {
-        final Map<?,?> actual = emptyMap().put(1, 1).put(2, 2).put(3, 3).put(4, 4).zipAll(of("a", "b"), Map.Entry.of(9, 10), "z");
+        final Map<?,?> actual = emptyMap().put(1, 1).put(2, 2).put(3, 3).put(4, 4).zipAll(of("a", "b"), Entry.of(9, 10), "z");
         final Map<?,?> expected = emptyMap().put(Tuple.of(1, 1), "a").put(Tuple.of(2, 2), "b").put(Tuple.of(3, 3), "z").put(Tuple.of(4, 4), "z");
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsOfSameSize() {
-        final Map<?,?> actual = emptyMap().put(1, 1).put(2, 2).put(3, 3).zipAll(of("a", "b", "c"), Map.Entry.of(9, 10), "z");
+        final Map<?,?> actual = emptyMap().put(1, 1).put(2, 2).put(3, 3).zipAll(of("a", "b", "c"), Entry.of(9, 10), "z");
         final Map<?,?> expected = emptyMap().put(Tuple.of(1, 1), "a").put(Tuple.of(2, 2), "b").put(Tuple.of(3, 3), "c");
         assertThat(actual).isEqualTo(expected);
     }

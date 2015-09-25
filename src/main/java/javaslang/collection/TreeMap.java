@@ -104,7 +104,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, Entry<? extends K, ? extends V> entry) {
         Objects.requireNonNull(keyComparator, "keyComparator is null");
         Objects.requireNonNull(entry, "entry is null");
-        return TreeMap.<K, V> empty(keyComparator).put(entry.key, entry.value);
+        return TreeMap.<K, V> empty(keyComparator).put(entry);
     }
 
     /**
@@ -136,7 +136,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
         Objects.requireNonNull(entries, "entries is null");
         TreeMap<K, V> map = TreeMap.empty(keyComparator);
         for (Entry<? extends K, ? extends V> entry : entries) {
-            map = map.put(entry.key, entry.value);
+            map = map.put(entry);
         }
         return map;
     }
@@ -172,7 +172,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
         } else {
             TreeMap<K, V> map = TreeMap.empty(keyComparator);
             for (Entry<? extends K, ? extends V> entry : entries) {
-                map = map.put(entry.key, entry.value);
+                map = map.put(entry);
             }
             return map;
         }
@@ -236,12 +236,12 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
 
     @Override
     public boolean containsValue(V value) {
-        return iterator().map(entry -> entry.value).contains(value);
+        return iterator().map(Entry::value).contains(value);
     }
 
     @Override
     public SortedSet<Entry<K, V>> entrySet() {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return new TreeSet<>(entries);
     }
 
     @Override
@@ -331,7 +331,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
 
     @Override
     public SortedSet<K> keySet() {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return entrySet().map(Entry::key);
     }
 
     @Override
@@ -345,12 +345,12 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     }
 
     @Override
-    public TreeMap<K, V> merge(Map<K, ? extends V> that) {
+    public TreeMap<K, V> merge(Map<? extends K, ? extends V> that) {
         throw new UnsupportedOperationException("TODO"); // TODO
     }
 
     @Override
-    public <U extends V> TreeMap<K, V> merge(Map<K, U> that, BiFunction<? super V, ? super U, ? extends V> mergef) {
+    public <U extends V> TreeMap<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
         throw new UnsupportedOperationException("TODO"); // TODO
     }
 
@@ -497,12 +497,13 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
      * @param <V>        Value type
      * @return A new TreeMap.
      */
+    @SuppressWarnings("unchecked")
     private static <K, V> TreeMap<K, V> createTreeMap(Comparator<? super Entry<K, V>> comparator, java.lang.Iterable<? extends Entry<? extends K, ? extends V>> entries) {
-        TreeMap<K, V> map = new TreeMap<>(RedBlackTree.empty(comparator));
+        RedBlackTree<Entry<K, V>> tree = RedBlackTree.empty(comparator);
         for (Entry<? extends K, ? extends V> entry : entries) {
-            map = map.put(entry.key, entry.value);
+            tree = tree.insert((Entry<K, V>) entry);
         }
-        return map;
+        return new TreeMap<>(tree);
     }
 
     // -- Object

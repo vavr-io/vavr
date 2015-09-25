@@ -79,10 +79,10 @@ public interface SortedMap<K, V> extends Map<K, V> {
     <U, W> SortedMap<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper);
 
     @Override
-    SortedMap<K, V> merge(Map<K, ? extends V> that);
+    SortedMap<K, V> merge(Map<? extends K, ? extends V> that);
 
     @Override
-    <U extends V> SortedMap<K, V> merge(Map<K, U> that, BiFunction<? super V, ? super U, ? extends V> mergef);
+    <U extends V> SortedMap<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution);
 
     @Override
     Tuple2<? extends SortedMap<K, V>, ? extends SortedMap<K, V>> partition(Predicate<? super Entry<K, V>> predicate);
