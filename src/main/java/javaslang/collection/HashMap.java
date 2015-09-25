@@ -131,8 +131,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public boolean contains(Entry<K, V> element) {
-        return get(element.key).map(v -> Objects.equals(v, element.value)).orElse(false);
+    public boolean contains(Entry<K, V> entry) {
+        return get(entry.key).map(v -> Objects.equals(v, entry.value)).orElse(false);
     }
 
     @Override
@@ -237,7 +237,10 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashSet<Object> flatten() {
-        return flatMap(t -> (t.value instanceof java.lang.Iterable) ? Stream.ofAll((java.lang.Iterable<?>) t.value).flatten() : Stream.of(t.value));
+        return flatMap(entry -> {
+            final V value = entry.value;
+            return (value instanceof java.lang.Iterable) ? Stream.ofAll((java.lang.Iterable<?>) value).flatten() : Stream.of(value);
+        });
     }
 
     @Override
@@ -327,36 +330,39 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <U, W> HashMap<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(HashMap.empty(), (acc, entry) -> {
-            final Entry<? extends U, ? extends W> e = mapper.apply(entry.key, entry.value);
-            return acc.put(e.key, e.value);
-        });
-    }
-
-    @Override
-    public HashMap<K, V> merge(Map<K, ? extends V> that) {
-        return merge(that, null);
+        return foldLeft(HashMap.empty(), (acc, entry) -> acc.put(entry.map(mapper)));
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U extends V> HashMap<K, V> merge(Map<K, U> that, BiFunction<? super V, ? super U, ? extends V> mergef) {
+    public HashMap<K, V> merge(Map<? extends K, ? extends V> that) {
+        Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
             return (HashMap<K, V>) that;
-        }
-        if (that.isEmpty()) {
+        } else if (that.isEmpty()) {
             return this;
+        } else {
+            return that.foldLeft(this, (map, entry) -> !map.containsKey(entry.key) ? map.put(entry) : map);
         }
-        HashMap<K, V> result = this;
-        for (Entry<K, U> e : that) {
-            Option<V> old = result.get(e.key);
-            if (old.isDefined() && mergef != null) {
-                result = result.put(e.key, mergef.apply(old.get(), e.value));
-            } else {
-                result = result.put(e.key, e.value);
-            }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U extends V> HashMap<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
+        Objects.requireNonNull(that, "that is null");
+        Objects.requireNonNull(collisionResolution, "collisionResolution is null");
+        if (isEmpty()) {
+            return (HashMap<K, V>) that;
+        } else if (that.isEmpty()) {
+            return this;
+        } else {
+            return that.foldLeft(this, (map, entry) -> {
+                final K key = entry.key;
+                final U value = entry.value;
+                final V newValue = map.get(key).map(v -> (V) collisionResolution.apply(v, value)).orElse((V) value);
+                return map.put(key, newValue);
+            });
         }
-        return result;
     }
 
     @Override
@@ -411,12 +417,9 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> replace(Entry<K, V> currentElement, Entry<K, V> newElement) {
-        final Option<V> value = get(currentElement.key);
-        if (value.isDefined()) {
-            return HashMap.of(trie.remove(currentElement.key).put(newElement.key, newElement.value));
-        } else {
-            return this;
-        }
+        Objects.requireNonNull(currentElement, "currentElement is null");
+        Objects.requireNonNull(newElement, "newElement is null");
+        return containsKey(currentElement.key) ? put(newElement) : this;
     }
 
     @Override
@@ -461,8 +464,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         if (trie.isEmpty()) {
             throw new UnsupportedOperationException("tail of empty map");
         } else {
-            HashArrayMappedTrie<K, V> trie = this.trie.remove(head().key);
-            return new HashMap<>(trie);
+            return remove(head().key);
         }
     }
 
@@ -479,8 +481,9 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     public HashMap<K, V> take(int n) {
         if (trie.size() <= n) {
             return this;
+        } else {
+            return HashMap.ofAll(trie.iterator().map(Entry::of).take(n));
         }
-        return HashMap.ofAll(trie.iterator().map(Entry::of).take(n));
     }
 
     @Override
@@ -497,7 +500,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<K, V> takeWhile(Predicate<? super Entry<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        HashMap<K, V> taken = HashMap.ofAll(iterator().takeWhile(predicate));
+        final HashMap<K, V> taken = HashMap.ofAll(iterator().takeWhile(predicate));
         return taken.length() == length() ? this : taken;
     }
 
@@ -507,7 +510,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         HashArrayMappedTrie<K1, V1> trie1 = HashArrayMappedTrie.empty();
         HashArrayMappedTrie<K2, V2> trie2 = HashArrayMappedTrie.empty();
         for (Entry<K, V> entry : this) {
-            Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>> t = unzipper.apply(entry);
+            final Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>> t = unzipper.apply(entry);
             trie1 = trie1.put(t._1.key, t._1.value);
             trie2 = trie2.put(t._2.key, t._2.value);
         }
@@ -520,7 +523,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         HashArrayMappedTrie<K1, V1> trie1 = HashArrayMappedTrie.empty();
         HashArrayMappedTrie<K2, V2> trie2 = HashArrayMappedTrie.empty();
         for (Entry<K, V> entry : this) {
-            Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>> t = unzipper.apply(entry.key, entry.value);
+            final Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>> t = unzipper.apply(entry.key, entry.value);
             trie1 = trie1.put(t._1.key, t._1.value);
             trie2 = trie2.put(t._2.key, t._2.value);
         }

@@ -1,11 +1,12 @@
 package javaslang.collection;
 
 import javaslang.Tuple2;
-import javaslang.control.None;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Spliterator;
 import java.util.function.*;
 
 public class AbstractIntMap<T> implements Traversable<T>, Serializable {

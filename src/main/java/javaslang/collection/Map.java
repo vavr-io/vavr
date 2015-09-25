@@ -130,23 +130,31 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     @Override
     <U> Set<U> map(Function<? super Entry<K, V>, ? extends U> mapper);
 
-    // TODO: ? extends K or K?
-    Map<K, V> merge(Map<K, ? extends V> that);
+    /**
+     * Creates a new map which by merging the entries of {@code this} map and {@code that} map.
+     * <p>
+     * If collisions occur, the value of {@code this} map is taken.
+     *
+     * @param that the other map
+     * @return A merged map
+     * @throws NullPointerException if that map is null
+     */
+    Map<K, V> merge(Map<? extends K, ? extends V> that);
 
     /**
-     * Creates a new map which is the merge of this and the argument hash map.
+     * Creates a new map which by merging the entries of {@code this} map and {@code that} map.
      * <p>
      * Uses the specified collision resolution function if two keys are the same.
-     * The collision resolution function will always take the first argument from <code>this</code> hash map
-     * and the second from <code>that</code>.
+     * The collision resolution function will always take the first argument from <code>this</code> map
+     * and the second from <code>that</code> map.
      *
-     * @param <U> value type of that HashMap
-     * @param that the other hash map
-     * @param mergef the merge function or null if the first key-value pair is to be picked
+     * @param <U> value type of that Map
+     * @param that the other map
+     * @param collisionResolution the collision resolution function
      * @return A merged map
+     * @throws NullPointerException if that map or the given collision resolution function is null
      */
-    // TODO: ? extends K or K?
-    <U extends V> Map<K, V> merge(Map<K, U> that, BiFunction<? super V, ? super U, ? extends V> mergef);
+    <U extends V> Map<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution);
 
     @Override
     Tuple2<? extends Map<K, V>, ? extends Map<K, V>> partition(Predicate<? super Entry<K, V>> predicate);
@@ -218,8 +226,37 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
             return new Entry<>(key, value);
         }
 
+        /**
+         * Returns the key.
+         * <p>
+         * Convenience method, intended to be used as method reference {@code Entry::key}.
+         * Use {@code entry.key} to access the key directly.
+         *
+         * @return The key of this entry.
+         */
+        public K key() {
+            return key;
+        }
+
+        /**
+         * Returns the value.
+         * <p>
+         * Convenience method, intended to be used as method reference {@code Entry::value}.
+         * Use {@code entry.value} to access the value directly.
+         *
+         * @return The value of this entry.
+         */
+        public V value() {
+            return value;
+        }
+
         @SuppressWarnings("unchecked")
         public <X, Y> Entry<X, Y> flatMap(BiFunction<? super K, ? super V, ? extends Entry<? extends X, ? extends Y>> mapper) {
+            return (Entry<X, Y>) mapper.apply(key, value);
+        }
+
+        @SuppressWarnings("unchecked")
+        public <X, Y> Entry<X, Y> map(BiFunction<? super K, ? super V, ? extends Entry<? extends X, ? extends Y>> mapper) {
             return (Entry<X, Y>) mapper.apply(key, value);
         }
 
