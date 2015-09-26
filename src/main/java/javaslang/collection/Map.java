@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
@@ -262,6 +263,10 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
 
         public <X, Y> Entry<X, Y> map(Function<? super K, ? extends X> keyMapper, Function<? super V, ? extends Y> valueMapper) {
             return new Entry<>(keyMapper.apply(key), valueMapper.apply(value));
+        }
+
+        public Tuple2<K, V> toTuple() {
+            return Tuple.of(key, value);
         }
 
         @Override
