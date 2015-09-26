@@ -1383,14 +1383,24 @@ def generateTestClasses(): Unit = {
    */
   def genTupleTests(): Unit = {
 
+    def genArgsForComparing(digits: Int, p: Int): String = {
+      (1 to digits).gen(i => if(i == p) "1" else "0")(", ")
+    }
+
+    def genArgsForComparator(digits: Int): String = {
+      (1 to digits).gen(i => "intComparator")(", ")
+    }
+
     (1 to N).foreach(i => {
 
       genJavaslangFile("javaslang", s"Tuple${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
         val test = im.getType("org.junit.Test")
+        val comparator = im.getType("java.util.Comparator")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
         val functionType = s"Function$i"
         val generics = (1 to i).gen(j => s"Object")(", ")
+        val intGenerics = (1 to i).gen(j => s"Integer")(", ")
         val functionArgTypes = (1 to i).gen(j => s"o$j")(", ")
         val nullArgs = (1 to i).gen(j => "null")(", ")
 
@@ -1408,6 +1418,27 @@ def generateTestClasses(): Unit = {
                   final Tuple$i<$generics> tuple = createTuple();
                   $assertThat(tuple.arity()).isEqualTo($i);
               }
+
+              @$test
+              public void shouldCompareEqual() {
+                  final Tuple$i<$intGenerics> t0 = createIntTuple(${genArgsForComparing(i, 0)});
+                  $assertThat(t0.compareTo(t0)).isZero();
+                  $assertThat(intTupleComparator.compare(t0, t0)).isZero();
+              }
+
+              ${(1 to i).gen(j => xs"""
+
+              @$test
+              public void shouldCompare${j}thArg() {
+                  final Tuple$i<$intGenerics> t0 = createIntTuple(${genArgsForComparing(i, 0)});
+                  final Tuple$i<$intGenerics> t$j = createIntTuple(${genArgsForComparing(i, j)});
+                  $assertThat(t0.compareTo(t$j)).isNegative();
+                  $assertThat(t$j.compareTo(t0)).isPositive();
+                  $assertThat(intTupleComparator.compare(t0, t$j)).isNegative();
+                  $assertThat(intTupleComparator.compare(t$j, t0)).isPositive();
+              }
+
+              """)}
 
               @$test
               public void shouldMap() {
@@ -1459,8 +1490,14 @@ def generateTestClasses(): Unit = {
                   $assertThat(actual).isEqualTo(expected);
               }
 
+              private $comparator<Tuple$i<$intGenerics>> intTupleComparator = Tuple$i.comparator(${(1 to i).gen($j => s"Integer::compare")(", ")});
+
               private Tuple$i<$generics> createTuple() {
                   return new Tuple$i<>($nullArgs);
+              }
+
+              private Tuple$i<$intGenerics> createIntTuple(${(1 to i).gen(j => s"Integer i$j")(", ")}) {
+                  return new Tuple$i<>(${(1 to i).gen(j => s"i$j")(", ")});
               }
           }
         """

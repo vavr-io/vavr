@@ -11,6 +11,7 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Comparator;
 import java.util.Objects;
 import org.junit.Test;
 
@@ -26,6 +27,23 @@ public class Tuple1Test {
     public void shouldGetArity() {
         final Tuple1<Object> tuple = createTuple();
         assertThat(tuple.arity()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldCompareEqual() {
+        final Tuple1<Integer> t0 = createIntTuple(0);
+        assertThat(t0.compareTo(t0)).isZero();
+        assertThat(intTupleComparator.compare(t0, t0)).isZero();
+    }
+
+    @Test
+    public void shouldCompare1thArg() {
+        final Tuple1<Integer> t0 = createIntTuple(0);
+        final Tuple1<Integer> t1 = createIntTuple(1);
+        assertThat(t0.compareTo(t1)).isNegative();
+        assertThat(t1.compareTo(t0)).isPositive();
+        assertThat(intTupleComparator.compare(t0, t1)).isNegative();
+        assertThat(intTupleComparator.compare(t1, t0)).isPositive();
     }
 
     @Test
@@ -64,7 +82,13 @@ public class Tuple1Test {
         assertThat(actual).isEqualTo(expected);
     }
 
+    private Comparator<Tuple1<Integer>> intTupleComparator = Tuple1.comparator(Integer::compare);
+
     private Tuple1<Object> createTuple() {
         return new Tuple1<>(null);
+    }
+
+    private Tuple1<Integer> createIntTuple(Integer i1) {
+        return new Tuple1<>(i1);
     }
 }
