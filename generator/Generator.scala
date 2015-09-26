@@ -1387,10 +1387,6 @@ def generateTestClasses(): Unit = {
       (1 to digits).gen(i => if(i == p) "1" else "0")(", ")
     }
 
-    def genArgsForComparator(digits: Int): String = {
-      (1 to digits).gen(i => "intComparator")(", ")
-    }
-
     (1 to N).foreach(i => {
 
       genJavaslangFile("javaslang", s"Tuple${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
