@@ -313,7 +313,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Set<K> keySet() {
-        return map(entry -> entry.key);
+        return entrySet().map(Entry::key);
     }
 
     @Override
@@ -322,9 +322,9 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public <U> Set<U> map(Function<? super Entry<K, V>, ? extends U> mapper) {
+    public <U> Seq<U> map(Function<? super Entry<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(HashSet.empty(), (acc, entry) -> acc.add(mapper.apply(entry)));
+        return foldLeft(Vector.empty(), (acc, entry) -> acc.append(mapper.apply(entry)));
     }
 
     @Override

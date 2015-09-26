@@ -335,7 +335,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     }
 
     @Override
-    public <U> Set<U> map(Function<? super Entry<K, V>, ? extends U> mapper) {
+    public <U> Seq<U> map(Function<? super Entry<K, V>, ? extends U> mapper) {
         throw new UnsupportedOperationException("TODO"); // TODO
     }
 

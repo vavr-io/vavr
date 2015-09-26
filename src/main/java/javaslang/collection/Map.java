@@ -128,7 +128,7 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     int length();
 
     @Override
-    <U> Set<U> map(Function<? super Entry<K, V>, ? extends U> mapper);
+    <U> Seq<U> map(Function<? super Entry<K, V>, ? extends U> mapper);
 
     /**
      * Creates a new map which by merging the entries of {@code this} map and {@code that} map.
