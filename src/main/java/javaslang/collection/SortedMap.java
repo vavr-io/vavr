@@ -73,7 +73,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedSet<K> keySet();
 
     @Override
-    <U> Set<U> map(Function<? super Entry<K, V>, ? extends U> mapper);
+    <U> Seq<U> map(Function<? super Entry<K, V>, ? extends U> mapper);
 
     @Override
     <U, W> SortedMap<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper);

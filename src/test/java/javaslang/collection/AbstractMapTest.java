@@ -214,15 +214,13 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldMapEmpty() {
-        final javaslang.collection.Set<Integer> expected = HashSet.empty();
-        final javaslang.collection.Set<Integer> actual = emptyInt().map(Entry::key);
-        assertThat(actual).isEqualTo(expected);
+        assertThat(emptyInt().map(Entry::key)).isEqualTo(Vector.empty());
     }
 
     @Test
     public void shouldMapNonEmpty() {
-        final javaslang.collection.Set<Integer> expected = HashSet.of(1, 2);
-        final javaslang.collection.Set<Integer> actual = emptyInt().put(1, "1").put(2, "2").map(Entry::key);
+        final javaslang.collection.Seq<Integer> expected = Vector.of(1, 2);
+        final javaslang.collection.Seq<Integer> actual = emptyInt().put(1, "1").put(2, "2").map(Entry::key);
         assertThat(actual).isEqualTo(expected);
     }
 
