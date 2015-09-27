@@ -50,6 +50,7 @@ public class RedBlackTreeTest {
     public void shouldCreateEmptyTree() {
         final RedBlackTree<Integer> tree = RedBlackTree.empty();
         assertThat(tree.isEmpty()).isTrue();
+        assertThat(tree.size()).isEqualTo(0);
     }
 
     // isEmpty
@@ -88,30 +89,39 @@ public class RedBlackTreeTest {
 
         RedBlackTree<Integer> tree = RedBlackTree.empty();
         assertThat(tree.toString()).isEqualTo("()");
+        assertThat(tree.size()).isEqualTo(0);
 
         tree = tree.insert(2);
         assertThat(tree.toString()).isEqualTo("(B:2)");
+        assertThat(tree.size()).isEqualTo(1);
 
         tree = tree.insert(1);
         assertThat(tree.toString()).isEqualTo("(B:2 R:1)");
+        assertThat(tree.size()).isEqualTo(2);
 
         tree = tree.insert(4);
         assertThat(tree.toString()).isEqualTo("(B:2 R:1 R:4)");
+        assertThat(tree.size()).isEqualTo(3);
 
         tree = tree.insert(5);
         assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1) B:5)");
+        assertThat(tree.size()).isEqualTo(4);
 
         tree = tree.insert(9);
         assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1) (B:5 R:9))");
+        assertThat(tree.size()).isEqualTo(5);
 
         tree = tree.insert(3);
         assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1 R:3) (B:5 R:9))");
+        assertThat(tree.size()).isEqualTo(6);
 
         tree = tree.insert(6);
         assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1 R:3) (R:6 B:5 B:9))");
+        assertThat(tree.size()).isEqualTo(7);
 
         tree = tree.insert(7);
         assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1 R:3) (R:6 B:5 (B:9 R:7)))");
+        assertThat(tree.size()).isEqualTo(8);
     }
 
     @Test
@@ -147,6 +157,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> testee = RedBlackTree.of(2, 1, 4, 5, 9, 3, 6, 7);
         final RedBlackTree<Integer> actual = testee.delete(2);
         assertThat(actual.toString()).isEqualTo("(B:4 (B:3 R:1) (R:6 B:5 (B:9 R:7)))");
+        assertThat(actual.size()).isEqualTo(7);
     }
 
     // difference()

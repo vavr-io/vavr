@@ -34,7 +34,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     private static final long serialVersionUID = 1L;
 
     private final RedBlackTree<T> tree;
-    private final transient Lazy<Integer> length = Lazy.of(() -> iterator().length());
 
     TreeSet(RedBlackTree<T> tree) {
         this.tree = tree;
@@ -609,7 +608,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public int length() {
-        return length.get();
+        return tree.size();
     }
 
     @Override

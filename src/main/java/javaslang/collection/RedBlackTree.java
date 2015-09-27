@@ -329,6 +329,8 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
     @Override
     String toString();
 
+    int size();
+
     enum Color {
 
         RED, BLACK;
@@ -357,6 +359,7 @@ interface RedBlackTreeModule {
         final T value;
         final RedBlackTree<T> right;
         final Empty<T> empty;
+        final int size;
 
         private final transient Lazy<Integer> hashCode;
 
@@ -369,6 +372,7 @@ interface RedBlackTreeModule {
             this.right = right;
             this.empty = empty;
             this.hashCode = Lazy.of(() -> Objects.hash(this.value, this.left, this.right));
+            this.size = left.size() + right.size() + 1;
         }
 
         @Override
@@ -445,6 +449,11 @@ interface RedBlackTreeModule {
         @Override
         public String toString() {
             return isLeaf() ? "(" + color + ":" + value + ")" : toLispString(this);
+        }
+
+        @Override
+        public int size() {
+            return size;
         }
 
         private static String toLispString(RedBlackTree<?> tree) {
@@ -879,6 +888,11 @@ interface RedBlackTreeModule {
         @Override
         public String toString() {
             return "()";
+        }
+
+        @Override
+        public int size() {
+            return 0;
         }
 
     }
