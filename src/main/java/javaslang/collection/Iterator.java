@@ -23,7 +23,9 @@ import java.util.function.*;
  * It is recommended to create instances using {@link AbstractIterator} in favor of {@code Iterator}.
  * <p>
  * <strong>Note:</strong> Iterators encapsulate mutable state.
- * They are not meant to be used concurrently by differnet threads.
+ * They are not meant to be used concurrently by different threads. Do not reuse Iterators, e.g. after passing to
+ * {@linkplain List#ofAll(Iterable)}.
+ * so d
  * <p>
  * There are two abstract methods: {@code hasNext} for checking if there is a next element available,
  * and {@code next} which removes the next element from the iterator and returns it. They can be called
@@ -230,6 +232,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
             @Override
             public Boolean next() {
+                if (!hasNext()) {
+                    EMPTY.next();
+                }
                 return array[i++];
             }
         };
@@ -253,6 +258,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
             @Override
             public Byte next() {
+                if (!hasNext()) {
+                    EMPTY.next();
+                }
                 return array[i++];
             }
         };
@@ -276,6 +284,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
             @Override
             public Character next() {
+                if (!hasNext()) {
+                    EMPTY.next();
+                }
                 return array[i++];
             }
         };
@@ -299,6 +310,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
             @Override
             public Double next() {
+                if (!hasNext()) {
+                    EMPTY.next();
+                }
                 return array[i++];
             }
         };
@@ -322,6 +336,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
             @Override
             public Float next() {
+                if (!hasNext()) {
+                    EMPTY.next();
+                }
                 return array[i++];
             }
         };
@@ -345,6 +362,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
             @Override
             public Integer next() {
+                if (!hasNext()) {
+                    EMPTY.next();
+                }
                 return array[i++];
             }
         };
@@ -368,6 +388,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
             @Override
             public Long next() {
+                if (!hasNext()) {
+                    EMPTY.next();
+                }
                 return array[i++];
             }
         };
@@ -391,6 +414,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
             @Override
             public Short next() {
+                if (!hasNext()) {
+                    EMPTY.next();
+                }
                 return array[i++];
             }
         };
@@ -1269,6 +1295,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
                 @Override
                 public U next() {
+                    if (!hasNext()) {
+                        EMPTY.next();
+                    }
                     return current.next();
                 }
             };
