@@ -326,7 +326,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
 
     @Override
     public int length() {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return entries.size();
     }
 
     @Override

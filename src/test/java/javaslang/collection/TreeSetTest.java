@@ -82,7 +82,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Override
     boolean useIsEqualToInsteadOfIsSameAs() {
-        return true; // we can't use length or size to compare effects because it is O(n) for TreeSet
+        return true; // TODO ?
     }
 
     @Override
