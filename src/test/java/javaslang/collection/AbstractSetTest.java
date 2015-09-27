@@ -7,7 +7,7 @@ package javaslang.collection;
 
 import org.junit.Test;
 
-public abstract class AbstractSetTest extends AbstractTraversableTest {
+public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
 
     // TODO: test difference(), intersection(), union()
 

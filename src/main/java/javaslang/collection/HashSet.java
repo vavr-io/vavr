@@ -205,6 +205,214 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return HashSet.ofAll(Iterator.ofAll(array));
     }
 
+    /**
+     * Creates a HashSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * HashSet.range(0, 0)  // = HashSet()
+     * HashSet.range(2, 0)  // = HashSet()
+     * HashSet.range(-2, 2) // = HashSet(-2, -1, 0, 1)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
+     */
+    public static HashSet<Integer> range(int from, int toExclusive) {
+        return HashSet.ofAll(Iterator.range(from, toExclusive));
+    }
+
+    public static HashSet<Character> range(char from, char toExclusive) {
+        return HashSet.ofAll(Iterator.range(from, toExclusive));
+    }
+
+    /**
+     * Creates a HashSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * HashSet.rangeBy(1, 3, 1)  // = HashSet(1, 2)
+     * HashSet.rangeBy(1, 4, 2)  // = HashSet(1, 3)
+     * HashSet.rangeBy(4, 1, -2) // = HashSet(4, 2)
+     * HashSet.rangeBy(4, 1, 2)  // = HashSet()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of long values as specified or the empty range if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    public static HashSet<Integer> rangeBy(int from, int toExclusive, int step) {
+        return HashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    public static HashSet<Character> rangeBy(char from, char toExclusive, int step) {
+        return HashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    public static HashSet<Double> rangeBy(double from, double toExclusive, double step) {
+        return HashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    /**
+     * Creates a HashSet of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * HashSet.range(0L, 0L)  // = HashSet()
+     * HashSet.range(2L, 0L)  // = HashSet()
+     * HashSet.range(-2L, 2L) // = HashSet(-2L, -1L, 0L, 1L)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
+     */
+    public static HashSet<Long> range(long from, long toExclusive) {
+        return HashSet.ofAll(Iterator.range(from, toExclusive));
+    }
+
+    /**
+     * Creates a HashSet of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * HashSet.rangeBy(1L, 3L, 1L)  // = HashSet(1L, 2L)
+     * HashSet.rangeBy(1L, 4L, 2L)  // = HashSet(1L, 3L)
+     * HashSet.rangeBy(4L, 1L, -2L) // = HashSet(4L, 2L)
+     * HashSet.rangeBy(4L, 1L, 2L)  // = HashSet()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of long values as specified or the empty range if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    public static HashSet<Long> rangeBy(long from, long toExclusive, long step) {
+        return HashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    /**
+     * Creates a HashSet of int numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * HashSet.rangeClosed(0, 0)  // = HashSet(0)
+     * HashSet.rangeClosed(2, 0)  // = HashSet()
+     * HashSet.rangeClosed(-2, 2) // = HashSet(-2, -1, 0, 1, 2)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of int values as specified or the empty range if {@code from > toInclusive}
+     */
+    public static HashSet<Integer> rangeClosed(int from, int toInclusive) {
+        return HashSet.ofAll(Iterator.rangeClosed(from, toInclusive));
+    }
+
+    public static HashSet<Character> rangeClosed(char from, char toInclusive) {
+        return HashSet.ofAll(Iterator.rangeClosed(from, toInclusive));
+    }
+
+    /**
+     * Creates a HashSet of int numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * HashSet.rangeClosedBy(1, 3, 1)  // = HashSet(1, 2, 3)
+     * HashSet.rangeClosedBy(1, 4, 2)  // = HashSet(1, 3)
+     * HashSet.rangeClosedBy(4, 1, -2) // = HashSet(4, 2)
+     * HashSet.rangeClosedBy(4, 1, 2)  // = HashSet()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    public static HashSet<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+        return HashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+    }
+
+    public static HashSet<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return HashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+    }
+
+    public static HashSet<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return HashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+    }
+
+    /**
+     * Creates a HashSet of long numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * HashSet.rangeClosed(0L, 0L)  // = HashSet(0L)
+     * HashSet.rangeClosed(2L, 0L)  // = HashSet()
+     * HashSet.rangeClosed(-2L, 2L) // = HashSet(-2L, -1L, 0L, 1L, 2L)
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of long values as specified or the empty range if {@code from > toInclusive}
+     */
+    public static HashSet<Long> rangeClosed(long from, long toInclusive) {
+        return HashSet.ofAll(Iterator.rangeClosed(from, toInclusive));
+    }
+
+    /**
+     * Creates a HashSet of long numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * HashSet.rangeClosedBy(1L, 3L, 1L)  // = HashSet(1L, 2L, 3L)
+     * HashSet.rangeClosedBy(1L, 4L, 2L)  // = HashSet(1L, 3L)
+     * HashSet.rangeClosedBy(4L, 1L, -2L) // = HashSet(4L, 2L)
+     * HashSet.rangeClosedBy(4L, 1L, 2L)  // = HashSet()
+     * </code>
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of int values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
+    public static HashSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
+        return HashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+    }
+
     @Override
     public HashSet<T> add(T element) {
         return new HashSet<>(tree.put(element, element));
