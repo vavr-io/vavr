@@ -92,13 +92,14 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(java.lang.Iterable<? extends T> values) {
         Objects.requireNonNull(values, "values is null");
-        return new TreeSet<>(RedBlackTree.ofAll(values));
+        return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(values)) : empty();
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> TreeSet<T> ofAll(Comparator<? super T> comparator, java.lang.Iterable<? extends T> values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
-        return new TreeSet<>(RedBlackTree.ofAll(comparator, values));
+        return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(comparator, values)) : (TreeSet<T>) empty();
     }
 
     /**
@@ -206,7 +207,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
      */
     public static TreeSet<Integer> range(int from, int toExclusive) {
-        return TreeSet.rangeBy(from, toExclusive, 1);
+        return TreeSet.ofAll(Iterator.range(from, toExclusive));
+    }
+
+    public static TreeSet<Character> range(char from, char toExclusive) {
+        return TreeSet.ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -232,14 +237,15 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static TreeSet<Integer> rangeBy(int from, int toExclusive, int step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
-            return TreeSet.empty();
-        } else {
-            final int one = (from < toExclusive) ? 1 : -1;
-            return TreeSet.rangeClosedBy(from, toExclusive - one, step);
-        }
+        return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    public static TreeSet<Character> rangeBy(char from, char toExclusive, int step) {
+        return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    public static TreeSet<Double> rangeBy(double from, double toExclusive, double step) {
+        return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -259,7 +265,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
      */
     public static TreeSet<Long> range(long from, long toExclusive) {
-        return TreeSet.rangeBy(from, toExclusive, 1);
+        return TreeSet.ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -285,14 +291,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static TreeSet<Long> rangeBy(long from, long toExclusive, long step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
-            return TreeSet.empty();
-        } else {
-            final int one = (from < toExclusive) ? 1 : -1;
-            return TreeSet.rangeClosedBy(from, toExclusive - one, step);
-        }
+        return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -312,7 +311,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @return a range of int values as specified or the empty range if {@code from > toInclusive}
      */
     public static TreeSet<Integer> rangeClosed(int from, int toInclusive) {
-        return TreeSet.rangeClosedBy(from, toInclusive, 1);
+        return TreeSet.ofAll(Iterator.rangeClosed(from, toInclusive));
+    }
+
+    public static TreeSet<Character> rangeClosed(char from, char toInclusive) {
+        return TreeSet.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -338,22 +341,15 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static TreeSet<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toInclusive) {
-            return TreeSet.of(from);
-        } else if (step * (from - toInclusive) > 0) {
-            return TreeSet.empty();
-        } else {
-            final int gap = (from - toInclusive) % step;
-            final int signum = (from < toInclusive) ? -1 : 1;
-            final int bound = from * signum;
-            TreeSet<Integer> result = TreeSet.empty();
-            for (int i = toInclusive + gap; i * signum <= bound; i -= step) {
-                result = result.add(i);
-            }
-            return result;
-        }
+        return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+    }
+
+    public static TreeSet<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+    }
+
+    public static TreeSet<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -373,7 +369,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @return a range of long values as specified or the empty range if {@code from > toInclusive}
      */
     public static TreeSet<Long> rangeClosed(long from, long toInclusive) {
-        return TreeSet.rangeClosedBy(from, toInclusive, 1L);
+        return TreeSet.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -399,22 +395,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static TreeSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toInclusive) {
-            return TreeSet.of(from);
-        } else if (step * (from - toInclusive) > 0) {
-            return TreeSet.empty();
-        } else {
-            final long gap = (from - toInclusive) % step;
-            final int signum = (from < toInclusive) ? -1 : 1;
-            final long bound = from * signum;
-            TreeSet<Long> result = TreeSet.empty();
-            for (long i = toInclusive + gap; i * signum <= bound; i -= step) {
-                result = result.add(i);
-            }
-            return result;
-        }
+        return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     @Override

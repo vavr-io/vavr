@@ -343,4 +343,74 @@ public class HashSetTest extends AbstractSetTest {
     boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
     }
+
+    @Override
+    protected HashSet<Character> range(char from, char toExclusive) {
+        return HashSet.range(from, toExclusive);
+    }
+
+    @Override
+    protected HashSet<Character> rangeBy(char from, char toExclusive, int step) {
+        return HashSet.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected HashSet<Double> rangeBy(double from, double toExclusive, double step) {
+        return HashSet.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected HashSet<Integer> range(int from, int toExclusive) {
+        return HashSet.range(from, toExclusive);
+    }
+
+    @Override
+    protected HashSet<Integer> rangeBy(int from, int toExclusive, int step) {
+        return HashSet.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected HashSet<Long> range(long from, long toExclusive) {
+        return HashSet.range(from, toExclusive);
+    }
+
+    @Override
+    protected HashSet<Long> rangeBy(long from, long toExclusive, long step) {
+        return HashSet.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected HashSet<Character> rangeClosed(char from, char toInclusive) {
+        return HashSet.rangeClosed(from, toInclusive);
+    }
+
+    @Override
+    protected HashSet<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return HashSet.rangeClosedBy(from, toInclusive, step);
+    }
+
+    @Override
+    protected HashSet<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return HashSet.rangeClosedBy(from, toInclusive, step);
+    }
+
+    @Override
+    protected HashSet<Integer> rangeClosed(int from, int toInclusive) {
+        return HashSet.rangeClosed(from, toInclusive);
+    }
+
+    @Override
+    protected HashSet<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+        return HashSet.rangeClosedBy(from, toInclusive, step);
+    }
+
+    @Override
+    protected HashSet<Long> rangeClosed(long from, long toInclusive) {
+        return HashSet.rangeClosed(from, toInclusive);
+    }
+
+    @Override
+    protected HashSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
+        return HashSet.rangeClosedBy(from, toInclusive, step);
+    }
 }
