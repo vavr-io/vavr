@@ -25,7 +25,6 @@ import java.util.function.*;
  * <strong>Note:</strong> Iterators encapsulate mutable state.
  * They are not meant to be used concurrently by different threads. Do not reuse Iterators, e.g. after passing to
  * {@linkplain List#ofAll(Iterable)}.
- * so d
  * <p>
  * There are two abstract methods: {@code hasNext} for checking if there is a next element available,
  * and {@code next} which removes the next element from the iterator and returns it. They can be called
