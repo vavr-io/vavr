@@ -494,6 +494,27 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
         assertThat(of(1, 2, 3).init()).isEqualTo(of(1, 2));
     }
 
+    // -- groupBy
+
+    @Test
+    public void shouldNilGroupBy() {
+        assertThat(HashMap.empty().groupBy(Function.identity())).isEqualTo(HashMap.empty());
+    }
+
+    @Test
+    public void shouldNonNilGroupByIdentity() {
+        Map<?, ?> actual = of('a', 'b', 'c').groupBy(Function.identity());
+        Map<?, ?> expected = HashMap.empty().put('a', of('a')).put('b', of('b')).put('c', of('c'));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldNonNilGroupByEqual() {
+        Map<?, ?> actual = of('a', 'b', 'c').groupBy(c -> 1);
+        Map<?, ?> expected = HashMap.empty().put(1, of('a', 'b', 'c'));
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- initOption
 
     @Test

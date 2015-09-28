@@ -8,6 +8,8 @@ import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.junit.Test;
 
+import java.util.function.Function;
+
 public class IteratorTest extends AbstractTraversableOnceTest {
 
     @Override
@@ -196,6 +198,30 @@ public class IteratorTest extends AbstractTraversableOnceTest {
     @Test
     public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
         // a hashCode impl would enforce evaluation which is not wanted
+    }
+
+    // -- groupBy
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void shouldNonNilGroupByIdentity() {
+        // we can't compare iterators, should map it to sequences
+        Seq<?> actual = of('a', 'b', 'c').groupBy(Function.identity())
+                .map(e -> Map.Entry.of(e.key, List.ofAll(e.value)));
+        Seq<?> expected = HashMap.empty().put('a', of('a')).put('b', of('b')).put('c', of('c'))
+                .map(e -> Map.Entry.of(e.key, List.ofAll((java.lang.Iterable<Character>) e.value)));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void shouldNonNilGroupByEqual() {
+        // we can't compare iterators, should map it to sequences
+        Seq<?> actual = of('a', 'b', 'c').groupBy(c -> 1)
+                .map(e -> Map.Entry.of(e.key, List.ofAll(e.value)));
+        Seq<?> expected = HashMap.empty().put(1, of('a', 'b', 'c'))
+                .map(e -> Map.Entry.of(e.key, List.ofAll((java.lang.Iterable<Character>) e.value)));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- serialization/deserialization
