@@ -63,7 +63,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
      * @return A new empty TreeMap.
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> empty() {
-        return empty(K::compareTo);
+        return empty((Comparator<? super K> & Serializable) K::compareTo);
     }
 
     /**
@@ -89,7 +89,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
      * @return A new TreeMap containing the given entry.
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Entry<? extends K, ? extends V> entry) {
-        return of(K::compareTo, entry);
+        return of((Comparator<? super K> & Serializable) K::compareTo, entry);
     }
 
     /**
@@ -118,7 +118,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Entry<? extends K, ? extends V>... entries) {
-        return of(K::compareTo, entries);
+        return of((Comparator<? super K> & Serializable) K::compareTo, entries);
     }
 
     /**
@@ -151,7 +151,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
      */
     @SuppressWarnings("unchecked")
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(java.lang.Iterable<? extends Entry<? extends K, ? extends V>> entries) {
-        return ofAll(K::compareTo, entries);
+        return ofAll((Comparator<? super K> & Serializable) K::compareTo, entries);
     }
 
     /**
@@ -246,12 +246,14 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
 
     @Override
     public TreeMap<K, V> filter(Predicate<? super Entry<K, V>> predicate) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(predicate, "predicate is null");
+        return createTreeMap(entries.comparator(), entries.iterator());
     }
 
     @Override
     public Option<Entry<K, V>> findLast(Predicate<? super Entry<K, V>> predicate) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(predicate, "predicate is null");
+        return entries.iterator().findLast(predicate);
     }
 
     @Override

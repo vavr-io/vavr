@@ -92,35 +92,35 @@ public class RedBlackTreeTest {
         assertThat(tree.size()).isEqualTo(0);
 
         tree = tree.insert(2);
-        assertThat(tree.toString()).isEqualTo("(B:2)");
+        assertThat(tree.toString()).isEqualTo("(2)");
         assertThat(tree.size()).isEqualTo(1);
 
         tree = tree.insert(1);
-        assertThat(tree.toString()).isEqualTo("(B:2 R:1)");
+        assertThat(tree.toString()).isEqualTo("(2 1)");
         assertThat(tree.size()).isEqualTo(2);
 
         tree = tree.insert(4);
-        assertThat(tree.toString()).isEqualTo("(B:2 R:1 R:4)");
+        assertThat(tree.toString()).isEqualTo("(2 1 4)");
         assertThat(tree.size()).isEqualTo(3);
 
         tree = tree.insert(5);
-        assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1) B:5)");
+        assertThat(tree.toString()).isEqualTo("(4 (2 1) 5)");
         assertThat(tree.size()).isEqualTo(4);
 
         tree = tree.insert(9);
-        assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1) (B:5 R:9))");
+        assertThat(tree.toString()).isEqualTo("(4 (2 1) (5 9))");
         assertThat(tree.size()).isEqualTo(5);
 
         tree = tree.insert(3);
-        assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1 R:3) (B:5 R:9))");
+        assertThat(tree.toString()).isEqualTo("(4 (2 1 3) (5 9))");
         assertThat(tree.size()).isEqualTo(6);
 
         tree = tree.insert(6);
-        assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1 R:3) (R:6 B:5 B:9))");
+        assertThat(tree.toString()).isEqualTo("(4 (2 1 3) (6 5 9))");
         assertThat(tree.size()).isEqualTo(7);
 
         tree = tree.insert(7);
-        assertThat(tree.toString()).isEqualTo("(B:4 (B:2 R:1 R:3) (R:6 B:5 (B:9 R:7)))");
+        assertThat(tree.toString()).isEqualTo("(4 (2 1 3) (6 5 (9 7)))");
         assertThat(tree.size()).isEqualTo(8);
     }
 
@@ -156,7 +156,7 @@ public class RedBlackTreeTest {
     public void shouldDelete_2_from_2_1_4_5_9_3_6_7() {
         final RedBlackTree<Integer> testee = RedBlackTree.of(2, 1, 4, 5, 9, 3, 6, 7);
         final RedBlackTree<Integer> actual = testee.delete(2);
-        assertThat(actual.toString()).isEqualTo("(B:4 (B:3 R:1) (R:6 B:5 (B:9 R:7)))");
+        assertThat(actual.toString()).isEqualTo("(4 (3 1) (6 5 (9 7)))");
         assertThat(actual.size()).isEqualTo(7);
     }
 

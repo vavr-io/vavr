@@ -39,7 +39,7 @@ import static javaslang.collection.RedBlackTree.Color.RED;
 public interface RedBlackTree<T> extends java.lang.Iterable<T> {
 
     static <T extends Comparable<? super T>> Empty<T> empty() {
-        return new Empty<>(T::compareTo);
+        return new Empty<>((Comparator<? super T> & Serializable) T::compareTo);
     }
 
     static <T> Empty<T> empty(Comparator<? super T> comparator) {
@@ -48,7 +48,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
     }
 
     static <T extends Comparable<? super T>> Node<T> of(T value) {
-        return of(T::compareTo, value);
+        return of((Comparator<? super T> & Serializable) T::compareTo, value);
     }
 
     static <T> Node<T> of(Comparator<? super T> comparator, T value) {
@@ -61,7 +61,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
     @SafeVarargs
     static <T extends Comparable<? super T>> RedBlackTree<T> of(T... values) {
         Objects.requireNonNull(values, "values is null");
-        return of(T::compareTo, values);
+        return of((Comparator<? super T> & Serializable) T::compareTo, values);
     }
 
     @SafeVarargs
@@ -77,7 +77,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
 
     static <T extends Comparable<? super T>> RedBlackTree<T> ofAll(java.lang.Iterable<? extends T> values) {
         Objects.requireNonNull(values, "values is null");
-        return ofAll(T::compareTo, values);
+        return ofAll((Comparator<? super T> & Serializable) T::compareTo, values);
     }
 
     @SuppressWarnings("unchecked")
@@ -218,6 +218,13 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
     RedBlackTree<T> right();
 
     /**
+     * Returns the size of this tree.
+     *
+     * @return the number of nodes of this tree and 0 if this is the empty tree
+     */
+    int size();
+
+    /**
      * Adds all of the elements of the given {@code tree} to this tree, if not already present.
      *
      * @param tree The RedBlackTree to form the union with.
@@ -329,8 +336,6 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
     @Override
     String toString();
 
-    int size();
-
     enum Color {
 
         RED, BLACK;
@@ -418,6 +423,11 @@ interface RedBlackTreeModule {
         }
 
         @Override
+        public int size() {
+            return size;
+        }
+
+        @Override
         public T value() {
             return value;
         }
@@ -448,12 +458,7 @@ interface RedBlackTreeModule {
 
         @Override
         public String toString() {
-            return isLeaf() ? "(" + color + ":" + value + ")" : toLispString(this);
-        }
-
-        @Override
-        public int size() {
-            return size;
+            return isLeaf() ? "(" + value + ")" : toLispString(this);
         }
 
         private static String toLispString(RedBlackTree<?> tree) {
@@ -461,7 +466,7 @@ interface RedBlackTreeModule {
                 return "";
             } else {
                 final Node<?> node = (Node<?>) tree;
-                final String value = node.color + ":" + node.value;
+                final String value = String.valueOf(node.value);
                 if (node.isLeaf()) {
                     return value;
                 } else {
@@ -870,6 +875,11 @@ interface RedBlackTreeModule {
         }
 
         @Override
+        public int size() {
+            return 0;
+        }
+
+        @Override
         public T value() {
             throw new NoSuchElementException("value on empty");
         }
@@ -889,11 +899,5 @@ interface RedBlackTreeModule {
         public String toString() {
             return "()";
         }
-
-        @Override
-        public int size() {
-            return 0;
-        }
-
     }
 }
