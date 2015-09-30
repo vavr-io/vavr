@@ -258,17 +258,21 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
 
     @Override
     public <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(mapper, "mapper is null");
+        return entries.iterator().flatMap(mapper).toSet();
     }
 
     @Override
     public <U, W> TreeMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(mapper, "mapper is null");
+        final Comparator<U> keyComparator = Comparators.naturalComparator();
+        return createTreeMap(entryComparator(keyComparator), entries.iterator().flatMap(entry -> mapper.apply(entry.key, entry.value)));
     }
 
     @Override
     public Option<V> get(K key) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        final V ignored = null;
+        return entries.find(new Map.Entry<>(key, ignored)).map(Entry::value);
     }
 
     @Override
@@ -376,9 +380,10 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
         throw new UnsupportedOperationException("TODO"); // TODO
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public TreeMap<K, V> put(Entry<? extends K, ? extends V> entry) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return new TreeMap<>(entries.insert((Entry<K, V>) entry));
     }
 
     @Override
@@ -529,6 +534,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
 
     @Override
     public String toString() {
-        return "TreeMap" + entries.toString();
+        return mkString(", ", "TreeMap(", ")");
     }
 }

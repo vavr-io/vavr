@@ -159,6 +159,18 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
         }
     }
 
+    /**
+     * Finds the value stored in this tree, if exists, by applying the underlying comparator to the tree elements and
+     * the given element.
+     * <p>
+     * Especially the value returned may differ from the given value, even if the underlying comparator states that
+     * both are equal.
+     *
+     * @param value A value
+     * @return Some value, if this tree contains a value equal to the given value according to the underlying comparator. Otherwise None.
+     */
+    Option<T> find(T value);
+
     default RedBlackTree<T> intersection(RedBlackTree<T> tree) {
         Objects.requireNonNull(tree, "tree is null");
         if (isEmpty()) {
@@ -408,6 +420,18 @@ interface RedBlackTreeModule {
         }
 
         @Override
+        public Option<T> find(T value) {
+            final int result = empty.comparator.compare(value, this.value);
+            if (result < 0) {
+                return left.find(value);
+            } else if (result > 0) {
+                return right.find(value);
+            } else {
+                return new Some<>(this.value);
+            }
+        }
+
+        @Override
         public boolean isEmpty() {
             return false;
         }
@@ -458,7 +482,7 @@ interface RedBlackTreeModule {
 
         @Override
         public String toString() {
-            return isLeaf() ? "(" + value + ")" : toLispString(this);
+            return isLeaf() ? "(" + color + ":" + value + ")" : toLispString(this);
         }
 
         private static String toLispString(RedBlackTree<?> tree) {
@@ -466,7 +490,7 @@ interface RedBlackTreeModule {
                 return "";
             } else {
                 final Node<?> node = (Node<?>) tree;
-                final String value = String.valueOf(node.value);
+                final String value = node.color + ":" + node.value;
                 if (node.isLeaf()) {
                     return value;
                 } else {
@@ -857,6 +881,11 @@ interface RedBlackTreeModule {
         @Override
         public boolean contains(T value) {
             return false;
+        }
+
+        @Override
+        public Option<T> find(T value) {
+            return None.instance();
         }
 
         @Override

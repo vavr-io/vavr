@@ -782,6 +782,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public String toString() {
-        return "TreeSet" + tree.toString();
+        return mkString(", ", "TreeSet(", ")");
     }
 }
