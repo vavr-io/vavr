@@ -63,7 +63,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
      * @return A new empty TreeMap.
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> empty() {
-        return empty(K::compareTo);
+        return empty((Comparator<? super K> & Serializable) K::compareTo);
     }
 
     /**
@@ -89,7 +89,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
      * @return A new TreeMap containing the given entry.
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Entry<? extends K, ? extends V> entry) {
-        return of(K::compareTo, entry);
+        return of((Comparator<? super K> & Serializable) K::compareTo, entry);
     }
 
     /**
@@ -118,7 +118,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Entry<? extends K, ? extends V>... entries) {
-        return of(K::compareTo, entries);
+        return of((Comparator<? super K> & Serializable) K::compareTo, entries);
     }
 
     /**
@@ -151,7 +151,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
      */
     @SuppressWarnings("unchecked")
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(java.lang.Iterable<? extends Entry<? extends K, ? extends V>> entries) {
-        return ofAll(K::compareTo, entries);
+        return ofAll((Comparator<? super K> & Serializable) K::compareTo, entries);
     }
 
     /**
@@ -246,27 +246,33 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
 
     @Override
     public TreeMap<K, V> filter(Predicate<? super Entry<K, V>> predicate) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(predicate, "predicate is null");
+        return createTreeMap(entries.comparator(), entries.iterator());
     }
 
     @Override
     public Option<Entry<K, V>> findLast(Predicate<? super Entry<K, V>> predicate) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(predicate, "predicate is null");
+        return entries.iterator().findLast(predicate);
     }
 
     @Override
     public <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(mapper, "mapper is null");
+        return entries.iterator().flatMap(mapper).toSet();
     }
 
     @Override
     public <U, W> TreeMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(mapper, "mapper is null");
+        final Comparator<U> keyComparator = Comparators.naturalComparator();
+        return createTreeMap(entryComparator(keyComparator), entries.iterator().flatMap(entry -> mapper.apply(entry.key, entry.value)));
     }
 
     @Override
     public Option<V> get(K key) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        final V ignored = null;
+        return entries.find(new Map.Entry<>(key, ignored)).map(Entry::value);
     }
 
     @Override
@@ -374,9 +380,10 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
         throw new UnsupportedOperationException("TODO"); // TODO
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public TreeMap<K, V> put(Entry<? extends K, ? extends V> entry) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return new TreeMap<>(entries.insert((Entry<K, V>) entry));
     }
 
     @Override
@@ -527,6 +534,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
 
     @Override
     public String toString() {
-        return "TreeMap" + entries.toString();
+        return mkString(", ", "TreeMap(", ")");
     }
 }

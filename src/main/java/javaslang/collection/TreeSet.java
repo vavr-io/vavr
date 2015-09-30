@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Lazy;
 import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -783,6 +782,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public String toString() {
-        return "TreeSet" + tree.toString();
+        return mkString(", ", "TreeSet(", ")");
     }
 }

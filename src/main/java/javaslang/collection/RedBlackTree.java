@@ -39,7 +39,7 @@ import static javaslang.collection.RedBlackTree.Color.RED;
 public interface RedBlackTree<T> extends java.lang.Iterable<T> {
 
     static <T extends Comparable<? super T>> Empty<T> empty() {
-        return new Empty<>(T::compareTo);
+        return new Empty<>((Comparator<? super T> & Serializable) T::compareTo);
     }
 
     static <T> Empty<T> empty(Comparator<? super T> comparator) {
@@ -48,7 +48,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
     }
 
     static <T extends Comparable<? super T>> Node<T> of(T value) {
-        return of(T::compareTo, value);
+        return of((Comparator<? super T> & Serializable) T::compareTo, value);
     }
 
     static <T> Node<T> of(Comparator<? super T> comparator, T value) {
@@ -61,7 +61,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
     @SafeVarargs
     static <T extends Comparable<? super T>> RedBlackTree<T> of(T... values) {
         Objects.requireNonNull(values, "values is null");
-        return of(T::compareTo, values);
+        return of((Comparator<? super T> & Serializable) T::compareTo, values);
     }
 
     @SafeVarargs
@@ -77,7 +77,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
 
     static <T extends Comparable<? super T>> RedBlackTree<T> ofAll(java.lang.Iterable<? extends T> values) {
         Objects.requireNonNull(values, "values is null");
-        return ofAll(T::compareTo, values);
+        return ofAll((Comparator<? super T> & Serializable) T::compareTo, values);
     }
 
     @SuppressWarnings("unchecked")
@@ -159,6 +159,18 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
         }
     }
 
+    /**
+     * Finds the value stored in this tree, if exists, by applying the underlying comparator to the tree elements and
+     * the given element.
+     * <p>
+     * Especially the value returned may differ from the given value, even if the underlying comparator states that
+     * both are equal.
+     *
+     * @param value A value
+     * @return Some value, if this tree contains a value equal to the given value according to the underlying comparator. Otherwise None.
+     */
+    Option<T> find(T value);
+
     default RedBlackTree<T> intersection(RedBlackTree<T> tree) {
         Objects.requireNonNull(tree, "tree is null");
         if (isEmpty()) {
@@ -216,6 +228,13 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
      * @throws UnsupportedOperationException if this RedBlackTree is empty
      */
     RedBlackTree<T> right();
+
+    /**
+     * Returns the size of this tree.
+     *
+     * @return the number of nodes of this tree and 0 if this is the empty tree
+     */
+    int size();
 
     /**
      * Adds all of the elements of the given {@code tree} to this tree, if not already present.
@@ -329,8 +348,6 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
     @Override
     String toString();
 
-    int size();
-
     enum Color {
 
         RED, BLACK;
@@ -403,6 +420,18 @@ interface RedBlackTreeModule {
         }
 
         @Override
+        public Option<T> find(T value) {
+            final int result = empty.comparator.compare(value, this.value);
+            if (result < 0) {
+                return left.find(value);
+            } else if (result > 0) {
+                return right.find(value);
+            } else {
+                return new Some<>(this.value);
+            }
+        }
+
+        @Override
         public boolean isEmpty() {
             return false;
         }
@@ -415,6 +444,11 @@ interface RedBlackTreeModule {
         @Override
         public RedBlackTree<T> right() {
             return right;
+        }
+
+        @Override
+        public int size() {
+            return size;
         }
 
         @Override
@@ -449,11 +483,6 @@ interface RedBlackTreeModule {
         @Override
         public String toString() {
             return isLeaf() ? "(" + color + ":" + value + ")" : toLispString(this);
-        }
-
-        @Override
-        public int size() {
-            return size;
         }
 
         private static String toLispString(RedBlackTree<?> tree) {
@@ -855,6 +884,11 @@ interface RedBlackTreeModule {
         }
 
         @Override
+        public Option<T> find(T value) {
+            return None.instance();
+        }
+
+        @Override
         public boolean isEmpty() {
             return true;
         }
@@ -867,6 +901,11 @@ interface RedBlackTreeModule {
         @Override
         public RedBlackTree<T> right() {
             throw new UnsupportedOperationException("right on empty");
+        }
+
+        @Override
+        public int size() {
+            return 0;
         }
 
         @Override
@@ -889,11 +928,5 @@ interface RedBlackTreeModule {
         public String toString() {
             return "()";
         }
-
-        @Override
-        public int size() {
-            return 0;
-        }
-
     }
 }

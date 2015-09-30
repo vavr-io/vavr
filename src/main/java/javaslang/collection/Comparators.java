@@ -26,7 +26,23 @@ final class Comparators {
      * @return The natural Comparator of type U
      */
     @SuppressWarnings("unchecked")
-    static <U> Comparator<U> naturalComparator() {
-        return (Comparator<U> & Serializable) (o1, o2) -> ((Comparable<U>) o1).compareTo(o2);
+    static <U> SerializableComparator<U> naturalComparator() {
+        return (o1, o2) -> ((Comparable<U>) o1).compareTo(o2);
+    }
+
+    /**
+     * Needed for serialization of sortable collections which internally need a comparator.
+     * <p>
+     * In general the comparator may be
+     * <ul>
+     * <li>a concrete class</li>
+     * <li>a lambda</li>
+     * <li>a method reference</li>
+     * </ul>
+     *
+     * @param <T> the type of objects that may be compared by this comparator
+     */
+    @FunctionalInterface
+    interface SerializableComparator<T> extends Comparator<T>, Serializable {
     }
 }
