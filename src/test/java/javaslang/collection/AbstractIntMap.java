@@ -32,7 +32,7 @@ public class AbstractIntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public int hashCode() {
-        return original.hashCode();
+        return original.values().hashCode();
     }
 
     @Override
