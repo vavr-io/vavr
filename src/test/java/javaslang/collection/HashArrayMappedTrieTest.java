@@ -76,14 +76,14 @@ public class HashArrayMappedTrieTest {
     // -- equals
 
     @Test
-    public void shouldEqualSameTraversableInstance() {
-        final TraversableOnce<?> traversable = HashMap.empty();
-        assertThat(traversable).isEqualTo(traversable);
+    public void shouldEqualSameHAMTInstance() {
+        final HashArrayMappedTrie<?, ?> trie = HashArrayMappedTrie.empty();
+        assertThat(trie).isEqualTo(trie);
     }
 
     @Test
     public void shouldNilNotEqualsNull() {
-        assertThat(HashMap.empty()).isNotNull();
+        assertThat(HashArrayMappedTrie.empty()).isNotNull();
     }
 
     @Test
@@ -93,7 +93,7 @@ public class HashArrayMappedTrieTest {
 
     @Test
     public void shouldEmptyNotEqualsDifferentType() {
-        assertThat(HashMap.empty()).isNotEqualTo("");
+        assertThat(HashArrayMappedTrie.empty()).isNotEqualTo("");
     }
 
     @Test
@@ -103,7 +103,7 @@ public class HashArrayMappedTrieTest {
 
     @Test
     public void shouldRecognizeEqualityOfNils() {
-        assertThat(HashMap.empty()).isEqualTo(HashMap.empty());
+        assertThat(HashArrayMappedTrie.empty()).isEqualTo(HashArrayMappedTrie.empty());
     }
 
     @Test
@@ -112,12 +112,12 @@ public class HashArrayMappedTrieTest {
     }
 
     @Test
-    public void shouldRecognizeNonEqualityOfTraversablesOfSameSize() {
+    public void shouldRecognizeNonEqualityOfHAMTOfSameSize() {
         assertThat(of(1, 2, 3).equals(of(1, 2, 4))).isFalse();
     }
 
     @Test
-    public void shouldRecognizeNonEqualityOfTraversablesOfDifferentSize() {
+    public void shouldRecognizeNonEqualityOfHAMTOfDifferentSize() {
         assertThat(of(1, 2, 3).equals(of(1, 2))).isFalse();
     }
 
@@ -125,7 +125,7 @@ public class HashArrayMappedTrieTest {
 
     @Test
     public void shouldCalculateHashCodeOfNil() {
-        assertThat(HashMap.empty().hashCode() == HashMap.empty().hashCode()).isTrue();
+        assertThat(HashArrayMappedTrie.empty().hashCode() == HashArrayMappedTrie.empty().hashCode()).isTrue();
     }
 
     @Test
@@ -134,7 +134,7 @@ public class HashArrayMappedTrieTest {
     }
 
     @Test
-    public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
+    public void shouldCalculateDifferentHashCodesForDifferentHAMT() {
         assertThat(of(1, 2).hashCode() != of(2, 3).hashCode()).isTrue();
     }
 
