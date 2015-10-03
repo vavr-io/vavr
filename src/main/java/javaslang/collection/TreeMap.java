@@ -7,11 +7,14 @@ package javaslang.collection;
 
 import javaslang.Tuple2;
 import javaslang.collection.Map.Entry;
+import javaslang.control.None;
 import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
@@ -231,7 +234,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
 
     @Override
     public boolean containsKey(K key) {
-        return entries.contains(new Entry<>(key, null));
+        final V ignored = null;
+        return entries.contains(new Entry<>(key, ignored));
     }
 
     @Override
@@ -247,7 +251,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     @Override
     public TreeMap<K, V> filter(Predicate<? super Entry<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return createTreeMap(entries.comparator(), entries.iterator());
+        return createTreeMap(entries.comparator(), entries.iterator().filter(predicate));
     }
 
     @Override
@@ -269,13 +273,29 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
         return createTreeMap(entryComparator(keyComparator), entries.iterator().flatMap(entry -> mapper.apply(entry.key, entry.value)));
     }
 
+    // DEV-NOTE: It should be sufficient here to let the mapper return HashMap, flatMap will do the rest.
+    @SuppressWarnings("unchecked")
     @Override
-    public SortedMap<Object, Object> flatten() {
-        throw new UnsupportedOperationException("TODO"); // TODO
+    public TreeMap<Object, Object> flatten() {
+        return flatMap((key, value) -> {
+            if (value instanceof java.lang.Iterable) {
+                final Iterator<?> entries = Iterator.ofAll((java.lang.Iterable<?>) value).flatten().filter(e -> e instanceof Entry);
+                if (entries.hasNext()) {
+                    return (Iterator<? extends Entry<?, ?>>) entries;
+                } else {
+                    return List.of(new Entry<>(key, value));
+                }
+            } else if (value instanceof Entry) {
+                return HashMap.of((Entry<?, ?>) value).flatten();
+            } else {
+                return List.of(new Entry<>(key, value));
+            }
+        });
     }
 
     @Override
     public <U> U foldRight(U zero, BiFunction<? super Entry<K, V>, ? super U, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
         return iterator().foldRight(zero, f);
     }
 
@@ -287,42 +307,59 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
 
     @Override
     public <C> Map<C, TreeMap<K, V>> groupBy(Function<? super Entry<K, V>, ? extends C> classifier) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(classifier, "classifier is null");
+        return foldLeft(HashMap.empty(), (map, entry) -> {
+            final C key = classifier.apply(entry);
+            final TreeMap<K, V> values = map
+                    .get(key)
+                    .map(entries -> entries.put(entry.key, entry.value))
+                    .orElse(createTreeMap(entries.comparator(), Iterator.of(entry)));
+            return map.put(key, values);
+        });
     }
 
     @Override
     public boolean hasDefiniteSize() {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return true;
     }
 
     @Override
     public Entry<K, V> head() {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        if (isEmpty()) {
+            throw new NoSuchElementException("head of empty TreeMap");
+        } else {
+            return entries.min().get();
+        }
     }
 
     @Override
     public Option<Entry<K, V>> headOption() {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return isEmpty() ? None.instance() : new Some<>(head());
     }
 
     @Override
     public TreeMap<K, V> init() {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("init of empty TreeMap");
+        } else {
+            final Entry<K, V> max = entries.max().get();
+            return new TreeMap<>(entries.delete(max));
+        }
     }
 
     @Override
     public Option<TreeMap<K, V>> initOption() {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return isEmpty() ? None.instance() : new Some<>(init());
     }
 
     @Override
     public boolean isEmpty() {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return entries.isEmpty();
     }
 
     @Override
     public boolean isTraversableAgain() {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return true;
     }
 
     @Override
@@ -377,33 +414,54 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
 
     @Override
     public TreeMap<K, V> put(K key, V value) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return new TreeMap<>(entries.insert(Entry.of(key, value)));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public TreeMap<K, V> put(Entry<? extends K, ? extends V> entry) {
+        Objects.requireNonNull(entry, "entry is null");
         return new TreeMap<>(entries.insert((Entry<K, V>) entry));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public TreeMap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(entry, "entry is null");
+        return new TreeMap<>(entries.insert((Entry<K, V>) Entry.of(entry)));
     }
 
     @Override
     public TreeMap<K, V> remove(K key) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        final V ignored = null;
+        final Entry<K, V> entry = Entry.of(key, ignored);
+        if (entries.contains(entry)) {
+            return new TreeMap<>(entries.delete(entry));
+        } else {
+            return this;
+        }
     }
 
     @Override
     public TreeMap<K, V> removeAll(Iterable<? extends K> keys) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        final V ignored = null;
+        RedBlackTree<Entry<K, V>> removed = entries;
+        for (K key : keys) {
+            final Entry<K, V> entry = Entry.of(key, ignored);
+            if (removed.contains(entry)) {
+                removed = removed.delete(entry);
+            }
+        }
+        if (removed.size() == entries.size()) {
+            return this;
+        } else {
+            return new TreeMap<>(removed);
+        }
     }
 
     @Override
     public int size() {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return entries.size();
     }
 
     @Override
@@ -433,32 +491,39 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
 
     @Override
     public TreeMap<K, V> tail() {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("tail of empty TreeMap");
+        } else {
+            final Entry<K, V> min = entries.min().get();
+            return new TreeMap<>(entries.delete(min));
+        }
     }
 
     @Override
     public Option<TreeMap<K, V>> tailOption() {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return isEmpty() ? None.instance() : new Some<>(tail());
     }
 
     @Override
     public TreeMap<K, V> take(int n) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return createTreeMap(entries.comparator(), entries.iterator().take(n));
     }
 
     @Override
     public TreeMap<K, V> takeRight(int n) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return createTreeMap(entries.comparator(), entries.iterator().takeRight(n));
     }
 
     @Override
     public TreeMap<K, V> takeUntil(Predicate<? super Entry<K, V>> predicate) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(predicate, "predicate is null");
+        return createTreeMap(entries.comparator(), entries.iterator().takeUntil(predicate));
     }
 
     @Override
     public TreeMap<K, V> takeWhile(Predicate<? super Entry<K, V>> predicate) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(predicate, "predicate is null");
+        return createTreeMap(entries.comparator(), entries.iterator().takeWhile(predicate));
     }
 
     @Override
@@ -473,7 +538,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
 
     @Override
     public Seq<V> values() {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return iterator().map(Entry::value).toStream();
     }
 
     @Override

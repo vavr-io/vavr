@@ -232,19 +232,19 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Map<Object, Object> flatten() {
+    public HashMap<Object, Object> flatten() {
         return flatMap((key, value) -> {
             if (value instanceof java.lang.Iterable) {
-                final Iterator<Object> entries = Iterator.ofAll((java.lang.Iterable<Object>) value).flatten().filter(e -> e instanceof Entry);
+                final Iterator<?> entries = Iterator.ofAll((java.lang.Iterable<?>) value).flatten().filter(e -> e instanceof Entry);
                 if (entries.hasNext()) {
-                    return HashMap.ofAll((Iterator<? extends Entry<?, ?>>) (Object) entries);
+                    return (Iterator<? extends Entry<?, ?>>) entries;
                 } else {
-                    return HashMap.of(new Entry<Object, Object>(key, value));
+                    return List.of(new Entry<>(key, value));
                 }
             } else if (value instanceof Entry) {
-                return HashMap.of((Entry<Object, Object>) value).flatten();
+                return HashMap.of((Entry<?, ?>) value).flatten();
             } else {
-                return HashMap.of(new Entry<Object, Object>(key, value));
+                return List.of(new Entry<>(key, value));
             }
         });
     }

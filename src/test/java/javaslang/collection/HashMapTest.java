@@ -8,7 +8,6 @@ package javaslang.collection;
 import java.util.ArrayList;
 import java.util.stream.Collector;
 
-
 public class HashMapTest extends AbstractMapTest {
 
     @Override
@@ -23,6 +22,6 @@ public class HashMapTest extends AbstractMapTest {
 
     @Override
     protected <T> Collector<Map.Entry<Integer, T>, ArrayList<Map.Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
-        return HashMap.<Integer, T>collector();
+        return HashMap.<Integer, T> collector();
     }
 }
