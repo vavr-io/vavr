@@ -49,13 +49,13 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> filter(Predicate<? super Entry<K, V>> predicate);
 
     @Override
-    <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> Seq<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
     <U, W> SortedMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper);
 
     @Override
-    Set<Object> flatten();
+    SortedMap<Object, Object> flatten();
 
     @Override
     <C> Map<C, ? extends SortedMap<K, V>> groupBy(Function<? super Entry<K, V>, ? extends C> classifier);

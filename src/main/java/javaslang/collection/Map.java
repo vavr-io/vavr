@@ -108,10 +108,10 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     Map<K, V> filter(Predicate<? super Entry<K, V>> predicate);
 
     @Override
-    <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> Seq<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    Set<Object> flatten();
+    Map<Object, Object> flatten();
 
     @Override
     <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Entry<K, V>, ? extends C> classifier);

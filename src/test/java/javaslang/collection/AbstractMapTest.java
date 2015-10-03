@@ -44,9 +44,9 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected <T> Collector<T, ArrayList<T>, AbstractIntMap<T>> collector() {
+    protected <T> Collector<T, ArrayList<T>, IntMap<T>> collector() {
         final Collector<Entry<Integer, T>, ArrayList<Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector = mapCollector();
-        return new Collector<T, ArrayList<T>, AbstractIntMap<T>>() {
+        return new Collector<T, ArrayList<T>, IntMap<T>>() {
             @Override
             public Supplier<ArrayList<T>> supplier() {
                 return ArrayList::new;
@@ -66,7 +66,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
             }
 
             @Override
-            public Function<ArrayList<T>, AbstractIntMap<T>> finisher() {
+            public Function<ArrayList<T>, IntMap<T>> finisher() {
                 return AbstractMapTest.this::ofAll;
             }
 
@@ -79,8 +79,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <T> AbstractIntMap<T> empty() {
-        return AbstractIntMap.of(emptyMap());
+    protected <T> IntMap<T> empty() {
+        return IntMap.of(emptyMap());
     }
 
     private <T> Map<Integer, T> emptyInt() {
@@ -110,69 +110,69 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <T> AbstractIntMap<T> of(T element) {
+    protected <T> IntMap<T> of(T element) {
         Map<Integer, T> map = emptyMap();
         map = map.put(0, element);
-        return AbstractIntMap.of(map);
+        return IntMap.of(map);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <T> AbstractIntMap<T> of(T... elements) {
+    protected <T> IntMap<T> of(T... elements) {
         Map<Integer, T> map = emptyMap();
         for (T element : elements) {
             map = map.put(map.size(), element);
         }
-        return AbstractIntMap.of(map);
+        return IntMap.of(map);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <T> AbstractIntMap<T> ofAll(Iterable<? extends T> elements) {
+    protected <T> IntMap<T> ofAll(Iterable<? extends T> elements) {
         Map<Integer, T> map = emptyMap();
         for (T element : elements) {
             map = map.put(map.size(), element);
         }
-        return AbstractIntMap.of(map);
+        return IntMap.of(map);
     }
 
     @Override
-    protected AbstractIntMap<Boolean> ofAll(boolean[] array) {
+    protected IntMap<Boolean> ofAll(boolean[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected AbstractIntMap<Byte> ofAll(byte[] array) {
+    protected IntMap<Byte> ofAll(byte[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected AbstractIntMap<Character> ofAll(char[] array) {
+    protected IntMap<Character> ofAll(char[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected AbstractIntMap<Double> ofAll(double[] array) {
+    protected IntMap<Double> ofAll(double[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected AbstractIntMap<Float> ofAll(float[] array) {
+    protected IntMap<Float> ofAll(float[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected AbstractIntMap<Integer> ofAll(int[] array) {
+    protected IntMap<Integer> ofAll(int[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected AbstractIntMap<Long> ofAll(long[] array) {
+    protected IntMap<Long> ofAll(long[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected AbstractIntMap<Short> ofAll(short[] array) {
+    protected IntMap<Short> ofAll(short[] array) {
         return ofAll(Iterator.ofAll(array));
     }
 
@@ -400,7 +400,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Override
     public void shouldPreserveSingletonInstanceOnDeserialization() {
-        AbstractIntMap<?> obj = deserialize(serialize(empty()));
+        IntMap<?> obj = deserialize(serialize(empty()));
         final boolean actual = obj.original() == empty().original();
         assertThat(actual).isTrue();
     }
