@@ -219,10 +219,27 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
             this.value = value;
         }
 
+        /**
+         * Convenience method for {@code new Entry<>(t._1, t._2)}.
+         *
+         * @param t A tuple of arity 2
+         * @param <K> Key type
+         * @param <V> Value type
+         * @return A new Entry instance containing the first tuple component as key and the second tuple component as value.
+         */
         public static <K, V> Entry<K, V> of(Tuple2<K, V> t) {
             return new Entry<>(t._1, t._2);
         }
 
+        /**
+         * Convenience method for {@code new Entry<>(key, value)}.
+         *
+         * @param key An map entry key
+         * @param value An map entry value
+         * @param <K> Key type
+         * @param <V> Value type
+         * @return A new Entry instance containing the specified key and value.
+         */
         public static <K, V> Entry<K, V> of(K key, V value) {
             return new Entry<>(key, value);
         }
