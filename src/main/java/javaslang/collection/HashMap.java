@@ -214,14 +214,9 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public <U> HashSet<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper) {
+    public <U> Seq<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(HashSet.<U> empty(), (HashSet<U> acc, Entry<K, V> entry) -> {
-            for (U u : mapper.apply(entry)) {
-                acc = acc.add(u);
-            }
-            return acc;
-        });
+        return iterator().flatMap(mapper).toStream();
     }
 
     @Override
@@ -235,11 +230,22 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public HashSet<Object> flatten() {
-        return flatMap(entry -> {
-            final V value = entry.value;
-            return (value instanceof java.lang.Iterable) ? Stream.ofAll((java.lang.Iterable<?>) value).flatten() : Stream.of(value);
+    public Map<Object, Object> flatten() {
+        return flatMap((key, value) -> {
+            if (value instanceof java.lang.Iterable) {
+                final Iterator<Object> entries = Iterator.ofAll((java.lang.Iterable<Object>) value).flatten().filter(e -> e instanceof Entry);
+                if (entries.hasNext()) {
+                    return HashMap.ofAll((Iterator<? extends Entry<?, ?>>) (Object) entries);
+                } else {
+                    return HashMap.of(new Entry<Object, Object>(key, value));
+                }
+            } else if (value instanceof Entry) {
+                return HashMap.of((Entry<Object, Object>) value).flatten();
+            } else {
+                return HashMap.of(new Entry<Object, Object>(key, value));
+            }
         });
     }
 
@@ -324,7 +330,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <U> Seq<U> map(Function<? super Entry<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(Vector.empty(), (acc, entry) -> acc.append(mapper.apply(entry)));
+        return iterator().map(mapper).toStream();
     }
 
     @Override

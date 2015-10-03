@@ -1,5 +1,6 @@
 package javaslang.collection;
 
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
@@ -9,20 +10,20 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.*;
 
-public class AbstractIntMap<T> implements Traversable<T>, Serializable {
+public class IntMap<T> implements Traversable<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
     // TODO why HashMap?
-    private static final AbstractIntMap<?> EMPTY = AbstractIntMap.of(HashMap.empty());
+    private static final IntMap<?> EMPTY = IntMap.of(HashMap.empty());
 
     private final Map<Integer, T> original;
 
-    public static <T> AbstractIntMap<T> of(Map<Integer, T> original) {
-        return new AbstractIntMap<>(original);
+    public static <T> IntMap<T> of(Map<Integer, T> original) {
+        return new IntMap<>(original);
     }
 
-    private AbstractIntMap(Map<Integer, T> original) {
+    private IntMap(Map<Integer, T> original) {
         this.original = original;
     }
 
@@ -39,8 +40,8 @@ public class AbstractIntMap<T> implements Traversable<T>, Serializable {
     public boolean equals(Object o) {
         if (o == this) {
             return true;
-        } else if (o instanceof AbstractIntMap) {
-            final AbstractIntMap<?> that = (AbstractIntMap<?>) o;
+        } else if (o instanceof IntMap) {
+            final IntMap<?> that = (IntMap<?>) o;
             return original.values().equals(that.original.values());
         } else if (o instanceof Iterable) {
             final Iterable<?> that = (Iterable<?>) o;
@@ -50,50 +51,55 @@ public class AbstractIntMap<T> implements Traversable<T>, Serializable {
         }
     }
 
+    @Override
+    public String toString() {
+        return mkString(", ", "IntMap(", ")");
+    }
+
     private Object readResolve() {
         return original.isEmpty() ? EMPTY : this;
     }
 
     @Override
-    public AbstractIntMap<T> clear() {
-        return AbstractIntMap.of(original.clear());
+    public IntMap<T> clear() {
+        return IntMap.of(original.clear());
     }
 
     @Override
-    public AbstractIntMap<T> distinct() {
-        return AbstractIntMap.of(original.distinct());
+    public IntMap<T> distinct() {
+        return IntMap.of(original.distinct());
     }
 
     @Override
-    public AbstractIntMap<T> distinctBy(Comparator<? super T> comparator) {
-        return AbstractIntMap.of(original.distinctBy((o1, o2) -> comparator.compare(o1.value, o2.value)));
+    public IntMap<T> distinctBy(Comparator<? super T> comparator) {
+        return IntMap.of(original.distinctBy((o1, o2) -> comparator.compare(o1.value, o2.value)));
     }
 
     @Override
-    public <U> AbstractIntMap<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        return AbstractIntMap.of(original.distinctBy(f -> keyExtractor.apply(f.value)));
+    public <U> IntMap<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+        return IntMap.of(original.distinctBy(f -> keyExtractor.apply(f.value)));
     }
 
     @Override
-    public AbstractIntMap<T> drop(int n) {
+    public IntMap<T> drop(int n) {
         final Map<Integer, T> dropped = original.drop(n);
-        return dropped == original ? this : AbstractIntMap.of(dropped);
+        return dropped == original ? this : IntMap.of(dropped);
     }
 
     @Override
-    public AbstractIntMap<T> dropRight(int n) {
+    public IntMap<T> dropRight(int n) {
         final Map<Integer, T> dropped = original.dropRight(n);
-        return dropped == original ? this : AbstractIntMap.of(dropped);
+        return dropped == original ? this : IntMap.of(dropped);
     }
 
     @Override
-    public AbstractIntMap<T> dropWhile(Predicate<? super T> predicate) {
-        return AbstractIntMap.of(original.dropWhile(p -> predicate.test(p.value)));
+    public IntMap<T> dropWhile(Predicate<? super T> predicate) {
+        return IntMap.of(original.dropWhile(p -> predicate.test(p.value)));
     }
 
     @Override
-    public AbstractIntMap<T> filter(Predicate<? super T> predicate) {
-        return AbstractIntMap.of(original.filter(p -> predicate.test(p.value)));
+    public IntMap<T> filter(Predicate<? super T> predicate) {
+        return IntMap.of(original.filter(p -> predicate.test(p.value)));
     }
 
     @Override
@@ -107,8 +113,10 @@ public class AbstractIntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Traversable<Object> flatten() {
-        return original.flatten();
+    public IntMap<Object> flatten() {
+        final Seq<Object> seq = original.values().flatten();
+        final Map<Integer, Object> map = seq.zipWithIndex().toMap(t -> Tuple.of(t._2, t._1));
+        return IntMap.of(map);
     }
 
     @Override
@@ -118,8 +126,8 @@ public class AbstractIntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public <C> Map<C, ? extends AbstractIntMap<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        return original.groupBy(e -> classifier.apply(e.value)).map((k, v) -> Map.Entry.of(k, AbstractIntMap.of(v)));
+    public <C> Map<C, ? extends IntMap<T>> groupBy(Function<? super T, ? extends C> classifier) {
+        return original.groupBy(e -> classifier.apply(e.value)).map((k, v) -> Map.Entry.of(k, IntMap.of(v)));
     }
 
     @Override
@@ -138,13 +146,13 @@ public class AbstractIntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public AbstractIntMap<T> init() {
-        return AbstractIntMap.of(original.init());
+    public IntMap<T> init() {
+        return IntMap.of(original.init());
     }
 
     @Override
-    public Option<? extends AbstractIntMap<T>> initOption() {
-        return original.initOption().map(AbstractIntMap::of);
+    public Option<? extends IntMap<T>> initOption() {
+        return original.initOption().map(IntMap::of);
     }
 
     @Override
@@ -168,14 +176,14 @@ public class AbstractIntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Tuple2<AbstractIntMap<T>, AbstractIntMap<T>> partition(Predicate<? super T> predicate) {
+    public Tuple2<IntMap<T>, IntMap<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return original.partition(p -> predicate.test(p.value)).map(AbstractIntMap::of, AbstractIntMap::of);
+        return original.partition(p -> predicate.test(p.value)).map(IntMap::of, IntMap::of);
     }
 
     @Override
-    public AbstractIntMap<T> peek(Consumer<? super T> action) {
-        return AbstractIntMap.of(original.peek(e -> action.accept(e.value)));
+    public IntMap<T> peek(Consumer<? super T> action) {
+        return IntMap.of(original.peek(e -> action.accept(e.value)));
     }
 
     @Override
@@ -185,39 +193,39 @@ public class AbstractIntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public AbstractIntMap<T> replace(T currentElement, T newElement) {
+    public IntMap<T> replace(T currentElement, T newElement) {
         final Option<Map.Entry<Integer, T>> currentEntryOpt = original.findFirst(e -> e.value.equals(currentElement));
         if (currentEntryOpt.isDefined()) {
             final Map.Entry<Integer, T> currentEntry = currentEntryOpt.get();
-            return AbstractIntMap.of(original.replace(currentEntry, Map.Entry.of(currentEntry.key, newElement)));
+            return IntMap.of(original.replace(currentEntry, Map.Entry.of(currentEntry.key, newElement)));
         } else {
             return this;
         }
     }
 
     @Override
-    public AbstractIntMap<T> replaceAll(T currentElement, T newElement) {
+    public IntMap<T> replaceAll(T currentElement, T newElement) {
         Map<Integer, T> result = original;
         for (Map.Entry<Integer, T> entry : original.filter(e -> e.value.equals(currentElement))) {
             result = result.replaceAll(entry, Map.Entry.of(entry.key, newElement));
         }
-        return AbstractIntMap.of(result);
+        return IntMap.of(result);
     }
 
     @Override
-    public AbstractIntMap<T> replaceAll(UnaryOperator<T> operator) {
-        return AbstractIntMap.of(original.replaceAll(o -> Map.Entry.of(o.key, operator.apply(o.value))));
+    public IntMap<T> replaceAll(UnaryOperator<T> operator) {
+        return IntMap.of(original.replaceAll(o -> Map.Entry.of(o.key, operator.apply(o.value))));
     }
 
     @Override
-    public AbstractIntMap<T> retainAll(Iterable<? extends T> elements) {
+    public IntMap<T> retainAll(Iterable<? extends T> elements) {
         final Set<T> elementsSet = HashSet.ofAll(elements);
-        return AbstractIntMap.of(original.retainAll(original.filter(e -> elementsSet.contains(e.value))));
+        return IntMap.of(original.retainAll(original.filter(e -> elementsSet.contains(e.value))));
     }
 
     @Override
-    public Tuple2<? extends AbstractIntMap<T>, ? extends AbstractIntMap<T>> span(Predicate<? super T> predicate) {
-        return original.span(p -> predicate.test(p.value)).map(AbstractIntMap::of, AbstractIntMap::of);
+    public Tuple2<? extends IntMap<T>, ? extends IntMap<T>> span(Predicate<? super T> predicate) {
+        return original.span(p -> predicate.test(p.value)).map(IntMap::of, IntMap::of);
     }
 
     public Spliterator<T> spliterator() {
@@ -252,23 +260,23 @@ public class AbstractIntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public AbstractIntMap<T> tail() {
-        return AbstractIntMap.of(original.tail());
+    public IntMap<T> tail() {
+        return IntMap.of(original.tail());
     }
 
     @Override
-    public Option<AbstractIntMap<T>> tailOption() {
-        return original.tailOption().map(AbstractIntMap::of);
+    public Option<IntMap<T>> tailOption() {
+        return original.tailOption().map(IntMap::of);
     }
 
     @Override
-    public AbstractIntMap<T> take(int n) {
-        return AbstractIntMap.of(original.take(n));
+    public IntMap<T> take(int n) {
+        return IntMap.of(original.take(n));
     }
 
     @Override
-    public AbstractIntMap<T> takeRight(int n) {
-        return AbstractIntMap.of(original.takeRight(n));
+    public IntMap<T> takeRight(int n) {
+        return IntMap.of(original.takeRight(n));
     }
 
     @Override
@@ -278,7 +286,7 @@ public class AbstractIntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public AbstractIntMap<T> takeWhile(Predicate<? super T> predicate) {
-        return AbstractIntMap.of(original.takeWhile(p -> predicate.test(p.value)));
+    public IntMap<T> takeWhile(Predicate<? super T> predicate) {
+        return IntMap.of(original.takeWhile(p -> predicate.test(p.value)));
     }
 }

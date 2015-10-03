@@ -257,9 +257,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     }
 
     @Override
-    public <U> Set<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper) {
+    public <U> Seq<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return entries.iterator().flatMap(mapper).toSet();
+        return entries.iterator().flatMap(mapper).toStream();
     }
 
     @Override
@@ -270,19 +270,19 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     }
 
     @Override
-    public Option<V> get(K key) {
-        final V ignored = null;
-        return entries.find(new Map.Entry<>(key, ignored)).map(Entry::value);
-    }
-
-    @Override
-    public Set<Object> flatten() {
+    public SortedMap<Object, Object> flatten() {
         throw new UnsupportedOperationException("TODO"); // TODO
     }
 
     @Override
     public <U> U foldRight(U zero, BiFunction<? super Entry<K, V>, ? super U, ? extends U> f) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        return iterator().foldRight(zero, f);
+    }
+
+    @Override
+    public Option<V> get(K key) {
+        final V ignored = null;
+        return entries.find(new Map.Entry<>(key, ignored)).map(Entry::value);
     }
 
     @Override

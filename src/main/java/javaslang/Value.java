@@ -230,7 +230,8 @@ public interface Value<T> extends javaslang.Iterable<T> {
      *
      * @return A flattened version of this {@code Value}.
      */
-    Value<Object> flatten();
+    // DEV_NOTE: needs to be <? extends Object> because of Map.flatten() of type Map<Object, Object>.
+    Value<? extends Object> flatten();
 
     /**
      * FlatMaps this value to a new value with different component type.
