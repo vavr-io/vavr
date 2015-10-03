@@ -230,6 +230,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         });
     }
 
+    // DEV-NOTE: It is sufficient here to let the mapper return any Iterable, flatMap will do the rest.
     @SuppressWarnings("unchecked")
     @Override
     public HashMap<Object, Object> flatten() {
@@ -344,7 +345,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     public HashMap<K, V> merge(Map<? extends K, ? extends V> that) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
-            return (HashMap<K, V>) that;
+            return HashMap.ofAll(that);
         } else if (that.isEmpty()) {
             return this;
         } else {
@@ -358,7 +359,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         if (isEmpty()) {
-            return (HashMap<K, V>) that;
+            return HashMap.ofAll(that);
         } else if (that.isEmpty()) {
             return this;
         } else {
@@ -374,12 +375,13 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public Tuple2<HashMap<K, V>, HashMap<K, V>> partition(Predicate<? super Entry<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final Tuple2<Iterator<Map.Entry<K, V>>, Iterator<Map.Entry<K, V>>> p = iterator().partition(predicate);
+        final Tuple2<Iterator<Entry<K, V>>, Iterator<Entry<K, V>>> p = iterator().partition(predicate);
         return Tuple.of(HashMap.ofAll(p._1), HashMap.ofAll(p._2));
     }
 
     @Override
     public HashMap<K, V> peek(Consumer<? super Entry<K, V>> action) {
+        Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(iterator().next());
         }
@@ -435,22 +437,25 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> replaceAll(UnaryOperator<Entry<K, V>> operator) {
-        HashMap<K, V> result = empty();
+        Objects.requireNonNull(operator, "operator is null");
+        HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
         for (Entry<K, V> entry : this) {
-            result = result.put(operator.apply(entry));
+            final Entry<K, V> newEntry = operator.apply(entry);
+            tree = tree.put(newEntry.key, newEntry.value);
         }
-        return result;
+        return new HashMap<>(tree);
     }
 
     @Override
     public HashMap<K, V> retainAll(java.lang.Iterable<? extends Entry<K, V>> elements) {
-        HashMap<K, V> result = empty();
+        Objects.requireNonNull(elements, "elements is null");
+        HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
         for (Entry<K, V> entry : elements) {
             if (contains(entry)) {
-                result = result.put(entry);
+                tree = tree.put(entry.key, entry.value);
             }
         }
-        return result;
+        return new HashMap<>(tree);
     }
 
     @Override
@@ -461,7 +466,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public Tuple2<HashMap<K, V>, HashMap<K, V>> span(Predicate<? super Entry<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final Tuple2<Iterator<Map.Entry<K, V>>, Iterator<Map.Entry<K, V>>> t = iterator().span(predicate);
+        final Tuple2<Iterator<Entry<K, V>>, Iterator<Entry<K, V>>> t = iterator().span(predicate);
         return Tuple.of(HashMap.ofAll(t._1), HashMap.ofAll(t._2));
     }
 
@@ -538,7 +543,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Seq<V> values() {
-        return map(entry -> entry.value).toList();
+        return map(Entry::value).toStream();
     }
 
     @Override

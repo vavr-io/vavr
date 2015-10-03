@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.Map.Entry;
 import javaslang.control.None;
@@ -27,6 +28,7 @@ import java.util.stream.Collector;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
+// DEV-NOTE: use entries.min().get() in favor of iterator().next(), it is faster!
 public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V>>, Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -273,7 +275,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
         return createTreeMap(entryComparator(keyComparator), entries.iterator().flatMap(entry -> mapper.apply(entry.key, entry.value)));
     }
 
-    // DEV-NOTE: It should be sufficient here to let the mapper return HashMap, flatMap will do the rest.
+    // DEV-NOTE: It is sufficient here to let the mapper return any Iterable, flatMap will do the rest.
     @SuppressWarnings("unchecked")
     @Override
     public TreeMap<Object, Object> flatten() {
@@ -302,7 +304,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     @Override
     public Option<V> get(K key) {
         final V ignored = null;
-        return entries.find(new Map.Entry<>(key, ignored)).map(Entry::value);
+        return entries.find(new Entry<>(key, ignored)).map(Entry::value);
     }
 
     @Override
@@ -379,37 +381,73 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
 
     @Override
     public <U> Seq<U> map(Function<? super Entry<K, V>, ? extends U> mapper) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(mapper, "mapper is null");
+        return entries.iterator().map(mapper).toStream();
     }
 
     @Override
     public <U, W> TreeMap<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(mapper, "mapper is null");
+        final Comparator<U> keyComparator = Comparators.naturalComparator();
+        return createTreeMap(entryComparator(keyComparator), entries.iterator().map(entry -> mapper.apply(entry.key, entry.value)));
     }
 
     @Override
     public TreeMap<K, V> merge(Map<? extends K, ? extends V> that) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(that, "that is null");
+        if (isEmpty()) {
+            return createTreeMap(entries.comparator(), that);
+        } else if (that.isEmpty()) {
+            return this;
+        } else {
+            return that.foldLeft(this, (map, entry) -> !map.containsKey(entry.key) ? map.put(entry) : map);
+        }
     }
 
     @Override
     public <U extends V> TreeMap<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(that, "that is null");
+        Objects.requireNonNull(collisionResolution, "collisionResolution is null");
+        if (isEmpty()) {
+            return createTreeMap(entries.comparator(), that);
+        } else if (that.isEmpty()) {
+            return this;
+        } else {
+            return that.foldLeft(this, (map, entry) -> {
+                final K key = entry.key;
+                final U value = entry.value;
+                final V newValue = map.get(key).map(v -> (V) collisionResolution.apply(v, value)).orElse((V) value);
+                return map.put(key, newValue);
+            });
+        }
     }
 
     @Override
     public Tuple2<TreeMap<K, V>, TreeMap<K, V>> partition(Predicate<? super Entry<K, V>> predicate) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(predicate, "predicate is null");
+        final Tuple2<Iterator<Entry<K, V>>, Iterator<Entry<K, V>>> p = iterator().partition(predicate);
+        final TreeMap<K, V> treeMap1 = createTreeMap(entries.comparator(), p._1);
+        final TreeMap<K, V> treeMap2 = createTreeMap(entries.comparator(), p._2);
+        return Tuple.of(treeMap1, treeMap2);
     }
 
     @Override
     public TreeMap<K, V> peek(Consumer<? super Entry<K, V>> action) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(action, "action is null");
+        if (!isEmpty()) {
+            action.accept(entries.min().get());
+        }
+        return this;
     }
 
     @Override
     public Entry<K, V> reduceRight(BiFunction<? super Entry<K, V>, ? super Entry<K, V>, ? extends Entry<K, V>> op) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(op, "op is null");
+        if (isEmpty()) {
+            throw new NoSuchElementException("reduceRight on empty TreeMap");
+        } else {
+            return iterator().reduceRight(op);
+        }
     }
 
     @Override
@@ -460,33 +498,51 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     }
 
     @Override
+    public TreeMap<K, V> replace(Entry<K, V> currentElement, Entry<K, V> newElement) {
+        Objects.requireNonNull(currentElement, "currentElement is null");
+        Objects.requireNonNull(newElement, "newElement is null");
+        return containsKey(currentElement.key) ? put(newElement) : this;
+    }
+
+    @Override
+    public TreeMap<K, V> replaceAll(Entry<K, V> currentElement, Entry<K, V> newElement) {
+        return replace(currentElement, newElement);
+    }
+
+    @Override
+    public TreeMap<K, V> replaceAll(UnaryOperator<Entry<K, V>> operator) {
+        Objects.requireNonNull(operator, "operator is null");
+        RedBlackTree<Entry<K, V>> tree = RedBlackTree.empty(entries.comparator());
+        for (Entry<K, V> entry : this) {
+            tree = tree.insert(operator.apply(entry));
+        }
+        return new TreeMap<>(tree);
+    }
+
+    @Override
+    public TreeMap<K, V> retainAll(Iterable<? extends Entry<K, V>> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        RedBlackTree<Entry<K, V>> tree = RedBlackTree.empty(entries.comparator());
+        for (Entry<K, V> entry : elements) {
+            if (contains(entry)) {
+                tree = tree.insert(entry);
+            }
+        }
+        return new TreeMap<>(tree);
+    }
+
+    @Override
     public int size() {
         return entries.size();
     }
 
     @Override
-    public TreeMap<K, V> replace(Entry<K, V> currentElement, Entry<K, V> newElement) {
-        throw new UnsupportedOperationException("TODO"); // TODO
-    }
-
-    @Override
-    public TreeMap<K, V> replaceAll(Entry<K, V> currentElement, Entry<K, V> newElement) {
-        throw new UnsupportedOperationException("TODO"); // TODO
-    }
-
-    @Override
-    public TreeMap<K, V> replaceAll(UnaryOperator<Entry<K, V>> operator) {
-        throw new UnsupportedOperationException("TODO"); // TODO
-    }
-
-    @Override
-    public TreeMap<K, V> retainAll(Iterable<? extends Entry<K, V>> elements) {
-        throw new UnsupportedOperationException("TODO"); // TODO
-    }
-
-    @Override
     public Tuple2<TreeMap<K, V>, TreeMap<K, V>> span(Predicate<? super Entry<K, V>> predicate) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(predicate, "predicate is null");
+        final Tuple2<Iterator<Entry<K, V>>, Iterator<Entry<K, V>>> t = iterator().span(predicate);
+        final TreeMap<K, V> treeMap1 = createTreeMap(entries.comparator(), t._1);
+        final TreeMap<K, V> treeMap2 = createTreeMap(entries.comparator(), t._2);
+        return Tuple.of(treeMap1, treeMap2);
     }
 
     @Override
@@ -526,14 +582,28 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
         return createTreeMap(entries.comparator(), entries.iterator().takeWhile(predicate));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <K1, V1, K2, V2> Tuple2<TreeMap<K1, V1>, TreeMap<K2, V2>> unzip(Function<? super Entry<? super K, ? super V>, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        final Comparator<K1> keyComparator1 = Comparators.naturalComparator();
+        final Comparator<K2> keyComparator2 = Comparators.naturalComparator();
+        RedBlackTree<Entry<K1, V1>> tree1 = RedBlackTree.empty(entryComparator(keyComparator1));
+        RedBlackTree<Entry<K2, V2>> tree2 = RedBlackTree.empty(entryComparator(keyComparator2));
+        for (Entry<K, V> entry : this) {
+            final Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>> t = unzipper.apply(entry);
+            tree1 = tree1.insert((Entry<K1, V1>) t._1);
+            tree2 = tree2.insert((Entry<K2, V2>) t._2);
+        }
+        return Tuple.of(new TreeMap<>(tree1), new TreeMap<>(tree2));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <K1, V1, K2, V2> Tuple2<TreeMap<K1, V1>, TreeMap<K2, V2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        // TODO: return unzip(entry -> unzipper.apply(entry.key, entry.value));
+        // TODO: also remove code duplication in HashMap.unzip(BiFunction)
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override

@@ -828,7 +828,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
-            throw new NoSuchElementException("reduceRight on Nil");
+            throw new NoSuchElementException("reduceRight on empty");
         } else {
             return iterator().reduceRight(op);
         }
