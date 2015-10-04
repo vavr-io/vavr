@@ -502,9 +502,14 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public <U> TreeSet<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+    public <U> TreeSet<U> flatMap(Comparator<? super U> comparator, Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return TreeSet.ofAll(naturalComparator(), iterator().flatMap(mapper));
+        return TreeSet.ofAll(comparator, iterator().flatMap(mapper));
+    }
+
+    @Override
+    public <U> TreeSet<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+        return flatMap(naturalComparator(), mapper);
     }
 
     @Override
@@ -592,9 +597,14 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public <U> TreeSet<U> map(Function<? super T, ? extends U> mapper) {
+    public <U> TreeSet<U> map(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return TreeSet.ofAll(naturalComparator(), iterator().map(mapper));
+        return TreeSet.ofAll(comparator, iterator().map(mapper));
+    }
+
+    @Override
+    public <U> TreeSet<U> map(Function<? super T, ? extends U> mapper) {
+        return map(naturalComparator(), mapper);
     }
 
     @Override

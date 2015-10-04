@@ -21,6 +21,39 @@ import java.util.function.*;
  * @since 2.0.0
  */
 public interface SortedMap<K, V> extends Map<K, V> {
+
+    /**
+     * Returns the underlying key-comparator which defines the order of the elements contained in this map.
+     *
+     * @return This map's key-comparator.
+     */
+    Comparator<? super K> keyComparator();
+
+    /**
+     * Same as {@link #flatMap(BiFunction)} but using a specific comparator for values of the codomain of the given
+     * {@code mapper}.
+     *
+     * @param keyComparator A comparator for keys of type U
+     * @param mapper A function which maps key/value pairs to Iterables map entries
+     * @param <U> New key type
+     * @param <W> New value type
+     * @return A new Map instance containing mapped entries
+     */
+    <U, W> SortedMap<U, W> flatMap(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper);
+
+    /**
+     * Same as {@link #map(BiFunction)} but using a specific comparator for values of the codomain of the given
+     * {@code mapper}.
+     *
+     * @param keyComparator A comparator for keys of type U
+     * @param mapper A function which maps key/value pairs to map entries
+     * @param <U> New key type
+     * @param <W> New value type
+     * @return A new Map instance containing mapped entries
+     */
+    <U, W> SortedMap<U, W> map(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper);
+
+    // -- Adjusted return types of Map methods
     
     @Override
     SortedMap<K, V> clear();
