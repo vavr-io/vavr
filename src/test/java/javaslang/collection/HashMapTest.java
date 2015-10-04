@@ -24,4 +24,11 @@ public class HashMapTest extends AbstractMapTest {
     protected <T> Collector<Map.Entry<Integer, T>, ArrayList<Map.Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
         return HashMap.<Integer, T> collector();
     }
+
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
+    @Override
+    protected final <K, V> Map<K, V> mapOf(Map.Entry<? extends K, ? extends V>... entries) {
+        return HashMap.of(entries);
+    }
 }

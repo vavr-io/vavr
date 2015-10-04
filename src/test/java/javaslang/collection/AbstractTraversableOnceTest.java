@@ -997,7 +997,10 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldReplaceFirstOccurrenceOfNonNilUsingCurrNewWhenMultipleOccurrencesExist() {
-        assertThat(of(0, 1, 2, 1).replace(1, 3)).isEqualTo(of(0, 3, 2, 1));
+        final TraversableOnce<Integer> testee = of(0, 1, 2, 1);
+        final TraversableOnce<Integer> actual = testee.replace(1, 3);
+        final TraversableOnce<Integer> expected = of(0, 3, 2, 1);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
