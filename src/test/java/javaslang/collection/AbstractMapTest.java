@@ -216,9 +216,9 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldFlatMapUsingBiFunction() {
-        final Map<Integer, Integer> testee = mapOf($(1, 11), $(2, 22), $(3, 33));
-        final Map<String, String> actual = testee.flatMap((k, v) -> List.of($(String.valueOf(k), String.valueOf(v)), $(String.valueOf(k * 10), String.valueOf(v * 10))));
-        final Map<String, String> expected = mapOf($("1", "11"), $("10", "110"), $("2", "22"), $("20", "220"), $("3", "33"), $("30", "330"));
+        final Map<Integer, Integer> testee = mapOf(Entry.of(1, 11), Entry.of(2, 22), Entry.of(3, 33));
+        final Map<String, String> actual = testee.flatMap((k, v) -> List.of(Entry.of(String.valueOf(k), String.valueOf(v)), Entry.of(String.valueOf(k * 10), String.valueOf(v * 10))));
+        final Map<String, String> expected = mapOf(Entry.of("1", "11"), Entry.of("10", "110"), Entry.of("2", "22"), Entry.of("20", "220"), Entry.of("3", "33"), Entry.of("30", "330"));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -399,7 +399,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Override
     public void shouldComputeDistinctOfNonEmptyTraversable() {
-        /* ignore */
+        final Map<Object, Object> testee = emptyMap().put(1, 1).put(2, 2).put(3, 3);
+        assertThat(testee.distinct()).isEqualTo(testee);
     }
 
     @Override
@@ -419,20 +420,5 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final String actual = of('a', 'b', 'c').foldRight("", (x, xs) -> x + xs);
         final List<String> expected = List.of('a', 'b', 'c').permutations().map(List::mkString);
         assertThat(actual).isIn(expected);
-    }
-
-    // helpers
-
-    /**
-     * Convenience method for {@code Entry.of(key, value)}.
-     *
-     * @param key   A key
-     * @param value A value
-     * @param <K>   Key type
-     * @param <V>   Value type
-     * @return A new entry (key, value)
-     */
-    static <K, V> Entry<K, V> $(K key, V value) {
-        return new Map.Entry<>(key, value);
     }
 }

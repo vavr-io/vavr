@@ -20,6 +20,8 @@ import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+import static javaslang.collection.Comparators.naturalComparator;
+
 /**
  * SortedMap implementation, backed by a Red/Black Tree.
  *
@@ -55,7 +57,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
             left.addAll(right);
             return left;
         };
-        final Comparator<? super K> comparator = Comparators.naturalComparator();
+        final Comparator<? super K> comparator = naturalComparator();
         final Function<ArrayList<Entry<K, V>>, TreeMap<K, V>> finisher = list -> TreeMap.ofAll(comparator, list);
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
@@ -263,16 +265,20 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     }
 
     @Override
-    public <U> Seq<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return entries.iterator().flatMap(mapper).toStream();
+    public <U, W> TreeMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
+        return flatMap(naturalComparator(), mapper);
     }
 
     @Override
-    public <U, W> TreeMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
+    public <U, W> TreeMap<U, W> flatMap(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        final Comparator<U> keyComparator = Comparators.naturalComparator();
         return createTreeMap(entryComparator(keyComparator), entries.iterator().flatMap(entry -> mapper.apply(entry.key, entry.value)));
+    }
+
+    @Override
+    public <U> Seq<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return entries.iterator().flatMap(mapper).toStream();
     }
 
     // DEV-NOTE: It is sufficient here to let the mapper return any Iterable, flatMap will do the rest.
@@ -375,21 +381,32 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     }
 
     @Override
+    public Comparator<? super K> keyComparator() {
+        final Comparator<? super Entry<K, V>> comparator = entries.comparator();
+        final V ignored = null;
+        return (Comparator<? super K> & Serializable) (k1, k2) -> comparator.compare(Entry.of(k1, ignored), Entry.of(k2, ignored));
+    }
+
+    @Override
     public SortedSet<K> keySet() {
         return entrySet().map(Entry::key);
+    }
+
+    @Override
+    public <U, W> TreeMap<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper) {
+        return map(naturalComparator(), mapper);
+    }
+
+    @Override
+    public <U, W> TreeMap<U, W> map(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return createTreeMap(entryComparator(keyComparator), entries.iterator().map(entry -> mapper.apply(entry.key, entry.value)));
     }
 
     @Override
     public <U> Seq<U> map(Function<? super Entry<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return entries.iterator().map(mapper).toStream();
-    }
-
-    @Override
-    public <U, W> TreeMap<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        final Comparator<U> keyComparator = Comparators.naturalComparator();
-        return createTreeMap(entryComparator(keyComparator), entries.iterator().map(entry -> mapper.apply(entry.key, entry.value)));
     }
 
     @Override
