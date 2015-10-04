@@ -86,7 +86,7 @@ public interface SortedSet<T> extends Set<T> {
 
     @Override
     default T last() {
-        return max().orElseThrow(() -> new NoSuchElementException("last on empty TreeSet"));
+        return max().orElseThrow(() -> new NoSuchElementException("last on empty SortedSet"));
     }
 
     @Override
