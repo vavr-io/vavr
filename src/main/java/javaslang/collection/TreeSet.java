@@ -598,6 +598,16 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
+    public Option<T> max() {
+        return tree.max();
+    }
+
+    @Override
+    public Option<T> min() {
+        return tree.min();
+    }
+
+    @Override
     public Tuple2<TreeSet<T>, TreeSet<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return iterator()

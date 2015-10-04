@@ -443,7 +443,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public Iterator<Character> iterator() {
-        return new Iterator<Character>() {
+        return new AbstractIterator<Character>() {
             private int index = 0;
 
             @Override

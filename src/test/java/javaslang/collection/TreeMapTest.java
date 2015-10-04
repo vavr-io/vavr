@@ -26,7 +26,7 @@ public class TreeMapTest extends AbstractMapTest {
 
     @Override
     protected <T> Collector<Entry<Integer, T>, ArrayList<Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
-        return HashMap.<Integer, T> collector();
+        return TreeMap.<Integer, T> collector();
     }
 
     @SuppressWarnings({ "unchecked", "varargs" })
@@ -34,16 +34,6 @@ public class TreeMapTest extends AbstractMapTest {
     @Override
     protected final <K, V> Map<K, V> mapOf(Entry<? extends K, ? extends V>... entries) {
         return TreeMap.of(naturalComparator(), entries);
-    }
-
-    @Override
-    public void shouldTakeRightAsExpectedIfCountIsLessThanSize() {
-        // TODO
-    }
-
-    @Override
-    public void shouldGetInitOfNonNil() {
-        // TODO
     }
 
     // -- obsolete tests

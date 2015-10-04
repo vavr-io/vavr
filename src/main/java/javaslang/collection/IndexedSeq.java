@@ -9,6 +9,7 @@ import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -96,6 +97,15 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     IndexedSeq<T> intersperse(T element);
+
+    @Override
+    default T last() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("last of empty IndexedSeq");
+        } else {
+            return get(length() - 1);
+        }
+    }
 
     @Override
     <U> IndexedSeq<U> map(Function<? super T, ? extends U> mapper);

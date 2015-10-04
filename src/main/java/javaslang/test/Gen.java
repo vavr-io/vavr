@@ -7,6 +7,7 @@ package javaslang.test;
 
 import javaslang.Tuple2;
 import javaslang.Value;
+import javaslang.collection.AbstractIterator;
 import javaslang.collection.Iterator;
 import javaslang.collection.Stream;
 
@@ -356,7 +357,7 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
     @Override
     default Iterator<T> iterator() {
         final Random random = Checkable.RNG.get();
-        return new Iterator<T>() {
+        return new AbstractIterator<T>() {
 
             @Override
             public boolean hasNext() {

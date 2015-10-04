@@ -295,12 +295,20 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> init() {
-        return tail();
+        if (trie.isEmpty()) {
+            throw new UnsupportedOperationException("init of empty HashMap");
+        } else {
+            return remove(last().key);
+        }
     }
 
     @Override
     public Option<HashMap<K, V>> initOption() {
-        return tailOption();
+        if (isEmpty()) {
+            return None.instance();
+        } else {
+            return new Some<>(init());
+        }
     }
 
     @Override
@@ -473,7 +481,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<K, V> tail() {
         if (trie.isEmpty()) {
-            throw new UnsupportedOperationException("tail of empty map");
+            throw new UnsupportedOperationException("tail of empty HashMap");
         } else {
             return remove(head().key);
         }
@@ -499,7 +507,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> takeRight(int n) {
-        return take(n);
+        if (trie.size() <= n) {
+            return this;
+        } else {
+            return HashMap.ofAll(trie.iterator().map(Entry::of).takeRight(n));
+        }
     }
 
     @Override
