@@ -531,14 +531,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <K1, V1, K2, V2> Tuple2<HashMap<K1, V1>, HashMap<K2, V2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        HashArrayMappedTrie<K1, V1> trie1 = HashArrayMappedTrie.empty();
-        HashArrayMappedTrie<K2, V2> trie2 = HashArrayMappedTrie.empty();
-        for (Entry<K, V> entry : this) {
-            final Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>> t = unzipper.apply(entry.key, entry.value);
-            trie1 = trie1.put(t._1.key, t._1.value);
-            trie2 = trie2.put(t._2.key, t._2.value);
-        }
-        return Tuple.of(HashMap.of(trie1), HashMap.of(trie2));
+        return unzip(entry -> unzipper.apply((K) entry.key, (V) entry.value));
     }
 
     @Override
@@ -548,11 +541,13 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <U> HashMap<Tuple2<K, V>, U> zip(java.lang.Iterable<U> that) {
+        Objects.requireNonNull(that, "that is null");
         return HashMap.ofAll(iterator().zip(that).map(t -> Entry.of(Tuple.of(t._1.key, t._1.value), t._2)));
     }
 
     @Override
     public <U> HashMap<Tuple2<K, V>, U> zipAll(java.lang.Iterable<U> that, Entry<K, V> thisElem, U thatElem) {
+        Objects.requireNonNull(that, "that is null");
         return HashMap.ofAll(iterator().zipAll(that, thisElem, thatElem).map(t -> Entry.of(t._1 == null ? null : Tuple.of(t._1.key, t._1.value), t._2)));
     }
 
