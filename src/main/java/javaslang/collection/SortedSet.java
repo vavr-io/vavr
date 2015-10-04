@@ -9,6 +9,7 @@ import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -82,6 +83,11 @@ public interface SortedSet<T> extends Set<T> {
 
     @Override
     SortedSet<T> intersect(Set<? extends T> elements);
+
+    @Override
+    default T last() {
+        return max().orElseThrow(() -> new NoSuchElementException("last on empty TreeSet"));
+    }
 
     @Override
     <U> SortedSet<U> map(Function<? super T, ? extends U> mapper);

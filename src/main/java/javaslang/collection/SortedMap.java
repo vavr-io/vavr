@@ -9,6 +9,7 @@ import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 import java.util.function.*;
 
 /**
@@ -71,6 +72,11 @@ public interface SortedMap<K, V> extends Map<K, V> {
 
     @Override
     SortedSet<K> keySet();
+
+    @Override
+    default Entry<K, V> last() {
+        return max().orElseThrow(() -> new NoSuchElementException("last on empty TreeMap"));
+    }
 
     @Override
     <U> Seq<U> map(Function<? super Entry<K, V>, ? extends U> mapper);

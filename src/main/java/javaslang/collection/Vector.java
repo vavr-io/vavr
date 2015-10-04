@@ -705,7 +705,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Iterator<T> iterator() {
-        return new Iterator<T>() {
+        return new AbstractIterator<T>() {
             private int index = indexShift;
             private final int size = trie.size() + indexShift;
 

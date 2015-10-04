@@ -501,7 +501,7 @@ public interface TraversableOnce<T> extends Value<T> {
      */
     default T last() {
         if (isEmpty()) {
-            throw new NoSuchElementException("last of Nil");
+            throw new NoSuchElementException("last of empty TraversableOnce");
         } else {
             final Iterator<T> it = iterator();
             T result = null;

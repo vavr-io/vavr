@@ -447,7 +447,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public Iterator<T> iterator() {
-        return new Iterator<T>() {
+        return new AbstractIterator<T>() {
             private int index = 0;
 
             @Override

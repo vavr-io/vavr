@@ -587,6 +587,15 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
+    public T last() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("last on empty TreeSet");
+        } else {
+            return tree.max().get();
+        }
+    }
+
+    @Override
     public int length() {
         return tree.size();
     }
@@ -595,6 +604,16 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     public <U> TreeSet<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return TreeSet.ofAll(naturalComparator(), iterator().map(mapper));
+    }
+
+    @Override
+    public Option<T> max() {
+        return tree.max();
+    }
+
+    @Override
+    public Option<T> min() {
+        return tree.min();
     }
 
     @Override

@@ -393,6 +393,11 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     }
 
     @Override
+    public Option<Entry<K, V>> max() {
+        return entries.max();
+    }
+
+    @Override
     public TreeMap<K, V> merge(Map<? extends K, ? extends V> that) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
@@ -420,6 +425,11 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
                 return map.put(key, newValue);
             });
         }
+    }
+
+    @Override
+    public Option<Entry<K, V>> min() {
+        return entries.min();
     }
 
     @Override
