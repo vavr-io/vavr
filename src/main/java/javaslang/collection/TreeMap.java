@@ -592,49 +592,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
         return createTreeMap(entries.comparator(), entries.iterator().takeWhile(predicate));
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <K1, V1, K2, V2> Tuple2<TreeMap<K1, V1>, TreeMap<K2, V2>> unzip(Function<? super Entry<? super K, ? super V>, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        final Comparator<K1> keyComparator1 = Comparators.naturalComparator();
-        final Comparator<K2> keyComparator2 = Comparators.naturalComparator();
-        RedBlackTree<Entry<K1, V1>> tree1 = RedBlackTree.empty(entryComparator(keyComparator1));
-        RedBlackTree<Entry<K2, V2>> tree2 = RedBlackTree.empty(entryComparator(keyComparator2));
-        for (Entry<K, V> entry : this) {
-            final Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>> t = unzipper.apply(entry);
-            tree1 = tree1.insert((Entry<K1, V1>) t._1);
-            tree2 = tree2.insert((Entry<K2, V2>) t._2);
-        }
-        return Tuple.of(new TreeMap<>(tree1), new TreeMap<>(tree2));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <K1, V1, K2, V2> Tuple2<TreeMap<K1, V1>, TreeMap<K2, V2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        return unzip(entry -> unzipper.apply((K) entry.key, (V) entry.value));
-    }
-
     @Override
     public Seq<V> values() {
         return iterator().map(Entry::value).toStream();
-    }
-
-    @Override
-    public <U> TreeMap<Tuple2<K, V>, U> zip(Iterable<U> that) {
-        Objects.requireNonNull(that, "that is null");
-        return TreeMap.ofAll(iterator().zip(that).map(t -> Entry.of(Tuple.of(t._1.key, t._1.value), t._2)));
-    }
-
-    @Override
-    public <U> TreeMap<Tuple2<K, V>, U> zipAll(Iterable<U> that, Entry<K, V> thisElem, U thatElem) {
-        Objects.requireNonNull(that, "that is null");
-        return TreeMap.ofAll(iterator().zipAll(that, thisElem, thatElem).map(t -> Entry.of(t._1 == null ? null : Tuple.of(t._1.key, t._1.value), t._2)));
-    }
-
-    @Override
-    public TreeMap<Tuple2<K, V>, Integer> zipWithIndex() {
-        return TreeMap.ofAll(iterator().zipWithIndex().map(t -> Entry.of(Tuple.of(t._1.key, t._1.value), t._2)));
     }
 
     private static <K, V> Comparator<Entry<K, V>> entryComparator(Comparator<? super K> keyComparator) {

@@ -66,17 +66,12 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
 
     int size();
 
-    <K1, V1, K2, V2> Tuple2<? extends Map<K1, V1>, ? extends Map<K2, V2>> unzip(Function<? super Entry<? super K, ? super V>, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper);
-
-    <K1, V1, K2, V2> Tuple2<? extends Map<K1, V1>, ? extends Map<K2, V2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper);
+    default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends T1, ? extends T2>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        return unzip(entry -> unzipper.apply(entry.key, entry.value));
+    }
 
     Seq<V> values();
-
-    <U> Map<Tuple2<K, V>, U> zip(java.lang.Iterable<U> that);
-
-    <U> Map<Tuple2<K, V>, U> zipAll(java.lang.Iterable<U> that, Entry<K, V> thisElem, U thatElem);
-
-    Map<Tuple2<K, V>, Integer> zipWithIndex();
 
     // -- Adjusted return types of Traversable methods
 
@@ -200,6 +195,29 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
 
     @Override
     Map<K, V> takeWhile(Predicate<? super Entry<K, V>> predicate);
+
+    @Override
+    default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super Entry<K, V>, Tuple2<? extends T1, ? extends T2>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        return iterator().unzip(unzipper).map(Stream::ofAll, Stream::ofAll);
+    }
+
+    @Override
+    default <U> Seq<Tuple2<Entry<K, V>, U>> zip(java.lang.Iterable<U> that) {
+        Objects.requireNonNull(that, "that is null");
+        return Stream.ofAll(iterator().zip(that));
+    }
+
+    @Override
+    default <U> Seq<Tuple2<Entry<K, V>, U>> zipAll(java.lang.Iterable<U> that, Entry<K, V> thisElem, U thatElem) {
+        Objects.requireNonNull(that, "that is null");
+        return Stream.ofAll(iterator().zipAll(that, thisElem, thatElem));
+    }
+
+    @Override
+    default Seq<Tuple2<Entry<K, V>, Integer>> zipWithIndex() {
+        return Stream.ofAll(iterator().zipWithIndex());
+    }
 
     /**
      * Representation of a Map entry.
