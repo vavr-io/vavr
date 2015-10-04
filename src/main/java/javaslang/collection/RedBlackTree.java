@@ -670,11 +670,8 @@ interface RedBlackTreeModule {
                     return (newRight == node.right) ? node : Node.balanceRight(node.color, node.blackHeight, node.left, node.value, newRight, node.empty);
                 } else {
                     // DEV-NOTE: Even if there is no _comparison_ difference, the object may not be _equal_.
-                    if (Objects.equals(node.value, value)) {
-                        return node;
-                    } else {
-                        return new Node<>(node.color, node.blackHeight, node.left, value, node.right, node.empty);
-                    }
+                    //           To save an equals() call, which may be expensive, we return a new instance.
+                    return new Node<>(node.color, node.blackHeight, node.left, value, node.right, node.empty);
                 }
             }
         }
