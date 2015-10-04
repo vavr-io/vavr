@@ -948,6 +948,18 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
 
     // -- Additional methods of Iterator
 
+    // DEV-NOTE: cannot use arg java.lang.Iterable, it would be ambiguous
+    default Iterator<T> concat(java.util.Iterator<T> that) {
+        Objects.requireNonNull(that, "that is null");
+        if (!that.hasNext()) {
+            return this;
+        } else if (!hasNext()) {
+            return Iterator.ofAll(that);
+        } else {
+            return Iterator.concat(this, Iterator.ofAll(that));
+        }
+    }
+
     /**
      * Inserts an element between all elements of this Iterator.
      *
