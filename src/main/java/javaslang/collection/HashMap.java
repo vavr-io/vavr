@@ -528,6 +528,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         return Tuple.of(HashMap.of(trie1), HashMap.of(trie2));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <K1, V1, K2, V2> Tuple2<HashMap<K1, V1>, HashMap<K2, V2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
