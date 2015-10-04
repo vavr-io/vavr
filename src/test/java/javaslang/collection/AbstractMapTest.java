@@ -30,8 +30,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 java.lang.Iterable<T> expected = (java.lang.Iterable<T>) obj;
                 java.util.Map<T, Integer> actualMap = countMap(actual);
                 java.util.Map<T, Integer> expectedMap = countMap(expected);
-                assertThat(actualMap.size()).isEqualTo(expectedMap.size());
-                actualMap.keySet().forEach(k -> assertThat(actualMap.get(k)).isEqualTo(expectedMap.get(k)));
+                assertThat(actualMap.toString()).isEqualTo(expectedMap.toString());
                 return this;
             }
 
@@ -97,9 +96,11 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     abstract protected <T> Collector<Entry<Integer, T>, ArrayList<Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector();
 
+    @SuppressWarnings("unchecked")
+    abstract protected <K, V> Map<K, V> mapOf(Entry<? extends K, ? extends V>... entries);
+
     @Override
     boolean useIsEqualToInsteadOfIsSameAs() {
-        // TODO
         return true;
     }
 
@@ -208,6 +209,17 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldFindValue() {
         assertThat(emptyMap().put(1, 2).containsValue(2)).isTrue();
         assertThat(emptyMap().put(1, 2).containsValue(1)).isFalse();
+    }
+
+    // -- flatMap
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldFlatMapUsingBiFunction() {
+        final Map<Integer, Integer> testee = mapOf($(1, 11), $(2, 22), $(3, 33));
+        final Map<String, String> actual = testee.flatMap((k, v) -> List.of($(String.valueOf(k), String.valueOf(v)), $(String.valueOf(k * 10), String.valueOf(v * 10))));
+        final Map<String, String> expected = mapOf($("1", "11"), $("10", "110"), $("2", "22"), $("20", "220"), $("3", "33"), $("30", "330"));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- map
@@ -327,57 +339,57 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipAllNils() {
-        final Map<?,?> actual = emptyMap().zipAll(empty(), null, null);
-        final Map<?,?> expected = emptyMap();
+        final Map<?, ?> actual = emptyMap().zipAll(empty(), null, null);
+        final Map<?, ?> expected = emptyMap();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllEmptyAndNonNil() {
-        final Map<?,?> actual = emptyMap().zipAll(List.of(1), null, null);
-        final Map<?,?> expected = emptyMap().put(null, 1);
+        final Map<?, ?> actual = emptyMap().zipAll(List.of(1), null, null);
+        final Map<?, ?> expected = emptyMap().put(null, 1);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonEmptyAndNil() {
-        final Map<?,?> actual = emptyMap().put(0, 1).zipAll(empty(), null, null);
-        final Map<?,?> expected = emptyMap().put(Tuple.of(0, 1), null);
+        final Map<?, ?> actual = emptyMap().put(0, 1).zipAll(empty(), null, null);
+        final Map<?, ?> expected = emptyMap().put(Tuple.of(0, 1), null);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsIfThisIsSmaller() {
-        final Map<?,?> actual = emptyMap().put(1, 1).put(2, 2).zipAll(of("a", "b", "c"), Entry.of(9, 10), "z");
-        final Map<?,?> expected = emptyMap().put(Tuple.of(1, 1), "a").put(Tuple.of(2, 2), "b").put(Tuple.of(9, 10), "c");
+        final Map<?, ?> actual = emptyMap().put(1, 1).put(2, 2).zipAll(of("a", "b", "c"), Entry.of(9, 10), "z");
+        final Map<?, ?> expected = emptyMap().put(Tuple.of(1, 1), "a").put(Tuple.of(2, 2), "b").put(Tuple.of(9, 10), "c");
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsIfThisIsMoreSmaller() {
-        final Map<?,?> actual = emptyMap().put(1, 1).put(2, 2).zipAll(of("a", "b", "c", "d"), Entry.of(9, 10), "z");
-        final Map<?,?> expected = emptyMap().put(Tuple.of(1, 1), "a").put(Tuple.of(2, 2), "b").put(Tuple.of(9, 10), "d");
+        final Map<?, ?> actual = emptyMap().put(1, 1).put(2, 2).zipAll(of("a", "b", "c", "d"), Entry.of(9, 10), "z");
+        final Map<?, ?> expected = emptyMap().put(Tuple.of(1, 1), "a").put(Tuple.of(2, 2), "b").put(Tuple.of(9, 10), "d");
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsIfThatIsSmaller() {
-        final Map<?,?> actual = emptyMap().put(1, 1).put(2, 2).put(3, 3).zipAll(of("a", "b"), Entry.of(9, 10), "z");
-        final Map<?,?> expected = emptyMap().put(Tuple.of(1, 1), "a").put(Tuple.of(2, 2), "b").put(Tuple.of(3, 3), "z");
+        final Map<?, ?> actual = emptyMap().put(1, 1).put(2, 2).put(3, 3).zipAll(of("a", "b"), Entry.of(9, 10), "z");
+        final Map<?, ?> expected = emptyMap().put(Tuple.of(1, 1), "a").put(Tuple.of(2, 2), "b").put(Tuple.of(3, 3), "z");
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsIfThatIsMoreSmaller() {
-        final Map<?,?> actual = emptyMap().put(1, 1).put(2, 2).put(3, 3).put(4, 4).zipAll(of("a", "b"), Entry.of(9, 10), "z");
-        final Map<?,?> expected = emptyMap().put(Tuple.of(1, 1), "a").put(Tuple.of(2, 2), "b").put(Tuple.of(3, 3), "z").put(Tuple.of(4, 4), "z");
+        final Map<?, ?> actual = emptyMap().put(1, 1).put(2, 2).put(3, 3).put(4, 4).zipAll(of("a", "b"), Entry.of(9, 10), "z");
+        final Map<?, ?> expected = emptyMap().put(Tuple.of(1, 1), "a").put(Tuple.of(2, 2), "b").put(Tuple.of(3, 3), "z").put(Tuple.of(4, 4), "z");
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsOfSameSize() {
-        final Map<?,?> actual = emptyMap().put(1, 1).put(2, 2).put(3, 3).zipAll(of("a", "b", "c"), Entry.of(9, 10), "z");
-        final Map<?,?> expected = emptyMap().put(Tuple.of(1, 1), "a").put(Tuple.of(2, 2), "b").put(Tuple.of(3, 3), "c");
+        final Map<?, ?> actual = emptyMap().put(1, 1).put(2, 2).put(3, 3).zipAll(of("a", "b", "c"), Entry.of(9, 10), "z");
+        final Map<?, ?> expected = emptyMap().put(Tuple.of(1, 1), "a").put(Tuple.of(2, 2), "b").put(Tuple.of(3, 3), "c");
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -425,5 +437,20 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Override
     public void shouldReturnSomeInitWhenCallingInitOptionOnNonNil() {
         // TODO
+    }
+
+    // helpers
+
+    /**
+     * Convenience method for {@code Entry.of(key, value)}.
+     *
+     * @param key   A key
+     * @param value A value
+     * @param <K>   Key type
+     * @param <V>   Value type
+     * @return A new entry (key, value)
+     */
+    static <K, V> Entry<K, V> $(K key, V value) {
+        return new Map.Entry<>(key, value);
     }
 }

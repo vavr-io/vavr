@@ -669,7 +669,12 @@ interface RedBlackTreeModule {
                     final Node<T> newRight = insert(node.right, value);
                     return (newRight == node.right) ? node : Node.balanceRight(node.color, node.blackHeight, node.left, node.value, newRight, node.empty);
                 } else {
-                    return node;
+                    // DEV-NOTE: Even if there is no _comparison_ difference, the object may not be _equal_.
+                    if (Objects.equals(node.value, value)) {
+                        return node;
+                    } else {
+                        return new Node<>(node.color, node.blackHeight, node.left, value, node.right, node.empty);
+                    }
                 }
             }
         }

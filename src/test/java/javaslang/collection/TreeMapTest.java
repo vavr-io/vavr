@@ -6,23 +6,50 @@
 package javaslang.collection;
 
 import javaslang.collection.Map.Entry;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.ArrayList;
+import java.util.stream.Collector;
 
-public class TreeMapTest {
+import static javaslang.collection.Comparators.naturalComparator;
 
-    @Test
-    public void shouldFlatMapUsingBiFunction() {
-        final TreeMap<Integer, Integer> testee = TreeMap.of($(1, 11), $(2, 22), $(3, 33));
-        final TreeMap<String, String> actual = testee.flatMap((k, v) -> List.of($(String.valueOf(k), String.valueOf(v)), $(String.valueOf(k * 10), String.valueOf(v * 10))));
-        final TreeMap<String, String> expected = TreeMap.of($("1", "11"), $("10", "110"), $("2", "22"), $("20", "220"), $("3", "33"), $("30", "330"));
-        assertThat(actual).isEqualTo(expected);
+public class TreeMapTest extends AbstractMapTest {
 
+    @Override
+    protected String className() {
+        return "TreeMap";
     }
 
-    static <K, V> Entry<K, V> $(K key, V value) {
-        return new Map.Entry<>(key, value);
+    @Override
+    protected <T1, T2> Map<T1, T2> emptyMap() {
+        return TreeMap.empty(naturalComparator());
+    }
+
+    @Override
+    protected <T> Collector<Entry<Integer, T>, ArrayList<Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
+        return HashMap.<Integer, T> collector();
+    }
+
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
+    @Override
+    protected final <K, V> Map<K, V> mapOf(Entry<? extends K, ? extends V>... entries) {
+        return TreeMap.of(naturalComparator(), entries);
+    }
+
+    @Override
+    public void shouldTakeRightAsExpectedIfCountIsLessThanSize() {
+        // TODO
+    }
+
+    @Override
+    public void shouldGetInitOfNonNil() {
+        // TODO
+    }
+
+    // -- obsolete tests
+
+    @Override
+    public void shouldPreserveSingletonInstanceOnDeserialization() {
+        // The empty TreeMap encapsulates a comparator and therefore cannot be a singleton
     }
 }
