@@ -909,4 +909,61 @@ public interface TraversableOnce<T> extends Value<T> {
      */
     TraversableOnce<T> takeWhile(Predicate<? super T> predicate);
 
+    /**
+     * Unzips this elements by mapping this elements to pairs which are subsequentially split into two distinct
+     * sets.
+     *
+     * @param unzipper a function which converts elements of this to pairs
+     * @param <T1>     1st element type of a pair returned by unzipper
+     * @param <T2>     2nd element type of a pair returned by unzipper
+     * @return A pair of set containing elements split by unzipper
+     * @throws NullPointerException if {@code unzipper} is null
+     */
+    <T1, T2> Tuple2<? extends TraversableOnce<T1>, ? extends TraversableOnce<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+
+    /**
+     * Returns a traversable formed from this traversable and another java.lang.Iterable collection by combining
+     * corresponding elements in pairs. If one of the two iterables is longer than the other, its remaining elements
+     * are ignored.
+     * <p>
+     * The length of the returned traversable is the minimum of the lengths of this traversable and {@code that}
+     * iterable.
+     *
+     * @param <U>  The type of the second half of the returned pairs.
+     * @param that The java.lang.Iterable providing the second half of each result pair.
+     * @return a new traversable containing pairs consisting of corresponding elements of this traversable and {@code that} iterable.
+     * @throws NullPointerException if {@code that} is null
+     */
+    <U> TraversableOnce<Tuple2<T, U>> zip(java.lang.Iterable<U> that);
+
+    /**
+     * Returns a traversable formed from this traversable and another java.lang.Iterable by combining corresponding elements in
+     * pairs. If one of the two collections is shorter than the other, placeholder elements are used to extend the
+     * shorter collection to the length of the longer.
+     * <p>
+     * The length of the returned traversable is the maximum of the lengths of this traversable and {@code that}
+     * iterable.
+     * <p>
+     * Special case: if this traversable is shorter than that elements, and that elements contains duplicates, the
+     * resulting traversable may be shorter than the maximum of the lengths of this and that because a traversable
+     * contains an element at most once.
+     * <p>
+     * If this Traversable is shorter than that, thisElem values are used to fill the result.
+     * If that is shorter than this Traversable, thatElem values are used to fill the result.
+     *
+     * @param <U>      The type of the second half of the returned pairs.
+     * @param that     The java.lang.Iterable providing the second half of each result pair.
+     * @param thisElem The element to be used to fill up the result if this traversable is shorter than that.
+     * @param thatElem The element to be used to fill up the result if that is shorter than this traversable.
+     * @return A new traversable containing pairs consisting of corresponding elements of this traversable and that.
+     * @throws NullPointerException if {@code that} is null
+     */
+    <U> TraversableOnce<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem);
+
+    /**
+     * Zips this traversable with its indices.
+     *
+     * @return A new traversable containing all elements of this traversable paired with their index, starting with 0.
+     */
+    TraversableOnce<Tuple2<T, Integer>> zipWithIndex();
 }

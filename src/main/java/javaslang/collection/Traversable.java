@@ -166,4 +166,15 @@ public interface Traversable<T> extends TraversableOnce<T> {
     @Override
     Traversable<T> takeWhile(Predicate<? super T> predicate);
 
+    @Override
+    <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+
+    @Override
+    <U> Traversable<Tuple2<T, U>> zip(java.lang.Iterable<U> that);
+
+    @Override
+    <U> Traversable<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem);
+
+    @Override
+    Traversable<Tuple2<T, Integer>> zipWithIndex();
 }

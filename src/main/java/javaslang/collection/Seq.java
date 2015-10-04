@@ -702,18 +702,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     <U> Seq<U> unit(java.lang.Iterable<? extends U> iterable);
 
     /**
-     * Unzips this elements by mapping this elements to pairs which are subsequentially split into two distinct
-     * traversables.
-     *
-     * @param unzipper a function which converts elements of this to pairs
-     * @param <T1>     1st element type of a pair returned by unzipper
-     * @param <T2>     2nd element type of a pair returned by unzipper
-     * @return A pair of traversables containing elements split by unzipper
-     * @throws NullPointerException if {@code unzipper} is null
-     */
-    <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
-
-    /**
      * Updates the given element at the specified index.
      *
      * @param index   an index
@@ -722,45 +710,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
     Seq<T> update(int index, T element);
-
-    /**
-     * Returns a Seq formed from this Seq and another java.lang.Iterable collection by combining corresponding elements
-     * in pairs. If one of the two sequences is longer than the other, its remaining elements are ignored.
-     * <p>
-     * The length of the returned collection is the minimum of the lengths of this Seq and that.
-     *
-     * @param <U>  The type of the second half of the returned pairs.
-     * @param that The java.lang.Iterable providing the second half of each result pair.
-     * @return a new Seq containing pairs consisting of corresponding elements of this seq and that.
-     * @throws NullPointerException if {@code that} is null
-     */
-    <U> Seq<Tuple2<T, U>> zip(java.lang.Iterable<U> that);
-
-    /**
-     * Returns a Traversable formed from this Traversable and another java.lang.Iterable by combining corresponding elements in
-     * pairs. If one of the two collections is shorter than the other, placeholder elements are used to extend the
-     * shorter collection to the length of the longer.
-     * <p>
-     * The length of the returned Traversable is the maximum of the lengths of this Traversable and that.
-     * <p>
-     * If this Traversable is shorter than that, thisElem values are used to fill the result.
-     * If that is shorter than this Traversable, thatElem values are used to fill the result.
-     *
-     * @param <U>      The type of the second half of the returned pairs.
-     * @param that     The java.lang.Iterable providing the second half of each result pair.
-     * @param thisElem The element to be used to fill up the result if this Traversable is shorter than that.
-     * @param thatElem The element to be used to fill up the result if that is shorter than this Traversable.
-     * @return A new Traversable containing pairs consisting of corresponding elements of this Traversable and that.
-     * @throws NullPointerException if {@code that} is null
-     */
-    <U> Seq<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem);
-
-    /**
-     * Zips this seq with its indices.
-     *
-     * @return A new seq containing all elements of this seq paired with their index, starting with 0.
-     */
-    Seq<Tuple2<T, Integer>> zipWithIndex();
 
     // -- Adjusted return types of Traversable methods
 
@@ -867,4 +816,15 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     @Override
     Seq<T> takeWhile(Predicate<? super T> predicate);
 
+    @Override
+    <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+
+    @Override
+    <U> Seq<Tuple2<T, U>> zip(java.lang.Iterable<U> that);
+
+    @Override
+    <U> Seq<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem);
+
+    @Override
+    Seq<Tuple2<T, Integer>> zipWithIndex();
 }

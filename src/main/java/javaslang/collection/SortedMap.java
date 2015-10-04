@@ -145,21 +145,6 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> takeWhile(Predicate<? super Entry<K, V>> predicate);
 
     @Override
-    <K1, V1, K2, V2> Tuple2<? extends SortedMap<K1, V1>, ? extends SortedMap<K2, V2>> unzip(Function<? super Entry<? super K, ? super V>, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper);
-
-    @Override
-    <K1, V1, K2, V2> Tuple2<? extends SortedMap<K1, V1>, ? extends SortedMap<K2, V2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends Entry<? extends K1, ? extends V1>, ? extends Entry<? extends K2, ? extends V2>>> unzipper);
-
-    @Override
     Seq<V> values();
-
-    @Override
-    <U> SortedMap<Tuple2<K, V>, U> zip(java.lang.Iterable<U> that);
-
-    @Override
-    <U> SortedMap<Tuple2<K, V>, U> zipAll(java.lang.Iterable<U> that, Entry<K, V> thisElem, U thatElem);
-
-    @Override
-    SortedMap<Tuple2<K, V>, Integer> zipWithIndex();
 
 }

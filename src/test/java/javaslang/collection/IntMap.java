@@ -289,4 +289,27 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     public IntMap<T> takeWhile(Predicate<? super T> predicate) {
         return IntMap.of(original.takeWhile(p -> predicate.test(p.value)));
     }
+
+    @Override
+    public <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        return iterator().unzip(unzipper).map(Stream::ofAll, Stream::ofAll);
+    }
+
+    @Override
+    public <U> Seq<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
+        Objects.requireNonNull(that, "that is null");
+        return Stream.ofAll(iterator().zip(that));
+    }
+
+    @Override
+    public <U> Seq<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
+        Objects.requireNonNull(that, "that is null");
+        return Stream.ofAll(iterator().zipAll(that, thisElem, thatElem));
+    }
+
+    @Override
+    public Seq<Tuple2<T, Integer>> zipWithIndex() {
+        return Stream.ofAll(iterator().zipWithIndex());
+    }
 }
