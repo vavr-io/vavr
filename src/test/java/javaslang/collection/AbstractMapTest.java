@@ -424,21 +424,6 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(actual).isIn(expected);
     }
 
-    @Override
-    public void shouldTakeRightAsExpectedIfCountIsLessThanSize() {
-        assertThat(of(1, 2, 3).takeRight(2)).isEqualTo(of(1, 2));
-    }
-
-    @Override
-    public void shouldGetInitOfNonNil() {
-        assertThat(of(1, 2, 3).init()).isEqualTo(of(2, 3));
-    }
-
-    @Override
-    public void shouldReturnSomeInitWhenCallingInitOptionOnNonNil() {
-        // TODO
-    }
-
     // helpers
 
     /**
