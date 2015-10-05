@@ -8,11 +8,10 @@ package javaslang;
 import java.io.Serializable;
 
 /**
- * <p>Implementation of an empty tuple, a tuple containing no elements.</p>
+ * Implementation of an empty tuple, a tuple containing no elements.
  * <p>
  * Because the empty tuple is a singleton, there is no accessible constructor.
  * Please use {@linkplain Tuple0#instance()} or {@linkplain Tuple#empty()} to obtain the single instance.
- * </p>
  *
  * @author Daniel Dietrich
  * @since 1.1.0

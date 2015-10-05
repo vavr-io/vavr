@@ -84,9 +84,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     /**
-     * <p>
      * Creates a Vector of the given elements.
-     * </p>
      *
      * @param <T>      Component type of the Vector.
      * @param elements Zero or more elements.

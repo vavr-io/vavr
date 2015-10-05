@@ -27,12 +27,11 @@ import java.util.function.Predicate;
 public interface Arbitrary<T> extends Value<T> {
 
     /**
-     * <p>
      * Returns a generator for objects of type T.
      * Use {@link Gen#map(Function)} and {@link Gen#flatMap(Function)} to
      * combine object generators.
-     * </p>
-     * <p>Example:</p>
+     * <p>
+     * Example:
      * <pre>
      * <code>
      * // represents arbitrary binary trees of a certain depth n
@@ -143,7 +142,7 @@ public interface Arbitrary<T> extends Value<T> {
     }
 
     /**
-     * <p>Generates arbitrary integer values.</p>
+     * Generates arbitrary integer values.
      *
      * @return A new Arbitrary of Integer
      */
@@ -152,8 +151,9 @@ public interface Arbitrary<T> extends Value<T> {
     }
 
     /**
-     * <p>Generates arbitrary strings based on a given alphabet represented by <em>gen</em>.</p>
-     * <p>Example:</p>
+     * Generates arbitrary strings based on a given alphabet represented by <em>gen</em>.
+     * <p>
+     * Example:
      * <pre>
      * <code>
      * Arbitrary.string(
@@ -178,8 +178,9 @@ public interface Arbitrary<T> extends Value<T> {
     }
 
     /**
-     * <p>Generates arbitrary lists based on a given element generator arbitraryT.</p>
-     * <p>Example:</p>
+     * Generates arbitrary lists based on a given element generator arbitraryT.
+     * <p>
+     * Example:
      * <pre>
      * <code>
      * Arbitrary.list(Arbitrary.integer());
@@ -205,8 +206,9 @@ public interface Arbitrary<T> extends Value<T> {
     }
 
     /**
-     * <p>Generates arbitrary streams based on a given element generator arbitraryT.</p>
-     * <p>Example:</p>
+     * Generates arbitrary streams based on a given element generator arbitraryT.
+     * <p>
+     * Example:
      * <pre>
      * <code>
      * Arbitrary.stream(Arbitrary.integer());

@@ -32,9 +32,7 @@ public final class None<T> implements Option<T>, Serializable {
     }
 
     /**
-     * <p>
      * Returns the singleton instance of None as {@code None<T>} in the context of a type {@code <T>}, e.g.
-     * </p>
      * <pre>
      * <code>final Option&lt;Integer&gt; o = None.instance(); // o is of type None&lt;Integer&gt;</code>
      * </pre>

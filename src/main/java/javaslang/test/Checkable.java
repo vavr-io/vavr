@@ -68,8 +68,9 @@ public interface Checkable {
     }
 
     /**
-     * <p>Returns a new Checkable which is satisfied if this Checkable <em>and</em> the given checkable are satisfied.</p>
-     * <p>First this Checkable is checked.</p>
+     * Returns a new Checkable which is satisfied if this Checkable <em>and</em> the given checkable are satisfied.
+     * <p>
+     * First this Checkable is checked.
      *
      * @param checkable A Checkable
      * @return A new Checkable
@@ -86,8 +87,9 @@ public interface Checkable {
     }
 
     /**
-     * <p>Returns a new Checkable which is satisfied if this Checkable <em>or</em> the given checkable are satisfied.</p>
-     * <p>First this Checkable is checked.</p>
+     * Returns a new Checkable which is satisfied if this Checkable <em>or</em> the given checkable are satisfied.
+     * <p>
+     * First this Checkable is checked.
      *
      * @param checkable A Checkable
      * @return A new Checkable

@@ -133,9 +133,10 @@ public interface Try<T> extends Value<T> {
     }
 
     /**
-     * <p>Returns {@code this} if this is a Failure or this is a Success and the value satisfies the predicate.</p>
-     * <p>Returns a new Failure, if this is a Success and the value does not satisfy the Predicate or an exception
-     * occurs testing the predicate.</p>
+     * Returns {@code this} if this is a Failure or this is a Success and the value satisfies the predicate.
+     * <p>
+     * Returns a new Failure, if this is a Success and the value does not satisfy the Predicate or an exception
+     * occurs testing the predicate.
      *
      * @param predicate A predicate
      * @return a new Try

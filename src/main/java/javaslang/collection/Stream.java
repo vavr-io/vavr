@@ -207,14 +207,11 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     /**
-     * <p>
      * Creates a Stream of the given elements.
-     * </p>
-     * <pre>
-     * <code>  Stream.of(1, 2, 3, 4)
+     *
+     * <pre><code>  Stream.of(1, 2, 3, 4)
      * = Nil.instance().prepend(4).prepend(3).prepend(2).prepend(1)
-     * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))</code>
-     * </pre>
+     * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))</code></pre>
      *
      * @param <T>      Component type of the Stream.
      * @param elements Zero or more elements.
@@ -1378,9 +1375,8 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         /**
-         * <p>
          * {@code writeReplace} method for the serialization proxy pattern.
-         * </p>
+         * <p>
          * The presence of this method causes the serialization system to emit a SerializationProxy instance instead of
          * an instance of the enclosing class.
          *
@@ -1391,9 +1387,8 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         /**
-         * <p>
          * {@code readObject} method for the serialization proxy pattern.
-         * </p>
+         * <p>
          * Guarantees that the serialization system will never generate a serialized instance of the enclosing class.
          *
          * @param stream An object serialization stream.
@@ -1419,9 +1414,8 @@ public interface Stream<T> extends LinearSeq<T> {
             private transient Cons<T> stream;
 
             /**
-             * <p>
              * Constructor for the case of serialization, called by {@link Cons#writeReplace()}.
-             * </p>
+             * <p>
              * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
              * an instance of the enclosing class.
              *
@@ -1471,9 +1465,8 @@ public interface Stream<T> extends LinearSeq<T> {
             }
 
             /**
-             * <p>
              * {@code readResolve} method for the serialization proxy pattern.
-             * </p>
+             * <p>
              * Returns a logically equivalent instance of the enclosing class. The presence of this method causes the
              * serialization system to translate the serialization proxy back into an instance of the enclosing class
              * upon deserialization.

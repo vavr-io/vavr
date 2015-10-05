@@ -15,14 +15,12 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * <p>
  * Replacement for {@link java.util.Optional}.
- * </p>
  * <p>
  * Option is a <a href="http://stackoverflow.com/questions/13454347/monads-with-java-8">monadic</a> container type which
  * represents an optional value. Instances of Option are either an instance of {@link javaslang.control.Some} or the
  * singleton {@link javaslang.control.None}.
- * </p>
+ * <p>
  * Most of the API is taken from {@link java.util.Optional}. A similar type can be found in <a
  * href="http://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Maybe.html">Haskell</a> and <a
  * href="http://www.scala-lang.org/api/current/#scala.Option">Scala</a>.
@@ -62,8 +60,9 @@ public interface Option<T> extends Value<T> {
     boolean isEmpty();
 
     /**
-     * <p>Returns true, if this is {@code Some}, otherwise false, if this is {@code None}.</p>
-     * <p>Please note that it is possible to create {@code new Some(null)}, which is defined.</p>
+     * Returns true, if this is {@code Some}, otherwise false, if this is {@code None}.
+     * <p>
+     * Please note that it is possible to create {@code new Some(null)}, which is defined.
      *
      * @return true, if this {@code Option} has a defined value, false otherwise
      */
@@ -74,8 +73,9 @@ public interface Option<T> extends Value<T> {
     T get();
 
     /**
-     * <p>Returns the value if this is a {@code Some} or the {@code other} value if this is a {@code None}.</p>
-     * <p>Please note, that the other value is eagerly evaluated.</p>
+     * Returns the value if this is a {@code Some} or the {@code other} value if this is a {@code None}.
+     * <p>
+     * Please note, that the other value is eagerly evaluated.
      *
      * @param other An alternative value
      * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
@@ -85,9 +85,10 @@ public interface Option<T> extends Value<T> {
     }
 
     /**
-     * <p>Returns the value if this is a {@code Some}, otherwise the {@code other} value is returned,
-     * if this is a {@code None}.</p>
-     * <p>Please note, that the other value is lazily evaluated.</p>
+     * Returns the value if this is a {@code Some}, otherwise the {@code other} value is returned,
+     * if this is a {@code None}.
+     * <p>
+     * Please note, that the other value is lazily evaluated.
      *
      * @param supplier An alternative value supplier
      * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.

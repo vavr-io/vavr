@@ -129,14 +129,13 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     /**
-     * <p>
      * Creates a List of the given elements.
-     * </p>
-     *
      * <pre>
-     * <code>  List.of(1, 2, 3, 4)
+     * <code>
+     *   List.of(1, 2, 3, 4)
      * = Nil.instance().prepend(4).prepend(3).prepend(2).prepend(1)
-     * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))</code>
+     * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))
+     * </code>
      * </pre>
      *
      * @param <T>      Component type of the List.
@@ -1437,13 +1436,10 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
 
         /**
-         * <p>
          * {@code writeReplace} method for the serialization proxy pattern.
-         * </p>
          * <p>
          * The presence of this method causes the serialization system to emit a SerializationProxy instance instead of
          * an instance of the enclosing class.
-         * </p>
          *
          * @return A SerialiationProxy for this enclosing class.
          */
@@ -1452,9 +1448,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
 
         /**
-         * <p>
          * {@code readObject} method for the serialization proxy pattern.
-         * </p>
+         * <p>
          * Guarantees that the serialization system will never generate a serialized instance of the enclosing class.
          *
          * @param stream An object serialization stream.
@@ -1529,9 +1524,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             }
 
             /**
-             * <p>
              * {@code readResolve} method for the serialization proxy pattern.
-             * </p>
+             * <p>
              * Returns a logically equivalent instance of the enclosing class. The presence of this method causes the
              * serialization system to translate the serialization proxy back into an instance of the enclosing class
              * upon deserialization.

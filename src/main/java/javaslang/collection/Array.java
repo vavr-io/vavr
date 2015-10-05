@@ -74,9 +74,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     /**
-     * <p>
      * Creates a Array of the given elements.
-     * </p>
      *
      * @param <T>      Component type of the Array.
      * @param elements Zero or more elements.
