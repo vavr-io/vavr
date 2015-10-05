@@ -9,14 +9,18 @@ import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.List.Nil;
-import javaslang.control.Match;
+import javaslang.collection.Tree.Node;
 import javaslang.control.None;
 import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.io.*;
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
+
+import static javaslang.collection.Tree.Order.PRE_ORDER;
 
 /**
  * A general Tree interface.
@@ -27,6 +31,12 @@ import java.util.function.*;
  */
 public interface Tree<T> extends Traversable<T> {
 
+    /**
+     * Returns the singleton empty tree.
+     *
+     * @param <T> Type of tree values.
+     * @return The empty tree.
+     */
     static <T> Empty<T> empty() {
         return Empty.instance();
     }
@@ -60,7 +70,7 @@ public interface Tree<T> extends Traversable<T> {
      *
      * @return the tree's children
      */
-    List<? extends Tree<T>> getChildren();
+    List<Node<T>> getChildren();
 
     /**
      * Checks if this Tree is a leaf. A tree is a leaf if it is a Node with no children.
@@ -80,16 +90,12 @@ public interface Tree<T> extends Traversable<T> {
         return !(isEmpty() || isLeaf());
     }
 
-    <U> Tree<U> map(Function<? super T, ? extends U> mapper);
+    default Iterator<T> iterator(Order order) {
+        return traverse(order).iterator();
+    }
 
-    /**
-     * Traverses the Tree in pre-order.
-     *
-     * @return A List containing all elements of this tree, which is List if this tree is empty.
-     * @throws java.lang.NullPointerException if order is null
-     */
-    default List<T> traverse() {
-        return traverse(Order.PRE_ORDER);
+    default Seq<T> traverse() {
+        return isEmpty() ? Stream.empty() : traverse(PRE_ORDER);
     }
 
     /**
@@ -99,199 +105,314 @@ public interface Tree<T> extends Traversable<T> {
      * @return A List containing all elements of this tree, which is List if this tree is empty.
      * @throws java.lang.NullPointerException if order is null
      */
-    default List<T> traverse(Order order) {
-        Objects.requireNonNull(order, "order is null");
-        class Traversal {
-            List<T> preOrder(Tree<T> tree) {
-                return tree.getChildren()
-                        .foldLeft(List.of(tree.getValue()), (acc, child) -> acc.appendAll(preOrder(child)));
-            }
-
-            // see RedBlackTree.iterator() for in-order traversal without recursion
-            List<T> inOrder(Tree<T> tree) {
-                if (tree.isLeaf()) {
-                    return List.of(tree.getValue());
-                } else {
-                    final List<? extends Tree<T>> children = tree.getChildren();
-                    return children.tail().foldLeft(List.<T> empty(), (acc, child) -> acc.appendAll(inOrder(child)))
-                            .prepend(tree.getValue())
-                            .prependAll(inOrder(children.head()));
-                }
-            }
-
-            List<T> postOrder(Tree<T> tree) {
-                return tree.getChildren()
-                        .foldLeft(List.<T> empty(), (acc, child) -> acc.appendAll(postOrder(child)))
-                        .append(tree.getValue());
-            }
-
-            List<T> levelOrder(Tree<T> tree) {
-                List<T> result = List.empty();
-                final java.util.Queue<Tree<T>> queue = new java.util.LinkedList<>();
-                queue.add(tree);
-                while (!queue.isEmpty()) {
-                    final Tree<T> next = queue.remove();
-                    result = result.prepend(next.getValue());
-                    queue.addAll(next.getChildren().toJavaList());
-                }
-                return result.reverse();
-            }
-        }
+    default Seq<T> traverse(Order order) {
         if (isEmpty()) {
-            return List.empty();
+            return Stream.empty();
         } else {
-            final Traversal traversal = new Traversal();
-            // TODO: use functional strategy pattern instead of Match.of (https://dzone.com/articles/strategy-pattern-implemented-as-an-enum-using-lamb)
-            return Match.of(order)
-                    .whenIs(Order.PRE_ORDER).then(() -> traversal.preOrder(this))
-                    .whenIs(Order.IN_ORDER).then(() -> traversal.inOrder(this))
-                    .whenIs(Order.POST_ORDER).then(() -> traversal.postOrder(this))
-                    .whenIs(Order.LEVEL_ORDER).then(() -> traversal.levelOrder(this))
-                    .get();
+            Objects.requireNonNull(order, "order is null");
+            switch (order) {
+                case PRE_ORDER:
+                    return TreeModule.Traversal.preOrder(this);
+                case IN_ORDER:
+                    return TreeModule.Traversal.inOrder(this);
+                case POST_ORDER:
+                    return TreeModule.Traversal.postOrder(this);
+                case LEVEL_ORDER:
+                    return TreeModule.Traversal.levelOrder(this);
+                default:
+                    throw new IllegalStateException("Unknown order: " + order.name());
+            }
         }
     }
 
     // -- Methods inherited from Traversable
 
     @Override
-    default Empty<T> clear() {
+    default Tree<T> clear() {
         return Tree.empty();
     }
 
-    /**
-     * Checks whether the given element occurs in this tree.
-     *
-     * @param element An element.
-     * @return true, if this tree contains
-     */
     @Override
-    default boolean contains(T element) {
-        return iterator().contains(element);
+    default Seq<T> distinct() {
+        return traverse().distinct();
     }
 
     @Override
-    List<T> distinct();
+    default Seq<T> distinctBy(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        if (isEmpty()) {
+            return Stream.empty();
+        } else {
+            return traverse().distinctBy(comparator);
+        }
+    }
 
     @Override
-    List<T> distinctBy(Comparator<? super T> comparator);
+    default <U> Seq<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
+        if (isEmpty()) {
+            return Stream.empty();
+        } else {
+            return traverse().distinctBy(keyExtractor);
+        }
+    }
 
     @Override
-    <U> List<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
+    default Seq<T> drop(int n) {
+        if (n >= length()) {
+            return Stream.empty();
+        } else {
+            return traverse().drop(n);
+        }
+    }
 
     @Override
-    List<T> drop(int n);
+    default Seq<T> dropRight(int n) {
+        if (n >= length()) {
+            return Stream.empty();
+        } else {
+            return traverse().dropRight(n);
+        }
+    }
 
     @Override
-    List<T> dropRight(int n);
+    default Seq<T> dropWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        if (isEmpty()) {
+            return Stream.empty();
+        } else {
+            return traverse().dropWhile(predicate);
+        }
+    }
 
     @Override
-    List<T> dropWhile(Predicate<? super T> predicate);
+    default Seq<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        if (isEmpty()) {
+            return Stream.empty();
+        } else {
+            return traverse().filter(predicate);
+        }
+    }
 
     @Override
-    List<T> filter(Predicate<? super T> predicate);
+    default Option<T> findLast(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        if (isEmpty()) {
+            return None.instance();
+        } else {
+            return iterator().findLast(predicate);
+        }
+    }
 
     @Override
-    <U> Tree<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+    default <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return null; // TODO
+    }
 
     @Override
-    Tree<Object> flatten();
+    default Tree<?> flatten() {
+        return null; // TODO
+    }
 
     @Override
-    <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier);
+    default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        if (isEmpty()) {
+            return zero;
+        } else {
+            return iterator().foldRight(zero, f);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <C> Map<C, Seq<T>> groupBy(Function<? super T, ? extends C> classifier) {
+        Objects.requireNonNull(classifier, "classifier is null");
+        if (isEmpty()) {
+            return HashMap.empty();
+        } else {
+            return (Map<C, Seq<T>>) traverse().groupBy(classifier);
+        }
+    }
 
     @Override
-    T head();
+    default boolean hasDefiniteSize() {
+        return true;
+    }
 
     @Override
-    Option<T> headOption();
+    default T head() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("head of empty tree");
+        } else {
+            return iterator().next();
+        }
+    }
 
     @Override
-    List<T> init();
+    default Option<T> headOption() {
+        return isEmpty() ? None.instance() : new Some<>(head());
+    }
 
     @Override
-    Option<List<T>> initOption();
+    default Seq<T> init() {
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("init of empty tree");
+        } else {
+            return traverse().init();
+        }
+    }
 
-    /**
-     * Checks if this tree is the empty tree.
-     *
-     * @return true, if this tree is empty, false otherwise.
-     */
     @Override
-    boolean isEmpty();
+    default Option<Seq<T>> initOption() {
+        return isEmpty() ? None.instance() : new Some<>(init());
+    }
 
-    /**
-     * Iterates over the elements of this tree in pre-order.
-     *
-     * @return An iterator of this tree's node values.
-     */
+    @Override
+    default boolean isTraversableAgain() {
+        return true;
+    }
+
     @Override
     default Iterator<T> iterator() {
         return traverse().iterator();
     }
 
     @Override
-    Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate);
+    default <U> Tree<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return null; // TODO
+    }
 
+    @SuppressWarnings("unchecked")
     @Override
-    Tree<T> peek(Consumer<? super T> action);
-
-    @Override
-    Tree<T> replace(T currentElement, T newElement);
-
-    @Override
-    Tree<T> replaceAll(T currentElement, T newElement);
-
-    @Override
-    Tree<T> replaceAll(UnaryOperator<T> operator);
-
-    @Override
-    List<T> retainAll(java.lang.Iterable<? extends T> elements);
-
-    @Override
-    Tuple2<List<T>, List<T>> span(Predicate<? super T> predicate);
-
-    @Override
-    List<T> tail();
-
-    @Override
-    Option<List<T>> tailOption();
-
-    @Override
-    List<T> take(int n);
-
-    @Override
-    List<T> takeRight(int n);
-
-    @Override
-    default List<T> takeUntil(Predicate<? super T> predicate) {
+    default Tuple2<Seq<T>, Seq<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return takeWhile(predicate.negate());
+        if (isEmpty()) {
+            return Tuple.of(Stream.empty(), Stream.empty());
+        } else {
+            return (Tuple2<Seq<T>, Seq<T>>) traverse().partition(predicate);
+        }
     }
 
     @Override
-    List<T> takeWhile(Predicate<? super T> predicate);
+    default Tree<T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+        if (!isEmpty()) {
+            action.accept(head());
+        }
+        return this;
+    }
 
     @Override
-    default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("reduceRight of empty Tree");
+        } else {
+            return iterator().reduceRight(op);
+        }
+    }
+
+    @Override
+    default Tree<T> replace(T currentElement, T newElement) {
+        return null; // TODO
+    }
+
+    @Override
+    default Tree<T> replaceAll(T currentElement, T newElement) {
+        return null; // TODO
+    }
+
+    @Override
+    default Tree<T> replaceAll(UnaryOperator<T> operator) {
+        Objects.requireNonNull(operator, "operator is null");
+        return null; // TODO
+    }
+
+    @Override
+    default Seq<T> retainAll(Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return traverse().retainAll(elements);
+    }
+
+    @Override
+    default Tuple2<Seq<T>, Seq<T>> span(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        if (isEmpty()) {
+            return Tuple.of(Stream.empty(), Stream.empty());
+        } else {
+            return null; // TODO
+        }
+    }
+
+    @Override
+    default Seq<T> tail() {
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("tail of empty tree");
+        } else {
+            return traverse().tail();
+        }
+    }
+
+    @Override
+    default Option<Seq<T>> tailOption() {
+        return isEmpty() ? None.instance() : new Some<>(tail());
+    }
+
+    @Override
+    default Seq<T> take(int n) {
+        if (isEmpty()) {
+            return Stream.empty();
+        } else {
+            return traverse().take(n);
+        }
+    }
+
+    @Override
+    default Seq<T> takeRight(int n) {
+        if (isEmpty()) {
+            return Stream.empty();
+        } else {
+            return traverse().takeRight(n);
+        }
+    }
+
+    @Override
+    default Seq<T> takeUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return traverse().takeUntil(predicate);
+    }
+
+    @Override
+    default Seq<T> takeWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return traverse().takeWhile(predicate);
+    }
+
+    @Override
+    default <T1, T2> Tuple2<Tree<T1>, Tree<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        return iterator().unzip(unzipper).map(Stream::ofAll, Stream::ofAll);
+        return null; // TODO
     }
 
     @Override
-    default <U> Seq<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
+    default <U> Tree<Tuple2<T, U>> zip(Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
-        return Stream.ofAll(iterator().zip(that));
+        return null; // TODO
     }
 
     @Override
-    default <U> Seq<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
+    default <U> Tree<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        return Stream.ofAll(iterator().zipAll(that, thisElem, thatElem));
+        return null; // TODO
     }
 
     @Override
-    default Seq<Tuple2<T, Integer>> zipWithIndex() {
-        return Stream.ofAll(iterator().zipWithIndex());
+    default Tree<Tuple2<T, Integer>> zipWithIndex() {
+        return null; // TODO
     }
 
     @Override
@@ -334,68 +455,8 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public List<T> distinct() {
-            return traverse().distinct();
-        }
-
-        @Override
-        public List<T> distinctBy(Comparator<? super T> comparator) {
-            return traverse().distinctBy(comparator);
-        }
-
-        @Override
-        public <U> List<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-            return traverse().distinctBy(keyExtractor);
-        }
-
-        @Override
-        public List<T> drop(int n) {
-            return traverse().drop(n);
-        }
-
-        @Override
-        public List<T> dropRight(int n) {
-            return traverse().dropRight(n);
-        }
-
-        @Override
-        public List<T> dropWhile(Predicate<? super T> predicate) {
-            return traverse().dropWhile(predicate);
-        }
-
-        @Override
-        public List<T> filter(Predicate<? super T> predicate) {
-            return traverse().filter(predicate);
-        }
-
-        @Override
-        public Option<T> findLast(Predicate<? super T> predicate) {
-            return traverse().findLast(predicate);
-        }
-
-        @Override
-        public <U> Tree<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
-            return null; // TODO
-        }
-
-        @Override
-        public Tree<Object> flatten() {
-            return null; // TODO
-        }
-
-        @Override
-        public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-            return traverse().foldRight(zero, f);
-        }
-
-        @Override
         public T getValue() {
             return value;
-        }
-
-        @Override
-        public boolean hasDefiniteSize() {
-            return true;
         }
 
         @Override
@@ -405,7 +466,7 @@ public interface Tree<T> extends Traversable<T> {
 
         @Override
         public int length() {
-            return 0;
+            return size.get();
         }
 
         @Override
@@ -414,109 +475,8 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public boolean isTraversableAgain() {
-            return true;
-        }
-
-        @Override
-        public <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
-            return traverse().groupBy(classifier);
-        }
-
-        @Override
-        public T head() {
-            return traverse().head(); // TODO: use iterator (in traverse order)
-        }
-
-        @Override
-        public Option<T> headOption() {
-            return traverse().headOption(); // TODO: use iterator (in traverse order)
-        }
-
-        @Override
-        public List<T> init() {
-            return traverse().init();
-        }
-
-        @Override
-        public Option<List<T>> initOption() {
-            return traverse().initOption();
-        }
-
-        @Override
         public List<Node<T>> getChildren() {
             return children;
-        }
-
-        @Override
-        public Node<T> peek(Consumer<? super T> action) {
-            traverse().peek(action); // TODO: use iterator (in traverse order)
-            return this;
-        }
-
-        @Override
-        public T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-            return traverse().reduceRight(op);
-        }
-
-        @Override
-        public Tree<T> replace(T currentElement, T newElement) {
-            return null; // TODO
-        }
-
-        @Override
-        public Tree<T> replaceAll(T currentElement, T newElement) {
-            return null; // TODO
-        }
-
-        @Override
-        public Tree<T> replaceAll(UnaryOperator<T> operator) {
-            return null; // TODO
-        }
-
-        @Override
-        public List<T> retainAll(java.lang.Iterable<? extends T> elements) {
-            return traverse().retainAll(elements);
-        }
-
-        @Override
-        public Tuple2<List<T>, List<T>> span(Predicate<? super T> predicate) {
-            return traverse().span(predicate);
-        }
-
-        @Override
-        public List<T> tail() {
-            return traverse().tail();
-        }
-
-        @Override
-        public Option<List<T>> tailOption() {
-            return traverse().tailOption();
-        }
-
-        @Override
-        public List<T> take(int n) {
-            return traverse().take(n);
-        }
-
-        @Override
-        public List<T> takeRight(int n) {
-            return traverse().takeRight(n);
-        }
-
-        @Override
-        public List<T> takeWhile(Predicate<? super T> predicate) {
-            return traverse().takeWhile(predicate);
-        }
-
-        @Override
-        public <U> Node<U> map(Function<? super T, ? extends U> mapper) {
-            return new Node<>(mapper.apply(value), children.map(child -> child.map(mapper)));
-        }
-
-        @Override
-        public Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate) {
-            return traverse().partition(predicate);
         }
 
         @Override
@@ -647,7 +607,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     /**
-     * The singleton instance of the empty tree.
+     * The empty tree. Use Tree.empty() to create an instance.
      *
      * @param <T> type of the tree's values
      */
@@ -661,45 +621,9 @@ public interface Tree<T> extends Traversable<T> {
         private Empty() {
         }
 
-        /**
-         * Returns the singleton instance of the empty tree.
-         *
-         * @param <T> type of the tree's values
-         * @return the single tree instance
-         */
         @SuppressWarnings("unchecked")
         public static <T> Empty<T> instance() {
             return (Empty<T>) INSTANCE;
-        }
-
-        @Override
-        public Nil<T> distinct() {
-            return Nil.instance();
-        }
-
-        @Override
-        public Nil<T> distinctBy(Comparator<? super T> comparator) {
-            return Nil.instance();
-        }
-
-        @Override
-        public <U> Nil<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-            return Nil.instance();
-        }
-
-        @Override
-        public Nil<T> drop(int n) {
-            return Nil.instance();
-        }
-
-        @Override
-        public Nil<T> dropRight(int n) {
-            return Nil.instance();
-        }
-
-        @Override
-        public Nil<T> dropWhile(Predicate<? super T> predicate) {
-            return Nil.instance();
         }
 
         @Override
@@ -710,11 +634,6 @@ public interface Tree<T> extends Traversable<T> {
         @Override
         public T getValue() {
             throw new UnsupportedOperationException("getValue of empty Tree");
-        }
-
-        @Override
-        public boolean hasDefiniteSize() {
-            return true;
         }
 
         @Override
@@ -730,131 +649,6 @@ public interface Tree<T> extends Traversable<T> {
         @Override
         public boolean isLeaf() {
             return false;
-        }
-
-        @Override
-        public boolean isTraversableAgain() {
-            return true;
-        }
-
-        @Override
-        public Empty<T> peek(Consumer<? super T> action) {
-            return this;
-        }
-
-        @Override
-        public T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-            throw new UnsupportedOperationException("reduceRight of empty Tree");
-        }
-
-        @Override
-        public Tree<T> replace(T currentElement, T newElement) {
-            return Tree.empty();
-        }
-
-        @Override
-        public Tree<T> replaceAll(T currentElement, T newElement) {
-            return Tree.empty();
-        }
-
-        @Override
-        public Tree<T> replaceAll(UnaryOperator<T> operator) {
-            return Tree.empty();
-        }
-
-        @Override
-        public Nil<T> retainAll(java.lang.Iterable<? extends T> elements) {
-            return Nil.instance();
-        }
-
-        @Override
-        public Tuple2<List<T>, List<T>> span(Predicate<? super T> predicate) {
-            return Tuple.of(List.empty(), List.empty());
-        }
-
-        @Override
-        public List<T> tail() {
-            throw new UnsupportedOperationException("tail of empty tree");
-        }
-
-        @Override
-        public None<List<T>> tailOption() {
-            return None.instance();
-        }
-
-        @Override
-        public Nil<T> take(int n) {
-            return Nil.instance();
-        }
-
-        @Override
-        public Nil<T> takeRight(int n) {
-            return Nil.instance();
-        }
-
-        @Override
-        public Nil<T> takeWhile(Predicate<? super T> predicate) {
-            return Nil.instance();
-        }
-
-        @Override
-        public Nil<T> filter(Predicate<? super T> predicate) {
-            return Nil.instance();
-        }
-
-        @Override
-        public None<T> findLast(Predicate<? super T> predicate) {
-            return None.instance();
-        }
-
-        @Override
-        public <U> Empty<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
-            return Empty.instance();
-        }
-
-        @Override
-        public Empty<Object> flatten() {
-            return Empty.instance();
-        }
-
-        @Override
-        public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-            throw new UnsupportedOperationException("foldRight of empty tree");
-        }
-
-        @Override
-        public <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
-            return HashMap.empty();
-        }
-
-        @Override
-        public T head() {
-            throw new UnsupportedOperationException("head of empty tree");
-        }
-
-        @Override
-        public None<T> headOption() {
-            return None.instance();
-        }
-
-        @Override
-        public List<T> init() {
-            throw new UnsupportedOperationException("init of empty tree");
-        }
-
-        @Override
-        public None<List<T>> initOption() {
-            return None.instance();
-        }
-
-        @Override
-        public <U> Empty<U> map(Function<? super T, ? extends U> mapper) {
-            return Empty.instance();
-        }
-
-        @Override
-        public Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate) {
-            return Tuple.of(List.empty(), List.empty());
         }
 
         @Override
@@ -976,6 +770,49 @@ public interface Tree<T> extends Traversable<T> {
             return 0;
         } else {
             return 1 + tree.getChildren().foldLeft(0, (count, child) -> count + Tree.nodeCount(child));
+        }
+    }
+}
+
+interface TreeModule {
+
+    final class Traversal {
+
+        private Traversal() {
+        }
+
+        static <T> Stream<T> preOrder(Tree<T> tree) {
+            return tree.getChildren()
+                    .foldLeft(Stream.of(tree.getValue()), (acc, child) -> acc.appendAll(preOrder(child)));
+        }
+
+        static <T> Stream<T> inOrder(Tree<T> tree) {
+            if (tree.isLeaf()) {
+                return Stream.of(tree.getValue());
+            } else {
+                final List<Node<T>> children = tree.getChildren();
+                return children.tail().foldLeft(Stream.<T> empty(), (acc, child) -> acc.appendAll(inOrder(child)))
+                        .prepend(tree.getValue())
+                        .prependAll(inOrder(children.head()));
+            }
+        }
+
+        static <T> Stream<T> postOrder(Tree<T> tree) {
+            return tree.getChildren()
+                    .foldLeft(Stream.<T> empty(), (acc, child) -> acc.appendAll(postOrder(child)))
+                    .append(tree.getValue());
+        }
+
+        static <T> Stream<T> levelOrder(Tree<T> tree) {
+            Stream<T> result = Stream.empty();
+            final java.util.Queue<Tree<T>> queue = new java.util.LinkedList<>();
+            queue.add(tree);
+            while (!queue.isEmpty()) {
+                final Tree<T> next = queue.remove();
+                result = result.prepend(next.getValue());
+                queue.addAll(next.getChildren().toJavaList());
+            }
+            return result.reverse();
         }
     }
 }
