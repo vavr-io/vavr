@@ -49,7 +49,7 @@ public final class Utils {
 
     public static File file(String fileName) {
         final URL resource = Utils.class.getClassLoader().getResource(fileName);
-        if(resource == null) {
+        if (resource == null) {
             throw new RuntimeException("resource not found");
         }
         return new File(resource.getFile());

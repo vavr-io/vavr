@@ -59,7 +59,7 @@ public class StringTest {
 
     @Test
     public void getBytes() {
-        assertThat(CharSeq.of("123").getBytes()).isEqualTo(new byte[] {49, 50, 51});
+        assertThat(CharSeq.of("123").getBytes()).isEqualTo(new byte[] { 49, 50, 51 });
     }
 
     @Test
@@ -199,12 +199,12 @@ public class StringTest {
 
     @Test
     public void split() {
-        assertThat(CharSeq.of("123").split("2")).isEqualTo(new CharSeq[] {CharSeq.of("1"), CharSeq.of("3")});
+        assertThat(CharSeq.of("123").split("2")).isEqualTo(new CharSeq[] { CharSeq.of("1"), CharSeq.of("3") });
     }
 
     @Test
     public void splitLim() {
-        assertThat(CharSeq.of("123").split("2", 2)).isEqualTo(new CharSeq[] {CharSeq.of("1"), CharSeq.of("3")});
+        assertThat(CharSeq.of("123").split("2", 2)).isEqualTo(new CharSeq[] { CharSeq.of("1"), CharSeq.of("3") });
     }
 
     @Test
@@ -224,7 +224,7 @@ public class StringTest {
 
     @Test
     public void toCharArray() {
-        assertThat(CharSeq.of("123").toCharArray()).isEqualTo(new char[] {49, 50, 51});
+        assertThat(CharSeq.of("123").toCharArray()).isEqualTo(new char[] { 49, 50, 51 });
     }
 
 }

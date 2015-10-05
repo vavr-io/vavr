@@ -5,14 +5,8 @@
  */
 package javaslang.control;
 
-import javaslang.Value;
-
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * Some represents a defined {@link javaslang.control.Option}. It contains a value which may be null. However, to

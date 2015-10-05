@@ -7,10 +7,6 @@ package javaslang.control;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * None is a singleton representation of the undefined {@link javaslang.control.Option}. The instance is obtained by

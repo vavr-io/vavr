@@ -23,90 +23,94 @@ import java.util.concurrent.CancellationException;
 public class Promise<T> {
 
     private final Future<T> future;
-	private volatile boolean completed = false;
+    private volatile boolean completed = false;
 
     /**
      * Creates a new Promise with an inner Future.
      */
-    public Promise(){
+    public Promise() {
         this.future = new Future<>();
     }
 
     /**
      * @return The {@link javaslang.concurrent.Future} created by this Promise
      */
-    public Future<T> future(){
+    public Future<T> future() {
         return future;
     }
 
     /**
      * Complete the attached Future with this value, triggering all call backs assigned to it.
+     *
      * @param t Value to complete the Future with.
      * @throws IllegalStateException if this Promise has already been completed.
      */
-    public void success(T t){
-	    complete(new Success<>(t));
+    public void success(T t) {
+        complete(new Success<>(t));
     }
 
     /**
      * Complete the attached Future with this exception, triggering all call backs assigned to it.
+     *
      * @param e Exception to complete the Future with.
      * @throws IllegalStateException if this Promise has already been completed.
      */
-    public void failure(Throwable e){
-	    complete(new Failure<>(e));
+    public void failure(Throwable e) {
+        complete(new Failure<>(e));
     }
 
     /**
      * Complete the attached Future with this Try, which will call success or failure depending on the Try's contents and weil trigger all call backs assigned to it.
+     *
      * @param source Try containing either a successful value or a failure exception.
      * @throws IllegalStateException if this Promise has already been completed.
      */
-    public void complete(Try<T> source){
-	    if(!completed){
-		    completed = true;
-	        future.complete(source);
-	    } else
-		    throw new IllegalStateException("This Promise has already been completed!");
+    public void complete(Try<T> source) {
+        if (!completed) {
+            completed = true;
+            future.complete(source);
+        } else
+            throw new IllegalStateException("This Promise has already been completed!");
     }
 
     /**
      * Complete the attached Future with the result of this Future, making them functionally the same.
+     *
      * @param source Future who's value will be passed on to this Future when it completes.
-     * @throws IllegalStateException if this Promise has already been completed.
+     * @throws IllegalStateException    if this Promise has already been completed.
      * @throws IllegalArgumentException if the given Future is the same one created by this Promise,
-     * as the Future can't succeed by itself, this would result in a Future that can never complete.
+     *                                  as the Future can't succeed by itself, this would result in a Future that can never complete.
      */
     public void completeWith(Future<T> source) {
-	    if(source == future)
-		    throw new IllegalArgumentException("Can't complete a Future with itself!");
+        if (source == future)
+            throw new IllegalArgumentException("Can't complete a Future with itself!");
 
-	    if(!completed){
+        if (!completed) {
             source.onCompletedTry(this::complete);
-	    } else
-		    throw new IllegalStateException("This Promise has already been completed!");
+        } else
+            throw new IllegalStateException("This Promise has already been completed!");
     }
 
     /**
-     *
      * @return True if this Promise has already been success, False if it has not.
      */
-    public boolean isCompleted(){
+    public boolean isCompleted() {
         return completed;
     }
 
     /**
      * Retrieves the value of this Promise.
+     *
      * @return None if this Promise has not been success yet, or Some containing a Try holding either the successful result or exception.
      */
-    public Option<Try<T>> value(){
+    public Option<Try<T>> value() {
         return future.value();
     }
 
     /**
      * Completes this Promise with a {@link java.util.concurrent.CancellationException}.
      */
-    public void cancel(){
+    public void cancel() {
         failure(new CancellationException("Promise was broken!"));
     }
 }

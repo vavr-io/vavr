@@ -144,8 +144,8 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
      * The collision resolution function will always take the first argument from <code>this</code> map
      * and the second from <code>that</code> map.
      *
-     * @param <U> value type of that Map
-     * @param that the other map
+     * @param <U>                 value type of that Map
+     * @param that                the other map
      * @param collisionResolution the collision resolution function
      * @return A merged map
      * @throws NullPointerException if that map or the given collision resolution function is null
@@ -240,7 +240,7 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
         /**
          * Convenience method for {@code new Entry<>(t._1, t._2)}.
          *
-         * @param t A tuple of arity 2
+         * @param t   A tuple of arity 2
          * @param <K> Key type
          * @param <V> Value type
          * @return A new Entry instance containing the first tuple component as key and the second tuple component as value.
@@ -252,10 +252,10 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
         /**
          * Convenience method for {@code new Entry<>(key, value)}.
          *
-         * @param key An map entry key
+         * @param key   An map entry key
          * @param value An map entry value
-         * @param <K> Key type
-         * @param <V> Value type
+         * @param <K>   Key type
+         * @param <V>   Value type
          * @return A new Entry instance containing the specified key and value.
          */
         public static <K, V> Entry<K, V> of(K key, V value) {

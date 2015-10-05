@@ -70,7 +70,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      */
     @SuppressWarnings("unchecked")
     public static <T> Array<T> of(T element) {
-        return wrap((T[]) new Object[] {element});
+        return wrap((T[]) new Object[] { element });
     }
 
     /**
@@ -198,7 +198,8 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         return Array.ofAll(Iterator.ofAll(array));
     }
 
-    /* package */ static <T> Array<T> wrap(Object[] array) {
+    /* package */
+    static <T> Array<T> wrap(Object[] array) {
         if (array.length == 0) {
             return empty();
         } else {
@@ -664,7 +665,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     private Object readResolve() {
-        if(isEmpty()) {
+        if (isEmpty()) {
             return EMPTY;
         } else {
             return this;
@@ -749,7 +750,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> padTo(int length, T element) {
-        if(length <= length()) {
+        if (length <= length()) {
             return this;
         } else {
             return appendAll(Iterator.gen(() -> element).take(length - length()));
@@ -883,11 +884,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         final java.util.List<T> list = new ArrayList<>();
         for (int i = 0; i < length(); i++) {
             T value = get(i);
-            if(!element.equals(value)) {
+            if (!element.equals(value)) {
                 list.add(value);
             }
         }
-        if(list.size() == length()) {
+        if (list.size() == length()) {
             return this;
         } else {
             return wrap(list.toArray());
@@ -903,11 +904,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         final java.util.List<T> list = new ArrayList<>();
         for (int i = 0; i < length(); i++) {
             T value = get(i);
-            if(!removed.contains(value)) {
+            if (!removed.contains(value)) {
                 list.add(value);
             }
         }
-        if(list.size() == length()) {
+        if (list.size() == length()) {
             return this;
         } else {
             return wrap(list.toArray());
@@ -970,11 +971,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         final java.util.List<T> list = new ArrayList<>();
         for (int i = 0; i < length(); i++) {
             T value = get(i);
-            if(keeped.contains(value)) {
+            if (keeped.contains(value)) {
                 list.add(value);
             }
         }
-        if(list.size() == length()) {
+        if (list.size() == length()) {
             return this;
         } else {
             return wrap(list.toArray());

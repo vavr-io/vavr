@@ -748,7 +748,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Vector<T> padTo(int length, T element) {
-        if(length <= length()) {
+        if (length <= length()) {
             return this;
         } else {
             return appendAll(Iterator.gen(() -> element).take(length - length()));
@@ -1088,7 +1088,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty vector");
         }
-        if(length() == 1) {
+        if (length() == 1) {
             return empty();
         } else {
             final int newIndexShift = indexShift + 1;
@@ -1101,7 +1101,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         if (isEmpty()) {
             return None.instance();
         }
-        if(length() == 1) {
+        if (length() == 1) {
             return new Some<>(empty());
         } else {
             return new Some<>(tail());

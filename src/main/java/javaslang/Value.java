@@ -61,7 +61,7 @@ public interface Value<T> extends javaslang.Iterable<T> {
      * Gets the first value of the given Iterable if exists, otherwise throws.
      *
      * @param iterable An java.lang.Iterable
-     * @param <T> Component type
+     * @param <T>      Component type
      * @return An object of type T
      * @throws java.util.NoSuchElementException if the given iterable is empty
      */

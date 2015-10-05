@@ -28,8 +28,8 @@ import java.util.function.Supplier;
  * This will ignore the size hint of Arbitrary.</p>
  *
  * @param <T> type of generated objects
- * @see javaslang.test.Arbitrary
  * @author Daniel Dietrich
+ * @see javaslang.test.Arbitrary
  * @since 1.2.0
  */
 @FunctionalInterface

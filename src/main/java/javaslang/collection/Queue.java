@@ -603,7 +603,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Queue<T> drop(int n) {
-        if(n <= 0) {
+        if (n <= 0) {
             return this;
         }
         return new Queue<>(front.drop(n), rear.dropRight(n - front.length()));
@@ -611,7 +611,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Queue<T> dropRight(int n) {
-        if(n <= 0) {
+        if (n <= 0) {
             return this;
         }
         return new Queue<>(front.dropRight(n), rear.drop(n - front.length()));
@@ -799,7 +799,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Queue<T> padTo(int length, T element) {
-        if(length <= length()) {
+        if (length <= length()) {
             return this;
         }
         return toList().padTo(length, element).toQueue();
@@ -984,7 +984,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Queue<T> take(int n) {
-        if(n >= length()) {
+        if (n >= length()) {
             return this;
         }
         final int frontLength = front.length();
@@ -999,7 +999,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Queue<T> takeRight(int n) {
-        if(n >= length()) {
+        if (n >= length()) {
             return this;
         }
         final int rearLength = rear.length();
@@ -1036,7 +1036,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
         return toList().unzip(unzipper).map(List::toQueue, List::toQueue);
     }
 
-        @Override
+    @Override
     public Queue<T> update(int index, T element) {
         return toList().update(index, element).toQueue();
     }

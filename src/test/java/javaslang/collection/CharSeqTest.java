@@ -399,7 +399,7 @@ public class CharSeqTest {
     @Test
     public void shouldFilterNonEmptyTraversableAllMatch() {
         final CharSeq t = CharSeq.of('1', '2', '3', '4');
-        if(isThisLazyCollection()) {
+        if (isThisLazyCollection()) {
             assertThat(t.filter(i -> true)).isEqualTo(t);
         } else {
             assertThat(t.filter(i -> true)).isSameAs(t);
@@ -497,7 +497,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldFoldLeftNil() {
-        assertThat(this.<String>empty().foldLeft("", (xs, x) -> xs + x)).isEqualTo("");
+        assertThat(this.<String> empty().foldLeft("", (xs, x) -> xs + x)).isEqualTo("");
     }
 
     @Test(expected = NullPointerException.class)
@@ -703,7 +703,7 @@ public class CharSeqTest {
     public void shouldMapElementsToSequentialValuesInTheRightOrder() {
         final AtomicInteger seq = new AtomicInteger('0');
         final Vector<Character> expectedInts = Vector.of('0', '1', '2', '3', '4');
-        final Vector<Character> actualInts = expectedInts.map(ignored -> (char)seq.getAndIncrement());
+        final Vector<Character> actualInts = expectedInts.map(ignored -> (char) seq.getAndIncrement());
         assertThat(actualInts).isEqualTo(expectedInts);
     }
 
@@ -1217,7 +1217,7 @@ public class CharSeqTest {
     @Test
     public void shouldTakeAllIfCountExceedsSize() {
         final CharSeq t = CharSeq.of('1', '2', '3');
-        if(isThisLazyCollection()) {
+        if (isThisLazyCollection()) {
             assertThat(t.take(4)).isEqualTo(t);
         } else {
             assertThat(t.take(4)).isSameAs(t);
@@ -1262,7 +1262,7 @@ public class CharSeqTest {
     @Test
     public void shouldTakeWhileAllOnTrueCondition() {
         final CharSeq t = CharSeq.of('1', '2', '3');
-        if(isThisLazyCollection()) {
+        if (isThisLazyCollection()) {
             assertThat(t.takeWhile(x -> true)).isEqualTo(t);
         } else {
             assertThat(t.takeWhile(x -> true)).isSameAs(t);
@@ -1310,7 +1310,7 @@ public class CharSeqTest {
     @Test
     public void shouldConvertNonNilToJavaArray() {
         final Character[] array = CharSeq.of('1', '2').toJavaArray(Character.class);
-        final Character[] expected = new Character[]{ '1', '2' };
+        final Character[] expected = new Character[] { '1', '2' };
         assertThat(array).isEqualTo(expected);
     }
 
@@ -2541,7 +2541,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldStreamAndCollectNil() {
-        final Seq<?> actual = java.util.stream.Stream.<Character>empty().collect(CharSeq.collector());
+        final Seq<?> actual = java.util.stream.Stream.<Character> empty().collect(CharSeq.collector());
         assertThat(actual).isEqualTo(empty());
     }
 
@@ -2553,7 +2553,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldParallelStreamAndCollectNil() {
-        final Seq<?> actual = java.util.stream.Stream.<Character>empty().parallel().collect(CharSeq.collector());
+        final Seq<?> actual = java.util.stream.Stream.<Character> empty().parallel().collect(CharSeq.collector());
         assertThat(actual).isEqualTo(empty());
     }
 

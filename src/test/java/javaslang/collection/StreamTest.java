@@ -12,7 +12,6 @@ import org.junit.Test;
 
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
-import java.util.function.Function;
 import java.util.stream.Collector;
 
 public class StreamTest extends AbstractSeqTest {
