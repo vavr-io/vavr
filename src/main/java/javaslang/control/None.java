@@ -7,10 +7,6 @@ package javaslang.control;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * None is a singleton representation of the undefined {@link javaslang.control.Option}. The instance is obtained by
@@ -36,9 +32,7 @@ public final class None<T> implements Option<T>, Serializable {
     }
 
     /**
-     * <p>
      * Returns the singleton instance of None as {@code None<T>} in the context of a type {@code <T>}, e.g.
-     * </p>
      * <pre>
      * <code>final Option&lt;Integer&gt; o = None.instance(); // o is of type None&lt;Integer&gt;</code>
      * </pre>

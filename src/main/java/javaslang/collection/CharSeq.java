@@ -146,10 +146,10 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return a range of characters as specified or the empty range if {@code from >= toExclusive}
      */
     public static CharSeq range(char from, char toExclusive) {
-        return new CharSeq(Iterator.range(from ,toExclusive).mkString());
+        return new CharSeq(Iterator.range(from, toExclusive).mkString());
     }
 
-    public static CharSeq rangeBy(char from, char toExclusive, int step){
+    public static CharSeq rangeBy(char from, char toExclusive, int step) {
         return new CharSeq(Iterator.rangeBy(from, toExclusive, step).mkString());
     }
 
@@ -200,7 +200,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * Repeats a character {@code times} times.
      *
      * @param character A character
-     * @param times Repetition count
+     * @param times     Repetition count
      * @return A CharSeq representing {@code character * times}
      */
     public static CharSeq repeat(char character, int times) {

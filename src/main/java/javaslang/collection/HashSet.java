@@ -76,13 +76,9 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * <p>
      * Creates a HashSet of the given elements.
-     * </p>
      *
-     * <pre>
-     * <code>  HashSet.of(1, 2, 3, 4)
-     * </pre>
+     * <pre><code>HashSet.of(1, 2, 3, 4)</code></pre>
      *
      * @param <T>      Component type of the HashSet.
      * @param elements Zero or more elements.
@@ -813,13 +809,10 @@ public final class HashSet<T> implements Set<T>, Serializable {
     // -- Serialization
 
     /**
-     * <p>
      * {@code writeReplace} method for the serialization proxy pattern.
-     * </p>
      * <p>
      * The presence of this method causes the serialization system to emit a SerializationProxy instance instead of
      * an instance of the enclosing class.
-     * </p>
      *
      * @return A SerialiationProxy for this enclosing class.
      */
@@ -828,9 +821,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * <p>
      * {@code readObject} method for the serialization proxy pattern.
-     * </p>
+     * <p>
      * Guarantees that the serialization system will never generate a serialized instance of the enclosing class.
      *
      * @param stream An object serialization stream.
@@ -905,9 +897,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
         }
 
         /**
-         * <p>
          * {@code readResolve} method for the serialization proxy pattern.
-         * </p>
+         * <p>
          * Returns a logically equivalent instance of the enclosing class. The presence of this method causes the
          * serialization system to translate the serialization proxy back into an instance of the enclosing class
          * upon deserialization.

@@ -67,36 +67,36 @@ public class Future<T> {
         this(source, ForkJoinPool.commonPool());
     }
 
-	/**
-	 * Should only be called from Promise.
-	 */
+    /**
+     * Should only be called from Promise.
+     */
     Future() {
 
     }
 
-	/**
-	 * Create a new Future who's value will be calculated asynchronously from the given {@link java.util.function.Supplier}
-	 *
-     * @param <T> value type
-	 * @param source A {@link java.util.function.Supplier} that will asynchronously provide the final value.
-	 * @param ex     An {@link java.util.concurrent.Executor} that will be used to calculate the value of the supplier and will serve
-	 *               as the default Executor for all asynchronous methods on this Future.
+    /**
+     * Create a new Future who's value will be calculated asynchronously from the given {@link java.util.function.Supplier}
+     *
+     * @param <T>    value type
+     * @param source A {@link java.util.function.Supplier} that will asynchronously provide the final value.
+     * @param ex     An {@link java.util.concurrent.Executor} that will be used to calculate the value of the supplier and will serve
+     *               as the default Executor for all asynchronous methods on this Future.
      * @return a new Future
-	 */
-	public static <T> Future<T> of(CheckedSupplier<T> source, Executor ex) {
-		return new Future<>(source, ex);
-	}
+     */
+    public static <T> Future<T> of(CheckedSupplier<T> source, Executor ex) {
+        return new Future<>(source, ex);
+    }
 
-	/**
-	 * Create a new Future who's value will be calculated asynchronously from the given {@link java.util.function.Supplier}
-	 *
-     * @param <T> value type
-	 * @param source A {@link java.util.function.Supplier} that will asynchronously provide the final value.
+    /**
+     * Create a new Future who's value will be calculated asynchronously from the given {@link java.util.function.Supplier}
+     *
+     * @param <T>    value type
+     * @param source A {@link java.util.function.Supplier} that will asynchronously provide the final value.
      * @return a new Future
-	 */
-	public static <T> Future<T> of(CheckedSupplier<T> source) {
-		return of(source, ForkJoinPool.commonPool());
-	}
+     */
+    public static <T> Future<T> of(CheckedSupplier<T> source) {
+        return of(source, ForkJoinPool.commonPool());
+    }
 
     /**
      * A static form of {@link #Future(CompletableFuture)} and is identical.
@@ -104,7 +104,7 @@ public class Future<T> {
      * See {@link #Future(CompletableFuture)}.
      *
      * @param source a source CompletableFuture
-     * @param <T> The type of this Future's eventual value.
+     * @param <T>    The type of this Future's eventual value.
      * @return a new Future
      */
     public static <T> Future<T> of(CompletableFuture<? extends T> source) {
@@ -123,24 +123,24 @@ public class Future<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> Future<T> of(java.util.concurrent.Future<? extends T> source) {
-	    if(source instanceof CompletableFuture)
-		    return new Future<>((CompletableFuture<T>) source);
-	    else {
-		    Promise<T> result = new Promise<>();
+        if (source instanceof CompletableFuture)
+            return new Future<>((CompletableFuture<T>) source);
+        else {
+            Promise<T> result = new Promise<>();
 
-		    FutureConverter.instance().addFuture(source, result);
+            FutureConverter.instance().addFuture(source, result);
 
-		    return result.future();
-	    }
+            return result.future();
+        }
     }
 
-	public static <T> Future<T> completed(Try<T> tri){
-		Future<T> result = new Future<>();
+    public static <T> Future<T> completed(Try<T> tri) {
+        Future<T> result = new Future<>();
 
-		result.complete(tri);
+        result.complete(tri);
 
-		return result;
-	}
+        return result;
+    }
 
     /**
      * Create a new Future that is already finished with the given value.
@@ -172,7 +172,7 @@ public class Future<T> {
         return result;
     }
 
-    private synchronized void accessQueue(Function<Queue<Tuple2<Executor, Consumer<Try<T>>>>, Queue<Tuple2<Executor, Consumer<Try<T>>>>> func){
+    private synchronized void accessQueue(Function<Queue<Tuple2<Executor, Consumer<Try<T>>>>, Queue<Tuple2<Executor, Consumer<Try<T>>>>> func) {
         callBacks = func.apply(callBacks);
     }
 
@@ -181,12 +181,12 @@ public class Future<T> {
             value = new Some<>(result);
 
             accessQueue(queue -> {
-                for(Tuple2<Executor, Consumer<Try<T>>> pair : queue)
+                for (Tuple2<Executor, Consumer<Try<T>>> pair : queue)
                     pair._1.execute(() -> pair._2.accept(result));
-               return null;
+                return null;
             });
 
-	        notifyAll();
+            notifyAll();
 
             //These lines were using in testing to ensure that no callBacks were slipping through.
 //            try {
@@ -197,9 +197,8 @@ public class Future<T> {
 
             // Not sure if this assert should stay in the code or be removed after we're positive everything works
             assert callBacks == null;
-        }
-	    else
-	        throw new IllegalStateException("This Future has already been completed!");
+        } else
+            throw new IllegalStateException("This Future has already been completed!");
     }
 
     /**
@@ -359,7 +358,7 @@ public class Future<T> {
      * @return A failed projection of this future.
      */
     public Future<Throwable> failed(Executor ex) {
-	    return mapTry(Try::failed, ex);
+        return mapTry(Try::failed, ex);
     }
 
     /**
@@ -384,7 +383,7 @@ public class Future<T> {
     public Future<T> recover(Function<Throwable, ? extends T> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
 
-	    return mapTry(tri -> tri.recover(func), ex);
+        return mapTry(tri -> tri.recover(func), ex);
     }
 
     /**
@@ -410,7 +409,7 @@ public class Future<T> {
         Promise<T> result = new Promise<>();
 
         //If it fails, run the func and complete result with that future's success or failure
-	    onCompleted(result::success, e -> result.completeWith(func.apply(e)), ex);
+        onCompleted(result::success, e -> result.completeWith(func.apply(e)), ex);
 
         return result.future();
     }
@@ -489,8 +488,7 @@ public class Future<T> {
                     return queue;
                 }
             });
-        }
-        else
+        } else
             value.forEach(func);
     }
 
@@ -543,7 +541,7 @@ public class Future<T> {
      */
     public Future<T> filter(Predicate<? super T> func, Executor ex) {
         Objects.requireNonNull(func, "func is null");
-	    return mapTry(in -> in.filter(func), ex);
+        return mapTry(in -> in.filter(func), ex);
     }
 
     /**
@@ -629,11 +627,11 @@ public class Future<T> {
      * @param unit    TimeUnit that timeOut is in.
      * @return this, but after blocking until success.
      * @throws InterruptedException if {@code unit.timedWait} gets interrupted
-     * @throws TimeoutException if a timeout occurs
+     * @throws TimeoutException     if a timeout occurs
      */
     public Future<T> await(long timeOut, TimeUnit unit) throws InterruptedException, TimeoutException {
-	    if(isCompleted())
-		    return this;
+        if (isCompleted())
+            return this;
 
         //TODO: Test more to make sure this works all the time.
         synchronized (this) {
@@ -651,7 +649,7 @@ public class Future<T> {
      * @param unit    TimeUnit that timeOut is in.
      * @return The result value of this Future after blocking.
      * @throws InterruptedException if {@code await} gets interrupted
-     * @throws TimeoutException if a timeout occurs
+     * @throws TimeoutException     if a timeout occurs
      */
     public Try<T> ready(long timeOut, TimeUnit unit) throws InterruptedException, TimeoutException {
         await(timeOut, unit);
@@ -670,7 +668,7 @@ public class Future<T> {
 
     public static <T> Future<List<T>> sequence(java.lang.Iterable<Future<T>> source, Executor ex) {
         return List.ofAll(source)
-		        .foldRight(Future.success(List.empty()), (next, accumulator) -> accumulator.flatMap(list -> next.map(list::prepend, ex), ex));
+                .foldRight(Future.success(List.empty()), (next, accumulator) -> accumulator.flatMap(list -> next.map(list::prepend, ex), ex));
     }
 
     public static <T> Future<List<T>> sequence(java.lang.Iterable<Future<T>> source) {
@@ -696,37 +694,37 @@ public class Future<T> {
 
     public static <T1, T2, T3> Future<Tuple3<T1, T2, T3>> sequence(Tuple3<Future<T1>, Future<T2>, Future<T3>> source) {
         return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2)), source._3))
-		        .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._2));
+                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._2));
 
     }
 
     public static <T1, T2, T3, T4> Future<Tuple4<T1, T2, T3, T4>> sequence(Tuple4<Future<T1>, Future<T2>, Future<T3>, Future<T4>> source) {
         return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2, source._3)), source._4))
-		        .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._2));
+                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._2));
 
     }
 
     public static <T1, T2, T3, T4, T5> Future<Tuple5<T1, T2, T3, T4, T5>> sequence(Tuple5<Future<T1>, Future<T2>, Future<T3>, Future<T4>, Future<T5>> source) {
         return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2, source._3, source._4)), source._5))
-		        .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._2));
+                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._2));
 
     }
 
     public static <T1, T2, T3, T4, T5, T6> Future<Tuple6<T1, T2, T3, T4, T5, T6>> sequence(Tuple6<Future<T1>, Future<T2>, Future<T3>, Future<T4>, Future<T5>, Future<T6>> source) {
         return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2, source._3, source._4, source._5)), source._6))
-		        .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._1._5, nested._2));
+                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._1._5, nested._2));
 
     }
 
     public static <T1, T2, T3, T4, T5, T6, T7> Future<Tuple7<T1, T2, T3, T4, T5, T6, T7>> sequence(Tuple7<Future<T1>, Future<T2>, Future<T3>, Future<T4>, Future<T5>, Future<T6>, Future<T7>> source) {
         return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2, source._3, source._4, source._5, source._6)), source._7))
-		        .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._1._5, nested._1._6, nested._2));
+                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._1._5, nested._1._6, nested._2));
     }
 
 
     public static <T1, T2, T3, T4, T5, T6, T7, T8> Future<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> sequence(Tuple8<Future<T1>, Future<T2>, Future<T3>, Future<T4>, Future<T5>, Future<T6>, Future<T7>, Future<T8>> source) {
         return sequence(Tuple.of(sequence(Tuple.of(source._1, source._2, source._3, source._4, source._5, source._6, source._7)), source._8))
-		        .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._1._5, nested._1._6, nested._1._7, nested._2));
+                .map(nested -> Tuple.of(nested._1._1, nested._1._2, nested._1._3, nested._1._4, nested._1._5, nested._1._6, nested._1._7, nested._2));
     }
 
     private static class FutureConverter {

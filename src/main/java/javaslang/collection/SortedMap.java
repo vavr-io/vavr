@@ -34,9 +34,9 @@ public interface SortedMap<K, V> extends Map<K, V> {
      * {@code mapper}.
      *
      * @param keyComparator A comparator for keys of type U
-     * @param mapper A function which maps key/value pairs to Iterables map entries
-     * @param <U> New key type
-     * @param <W> New value type
+     * @param mapper        A function which maps key/value pairs to Iterables map entries
+     * @param <U>           New key type
+     * @param <W>           New value type
      * @return A new Map instance containing mapped entries
      */
     <U, W> SortedMap<U, W> flatMap(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper);
@@ -46,15 +46,15 @@ public interface SortedMap<K, V> extends Map<K, V> {
      * {@code mapper}.
      *
      * @param keyComparator A comparator for keys of type U
-     * @param mapper A function which maps key/value pairs to map entries
-     * @param <U> New key type
-     * @param <W> New value type
+     * @param mapper        A function which maps key/value pairs to map entries
+     * @param <U>           New key type
+     * @param <W>           New value type
      * @return A new Map instance containing mapped entries
      */
     <U, W> SortedMap<U, W> map(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper);
 
     // -- Adjusted return types of Map methods
-    
+
     @Override
     SortedMap<K, V> clear();
 

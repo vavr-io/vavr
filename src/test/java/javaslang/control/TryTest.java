@@ -8,7 +8,6 @@ package javaslang.control;
 import javaslang.Serializables;
 import javaslang.control.Failure.NonFatal;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.StrictAssertions;
 import org.junit.Test;
 
 import java.util.*;
@@ -193,7 +192,7 @@ public class TryTest {
                 throw new UnknownError();
             });
             fail("Exception Expected");
-        }catch (Failure.Fatal x){
+        } catch (Failure.Fatal x) {
             assertThat(x.toString()).isEqualTo("Fatal(java.lang.UnknownError)");
         }
     }
@@ -220,12 +219,12 @@ public class TryTest {
             });
             fail("Exception Expected");
         } catch (Failure.Fatal x) {
-            try{
+            try {
                 Try.of(() -> {
                     throw error;
                 });
                 fail("Exception Expected");
-            }catch (Failure.Fatal fatal){
+            } catch (Failure.Fatal fatal) {
                 assertThat(x.equals(fatal)).isEqualTo(true);
             }
         }

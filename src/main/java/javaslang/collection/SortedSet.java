@@ -36,8 +36,8 @@ public interface SortedSet<T> extends Set<T> {
      * {@code mapper}.
      *
      * @param comparator A comparator for values of type U
-     * @param mapper A function which maps values of type T to Iterables of values of type U
-     * @param <U> Type of flat-mapped values
+     * @param mapper     A function which maps values of type T to Iterables of values of type U
+     * @param <U>        Type of flat-mapped values
      * @return A new Set instance containing mapped values
      */
     <U> SortedSet<U> flatMap(Comparator<? super U> comparator, Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
@@ -47,8 +47,8 @@ public interface SortedSet<T> extends Set<T> {
      * {@code mapper}.
      *
      * @param comparator A comparator for values of type U
-     * @param mapper A function which maps values of type T to values of type U
-     * @param <U> Type of mapped values
+     * @param mapper     A function which maps values of type T to values of type U
+     * @param <U>        Type of mapped values
      * @return A new Set instance containing mapped values
      */
     <U> SortedSet<U> map(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper);

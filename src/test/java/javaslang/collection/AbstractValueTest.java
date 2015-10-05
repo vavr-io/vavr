@@ -198,7 +198,7 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldFilterNonEmptyTraversableAllMatch() {
-        if(useIsEqualToInsteadOfIsSameAs()) {
+        if (useIsEqualToInsteadOfIsSameAs()) {
             final Value<Integer> v1 = of(1, 2, 3, 4);
             final Value<Integer> v2 = of(1, 2, 3, 4);
             assertThat(v1.filter(i -> true)).isEqualTo(v2);
@@ -326,8 +326,8 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
     public void shouldConvertToCharSeq() {
         Value<Character> v = of('a', 'b', 'c');
         assertThat(Match.of(v)
-                .whenTypeIn(Iterator.class).then(Iterator.of("ignore").toString())
-                .orElse(v.toString())
+                        .whenTypeIn(Iterator.class).then(Iterator.of("ignore").toString())
+                        .orElse(v.toString())
         ).isEqualTo(v.toCharSeq().toString());
     }
 
@@ -390,7 +390,7 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldConvertToJavaArray() {
-        assertThat(of(1, 2, 3).toJavaArray(Integer.class)).isEqualTo(new int[] {1, 2, 3});
+        assertThat(of(1, 2, 3).toJavaArray(Integer.class)).isEqualTo(new int[] { 1, 2, 3 });
     }
 
     @Test

@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.function.*;
 
 /**
- * <p>A general Tree interface.</p>
+ * A general Tree interface.
  *
  * @param <T> component type of this Tree
  * @author Daniel Dietrich
@@ -554,9 +554,8 @@ public interface Tree<T> extends Traversable<T> {
         // -- Serializable implementation
 
         /**
-         * <p>
          * {@code writeReplace} method for the serialization proxy pattern.
-         * </p>
+         * <p>
          * The presence of this method causes the serialization system to emit a SerializationProxy instance instead of
          * an instance of the enclosing class.
          *
@@ -567,9 +566,8 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         /**
-         * <p>
          * {@code readObject} method for the serialization proxy pattern.
-         * </p>
+         * <p>
          * Guarantees that the serialization system will never generate a serialized instance of the enclosing class.
          *
          * @param stream An object serialization stream.
@@ -634,9 +632,8 @@ public interface Tree<T> extends Traversable<T> {
             }
 
             /**
-             * <p>
              * {@code readResolve} method for the serialization proxy pattern.
-             * </p>
+             * <p>
              * Returns a logically equivalent instance of the enclosing class. The presence of this method causes the
              * serialization system to translate the serialization proxy back into an instance of the enclosing class
              * upon deserialization.
@@ -889,8 +886,8 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     /**
-     * <p>Tree traversal order.</p>
-     *
+     * Tree traversal order.
+     * <p>
      * Example tree:
      * <pre>
      * <code>

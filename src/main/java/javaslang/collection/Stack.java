@@ -80,9 +80,7 @@ public interface Stack<T> extends LinearSeq<T> {
     }
 
     /**
-     * <p>
      * Creates a Stack of the given elements.
-     * </p>
      *
      * @param <T>      Component type of the Stack.
      * @param elements Zero or more elements.

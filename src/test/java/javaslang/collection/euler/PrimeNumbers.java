@@ -22,11 +22,11 @@ public final class PrimeNumbers {
         if (index < 1) {
             throw new IllegalArgumentException("index < 1");
         }
-        return Sieve.INSTANCE.array()[index-1];
+        return Sieve.INSTANCE.array()[index - 1];
     }
 
     public static HashMap<Long, Long> factorization(long num) {
-        if(num == 1) {
+        if (num == 1) {
             return HashMap.empty();
         } else {
             return primeFactors(num)

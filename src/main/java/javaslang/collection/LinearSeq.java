@@ -9,7 +9,6 @@ import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.util.Comparator;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;

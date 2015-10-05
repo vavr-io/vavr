@@ -176,14 +176,11 @@ public interface TraversableOnce<T> extends Value<T> {
     }
 
     /**
-     * <p>
      * Tests if this TraversableOnce contains all given elements.
-     * </p>
      * <p>
      * The result is equivalent to
      * {@code elements.isEmpty() ? true : contains(elements.head()) && containsAll(elements.tail())} but implemented
      * without recursion.
-     * </p>
      *
      * @param elements A List of values of type T.
      * @return true, if this List contains all given elements, false otherwise.
@@ -304,12 +301,9 @@ public interface TraversableOnce<T> extends Value<T> {
     }
 
     /**
-     * <p>
      * Returns the last element of this which satisfies the given predicate.
-     * </p>
      * <p>
      * Same as {@code reverse().findFirst(predicate)}.
-     * </p>
      *
      * @param predicate A predicate.
      * @return Some(element) or None, where element may be null (i.e. {@code List.of(null).findFirst(e -> e == null)}).
@@ -324,12 +318,9 @@ public interface TraversableOnce<T> extends Value<T> {
     TraversableOnce<? extends Object> flatten();
 
     /**
-     * <p>
      * Accumulates the elements of this TraversableOnce by successively calling the given operator {@code op}.
-     * </p>
      * <p>
      * Example: {@code List("a", "b", "c").fold("", (xs, x) -> xs + x) = "abc"}
-     * </p>
      *
      * @param zero Value to start the accumulation with.
      * @param op   The accumulator operator.
@@ -367,17 +358,13 @@ public interface TraversableOnce<T> extends Value<T> {
     }
 
     /**
-     * <p>
      * Accumulates the elements of this TraversableOnce by successively calling the given function {@code f} from the right,
      * starting with a value {@code zero} of type B.
-     * </p>
      * <p>
      * Example: {@code List.of("a", "b", "c").foldRight("", (x, xs) -> x + xs) = "abc"}
-     * </p>
      * <p>
      * In order to prevent recursive calls, foldRight is implemented based on reverse and foldLeft. A recursive variant
      * is based on foldMap, using the monoid of function composition (endo monoid).
-     * </p>
      * <pre>
      * <code>
      * foldRight = reverse().foldLeft(zero, (b, a) -&gt; f.apply(a, b));

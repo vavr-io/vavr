@@ -5,11 +5,9 @@
  */
 package javaslang;
 
-import javaslang.collection.AbstractValueTest;
 import javaslang.collection.List;
 import org.junit.Test;
 
-import java.lang.*;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Function;

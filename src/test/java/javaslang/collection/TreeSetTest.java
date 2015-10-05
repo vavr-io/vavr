@@ -34,16 +34,16 @@ public class TreeSetTest extends AbstractSortedSetTest {
         boolean allLongs = true;
         boolean allNumbers = true;
         for (T element : elements) {
-            if(!(element instanceof Number)) {
+            if (!(element instanceof Number)) {
                 allNumbers = false;
             }
-            if(!(element instanceof Long)) {
+            if (!(element instanceof Long)) {
                 allLongs = false;
             }
         }
-        if(allLongs) {
+        if (allLongs) {
             return TreeSet.ofAll(toLongComparator(), Iterator.of(elements));
-        } else if(allNumbers) {
+        } else if (allNumbers) {
             return TreeSet.ofAll(toDoubleComparator(), Iterator.of(elements));
         } else {
             return TreeSet.ofAll(toStringComparator(), Iterator.of(elements));

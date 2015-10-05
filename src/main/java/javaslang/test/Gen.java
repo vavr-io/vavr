@@ -19,17 +19,21 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * <p>Generators are the building blocks for providing arbitrary objects.</p>
- * <p>To ease the creation of Arbitraries, Gen is a FunctionalInterface which extends {@code Function1<Random, T>}.</p>
- * <p>Gen objects are obtained via one of the methods {@code choose}, {@code fail}, {@code frequency}, {@code of} and
- * {@code oneOf}.</p>
- * <p>Given Gen objects may be transformed using one of the methods {@code filter}, {@code map} and {@code flatMap}.</p>
- * <p>A simple way to obtain an Arbitrary of a Gen is to call {@linkplain javaslang.test.Gen#arbitrary()}.
- * This will ignore the size hint of Arbitrary.</p>
+ * Generators are the building blocks for providing arbitrary objects.
+ * <p>
+ * To ease the creation of Arbitraries, Gen is a FunctionalInterface which extends {@code Function1<Random, T>}.
+ * <p>
+ * Gen objects are obtained via one of the methods {@code choose}, {@code fail}, {@code frequency}, {@code of} and
+ * {@code oneOf}.
+ * <p>
+ * Given Gen objects may be transformed using one of the methods {@code filter}, {@code map} and {@code flatMap}.
+ * <p>
+ * A simple way to obtain an Arbitrary of a Gen is to call {@linkplain javaslang.test.Gen#arbitrary()}.
+ * This will ignore the size hint of Arbitrary.
  *
  * @param <T> type of generated objects
- * @see javaslang.test.Arbitrary
  * @author Daniel Dietrich
+ * @see javaslang.test.Arbitrary
  * @since 1.2.0
  */
 @FunctionalInterface
@@ -62,9 +66,10 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
     }
 
     /**
-     * <p>Chooses an int between min and max, bounds inclusive and numbers distributed according to the distribution of
-     * the underlying random number generator.</p>
-     * <p>Note: min and max are internally swapped if min &gt; max.</p>
+     * Chooses an int between min and max, bounds inclusive and numbers distributed according to the distribution of
+     * the underlying random number generator.
+     * <p>
+     * Note: min and max are internally swapped if min &gt; max.
      *
      * @param min lower bound
      * @param max upper bound
@@ -81,9 +86,10 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
     }
 
     /**
-     * <p>Chooses a long between min and max, bounds inclusive and numbers distributed according to the distribution of
-     * the underlying random number generator.</p>
-     * <p>Note: min and max are internally swapped if min &gt; max.</p>
+     * Chooses a long between min and max, bounds inclusive and numbers distributed according to the distribution of
+     * the underlying random number generator.
+     * <p>
+     * Note: min and max are internally swapped if min &gt; max.
      *
      * @param min lower bound
      * @param max upper bound
@@ -103,9 +109,10 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
     }
 
     /**
-     * <p>Chooses a double between min and max, bounds inclusive and numbers distributed according to the distribution
-     * of the underlying random number generator.</p>
-     * <p>Note: min and max are internally swapped if min &gt; max.</p>
+     * Chooses a double between min and max, bounds inclusive and numbers distributed according to the distribution
+     * of the underlying random number generator.
+     * <p>
+     * Note: min and max are internally swapped if min &gt; max.
      *
      * @param min lower bound
      * @param max upper bound
@@ -138,9 +145,10 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
     }
 
     /**
-     * <p>Chooses a char between min and max, bounds inclusive and chars distributed according to the underlying random
-     * number generator.</p>
-     * <p>Note: min and max are internally swapped if min &gt; max.</p>
+     * Chooses a char between min and max, bounds inclusive and chars distributed according to the underlying random
+     * number generator.
+     * <p>
+     * Note: min and max are internally swapped if min &gt; max.
      *
      * @param min lower bound
      * @param max upper bound

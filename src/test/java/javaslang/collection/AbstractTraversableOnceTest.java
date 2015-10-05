@@ -340,7 +340,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldDropWhileNoneIfPredicateIsFalse() {
-        if(useIsEqualToInsteadOfIsSameAs()) {
+        if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(of(1, 2, 3).dropWhile(ignored -> false)).isEqualTo(of(1, 2, 3));
         } else {
             TraversableOnce<Integer> t = of(1, 2, 3);
@@ -1308,7 +1308,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeAllIfCountExceedsSize() {
-        if(useIsEqualToInsteadOfIsSameAs()) {
+        if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(of(1, 2, 3).take(4)).isEqualTo(of(1, 2, 3));
         } else {
             final TraversableOnce<Integer> t = of(1, 2, 3);
@@ -1335,7 +1335,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeRightAllIfCountExceedsSize() {
-        if(useIsEqualToInsteadOfIsSameAs()) {
+        if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(of(1, 2, 3).takeRight(4)).isEqualTo(of(1, 2, 3));
         } else {
             final TraversableOnce<Integer> t = of(1, 2, 3);
@@ -1358,7 +1358,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
     @Test
     public void shouldTakeWhileAllOnTrueCondition() {
         final TraversableOnce<Integer> t = of(1, 2, 3);
-        if(useIsEqualToInsteadOfIsSameAs()) {
+        if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(of(1, 2, 3).takeWhile(x -> true)).isEqualTo(of(1, 2, 3));
         } else {
             assertThat(t.takeWhile(x -> true)).isSameAs(t);
