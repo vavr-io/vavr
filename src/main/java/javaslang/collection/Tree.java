@@ -9,7 +9,6 @@ import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.List.Nil;
-import javaslang.collection.Tree.Node;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -41,18 +40,25 @@ public interface Tree<T> extends Traversable<T> {
         return Empty.instance();
     }
 
+    /**
+     * Returns a new Node containing the given value and having no children.
+     *
+     * @param value A value
+     * @param <T>   Value type
+     * @return A new Node instance.
+     */
     static <T> Node<T> of(T value) {
         return new Node<>(value, List.empty());
     }
 
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    static <T> Node<T> of(T value, Node<T>... children) {
+    static <T> Node<T> of(T value, Tree<T>... children) {
         Objects.requireNonNull(children, "children is null");
         return new Node<>(value, List.of(children));
     }
 
-    static <T> Node<T> of(T value, java.lang.Iterable<? extends Node<T>> children) {
+    static <T> Node<T> of(T value, java.lang.Iterable<? extends Tree<T>> children) {
         Objects.requireNonNull(children, "children is null");
         return new Node<>(value, List.ofAll(children));
     }
@@ -70,7 +76,7 @@ public interface Tree<T> extends Traversable<T> {
      *
      * @return the tree's children
      */
-    List<Node<T>> getChildren();
+    List<Tree<T>> getChildren();
 
     /**
      * Checks if this Tree is a leaf. A tree is a leaf if it is a Node with no children.
@@ -92,6 +98,11 @@ public interface Tree<T> extends Traversable<T> {
 
     default Iterator<T> iterator(Order order) {
         return traverse(order).iterator();
+    }
+
+    @SuppressWarnings("unchecked")
+    default <U> Tree<U> transform(Function<Tree<T>, Tree<U>> f) {
+        return f.apply(this);
     }
 
     default Seq<T> traverse() {
@@ -283,7 +294,15 @@ public interface Tree<T> extends Traversable<T> {
     @Override
     default <U> Tree<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return null; // TODO
+        return transform(t -> {
+            if (t.isEmpty()) {
+                return Tree.empty();
+            } else {
+                final U mappedValue = mapper.apply(t.getValue());
+                final List<Tree<U>> mappedChildren = t.getChildren().map(child -> child.map(mapper));
+                return new Node<>(mappedValue, mappedChildren);
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -434,7 +453,7 @@ public interface Tree<T> extends Traversable<T> {
         private static final long serialVersionUID = 1L;
 
         private final T value;
-        private final List<Node<T>> children;
+        private final List<Tree<T>> children;
         private final Lazy<Integer> size;
 
         private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
@@ -447,7 +466,8 @@ public interface Tree<T> extends Traversable<T> {
          * @throws NullPointerException     if children is null
          * @throws IllegalArgumentException if children is empty
          */
-        public Node(T value, List<Node<T>> children) {
+        @SuppressWarnings("RedundantCast")
+        public Node(T value, List<Tree<T>> children) {
             Objects.requireNonNull(children, "children is null");
             this.value = value;
             this.children = children;
@@ -475,7 +495,7 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public List<Node<T>> getChildren() {
+        public List<Tree<T>> getChildren() {
             return children;
         }
 
@@ -502,12 +522,16 @@ public interface Tree<T> extends Traversable<T> {
             return isLeaf() ? "(" + value + ")" : toLispString(this);
         }
 
-        private static String toLispString(Node<?> node) {
-            final String value = String.valueOf(node.value);
-            if (node.isLeaf()) {
-                return value;
+        private static String toLispString(Tree<?> tree) {
+            if (tree.isEmpty()) {
+                return "()";
             } else {
-                return String.format("(%s %s)", value, node.children.map(Node::toLispString).mkString(" "));
+                final String value = String.valueOf(tree.getValue());
+                if (tree.isLeaf()) {
+                    return value;
+                } else {
+                    return String.format("(%s %s)", value, tree.getChildren().map(Node::toLispString).mkString(" "));
+                }
             }
         }
 
@@ -587,7 +611,7 @@ public interface Tree<T> extends Traversable<T> {
             private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
                 s.defaultReadObject();
                 final T value = (T) s.readObject();
-                final List<Node<T>> children = (List<Node<T>>) s.readObject();
+                final List<Tree<T>> children = (List<Tree<T>>) s.readObject();
                 node = new Node<>(value, children);
             }
 
@@ -627,7 +651,7 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public List<Node<T>> getChildren() {
+        public List<Tree<T>> getChildren() {
             return Nil.instance();
         }
 
@@ -790,7 +814,7 @@ interface TreeModule {
             if (tree.isLeaf()) {
                 return Stream.of(tree.getValue());
             } else {
-                final List<Node<T>> children = tree.getChildren();
+                final List<Tree<T>> children = tree.getChildren();
                 return children.tail().foldLeft(Stream.<T> empty(), (acc, child) -> acc.appendAll(inOrder(child)))
                         .prepend(tree.getValue())
                         .prependAll(inOrder(children.head()));

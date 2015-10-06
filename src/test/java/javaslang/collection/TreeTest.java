@@ -238,9 +238,8 @@ public class TreeTest {
 
     // -- map
 
-    /* TODO
     @Test
-    public void shouldMapNil() {
+    public void shouldMapEmpty() {
         assertThat(empty().map(i -> i)).isEqualTo(empty());
     }
 
@@ -252,7 +251,7 @@ public class TreeTest {
     // -- traverse
 
     @Test
-    public void shouldTraverseNil() {
+    public void shouldTraverseEmpty() {
         assertThat(empty().traverse()).isEqualTo(Stream.empty());
     }
 
@@ -260,34 +259,33 @@ public class TreeTest {
 
     @Test
     public void shouldTraverseTreeUsingPreOrder() {
-        assertThat(tree().traverse(Tree.Order.PRE_ORDER)).isEqualTo(List.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
+        assertThat(tree().traverse(Tree.Order.PRE_ORDER)).isEqualTo(Stream.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
     }
 
     @Test
     public void shouldTraverseTreeUsingInOrder() {
-        assertThat(tree().traverse(Tree.Order.IN_ORDER)).isEqualTo(List.of(7, 4, 2, 5, 1, 8, 6, 9, 3));
+        assertThat(tree().traverse(Tree.Order.IN_ORDER)).isEqualTo(Stream.of(7, 4, 2, 5, 1, 8, 6, 9, 3));
     }
 
     @Test
     public void shouldTraverseTreeUsingPostOrder() {
-        assertThat(tree().traverse(Tree.Order.POST_ORDER)).isEqualTo(List.of(7, 4, 5, 2, 8, 9, 6, 3, 1));
+        assertThat(tree().traverse(Tree.Order.POST_ORDER)).isEqualTo(Stream.of(7, 4, 5, 2, 8, 9, 6, 3, 1));
     }
 
     @Test
     public void shouldTraverseTreeUsingLevelOrder() {
-        assertThat(tree().traverse(Tree.Order.LEVEL_ORDER)).isEqualTo(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
+        assertThat(tree().traverse(Tree.Order.LEVEL_ORDER)).isEqualTo(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
     }
-    */
 
     // -- toLispString
 
     @Test
-    public void shouldConvertNilToLispString() {
+    public void shouldConvertEmptyToLispString() {
         assertThat(empty().toString()).isEqualTo("()");
     }
 
     @Test
-    public void shouldConvertNonNilToLispString() {
+    public void shouldConvertNonEmptyToLispString() {
         assertThat(tree().toString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
     }
 
@@ -312,7 +310,7 @@ public class TreeTest {
     // hashCode
 
     @Test
-    public void shouldBeAwareThatHashCodeOfNilIsOne() {
+    public void shouldBeAwareThatHashCodeOfEmptyIsOne() {
         assertThat(empty().hashCode()).isEqualTo(1);
     }
 
@@ -324,7 +322,7 @@ public class TreeTest {
     // toString
 
     @Test
-    public void shouldReturnStringRepresentationOfNil() {
+    public void shouldReturnStringRepresentationOfEmpty() {
         assertThat(empty().toString()).isEqualTo("()");
     }
 
@@ -336,7 +334,7 @@ public class TreeTest {
     // -- Serializable interface
 
     @Test
-    public void shouldSerializeDeserializeNil() {
+    public void shouldSerializeDeserializeEmpty() {
         final Object actual = deserialize(serialize(empty()));
         final Object expected = empty();
         assertThat(actual).isEqualTo(expected);
@@ -349,7 +347,7 @@ public class TreeTest {
     }
 
     @Test
-    public void shouldSerializeDeserializeNonNil() {
+    public void shouldSerializeDeserializeNonEmpty() {
         final Object actual = deserialize(serialize(tree()));
         final Object expected = tree();
         assertThat(actual).isEqualTo(expected);
