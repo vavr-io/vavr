@@ -53,12 +53,12 @@ public interface Tree<T> extends Traversable<T> {
 
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    static <T> Node<T> of(T value, Tree<T>... children) {
+    static <T> Node<T> of(T value, Node<T>... children) {
         Objects.requireNonNull(children, "children is null");
         return new Node<>(value, List.of(children));
     }
 
-    static <T> Node<T> of(T value, java.lang.Iterable<? extends Tree<T>> children) {
+    static <T> Node<T> of(T value, java.lang.Iterable<Node<T>> children) {
         Objects.requireNonNull(children, "children is null");
         return new Node<>(value, List.ofAll(children));
     }
@@ -76,7 +76,7 @@ public interface Tree<T> extends Traversable<T> {
      *
      * @return the tree's children
      */
-    List<Tree<T>> getChildren();
+    List<Node<T>> getChildren();
 
     /**
      * Checks if this Tree is a leaf. A tree is a leaf if it is a Node with no children.
@@ -287,16 +287,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default <U> Tree<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return Tree.empty();
-        } else {
-            final U value = mapper.apply(getValue());
-            final List<Tree<U>> children = getChildren().map(child -> child.map(mapper));
-            return new Node<>(value, children);
-        }
-    }
+    <U> Tree<U> map(Function<? super T, ? extends U> mapper);
 
     @SuppressWarnings("unchecked")
     @Override
@@ -446,7 +437,7 @@ public interface Tree<T> extends Traversable<T> {
         private static final long serialVersionUID = 1L;
 
         private final T value;
-        private final List<Tree<T>> children;
+        private final List<Node<T>> children;
         private final Lazy<Integer> size;
 
         private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
@@ -460,11 +451,16 @@ public interface Tree<T> extends Traversable<T> {
          * @throws IllegalArgumentException if children is empty
          */
         @SuppressWarnings("RedundantCast")
-        public Node(T value, List<Tree<T>> children) {
+        public Node(T value, List<Node<T>> children) {
             Objects.requireNonNull(children, "children is null");
             this.value = value;
             this.children = children;
             this.size = Lazy.of(() -> 1 + children.foldLeft(0, (acc, child) -> acc + child.length()));
+        }
+
+        @Override
+        public List<Node<T>> getChildren() {
+            return children;
         }
 
         @Override
@@ -478,18 +474,21 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public int length() {
-            return size.get();
-        }
-
-        @Override
         public boolean isLeaf() {
             return children.isEmpty();
         }
 
         @Override
-        public List<Tree<T>> getChildren() {
-            return children;
+        public int length() {
+            return size.get();
+        }
+
+        @Override
+        public <U> Node<U> map(Function<? super T, ? extends U> mapper) {
+            Objects.requireNonNull(mapper, "mapper is null");
+            final U value = mapper.apply(getValue());
+            final List<Node<U>> children = getChildren().map(child -> child.map(mapper));
+            return new Node<>(value, children);
         }
 
         @Override
@@ -516,15 +515,11 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         private static String toLispString(Tree<?> tree) {
-            if (tree.isEmpty()) {
-                return "()";
+            final String value = String.valueOf(tree.getValue());
+            if (tree.isLeaf()) {
+                return value;
             } else {
-                final String value = String.valueOf(tree.getValue());
-                if (tree.isLeaf()) {
-                    return value;
-                } else {
-                    return String.format("(%s %s)", value, tree.getChildren().map(Node::toLispString).mkString(" "));
-                }
+                return String.format("(%s %s)", value, tree.getChildren().map(Node::toLispString).mkString(" "));
             }
         }
 
@@ -604,7 +599,7 @@ public interface Tree<T> extends Traversable<T> {
             private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
                 s.defaultReadObject();
                 final T value = (T) s.readObject();
-                final List<Tree<T>> children = (List<Tree<T>>) s.readObject();
+                final List<Node<T>> children = (List<Node<T>>) s.readObject();
                 node = new Node<>(value, children);
             }
 
@@ -644,7 +639,7 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public List<Tree<T>> getChildren() {
+        public List<Node<T>> getChildren() {
             return Nil.instance();
         }
 
@@ -659,13 +654,18 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
+        public boolean isLeaf() {
+            return false;
+        }
+
+        @Override
         public int length() {
             return 0;
         }
 
         @Override
-        public boolean isLeaf() {
-            return false;
+        public <U> Empty<U> map(Function<? super T, ? extends U> mapper) {
+            return Empty.instance();
         }
 
         @Override
@@ -807,7 +807,7 @@ interface TreeModule {
             if (tree.isLeaf()) {
                 return Stream.of(tree.getValue());
             } else {
-                final List<Tree<T>> children = tree.getChildren();
+                final List<Tree.Node<T>> children = tree.getChildren();
                 return children.tail().foldLeft(Stream.<T> empty(), (acc, child) -> acc.appendAll(inOrder(child)))
                         .prepend(tree.getValue())
                         .prependAll(inOrder(children.head()));
