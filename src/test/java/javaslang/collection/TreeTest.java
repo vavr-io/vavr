@@ -248,6 +248,7 @@ public class TreeTest {
     public void shouldMapTree() {
         assertThat(tree().map(i -> (char) (i + 64)).toString()).isEqualTo("(A (B (D G) E) (C (F H I)))");
     }
+    */
 
     // -- traverse
 
@@ -260,24 +261,23 @@ public class TreeTest {
 
     @Test
     public void shouldTraverseTreeUsingPreOrder() {
-        assertThat(tree().traverse(Tree.Order.PRE_ORDER)).isEqualTo(List.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
+        assertThat(tree().traverse(Tree.Order.PRE_ORDER)).isEqualTo(Stream.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
     }
 
     @Test
     public void shouldTraverseTreeUsingInOrder() {
-        assertThat(tree().traverse(Tree.Order.IN_ORDER)).isEqualTo(List.of(7, 4, 2, 5, 1, 8, 6, 9, 3));
+        assertThat(tree().traverse(Tree.Order.IN_ORDER)).isEqualTo(Stream.of(7, 4, 2, 5, 1, 8, 6, 9, 3));
     }
 
     @Test
     public void shouldTraverseTreeUsingPostOrder() {
-        assertThat(tree().traverse(Tree.Order.POST_ORDER)).isEqualTo(List.of(7, 4, 5, 2, 8, 9, 6, 3, 1));
+        assertThat(tree().traverse(Tree.Order.POST_ORDER)).isEqualTo(Stream.of(7, 4, 5, 2, 8, 9, 6, 3, 1));
     }
 
     @Test
     public void shouldTraverseTreeUsingLevelOrder() {
-        assertThat(tree().traverse(Tree.Order.LEVEL_ORDER)).isEqualTo(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
+        assertThat(tree().traverse(Tree.Order.LEVEL_ORDER)).isEqualTo(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
     }
-    */
 
     // -- toLispString
 
