@@ -51,6 +51,14 @@ public interface Tree<T> extends Traversable<T> {
         return new Node<>(value, List.empty());
     }
 
+    /**
+     * Returns a new Node containing the given value and having the given children.
+     *
+     * @param value A value
+     * @param children The child nodes, possibly empty
+     * @param <T> Value type
+     * @return A new Node instance.
+     */
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     static <T> Node<T> of(T value, Node<T>... children) {
@@ -58,7 +66,15 @@ public interface Tree<T> extends Traversable<T> {
         return new Node<>(value, List.of(children));
     }
 
-    static <T> Node<T> of(T value, java.lang.Iterable<Node<T>> children) {
+    /**
+     * Returns a new Node containing the given value and having the given children.
+     *
+     * @param value A value
+     * @param children The child nodes, possibly empty
+     * @param <T> Value type
+     * @return A new Node instance.
+     */
+    static <T> Node<T> of(T value, Iterable<Node<T>> children) {
         Objects.requireNonNull(children, "children is null");
         return new Node<>(value, List.ofAll(children));
     }
@@ -96,12 +112,23 @@ public interface Tree<T> extends Traversable<T> {
         return !(isEmpty() || isLeaf());
     }
 
+    /**
+     * Traverses this tree in a specific {@link javaslang.collection.Tree.Order}.
+     *
+     * @param order A traversal order
+     * @return A new Iterator
+     */
     default Iterator<T> iterator(Order order) {
         return traverse(order).iterator();
     }
 
+    /**
+     * Traverses this tree in {@link Order#PRE_ORDER}.
+     *
+     * @return A sequence of the tree values in pre-order.
+     */
     default Seq<T> traverse() {
-        return isEmpty() ? Stream.empty() : traverse(PRE_ORDER);
+        return traverse(PRE_ORDER);
     }
 
     /**
@@ -112,6 +139,7 @@ public interface Tree<T> extends Traversable<T> {
      * @throws java.lang.NullPointerException if order is null
      */
     default Seq<T> traverse(Order order) {
+        Objects.requireNonNull(order, "order is null");
         if (isEmpty()) {
             return Stream.empty();
         } else {
