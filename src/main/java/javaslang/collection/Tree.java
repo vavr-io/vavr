@@ -100,11 +100,6 @@ public interface Tree<T> extends Traversable<T> {
         return traverse(order).iterator();
     }
 
-    @SuppressWarnings("unchecked")
-    default <U> Tree<U> transform(Function<Tree<T>, Tree<U>> f) {
-        return f.apply(this);
-    }
-
     default Seq<T> traverse() {
         return isEmpty() ? Stream.empty() : traverse(PRE_ORDER);
     }
@@ -294,15 +289,13 @@ public interface Tree<T> extends Traversable<T> {
     @Override
     default <U> Tree<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return transform(t -> {
-            if (t.isEmpty()) {
-                return Tree.empty();
-            } else {
-                final U mappedValue = mapper.apply(t.getValue());
-                final List<Tree<U>> mappedChildren = t.getChildren().map(child -> child.map(mapper));
-                return new Node<>(mappedValue, mappedChildren);
-            }
-        });
+        if (isEmpty()) {
+            return Tree.empty();
+        } else {
+            final U value = mapper.apply(getValue());
+            final List<Tree<U>> children = getChildren().map(child -> child.map(mapper));
+            return new Node<>(value, children);
+        }
     }
 
     @SuppressWarnings("unchecked")
