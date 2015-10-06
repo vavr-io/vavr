@@ -238,9 +238,8 @@ public class TreeTest {
 
     // -- map
 
-    /* TODO
     @Test
-    public void shouldMapNil() {
+    public void shouldMapEmpty() {
         assertThat(empty().map(i -> i)).isEqualTo(empty());
     }
 
@@ -248,12 +247,11 @@ public class TreeTest {
     public void shouldMapTree() {
         assertThat(tree().map(i -> (char) (i + 64)).toString()).isEqualTo("(A (B (D G) E) (C (F H I)))");
     }
-    */
 
     // -- traverse
 
     @Test
-    public void shouldTraverseNil() {
+    public void shouldTraverseEmpty() {
         assertThat(empty().traverse()).isEqualTo(Stream.empty());
     }
 
@@ -282,12 +280,12 @@ public class TreeTest {
     // -- toLispString
 
     @Test
-    public void shouldConvertNilToLispString() {
+    public void shouldConvertEmptyToLispString() {
         assertThat(empty().toString()).isEqualTo("()");
     }
 
     @Test
-    public void shouldConvertNonNilToLispString() {
+    public void shouldConvertNonEmptyToLispString() {
         assertThat(tree().toString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
     }
 
@@ -312,7 +310,7 @@ public class TreeTest {
     // hashCode
 
     @Test
-    public void shouldBeAwareThatHashCodeOfNilIsOne() {
+    public void shouldBeAwareThatHashCodeOfEmptyIsOne() {
         assertThat(empty().hashCode()).isEqualTo(1);
     }
 
@@ -324,7 +322,7 @@ public class TreeTest {
     // toString
 
     @Test
-    public void shouldReturnStringRepresentationOfNil() {
+    public void shouldReturnStringRepresentationOfEmpty() {
         assertThat(empty().toString()).isEqualTo("()");
     }
 
@@ -336,7 +334,7 @@ public class TreeTest {
     // -- Serializable interface
 
     @Test
-    public void shouldSerializeDeserializeNil() {
+    public void shouldSerializeDeserializeEmpty() {
         final Object actual = deserialize(serialize(empty()));
         final Object expected = empty();
         assertThat(actual).isEqualTo(expected);
@@ -349,7 +347,7 @@ public class TreeTest {
     }
 
     @Test
-    public void shouldSerializeDeserializeNonNil() {
+    public void shouldSerializeDeserializeNonEmpty() {
         final Object actual = deserialize(serialize(tree()));
         final Object expected = tree();
         assertThat(actual).isEqualTo(expected);
