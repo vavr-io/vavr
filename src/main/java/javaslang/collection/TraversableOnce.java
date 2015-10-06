@@ -436,7 +436,7 @@ public interface TraversableOnce<T> extends Value<T> {
     /**
      * Checks if this TraversableOnce is empty.
      *
-     * @return true, if this TraversableOnce contains no elements, falso otherwise.
+     * @return true, if this TraversableOnce contains no elements, false otherwise.
      */
     @Override
     boolean isEmpty();
