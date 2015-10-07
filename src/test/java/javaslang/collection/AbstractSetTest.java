@@ -11,6 +11,11 @@ public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
 
     // TODO: test difference(), intersection(), union()
 
+    @Test
+    public void shouldMapDistinctElementsToOneElement() {
+        assertThat(of(1, 2, 3).map(i -> 0)).isEqualTo(of(0));
+    }
+
     @Override
     @Test
     public void shouldBeAwareOfExistingNonUniqueElement() {
@@ -22,4 +27,5 @@ public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
     public void shouldReplaceFirstOccurrenceOfNonNilUsingCurrNewWhenMultipleOccurrencesExist() {
         // sets have only distinct elements
     }
+
 }

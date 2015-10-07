@@ -54,9 +54,9 @@ public interface Tree<T> extends Traversable<T> {
     /**
      * Returns a new Node containing the given value and having the given children.
      *
-     * @param value A value
+     * @param value    A value
      * @param children The child nodes, possibly empty
-     * @param <T> Value type
+     * @param <T>      Value type
      * @return A new Node instance.
      */
     @SuppressWarnings({ "unchecked", "varargs" })
@@ -69,14 +69,25 @@ public interface Tree<T> extends Traversable<T> {
     /**
      * Returns a new Node containing the given value and having the given children.
      *
-     * @param value A value
+     * @param value    A value
      * @param children The child nodes, possibly empty
-     * @param <T> Value type
+     * @param <T>      Value type
      * @return A new Node instance.
      */
     static <T> Node<T> of(T value, Iterable<Node<T>> children) {
         Objects.requireNonNull(children, "children is null");
         return new Node<>(value, List.ofAll(children));
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T> Tree<T> ofAll(Iterable<? extends T> iterable) {
+        Objects.requireNonNull(iterable, "iterable is null");
+        if (iterable instanceof Tree) {
+            return (Tree<T>) iterable;
+        } else {
+            final List<T> list = List.ofAll(iterable);
+            return list.isEmpty() ? Empty.instance() : new Node<>(list.head(), list.tail().map(Tree::of));
+        }
     }
 
     /**
@@ -143,7 +154,6 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             return Stream.empty();
         } else {
-            Objects.requireNonNull(order, "order is null");
             switch (order) {
                 case PRE_ORDER:
                     return TreeModule.Traversal.preOrder(this);
@@ -239,10 +249,17 @@ public interface Tree<T> extends Traversable<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     default <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return null; // TODO
+        if (isEmpty()) {
+            return Empty.instance();
+        } else {
+            final Tree<U> mapped = Tree.ofAll(mapper.apply(getValue()));
+            final List<Node<U>> children = (List<Node<U>>) (Object) getChildren().map(node -> node.flatMap(mapper)).filter(Tree::isDefined);
+            return Tree.of(mapped.getValue(), children.prependAll(mapped.getChildren()));
+        }
     }
 
     @Override

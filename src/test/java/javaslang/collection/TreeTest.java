@@ -6,6 +6,8 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
+import javaslang.collection.Tree.Empty;
+import javaslang.collection.Tree.Node;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
@@ -36,8 +38,14 @@ public class TreeTest {
      */
     final Tree<Integer> tree = Tree.of(1, Tree.of(2, Tree.of(4, Tree.of(7)), Tree.of(5)), Tree.of(3, Tree.of(6, Tree.of(8), Tree.of(9))));
 
-    protected Tree<Integer> empty() {
+    protected <T> Empty<T> empty() {
         return Tree.empty();
+    }
+
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
+    protected final <T> Node<T> of(T value, Node<T>... children) {
+        return Tree.of(value, children);
     }
 
     /**
@@ -51,13 +59,12 @@ public class TreeTest {
         return tree;
     }
 
-
     // -- Tree test
 
     @Test
     public void shouldInstantiateTreeBranchWithOf() {
         final Tree<Integer> actual = Tree.of(1, Tree.of(2), Tree.of(3));
-        final Tree<Integer> expected = new Tree.Node<>(1, List.of(new Tree.Node<>(2, List.empty()), new Tree.Node<>(3, List.empty())));
+        final Tree<Integer> expected = new Node<>(1, List.of(new Node<>(2, List.empty()), new Node<>(3, List.empty())));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -66,7 +73,7 @@ public class TreeTest {
     @Test
     public void shouldInstantiateTreeLeafWithOf() {
         final Tree<Integer> actual = Tree.of(1);
-        final Tree<Integer> expected = new Tree.Node<>(1, List.empty());
+        final Tree<Integer> expected = new Node<>(1, List.empty());
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -74,7 +81,7 @@ public class TreeTest {
 
     @Test
     public void shouldCreateANodeWithoutChildren() {
-        new Tree.Node<>(1, List.empty());
+        new Node<>(1, List.empty());
     }
 
     @Test(expected = InvalidObjectException.class)
@@ -196,7 +203,7 @@ public class TreeTest {
         assertThat(Tree.nodeCount(tree())).isEqualTo(9);
     }
 
-    // -- cotains
+    // -- contains
 
     @Test
     public void shouldNotFindNodeInNil() {
@@ -211,6 +218,22 @@ public class TreeTest {
     @Test
     public void shouldNotFindNonExistingNodeInNonNil() {
         assertThat(tree().contains(0)).isFalse();
+    }
+
+    // -- flatMap
+
+    @Test
+    public void shouldFlatMapEmptyTree() {
+        assertThat(empty().flatMap(t -> Tree.of(1))).isEqualTo(empty());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldFlatMapNonEmptyTree() {
+        final Node<Integer> testee = of(1, of(2), of(3));
+        final Tree<Integer> actual = testee.flatMap(i -> of(i, of(i), of(i)));
+        final Tree<Integer> expected = of(1, of(1), of(1), of(2, of(2), of(2)), of(3, of(3), of(3)));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- iterator
