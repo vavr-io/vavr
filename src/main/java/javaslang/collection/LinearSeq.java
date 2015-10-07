@@ -164,6 +164,12 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> sort(Comparator<? super T> comparator);
 
     @Override
+    <U extends Comparable<? super U>> LinearSeq<T> sortBy(Function<? super T, ? extends U> mapper);
+
+    @Override
+    <U> LinearSeq<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper);
+
+    @Override
     Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> span(Predicate<? super T> predicate);
 
     @Override

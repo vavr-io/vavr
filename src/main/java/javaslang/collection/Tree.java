@@ -348,9 +348,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Tree<T> replace(T currentElement, T newElement) {
-        return null; // TODO
-    }
+    Tree<T> replace(T currentElement, T newElement);
 
     @Override
     default Tree<T> replaceAll(T currentElement, T newElement) {
@@ -517,6 +515,11 @@ public interface Tree<T> extends Traversable<T> {
             final U value = mapper.apply(getValue());
             final List<Node<U>> children = getChildren().map(child -> child.map(mapper));
             return new Node<>(value, children);
+        }
+
+        @Override
+        public Node<T> replace(T currentElement, T newElement) {
+            return null; // TODO
         }
 
         @Override
@@ -693,6 +696,11 @@ public interface Tree<T> extends Traversable<T> {
 
         @Override
         public <U> Empty<U> map(Function<? super T, ? extends U> mapper) {
+            return Empty.instance();
+        }
+
+        @Override
+        public Empty<T> replace(T currentElement, T newElement) {
             return Empty.instance();
         }
 

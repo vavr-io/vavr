@@ -174,6 +174,12 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> sort(Comparator<? super T> comparator);
 
     @Override
+    <U extends Comparable<? super U>> IndexedSeq<T> sortBy(Function<? super T, ? extends U> mapper);
+
+    @Override
+    <U> IndexedSeq<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper);
+
+    @Override
     Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> span(Predicate<? super T> predicate);
 
     @Override
