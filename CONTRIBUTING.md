@@ -1,9 +1,24 @@
+## IDE
+
+Currently it is recommended to use IntelliJ IDEA because of performance issues with Eclipse regarding type inference. Please note that these issues only occur when developing Javaslang - for using Javaslang, Eclipse is fine.
+
+Using IntelliJ IDEA, the Community Edition works out-of-the-box. The idea-settings.jar can be found in the repo.
+
+The IDEA settings include:
+
+* Code Style
+* File templates
+* Inspection profiles
+
+Using Eclipse, the minimal requirements are
+
+* Eclipse 'Platform Runtime Binary' (http://download.eclipse.org/eclipse/downloads/)
+* jdt (Eclipse Java Development Tools)
+* m2e (Maven Integration for Eclipse)
+* git (Eclipse Git Team Provider)
+* Code Recommenders for Java Developers
+
 ## Coding Conventions
-
-### Style guidelines
-
-* The file `eclipse_formatter.xml` has to be used with Eclipse IDE.
-* It is recommended to automatically organize imports and format code on save action.
 
 ### Javadoc
 
@@ -83,17 +98,3 @@ private Xxx() {
 * Commits are coarsely granular grouped by feature/change.
 * Commits do not mix change sets of different domains/purpose.
 * Commit messages provide enough detail to extract a changelog for a new release.
-
-## IDE
-
-Currently it is recommended to use IntelliJ IDEA because of performance issues with Eclipse regarding type inference. Please note that these issues only occur when developing Javaslang - for using Javaslang, Eclipse is fine.
-
-Using IntelliJ IDEA, the Community Edition works out-of-the-box. The idea-settings.jar can be found in the repo.
-
-Using Eclipse, the minimal requirements are
-
-* Eclipse 'Platform Runtime Binary' (http://download.eclipse.org/eclipse/downloads/)
-* jdt (Eclipse Java Development Tools)
-* m2e (Maven Integration for Eclipse)
-* git (Eclipse Git Team Provider)
-* Code Recommenders for Java Developers
