@@ -9,6 +9,8 @@ import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.List.Nil;
+import javaslang.collection.Tree.Node;
+import javaslang.collection.TreeModule.FlatMap;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -54,9 +56,9 @@ public interface Tree<T> extends Traversable<T> {
     /**
      * Returns a new Node containing the given value and having the given children.
      *
-     * @param value A value
+     * @param value    A value
      * @param children The child nodes, possibly empty
-     * @param <T> Value type
+     * @param <T>      Value type
      * @return A new Node instance.
      */
     @SuppressWarnings({ "unchecked", "varargs" })
@@ -69,14 +71,25 @@ public interface Tree<T> extends Traversable<T> {
     /**
      * Returns a new Node containing the given value and having the given children.
      *
-     * @param value A value
+     * @param value    A value
      * @param children The child nodes, possibly empty
-     * @param <T> Value type
+     * @param <T>      Value type
      * @return A new Node instance.
      */
     static <T> Node<T> of(T value, Iterable<Node<T>> children) {
         Objects.requireNonNull(children, "children is null");
         return new Node<>(value, List.ofAll(children));
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T> Tree<T> ofAll(Iterable<? extends T> iterable) {
+        Objects.requireNonNull(iterable, "iterable is null");
+        if (iterable instanceof Tree) {
+            return (Tree<T>) iterable;
+        } else {
+            final List<T> list = List.ofAll(iterable);
+            return list.isEmpty() ? Empty.instance() : new Node<>(list.head(), list.tail().map(Tree::of));
+        }
     }
 
     /**
@@ -143,7 +156,6 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             return Stream.empty();
         } else {
-            Objects.requireNonNull(order, "order is null");
             switch (order) {
                 case PRE_ORDER:
                     return TreeModule.Traversal.preOrder(this);
@@ -239,10 +251,11 @@ public interface Tree<T> extends Traversable<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     default <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return null; // TODO
+        return FlatMap.apply(this, mapper);
     }
 
     @Override
@@ -829,6 +842,20 @@ public interface Tree<T> extends Traversable<T> {
 
 interface TreeModule {
 
+    final class FlatMap {
+
+        static <T, U> Tree<U> apply(Tree<T> tree, Function<? super T, ? extends Iterable<? extends U>> mapper) {
+            return tree.isEmpty() ? Tree.Empty.instance() : flatMap(tree, mapper);
+        }
+
+        @SuppressWarnings("unchecked")
+        private static <T, U> Tree<U> flatMap(Tree<T> node, Function<? super T, ? extends Iterable<? extends U>> mapper) {
+            final Tree<U> mapped = Tree.ofAll(mapper.apply(node.getValue()));
+            final List<Node<U>> children = (List<Node<U>>) (Object) node.getChildren().map(child -> flatMap(child, mapper)).filter(Tree::isDefined);
+            return Tree.of(mapped.getValue(), children.prependAll(mapped.getChildren()));
+        }
+    }
+
     final class Traversal {
 
         private Traversal() {
@@ -843,7 +870,7 @@ interface TreeModule {
             if (tree.isLeaf()) {
                 return Stream.of(tree.getValue());
             } else {
-                final List<Tree.Node<T>> children = tree.getChildren();
+                final List<Node<T>> children = tree.getChildren();
                 return children.tail().foldLeft(Stream.<T> empty(), (acc, child) -> acc.appendAll(inOrder(child)))
                         .prepend(tree.getValue())
                         .prependAll(inOrder(children.head()));
