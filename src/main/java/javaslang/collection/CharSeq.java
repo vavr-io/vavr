@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
@@ -753,6 +754,19 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     public CharSeq sort(Comparator<? super Character> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return isEmpty() ? this : toJavaStream().sorted(comparator).collect(CharSeq.collector());
+    }
+
+    @Override
+    public <U extends Comparable<? super U>> CharSeq sortBy(Function<? super Character, ? extends U> mapper) {
+        return sortBy(U::compareTo, mapper);
+    }
+
+    @Override
+    public <U> CharSeq sortBy(Comparator<? super U> comparator, Function<? super Character, ? extends U> mapper) {
+        final Function<? super Character, ? extends U> domain = Function1.lift(mapper::apply).memoized();
+        return toJavaStream()
+                .sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
+                .collect(collector());
     }
 
     @Override

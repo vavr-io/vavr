@@ -956,6 +956,36 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(3, 4, 1, 2).sort((i, j) -> j - i)).isEqualTo(of(4, 3, 2, 1));
     }
 
+    // -- sortBy(Function)
+
+    @Test
+    public void shouldSortByNilUsingFunction() {
+        assertThat(this.<String> empty().sortBy(String::length)).isEmpty();
+    }
+
+    @Test
+    public void shouldSortByNonNilUsingFunction() {
+        final Seq<String> testee = of("aaa", "b", "cc");
+        final Seq<String> actual = testee.sortBy(String::length);
+        final Seq<String> expected = of("b", "cc", "aaa");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- sortBy(Comparator, Function)
+
+    @Test
+    public void shouldSortByNilUsingComparatorAndFunction() {
+        assertThat(this.<String> empty().sortBy(String::length)).isEmpty();
+    }
+
+    @Test
+    public void shouldSortByNonNilUsingComparatorAndFunction() {
+        final Seq<String> testee = of("aaa", "b", "cc");
+        final Seq<String> actual = testee.sortBy((i1, i2) -> i2 - i1, String::length);
+        final Seq<String> expected = of("aaa", "cc", "b");
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- splitAt(index)
 
     @Test

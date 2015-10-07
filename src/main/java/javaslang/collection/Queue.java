@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Function1;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
@@ -925,6 +926,19 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     public Queue<T> sort(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return toList().sort(comparator).toQueue();
+    }
+
+    @Override
+    public <U extends Comparable<? super U>> Queue<T> sortBy(Function<? super T, ? extends U> mapper) {
+        return sortBy(U::compareTo, mapper);
+    }
+
+    @Override
+    public <U> Queue<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
+        final Function<? super T, ? extends U> domain = Function1.lift(mapper::apply).memoized();
+        return toJavaStream()
+                .sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
+                .collect(collector());
     }
 
     @Override

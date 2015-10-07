@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Function1;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
@@ -1017,6 +1018,19 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         final Object[] arr = Arrays.copyOf(back, back.length);
         Arrays.sort(arr, (o1, o2) -> comparator.compare((T) o1, (T) o2));
         return wrap(arr);
+    }
+
+    @Override
+    public <U extends Comparable<? super U>> Array<T> sortBy(Function<? super T, ? extends U> mapper) {
+        return sortBy(U::compareTo, mapper);
+    }
+
+    @Override
+    public <U> Array<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
+        final Function<? super T, ? extends U> domain = Function1.lift(mapper::apply).memoized();
+        return toJavaStream()
+                .sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
+                .collect(collector());
     }
 
     @Override
