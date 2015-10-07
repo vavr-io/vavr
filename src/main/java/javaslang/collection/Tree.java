@@ -9,6 +9,8 @@ import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.List.Nil;
+import javaslang.collection.Tree.Node;
+import javaslang.collection.TreeModule.FlatMap;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -253,13 +255,7 @@ public interface Tree<T> extends Traversable<T> {
     @Override
     default <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return Empty.instance();
-        } else {
-            final Tree<U> mapped = Tree.ofAll(mapper.apply(getValue()));
-            final List<Node<U>> children = (List<Node<U>>) (Object) getChildren().map(node -> node.flatMap(mapper)).filter(Tree::isDefined);
-            return Tree.of(mapped.getValue(), children.prependAll(mapped.getChildren()));
-        }
+        return FlatMap.apply(this, mapper);
     }
 
     @Override
@@ -846,6 +842,20 @@ public interface Tree<T> extends Traversable<T> {
 
 interface TreeModule {
 
+    final class FlatMap {
+
+        static <T, U> Tree<U> apply(Tree<T> tree, Function<? super T, ? extends Iterable<? extends U>> mapper) {
+            return tree.isEmpty() ? Tree.Empty.instance() : flatMap(tree, mapper);
+        }
+
+        @SuppressWarnings("unchecked")
+        private static <T, U> Tree<U> flatMap(Tree<T> node, Function<? super T, ? extends Iterable<? extends U>> mapper) {
+            final Tree<U> mapped = Tree.ofAll(mapper.apply(node.getValue()));
+            final List<Node<U>> children = (List<Node<U>>) (Object) node.getChildren().map(child -> flatMap(child, mapper)).filter(Tree::isDefined);
+            return Tree.of(mapped.getValue(), children.prependAll(mapped.getChildren()));
+        }
+    }
+
     final class Traversal {
 
         private Traversal() {
@@ -860,7 +870,7 @@ interface TreeModule {
             if (tree.isLeaf()) {
                 return Stream.of(tree.getValue());
             } else {
-                final List<Tree.Node<T>> children = tree.getChildren();
+                final List<Node<T>> children = tree.getChildren();
                 return children.tail().foldLeft(Stream.<T> empty(), (acc, child) -> acc.appendAll(inOrder(child)))
                         .prepend(tree.getValue())
                         .prependAll(inOrder(children.head()));
