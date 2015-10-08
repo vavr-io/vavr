@@ -13,7 +13,10 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Spliterator;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class IntMap<T> implements Traversable<T>, Serializable {
 
@@ -215,11 +218,6 @@ public class IntMap<T> implements Traversable<T>, Serializable {
             result = result.replaceAll(entry, Map.Entry.of(entry.key, newElement));
         }
         return IntMap.of(result);
-    }
-
-    @Override
-    public IntMap<T> replaceAll(UnaryOperator<T> operator) {
-        return IntMap.of(original.replaceAll(o -> Map.Entry.of(o.key, operator.apply(o.value))));
     }
 
     @Override

@@ -11,6 +11,7 @@ import javaslang.Tuple2;
 import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.Node;
 import javaslang.collection.TreeModule.FlatMap;
+import javaslang.collection.TreeModule.Replace;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -19,7 +20,10 @@ import java.io.*;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static javaslang.collection.Tree.Order.PRE_ORDER;
 
@@ -255,7 +259,7 @@ public interface Tree<T> extends Traversable<T> {
     @Override
     default <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return FlatMap.apply(this, mapper);
+        return isEmpty() ? Empty.instance() : FlatMap.apply((Node<T>) this, mapper);
     }
 
     @Override
@@ -361,17 +365,17 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    Tree<T> replace(T currentElement, T newElement);
-
-    @Override
-    default Tree<T> replaceAll(T currentElement, T newElement) {
-        return null; // TODO
+    default Tree<T> replace(T currentElement, T newElement) {
+        if (isEmpty()) {
+            return Empty.instance();
+        } else {
+            return Replace.apply((Node<T>) this, currentElement, newElement);
+        }
     }
 
     @Override
-    default Tree<T> replaceAll(UnaryOperator<T> operator) {
-        Objects.requireNonNull(operator, "operator is null");
-        return null; // TODO
+    default Tree<T> replaceAll(T currentElement, T newElement) {
+        return map(t ->  Objects.equals(t, currentElement) ? newElement : t);
     }
 
     @Override
@@ -528,11 +532,6 @@ public interface Tree<T> extends Traversable<T> {
             final U value = mapper.apply(getValue());
             final List<Node<U>> children = getChildren().map(child -> child.map(mapper));
             return new Node<>(value, children);
-        }
-
-        @Override
-        public Node<T> replace(T currentElement, T newElement) {
-            return null; // TODO
         }
 
         @Override
@@ -713,11 +712,6 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public Empty<T> replace(T currentElement, T newElement) {
-            return Empty.instance();
-        }
-
-        @Override
         public boolean equals(Object o) {
             return o == this;
         }
@@ -844,15 +838,24 @@ interface TreeModule {
 
     final class FlatMap {
 
-        static <T, U> Tree<U> apply(Tree<T> tree, Function<? super T, ? extends Iterable<? extends U>> mapper) {
-            return tree.isEmpty() ? Tree.Empty.instance() : flatMap(tree, mapper);
+        private FlatMap() {
         }
 
         @SuppressWarnings("unchecked")
-        private static <T, U> Tree<U> flatMap(Tree<T> node, Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        static <T, U> Tree<U> apply(Node<T> node, Function<? super T, ? extends Iterable<? extends U>> mapper) {
             final Tree<U> mapped = Tree.ofAll(mapper.apply(node.getValue()));
-            final List<Node<U>> children = (List<Node<U>>) (Object) node.getChildren().map(child -> flatMap(child, mapper)).filter(Tree::isDefined);
+            final List<Node<U>> children = (List<Node<U>>) (Object) node.getChildren().map(child -> FlatMap.apply(child, mapper)).filter(Tree::isDefined);
             return Tree.of(mapped.getValue(), children.prependAll(mapped.getChildren()));
+        }
+    }
+
+    final class Replace {
+
+        private Replace() {
+        }
+
+        static <T> Node<T> apply(Node<T> node, T currentElement, T newElement) {
+            return null;// TODO
         }
     }
 

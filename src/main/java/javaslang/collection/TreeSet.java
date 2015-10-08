@@ -680,12 +680,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public TreeSet<T> replaceAll(UnaryOperator<T> operator) {
-        Objects.requireNonNull(operator, "operator is null");
-        return TreeSet.ofAll(tree.comparator(), iterator().replaceAll(operator));
-    }
-
-    @Override
     public TreeSet<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty()) {

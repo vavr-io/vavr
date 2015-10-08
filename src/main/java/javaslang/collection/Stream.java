@@ -1001,15 +1001,6 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> replaceAll(UnaryOperator<T> operator) {
-        if (isEmpty()) {
-            return this;
-        } else {
-            return new Cons<>(operator.apply(head()), () -> tail().replaceAll(operator));
-        }
-    }
-
-    @Override
     default Stream<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty()) {

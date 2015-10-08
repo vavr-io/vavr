@@ -654,17 +654,6 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> replaceAll(UnaryOperator<T> operator) {
-        Objects.requireNonNull(operator, "operator is null");
-        HashArrayMappedTrie<T, T> that = HashArrayMappedTrie.empty();
-        for (T currElem : this) {
-            T newElem = operator.apply(currElem);
-            that = that.put(newElem, newElem);
-        }
-        return new HashSet<>(that);
-    }
-
-    @Override
     public HashSet<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final HashArrayMappedTrie<T, T> keeped = addAll(HashArrayMappedTrie.empty(), elements);

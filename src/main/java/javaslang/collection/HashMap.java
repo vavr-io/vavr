@@ -444,17 +444,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public HashMap<K, V> replaceAll(UnaryOperator<Entry<K, V>> operator) {
-        Objects.requireNonNull(operator, "operator is null");
-        HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
-        for (Entry<K, V> entry : this) {
-            final Entry<K, V> newEntry = operator.apply(entry);
-            tree = tree.put(newEntry.key, newEntry.value);
-        }
-        return new HashMap<>(tree);
-    }
-
-    @Override
     public HashMap<K, V> retainAll(java.lang.Iterable<? extends Entry<K, V>> elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();

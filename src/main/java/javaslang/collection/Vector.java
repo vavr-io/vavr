@@ -956,16 +956,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> replaceAll(UnaryOperator<T> operator) {
-        Objects.requireNonNull(operator, "operator is null");
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = 0; i < length(); i++) {
-            trie = trie.put(trie.size(), operator.apply(get(i)));
-        }
-        return trie.isEmpty() ? empty() : new Vector<>(trie);
-    }
-
-    @Override
     public Vector<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final Vector<T> keeped = Vector.ofAll(elements).distinct();

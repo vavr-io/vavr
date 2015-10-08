@@ -896,12 +896,6 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> replaceAll(UnaryOperator<T> operator) {
-        Objects.requireNonNull(operator, "operator is null");
-        return new Queue<>(front.replaceAll(operator), rear.replaceAll(operator));
-    }
-
-    @Override
     public Queue<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return new Queue<>(front.retainAll(elements), rear.retainAll(elements));

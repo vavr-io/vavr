@@ -703,16 +703,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq replaceAll(UnaryOperator<Character> operator) {
-        Objects.requireNonNull(operator, "operator is null");
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length(); i++) {
-            sb.append(operator.apply(back.charAt(i)));
-        }
-        return sb.length() == 0 ? EMPTY : of(sb.toString());
-    }
-
-    @Override
     public CharSeq retainAll(java.lang.Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final java.util.Set<Character> keeped = new HashSet<>();

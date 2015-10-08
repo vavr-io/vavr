@@ -10,7 +10,10 @@ import javaslang.control.Option;
 
 import java.util.Comparator;
 import java.util.NoSuchElementException;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * An immutable {@code SortedMap} interface.
@@ -149,9 +152,6 @@ public interface SortedMap<K, V> extends Map<K, V> {
 
     @Override
     SortedMap<K, V> replaceAll(Entry<K, V> currentElement, Entry<K, V> newElement);
-
-    @Override
-    SortedMap<K, V> replaceAll(UnaryOperator<Entry<K, V>> operator);
 
     @Override
     SortedMap<K, V> retainAll(java.lang.Iterable<? extends Entry<K, V>> elements);

@@ -1020,18 +1020,6 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
         assertThat(of(0, 1, 2, 1).replaceAll(1, 3)).isEqualTo(of(0, 3, 2, 3));
     }
 
-    // -- replaceAll(UnaryOp)
-
-    @Test
-    public void shouldReplaceAllElementsOfNilUsingUnaryOp() {
-        assertThat(this.<Integer> empty().replaceAll(i -> i + 1)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldReplaceAllElementsOfNonNilUsingUnaryOp() {
-        assertThat(of(1, 2, 3).replaceAll(i -> i + 1)).isEqualTo(of(2, 3, 4));
-    }
-
     // -- retainAll
 
     @Test

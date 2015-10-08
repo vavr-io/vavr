@@ -771,16 +771,6 @@ public interface TraversableOnce<T> extends Value<T> {
     TraversableOnce<T> replaceAll(T currentElement, T newElement);
 
     /**
-     * Replaces all occurrences of this TraversableOnce by applying the given operator to the elements, which is
-     * essentially a special case of {@link #map(Function)}.
-     *
-     * @param operator An operator.
-     * @return a TraversableOnce containing all elements of this transformed within the same domain.
-     * @throws NullPointerException if {@code operator} is null
-     */
-    TraversableOnce<T> replaceAll(UnaryOperator<T> operator);
-
-    /**
      * Keeps all occurrences of the given elements from this.
      *
      * @param elements Elements to be kept.

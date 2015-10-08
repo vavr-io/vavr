@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 
 /**
  * Interface for immutable, linear sequences.
@@ -144,9 +143,6 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     LinearSeq<T> replaceAll(T currentElement, T newElement);
-
-    @Override
-    LinearSeq<T> replaceAll(UnaryOperator<T> operator);
 
     @Override
     LinearSeq<T> retainAll(java.lang.Iterable<? extends T> elements);

@@ -537,16 +537,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     }
 
     @Override
-    public TreeMap<K, V> replaceAll(UnaryOperator<Entry<K, V>> operator) {
-        Objects.requireNonNull(operator, "operator is null");
-        RedBlackTree<Entry<K, V>> tree = RedBlackTree.empty(entries.comparator());
-        for (Entry<K, V> entry : this) {
-            tree = tree.insert(operator.apply(entry));
-        }
-        return new TreeMap<>(tree);
-    }
-
-    @Override
     public TreeMap<K, V> retainAll(Iterable<? extends Entry<K, V>> elements) {
         Objects.requireNonNull(elements, "elements is null");
         RedBlackTree<Entry<K, V>> tree = RedBlackTree.empty(entries.comparator());

@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 
 /**
  * An interface for inherently recursive data structures. The order of elements is determined by
@@ -138,9 +137,6 @@ public interface Traversable<T> extends TraversableOnce<T> {
 
     @Override
     Traversable<T> replaceAll(T currentElement, T newElement);
-
-    @Override
-    Traversable<T> replaceAll(UnaryOperator<T> operator);
 
     @Override
     Traversable<T> retainAll(java.lang.Iterable<? extends T> elements);

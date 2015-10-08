@@ -11,7 +11,10 @@ import javaslang.control.Option;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * An immutable {@code Map} interface.
@@ -163,9 +166,6 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
 
     @Override
     Map<K, V> replaceAll(Entry<K, V> currentElement, Entry<K, V> newElement);
-
-    @Override
-    Map<K, V> replaceAll(UnaryOperator<Entry<K, V>> operator);
 
     @Override
     Map<K, V> retainAll(java.lang.Iterable<? extends Entry<K, V>> elements);
