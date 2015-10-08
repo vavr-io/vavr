@@ -14,7 +14,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 
 /**
  * Interface for immutable, indexed sequences.
@@ -154,9 +153,6 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     IndexedSeq<T> replaceAll(T currentElement, T newElement);
-
-    @Override
-    IndexedSeq<T> replaceAll(UnaryOperator<T> operator);
 
     @Override
     IndexedSeq<T> retainAll(java.lang.Iterable<? extends T> elements);

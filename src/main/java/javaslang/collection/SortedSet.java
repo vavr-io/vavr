@@ -13,7 +13,6 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 
 /**
  * An immutable {@code SortedSet} interface.
@@ -131,9 +130,6 @@ public interface SortedSet<T> extends Set<T> {
 
     @Override
     SortedSet<T> replaceAll(T currentElement, T newElement);
-
-    @Override
-    SortedSet<T> replaceAll(UnaryOperator<T> operator);
 
     @Override
     SortedSet<T> retainAll(java.lang.Iterable<? extends T> elements);

@@ -1565,31 +1565,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     }
 
     @Override
-    default Iterator<T> replaceAll(UnaryOperator<T> operator) {
-        Objects.requireNonNull(operator, "operator is null");
-        if (!hasNext()) {
-            return empty();
-        } else {
-            final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
-
-                @Override
-                public boolean hasNext() {
-                    return that.hasNext();
-                }
-
-                @Override
-                public T next() {
-                    if (!that.hasNext()) {
-                        EMPTY.next();
-                    }
-                    return operator.apply(that.next());
-                }
-            };
-        }
-    }
-
-    @Override
     default Iterator<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return hasNext() ? filter(HashSet.ofAll(elements)::contains) : empty();

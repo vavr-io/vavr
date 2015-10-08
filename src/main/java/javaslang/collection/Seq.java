@@ -809,9 +809,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    Seq<T> replaceAll(UnaryOperator<T> operator);
-
-    @Override
     Seq<T> retainAll(java.lang.Iterable<? extends T> elements);
 
     @Override

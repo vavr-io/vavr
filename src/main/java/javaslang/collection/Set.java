@@ -14,7 +14,6 @@ import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 
 /**
  * An immutable {@code Set} interface.
@@ -151,9 +150,6 @@ public interface Set<T> extends Traversable<T> {
 
     @Override
     Set<T> replaceAll(T currentElement, T newElement);
-
-    @Override
-    Set<T> replaceAll(UnaryOperator<T> operator);
 
     @Override
     Set<T> retainAll(java.lang.Iterable<? extends T> elements);

@@ -602,9 +602,6 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    Stack<T> replaceAll(UnaryOperator<T> operator);
-
-    @Override
     Stack<T> retainAll(java.lang.Iterable<? extends T> elements);
 
     @Override

@@ -1022,16 +1022,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> replaceAll(UnaryOperator<T> operator) {
-        Objects.requireNonNull(operator, "operator is null");
-        List<T> result = Nil.instance();
-        for (T element : this) {
-            result = result.prepend(operator.apply(element));
-        }
-        return result.reverse();
-    }
-
-    @Override
     default List<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final List<T> keeped = List.ofAll(elements).distinct();

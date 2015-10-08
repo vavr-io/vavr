@@ -951,16 +951,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> replaceAll(UnaryOperator<T> operator) {
-        Objects.requireNonNull(operator, "operator is null");
-        final Object[] arr = new Object[length()];
-        for (int i = 0; i < length(); i++) {
-            arr[i] = operator.apply(get(i));
-        }
-        return wrap(arr);
-    }
-
-    @Override
     public Array<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final java.util.Set<T> keeped = new HashSet<T>();

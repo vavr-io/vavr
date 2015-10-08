@@ -959,18 +959,6 @@ public class CharSeqTest {
         assertThat(CharSeq.of('0', '1', '2', '1').replaceAll('1', '3')).isEqualTo(CharSeq.of('0', '3', '2', '3'));
     }
 
-    // -- replaceAll(UnaryOp)
-
-    @Test
-    public void shouldReplaceAllElementsOfNilUsingUnaryOp() {
-        assertThat(empty().replaceAll(i -> i)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldReplaceAllElementsOfNonNilUsingUnaryOp() {
-        assertThat(CharSeq.of('1', '2', '3').replaceAll(i -> i)).isEqualTo(CharSeq.of('1', '2', '3'));
-    }
-
     // -- retainAll
 
     @Test
