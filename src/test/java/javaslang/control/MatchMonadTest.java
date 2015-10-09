@@ -8,6 +8,8 @@ package javaslang.control;
 import org.junit.Test;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.StrictAssertions.fail;
@@ -80,7 +82,7 @@ public class MatchMonadTest {
     public void shouldMatchEvenIntByPredicate() {
         final String divisibility = Match.of(0)
                 .when((String s) -> true).then("oops")
-                .when((Integer i) -> i % 2 == 0).then("even")
+                .when((Integer i) -> i % 2 == 0).then(() -> "even")
                 .orElse("odd");
         assertThat(divisibility).isEqualTo("even");
     }
@@ -89,7 +91,7 @@ public class MatchMonadTest {
     public void shouldMatchOddIntWithOrElseHavingUnmatchedPredicates() {
         final String divisibility = Match.of(1)
                 .when((String s) -> true).then("oops")
-                .when((Integer i) -> i % 2 == 0).then("even")
+                .when((Integer i) -> i % 2 == 0).then(() -> "even")
                 .orElse("odd");
         assertThat(divisibility).isEqualTo("odd");
     }
@@ -630,6 +632,14 @@ public class MatchMonadTest {
         assertThat(actual).isTrue();
     }
 
+    @Test(expected = RuntimeException.class)
+    public void shouldHandleOtherwiseThrowOfMatched() {
+        Match.of(0)
+                .whenIs(1).then(true)
+                .otherwiseThrow(RuntimeException::new)
+                .get();
+    }
+
     @Test
     public void shouldHandleOtherwiseSupplierOfUnmatched() {
         final boolean actual = Match.of(1)
@@ -658,6 +668,33 @@ public class MatchMonadTest {
     }
 
     // monadic operations
+
+    @Test
+    public void shouldFilterThen() {
+        final Function<Boolean, Integer> f = b -> Match.of(1)
+                .whenIs(1).then(1)
+                .filter(i -> b)
+                .orElse(2);
+        assertThat(f.apply(true)).isEqualTo(1);
+        assertThat(f.apply(false)).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldSuccessFilterOtherwise() {
+        final int actual = Match.of(0)
+                .whenIs(1).then(1).otherwise(2)
+                .filter(i -> true)
+                .get();
+        assertThat(actual).isEqualTo(2);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailFilterOtherwise() {
+        Match.of(0)
+                .whenIs(1).then(1).otherwise(2)
+                .filter(i -> false)
+                .get();
+    }
 
     @Test
     public void shouldFlatMapMatched() {
