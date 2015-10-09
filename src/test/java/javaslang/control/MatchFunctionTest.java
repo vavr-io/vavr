@@ -311,14 +311,20 @@ public class MatchFunctionTest {
 
     @Test
     public void shouldApplyThenValueWhenMatched() {
-        final boolean actual = Match.whenIs(1).then(true).apply(1);
-        assertThat(actual).isTrue();
+        Match<Boolean> match = Match
+                .whenIs(1).then(true)
+                .whenIs(2).then(false);
+        assertThat(match.apply(1)).isTrue();
+        assertThat(match.apply(2)).isFalse();
     }
 
     @Test
     public void shouldApplyThenSupplierWhenMatched() {
-        final boolean actual = Match.whenIs(1).then(() -> true).apply(1);
-        assertThat(actual).isTrue();
+        Match<Boolean> match = Match
+                .whenIs(1).then(() -> true)
+                .whenIs(2).then(() -> false);
+        assertThat(match.apply(1)).isTrue();
+        assertThat(match.apply(2)).isFalse();
     }
 
     @Test
