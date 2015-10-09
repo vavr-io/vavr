@@ -1547,9 +1547,6 @@ interface ListModule {
 
     final class Combinations {
 
-        private Combinations() {
-        }
-
         static <T> List<List<T>> apply(List<T> elements, int k) {
             return (k == 0)
                     ? List.of(List.empty())
@@ -1559,9 +1556,6 @@ interface ListModule {
     }
 
     final class SplitAt {
-
-        private SplitAt() {
-        }
 
         static <T> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");

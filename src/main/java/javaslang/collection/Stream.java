@@ -1509,9 +1509,6 @@ interface StreamModule {
 
     final class Combinations {
 
-        private Combinations() {
-        }
-
         static <T> Stream<Stream<T>> apply(Stream<T> elements, int k) {
             return (k == 0) ? Stream.of(Stream.empty()) :
                     elements.zipWithIndex().flatMap(t ->
@@ -1522,9 +1519,6 @@ interface StreamModule {
     }
 
     final class DropRight {
-
-        private DropRight() {
-        }
 
         // works with infinite streams by buffering elements
         static <T> Stream<T> apply(List<T> front, List<T> rear, Stream<T> remaining) {
@@ -1539,9 +1533,6 @@ interface StreamModule {
     }
 
     final class StreamFactory {
-
-        private StreamFactory() {
-        }
 
         static <T> Stream<T> create(java.util.Iterator<? extends T> iterator) {
             return iterator.hasNext() ? new Cons<>(iterator.next(), () -> create(iterator)) : Empty.instance();

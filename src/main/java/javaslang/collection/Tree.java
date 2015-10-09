@@ -12,6 +12,7 @@ import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.Node;
 import javaslang.collection.TreeModule.FlatMap;
 import javaslang.collection.TreeModule.Replace;
+import javaslang.collection.TreeModule.Unzip;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -342,7 +343,10 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    <U> Tree<U> map(Function<? super T, ? extends U> mapper);
+    default <U> Tree<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return isEmpty() ? Empty.instance() : TreeModule.Map.apply((Node<T>) this, mapper);
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -385,7 +389,7 @@ public interface Tree<T> extends Traversable<T> {
 
     @Override
     default Tree<T> replaceAll(T currentElement, T newElement) {
-        return map(t ->  Objects.equals(t, currentElement) ? newElement : t);
+        return map(t -> Objects.equals(t, currentElement) ? newElement : t);
     }
 
     @Override
@@ -394,13 +398,14 @@ public interface Tree<T> extends Traversable<T> {
         return traverse().retainAll(elements);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     default Tuple2<Seq<T>, Seq<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Tuple.of(Stream.empty(), Stream.empty());
         } else {
-            return null; // TODO
+            return (Tuple2<Seq<T>, Seq<T>>) traverse().span(predicate);
         }
     }
 
@@ -448,10 +453,15 @@ public interface Tree<T> extends Traversable<T> {
         return traverse().takeWhile(predicate);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     default <T1, T2> Tuple2<Tree<T1>, Tree<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        return null; // TODO
+        if (isEmpty()) {
+            return Tuple.of(Empty.instance(), Empty.instance());
+        } else {
+            return (Tuple2<Tree<T1>, Tree<T2>>) (Object) Unzip.apply((Node<T>) this, unzipper);
+        }
     }
 
     @Override
@@ -534,14 +544,6 @@ public interface Tree<T> extends Traversable<T> {
         @Override
         public int length() {
             return size.get();
-        }
-
-        @Override
-        public <U> Node<U> map(Function<? super T, ? extends U> mapper) {
-            Objects.requireNonNull(mapper, "mapper is null");
-            final U value = mapper.apply(getValue());
-            final List<Node<U>> children = getChildren().map(child -> child.map(mapper));
-            return new Node<>(value, children);
         }
 
         @Override
@@ -717,11 +719,6 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public <U> Empty<U> map(Function<? super T, ? extends U> mapper) {
-            return Empty.instance();
-        }
-
-        @Override
         public boolean equals(Object o) {
             return o == this;
         }
@@ -844,12 +841,14 @@ public interface Tree<T> extends Traversable<T> {
     }
 }
 
+/**
+ * Because the empty tree `Empty` cannot be a child of an existing tree, method implementations distinguish between the
+ * empty and non-empty case. Because the structure of trees is recursive, often we have commands in the form of module
+ * classes with one static method.
+ */
 interface TreeModule {
 
     final class FlatMap {
-
-        private FlatMap() {
-        }
 
         @SuppressWarnings("unchecked")
         static <T, U> Tree<U> apply(Node<T> node, Function<? super T, ? extends Iterable<? extends U>> mapper) {
@@ -859,10 +858,16 @@ interface TreeModule {
         }
     }
 
-    final class Replace {
+    final class Map {
 
-        private Replace() {
+        static <T, U> Node<U> apply(Node<T> node, Function<? super T, ? extends U> mapper) {
+            final U value = mapper.apply(node.getValue());
+            final List<Node<U>> children = node.getChildren().map(child -> Map.apply(child, mapper));
+            return new Node<>(value, children);
         }
+    }
+
+    final class Replace {
 
         // Idea:
         // Traverse (depth-first) until a match is found, then stop and rebuild relevant parts of the tree.
@@ -885,9 +890,6 @@ interface TreeModule {
     }
 
     final class Traversal {
-
-        private Traversal() {
-        }
 
         static <T> Stream<T> preOrder(Tree<T> tree) {
             return tree.getChildren()
@@ -921,6 +923,17 @@ interface TreeModule {
                 queue.addAll(next.getChildren().toJavaList());
             }
             return result.reverse();
+        }
+    }
+
+    final class Unzip {
+
+        static <T, T1, T2> Tuple2<Node<T1>, Node<T2>> apply(Node<T> node, Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+            final Tuple2<? extends T1, ? extends T2> value = unzipper.apply(node.getValue());
+            final List<Tuple2<Node<T1>, Node<T2>>> children = node.getChildren().map(child -> Unzip.apply(child, unzipper));
+            final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
+            final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
+            return Tuple.of(node1, node2);
         }
     }
 }
