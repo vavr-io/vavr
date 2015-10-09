@@ -271,6 +271,31 @@ public class TreeTest {
         assertThat(tree().map(i -> (char) (i + 64)).toString()).isEqualTo("(A (B (D G) E) (C (F H I)))");
     }
 
+    // -- replace
+
+    @Test
+    public void shouldReplaceNullInEmpty() {
+        assertThat(empty().replace(null, null)).isEmpty();
+    }
+
+    @Test
+    public void shouldReplaceFirstOccurrenceUsingDepthFirstSearchInNonEmptyTree() {
+        //   1        1
+        //  / \  ->  / \
+        // 2   3    99  3
+        final Tree<Integer> testee = Tree.of(1, Tree.of(2), Tree.of(3));
+        final Tree<Integer> actual = testee.replace(2, 99);
+        final Tree<Integer> expected = Tree.of(1, Tree.of(99), Tree.of(3));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldNotReplaceAnyElementIfThereIsNoOccurrenceInNonEmptyTree() {
+        final Tree<Integer> testee = Tree.of(1, Tree.of(2), Tree.of(3));
+        final Tree<Integer> actual = testee.replace(4, 99);
+        assertThat(actual).isEqualTo(testee);
+    }
+
     // -- traverse
 
     @Test

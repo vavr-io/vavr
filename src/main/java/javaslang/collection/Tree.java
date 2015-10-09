@@ -854,8 +854,23 @@ interface TreeModule {
         private Replace() {
         }
 
+        // Idea:
+        // Traverse (depth-first) until a match is found, then stop and rebuild relevant parts of the tree.
+        // If not found, return the same tree instance.
         static <T> Node<T> apply(Node<T> node, T currentElement, T newElement) {
-            return null;// TODO
+            if (Objects.equals(node.getValue(), currentElement)) {
+                return new Node<>(newElement, node.getChildren());
+            } else {
+                for (Node<T> child : node.getChildren()) {
+                    final Node<T> newChild = Replace.apply(child, currentElement, newElement);
+                    final boolean found = newChild != child;
+                    if (found) {
+                        final List<Node<T>> newChildren = node.getChildren().replace(child, newChild);
+                        return new Node<>(node.getValue(), newChildren);
+                    }
+                }
+                return node;
+            }
         }
     }
 
