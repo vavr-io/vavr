@@ -743,15 +743,15 @@ interface RedBlackTreeModule {
             final T m = Node.minimum(n2);
             final RedBlackTree<T> t2 = Node.deleteMin(n2)._1;
             final int h2 = t2.isEmpty() ? 0 : ((Node<T>) t2).blackHeight;
-            final RedBlackTree<T> rl = ((Node<T>) n1.right).left;
-            final T rx = ((Node<T>) n1.right).value;
-            final RedBlackTree<T> rr = ((Node<T>) n1.right).right;
             if (n1.blackHeight == h2) {
                 return new Node<>(RED, n1.blackHeight + 1, n1, m, t2, n1.empty);
             } else if (isRed(n1.left)) {
                 final Node<T> node = new Node<>(BLACK, n1.blackHeight, n1.right, m, t2, n1.empty);
                 return new Node<>(RED, n1.blackHeight, Node.color(n1.left, BLACK), n1.value, node, n1.empty);
             } else if (isRed(n1.right)) {
+                final RedBlackTree<T> rl = ((Node<T>) n1.right).left;
+                final T rx = ((Node<T>) n1.right).value;
+                final RedBlackTree<T> rr = ((Node<T>) n1.right).right;
                 final Node<T> left = new Node<>(RED, n1.blackHeight, n1.left, n1.value, rl, n1.empty);
                 final Node<T> right = new Node<>(RED, n1.blackHeight, rr, m, t2, n1.empty);
                 return new Node<>(BLACK, n1.blackHeight, left, rx, right, n1.empty);
