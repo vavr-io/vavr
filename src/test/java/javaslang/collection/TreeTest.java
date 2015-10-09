@@ -236,6 +236,27 @@ public class TreeTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- flatten
+
+    @Test
+    public void shouldFlattenEmptyTree() {
+        assertThat(empty().flatten()).isEmpty();
+    }
+
+    @Test
+    public void shouldFlattenNonEmptyTree() {
+
+        // (((1 1 1) 2 3) ((4 4 4) 5 6) ((7 7 7) 8 9))
+        final Tree<?> testee = of(of(of(1, of(1), of(1)), of(2), of(3)), of(of(4, of(4), of(4)), of(5), of(6)), of(of(7, of(7), of(7)), of(8), of(9)));
+        final Tree<?> actual = testee.flatten();
+
+        // (1 1 1 2 3 (4 4 4 5 6) (7 7 7 8 9))
+        final Tree<?> expected = of(1, of(1), of(1), of(2), of(3), of(4, of(4), of(4), of(5), of(6)), of(7, of(7), of(7), of(8), of(9)));
+        assertThat(actual).isEqualTo(expected);
+
+        System.out.println(testee);
+    }
+
     // -- iterator
 
     @Test

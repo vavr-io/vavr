@@ -264,7 +264,17 @@ public interface Tree<T> extends Traversable<T> {
 
     @Override
     default Tree<?> flatten() {
-        return null; // TODO
+        if (isEmpty()) {
+            return Empty.instance();
+        } else {
+            return flatMap(t -> {
+                if (t instanceof java.lang.Iterable) {
+                    return Tree.ofAll((java.lang.Iterable<?>) t).flatten();
+                } else {
+                    return Tree.of(t);
+                }
+            });
+        }
     }
 
     @Override
