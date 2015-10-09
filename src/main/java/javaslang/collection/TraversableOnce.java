@@ -107,7 +107,6 @@ import java.util.function.*;
  * <li>{@link #partition(Predicate)}</li>
  * <li>{@link #replace(Object, Object)}</li>
  * <li>{@link #replaceAll(Object, Object)}</li>
- * <li>{@link #replaceAll(UnaryOperator)}</li>
  * <li>{@link #sliding(int)}</li>
  * <li>{@link #sliding(int, int)}</li>
  * <li>{@link #span(Predicate)}</li>
@@ -774,7 +773,7 @@ public interface TraversableOnce<T> extends Value<T> {
      * Keeps all occurrences of the given elements from this.
      *
      * @param elements Elements to be kept.
-     * @return a TraversableOnce containing all occurreces of the given elements.
+     * @return a TraversableOnce containing all occurrences of the given elements.
      * @throws NullPointerException if {@code elements} is null
      */
     TraversableOnce<T> retainAll(java.lang.Iterable<? extends T> elements);

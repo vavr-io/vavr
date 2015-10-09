@@ -27,9 +27,10 @@ public class ArrayTest extends AbstractSeqTest {
         return Array.of(element);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
     @Override
-    protected <T> Array<T> of(T... elements) {
+    protected final <T> Array<T> of(T... elements) {
         return Array.of(elements);
     }
 

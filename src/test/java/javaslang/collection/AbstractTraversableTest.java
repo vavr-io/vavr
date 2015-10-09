@@ -20,7 +20,7 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
     @Override
     abstract protected <T> Traversable<T> of(T element);
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "varargs" })
     @Override
     abstract protected <T> Traversable<T> of(T... elements);
 
@@ -56,7 +56,7 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
     @Test
     public void shouldStreamAndCollectNil() {
         final Traversable<?> actual = java.util.stream.Stream.empty().collect(this.<Object> collector());
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test
@@ -68,7 +68,7 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
     @Test
     public void shouldParallelStreamAndCollectNil() {
         final Traversable<?> actual = java.util.stream.Stream.empty().parallel().collect(this.<Object> collector());
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test

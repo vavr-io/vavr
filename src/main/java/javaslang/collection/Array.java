@@ -82,7 +82,8 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return A Array containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
     public static <T> Array<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return wrap(Arrays.copyOf(elements, elements.length));

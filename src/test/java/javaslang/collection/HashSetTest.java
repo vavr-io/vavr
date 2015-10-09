@@ -92,9 +92,10 @@ public class HashSetTest extends AbstractSetTest {
         return HashSet.of(element);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
     @Override
-    protected <T> HashSet<T> of(T... elements) {
+    protected final <T> HashSet<T> of(T... elements) {
         return HashSet.of(elements);
     }
 

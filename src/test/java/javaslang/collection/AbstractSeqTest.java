@@ -29,7 +29,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Override
     abstract protected <T> Seq<T> of(T element);
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "varargs" })
     @Override
     abstract protected <T> Seq<T> of(T... elements);
 

@@ -31,9 +31,10 @@ public class ListTest extends AbstractSeqTest {
         return List.of(element);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
     @Override
-    protected <T> List<T> of(T... elements) {
+    protected final <T> List<T> of(T... elements) {
         return List.of(elements);
     }
 

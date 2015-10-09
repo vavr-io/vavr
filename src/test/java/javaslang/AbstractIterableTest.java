@@ -15,7 +15,7 @@ public abstract class AbstractIterableTest {
 
     abstract protected <T> Iterable<T> of(T element);
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "varargs" })
     abstract protected <T> Iterable<T> of(T... elements);
 
     // -- corresponds

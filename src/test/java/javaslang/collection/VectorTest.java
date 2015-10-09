@@ -28,9 +28,10 @@ public class VectorTest extends AbstractSeqTest {
         return Vector.of(element);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
     @Override
-    protected <T> Vector<T> of(T... elements) {
+    protected final <T> Vector<T> of(T... elements) {
         return Vector.of(elements);
     }
 

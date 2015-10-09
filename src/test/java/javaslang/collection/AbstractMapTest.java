@@ -122,7 +122,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         return IntMap.of(map);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "varargs" })
     @Override
     protected <T> IntMap<T> of(T... elements) {
         Map<Integer, T> map = emptyMap();

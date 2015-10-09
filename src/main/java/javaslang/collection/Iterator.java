@@ -141,6 +141,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @param <T>      Component type
      * @return A new Iterator
      */
+    @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     static <T> Iterator<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");

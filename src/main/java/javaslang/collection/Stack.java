@@ -87,8 +87,8 @@ public interface Stack<T> extends LinearSeq<T> {
      * @return A stack containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    @SafeVarargs
     @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
     static <T> Stack<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return List.of(elements);
