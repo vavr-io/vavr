@@ -78,9 +78,10 @@ public class IteratorTest extends AbstractTraversableOnceTest {
         return Iterator.of(element);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
     @Override
-    protected <T> Iterator<T> of(T... elements) {
+    protected final <T> Iterator<T> of(T... elements) {
         return Iterator.of(elements);
     }
 

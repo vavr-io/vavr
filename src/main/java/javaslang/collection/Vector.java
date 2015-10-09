@@ -92,6 +92,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return A vector containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
+    @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     public static <T> Vector<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");

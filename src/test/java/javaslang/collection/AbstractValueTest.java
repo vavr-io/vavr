@@ -62,8 +62,14 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     abstract protected <T> Value<T> of(T element);
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "varargs" })
     abstract protected <T> Value<T> of(T... elements);
+
+    // DEV-NOTE: needed in addition to of(T...) because may Tree methods return Seq instead of Tree
+    @SuppressWarnings({ "unchecked", "varargs" })
+    protected <T> Value<T> result(T... elements) {
+        return of(elements);
+    }
 
     abstract boolean useIsEqualToInsteadOfIsSameAs();
 
@@ -193,14 +199,14 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldFilterNonEmptyTraversable() {
-        assertThat(of(1, 2, 3, 4).filter(i -> i % 2 == 0)).isEqualTo(of(2, 4));
+        assertThat(of(1, 2, 3, 4).filter(i -> i % 2 == 0)).isEqualTo(result(2, 4));
     }
 
     @Test
     public void shouldFilterNonEmptyTraversableAllMatch() {
         if (useIsEqualToInsteadOfIsSameAs()) {
             final Value<Integer> v1 = of(1, 2, 3, 4);
-            final Value<Integer> v2 = of(1, 2, 3, 4);
+            final Value<Integer> v2 = result(1, 2, 3, 4);
             assertThat(v1.filter(i -> true)).isEqualTo(v2);
         } else {
             final Value<Integer> v = of(1, 2, 3, 4);
@@ -432,7 +438,6 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         assertThat(List.ofAll(s1::iterator)).isEqualTo(List.ofAll(s2::iterator));
     }
 
-    // TODO move to TraversableTest when Iterator will be OK
     // -- exists
 
     @Test
@@ -445,7 +450,6 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         assertThat(this.<Integer> empty().exists(i -> i == 1)).isFalse();
     }
 
-    // TODO move to TraversableTest when Iterator will be OK
     // -- forAll
 
     @Test

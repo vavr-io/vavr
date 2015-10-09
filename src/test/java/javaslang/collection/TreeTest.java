@@ -6,22 +6,26 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
-import javaslang.collection.Tree.Empty;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.collection.Tree.Node;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collector;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests all methods defined in {@link javaslang.collection.Tree}.
  */
-public class TreeTest {
+public class TreeTest extends AbstractTraversableTest {
 
     /**
      * <pre><code>
@@ -36,27 +40,102 @@ public class TreeTest {
      * 7       8   9
      * </code></pre>
      */
-    final Tree<Integer> tree = Tree.of(1, Tree.of(2, Tree.of(4, Tree.of(7)), Tree.of(5)), Tree.of(3, Tree.of(6, Tree.of(8), Tree.of(9))));
+    final Tree<Integer> tree = $(1, $(2, $(4, $(7)), $(5)), $(3, $(6, $(8), $(9))));
 
-    protected <T> Empty<T> empty() {
-        return Tree.empty();
+    @Override
+    protected <T> Collector<T, ArrayList<T>, Tree<T>> collector() {
+        return Tree.collector();
+    }
+
+    /**
+     * Returns **NOT** the empty tree. Use {@code Tree.empty()} instead.
+     * <p>
+     * This method returns {@code Stream.empty()} because most return types of Tree methods are {@code Seq}.
+     *
+     * @param <T> Component type.
+     * @return An empty {@code Seq}.
+     */
+    @Override
+    protected <T> Seq<T> empty() {
+        return Stream.empty();
+    }
+
+    @SuppressWarnings({ "unchecked", "varargs" })
+    protected <T> Seq<T> result(T... elements) {
+        return Stream.of(elements);
+    }
+
+    @Override
+    protected <T> Node<T> of(T element) {
+        return Tree.of(element);
     }
 
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    protected final <T> Node<T> of(T value, Node<T>... children) {
+    @Override
+    protected final <T> Tree<T> of(T... elements) {
+        return Tree.ofAll(List.of(elements));
+    }
+
+    @Override
+    protected <T> Tree<T> ofAll(Iterable<? extends T> elements) {
+        return Tree.ofAll(elements);
+    }
+
+    @Override
+    protected Tree<Boolean> ofAll(boolean[] array) {
+        return Tree.ofAll(List.ofAll(array));
+    }
+
+    @Override
+    protected Tree<Byte> ofAll(byte[] array) {
+        return Tree.ofAll(List.ofAll(array));
+    }
+
+    @Override
+    protected Tree<Character> ofAll(char[] array) {
+        return Tree.ofAll(List.ofAll(array));
+    }
+
+    @Override
+    protected Tree<Double> ofAll(double[] array) {
+        return Tree.ofAll(List.ofAll(array));
+    }
+
+    @Override
+    protected Tree<Float> ofAll(float[] array) {
+        return Tree.ofAll(List.ofAll(array));
+    }
+
+    @Override
+    protected Tree<Integer> ofAll(int[] array) {
+        return Tree.ofAll(List.ofAll(array));
+    }
+
+    @Override
+    protected Tree<Long> ofAll(long[] array) {
+        return Tree.ofAll(List.ofAll(array));
+    }
+
+    @Override
+    protected Tree<Short> ofAll(short[] array) {
+        return Tree.ofAll(List.ofAll(array));
+    }
+
+    @Override
+    boolean useIsEqualToInsteadOfIsSameAs() {
+        return true;
+    }
+
+    @Override
+    int getPeekNonNilPerformingAnAction() {
+        return 1;
+    }
+
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
+    protected final <T> Node<T> $(T value, Node<T>... children) {
         return Tree.of(value, children);
-    }
-
-    /**
-     * @return A Leaf(0)
-     */
-    protected Tree<Integer> leaf() {
-        return Tree.of(0);
-    }
-
-    protected Tree<Integer> tree() {
-        return tree;
     }
 
     // -- Tree test
@@ -86,77 +165,77 @@ public class TreeTest {
 
     @Test(expected = InvalidObjectException.class)
     public void shouldNotCallReadObjectOnNodeInstance() throws Throwable {
-        Serializables.callReadObject(tree());
+        Serializables.callReadObject(tree);
     }
 
     // -- getValue
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldNotGetValueOfNil() {
-        empty().getValue();
+        Tree.empty().getValue();
     }
 
     @Test
     public void shouldNotGetValueOfNonNil() {
-        assertThat(tree().getValue()).isEqualTo(1);
+        assertThat(tree.getValue()).isEqualTo(1);
     }
 
     // -- isEmpty
 
     @Test
     public void shouldIdentifyNilAsEmpty() {
-        assertThat(empty().isEmpty()).isTrue();
+        assertThat(Tree.empty().isEmpty()).isTrue();
     }
 
     @Test
     public void shouldIdentifyNonNilAsNotEmpty() {
-        assertThat(tree().isEmpty()).isFalse();
+        assertThat(tree.isEmpty()).isFalse();
     }
 
     // -- isLeaf
 
     @Test
     public void shouldIdentifiyLeafAsLeaf() {
-        assertThat(leaf().isLeaf()).isTrue();
+        assertThat($(0).isLeaf()).isTrue();
     }
 
     @Test
     public void shouldIdentifyNonLeafAsNonLeaf() {
-        assertThat(tree().isLeaf()).isFalse();
+        assertThat(tree.isLeaf()).isFalse();
     }
 
     @Test
     public void shouldIdentifiyNilAsNonLeaf() {
-        assertThat(empty().isLeaf()).isFalse();
+        assertThat(Tree.empty().isLeaf()).isFalse();
     }
 
     // -- isBranch
 
     @Test
     public void shouldIdentifiyLeafAsNonBranch() {
-        assertThat(leaf().isBranch()).isFalse();
+        assertThat($(0).isBranch()).isFalse();
     }
 
     @Test
     public void shouldIdentifyNonLeafAsBranch() {
-        assertThat(tree().isBranch()).isTrue();
+        assertThat(tree.isBranch()).isTrue();
     }
 
     @Test
     public void shouldIdentifiyNilAsNonBranch() {
-        assertThat(empty().isBranch()).isFalse();
+        assertThat(Tree.empty().isBranch()).isFalse();
     }
 
     // -- getChildren
 
     @Test
     public void shouldGetChildrenOfLeaf() {
-        assertThat(leaf().getChildren()).isEqualTo(List.empty());
+        assertThat($(0).getChildren()).isEqualTo(List.empty());
     }
 
     @Test
     public void shouldGetChildrenOfBranch() {
-        final List<? extends Tree<Integer>> children = tree().getChildren();
+        final List<? extends Tree<Integer>> children = tree.getChildren();
         assertThat(children.length()).isEqualTo(2);
         assertThat(children.get(0).toString()).isEqualTo("(2 (4 7) 5)");
         assertThat(children.get(1).toString()).isEqualTo("(3 (6 8 9))");
@@ -164,119 +243,173 @@ public class TreeTest {
 
     @Test
     public void shouldIGetChildrenOfNil() {
-        assertThat(empty().getChildren()).isEqualTo(List.empty());
+        assertThat(Tree.empty().getChildren()).isEqualTo(List.empty());
     }
 
     // -- branchCount
 
     @Test
     public void shouldCountBranchesOfNil() {
-        assertThat(Tree.branchCount(empty())).isEqualTo(0);
+        assertThat(Tree.branchCount(Tree.empty())).isEqualTo(0);
     }
 
     @Test
     public void shouldCountBranchesOfNonNil() {
-        assertThat(Tree.branchCount(tree())).isEqualTo(5);
+        assertThat(Tree.branchCount(tree)).isEqualTo(5);
     }
 
     // -- leafCount
 
     @Test
     public void shouldCountLeavesOfNil() {
-        assertThat(Tree.leafCount(empty())).isEqualTo(0);
+        assertThat(Tree.leafCount(Tree.empty())).isEqualTo(0);
     }
 
     @Test
     public void shouldCountLeavesOfNonNil() {
-        assertThat(Tree.leafCount(tree())).isEqualTo(4);
+        assertThat(Tree.leafCount(tree)).isEqualTo(4);
     }
 
     // -- nodeCount
 
     @Test
     public void shouldCountNodesOfNil() {
-        assertThat(Tree.nodeCount(empty())).isEqualTo(0);
+        assertThat(Tree.nodeCount(Tree.empty())).isEqualTo(0);
     }
 
     @Test
     public void shouldCountNodesOfNonNil() {
-        assertThat(Tree.nodeCount(tree())).isEqualTo(9);
+        assertThat(Tree.nodeCount(tree)).isEqualTo(9);
     }
 
     // -- contains
 
     @Test
     public void shouldNotFindNodeInNil() {
-        assertThat(empty().contains(1)).isFalse();
+        assertThat(Tree.empty().contains(1)).isFalse();
     }
 
     @Test
     public void shouldFindExistingNodeInNonNil() {
-        assertThat(tree().contains(5)).isTrue();
+        assertThat(tree.contains(5)).isTrue();
     }
 
     @Test
     public void shouldNotFindNonExistingNodeInNonNil() {
-        assertThat(tree().contains(0)).isFalse();
+        assertThat(tree.contains(0)).isFalse();
+    }
+
+    // -- drop
+
+    @Test
+    @Override
+    public void shouldDropNoneIfCountIsNegative() {
+        assertThat(of(1, 2, 3).drop(-1)).isEqualTo(result(1, 2, 3));
+    }
+
+    // -- dropRight
+
+    @Test
+    @Override
+    public void shouldDropRightNoneIfCountIsNegative() {
+        final TraversableOnce<Integer> t = of(1, 2, 3);
+        assertThat(of(1, 2, 3).dropRight(-1)).isEqualTo(result(1, 2, 3));
     }
 
     // -- flatMap
 
     @Test
     public void shouldFlatMapEmptyTree() {
-        assertThat(empty().flatMap(t -> Tree.of(1))).isEqualTo(empty());
+        assertThat(Tree.empty().flatMap(t -> Tree.of(1))).isEqualTo(Tree.empty());
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldFlatMapNonEmptyTree() {
-        final Node<Integer> testee = of(1, of(2), of(3));
-        final Tree<Integer> actual = testee.flatMap(i -> of(i, of(i), of(i)));
-        final Tree<Integer> expected = of(1, of(1), of(1), of(2, of(2), of(2)), of(3, of(3), of(3)));
+        final Node<Integer> testee = $(1, $(2), $(3));
+        final Tree<Integer> actual = testee.flatMap(i -> $(i, $(i), $(i)));
+        final Tree<Integer> expected = $(1, $(1), $(1), $(2, $(2), $(2)), $(3, $(3), $(3)));
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @Override
+    public void shouldFlatMapTraversableByExpandingElements() {
+        assertThat(of(1, 2, 3).flatMap(i -> {
+            if (i == 1) {
+                return of(1, 2, 3);
+            } else if (i == 2) {
+                return of(4, 5);
+            } else {
+                return of(6);
+            }
+        })).isEqualTo($(1, $(2), $(3), $(4, $(5)), $(6)));
+    }
+
+    @Test
+    @Override
+    public void shouldFlatMapElementsToSequentialValuesInTheRightOrder() {
+        final AtomicInteger seq = new AtomicInteger(0);
+        final Value<Integer> actualInts = $(0, $(1), $(2)).flatMap(ignored -> of(seq.getAndIncrement(), seq.getAndIncrement()));
+        final Value<Integer> expectedInts = $(0, $(1), $(2, $(3)), $(4, $(5)));
+        assertThat(actualInts).isEqualTo(expectedInts);
     }
 
     // -- flatten
 
     @Test
     public void shouldFlattenEmptyTree() {
-        assertThat(empty().flatten()).isEmpty();
+        assertThat(Tree.empty().flatten()).isEmpty();
     }
 
     @Test
-    public void shouldFlattenNonEmptyTree() {
+    @Override
+    public void shouldFlattenTraversableOfTraversables() {
 
         // (((1 1 1) 2 3) ((4 4 4) 5 6) ((7 7 7) 8 9))
-        final Tree<?> testee = of(of(of(1, of(1), of(1)), of(2), of(3)), of(of(4, of(4), of(4)), of(5), of(6)), of(of(7, of(7), of(7)), of(8), of(9)));
+        final Tree<?> testee = $($($(1, $(1), $(1)), $(2), $(3)), $($(4, $(4), $(4)), $(5), $(6)), $($(7, $(7), $(7)), $(8), $(9)));
         final Tree<?> actual = testee.flatten();
 
         // (1 1 1 2 3 (4 4 4 5 6) (7 7 7 8 9))
-        final Tree<?> expected = of(1, of(1), of(1), of(2), of(3), of(4, of(4), of(4), of(5), of(6)), of(7, of(7), of(7), of(8), of(9)));
+        final Tree<?> expected = $(1, $(1), $(1), $(2), $(3), $(4, $(4), $(4), $(5), $(6)), $(7, $(7), $(7), $(8), $(9)));
         assertThat(actual).isEqualTo(expected);
+    }
 
-        System.out.println(testee);
+    @Test
+    @Override
+    public void shouldFlattenTraversableOfTraversablesAndPlainElements() {
+        assertThat($(1, $($(2, $(3)), $(4)), $(5)).flatten()).isEqualTo($(1, $(2, $(3), $(4)), $(5)));
+    }
+
+    @Test
+    @Override
+    public void shouldFlattenDifferentElementTypes() {
+        final Tree<?> testee = $(1, $($("2", $(3.1415, $(1L)))));
+        final Tree<?> actual = testee.flatten();
+        final Tree<?> expected = $(1, $("2", $(3.1415, $(1L))));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- iterator
 
     @Test
     public void shouldNotHasNextWhenNilIterator() {
-        assertThat(empty().iterator().hasNext()).isFalse();
+        assertThat(Tree.empty().iterator().hasNext()).isFalse();
     }
 
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowOnNextWhenNilIterator() {
-        empty().iterator().next();
+        Tree.empty().iterator().next();
     }
 
     @Test
     public void shouldIterateFirstElementOfNonNil() {
-        assertThat(tree().iterator().next()).isEqualTo(1);
+        assertThat(tree.iterator().next()).isEqualTo(1);
     }
 
     @Test
     public void shouldFullyIterateNonNil() {
-        final int length = List.of(1, 2, 4, 7, 5, 3, 6, 8, 9).zip(() -> tree().iterator()).filter(t -> Objects.equals(t._1, t._2)).length();
+        final int length = List.of(1, 2, 4, 7, 5, 3, 6, 8, 9).zip(tree::iterator).filter(t -> Objects.equals(t._1, t._2)).length();
         assertThat(length).isEqualTo(9);
     }
 
@@ -284,19 +417,19 @@ public class TreeTest {
 
     @Test
     public void shouldMapEmpty() {
-        assertThat(empty().map(i -> i)).isEqualTo(empty());
+        assertThat(Tree.empty().map(i -> i)).isEqualTo(Tree.empty());
     }
 
     @Test
     public void shouldMapTree() {
-        assertThat(tree().map(i -> (char) (i + 64)).toString()).isEqualTo("(A (B (D G) E) (C (F H I)))");
+        assertThat(tree.map(i -> (char) (i + 64)).toString()).isEqualTo("(A (B (D G) E) (C (F H I)))");
     }
 
     // -- replace
 
     @Test
     public void shouldReplaceNullInEmpty() {
-        assertThat(empty().replace(null, null)).isEmpty();
+        assertThat(Tree.empty().replace(null, null)).isEmpty();
     }
 
     @Test
@@ -321,104 +454,118 @@ public class TreeTest {
 
     @Test
     public void shouldTraverseEmpty() {
-        assertThat(empty().traverse()).isEqualTo(Stream.empty());
+        assertThat(Tree.empty().traverse()).isEqualTo(empty());
     }
 
     // -- traverse(Order)
 
     @Test
     public void shouldTraverseTreeUsingPreOrder() {
-        assertThat(tree().traverse(Tree.Order.PRE_ORDER)).isEqualTo(Stream.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
+        assertThat(tree.traverse(Tree.Order.PRE_ORDER)).isEqualTo(Stream.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
     }
 
     @Test
     public void shouldTraverseTreeUsingInOrder() {
-        assertThat(tree().traverse(Tree.Order.IN_ORDER)).isEqualTo(Stream.of(7, 4, 2, 5, 1, 8, 6, 9, 3));
+        assertThat(tree.traverse(Tree.Order.IN_ORDER)).isEqualTo(Stream.of(7, 4, 2, 5, 1, 8, 6, 9, 3));
     }
 
     @Test
     public void shouldTraverseTreeUsingPostOrder() {
-        assertThat(tree().traverse(Tree.Order.POST_ORDER)).isEqualTo(Stream.of(7, 4, 5, 2, 8, 9, 6, 3, 1));
+        assertThat(tree.traverse(Tree.Order.POST_ORDER)).isEqualTo(Stream.of(7, 4, 5, 2, 8, 9, 6, 3, 1));
     }
 
     @Test
     public void shouldTraverseTreeUsingLevelOrder() {
-        assertThat(tree().traverse(Tree.Order.LEVEL_ORDER)).isEqualTo(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
+        assertThat(tree.traverse(Tree.Order.LEVEL_ORDER)).isEqualTo(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
     }
 
-    // -- toLispString
+    // -- unzip
 
     @Test
-    public void shouldConvertEmptyToLispString() {
-        assertThat(empty().toString()).isEqualTo("()");
+    public void shouldUnzipEmptyTree() {
+        assertThat(Tree.empty().unzip(t -> Tuple.of(t, t))).isEqualTo(Tuple.of(Tree.empty(), Tree.empty()));
     }
 
     @Test
-    public void shouldConvertNonEmptyToLispString() {
-        assertThat(tree().toString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
+    public void shouldUnzipNonEmptyTree() {
+        final Tree<Integer> testee = $(1, $(2), $(3));
+        final Tuple2<Tree<Integer>, Tree<Integer>> actual = testee.unzip(i -> Tuple.of(i, -i));
+        final Tuple2<Tree<Integer>, Tree<Integer>> expected = Tuple.of($(1, $(2), $(3)), $(-1, $(-2), $(-3)));
+        assertThat(actual).isEqualTo(expected);
     }
-
 
     // equals
 
     @Test
     public void shouldBeAwareThatTwoTreesOfSameInstanceAreEqual() {
-        assertThat(empty().equals(empty())).isTrue();
+        assertThat(Tree.empty().equals(Tree.empty())).isTrue();
     }
 
     @Test
     public void shouldBeAwareOfTwoDifferentEqualTrees() {
-        assertThat(leaf().equals(leaf())).isTrue();
+        assertThat($(0).equals($(0))).isTrue();
     }
 
     @Test
     public void shouldBeAwareThatTreeNotEqualsObject() {
-        assertThat(leaf()).isNotEqualTo(new Object());
+        assertThat($(0)).isNotEqualTo(new Object());
     }
 
     // hashCode
 
     @Test
     public void shouldBeAwareThatHashCodeOfEmptyIsOne() {
-        assertThat(empty().hashCode()).isEqualTo(1);
+        assertThat(Tree.empty().hashCode()).isEqualTo(1);
     }
 
     @Test
     public void shouldBeAwareThatHashCodeOfLeafIsGreaterThanOne() {
-        assertThat(leaf().hashCode()).isGreaterThan(1);
+        assertThat($(0).hashCode()).isGreaterThan(1);
     }
 
     // toString
 
     @Test
     public void shouldReturnStringRepresentationOfEmpty() {
-        assertThat(empty().toString()).isEqualTo("()");
+        assertThat(Tree.empty().toString()).isEqualTo("()");
     }
 
     @Test
     public void shouldReturnStringRepresentationOfNode() {
-        assertThat(tree().toString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
+        assertThat(tree.toString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
+    }
+
+    // -- toLispString
+
+    @Test
+    public void shouldConvertEmptyToLispString() {
+        assertThat(Tree.empty().toString()).isEqualTo("()");
+    }
+
+    @Test
+    public void shouldConvertNonEmptyToLispString() {
+        assertThat(tree.toString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
     }
 
     // -- Serializable interface
 
     @Test
     public void shouldSerializeDeserializeEmpty() {
-        final Object actual = deserialize(serialize(empty()));
-        final Object expected = empty();
+        final Object actual = deserialize(serialize(Tree.empty()));
+        final Object expected = Tree.empty();
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldPreserveSingletonInstanceOnDeserialization() {
-        final boolean actual = deserialize(serialize(empty())) == empty();
+        final boolean actual = deserialize(serialize(Tree.empty())) == Tree.empty();
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldSerializeDeserializeNonEmpty() {
-        final Object actual = deserialize(serialize(tree()));
-        final Object expected = tree();
+        final Object actual = deserialize(serialize(tree));
+        final Object expected = tree;
         assertThat(actual).isEqualTo(expected);
     }
 }

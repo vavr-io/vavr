@@ -9,22 +9,18 @@ import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.List.Nil;
+import javaslang.collection.Tree.Empty;
 import javaslang.collection.Tree.Node;
-import javaslang.collection.TreeModule.FlatMap;
-import javaslang.collection.TreeModule.Replace;
-import javaslang.collection.TreeModule.Unzip;
+import javaslang.collection.TreeModule.*;
+import javaslang.collection.TreeModule.*;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.io.*;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 import static javaslang.collection.Tree.Order.PRE_ORDER;
 
@@ -36,6 +32,24 @@ import static javaslang.collection.Tree.Order.PRE_ORDER;
  * @since 1.1.0
  */
 public interface Tree<T> extends Traversable<T> {
+
+    /**
+     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.Tree}.
+     *
+     * @param <T> Component type of the Tree.
+     * @return A javaslang.collection.Tree Collector.
+     */
+    static <T> Collector<T, ArrayList<T>, Tree<T>> collector() {
+        final Supplier<ArrayList<T>> supplier = ArrayList::new;
+        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
+        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
+            left.addAll(right);
+            return left;
+        };
+        final Function<ArrayList<T>, Tree<T>> finisher = Tree::ofAll;
+        return Collector.of(supplier, accumulator, combiner, finisher);
+    }
 
     /**
      * Returns the singleton empty tree.
@@ -86,6 +100,17 @@ public interface Tree<T> extends Traversable<T> {
         return new Node<>(value, List.ofAll(children));
     }
 
+    /**
+     * Creates a Tree of the given elements.
+     * <p>
+     * If the given iterable is a tree, it is returned as result.
+     * if the iteration order of the elements is stable.
+     *
+     * @param <T>      Component type of the List.
+     * @param iterable An java.lang.Iterable of elements.
+     * @return A list containing the given elements in the same order.
+     * @throws NullPointerException if {@code elements} is null
+     */
     @SuppressWarnings("unchecked")
     static <T> Tree<T> ofAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
@@ -410,6 +435,12 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
+    default Spliterator<T> spliterator() {
+        // the focus of the Stream API is on random-access collections of *known size*
+        return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
+    }
+
+    @Override
     default Seq<T> tail() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty tree");
@@ -467,18 +498,26 @@ public interface Tree<T> extends Traversable<T> {
     @Override
     default <U> Tree<Tuple2<T, U>> zip(Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
-        return null; // TODO
+        if (isEmpty()) {
+            return Empty.instance();
+        } else {
+            return Zip.apply((Node<T>) this, that.iterator());
+        }
     }
 
     @Override
     default <U> Tree<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        return null; // TODO
+        if (isEmpty()) {
+            return Empty.instance();
+        } else {
+            return ZipAll.apply((Node<T>) this, that, thisElem, thatElem);
+        }
     }
 
     @Override
     default Tree<Tuple2<T, Integer>> zipWithIndex() {
-        return null; // TODO
+        return zip(Iterator.from(0));
     }
 
     @Override
@@ -934,6 +973,27 @@ interface TreeModule {
             final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
             final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
             return Tuple.of(node1, node2);
+        }
+    }
+
+    final class Zip {
+
+        @SuppressWarnings("unchecked")
+        static <T, U> Tree<Tuple2<T, U>> apply(Node<T> node, java.util.Iterator<U> that) {
+            if (!that.hasNext()) {
+                return Empty.instance();
+            } else {
+                final Tuple2<T, U> value = Tuple.of(node.getValue(), that.next());
+                final List<Node<Tuple2<T, U>>> children = (List<Node<Tuple2<T, U>>>) (Object) node.getChildren().map(child -> Zip.apply(child, that)).filter(Tree::isDefined);
+                return new Node<>(value, children);
+            }
+        }
+    }
+
+    final class ZipAll {
+
+        static <T, U> Tree<Tuple2<T, U>> apply(Node<T> node, Iterable<U> that, T thisElem, U thatElem) {
+            return null; // TODO
         }
     }
 }

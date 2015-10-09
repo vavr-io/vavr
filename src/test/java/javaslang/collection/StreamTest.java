@@ -33,9 +33,10 @@ public class StreamTest extends AbstractSeqTest {
         return Stream.of(element);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
     @Override
-    protected <T> Stream<T> of(T... elements) {
+    protected final <T> Stream<T> of(T... elements) {
         return Stream.of(elements);
     }
 

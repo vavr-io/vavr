@@ -85,6 +85,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A set containing the given elements.
      * @throws NullPointerException if {@code elements} is null
      */
+    @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     static <T> HashSet<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");

@@ -218,6 +218,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param elements Zero or more elements.
      * @return A list containing the given elements in the same order.
      */
+    @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     static <T> Stream<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");

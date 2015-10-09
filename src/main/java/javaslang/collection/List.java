@@ -144,6 +144,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @return A list containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
+    @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     static <T> List<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -156,7 +157,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     /**
      * Creates a List of the given elements.
-     *
+     * <p>
      * The resulting list has the same iteration order as the given iterable of elements
      * if the iteration order of the elements is stable.
      *
