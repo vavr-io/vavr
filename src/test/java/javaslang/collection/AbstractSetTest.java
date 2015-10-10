@@ -51,6 +51,21 @@ public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
     }
 
     @Test
+    public void shouldRemoveElement() {
+        assertThat(of(1, 2, 3).remove(2)).isEqualTo(of(1, 3));
+        assertThat(of(1, 2, 3).remove(5)).isEqualTo(of(1, 2, 3));
+        assertThat(empty().remove(5)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldRemoveAllElements() {
+        assertThat(of(1, 2, 3).removeAll(empty())).isEqualTo(of(1, 2, 3));
+        assertThat(of(1, 2, 3).removeAll(of(2))).isEqualTo(of(1, 3));
+        assertThat(of(1, 2, 3).removeAll(of(5))).isEqualTo(of(1, 2, 3));
+        assertThat(empty().removeAll(of(5))).isEqualTo(empty());
+    }
+
+    @Test
     public void shouldMapDistinctElementsToOneElement() {
         assertThat(of(1, 2, 3).map(i -> 0)).isEqualTo(of(0));
     }

@@ -10,6 +10,14 @@ import org.junit.Test;
 public abstract class AbstractSortedSetTest extends AbstractSetTest {
 
     @Override
+    abstract protected <T> SortedSet<T> of(T element);
+
+    @Test
+    public void shouldReturnComparator() {
+        assertThat(of(1).comparator()).isNotNull();
+    }
+
+    @Override
     @Test
     public void shouldFlattenDifferentElementTypes() {
         // can't find a comparable for different element types in a generic way
