@@ -22,16 +22,28 @@ import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
 
 /**
- * A representation of value which may be either <em>defined</em> or <em>undefined</em>. If a value is undefined, we say
- * it is empty.
- * <p>
- * In a functional setting, a value can be seen as the result of a partial function application. Hence the result may
- * be undefined.
+ * Functional programming is all about values and transformation of values using functions. The {@code Value}
+ * type reflects the values in a functional setting. It can be seen as the result of a partial function application.
+ * Hence the result may be undefined. If a value is undefined, we say it is empty.
  * <p>
  * How the empty state is interpreted depends on the context, i.e. it may be <em>undefined</em>, <em>failed</em>,
  * <em>not yet defined</em>, etc.
- *
  * <p>
+ *
+ * Static methods:
+ *
+ * <ul>
+ * <li>{@link #get(java.lang.Iterable)}</li>
+ * </ul>
+ *
+ * Filter-monadic operations:
+ *
+ * <ul>
+ * <li>{@link #filter(Predicate)}</li>
+ * <li>{@link #flatMap(Function)}</li>
+ * <li>{@link #flatten()}</li>
+ * <li>{@link #map(Function)}</li>
+ * </ul>
  *
  * Side-effects:
  *
@@ -44,11 +56,51 @@ import java.util.stream.StreamSupport;
  * <li>{@link #stdout()}</li>
  * </ul>
  *
+ * Terminal operations:
+ *
+ * <ul>
+ * <li>{@link #get()}</li>
+ * <li>{@link #getOption()}</li>
+ * <li>{@link #ifDefined(Supplier, Supplier)}</li>
+ * <li>{@link #ifDefined(Object, Object)}</li>
+ * <li>{@link #ifEmpty(Supplier, Supplier)}</li>
+ * <li>{@link #ifEmpty(Object, Object)}</li>
+ * <li>{@link #orElse(Object)}</li>
+ * <li>{@link #orElseGet(Supplier)}</li>
+ * <li>{@link #orElseThrow(Supplier)}</li>
+ * </ul>
+ *
  * Tests:
  *
  * <ul>
  * <li>{@link #exists(Predicate)}</li>
  * <li>{@link #forAll(Predicate)}</li>
+ * <li>{@link #isDefined()}</li>
+ * <li>{@link #isEmpty()}</li>
+ * </ul>
+ *
+ * Type conversions:
+ *
+ * <ul>
+ * <li>{@link #toArray()}</li>
+ * <li>{@link #toCharSeq()}</li>
+ * <li>{@link #toJavaArray(Class)}</li>
+ * <li>{@link #toJavaList()}</li>
+ * <li>{@link #toJavaMap(Function)}</li>
+ * <li>{@link #toJavaOptional()}</li>
+ * <li>{@link #toJavaSet()}</li>
+ * <li>{@link #toJavaStream()}</li>
+ * <li>{@link #toLazy()}</li>
+ * <li>{@link #toList()}</li>
+ * <li>{@link #toMap(Function)}</li>
+ * <li>{@link #toOption()}</li>
+ * <li>{@link #toQueue()}</li>
+ * <li>{@link #toSet()}</li>
+ * <li>{@link #toStack()}</li>
+ * <li>{@link #toStream()}</li>
+ * <li>{@link #toTree()}</li>
+ * <li>{@link #toTry()}</li>
+ * <li>{@link #toVector()}</li>
  * </ul>
  *
  * @param <T> The type of the wrapped value.
