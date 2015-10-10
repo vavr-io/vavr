@@ -200,6 +200,47 @@ public interface Tree<T> extends Traversable<T> {
         }
     }
 
+    /**
+     * Counts the number of branches of this tree. The empty tree and a leaf have no branches.
+     *
+     * @return The number of branches of this tree.
+     */
+    default int branchCount() {
+        if (isEmpty() || isLeaf()) {
+            return 0;
+        } else {
+            return getChildren().foldLeft(1, (count, child) -> count + child.branchCount());
+        }
+    }
+
+    /**
+     * Counts the number of leaves of this tree. The empty tree has no leaves.
+     *
+     * @return The number of leaves of this tree.
+     */
+    default int leafCount() {
+        if (isEmpty()) {
+            return 0;
+        } else if (isLeaf()) {
+            return 1;
+        } else {
+            return getChildren().foldLeft(0, (count, child) -> count + child.leafCount());
+        }
+    }
+
+    /**
+     * Counts the number of nodes (i.e. branches and leaves) of this tree. The empty tree has no nodes.
+     *
+     * @return The number of nodes of this tree.
+     */
+    default int nodeCount() {
+        if (isEmpty()) {
+            return 0;
+        } else {
+            return 1 + getChildren().foldLeft(0, (count, child) -> count + child.nodeCount());
+        }
+    }
+
     // -- Methods inherited from Traversable
 
     @Override
@@ -508,9 +549,16 @@ public interface Tree<T> extends Traversable<T> {
     default <U> Tree<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
-            return Empty.instance();
+            return Iterator.ofAll(that).map(elem -> Tuple.of(thisElem, elem)).toTree();
         } else {
-            return ZipAll.apply((Node<T>) this, that, thisElem, thatElem);
+            final java.util.Iterator<U> thatIter = that.iterator();
+            final Tree<Tuple2<T, U>> tree = ZipAll.apply((Node<T>) this, thatIter, thatElem);
+            if (thatIter.hasNext()) {
+                final Iterable<Node<Tuple2<T, U>>> remainder = Iterator.ofAll(thatIter).map(elem -> Tree.of(Tuple.of(thisElem, elem)));
+                return new Node<>(tree.getValue(), tree.getChildren().appendAll(remainder));
+            } else {
+                return tree;
+            }
         }
     }
 
@@ -831,52 +879,6 @@ public interface Tree<T> extends Traversable<T> {
          */
         LEVEL_ORDER
     }
-
-    // -- static extension methods
-
-    /**
-     * Counts the number of branches of this tree. The empty tree and a leaf have no branches.
-     *
-     * @param tree the Tree
-     * @return The number of branches of this tree.
-     */
-    static int branchCount(Tree<?> tree) {
-        if (tree.isEmpty() || tree.isLeaf()) {
-            return 0;
-        } else {
-            return tree.getChildren().foldLeft(1, (count, child) -> count + Tree.branchCount(child));
-        }
-    }
-
-    /**
-     * Counts the number of leaves of this tree. The empty tree has no leaves.
-     *
-     * @param tree the Tree
-     * @return The number of leaves of this tree.
-     */
-    static int leafCount(Tree<?> tree) {
-        if (tree.isEmpty()) {
-            return 0;
-        } else if (tree.isLeaf()) {
-            return 1;
-        } else {
-            return tree.getChildren().foldLeft(0, (count, child) -> count + Tree.leafCount(child));
-        }
-    }
-
-    /**
-     * Counts the number of nodes (i.e. branches and leaves) of this tree. The empty tree has no nodes.
-     *
-     * @param tree the Tree
-     * @return The number of nodes of this tree.
-     */
-    static int nodeCount(Tree<?> tree) {
-        if (tree.isEmpty()) {
-            return 0;
-        } else {
-            return 1 + tree.getChildren().foldLeft(0, (count, child) -> count + Tree.nodeCount(child));
-        }
-    }
 }
 
 /**
@@ -991,8 +993,15 @@ interface TreeModule {
 
     final class ZipAll {
 
-        static <T, U> Tree<Tuple2<T, U>> apply(Node<T> node, Iterable<U> that, T thisElem, U thatElem) {
-            return null; // TODO
+        @SuppressWarnings("unchecked")
+        static <T, U> Tree<Tuple2<T, U>> apply(Node<T> node, java.util.Iterator<U> that, U thatElem) {
+            if (!that.hasNext()) {
+                return node.map(value -> Tuple.of(value, thatElem));
+            } else {
+                final Tuple2<T, U> value = Tuple.of(node.getValue(), that.next());
+                final List<Node<Tuple2<T, U>>> children = (List<Node<Tuple2<T, U>>>) (Object) node.getChildren().map(child -> Zip.apply(child, that)).filter(Tree::isDefined);
+                return new Node<>(value, children);
+            }
         }
     }
 }

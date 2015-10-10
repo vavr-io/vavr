@@ -387,17 +387,18 @@ public interface Value<T> extends javaslang.Iterable<T> {
         if (this instanceof Try) {
             return (Try<T>) this;
         } else {
-            return Try.of(() -> get());
+            return Try.of(this::get);
         }
     }
 
-// TODO:
-//    /**
-//     * Converts this value to a {@link Tree}.
-//     *
-//     * @return A new {@link Tree}.
-//     */
-//    Tree<T> toTree();
+    /**
+     * Converts this value to a {@link Tree}.
+     *
+     * @return A new {@link Tree}.
+     */
+    default Tree<T> toTree() {
+        return isEmpty() ? Tree.empty() : Tree.ofAll(this);
+    }
 
     /**
      * Converts this value to a {@link Vector}.
