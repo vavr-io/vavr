@@ -153,7 +153,9 @@ public class CheckedFunction1Test {
         final CheckedFunction1<Integer, Integer> f2 = (i1) -> null;
         final CheckedFunction1<Integer, String> f3 = (i1) -> null;
         final CheckedFunction1<String, Integer> f4 = (i1) -> null;
-        assertThat(f1.getType()).isEqualTo(f1.getType());
+        final CheckedFunction1.Type<Integer, Integer> t1 = f1.getType();
+        assertThat(t1).isEqualTo(t1);
+        assertThat(t1).isNotEqualTo(11);
         assertThat(f1.getType()).isEqualTo(f2.getType());
         assertThat(f1.getType()).isNotEqualTo(f3.getType());
         assertThat(f1.getType()).isNotEqualTo(f4.getType());

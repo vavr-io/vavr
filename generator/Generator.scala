@@ -1047,7 +1047,9 @@ def generateTestClasses(): Unit = {
                   ${(i > 0).gen(xs"""
                   final $name$i<String, ${(2 to i + 1).gen(j => "Integer")(", ")}> f4 = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
                   """)}
-                  $assertThat(f1.getType()).isEqualTo(f1.getType());
+                  final $name$i.Type<${(1 to i + 1).gen(j => "Integer")(", ")}> t1 = f1.getType();
+                  $assertThat(t1).isEqualTo(t1);
+                  $assertThat(t1).isNotEqualTo(11);
                   $assertThat(f1.getType()).isEqualTo(f2.getType());
                   $assertThat(f1.getType()).isNotEqualTo(f3.getType());
                   ${(i > 0).gen(xs"""

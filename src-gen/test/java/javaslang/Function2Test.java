@@ -152,7 +152,9 @@ public class Function2Test {
         final Function2<Integer, Integer, Integer> f2 = (i1, i2) -> null;
         final Function2<Integer, Integer, String> f3 = (i1, i2) -> null;
         final Function2<String, Integer, Integer> f4 = (i1, i2) -> null;
-        assertThat(f1.getType()).isEqualTo(f1.getType());
+        final Function2.Type<Integer, Integer, Integer> t1 = f1.getType();
+        assertThat(t1).isEqualTo(t1);
+        assertThat(t1).isNotEqualTo(11);
         assertThat(f1.getType()).isEqualTo(f2.getType());
         assertThat(f1.getType()).isNotEqualTo(f3.getType());
         assertThat(f1.getType()).isNotEqualTo(f4.getType());

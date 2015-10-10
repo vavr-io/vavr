@@ -117,7 +117,9 @@ public class Function0Test {
         final Function0<Integer> f2 = () -> null;
         final Function0<String> f3 = () -> null;
 
-        assertThat(f1.getType()).isEqualTo(f1.getType());
+        final Function0.Type<Integer> t1 = f1.getType();
+        assertThat(t1).isEqualTo(t1);
+        assertThat(t1).isNotEqualTo(11);
         assertThat(f1.getType()).isEqualTo(f2.getType());
         assertThat(f1.getType()).isNotEqualTo(f3.getType());
 

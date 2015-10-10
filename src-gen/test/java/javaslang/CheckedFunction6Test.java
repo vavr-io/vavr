@@ -180,7 +180,9 @@ public class CheckedFunction6Test {
         final CheckedFunction6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> f2 = (i1, i2, i3, i4, i5, i6) -> null;
         final CheckedFunction6<Integer, Integer, Integer, Integer, Integer, Integer, String> f3 = (i1, i2, i3, i4, i5, i6) -> null;
         final CheckedFunction6<String, Integer, Integer, Integer, Integer, Integer, Integer> f4 = (i1, i2, i3, i4, i5, i6) -> null;
-        assertThat(f1.getType()).isEqualTo(f1.getType());
+        final CheckedFunction6.Type<Integer, Integer, Integer, Integer, Integer, Integer, Integer> t1 = f1.getType();
+        assertThat(t1).isEqualTo(t1);
+        assertThat(t1).isNotEqualTo(11);
         assertThat(f1.getType()).isEqualTo(f2.getType());
         assertThat(f1.getType()).isNotEqualTo(f3.getType());
         assertThat(f1.getType()).isNotEqualTo(f4.getType());
