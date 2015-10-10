@@ -12,7 +12,6 @@ import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.Empty;
 import javaslang.collection.Tree.Node;
 import javaslang.collection.TreeModule.*;
-import javaslang.collection.TreeModule.*;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -188,13 +187,13 @@ public interface Tree<T> extends Traversable<T> {
         } else {
             switch (order) {
                 case PRE_ORDER:
-                    return TreeModule.Traversal.preOrder(this);
+                    return Traversal.preOrder(this);
                 case IN_ORDER:
-                    return TreeModule.Traversal.inOrder(this);
+                    return Traversal.inOrder(this);
                 case POST_ORDER:
-                    return TreeModule.Traversal.postOrder(this);
+                    return Traversal.postOrder(this);
                 case LEVEL_ORDER:
-                    return TreeModule.Traversal.levelOrder(this);
+                    return Traversal.levelOrder(this);
                 default:
                     throw new IllegalStateException("Unknown order: " + order.name());
             }
