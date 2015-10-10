@@ -250,36 +250,36 @@ public class TreeTest extends AbstractTraversableTest {
 
     @Test
     public void shouldCountBranchesOfNil() {
-        assertThat(Tree.branchCount(Tree.empty())).isEqualTo(0);
+        assertThat(Tree.empty().branchCount()).isEqualTo(0);
     }
 
     @Test
     public void shouldCountBranchesOfNonNil() {
-        assertThat(Tree.branchCount(tree)).isEqualTo(5);
+        assertThat(tree.branchCount()).isEqualTo(5);
     }
 
     // -- leafCount
 
     @Test
     public void shouldCountLeavesOfNil() {
-        assertThat(Tree.leafCount(Tree.empty())).isEqualTo(0);
+        assertThat(Tree.empty().leafCount()).isEqualTo(0);
     }
 
     @Test
     public void shouldCountLeavesOfNonNil() {
-        assertThat(Tree.leafCount(tree)).isEqualTo(4);
+        assertThat(tree.leafCount()).isEqualTo(4);
     }
 
     // -- nodeCount
 
     @Test
     public void shouldCountNodesOfNil() {
-        assertThat(Tree.nodeCount(Tree.empty())).isEqualTo(0);
+        assertThat(Tree.empty().nodeCount()).isEqualTo(0);
     }
 
     @Test
     public void shouldCountNodesOfNonNil() {
-        assertThat(Tree.nodeCount(tree)).isEqualTo(9);
+        assertThat(tree.nodeCount()).isEqualTo(9);
     }
 
     // -- contains
@@ -312,7 +312,6 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     @Override
     public void shouldDropRightNoneIfCountIsNegative() {
-        final TraversableOnce<Integer> t = of(1, 2, 3);
         assertThat(of(1, 2, 3).dropRight(-1)).isEqualTo(result(1, 2, 3));
     }
 
@@ -498,6 +497,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     @Test
     public void shouldBeAwareThatTwoTreesOfSameInstanceAreEqual() {
+        // DEV_NOTE: intentionally not called `assertThat(Tree.empty()).isEqualTo(Tree.empty())`
         assertThat(Tree.empty().equals(Tree.empty())).isTrue();
     }
 
