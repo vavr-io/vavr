@@ -104,4 +104,22 @@ public class Function0Test {
 
         assertThat(type.toString()).isEqualTo("() -> java.lang.Integer");
     }
+
+    @Test
+    public void shouldGetReturnType() {
+        final Function0<Integer> f = () -> null;
+        assertThat(f.getType().returnType()).isEqualTo(Integer.class);
+    }
+
+    @Test
+    public void testTypesEquals() {
+        final Function0<Integer> f1 = () -> null;
+        final Function0<Integer> f2 = () -> null;
+        final Function0<String> f3 = () -> null;
+
+        assertThat(f1.getType()).isEqualTo(f1.getType());
+        assertThat(f1.getType()).isEqualTo(f2.getType());
+        assertThat(f1.getType()).isNotEqualTo(f3.getType());
+
+    }
 }

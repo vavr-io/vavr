@@ -64,22 +64,22 @@ public class Function7Test {
     }
 
     @Test
-      public void shouldRecognizeApplicabilityOfNull() {
-          final Function7<Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7) -> null;
-          assertThat(f.isApplicableTo(null, null, null, null, null, null, null)).isTrue();
-      }
+    public void shouldRecognizeApplicabilityOfNull() {
+        final Function7<Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7) -> null;
+        assertThat(f.isApplicableTo(null, null, null, null, null, null, null)).isTrue();
+    }
 
-      @Test
-      public void shouldRecognizeApplicabilityOfNonNull() {
-          final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
-          assertThat(f.isApplicableTo(1, 2, 3, 4, 5, 6, 7)).isTrue();
-      }
+    @Test
+    public void shouldRecognizeApplicabilityOfNonNull() {
+        final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        assertThat(f.isApplicableTo(1, 2, 3, 4, 5, 6, 7)).isTrue();
+    }
 
-      @Test
-      public void shouldRecognizeApplicabilityToTypes() {
-          final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
-          assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class)).isTrue();
-      }
+    @Test
+    public void shouldRecognizeApplicabilityToTypes() {
+        final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class)).isTrue();
+    }
 
     @Test
     public void shouldGetArity() {
@@ -173,5 +173,23 @@ public class Function7Test {
         assertThat(type.parameterType6()).isEqualTo(Integer.class);
         assertThat(type.parameterType7()).isEqualTo(Integer.class);
         assertThat(type.toString()).isEqualTo("(java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer) -> java.lang.Integer");
+    }
+
+    @Test
+    public void shouldGetReturnType() {
+        final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        assertThat(f.getType().returnType()).isEqualTo(Integer.class);
+    }
+
+    @Test
+    public void testTypesEquals() {
+        final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f1 = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f2 = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        final Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, String> f3 = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        final Function7<String, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f4 = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        assertThat(f1.getType()).isEqualTo(f1.getType());
+        assertThat(f1.getType()).isEqualTo(f2.getType());
+        assertThat(f1.getType()).isNotEqualTo(f3.getType());
+        assertThat(f1.getType()).isNotEqualTo(f4.getType());
     }
 }

@@ -913,22 +913,22 @@ def generateTestClasses(): Unit = {
 
               ${(i > 0).gen(xs"""
               @$test
-                public void shouldRecognizeApplicabilityOfNull() {
-                    final $name$i<$generics> f = ($functionArgs) -> null;
-                    $assertThat(f.isApplicableTo(${(1 to i).gen(j => "null")(", ")})).isTrue();
-                }
+              public void shouldRecognizeApplicabilityOfNull() {
+                  final $name$i<$generics> f = ($functionArgs) -> null;
+                  $assertThat(f.isApplicableTo(${(1 to i).gen(j => "null")(", ")})).isTrue();
+              }
 
-                @$test
-                public void shouldRecognizeApplicabilityOfNonNull() {
-                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                    $assertThat(f.isApplicableTo(${(1 to i).gen(j => s"$j")(", ")})).isTrue();
-                }
+              @$test
+              public void shouldRecognizeApplicabilityOfNonNull() {
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                  $assertThat(f.isApplicableTo(${(1 to i).gen(j => s"$j")(", ")})).isTrue();
+              }
 
-                @$test
-                public void shouldRecognizeApplicabilityToType${(i > 1).gen("s")}() {
-                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                    $assertThat(f.isApplicableToType${(i > 1).gen("s")}(${(1 to i).gen(j => "Integer.class")(", ")})).isTrue();
-                }
+              @$test
+              public void shouldRecognizeApplicabilityToType${(i > 1).gen("s")}() {
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                  $assertThat(f.isApplicableToType${(i > 1).gen("s")}(${(1 to i).gen(j => "Integer.class")(", ")})).isTrue();
+              }
               """)}
 
               @$test
@@ -1031,6 +1031,28 @@ def generateTestClasses(): Unit = {
                   final $name$i.Type<${(1 to i + 1).gen(j => "Integer")(", ")}> type = f.getType();
                   ${(1 to i).gen(j => s"assertThat(type.parameterType$j()).isEqualTo(Integer.class);")("\n")}
                   $assertThat(type.toString()).isEqualTo("(${(1 to i).gen(j => "java.lang.Integer")(", ")}) -> java.lang.Integer");
+              }
+
+              @$test
+              public void shouldGetReturnType() {
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                  $assertThat(f.getType().returnType()).isEqualTo(Integer.class);
+              }
+
+              @$test
+              public void testTypesEquals() {
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f1 = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f2 = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                  final $name$i<${(1 to i).gen(j => "Integer")(", ")}${(i > 0).gen(s", ")}String> f3 = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                  ${(i > 0).gen(xs"""
+                  final $name$i<String, ${(2 to i + 1).gen(j => "Integer")(", ")}> f4 = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                  """)}
+                  $assertThat(f1.getType()).isEqualTo(f1.getType());
+                  $assertThat(f1.getType()).isEqualTo(f2.getType());
+                  $assertThat(f1.getType()).isNotEqualTo(f3.getType());
+                  ${(i > 0).gen(xs"""
+                  $assertThat(f1.getType()).isNotEqualTo(f4.getType());
+                  """)}
               }
           }
         """

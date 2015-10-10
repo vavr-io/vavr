@@ -34,22 +34,22 @@ public class Function2Test {
     }
 
     @Test
-      public void shouldRecognizeApplicabilityOfNull() {
-          final Function2<Object, Object, Object> f = (o1, o2) -> null;
-          assertThat(f.isApplicableTo(null, null)).isTrue();
-      }
+    public void shouldRecognizeApplicabilityOfNull() {
+        final Function2<Object, Object, Object> f = (o1, o2) -> null;
+        assertThat(f.isApplicableTo(null, null)).isTrue();
+    }
 
-      @Test
-      public void shouldRecognizeApplicabilityOfNonNull() {
-          final Function2<Integer, Integer, Integer> f = (i1, i2) -> null;
-          assertThat(f.isApplicableTo(1, 2)).isTrue();
-      }
+    @Test
+    public void shouldRecognizeApplicabilityOfNonNull() {
+        final Function2<Integer, Integer, Integer> f = (i1, i2) -> null;
+        assertThat(f.isApplicableTo(1, 2)).isTrue();
+    }
 
-      @Test
-      public void shouldRecognizeApplicabilityToTypes() {
-          final Function2<Integer, Integer, Integer> f = (i1, i2) -> null;
-          assertThat(f.isApplicableToTypes(Integer.class, Integer.class)).isTrue();
-      }
+    @Test
+    public void shouldRecognizeApplicabilityToTypes() {
+        final Function2<Integer, Integer, Integer> f = (i1, i2) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, Integer.class)).isTrue();
+    }
 
     @Test
     public void shouldGetArity() {
@@ -138,5 +138,23 @@ public class Function2Test {
         assertThat(type.parameterType1()).isEqualTo(Integer.class);
         assertThat(type.parameterType2()).isEqualTo(Integer.class);
         assertThat(type.toString()).isEqualTo("(java.lang.Integer, java.lang.Integer) -> java.lang.Integer");
+    }
+
+    @Test
+    public void shouldGetReturnType() {
+        final Function2<Integer, Integer, Integer> f = (i1, i2) -> null;
+        assertThat(f.getType().returnType()).isEqualTo(Integer.class);
+    }
+
+    @Test
+    public void testTypesEquals() {
+        final Function2<Integer, Integer, Integer> f1 = (i1, i2) -> null;
+        final Function2<Integer, Integer, Integer> f2 = (i1, i2) -> null;
+        final Function2<Integer, Integer, String> f3 = (i1, i2) -> null;
+        final Function2<String, Integer, Integer> f4 = (i1, i2) -> null;
+        assertThat(f1.getType()).isEqualTo(f1.getType());
+        assertThat(f1.getType()).isEqualTo(f2.getType());
+        assertThat(f1.getType()).isNotEqualTo(f3.getType());
+        assertThat(f1.getType()).isNotEqualTo(f4.getType());
     }
 }
