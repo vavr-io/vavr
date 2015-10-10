@@ -40,22 +40,22 @@ public class CheckedFunction3Test {
     }
 
     @Test
-      public void shouldRecognizeApplicabilityOfNull() {
-          final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
-          assertThat(f.isApplicableTo(null, null, null)).isTrue();
-      }
+    public void shouldRecognizeApplicabilityOfNull() {
+        final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
+        assertThat(f.isApplicableTo(null, null, null)).isTrue();
+    }
 
-      @Test
-      public void shouldRecognizeApplicabilityOfNonNull() {
-          final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
-          assertThat(f.isApplicableTo(1, 2, 3)).isTrue();
-      }
+    @Test
+    public void shouldRecognizeApplicabilityOfNonNull() {
+        final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
+        assertThat(f.isApplicableTo(1, 2, 3)).isTrue();
+    }
 
-      @Test
-      public void shouldRecognizeApplicabilityToTypes() {
-          final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
-          assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class)).isTrue();
-      }
+    @Test
+    public void shouldRecognizeApplicabilityToTypes() {
+        final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class)).isTrue();
+    }
 
     @Test
     public void shouldGetArity() {
@@ -145,5 +145,25 @@ public class CheckedFunction3Test {
         assertThat(type.parameterType2()).isEqualTo(Integer.class);
         assertThat(type.parameterType3()).isEqualTo(Integer.class);
         assertThat(type.toString()).isEqualTo("(java.lang.Integer, java.lang.Integer, java.lang.Integer) -> java.lang.Integer");
+    }
+
+    @Test
+    public void shouldGetReturnType() {
+        final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
+        assertThat(f.getType().returnType()).isEqualTo(Integer.class);
+    }
+
+    @Test
+    public void testTypesEquals() {
+        final CheckedFunction3<Integer, Integer, Integer, Integer> f1 = (i1, i2, i3) -> null;
+        final CheckedFunction3<Integer, Integer, Integer, Integer> f2 = (i1, i2, i3) -> null;
+        final CheckedFunction3<Integer, Integer, Integer, String> f3 = (i1, i2, i3) -> null;
+        final CheckedFunction3<String, Integer, Integer, Integer> f4 = (i1, i2, i3) -> null;
+        final CheckedFunction3.Type<Integer, Integer, Integer, Integer> t1 = f1.getType();
+        assertThat(t1).isEqualTo(t1);
+        assertThat(t1).isNotEqualTo(11);
+        assertThat(f1.getType()).isEqualTo(f2.getType());
+        assertThat(f1.getType()).isNotEqualTo(f3.getType());
+        assertThat(f1.getType()).isNotEqualTo(f4.getType());
     }
 }
