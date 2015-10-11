@@ -120,15 +120,15 @@ public interface Try<T> extends Value<T> {
 
     /**
      * Returns {@code Success(throwable)} if this is a {@code Failure(throwable)}, otherwise
-     * a {@code Failure(new UnsupportedOperationException("Success.failed()"))} if this is a Success.
+     * a {@code Failure(new NoSuchElementException("Success.failed()"))} if this is a Success.
      *
      * @return a new Try
      */
     default Try<Throwable> failed() {
-        if (isSuccess()) {
-            return new Failure<>(new UnsupportedOperationException("Success.failed()"));
-        } else {
+        if (isFailure()) {
             return new Success<>(getCause().getCause());
+        } else {
+            return new Failure<>(new NoSuchElementException("Success.failed()"));
         }
     }
 
@@ -304,16 +304,36 @@ public interface Try<T> extends Value<T> {
     }
 
     /**
-     * Consumes the throwable if this is a Failure, otherwise returns this Success.
+     * Consumes the throwable if this is a Failure.
      *
-     * @param f A Consumer
+     * @param action An exception consumer
      * @return a new Failure, if this is a Failure and the consumer throws, otherwise this, which may be a Success or
      * a Failure.
      */
-    default Try<T> onFailure(Consumer<Throwable> f) {
+    default Try<T> onFailure(Consumer<? super Throwable> action) {
         if (isFailure()) {
             try {
-                f.accept(getCause().getCause());
+                action.accept(getCause().getCause());
+                return this;
+            } catch (Throwable t) {
+                return new Failure<>(t);
+            }
+        } else {
+            return this;
+        }
+    }
+
+    /**
+     * Consumes the value if this is a Success.
+     *
+     * @param action A value consumer
+     * @return a new Failure, if this is a Success and the consumer throws, otherwise this, which may be a Success or
+     * a Failure.
+     */
+    default Try<T> onSuccess(Consumer<? super T> action) {
+        if (isSuccess()) {
+            try {
+                action.accept(get());
                 return this;
             } catch (Throwable t) {
                 return new Failure<>(t);
