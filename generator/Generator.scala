@@ -659,7 +659,7 @@ def generateMainClasses(): Unit = {
 
     genJavaslangFile("javaslang", "Tuple")(genBaseTuple)
 
-    (1 to N).foreach { i =>
+    (0 to N).foreach { i =>
       genJavaslangFile("javaslang", s"Tuple$i")(genTuple(i))
     }
 
@@ -667,16 +667,17 @@ def generateMainClasses(): Unit = {
      * Generates Tuple1..N
      */
     def genTuple(i: Int)(im: ImportManager, packageName: String, className: String): String = {
-      val generics = (1 to i).gen(j => s"T$j")(", ")
+      val generics = if (i == 0) "" else s"<${(1 to i).gen(j => s"T$j")(", ")}>"
       val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
       val params = (1 to i).gen(j => s"_$j")(", ")
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
       val resultType = if (i == 1) "? extends U1" else s"Tuple$i<${(1 to i).gen(j => s"U$j")(", ")}>"
-      val resultGenerics = (1 to i).gen(j => s"U$j")(", ")
-      val comparableGenerics = (1 to i).gen(j => s"U$j extends Comparable<? super U$j>")(", ")
-      val untyped = (1 to i).gen(j => "?")(", ")
+      val resultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j")(", ")}>"
+      val comparableGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j extends Comparable<? super U$j>")(", ")}>"
+      val untyped = if (i == 0) "" else s"<${(1 to i).gen(j => "?")(", ")}>"
       val functionType = s"Function$i"
       val Comparator = im.getType("java.util.Comparator")
+      val Objects = im.getType("java.util.Objects")
 
       xs"""
         /**
@@ -685,7 +686,7 @@ def generateMainClasses(): Unit = {
          * @author Daniel Dietrich
          * @since 1.1.0
          */
-        public final class $className<$generics> implements Tuple, Comparable<$className<$generics>>, ${im.getType("java.io.Serializable")} {
+        public final class $className$generics implements Tuple, Comparable<$className$generics>, ${im.getType("java.io.Serializable")} {
 
             private static final long serialVersionUID = 1L;
 
@@ -696,12 +697,75 @@ def generateMainClasses(): Unit = {
               public final T$j _$j;
             """)("\n\n")}
 
-            /$javadoc
-             * Constructs a tuple of ${i.numerus("element")}.
-             ${(0 to i).gen(j => if (j == 0) "*" else s"* @param t$j the ${j.ordinal} element")("\n")}
-             */
-            public $className($paramsDecl) {
-                ${(1 to i).gen(j => s"this._$j = t$j;")("\n")}
+            ${if (i == 0) xs"""
+              /$javadoc
+               * The singleton instance of Tuple0.
+               */
+              private static final Tuple0 INSTANCE = new Tuple0 ();
+
+              /$javadoc
+               * The singleton Tuple0 comparator.
+               */
+              private static final Comparator<Tuple0> COMPARATOR = (Comparator<Tuple0> & Serializable) (t1, t2) -> 0;
+
+              // hidden constructor, internally called
+              private Tuple0 () {
+              }
+
+              /$javadoc
+               * Returns the singleton instance of Tuple0.
+               *
+               * @return The singleton instance of Tuple0.
+               */
+              public static Tuple0 instance() {
+                  return INSTANCE;
+              }
+            """ else xs"""
+              /$javadoc
+               * Constructs a tuple of ${i.numerus("element")}.
+               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param t$j the ${j.ordinal} element")("\n")}
+               */
+              public $className($paramsDecl) {
+                  ${(1 to i).gen(j => s"this._$j = t$j;")("\n")}
+              }
+            """}
+
+            public static $generics $Comparator<$className$generics> comparator(${(1 to i).gen(j => s"$Comparator<? super T$j> t${j}Comp")(", ")}) {
+                ${if (i == 0) xs"""
+                  return COMPARATOR;
+                """ else xs"""
+                  return (Comparator<$className$generics> & Serializable) (t1, t2) -> {
+                      ${(1 to i).gen(j => xs"""
+                        final int check$j = t${j}Comp.compare(t1._$j, t2._$j);
+                        if (check$j != 0) {
+                            return check$j;
+                        }
+                      """)("\n\n")}
+
+                      // all components are equal
+                      return 0;
+                  };
+                """}
+            }
+
+            @SuppressWarnings("unchecked")
+            private static $comparableGenerics int compareTo($className$untyped o1, $className$untyped o2) {
+                ${if (i == 0) xs"""
+                  return 0;
+                """ else xs"""
+                  final $className$resultGenerics t1 = ($className$resultGenerics) o1;
+                  final $className$resultGenerics t2 = ($className$resultGenerics) o2;
+
+                  ${(1 to i).gen(j => xs"""
+                    final int check$j = t1._$j.compareTo(t2._$j);
+                    if (check$j != 0) {
+                        return check$j;
+                    }
+                  """)("\n\n")}
+
+                  // all components are equal
+                  return 0;
+                """}
             }
 
             @Override
@@ -709,79 +773,83 @@ def generateMainClasses(): Unit = {
                 return $i;
             }
 
-            public static <$generics> $Comparator<$className<$generics>> comparator(${(1 to i).gen(j => s"$Comparator<? super T$j> t${j}Comp")(", ")}) {
-                return (Comparator<$className<$generics>> & Serializable) (t1, t2) -> {
-
-                    ${(1 to i).gen(j => xs"""
-                      final int check$j = t${j}Comp.compare(t1._$j, t2._$j);
-                      if (check$j != 0) {
-                          return check$j;
-                      }
-                    """)("\n\n")}
-
-                    // all components are equal
-                    return 0;
-                };
-            }
-
             @Override
-            public int compareTo($className<$generics> that) {
-                return $className.compareTo(this, that);
+            public int compareTo($className$generics that) {
+                ${if (i == 0) xs"""
+                  return 0;
+                """ else xs"""
+                  return $className.compareTo(this, that);
+                """}
             }
 
-            @SuppressWarnings("unchecked")
-            private static <$comparableGenerics> int compareTo($className<$untyped> o1, $className<$untyped> o2) {
-
-                final $className<$resultGenerics> t1 = ($className<$resultGenerics>) o1;
-                final $className<$resultGenerics> t2 = ($className<$resultGenerics>) o2;
-
-                ${(1 to i).gen(j => xs"""
-                  final int check$j = t1._$j.compareTo(t2._$j);
-                  if (check$j != 0) {
-                      return check$j;
-                  }
-                """)("\n\n")}
-
-                // all components are equal
-                return 0;
-            }
-
-            public <$resultGenerics> $className<$resultGenerics> map($functionType<$paramTypes, $resultType> f) {
-                ${if (i > 1) { xs"""
-                  return f.apply($params);"""
-                } else { xs"""
-                  return new $className<>(f.apply($params));"""
-                }}
-            }
+            ${(i > 0).gen(xs"""
+              public $resultGenerics $className$resultGenerics map($functionType<$paramTypes, $resultType> f) {
+                  ${if (i > 1) { xs"""
+                    return f.apply($params);"""
+                  } else { xs"""
+                    return new $className<>(f.apply($params));"""
+                  }}
+              }
+            """)}
 
             ${(i > 1).gen(xs"""
-              public <$resultGenerics> $className<$resultGenerics> map(${(1 to i).gen(j => s"${im.getType("javaslang.Function1")}<? super T$j, ? extends U$j> f$j")(", ")}) {
+              public $resultGenerics $className$resultGenerics map(${(1 to i).gen(j => s"${im.getType("javaslang.Function1")}<? super T$j, ? extends U$j> f$j")(", ")}) {
                   return map((${(1 to i).gen(j => s"t$j")(", ")}) -> ${im.getType("javaslang.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(t$j)")(", ")}));
               }
             """)}
 
+            /**
+             * Transforms this tuple to another tuple of possibly different arity.
+             * @param f Transformation which takes this tuple and return a new tuple of type U
+             * @param <U> New tuple type
+             * @return A Tuple of type U
+             */
+            @SuppressWarnings("unchecked")
+            public <U extends Tuple> U transform(${im.getType("java.util.function.Function")}<? super $className$generics, U> f) {
+                $Objects.requireNonNull(f, "f is null");
+                return f.apply(this);
+            }
+
             @Override
             public boolean equals(Object o) {
-                if (o == this) {
-                    return true;
-                } else if (!(o instanceof $className)) {
-                    return false;
-                } else {
-                    final $className<$untyped> that = ($className<$untyped>) o;
-                    return ${(1 to i).gen(j => s"${im.getType("java.util.Objects")}.equals(this._$j, that._$j)")("\n                             && ")};
+                ${if (i == 0) xs"""
+                  return o == this;
+                """ else xs"""
+                  if (o == this) {
+                      return true;
+                  } else if (!(o instanceof $className)) {
+                      return false;
+                  } else {
+                      final $className$untyped that = ($className$untyped) o;
+                      return ${(1 to i).gen(j => s"${im.getType("java.util.Objects")}.equals(this._$j, that._$j)")("\n                             && ")};
+                  }"""
                 }
             }
 
             ${(i == 1).gen("// if _1 == null, hashCode() returns Objects.hash(new T1[] { null }) = 31 instead of 0 = Objects.hash(null)")}
             @Override
             public int hashCode() {
-                return ${im.getType("java.util.Objects")}.hash(${(1 to i).gen(j => s"_$j")(", ")});
+                return ${if (i == 0) "1" else s"""${im.getType("java.util.Objects")}.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
             }
 
             @Override
             public String toString() {
-                return String.format("(${(1 to i).gen(_ => s"%s")(", ")})", ${(1 to i).gen(j => s"_$j")(", ")});
+                return ${if (i == 0) "\"()\"" else s"""String.format("(${(1 to i).gen(_ => s"%s")(", ")})", ${(1 to i).gen(j => s"_$j")(", ")})"""};
             }
+
+            ${(i == 0).gen(xs"""
+              // -- Serializable implementation
+
+              /$javadoc
+               * Instance control for object serialization.
+               *
+               * @return The singleton instance of Tuple0.
+               * @see java.io.Serializable
+               */
+              private Object readResolve() {
+                  return INSTANCE;
+              }
+            """)}
         }
       """
     }
@@ -1483,17 +1551,24 @@ def generateTestClasses(): Unit = {
               """)}
 
               @$test
+              public void shouldTransformTuple() {
+                  final Tuple$i<$generics> tuple = createTuple();
+                  final Tuple0 actual = tuple.transform(t -> Tuple0.instance());
+                  assertThat(actual).isEqualTo(Tuple0.instance());
+              }
+
+              @$test
               public void shouldRecognizeEquality() {
                   final Tuple$i<$generics> tuple1 = createTuple();
                   final Tuple$i<$generics> tuple2 = createTuple();
-                  $assertThat(tuple1).isEqualTo(tuple2);
+                  $assertThat((Object) tuple1).isEqualTo(tuple2);
               }
 
               @$test
               public void shouldRecognizeNonEquality() {
-                  final Tuple$i<$generics> tuple1 = createTuple();
+                  final Tuple$i<$generics> tuple = createTuple();
                   final Object other = new Object();
-                  $assertThat(tuple1).isNotEqualTo(other);
+                  $assertThat(tuple).isNotEqualTo(other);
               }
 
               @$test

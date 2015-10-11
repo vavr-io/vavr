@@ -5,13 +5,17 @@
  */
 package javaslang;
 
+/*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
+   G E N E R A T O R   C R A F T E D
+\*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
+
 import java.io.Serializable;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.function.Function;
 
 /**
- * Implementation of an empty tuple, a tuple containing no elements.
- * <p>
- * Because the empty tuple is a singleton, there is no accessible constructor.
- * Please use {@linkplain Tuple0#instance()} or {@linkplain Tuple#empty()} to obtain the single instance.
+ * A tuple of no elements which can be seen as cartesian product of no components.
  *
  * @author Daniel Dietrich
  * @since 1.1.0
@@ -23,10 +27,15 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
     /**
      * The singleton instance of Tuple0.
      */
-    private static final Tuple0 INSTANCE = new Tuple0();
+    private static final Tuple0 INSTANCE = new Tuple0 ();
+
+    /**
+     * The singleton Tuple0 comparator.
+     */
+    private static final Comparator<Tuple0> COMPARATOR = (Comparator<Tuple0> & Serializable) (t1, t2) -> 0;
 
     // hidden constructor, internally called
-    private Tuple0() {
+    private Tuple0 () {
     }
 
     /**
@@ -38,6 +47,15 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
         return INSTANCE;
     }
 
+    public static  Comparator<Tuple0> comparator() {
+        return COMPARATOR;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static  int compareTo(Tuple0 o1, Tuple0 o2) {
+        return 0;
+    }
+
     @Override
     public int arity() {
         return 0;
@@ -46,6 +64,18 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
     @Override
     public int compareTo(Tuple0 that) {
         return 0;
+    }
+
+    /**
+     * Transforms this tuple to another tuple of possibly different arity.
+     * @param f Transformation which takes this tuple and return a new tuple of type U
+     * @param <U> New tuple type
+     * @return A Tuple of type U
+     */
+    @SuppressWarnings("unchecked")
+    public <U extends Tuple> U transform(Function<? super Tuple0, U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
     }
 
     @Override

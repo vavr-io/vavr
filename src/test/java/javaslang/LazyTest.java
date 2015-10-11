@@ -6,6 +6,7 @@
 package javaslang;
 
 import javaslang.collection.List;
+import javaslang.control.Some;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -106,7 +107,7 @@ public class LazyTest {
 
     @Test
     public void shouldFilterNonEmptyLazy() {
-        assertThat(Lazy.of(() -> 1).filter(i -> true)).isEqualTo(Lazy.of(() -> 1));
+        assertThat(Lazy.of(() -> 1).filter(i -> true)).isEqualTo(new Some<>(1));
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -116,7 +117,7 @@ public class LazyTest {
 
     @Test
     public void shouldNonEmptyFilterNonEmptyLazy() {
-        assertThat(Lazy.of(() -> 1).filter(i -> true)).isEqualTo(Lazy.of(() -> 1));
+        assertThat(Lazy.of(() -> 1).filter(i -> true)).isEqualTo(new Some<>(1));
     }
 
     // -- flatten()

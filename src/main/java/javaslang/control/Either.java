@@ -218,26 +218,20 @@ public interface Either<L, R> {
         }
 
         /**
-         * Returns
-         * <ul>
-         * <li>{@code LeftProjection(Left(Some(value)))}, if the underlying {@code Either} of this projection is a
-         * {@code Left} and the left value satisfies the given predicate</li>
-         * <li>{@code LeftProjection(Left(None)))} if the underlying {@code Either} of this projection
-         * is a {@code Left} and the left value does <em>not</em> satisfy the given predicate</li>
-         * <li>{@code LeftProjection(Right(Some(value)))} otherwise, i.e. if the underlying {@code Either} of this
-         * projection is a {@code Right}</li>
-         * </ul>
+         * Returns {@code Some} value of type L if this is a left projection of a Left value and the predicate
+         * applies to the underlying value.
          *
          * @param predicate A predicate
-         * @return a LeftProjection of an {@code Either} with an optional value
+         * @return A new Option
          */
         @Override
-        public LeftProjection<L, R> filter(Predicate<? super L> predicate) {
+        public Option<L> filter(Predicate<? super L> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
-            if (either.isRight() || (either.isLeft() && predicate.test(asLeft()))) {
-                return this;
+            if (either.isLeft()) {
+                final L value = asLeft();
+                return predicate.test(value) ? new Some<>(value) : None.instance();
             } else {
-                throw new NoSuchElementException("empty filter");
+                return None.instance();
             }
         }
 
@@ -433,25 +427,19 @@ public interface Either<L, R> {
         }
 
         /**
-         * Returns
-         * <ul>
-         * <li>{@code RightProjection(Right(Some(value)))}, if the underlying {@code Either} of this projection is a
-         * {@code Right} and the right value satisfies the given predicate</li>
-         * <li>{@code RightProjection(Right(None)))} if the underlying {@code Either} of this projection
-         * is a {@code Right} and the right value does <em>not</em> satisfy the given predicate</li>
-         * <li>{@code RightProjection(Left(Some(value)))} otherwise, i.e. if the underlying {@code Either} of this
-         * projection is a {@code Left}</li>
-         * </ul>
+         * Returns {@code Some} value of type R if this is a right projection of a Right value and the predicate
+         * applies to the underlying value.
          *
          * @param predicate A predicate
-         * @return a RightProjection of an {@code Either} with an optional value
+         * @return A new Option
          */
-        public RightProjection<L, R> filter(Predicate<? super R> predicate) {
+        public Option<R> filter(Predicate<? super R> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
-            if (either.isLeft() || (either.isRight() && predicate.test(asRight()))) {
-                return this;
+            if (either.isRight()) {
+                final R value = asRight();
+                return predicate.test(value) ? new Some<>(value) : None.instance();
             } else {
-                throw new NoSuchElementException("empty filter");
+                return None.instance();
             }
         }
 

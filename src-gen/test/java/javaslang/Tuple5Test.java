@@ -107,17 +107,24 @@ public class Tuple5Test {
     }
 
     @Test
+    public void shouldTransformTuple() {
+        final Tuple5<Object, Object, Object, Object, Object> tuple = createTuple();
+        final Tuple0 actual = tuple.transform(t -> Tuple0.instance());
+        assertThat(actual).isEqualTo(Tuple0.instance());
+    }
+
+    @Test
     public void shouldRecognizeEquality() {
         final Tuple5<Object, Object, Object, Object, Object> tuple1 = createTuple();
         final Tuple5<Object, Object, Object, Object, Object> tuple2 = createTuple();
-        assertThat(tuple1).isEqualTo(tuple2);
+        assertThat((Object) tuple1).isEqualTo(tuple2);
     }
 
     @Test
     public void shouldRecognizeNonEquality() {
-        final Tuple5<Object, Object, Object, Object, Object> tuple1 = createTuple();
+        final Tuple5<Object, Object, Object, Object, Object> tuple = createTuple();
         final Object other = new Object();
-        assertThat(tuple1).isNotEqualTo(other);
+        assertThat(tuple).isNotEqualTo(other);
     }
 
     @Test

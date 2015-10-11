@@ -209,9 +209,9 @@ public class EitherTest {
         assertThat(actual).isTrue();
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFilterNoneOnLeftProjectionOfLeftIfPredicateNotMatches() {
-        new Left<>(1).left().filter(i -> false);
+        assertThat(new Left<>(1).left().filter(i -> false)).isEqualTo(None.instance());
     }
 
     @Test
@@ -584,9 +584,9 @@ public class EitherTest {
         assertThat(actual).isTrue();
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFilterNoneOnRightProjectionOfRightIfPredicateNotMatches() {
-        new Right<String, Integer>(1).right().filter(i -> false);
+        assertThat(new Right<String, Integer>(1).right().filter(i -> false)).isEqualTo(None.instance());
     }
 
     @Test

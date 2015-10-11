@@ -12,6 +12,7 @@ package javaslang;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * A tuple of 4 elements which can be seen as cartesian product of 4 components.
@@ -62,14 +63,8 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
         this._4 = t4;
     }
 
-    @Override
-    public int arity() {
-        return 4;
-    }
-
     public static <T1, T2, T3, T4> Comparator<Tuple4<T1, T2, T3, T4>> comparator(Comparator<? super T1> t1Comp, Comparator<? super T2> t2Comp, Comparator<? super T3> t3Comp, Comparator<? super T4> t4Comp) {
         return (Comparator<Tuple4<T1, T2, T3, T4>> & Serializable) (t1, t2) -> {
-
             final int check1 = t1Comp.compare(t1._1, t2._1);
             if (check1 != 0) {
                 return check1;
@@ -95,14 +90,8 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
         };
     }
 
-    @Override
-    public int compareTo(Tuple4<T1, T2, T3, T4> that) {
-        return Tuple4.compareTo(this, that);
-    }
-
     @SuppressWarnings("unchecked")
     private static <U1 extends Comparable<? super U1>, U2 extends Comparable<? super U2>, U3 extends Comparable<? super U3>, U4 extends Comparable<? super U4>> int compareTo(Tuple4<?, ?, ?, ?> o1, Tuple4<?, ?, ?, ?> o2) {
-
         final Tuple4<U1, U2, U3, U4> t1 = (Tuple4<U1, U2, U3, U4>) o1;
         final Tuple4<U1, U2, U3, U4> t2 = (Tuple4<U1, U2, U3, U4>) o2;
 
@@ -130,12 +119,34 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
         return 0;
     }
 
+    @Override
+    public int arity() {
+        return 4;
+    }
+
+    @Override
+    public int compareTo(Tuple4<T1, T2, T3, T4> that) {
+        return Tuple4.compareTo(this, that);
+    }
+
     public <U1, U2, U3, U4> Tuple4<U1, U2, U3, U4> map(Function4<? super T1, ? super T2, ? super T3, ? super T4, Tuple4<U1, U2, U3, U4>> f) {
         return f.apply(_1, _2, _3, _4);
     }
 
     public <U1, U2, U3, U4> Tuple4<U1, U2, U3, U4> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2, Function1<? super T3, ? extends U3> f3, Function1<? super T4, ? extends U4> f4) {
         return map((t1, t2, t3, t4) -> Tuple.of(f1.apply(t1), f2.apply(t2), f3.apply(t3), f4.apply(t4)));
+    }
+
+    /**
+     * Transforms this tuple to another tuple of possibly different arity.
+     * @param f Transformation which takes this tuple and return a new tuple of type U
+     * @param <U> New tuple type
+     * @return A Tuple of type U
+     */
+    @SuppressWarnings("unchecked")
+    public <U extends Tuple> U transform(Function<? super Tuple4<T1, T2, T3, T4>, U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
     }
 
     @Override
@@ -147,9 +158,9 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
         } else {
             final Tuple4<?, ?, ?, ?> that = (Tuple4<?, ?, ?, ?>) o;
             return Objects.equals(this._1, that._1)
-                    && Objects.equals(this._2, that._2)
-                    && Objects.equals(this._3, that._3)
-                    && Objects.equals(this._4, that._4);
+                  && Objects.equals(this._2, that._2)
+                  && Objects.equals(this._3, that._3)
+                  && Objects.equals(this._4, that._4);
         }
     }
 
@@ -162,4 +173,5 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
     public String toString() {
         return String.format("(%s, %s, %s, %s)", _1, _2, _3, _4);
     }
+
 }
