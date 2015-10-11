@@ -102,13 +102,14 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
     }
 
     /**
-     * Transforms this tuple to another tuple of possibly different arity.
+     * Transforms this tuple to an arbitrary object (which may be also a tuple of same or different arity).
+     *
      * @param f Transformation which takes this tuple and return a new tuple of type U
-     * @param <U> New tuple type
-     * @return A Tuple of type U
+     * @param <U> New type
+     * @return An object of type U
      */
     @SuppressWarnings("unchecked")
-    public <U extends Tuple> U transform(Function<? super Tuple2<T1, T2>, U> f) {
+    public <U> U transform(Function<? super Tuple2<T1, T2>, U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
