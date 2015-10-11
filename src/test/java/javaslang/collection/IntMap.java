@@ -22,7 +22,6 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    // TODO why HashMap?
     private static final IntMap<?> EMPTY = IntMap.of(HashMap.empty());
 
     private final Map<Integer, T> original;

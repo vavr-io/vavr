@@ -97,7 +97,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Override
     boolean useIsEqualToInsteadOfIsSameAs() {
-        return true; // TODO ?
+        return false;
     }
 
     @Override

@@ -469,6 +469,8 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     public TreeSet<T> drop(int n) {
         if (n <= 0) {
             return this;
+        } else if (n >= length()) {
+            return empty(tree.comparator());
         } else {
             return TreeSet.ofAll(tree.comparator(), iterator().drop(n));
         }
@@ -478,6 +480,8 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     public TreeSet<T> dropRight(int n) {
         if (n <= 0) {
             return this;
+        } else if (n >= length()) {
+            return empty(tree.comparator());
         } else {
             return TreeSet.ofAll(tree.comparator(), iterator().dropRight(n));
         }
@@ -486,13 +490,15 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public TreeSet<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return TreeSet.ofAll(tree.comparator(), iterator().dropWhile(predicate));
+        final TreeSet<T> treeSet = TreeSet.ofAll(tree.comparator(), iterator().dropWhile(predicate));
+        return (treeSet.length() == length()) ? this : treeSet;
     }
 
     @Override
     public TreeSet<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return TreeSet.ofAll(tree.comparator(), iterator().filter(predicate));
+        final TreeSet<T> treeSet = TreeSet.ofAll(tree.comparator(), iterator().filter(predicate));
+        return (treeSet.length() == length()) ? this : treeSet;
     }
 
     @Override
@@ -714,24 +720,38 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public TreeSet<T> take(int n) {
-        return TreeSet.ofAll(tree.comparator(), iterator().take(n));
+        if (n <= 0) {
+            return empty(tree.comparator());
+        } else if (n >= length()) {
+            return this;
+        } else {
+            return TreeSet.ofAll(tree.comparator(), iterator().take(n));
+        }
     }
 
     @Override
     public TreeSet<T> takeRight(int n) {
-        return TreeSet.ofAll(tree.comparator(), iterator().takeRight(n));
+        if (n <= 0) {
+            return empty(tree.comparator());
+        } else if (n >= length()) {
+            return this;
+        } else {
+            return TreeSet.ofAll(tree.comparator(), iterator().takeRight(n));
+        }
     }
 
     @Override
     public TreeSet<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return takeWhile(predicate.negate());
+        final TreeSet<T> treeSet = takeWhile(predicate.negate());
+        return (treeSet.length() == length()) ? this : treeSet;
     }
 
     @Override
     public TreeSet<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return TreeSet.ofAll(tree.comparator(), iterator().takeWhile(predicate));
+        final TreeSet<T> treeSet = TreeSet.ofAll(tree.comparator(), iterator().takeWhile(predicate));
+        return (treeSet.length() == length()) ? this : treeSet;
     }
 
     @SuppressWarnings("unchecked")

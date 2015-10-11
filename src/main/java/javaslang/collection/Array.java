@@ -796,8 +796,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
                 return Array.of(this);
             } else {
                 final Array<Array<T>> zero = empty();
-                // TODO: IntelliJ IDEA 14.1.1 needs a redundant cast here, jdk 1.8.0_40 compiles fine
-                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map((Function<Array<T>, Array<T>>) l -> l.prepend(x))));
+                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map(l -> l.prepend(x))));
             }
         }
     }

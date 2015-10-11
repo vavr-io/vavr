@@ -19,7 +19,8 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * TODO javadoc
+ * Vector is the default Seq implementation. It provides the best performance in between Array (with constant time element access)
+ * and List (with constant time element addition).
  *
  * @param <T> Component type of the Vector.
  * @author Ruslan Sennov

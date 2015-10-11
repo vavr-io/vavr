@@ -22,7 +22,8 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collector;
 
 /**
- * TODO javadoc
+ * The CharSeq (read: character sequence) collection essentially is a rich String wrapper having all operations
+ * we know from the functional Javaslang collections.
  *
  * @author Ruslan Sennov, Daniel Dietrich
  * @since 2.0.0
