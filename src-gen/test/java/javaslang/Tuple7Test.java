@@ -129,6 +129,13 @@ public class Tuple7Test {
     }
 
     @Test
+    public void shouldTransformTuple() {
+        final Tuple7<Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
+        final Tuple0 actual = tuple.transform(t -> Tuple0.instance());
+        assertThat(actual).isEqualTo(Tuple0.instance());
+    }
+
+    @Test
     public void shouldRecognizeEquality() {
         final Tuple7<Object, Object, Object, Object, Object, Object, Object> tuple1 = createTuple();
         final Tuple7<Object, Object, Object, Object, Object, Object, Object> tuple2 = createTuple();

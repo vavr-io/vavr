@@ -1527,6 +1527,13 @@ def generateTestClasses(): Unit = {
               """)}
 
               @$test
+              public void shouldTransformTuple() {
+                  final Tuple$i<$generics> tuple = createTuple();
+                  final Tuple0 actual = tuple.transform(t -> Tuple0.instance());
+                  assertThat(actual).isEqualTo(Tuple0.instance());
+              }
+
+              @$test
               public void shouldRecognizeEquality() {
                   final Tuple$i<$generics> tuple1 = createTuple();
                   final Tuple$i<$generics> tuple2 = createTuple();
