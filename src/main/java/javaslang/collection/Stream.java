@@ -908,8 +908,7 @@ public interface Stream<T> extends LinearSeq<T> {
                 return Stream.of(this);
             } else {
                 final Stream<Stream<T>> zero = Empty.instance();
-                // TODO: IntelliJ IDEA 14.1.3 needs a redundant cast here, jdk 1.8.0_40 compiles fine
-                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map((Function<Stream<T>, Stream<T>>) l -> l.prepend(x))));
+                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map(l -> l.prepend(x))));
             }
         }
     }

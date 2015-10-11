@@ -49,7 +49,7 @@ public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, 
 interface HashArrayMappedTrieModule {
 
     /**
-     * TODO: javadoc
+     * An abstract base class for nodes of a HAMT.
      *
      * @param <K> Key type
      * @param <V> Value type
@@ -144,7 +144,7 @@ interface HashArrayMappedTrieModule {
     }
 
     /**
-     * TODO: javadoc
+     * The empty node.
      *
      * @param <K> Key type
      * @param <V> Value type
@@ -205,7 +205,7 @@ interface HashArrayMappedTrieModule {
     }
 
     /**
-     * TODO: javadoc
+     * Representation of a HAMT leaf.
      *
      * @param <K> Key type
      * @param <V> Value type
@@ -293,7 +293,7 @@ interface HashArrayMappedTrieModule {
     }
 
     /**
-     * TODO: javadoc
+     * Representation of a HAMT indexed node.
      *
      * @param <K> Key type
      * @param <V> Value type
@@ -399,7 +399,7 @@ interface HashArrayMappedTrieModule {
     }
 
     /**
-     * TODO: javadoc
+     * Representation of a HAMT array node.
      *
      * @param <K> Key type
      * @param <V> Value type

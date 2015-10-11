@@ -831,8 +831,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
                 return List.of(this);
             } else {
                 final List<List<T>> zero = Nil.instance();
-                // TODO: IntelliJ IDEA 14.1.1 needs a redundant cast here, jdk 1.8.0_40 compiles fine
-                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map((Function<List<T>, List<T>>) l -> l.prepend(x))));
+                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map(l -> l.prepend(x))));
             }
         }
     }
