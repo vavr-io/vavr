@@ -12,6 +12,7 @@ package javaslang;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * A tuple of 7 elements which can be seen as cartesian product of 7 components.
@@ -86,14 +87,8 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
         this._7 = t7;
     }
 
-    @Override
-    public int arity() {
-        return 7;
-    }
-
     public static <T1, T2, T3, T4, T5, T6, T7> Comparator<Tuple7<T1, T2, T3, T4, T5, T6, T7>> comparator(Comparator<? super T1> t1Comp, Comparator<? super T2> t2Comp, Comparator<? super T3> t3Comp, Comparator<? super T4> t4Comp, Comparator<? super T5> t5Comp, Comparator<? super T6> t6Comp, Comparator<? super T7> t7Comp) {
         return (Comparator<Tuple7<T1, T2, T3, T4, T5, T6, T7>> & Serializable) (t1, t2) -> {
-
             final int check1 = t1Comp.compare(t1._1, t2._1);
             if (check1 != 0) {
                 return check1;
@@ -134,14 +129,8 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
         };
     }
 
-    @Override
-    public int compareTo(Tuple7<T1, T2, T3, T4, T5, T6, T7> that) {
-        return Tuple7.compareTo(this, that);
-    }
-
     @SuppressWarnings("unchecked")
     private static <U1 extends Comparable<? super U1>, U2 extends Comparable<? super U2>, U3 extends Comparable<? super U3>, U4 extends Comparable<? super U4>, U5 extends Comparable<? super U5>, U6 extends Comparable<? super U6>, U7 extends Comparable<? super U7>> int compareTo(Tuple7<?, ?, ?, ?, ?, ?, ?> o1, Tuple7<?, ?, ?, ?, ?, ?, ?> o2) {
-
         final Tuple7<U1, U2, U3, U4, U5, U6, U7> t1 = (Tuple7<U1, U2, U3, U4, U5, U6, U7>) o1;
         final Tuple7<U1, U2, U3, U4, U5, U6, U7> t2 = (Tuple7<U1, U2, U3, U4, U5, U6, U7>) o2;
 
@@ -184,12 +173,34 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
         return 0;
     }
 
+    @Override
+    public int arity() {
+        return 7;
+    }
+
+    @Override
+    public int compareTo(Tuple7<T1, T2, T3, T4, T5, T6, T7> that) {
+        return Tuple7.compareTo(this, that);
+    }
+
     public <U1, U2, U3, U4, U5, U6, U7> Tuple7<U1, U2, U3, U4, U5, U6, U7> map(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Tuple7<U1, U2, U3, U4, U5, U6, U7>> f) {
         return f.apply(_1, _2, _3, _4, _5, _6, _7);
     }
 
     public <U1, U2, U3, U4, U5, U6, U7> Tuple7<U1, U2, U3, U4, U5, U6, U7> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2, Function1<? super T3, ? extends U3> f3, Function1<? super T4, ? extends U4> f4, Function1<? super T5, ? extends U5> f5, Function1<? super T6, ? extends U6> f6, Function1<? super T7, ? extends U7> f7) {
         return map((t1, t2, t3, t4, t5, t6, t7) -> Tuple.of(f1.apply(t1), f2.apply(t2), f3.apply(t3), f4.apply(t4), f5.apply(t5), f6.apply(t6), f7.apply(t7)));
+    }
+
+    /**
+     * Transforms this tuple to another tuple of possibly different arity.
+     * @param f Transformation which takes this tuple and return a new tuple of type U
+     * @param <U> New tuple type
+     * @return A Tuple of type U
+     */
+    @SuppressWarnings("unchecked")
+    public <U extends Tuple> U transform(Function<? super Tuple7<T1, T2, T3, T4, T5, T6, T7>, U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
     }
 
     @Override
@@ -201,12 +212,12 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
         } else {
             final Tuple7<?, ?, ?, ?, ?, ?, ?> that = (Tuple7<?, ?, ?, ?, ?, ?, ?>) o;
             return Objects.equals(this._1, that._1)
-                    && Objects.equals(this._2, that._2)
-                    && Objects.equals(this._3, that._3)
-                    && Objects.equals(this._4, that._4)
-                    && Objects.equals(this._5, that._5)
-                    && Objects.equals(this._6, that._6)
-                    && Objects.equals(this._7, that._7);
+                  && Objects.equals(this._2, that._2)
+                  && Objects.equals(this._3, that._3)
+                  && Objects.equals(this._4, that._4)
+                  && Objects.equals(this._5, that._5)
+                  && Objects.equals(this._6, that._6)
+                  && Objects.equals(this._7, that._7);
         }
     }
 
@@ -219,4 +230,5 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     public String toString() {
         return String.format("(%s, %s, %s, %s, %s, %s, %s)", _1, _2, _3, _4, _5, _6, _7);
     }
+
 }

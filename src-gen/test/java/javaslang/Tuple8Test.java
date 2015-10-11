@@ -143,14 +143,14 @@ public class Tuple8Test {
     public void shouldRecognizeEquality() {
         final Tuple8<Object, Object, Object, Object, Object, Object, Object, Object> tuple1 = createTuple();
         final Tuple8<Object, Object, Object, Object, Object, Object, Object, Object> tuple2 = createTuple();
-        assertThat(tuple1).isEqualTo(tuple2);
+        assertThat((Object) tuple1).isEqualTo(tuple2);
     }
 
     @Test
     public void shouldRecognizeNonEquality() {
-        final Tuple8<Object, Object, Object, Object, Object, Object, Object, Object> tuple1 = createTuple();
+        final Tuple8<Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
         final Object other = new Object();
-        assertThat(tuple1).isNotEqualTo(other);
+        assertThat(tuple).isNotEqualTo(other);
     }
 
     @Test

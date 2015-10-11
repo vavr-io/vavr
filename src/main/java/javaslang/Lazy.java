@@ -6,6 +6,9 @@
 package javaslang;
 
 import javaslang.collection.Iterator;
+import javaslang.control.None;
+import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -151,22 +154,20 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
     }
 
     /**
-     * Filters this value. However, if the filter result is empty, a {@code Lazy} will we returned, that
-     * will throw a {@code NoSuchElementException} when being evaluated.
+     * Filters this value. If the filter result is empty, {@code None} is returned, otherwise Some of this lazy value
+     * is returned.
      *
      * @param predicate A predicate
-     * @return A new Lazy instance
+     * @return A new Option instance
      */
     @Override
-    public Lazy<T> filter(Predicate<? super T> predicate) {
-        return Lazy.of(() -> {
-            final T value = get();
-            if (predicate.test(value)) {
-                return value;
-            } else {
-                throw new NoSuchElementException("empty filter");
-            }
-        });
+    public Option<T> filter(Predicate<? super T> predicate) {
+        final T value = get();
+        if (predicate.test(value)) {
+            return new Some<>(value);
+        } else {
+            return None.instance();
+        }
     }
 
     @SuppressWarnings("unchecked")
