@@ -80,13 +80,14 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
     }
 
     /**
-     * Transforms this tuple to another tuple of possibly different arity.
+     * Transforms this tuple to an arbitrary object (which may be also a tuple of same or different arity).
+     *
      * @param f Transformation which takes this tuple and return a new tuple of type U
-     * @param <U> New tuple type
-     * @return A Tuple of type U
+     * @param <U> New type
+     * @return An object of type U
      */
     @SuppressWarnings("unchecked")
-    public <U extends Tuple> U transform(Function<? super Tuple1<T1>, U> f) {
+    public <U> U transform(Function<? super Tuple1<T1>, U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }

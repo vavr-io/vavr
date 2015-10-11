@@ -799,13 +799,14 @@ def generateMainClasses(): Unit = {
             """)}
 
             /**
-             * Transforms this tuple to another tuple of possibly different arity.
+             * Transforms this tuple to an arbitrary object (which may be also a tuple of same or different arity).
+             *
              * @param f Transformation which takes this tuple and return a new tuple of type U
-             * @param <U> New tuple type
-             * @return A Tuple of type U
+             * @param <U> New type
+             * @return An object of type U
              */
             @SuppressWarnings("unchecked")
-            public <U extends Tuple> U transform(${im.getType("java.util.function.Function")}<? super $className$generics, U> f) {
+            public <U> U transform(${im.getType("java.util.function.Function")}<? super $className$generics, U> f) {
                 $Objects.requireNonNull(f, "f is null");
                 return f.apply(this);
             }
