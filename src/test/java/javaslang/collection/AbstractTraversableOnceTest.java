@@ -1331,6 +1331,33 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
         }
     }
 
+    // -- takeUntil
+
+    @Test
+    public void shouldTakeUntilNoneOnNil() {
+        assertThat(empty().takeUntil(x -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeUntilAllOnFalseCondition() {
+        final TraversableOnce<Integer> t = of(1, 2, 3);
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 3).takeUntil(x -> false)).isEqualTo(result(1, 2, 3));
+        } else {
+            assertThat(t.takeUntil(x -> false)).isSameAs(t);
+        }
+    }
+
+    @Test
+    public void shouldTakeUntilAllOnTrueCondition() {
+        assertThat(of(1, 2, 3).takeUntil(x -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeUntilAsExpected() {
+        assertThat(of(2, 4, 5, 6).takeUntil(x -> x % 2 != 0)).isEqualTo(result(2, 4));
+    }
+
     // -- takeWhile
 
     @Test
