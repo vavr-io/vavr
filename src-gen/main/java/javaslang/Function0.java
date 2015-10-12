@@ -136,8 +136,8 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
     }
 
     /**
-     * Represents the type of a {@code Function} which consists of 0 <em>parameter no types</em>
-     * and a <em>return type</em>.
+     * Represents the type of a {@code Function0} which consists of no parameter types
+     * and a return type.
      *
      *
      * @param <R> the return type of the function

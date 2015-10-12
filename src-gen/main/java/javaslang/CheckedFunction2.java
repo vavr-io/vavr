@@ -185,8 +185,8 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
     }
 
     /**
-     * Represents the type of a {@code CheckedFunction} which consists of 2 <em>parameter two types</em>
-     * and a <em>return type</em>.
+     * Represents the type of a {@code CheckedFunction2} which consists of two parameter types
+     * and a return type.
      *
      *
      * @param <T1> the 1st parameter type of the function

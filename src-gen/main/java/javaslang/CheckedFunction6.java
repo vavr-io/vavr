@@ -271,8 +271,8 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
     }
 
     /**
-     * Represents the type of a {@code CheckedFunction} which consists of 6 <em>parameter 6 types</em>
-     * and a <em>return type</em>.
+     * Represents the type of a {@code CheckedFunction6} which consists of 6 parameter types
+     * and a return type.
      *
      *
      * @param <T1> the 1st parameter type of the function

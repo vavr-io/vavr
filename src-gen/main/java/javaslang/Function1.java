@@ -194,8 +194,8 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
     }
 
     /**
-     * Represents the type of a {@code Function} which consists of 1 <em>parameter one type</em>
-     * and a <em>return type</em>.
+     * Represents the type of a {@code Function1} which consists of one parameter type
+     * and a return type.
      *
      *
      * @param <T1> the 1st parameter type of the function

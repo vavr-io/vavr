@@ -612,8 +612,8 @@ def generateMainClasses(): Unit = {
               }
 
               /**
-               * Represents the type of a {@code $name} which consists of $i <em>parameter ${i.numerus("type")}</em>
-               * and a <em>return type</em>.
+               * Represents the type of a {@code $className} which consists of ${i.numerus("parameter type")}
+               * and a return type.
                *
                ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> the ${j.ordinal} parameter type of the function")("\n")}
                * @param <R> the return type of the function

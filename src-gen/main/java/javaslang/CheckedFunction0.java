@@ -126,8 +126,8 @@ public interface CheckedFunction0<R> extends λ<R> {
     }
 
     /**
-     * Represents the type of a {@code CheckedFunction} which consists of 0 <em>parameter no types</em>
-     * and a <em>return type</em>.
+     * Represents the type of a {@code CheckedFunction0} which consists of no parameter types
+     * and a return type.
      *
      *
      * @param <R> the return type of the function
