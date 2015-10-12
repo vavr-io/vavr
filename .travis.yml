@@ -13,4 +13,4 @@ after_success:
   - mvn clean test jacoco:report coveralls:report
   - mvn clean deploy -DskipTests --settings .travis/maven-settings.xml
   - mvn javadoc:javadoc -DskipTests
-  - .travis/deploy-javadoc-latest.sh
+  - .travis/deploy-javadoc-snapshot.sh
