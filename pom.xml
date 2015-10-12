@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <prerequisites>
         <maven>3.0.4</maven>
@@ -10,7 +11,7 @@
     </parent>
     <groupId>com.javaslang</groupId>
     <artifactId>javaslang</artifactId>
-    <version>2.0.0-beta</version>
+    <version>2.0.0-beta-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Javaslang</name>
     <description>Javaslang is a Java standard library extension built for Java 8 and above.</description>
@@ -26,7 +27,7 @@
         <connection>scm:git:git@github.com:rocketscience-projects/javaslang.git</connection>
         <developerConnection>scm:git:git@github.com:rocketscience-projects/javaslang.git</developerConnection>
         <url>git@github.com:rocketscience-projects/javaslang.git</url>
-        <tag>javaslang-2.0.0-beta</tag>
+        <tag>HEAD</tag>
     </scm>
     <developers>
         <developer>
@@ -268,7 +269,7 @@
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
-                                                <ignore />
+                                                <ignore/>
                                             </action>
                                         </pluginExecution>
                                         <pluginExecution>
@@ -281,7 +282,7 @@
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
-                                                <ignore />
+                                                <ignore/>
                                             </action>
                                         </pluginExecution>
                                         <pluginExecution>
@@ -294,7 +295,7 @@
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
-                                                <ignore />
+                                                <ignore/>
                                             </action>
                                         </pluginExecution>
                                     </pluginExecutions>
