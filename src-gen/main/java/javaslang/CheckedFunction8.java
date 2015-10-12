@@ -320,8 +320,8 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
     }
 
     /**
-     * Represents the type of a {@code CheckedFunction} which consists of 8 <em>parameter 8 types</em>
-     * and a <em>return type</em>.
+     * Represents the type of a {@code CheckedFunction8} which consists of 8 parameter types
+     * and a return type.
      *
      *
      * @param <T1> the 1st parameter type of the function

@@ -248,8 +248,8 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends λ<R> {
     }
 
     /**
-     * Represents the type of a {@code CheckedFunction} which consists of 5 <em>parameter 5 types</em>
-     * and a <em>return type</em>.
+     * Represents the type of a {@code CheckedFunction5} which consists of 5 parameter types
+     * and a return type.
      *
      *
      * @param <T1> the 1st parameter type of the function
