@@ -18,7 +18,7 @@
  * <tbody>
  * <tr><td>{@linkplain javaslang.collection.Array}</td><td><small>const</small></td><td><small>linear</small></td><td><small>const</small></td><td><small>const</small></td><td><small>linear</small></td><td><small>linear</small></td></tr>
  * <tr><td>{@linkplain javaslang.collection.CharSeq}</td><td><small>const</small></td><td><small>linear</small></td><td><small>const</small></td><td><small>linear</small></td><td><small>linear</small></td><td><small>linear</small></td></tr>
- * <tr><td><em>{@linkplain javaslang.collection.Iterator}</em></td><td><small>const</small></td><td><small>const</small></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+ * <tr><td><em>{@linkplain javaslang.collection.Iterator}</em></td><td><small>const</small></td><td><small>const</small></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
  * <tr><td>{@linkplain javaslang.collection.List}</td><td><small>const</small></td><td><small>const</small></td><td><small>linear</small></td><td><small>linear</small></td><td><small>const</small></td><td><small>linear</small></td></tr>
  * <tr><td>{@linkplain javaslang.collection.Queue}</td><td><small>const</small></td><td><small>const<sup>a</sup></small></td><td><small>linear</small></td><td><small>linear</small></td><td><small>const</small></td><td><small>const</small></td></tr>
  * <tr><td>{@linkplain javaslang.collection.Stream}</td><td><small>const</small></td><td><small>const</small></td><td><small>linear</small></td><td><small>linear</small></td><td><small>const<sup>lazy</sup></small></td><td><small>const<sup>lazy</sup></small></td></tr>
