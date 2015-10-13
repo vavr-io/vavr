@@ -5,76 +5,76 @@
  */
 package javaslang.collection;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.stream.Collector;
 
-import org.junit.Test;
-
 public abstract class AbstractTraversableTest extends AbstractTraversableOnceTest {
 
-	abstract protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
+    abstract protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
 
-	@Override
-	abstract protected <T> Traversable<T> empty();
+    @Override
+    abstract protected <T> Traversable<T> empty();
 
-	@Override
-	abstract protected <T> Traversable<T> of(T element);
+    @Override
+    abstract protected <T> Traversable<T> of(T element);
 
-	@SuppressWarnings("unchecked")
-	@Override
-	abstract protected <T> Traversable<T> of(T... elements);
+    @SuppressWarnings("unchecked")
+    @Override
+    abstract protected <T> Traversable<T> of(T... elements);
 
-	@Override
-	abstract protected <T> Traversable<T> ofAll(java.lang.Iterable<? extends T> elements);
+    @Override
+    abstract protected <T> Traversable<T> ofAll(java.lang.Iterable<? extends T> elements);
 
-	@Override
-	abstract protected Traversable<Boolean> ofAll(boolean[] array);
+    @Override
+    abstract protected Traversable<Boolean> ofAll(boolean[] array);
 
-	@Override
-	abstract protected Traversable<Byte> ofAll(byte[] array);
+    @Override
+    abstract protected Traversable<Byte> ofAll(byte[] array);
 
-	@Override
-	abstract protected Traversable<Character> ofAll(char[] array);
+    @Override
+    abstract protected Traversable<Character> ofAll(char[] array);
 
-	@Override
-	abstract protected Traversable<Double> ofAll(double[] array);
+    @Override
+    abstract protected Traversable<Double> ofAll(double[] array);
 
-	@Override
-	abstract protected Traversable<Float> ofAll(float[] array);
+    @Override
+    abstract protected Traversable<Float> ofAll(float[] array);
 
-	@Override
-	abstract protected Traversable<Integer> ofAll(int[] array);
+    @Override
+    abstract protected Traversable<Integer> ofAll(int[] array);
 
-	@Override
-	abstract protected Traversable<Long> ofAll(long[] array);
+    @Override
+    abstract protected Traversable<Long> ofAll(long[] array);
 
-	@Override
-	abstract protected Traversable<Short> ofAll(short[] array);
+    @Override
+    abstract protected Traversable<Short> ofAll(short[] array);
 
-	// -- static collector()
+    // -- static collector()
 
-	@Test
-	public void shouldStreamAndCollectNil() {
-		final Traversable<?> actual = java.util.stream.Stream.empty().collect(this.<Object> collector());
-		assertThat(actual).isEmpty();
-	}
+    @Test
+    public void shouldStreamAndCollectNil() {
+        final Traversable<?> actual = java.util.stream.Stream.empty().collect(this.<Object> collector());
+        assertThat(actual).isEmpty();
+    }
 
-	@Test
-	public void shouldStreamAndCollectNonNil() {
-		final Traversable<?> actual = java.util.stream.Stream.of(1, 2, 3).collect(this.<Object> collector());
-		assertThat(actual).isEqualTo(of(1, 2, 3));
-	}
+    @Test
+    public void shouldStreamAndCollectNonNil() {
+        final Traversable<?> actual = java.util.stream.Stream.of(1, 2, 3).collect(this.<Object> collector());
+        assertThat(actual).isEqualTo(of(1, 2, 3));
+    }
 
-	@Test
-	public void shouldParallelStreamAndCollectNil() {
-		final Traversable<?> actual = java.util.stream.Stream.empty().parallel().collect(this.<Object> collector());
-		assertThat(actual).isEmpty();
-	}
+    @Test
+    public void shouldParallelStreamAndCollectNil() {
+        final Traversable<?> actual = java.util.stream.Stream.empty().parallel().collect(this.<Object> collector());
+        assertThat(actual).isEmpty();
+    }
 
-	@Test
-	public void shouldParallelStreamAndCollectNonNil() {
-		final Traversable<?> actual = java.util.stream.Stream.of(1, 2, 3).parallel().collect(this.<Object> collector());
-		assertThat(actual).isEqualTo(of(1, 2, 3));
-	}
+    @Test
+    public void shouldParallelStreamAndCollectNonNil() {
+        final Traversable<?> actual = java.util.stream.Stream.of(1, 2, 3).parallel().collect(this.<Object> collector());
+        assertThat(actual).isEqualTo(of(1, 2, 3));
+    }
 
 }

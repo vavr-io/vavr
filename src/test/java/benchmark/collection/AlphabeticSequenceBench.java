@@ -5,50 +5,46 @@
  */
 package benchmark.collection;
 
-import static benchmark.Benchmark.bench;
+import javaslang.collection.*;
 
-import javaslang.collection.CharSeq;
-import javaslang.collection.IndexedSeq;
-import javaslang.collection.List;
-import javaslang.collection.Seq;
-import javaslang.collection.Stream;
+import static benchmark.Benchmark.bench;
 
 public class AlphabeticSequenceBench {
 
-	private static final int COUNT = 4;
-	private static final int WARMUP = 2;
+    private static final int COUNT = 4;
+    private static final int WARMUP = 2;
 
-	private static final Seq<Character> ALPHABET = CharSeq.rangeClosed('A', 'Z').toStream();
+    private static final Seq<Character> ALPHABET = CharSeq.rangeClosed('A', 'Z').toStream();
 
-	public static void main(String[] args) {
-		benchAlphabeticSequenceUsingCartesianPower();
-		benchAlphabeticSequenceUsingAppendSelf();
-	}
+    public static void main(String[] args) {
+        benchAlphabeticSequenceUsingCartesianPower();
+        benchAlphabeticSequenceUsingAppendSelf();
+    }
 
-	static void benchAlphabeticSequenceUsingCartesianPower() {
-		bench("alphabetic sequence using cartesian product", COUNT, WARMUP, AlphabeticSequenceBench::cartesianPower);
-	}
+    static void benchAlphabeticSequenceUsingCartesianPower() {
+        bench("alphabetic sequence using cartesian product", COUNT, WARMUP, AlphabeticSequenceBench::cartesianPower);
+    }
 
-	static void benchAlphabeticSequenceUsingAppendSelf() {
-		bench("alphabetic sequence using append self", COUNT, WARMUP, AlphabeticSequenceBench::appendSelf);
-	}
+    static void benchAlphabeticSequenceUsingAppendSelf() {
+        bench("alphabetic sequence using append self", COUNT, WARMUP, AlphabeticSequenceBench::appendSelf);
+    }
 
-	private static List<String> cartesianPower(int n) {
-		return Stream
-				.from(1)
-				.flatMap(ALPHABET::crossProduct)
-				.map(IndexedSeq::mkString)
-				.takeWhile(s -> s.length() <= n)
-				.toList();
-	}
+    private static List<String> cartesianPower(int n) {
+        return Stream
+                .from(1)
+                .flatMap(ALPHABET::crossProduct)
+                .map(IndexedSeq::mkString)
+                .takeWhile(s -> s.length() <= n)
+                .toList();
+    }
 
-	private static List<String> appendSelf(int n) {
-		return ALPHABET
-				.sliding(1)
-				.toStream()
-				.appendSelf(stream -> stream.flatMap(product -> ALPHABET.map(product::append)))
-				.map(IndexedSeq::mkString)
-				.takeWhile(s -> s.length() <= n)
-				.toList();
-	}
+    private static List<String> appendSelf(int n) {
+        return ALPHABET
+                .sliding(1)
+                .toStream()
+                .appendSelf(stream -> stream.flatMap(product -> ALPHABET.map(product::append)))
+                .map(IndexedSeq::mkString)
+                .takeWhile(s -> s.length() <= n)
+                .toList();
+    }
 }

@@ -10,25 +10,25 @@ import java.util.stream.Collector;
 
 public class HashMapTest extends AbstractMapTest {
 
-	@Override
-	protected String className() {
-		return "HashMap";
-	}
+    @Override
+    protected String className() {
+        return "HashMap";
+    }
 
-	@Override
-	protected <T1, T2> Map<T1, T2> emptyMap() {
-		return HashMap.empty();
-	}
+    @Override
+    protected <T1, T2> Map<T1, T2> emptyMap() {
+        return HashMap.empty();
+    }
 
-	@Override
-	protected <T> Collector<Map.Entry<Integer, T>, ArrayList<Map.Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
-		return HashMap.<Integer, T> collector();
-	}
+    @Override
+    protected <T> Collector<Map.Entry<Integer, T>, ArrayList<Map.Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
+        return HashMap.<Integer, T> collector();
+    }
 
-	@SuppressWarnings("varargs")
-	@SafeVarargs
-	@Override
-	protected final <K, V> Map<K, V> mapOf(Map.Entry<? extends K, ? extends V>... entries) {
-		return HashMap.of(entries);
-	}
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    @Override
+    protected final <K, V> Map<K, V> mapOf(Map.Entry<? extends K, ? extends V>... entries) {
+        return HashMap.of(entries);
+    }
 }

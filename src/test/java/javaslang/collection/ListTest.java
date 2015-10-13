@@ -5,216 +5,215 @@
  */
 package javaslang.collection;
 
+import javaslang.Serializables;
+import org.junit.Test;
+
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.stream.Collector;
 
-import org.junit.Test;
-
-import javaslang.Serializables;
-
 public class ListTest extends AbstractSeqTest {
 
-	// -- construction
+    // -- construction
 
-	@Override
-	protected <T> Collector<T, ArrayList<T>, List<T>> collector() {
-		return List.collector();
-	}
+    @Override
+    protected <T> Collector<T, ArrayList<T>, List<T>> collector() {
+        return List.collector();
+    }
 
-	@Override
-	protected <T> List<T> empty() {
-		return List.empty();
-	}
+    @Override
+    protected <T> List<T> empty() {
+        return List.empty();
+    }
 
-	@Override
-	protected <T> List<T> of(T element) {
-		return List.of(element);
-	}
+    @Override
+    protected <T> List<T> of(T element) {
+        return List.of(element);
+    }
 
-	@SuppressWarnings("varargs")
-	@SafeVarargs
-	@Override
-	protected final <T> List<T> of(T... elements) {
-		return List.of(elements);
-	}
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    @Override
+    protected final <T> List<T> of(T... elements) {
+        return List.of(elements);
+    }
 
-	@Override
-	protected <T> List<T> ofAll(java.lang.Iterable<? extends T> elements) {
-		return List.ofAll(elements);
-	}
+    @Override
+    protected <T> List<T> ofAll(java.lang.Iterable<? extends T> elements) {
+        return List.ofAll(elements);
+    }
 
-	@Override
-	protected List<Boolean> ofAll(boolean[] array) {
-		return List.ofAll(array);
-	}
+    @Override
+    protected List<Boolean> ofAll(boolean[] array) {
+        return List.ofAll(array);
+    }
 
-	@Override
-	protected List<Byte> ofAll(byte[] array) {
-		return List.ofAll(array);
-	}
+    @Override
+    protected List<Byte> ofAll(byte[] array) {
+        return List.ofAll(array);
+    }
 
-	@Override
-	protected List<Character> ofAll(char[] array) {
-		return List.ofAll(array);
-	}
+    @Override
+    protected List<Character> ofAll(char[] array) {
+        return List.ofAll(array);
+    }
 
-	@Override
-	protected List<Double> ofAll(double[] array) {
-		return List.ofAll(array);
-	}
+    @Override
+    protected List<Double> ofAll(double[] array) {
+        return List.ofAll(array);
+    }
 
-	@Override
-	protected List<Float> ofAll(float[] array) {
-		return List.ofAll(array);
-	}
+    @Override
+    protected List<Float> ofAll(float[] array) {
+        return List.ofAll(array);
+    }
 
-	@Override
-	protected List<Integer> ofAll(int[] array) {
-		return List.ofAll(array);
-	}
+    @Override
+    protected List<Integer> ofAll(int[] array) {
+        return List.ofAll(array);
+    }
 
-	@Override
-	protected List<Long> ofAll(long[] array) {
-		return List.ofAll(array);
-	}
+    @Override
+    protected List<Long> ofAll(long[] array) {
+        return List.ofAll(array);
+    }
 
-	@Override
-	protected List<Short> ofAll(short[] array) {
-		return List.ofAll(array);
-	}
+    @Override
+    protected List<Short> ofAll(short[] array) {
+        return List.ofAll(array);
+    }
 
-	@Override
-	protected List<Character> range(char from, char toExclusive) {
-		return List.range(from, toExclusive);
-	}
+    @Override
+    protected List<Character> range(char from, char toExclusive) {
+        return List.range(from, toExclusive);
+    }
 
-	@Override
-	protected List<Character> rangeBy(char from, char toExclusive, int step) {
-		return List.rangeBy(from, toExclusive, step);
-	}
+    @Override
+    protected List<Character> rangeBy(char from, char toExclusive, int step) {
+        return List.rangeBy(from, toExclusive, step);
+    }
 
-	@Override
-	protected List<Double> rangeBy(double from, double toExclusive, double step) {
-		return List.rangeBy(from, toExclusive, step);
-	}
+    @Override
+    protected List<Double> rangeBy(double from, double toExclusive, double step) {
+        return List.rangeBy(from, toExclusive, step);
+    }
 
-	@Override
-	protected List<Integer> range(int from, int toExclusive) {
-		return List.range(from, toExclusive);
-	}
+    @Override
+    protected List<Integer> range(int from, int toExclusive) {
+        return List.range(from, toExclusive);
+    }
 
-	@Override
-	protected List<Integer> rangeBy(int from, int toExclusive, int step) {
-		return List.rangeBy(from, toExclusive, step);
-	}
+    @Override
+    protected List<Integer> rangeBy(int from, int toExclusive, int step) {
+        return List.rangeBy(from, toExclusive, step);
+    }
 
-	@Override
-	protected List<Long> range(long from, long toExclusive) {
-		return List.range(from, toExclusive);
-	}
+    @Override
+    protected List<Long> range(long from, long toExclusive) {
+        return List.range(from, toExclusive);
+    }
 
-	@Override
-	protected List<Long> rangeBy(long from, long toExclusive, long step) {
-		return List.rangeBy(from, toExclusive, step);
-	}
+    @Override
+    protected List<Long> rangeBy(long from, long toExclusive, long step) {
+        return List.rangeBy(from, toExclusive, step);
+    }
 
-	@Override
-	protected List<Character> rangeClosed(char from, char toInclusive) {
-		return List.rangeClosed(from, toInclusive);
-	}
+    @Override
+    protected List<Character> rangeClosed(char from, char toInclusive) {
+        return List.rangeClosed(from, toInclusive);
+    }
 
-	@Override
-	protected List<Character> rangeClosedBy(char from, char toInclusive, int step) {
-		return List.rangeClosedBy(from, toInclusive, step);
-	}
+    @Override
+    protected List<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return List.rangeClosedBy(from, toInclusive, step);
+    }
 
-	@Override
-	protected List<Double> rangeClosedBy(double from, double toInclusive, double step) {
-		return List.rangeClosedBy(from, toInclusive, step);
-	}
+    @Override
+    protected List<Double> rangeClosedBy(double from, double toInclusive, double step) {
+        return List.rangeClosedBy(from, toInclusive, step);
+    }
 
-	@Override
-	protected List<Integer> rangeClosed(int from, int toInclusive) {
-		return List.rangeClosed(from, toInclusive);
-	}
+    @Override
+    protected List<Integer> rangeClosed(int from, int toInclusive) {
+        return List.rangeClosed(from, toInclusive);
+    }
 
-	@Override
-	protected List<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-		return List.rangeClosedBy(from, toInclusive, step);
-	}
+    @Override
+    protected List<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+        return List.rangeClosedBy(from, toInclusive, step);
+    }
 
-	@Override
-	protected List<Long> rangeClosed(long from, long toInclusive) {
-		return List.rangeClosed(from, toInclusive);
-	}
+    @Override
+    protected List<Long> rangeClosed(long from, long toInclusive) {
+        return List.rangeClosed(from, toInclusive);
+    }
 
-	@Override
-	protected List<Long> rangeClosedBy(long from, long toInclusive, long step) {
-		return List.rangeClosedBy(from, toInclusive, step);
-	}
+    @Override
+    protected List<Long> rangeClosedBy(long from, long toInclusive, long step) {
+        return List.rangeClosedBy(from, toInclusive, step);
+    }
 
-	@Override
-	int getPeekNonNilPerformingAnAction() {
-		return 1;
-	}
+    @Override
+    int getPeekNonNilPerformingAnAction() {
+        return 1;
+    }
 
-	// -- toString
+    // -- toString
 
-	@Test
-	public void shouldStringifyNil() {
-		assertThat(empty().toString()).isEqualTo("List()");
-	}
+    @Test
+    public void shouldStringifyNil() {
+        assertThat(empty().toString()).isEqualTo("List()");
+    }
 
-	@Test
-	public void shouldStringifyNonNil() {
-		assertThat(of(1, 2, 3).toString()).isEqualTo("List(1, 2, 3)");
-	}
+    @Test
+    public void shouldStringifyNonNil() {
+        assertThat(of(1, 2, 3).toString()).isEqualTo("List(1, 2, 3)");
+    }
 
-	// -- Cons test
+    // -- Cons test
 
-	@Test(expected = InvalidObjectException.class)
-	public void shouldNotSerializeEnclosingClass() throws Throwable {
-		Serializables.callReadObject(List.of(1));
-	}
+    @Test(expected = InvalidObjectException.class)
+    public void shouldNotSerializeEnclosingClass() throws Throwable {
+        Serializables.callReadObject(List.of(1));
+    }
 
-	@Test(expected = InvalidObjectException.class)
-	public void shouldNotDeserializeListWithSizeLessThanOne() throws Throwable {
-		try {
-			/*
+    @Test(expected = InvalidObjectException.class)
+    public void shouldNotDeserializeListWithSizeLessThanOne() throws Throwable {
+        try {
+            /*
 			 * This implementation is stable regarding jvm impl changes of object serialization. The index of the number
 			 * of List elements is gathered dynamically.
 			 */
-			final byte[] listWithOneElement = Serializables.serialize(List.of(0));
-			final byte[] listWithTwoElements = Serializables.serialize(List.of(0, 0));
-			int index = -1;
-			for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
-				final byte b1 = listWithOneElement[i];
-				final byte b2 = listWithTwoElements[i];
-				if (b1 != b2) {
-					if (b1 != 1 || b2 != 2) {
-						throw new IllegalStateException("Difference does not indicate number of elements.");
-					} else {
-						index = i;
-					}
-				}
-			}
-			if (index == -1) {
-				throw new IllegalStateException("Hack incomplete - index not found");
-			}
+            final byte[] listWithOneElement = Serializables.serialize(List.of(0));
+            final byte[] listWithTwoElements = Serializables.serialize(List.of(0, 0));
+            int index = -1;
+            for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
+                final byte b1 = listWithOneElement[i];
+                final byte b2 = listWithTwoElements[i];
+                if (b1 != b2) {
+                    if (b1 != 1 || b2 != 2) {
+                        throw new IllegalStateException("Difference does not indicate number of elements.");
+                    } else {
+                        index = i;
+                    }
+                }
+            }
+            if (index == -1) {
+                throw new IllegalStateException("Hack incomplete - index not found");
+            }
 			/*
 			 * Hack the serialized data and fake zero elements.
 			 */
-			listWithOneElement[index] = 0;
-			Serializables.deserialize(listWithOneElement);
-		} catch (IllegalStateException x) {
-			throw (x.getCause() != null) ? x.getCause() : x;
-		}
-	}
+            listWithOneElement[index] = 0;
+            Serializables.deserialize(listWithOneElement);
+        } catch (IllegalStateException x) {
+            throw (x.getCause() != null) ? x.getCause() : x;
+        }
+    }
 
-	@Override
-	boolean useIsEqualToInsteadOfIsSameAs() {
-		return false;
-	}
+    @Override
+    boolean useIsEqualToInsteadOfIsSameAs() {
+        return false;
+    }
 
 }

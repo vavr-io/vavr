@@ -597,7 +597,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * Sorts this elements by comparing the elements in a different domain, using the given {@code mapper}.
      *
      * @param mapper A mapper
-     * @param <U> The domain where elements are compared
+     * @param <U>    The domain where elements are compared
      * @return a sorted version of this
      */
     <U extends Comparable<? super U>> Seq<T> sortBy(Function<? super T, ? extends U> mapper);
@@ -606,8 +606,8 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * Sorts this elements by comparing the elements in a different domain, using the given {@code mapper}.
      *
      * @param comparator A comparator
-     * @param mapper A mapper
-     * @param <U> The domain where elements are compared
+     * @param mapper     A mapper
+     * @param <U>        The domain where elements are compared
      * @return a sorted version of this
      */
     <U> Seq<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper);
