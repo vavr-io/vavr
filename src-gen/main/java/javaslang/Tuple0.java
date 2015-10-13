@@ -51,11 +51,6 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
         return COMPARATOR;
     }
 
-    @SuppressWarnings("unchecked")
-    private static  int compareTo(Tuple0 o1, Tuple0 o2) {
-        return 0;
-    }
-
     @Override
     public int arity() {
         return 0;
@@ -73,7 +68,6 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
      * @param <U> New type
      * @return An object of type U
      */
-    @SuppressWarnings("unchecked")
     public <U> U transform(Function<? super Tuple0, U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);

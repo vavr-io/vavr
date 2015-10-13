@@ -5,41 +5,41 @@
  */
 package javaslang.collection;
 
-import javaslang.collection.Map.Entry;
+import static javaslang.collection.Comparators.naturalComparator;
 
 import java.util.ArrayList;
 import java.util.stream.Collector;
 
-import static javaslang.collection.Comparators.naturalComparator;
+import javaslang.collection.Map.Entry;
 
 public class TreeMapTest extends AbstractMapTest {
 
-    @Override
-    protected String className() {
-        return "TreeMap";
-    }
+	@Override
+	protected String className() {
+		return "TreeMap";
+	}
 
-    @Override
-    protected <T1, T2> Map<T1, T2> emptyMap() {
-        return TreeMap.empty(naturalComparator());
-    }
+	@Override
+	protected <T1, T2> Map<T1, T2> emptyMap() {
+		return TreeMap.empty(naturalComparator());
+	}
 
-    @Override
-    protected <T> Collector<Entry<Integer, T>, ArrayList<Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
-        return TreeMap.<Integer, T> collector();
-    }
+	@Override
+	protected <T> Collector<Entry<Integer, T>, ArrayList<Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
+		return TreeMap.<Integer, T> collector();
+	}
 
-    @SuppressWarnings({ "unchecked", "varargs" })
-    @SafeVarargs
-    @Override
-    protected final <K, V> Map<K, V> mapOf(Entry<? extends K, ? extends V>... entries) {
-        return TreeMap.of(naturalComparator(), entries);
-    }
+	@SuppressWarnings("varargs")
+	@SafeVarargs
+	@Override
+	protected final <K, V> Map<K, V> mapOf(Entry<? extends K, ? extends V>... entries) {
+		return TreeMap.of(naturalComparator(), entries);
+	}
 
-    // -- obsolete tests
+	// -- obsolete tests
 
-    @Override
-    public void shouldPreserveSingletonInstanceOnDeserialization() {
-        // The empty TreeMap encapsulates a comparator and therefore cannot be a singleton
-    }
+	@Override
+	public void shouldPreserveSingletonInstanceOnDeserialization() {
+		// The empty TreeMap encapsulates a comparator and therefore cannot be a singleton
+	}
 }

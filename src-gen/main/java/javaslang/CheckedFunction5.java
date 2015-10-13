@@ -261,12 +261,10 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends λ<R> {
      * @author Daniel Dietrich
      * @since 2.0.0
      */
-    @SuppressWarnings("deprecation")
     final class Type<T1, T2, T3, T4, T5, R> extends λ.Type<R> {
 
         private static final long serialVersionUID = 1L;
 
-        @SuppressWarnings("deprecation")
         private Type(CheckedFunction5<T1, T2, T3, T4, T5, R> λ) {
             super(λ);
         }

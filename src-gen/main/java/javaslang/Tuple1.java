@@ -86,7 +86,6 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
      * @param <U> New type
      * @return An object of type U
      */
-    @SuppressWarnings("unchecked")
     public <U> U transform(Function<? super Tuple1<T1>, U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);

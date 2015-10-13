@@ -5,14 +5,15 @@
  */
 package javaslang;
 
-import javaslang.collection.List;
-import javaslang.control.Try;
-
 import java.io.Serializable;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+
+import javaslang.collection.List;
+import javaslang.control.Try;
+import javaslang.λModule.ReflectionUtil;
 
 /**
  * This is a general definition of a (checked/unchecked) function of unknown parameters and a return type R.
@@ -26,150 +27,144 @@ import java.util.Arrays;
  */
 public interface λ<R> extends Serializable {
 
-    /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-     */
-    long serialVersionUID = 1L;
+	/**
+	 * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+	 */
+	long serialVersionUID = 1L;
 
-    /**
-     * @return the number of function arguments.
-     * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
-     */
-    int arity();
+	/**
+	 * @return the number of function arguments.
+	 * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
+	 */
+	int arity();
 
-    /**
-     * Returns a curried version of this function.
-     *
-     * @return a curried function equivalent to this.
-     */
-    // generic argument count varies
-    @SuppressWarnings("rawtypes")
-    λ curried();
+	/**
+	 * Returns a curried version of this function.
+	 *
+	 * @return a curried function equivalent to this.
+	 */
+	// generic argument count varies
+	@SuppressWarnings("rawtypes")
+	λ curried();
 
-    /**
-     * Returns a tupled version of this function.
-     *
-     * @return a tupled function equivalent to this.
-     */
-    λ<R> tupled();
+	/**
+	 * Returns a tupled version of this function.
+	 *
+	 * @return a tupled function equivalent to this.
+	 */
+	λ<R> tupled();
 
-    /**
-     * Returns a reversed version of this function. This may be useful in a recursive context.
-     *
-     * @return a reversed function equivalent to this.
-     */
-    λ<R> reversed();
+	/**
+	 * Returns a reversed version of this function. This may be useful in a recursive context.
+	 *
+	 * @return a reversed function equivalent to this.
+	 */
+	λ<R> reversed();
 
-    /**
-     * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
-     * On subsequent calls given the same arguments the memoized value is returned.
-     * <p>
-     * Please note that memoizing functions do not permit `null` as single argument or return value.
-     *
-     * @return a memoizing function equivalent to this.
-     */
-    λ<R> memoized();
+	/**
+	 * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
+	 * On subsequent calls given the same arguments the memoized value is returned.
+	 * <p>
+	 * Please note that memoizing functions do not permit `null` as single argument or return value.
+	 *
+	 * @return a memoizing function equivalent to this.
+	 */
+	λ<R> memoized();
 
-    /**
-     * Checks if this function is memoizing (= caching) computed values.
-     *
-     * @return true, if this function is memoizing, false otherwise
-     */
-    boolean isMemoized();
+	/**
+	 * Checks if this function is memoizing (= caching) computed values.
+	 *
+	 * @return true, if this function is memoizing, false otherwise
+	 */
+	boolean isMemoized();
 
-    /**
-     * Get reflective type information about lambda parameters and return type.
-     *
-     * @return A new instance containing the type information
-     */
-    Type<R> getType();
+	/**
+	 * Get reflective type information about lambda parameters and return type.
+	 *
+	 * @return A new instance containing the type information
+	 */
+	Type<R> getType();
 
-    /**
-     * Represents the type of a function which consists of <em>parameter types</em> and a <em>return type</em>.
-     *
-     * @param <R> the return type of the function
-     * @since 2.0.0
-     */
-    // DEV-NOTE: implicitly static and therefore not leaking implicit this reference of enclosing instance
-    abstract class Type<R> implements Serializable {
+	/**
+	 * Represents the type of a function which consists of <em>parameter types</em> and a <em>return type</em>.
+	 *
+	 * @param <R> the return type of the function
+	 * @since 2.0.0
+	 */
+	// DEV-NOTE: implicitly static and therefore not leaking implicit this reference of enclosing instance
+	abstract class Type<R> implements Serializable {
 
-        private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1L;
 
-        private final Class<R> returnType;
-        private final Class<?>[] parameterTypes;
+		private final Class<R> returnType;
+		private final Class<?>[] parameterTypes;
 
-        private transient final Lazy<Integer> hashCode = Lazy.of(() -> List.of(parameterTypes())
-                        .map(c -> c.getName().hashCode())
-                        .fold(1, (acc, i) -> acc * 31 + i)
-                        * 31 + returnType().getName().hashCode()
-        );
+		private transient final Lazy<Integer> hashCode = Lazy.of(
+				() -> List.of(parameterTypes()).map(c -> c.getName().hashCode()).fold(1, (acc, i) -> acc * 31 + i) * 31
+						+ returnType().getName().hashCode());
 
-        /**
-         * Internal constructor.
-         *
-         * @param λ the outer function instance of this type
-         * @deprecated There should be a constructor {@code AbstractType(Class<R> returnType, Class<?>[] parameterArray)} but because of implementation details this one is needed. It will disappear as soon as possible.
-         */
-        @SuppressWarnings("unchecked")
-        @Deprecated
-        protected Type(λ<R> λ) {
+		/**
+		 * Internal constructor.
+		 *
+		 * @param λ the outer function instance of this type
+		 */
+		@SuppressWarnings("unchecked")
+		protected Type(λ<R> λ) {
+			final MethodType methodType = ReflectionUtil.getLambdaSignature(λ);
+			this.returnType = (Class<R>) methodType.returnType();
+			this.parameterTypes = methodType.parameterArray();
+		}
 
-            // hiding this functionality
-            final class ReflectionUtil {
+		public Class<R> returnType() {
+			return returnType;
+		}
 
-                MethodType getLambdaSignature(Serializable lambda) {
-                    final String signature = getSerializedLambda(lambda).getInstantiatedMethodType();
-                    return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
-                }
+		public Class<?>[] parameterTypes() {
+			return parameterTypes;
+		}
 
-                private SerializedLambda getSerializedLambda(Serializable lambda) {
-                    return Try.of(() -> {
-                        final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
-                        method.setAccessible(true);
-                        return (SerializedLambda) method.invoke(lambda);
-                    }).get();
-                }
-            }
+		@Override
+		public boolean equals(Object o) {
+			if (o == this) {
+				return true;
+			} else if (o instanceof Type) {
+				final Type<?> that = (Type<?>) o;
+				return this.hashCode() == that.hashCode()
+						&& this.returnType().equals(that.returnType)
+						&& Arrays.equals(this.parameterTypes, that.parameterTypes);
+			} else {
+				return false;
+			}
+		}
 
-            final MethodType methodType = new ReflectionUtil().getLambdaSignature(λ);
+		@Override
+		public int hashCode() {
+			return hashCode.get();
+		}
 
-            this.returnType = (Class<R>) methodType.returnType();
-            this.parameterTypes = methodType.parameterArray();
-        }
+		@Override
+		public String toString() {
+			return List.of(parameterTypes).map(Class::getName).mkString(", ", "(", ")") + " -> " + returnType.getName();
+		}
+	}
+}
 
-        @SuppressWarnings("unchecked")
-        public Class<R> returnType() {
-            return returnType;
-        }
+interface λModule {
 
-        public Class<?>[] parameterTypes() {
-            return parameterTypes;
-        }
+	// hiding this functionality
+	final class ReflectionUtil {
 
-        @Override
-        public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof Type) {
-                final Type<?> that = (Type<?>) o;
-                return this.hashCode() == that.hashCode()
-                        && this.returnType().equals(that.returnType)
-                        && Arrays.equals(this.parameterTypes, that.parameterTypes);
-            } else {
-                return false;
-            }
-        }
+		static MethodType getLambdaSignature(Serializable lambda) {
+			final String signature = getSerializedLambda(lambda).getInstantiatedMethodType();
+			return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
+		}
 
-        @Override
-        public int hashCode() {
-            return hashCode.get();
-        }
-
-        @Override
-        public String toString() {
-            return List.of(parameterTypes).map(Class::getName).mkString(", ", "(", ")")
-                    + " -> "
-                    + returnType.getName();
-        }
-    }
+		private static SerializedLambda getSerializedLambda(Serializable lambda) {
+			return Try.of(() -> {
+				final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
+				method.setAccessible(true);
+				return (SerializedLambda) method.invoke(lambda);
+			}).get();
+		}
+	}
 }

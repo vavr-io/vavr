@@ -620,12 +620,10 @@ def generateMainClasses(): Unit = {
                * @author Daniel Dietrich
                * @since 2.0.0
                */
-              @SuppressWarnings("deprecation")
               final class Type$fullGenerics extends λ.Type<R> {
 
                   private static final long serialVersionUID = 1L;
 
-                  @SuppressWarnings("deprecation")
                   private Type($name$i$fullGenerics λ) {
                       super(λ);
                   }
@@ -748,11 +746,9 @@ def generateMainClasses(): Unit = {
                 """}
             }
 
-            @SuppressWarnings("unchecked")
-            private static $comparableGenerics int compareTo($className$untyped o1, $className$untyped o2) {
-                ${if (i == 0) xs"""
-                  return 0;
-                """ else xs"""
+            ${(i > 0).gen(xs"""
+              @SuppressWarnings("unchecked")
+              private static $comparableGenerics int compareTo($className$untyped o1, $className$untyped o2) {
                   final $className$resultGenerics t1 = ($className$resultGenerics) o1;
                   final $className$resultGenerics t2 = ($className$resultGenerics) o2;
 
@@ -765,8 +761,8 @@ def generateMainClasses(): Unit = {
 
                   // all components are equal
                   return 0;
-                """}
-            }
+              }
+            """)}
 
             @Override
             public int arity() {
@@ -805,7 +801,6 @@ def generateMainClasses(): Unit = {
              * @param <U> New type
              * @return An object of type U
              */
-            @SuppressWarnings("unchecked")
             public <U> U transform(${im.getType("java.util.function.Function")}<? super $className$generics, U> f) {
                 $Objects.requireNonNull(f, "f is null");
                 return f.apply(this);
@@ -1068,7 +1063,9 @@ def generateTestClasses(): Unit = {
               }
 
               private static $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> recurrent1 = (${(1 to i).gen(j => s"i$j")(", ")}) -> $recFuncF1
-              private static $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> recurrent2 = $className.recurrent1.memoized();
+              ${(i > 0).gen(xs"""
+                private static $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> recurrent2 = $className.recurrent1.memoized();
+              """)}
 
               @$test
               public void shouldCalculatedRecursively()${checked.gen(" throws Throwable")} {
