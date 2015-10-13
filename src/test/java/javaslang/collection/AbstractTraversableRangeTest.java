@@ -412,13 +412,13 @@ public abstract class AbstractTraversableRangeTest extends AbstractTraversableTe
     @Test
     public void shouldCreateRangeByWhereFromAndToEqualMIN_VALUE() {
 
-        // int
+        // char
         assertThat(rangeBy(Character.MIN_VALUE, Character.MIN_VALUE, 1)).isEmpty();
         assertThat(rangeBy(Character.MIN_VALUE, Character.MIN_VALUE, 3)).isEmpty();
         assertThat(rangeBy(Character.MIN_VALUE, Character.MIN_VALUE, -1)).isEmpty();
         assertThat(rangeBy(Character.MIN_VALUE, Character.MIN_VALUE, -3)).isEmpty();
 
-        // int
+        // double
         assertThat(rangeBy(Double.MIN_VALUE, Double.MIN_VALUE, 1.0)).isEmpty();
         assertThat(rangeBy(Double.MIN_VALUE, Double.MIN_VALUE, 3.0)).isEmpty();
         assertThat(rangeBy(Double.MIN_VALUE, Double.MIN_VALUE, -1.0)).isEmpty();
