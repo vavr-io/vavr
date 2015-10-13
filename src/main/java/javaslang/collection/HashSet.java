@@ -85,7 +85,6 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A set containing the given elements.
      * @throws NullPointerException if {@code elements} is null
      */
-    @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     static <T> HashSet<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -502,14 +501,17 @@ public final class HashSet<T> implements Set<T>, Serializable {
         if (isEmpty()) {
             return empty();
         } else {
-            final HashArrayMappedTrie<U, U> that = foldLeft(HashArrayMappedTrie.empty(), (tree, t) -> addAll(tree, mapper.apply(t)));
+            final HashArrayMappedTrie<U, U> that = foldLeft(HashArrayMappedTrie.empty(),
+                    (tree, t) -> addAll(tree, mapper.apply(t)));
             return new HashSet<>(that);
         }
     }
 
     @Override
     public HashSet<Object> flatten() {
-        return flatMap(t -> (t instanceof java.lang.Iterable) ? HashSet.ofAll((java.lang.Iterable<?>) t).flatten() : HashSet.of(t));
+        return flatMap(t -> (t instanceof java.lang.Iterable)
+                ? HashSet.ofAll((java.lang.Iterable<?>) t).flatten()
+                : HashSet.of(t));
     }
 
     @Override
@@ -657,10 +659,10 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public HashSet<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final HashArrayMappedTrie<T, T> keeped = addAll(HashArrayMappedTrie.empty(), elements);
+        final HashArrayMappedTrie<T, T> kept = addAll(HashArrayMappedTrie.empty(), elements);
         HashArrayMappedTrie<T, T> that = HashArrayMappedTrie.empty();
         for (T element : this) {
-            if (keeped.containsKey(element)) {
+            if (kept.containsKey(element)) {
                 that = that.put(element, element);
             }
         }
@@ -740,7 +742,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <T1, T2> Tuple2<HashSet<T1>, HashSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    public <T1, T2> Tuple2<HashSet<T1>, HashSet<T2>> unzip(
+            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         Tuple2<Iterator<T1>, Iterator<T2>> t = iterator().unzip(unzipper);
         return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2));
@@ -788,7 +791,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return mkString(", ", "HashSet(", ")");
     }
 
-    private static <T> HashArrayMappedTrie<T, T> addAll(HashArrayMappedTrie<T, T> initial, Iterable<? extends T> additional) {
+    private static <T> HashArrayMappedTrie<T, T> addAll(HashArrayMappedTrie<T, T> initial,
+                                                        Iterable<? extends T> additional) {
         HashArrayMappedTrie<T, T> that = initial;
         for (T t : additional) {
             that = that.put(t, t);

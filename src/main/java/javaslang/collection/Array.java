@@ -16,6 +16,7 @@ import javaslang.control.Some;
 import java.io.Serializable;
 import java.util.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -82,7 +83,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return A Array containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T> Array<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -604,7 +605,9 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<Object> flatten() {
-        return flatMap(t -> (t instanceof java.lang.Iterable) ? Array.ofAll((java.lang.Iterable<?>) t).flatten() : Array.of(t));
+        return flatMap(t -> (t instanceof java.lang.Iterable)
+                ? Array.ofAll((java.lang.Iterable<?>) t).flatten()
+                : Array.of(t));
     }
 
     @Override
@@ -796,7 +799,8 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
                 return Array.of(this);
             } else {
                 final Array<Array<T>> zero = empty();
-                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map(l -> l.prepend(x))));
+                return distinct().foldLeft(zero,
+                        (xs, x) -> xs.appendAll(remove(x).permutations().map(l -> l.prepend(x))));
             }
         }
     }
@@ -953,14 +957,14 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Array<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final java.util.Set<T> keeped = new HashSet<T>();
+        final java.util.Set<T> kept = new HashSet<T>();
         for (T element : elements) {
-            keeped.add(element);
+            kept.add(element);
         }
         final java.util.List<T> list = new ArrayList<>();
         for (int i = 0; i < length(); i++) {
             T value = get(i);
-            if (keeped.contains(value)) {
+            if (kept.contains(value)) {
                 list.add(value);
             }
         }
@@ -1150,7 +1154,8 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <T1, T2> Tuple2<Array<T1>, Array<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    public <T1, T2> Tuple2<Array<T1>, Array<T2>> unzip(
+            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         if (isEmpty()) {
             return Tuple.of(empty(), empty());
@@ -1219,10 +1224,9 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         return mkString(", ", "Array(", ")");
     }
 
-    @SuppressWarnings("unchecked")
     private static <T> Object[] create(java.lang.Iterable<T> elements) {
         if (elements instanceof java.util.List) {
-            final java.util.List<T> list = (java.util.List) elements;
+            final java.util.List<T> list = (List<T>) elements;
             return list.toArray();
         } else {
             final java.util.Iterator<? extends T> it = elements.iterator();

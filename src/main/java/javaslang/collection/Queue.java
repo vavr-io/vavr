@@ -120,7 +120,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @return A queue containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T> Queue<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -565,9 +565,10 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
         return toStream().crossProduct(power).toQueue();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <U> Queue<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
-        return toList().crossProduct(that).toQueue();
+        return toList().crossProduct((java.lang.Iterable<U>) that).toQueue();
     }
 
     @Override
@@ -691,7 +692,6 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
         return isEmpty() ? None.instance() : new Some<>(front.head());
     }
 
-
     @Override
     public int indexOf(T element, int from) {
         final int frontIndex = front.indexOf(element, from);
@@ -735,7 +735,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
                 final int reverseRearIndex = rearLength - rearIndex - 1;
                 return new Queue<>(front, rear.insert(reverseRearIndex, element));
             } else {
-                throw new IndexOutOfBoundsException(String.format("insert(%s, e) on Queue of length %s", index, length()));
+                throw new IndexOutOfBoundsException(
+                        String.format("insert(%s, e) on Queue of length %s", index, length()));
             }
         }
     }
@@ -756,7 +757,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
                 final int reverseRearIndex = rearLength - rearIndex - 1;
                 return new Queue<>(front, rear.insertAll(reverseRearIndex, elements));
             } else {
-                throw new IndexOutOfBoundsException(String.format("insertAll(%s, e) on Queue of length %s", index, length()));
+                throw new IndexOutOfBoundsException(
+                        String.format("insertAll(%s, e) on Queue of length %s", index, length()));
             }
         }
     }
@@ -1039,7 +1041,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public <T1, T2> Tuple2<Queue<T1>, Queue<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    public <T1, T2> Tuple2<Queue<T1>, Queue<T2>> unzip(
+            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return toList().unzip(unzipper).map(List::toQueue, List::toQueue);
     }

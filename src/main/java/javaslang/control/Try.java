@@ -75,7 +75,6 @@ public interface Try<T> extends Value<T> {
      * @param consumer A checked consumer taking a single argument.
      * @return a new {@code Try}
      */
-    @SuppressWarnings("unchecked")
     default Try<T> andThen(CheckedConsumer<? super T> consumer) {
         if (isFailure()) {
             return this;
@@ -141,6 +140,7 @@ public interface Try<T> extends Value<T> {
      * @param predicate A predicate
      * @return a new Try
      */
+    @Override
     default Try<T> filter(Predicate<? super T> predicate) {
         if (isFailure()) {
             return this;

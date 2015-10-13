@@ -74,14 +74,14 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return new TreeSet<>(RedBlackTree.of(comparator, value));
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T extends Comparable<? super T>> TreeSet<T> of(T... values) {
         Objects.requireNonNull(values, "values is null");
         return new TreeSet<>(RedBlackTree.of(values));
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T> TreeSet<T> of(Comparator<? super T> comparator, T... values) {
         Objects.requireNonNull(comparator, "comparator is null");
@@ -98,7 +98,9 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     public static <T> TreeSet<T> ofAll(Comparator<? super T> comparator, java.lang.Iterable<? extends T> values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
-        return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(comparator, values)) : (TreeSet<T>) empty();
+        return values.iterator().hasNext()
+                ? new TreeSet<>(RedBlackTree.ofAll(comparator, values))
+                : (TreeSet<T>) empty();
     }
 
     /**
@@ -508,7 +510,8 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public <U> TreeSet<U> flatMap(Comparator<? super U> comparator, Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U> TreeSet<U> flatMap(Comparator<? super U> comparator,
+                                  Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return TreeSet.ofAll(comparator, iterator().flatMap(mapper));
     }
@@ -532,9 +535,8 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public <C> Map<C, TreeSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator()
-                .groupBy(classifier)
-                .map((key, iterator) -> new Map.Entry<>(key, TreeSet.ofAll(tree.comparator(), iterator)));
+        return iterator().groupBy(classifier).map(
+                (key, iterator) -> new Map.Entry<>(key, TreeSet.ofAll(tree.comparator(), iterator)));
     }
 
     @Override
@@ -626,9 +628,8 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public Tuple2<TreeSet<T>, TreeSet<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return iterator()
-                .partition(predicate)
-                .map(i1 -> TreeSet.ofAll(tree.comparator(), i1), i2 -> TreeSet.ofAll(tree.comparator(), i2));
+        return iterator().partition(predicate).map(i1 -> TreeSet.ofAll(tree.comparator(), i1),
+                i2 -> TreeSet.ofAll(tree.comparator(), i2));
     }
 
     @Override
@@ -699,9 +700,8 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public Tuple2<TreeSet<T>, TreeSet<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return iterator()
-                .span(predicate)
-                .map(i1 -> TreeSet.ofAll(tree.comparator(), i1), i2 -> TreeSet.ofAll(tree.comparator(), i2));
+        return iterator().span(predicate).map(i1 -> TreeSet.ofAll(tree.comparator(), i1),
+                i2 -> TreeSet.ofAll(tree.comparator(), i2));
     }
 
     @Override
@@ -767,11 +767,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    public <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(
+            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        return iterator()
-                .unzip(unzipper)
-                .map(i1 -> TreeSet.ofAll(naturalComparator(), i1), i2 -> TreeSet.ofAll(naturalComparator(), i2));
+        return iterator().unzip(unzipper).map(i1 -> TreeSet.ofAll(naturalComparator(), i1),
+                i2 -> TreeSet.ofAll(naturalComparator(), i2));
     }
 
     @Override

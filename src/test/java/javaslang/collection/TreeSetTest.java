@@ -27,7 +27,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
         return TreeSet.of(toStringComparator(), element);
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
     protected final <T> TreeSet<T> of(T... elements) {
@@ -107,7 +107,6 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     // -- helpers
 
-    @SuppressWarnings("unchecked")
     private static Comparator<Object> toStringComparator() {
         return (Comparator<Object> & Serializable) (o1, o2) -> String.valueOf(o1).compareTo(String.valueOf(o2));
     }

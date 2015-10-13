@@ -81,7 +81,6 @@ public class Function0Test {
     }
 
     private static Function0<Integer> recurrent1 = () -> 11;
-    private static Function0<Integer> recurrent2 = Function0Test.recurrent1.memoized();
 
     @Test
     public void shouldCalculatedRecursively() {

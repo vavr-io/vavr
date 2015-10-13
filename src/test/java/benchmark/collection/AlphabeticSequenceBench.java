@@ -30,7 +30,8 @@ public class AlphabeticSequenceBench {
     }
 
     private static List<String> cartesianPower(int n) {
-        return Stream.from(1)
+        return Stream
+                .from(1)
                 .flatMap(ALPHABET::crossProduct)
                 .map(IndexedSeq::mkString)
                 .takeWhile(s -> s.length() <= n)
@@ -38,7 +39,9 @@ public class AlphabeticSequenceBench {
     }
 
     private static List<String> appendSelf(int n) {
-        return ALPHABET.sliding(1).toStream()
+        return ALPHABET
+                .sliding(1)
+                .toStream()
                 .appendSelf(stream -> stream.flatMap(product -> ALPHABET.map(product::append)))
                 .map(IndexedSeq::mkString)
                 .takeWhile(s -> s.length() <= n)

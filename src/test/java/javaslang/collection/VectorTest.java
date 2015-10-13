@@ -28,7 +28,7 @@ public class VectorTest extends AbstractSeqTest {
         return Vector.of(element);
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
     protected final <T> Vector<T> of(T... elements) {
@@ -183,9 +183,9 @@ public class VectorTest extends AbstractSeqTest {
     public void shouldNotDeserializeListWithSizeLessThanOne() throws Throwable {
         try {
             /*
-             * This implementation is stable regarding jvm impl changes of object serialization. The index of the
-             * number of List elements is gathered dynamically.
-             */
+			 * This implementation is stable regarding jvm impl changes of object serialization. The index of the number
+			 * of List elements is gathered dynamically.
+			 */
             final byte[] listWithOneElement = Serializables.serialize(List.of(0));
             final byte[] listWithTwoElements = Serializables.serialize(List.of(0, 0));
             int index = -1;
@@ -203,9 +203,9 @@ public class VectorTest extends AbstractSeqTest {
             if (index == -1) {
                 throw new IllegalStateException("Hack incomplete - index not found");
             }
-            /*
-             * Hack the serialized data and fake zero elements.
-             */
+			/*
+			 * Hack the serialized data and fake zero elements.
+			 */
             listWithOneElement[index] = 0;
             Serializables.deserialize(listWithOneElement);
         } catch (IllegalStateException x) {

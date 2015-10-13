@@ -16,7 +16,10 @@ import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * An interface for data structures that are traversable once.
@@ -145,11 +148,23 @@ public interface TraversableOnce<T> extends Value<T> {
             final Object head = objects.head();
             final double d;
             if (head instanceof Integer || head instanceof Short || head instanceof Byte) {
-                d = ((TraversableOnce<Number>) objects).toJavaStream().mapToInt(Number::intValue).average().getAsDouble();
+                d = ((TraversableOnce<Number>) objects)
+                        .toJavaStream()
+                        .mapToInt(Number::intValue)
+                        .average()
+                        .getAsDouble();
             } else if (head instanceof Double || head instanceof Float || head instanceof BigDecimal) {
-                d = ((TraversableOnce<Number>) objects).toJavaStream().mapToDouble(Number::doubleValue).average().getAsDouble();
+                d = ((TraversableOnce<Number>) objects)
+                        .toJavaStream()
+                        .mapToDouble(Number::doubleValue)
+                        .average()
+                        .getAsDouble();
             } else if (head instanceof Long || head instanceof BigInteger) {
-                d = ((TraversableOnce<Number>) objects).toJavaStream().mapToLong(Number::longValue).average().getAsDouble();
+                d = ((TraversableOnce<Number>) objects)
+                        .toJavaStream()
+                        .mapToLong(Number::longValue)
+                        .average()
+                        .getAsDouble();
             } else {
                 throw new UnsupportedOperationException("not numeric");
             }
@@ -187,10 +202,7 @@ public interface TraversableOnce<T> extends Value<T> {
      */
     default boolean containsAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return List.ofAll(elements)
-                .distinct()
-                .findFirst(e -> !this.contains(e))
-                .isEmpty();
+        return List.ofAll(elements).distinct().findFirst(e -> !this.contains(e)).isEmpty();
     }
 
     /**
@@ -522,6 +534,7 @@ public interface TraversableOnce<T> extends Value<T> {
      * @return a mapped TraversableOnce
      * @throws NullPointerException if {@code mapper} is null
      */
+    @Override
     <U> TraversableOnce<U> map(Function<? super T, ? extends U> mapper);
 
     /**
@@ -531,7 +544,7 @@ public interface TraversableOnce<T> extends Value<T> {
      */
     @SuppressWarnings("unchecked")
     default Option<T> max() {
-        final Stream<T> stream = Stream.ofAll((javaslang.Iterable) iterator());
+        final Stream<T> stream = Stream.ofAll(iterator());
         if (isEmpty() || !(stream.head() instanceof Comparable)) {
             return None.instance();
         } else {
@@ -579,7 +592,7 @@ public interface TraversableOnce<T> extends Value<T> {
      */
     @SuppressWarnings("unchecked")
     default Option<T> min() {
-        final Stream<T> stream = Stream.ofAll((javaslang.Iterable) iterator());
+        final Stream<T> stream = Stream.ofAll(iterator());
         if (isEmpty() || !(stream.head() instanceof Comparable)) {
             return None.instance();
         } else {
@@ -653,9 +666,7 @@ public interface TraversableOnce<T> extends Value<T> {
      * @param suffix    suffix of the resulting string
      * @return a new String
      */
-    default String mkString(CharSequence delimiter,
-                            CharSequence prefix,
-                            CharSequence suffix) {
+    default String mkString(CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
         final StringBuilder builder = new StringBuilder(prefix);
         iterator().map(String::valueOf).intersperse(String.valueOf(delimiter)).forEach(builder::append);
         return builder.append(suffix).toString();
@@ -699,11 +710,14 @@ public interface TraversableOnce<T> extends Value<T> {
             final TraversableOnce<?> objects = isTraversableAgain() ? this : toStream();
             final Object head = objects.head();
             if (head instanceof Integer || head instanceof Short || head instanceof Byte) {
-                return ((TraversableOnce<Number>) objects).toJavaStream().mapToInt(Number::intValue).reduce(1, (i1, i2) -> i1 * i2);
+                return ((TraversableOnce<Number>) objects).toJavaStream().mapToInt(Number::intValue).reduce(1,
+                        (i1, i2) -> i1 * i2);
             } else if (head instanceof Double || head instanceof Float || head instanceof BigDecimal) {
-                return ((TraversableOnce<Number>) objects).toJavaStream().mapToDouble(Number::doubleValue).reduce(1.0, (d1, d2) -> d1 * d2);
+                return ((TraversableOnce<Number>) objects).toJavaStream().mapToDouble(Number::doubleValue).reduce(1.0,
+                        (d1, d2) -> d1 * d2);
             } else if (head instanceof Long || head instanceof BigInteger) {
-                return ((TraversableOnce<Number>) objects).toJavaStream().mapToLong(Number::longValue).reduce(1L, (l1, l2) -> l1 * l2);
+                return ((TraversableOnce<Number>) objects).toJavaStream().mapToLong(Number::longValue).reduce(1L,
+                        (l1, l2) -> l1 * l2);
             } else {
                 throw new UnsupportedOperationException("not numeric");
             }
@@ -895,7 +909,8 @@ public interface TraversableOnce<T> extends Value<T> {
      * @return A pair of set containing elements split by unzipper
      * @throws NullPointerException if {@code unzipper} is null
      */
-    <T1, T2> Tuple2<? extends TraversableOnce<T1>, ? extends TraversableOnce<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+    <T1, T2> Tuple2<? extends TraversableOnce<T1>, ? extends TraversableOnce<T2>> unzip(
+            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     /**
      * Returns a traversable formed from this traversable and another java.lang.Iterable collection by combining

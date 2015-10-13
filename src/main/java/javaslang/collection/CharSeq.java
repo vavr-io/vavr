@@ -706,14 +706,14 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public CharSeq retainAll(java.lang.Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final java.util.Set<Character> keeped = new HashSet<>();
+        final java.util.Set<Character> kept = new HashSet<>();
         for (Character element : elements) {
-            keeped.add(element);
+            kept.add(element);
         }
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length(); i++) {
             final char c = back.charAt(i);
-            if (keeped.contains(c)) {
+            if (kept.contains(c)) {
                 sb.append(c);
             }
         }
@@ -867,7 +867,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <T1, T2> Tuple2<Vector<T1>, Vector<T2>> unzip(Function<? super Character, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    public <T1, T2> Tuple2<Vector<T1>, Vector<T2>> unzip(
+            Function<? super Character, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         Vector<T1> xs = Vector.empty();
         Vector<T2> ys = Vector.empty();

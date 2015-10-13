@@ -87,7 +87,7 @@ public interface Stack<T> extends LinearSeq<T> {
      * @return A stack containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     static <T> Stack<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -662,7 +662,8 @@ public interface Stack<T> extends LinearSeq<T> {
     <U> Stack<U> unit(java.lang.Iterable<? extends U> iterable);
 
     @Override
-    <T1, T2> Tuple2<? extends Stack<T1>, ? extends Stack<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+    <T1, T2> Tuple2<? extends Stack<T1>, ? extends Stack<T2>> unzip(
+            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     @Override
     Stack<T> update(int index, T element);

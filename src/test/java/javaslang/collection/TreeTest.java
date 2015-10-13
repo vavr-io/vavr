@@ -60,7 +60,8 @@ public class TreeTest extends AbstractTraversableTest {
         return Stream.empty();
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @Override
+    @SuppressWarnings("unchecked")
     protected <T> Seq<T> result(T... elements) {
         return Stream.of(elements);
     }
@@ -70,7 +71,7 @@ public class TreeTest extends AbstractTraversableTest {
         return Tree.of(element);
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
     protected final <T> Tree<T> of(T... elements) {
@@ -132,7 +133,7 @@ public class TreeTest extends AbstractTraversableTest {
         return 1;
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     protected final <T> Node<T> $(T value, Node<T>... children) {
         return Tree.of(value, children);
@@ -322,7 +323,6 @@ public class TreeTest extends AbstractTraversableTest {
         assertThat(Tree.empty().flatMap(t -> Tree.of(1))).isEqualTo(Tree.empty());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldFlatMapNonEmptyTree() {
         final Node<Integer> testee = $(1, $(2), $(3));
@@ -349,7 +349,8 @@ public class TreeTest extends AbstractTraversableTest {
     @Override
     public void shouldFlatMapElementsToSequentialValuesInTheRightOrder() {
         final AtomicInteger seq = new AtomicInteger(0);
-        final Value<Integer> actualInts = $(0, $(1), $(2)).flatMap(ignored -> of(seq.getAndIncrement(), seq.getAndIncrement()));
+        final Value<Integer> actualInts = $(0, $(1), $(2))
+                .flatMap(ignored -> of(seq.getAndIncrement(), seq.getAndIncrement()));
         final Value<Integer> expectedInts = $(0, $(1), $(2, $(3)), $(4, $(5)));
         assertThat(actualInts).isEqualTo(expectedInts);
     }
@@ -366,11 +367,13 @@ public class TreeTest extends AbstractTraversableTest {
     public void shouldFlattenTraversableOfTraversables() {
 
         // (((1 1 1) 2 3) ((4 4 4) 5 6) ((7 7 7) 8 9))
-        final Tree<?> testee = $($($(1, $(1), $(1)), $(2), $(3)), $($(4, $(4), $(4)), $(5), $(6)), $($(7, $(7), $(7)), $(8), $(9)));
+        final Tree<?> testee = $($($(1, $(1), $(1)), $(2), $(3)), $($(4, $(4), $(4)), $(5), $(6)),
+                $($(7, $(7), $(7)), $(8), $(9)));
         final Tree<?> actual = testee.flatten();
 
         // (1 1 1 2 3 (4 4 4 5 6) (7 7 7 8 9))
-        final Tree<?> expected = $(1, $(1), $(1), $(2), $(3), $(4, $(4), $(4), $(5), $(6)), $(7, $(7), $(7), $(8), $(9)));
+        final Tree<?> expected = $(1, $(1), $(1), $(2), $(3), $(4, $(4), $(4), $(5), $(6)),
+                $(7, $(7), $(7), $(8), $(9)));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -391,24 +394,32 @@ public class TreeTest extends AbstractTraversableTest {
 
     // -- iterator
 
+    @Override
     @Test
     public void shouldNotHasNextWhenNilIterator() {
         assertThat(Tree.empty().iterator().hasNext()).isFalse();
     }
 
+    @Override
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowOnNextWhenNilIterator() {
         Tree.empty().iterator().next();
     }
 
+    @Override
     @Test
     public void shouldIterateFirstElementOfNonNil() {
         assertThat(tree.iterator().next()).isEqualTo(1);
     }
 
+    @Override
     @Test
     public void shouldFullyIterateNonNil() {
-        final int length = List.of(1, 2, 4, 7, 5, 3, 6, 8, 9).zip(tree::iterator).filter(t -> Objects.equals(t._1, t._2)).length();
+        final int length = List
+                .of(1, 2, 4, 7, 5, 3, 6, 8, 9)
+                .zip(tree::iterator)
+                .filter(t -> Objects.equals(t._1, t._2))
+                .length();
         assertThat(length).isEqualTo(9);
     }
 
@@ -556,6 +567,7 @@ public class TreeTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Override
     @Test
     public void shouldPreserveSingletonInstanceOnDeserialization() {
         final boolean actual = deserialize(serialize(Tree.empty())) == Tree.empty();

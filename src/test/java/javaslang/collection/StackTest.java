@@ -27,7 +27,7 @@ public class StackTest extends AbstractSeqTest {
         return Stack.of(element);
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
     protected final <T> Stack<T> of(T... elements) {

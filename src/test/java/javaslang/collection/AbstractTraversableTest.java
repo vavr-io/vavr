@@ -20,7 +20,7 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
     @Override
     abstract protected <T> Traversable<T> of(T element);
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("unchecked")
     @Override
     abstract protected <T> Traversable<T> of(T... elements);
 

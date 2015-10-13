@@ -35,9 +35,8 @@ public class IteratorTest extends AbstractTraversableOnceTest {
                 }
             }
 
-            @SuppressWarnings("unchecked")
             private Option<?> wrapIterator(Option<?> option) {
-                return option.map(o -> (o instanceof Iterator) ? List.ofAll((Iterator) o) : o);
+                return option.map(o -> (o instanceof Iterator) ? List.ofAll((Iterator<?>) o) : o);
             }
         };
     }
@@ -67,7 +66,6 @@ public class IteratorTest extends AbstractTraversableOnceTest {
         };
     }
 
-
     @Override
     protected <T> Iterator<T> empty() {
         return Iterator.empty();
@@ -78,7 +76,7 @@ public class IteratorTest extends AbstractTraversableOnceTest {
         return Iterator.of(element);
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
     protected final <T> Iterator<T> of(T... elements) {
@@ -150,7 +148,8 @@ public class IteratorTest extends AbstractTraversableOnceTest {
     @Test
     public void shouldGenerateTerminatingIntStream() {
         //noinspection NumericOverflow
-        assertThat(Iterator.from(Integer.MAX_VALUE).take(2)).isEqualTo(Iterator.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
+        assertThat(Iterator.from(Integer.MAX_VALUE).take(2))
+                .isEqualTo(Iterator.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
     }
 
     // -- static from(long)
@@ -212,10 +211,11 @@ public class IteratorTest extends AbstractTraversableOnceTest {
     @SuppressWarnings("unchecked")
     public void shouldNonNilGroupByIdentity() {
         // we can't compare iterators, should map it to sequences
-        Seq<?> actual = of('a', 'b', 'c').groupBy(Function.identity())
+        Seq<?> actual = of('a', 'b', 'c')
+                .groupBy(Function.identity())
                 .map(e -> Map.Entry.of(e.key, List.ofAll(e.value)));
-        Seq<?> expected = HashMap.empty().put('a', of('a')).put('b', of('b')).put('c', of('c'))
-                .map(e -> Map.Entry.of(e.key, List.ofAll((java.lang.Iterable<Character>) e.value)));
+        Seq<?> expected = HashMap.empty().put('a', of('a')).put('b', of('b')).put('c', of('c')).map(
+                e -> Map.Entry.of(e.key, List.ofAll((java.lang.Iterable<Character>) e.value)));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -223,10 +223,9 @@ public class IteratorTest extends AbstractTraversableOnceTest {
     @SuppressWarnings("unchecked")
     public void shouldNonNilGroupByEqual() {
         // we can't compare iterators, should map it to sequences
-        Seq<?> actual = of('a', 'b', 'c').groupBy(c -> 1)
-                .map(e -> Map.Entry.of(e.key, List.ofAll(e.value)));
-        Seq<?> expected = HashMap.empty().put(1, of('a', 'b', 'c'))
-                .map(e -> Map.Entry.of(e.key, List.ofAll((java.lang.Iterable<Character>) e.value)));
+        Seq<?> actual = of('a', 'b', 'c').groupBy(c -> 1).map(e -> Map.Entry.of(e.key, List.ofAll(e.value)));
+        Seq<?> expected = HashMap.empty().put(1, of('a', 'b', 'c')).map(
+                e -> Map.Entry.of(e.key, List.ofAll((java.lang.Iterable<Character>) e.value)));
         assertThat(actual).isEqualTo(expected);
     }
 

@@ -206,7 +206,7 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return (o == this) || (o instanceof Lazy && Objects.equals(((Lazy) o).get(), get()));
+        return (o == this) || (o instanceof Lazy && Objects.equals(((Lazy<?>) o).get(), get()));
     }
 
     @Override

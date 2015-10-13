@@ -79,7 +79,7 @@ public interface Tree<T> extends Traversable<T> {
      * @param <T>      Value type
      * @return A new Node instance.
      */
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     static <T> Node<T> of(T value, Node<T>... children) {
         Objects.requireNonNull(children, "children is null");
@@ -321,7 +321,6 @@ public interface Tree<T> extends Traversable<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     default <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
@@ -526,7 +525,8 @@ public interface Tree<T> extends Traversable<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <T1, T2> Tuple2<Tree<T1>, Tree<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    default <T1, T2> Tuple2<Tree<T1>, Tree<T2>> unzip(
+            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         if (isEmpty()) {
             return Tuple.of(Empty.instance(), Empty.instance());
@@ -554,7 +554,9 @@ public interface Tree<T> extends Traversable<T> {
             final java.util.Iterator<U> thatIter = that.iterator();
             final Tree<Tuple2<T, U>> tree = ZipAll.apply((Node<T>) this, thatIter, thatElem);
             if (thatIter.hasNext()) {
-                final Iterable<Node<Tuple2<T, U>>> remainder = Iterator.ofAll(thatIter).map(elem -> Tree.of(Tuple.of(thisElem, elem)));
+                final Iterable<Node<Tuple2<T, U>>> remainder = Iterator
+                        .ofAll(thatIter)
+                        .map(elem -> Tree.of(Tuple.of(thisElem, elem)));
                 return new Node<>(tree.getValue(), tree.getChildren().appendAll(remainder));
             } else {
                 return tree;
@@ -599,7 +601,6 @@ public interface Tree<T> extends Traversable<T> {
          * @throws NullPointerException     if children is null
          * @throws IllegalArgumentException if children is empty
          */
-        @SuppressWarnings("RedundantCast")
         public Node(T value, List<Node<T>> children) {
             Objects.requireNonNull(children, "children is null");
             this.value = value;
@@ -893,7 +894,10 @@ interface TreeModule {
         @SuppressWarnings("unchecked")
         static <T, U> Tree<U> apply(Node<T> node, Function<? super T, ? extends Iterable<? extends U>> mapper) {
             final Tree<U> mapped = Tree.ofAll(mapper.apply(node.getValue()));
-            final List<Node<U>> children = (List<Node<U>>) (Object) node.getChildren().map(child -> FlatMap.apply(child, mapper)).filter(Tree::isDefined);
+            final List<Node<U>> children = (List<Node<U>>) (Object) node
+                    .getChildren()
+                    .map(child -> FlatMap.apply(child, mapper))
+                    .filter(Tree::isDefined);
             return Tree.of(mapped.getValue(), children.prependAll(mapped.getChildren()));
         }
     }
@@ -932,8 +936,8 @@ interface TreeModule {
     final class Traversal {
 
         static <T> Stream<T> preOrder(Tree<T> tree) {
-            return tree.getChildren()
-                    .foldLeft(Stream.of(tree.getValue()), (acc, child) -> acc.appendAll(preOrder(child)));
+            return tree.getChildren().foldLeft(Stream.of(tree.getValue()),
+                    (acc, child) -> acc.appendAll(preOrder(child)));
         }
 
         static <T> Stream<T> inOrder(Tree<T> tree) {
@@ -941,14 +945,17 @@ interface TreeModule {
                 return Stream.of(tree.getValue());
             } else {
                 final List<Node<T>> children = tree.getChildren();
-                return children.tail().foldLeft(Stream.<T> empty(), (acc, child) -> acc.appendAll(inOrder(child)))
+                return children
+                        .tail()
+                        .foldLeft(Stream.<T> empty(), (acc, child) -> acc.appendAll(inOrder(child)))
                         .prepend(tree.getValue())
                         .prependAll(inOrder(children.head()));
             }
         }
 
         static <T> Stream<T> postOrder(Tree<T> tree) {
-            return tree.getChildren()
+            return tree
+                    .getChildren()
                     .foldLeft(Stream.<T> empty(), (acc, child) -> acc.appendAll(postOrder(child)))
                     .append(tree.getValue());
         }
@@ -968,9 +975,12 @@ interface TreeModule {
 
     final class Unzip {
 
-        static <T, T1, T2> Tuple2<Node<T1>, Node<T2>> apply(Node<T> node, Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+        static <T, T1, T2> Tuple2<Node<T1>, Node<T2>> apply(Node<T> node,
+                                                            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
             final Tuple2<? extends T1, ? extends T2> value = unzipper.apply(node.getValue());
-            final List<Tuple2<Node<T1>, Node<T2>>> children = node.getChildren().map(child -> Unzip.apply(child, unzipper));
+            final List<Tuple2<Node<T1>, Node<T2>>> children = node
+                    .getChildren()
+                    .map(child -> Unzip.apply(child, unzipper));
             final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
             final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
             return Tuple.of(node1, node2);
@@ -985,7 +995,10 @@ interface TreeModule {
                 return Empty.instance();
             } else {
                 final Tuple2<T, U> value = Tuple.of(node.getValue(), that.next());
-                final List<Node<Tuple2<T, U>>> children = (List<Node<Tuple2<T, U>>>) (Object) node.getChildren().map(child -> Zip.apply(child, that)).filter(Tree::isDefined);
+                final List<Node<Tuple2<T, U>>> children = (List<Node<Tuple2<T, U>>>) (Object) node
+                        .getChildren()
+                        .map(child -> Zip.apply(child, that))
+                        .filter(Tree::isDefined);
                 return new Node<>(value, children);
             }
         }
@@ -999,7 +1012,10 @@ interface TreeModule {
                 return node.map(value -> Tuple.of(value, thatElem));
             } else {
                 final Tuple2<T, U> value = Tuple.of(node.getValue(), that.next());
-                final List<Node<Tuple2<T, U>>> children = (List<Node<Tuple2<T, U>>>) (Object) node.getChildren().map(child -> Zip.apply(child, that)).filter(Tree::isDefined);
+                final List<Node<Tuple2<T, U>>> children = (List<Node<Tuple2<T, U>>>) (Object) node
+                        .getChildren()
+                        .map(child -> Zip.apply(child, that))
+                        .filter(Tree::isDefined);
                 return new Node<>(value, children);
             }
         }

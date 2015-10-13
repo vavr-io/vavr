@@ -7,7 +7,7 @@ package javaslang;
 
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.StrictAssertions.assertThat;
 
 public abstract class AbstractIterableTest {
 
@@ -15,7 +15,7 @@ public abstract class AbstractIterableTest {
 
     abstract protected <T> Iterable<T> of(T element);
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("unchecked")
     abstract protected <T> Iterable<T> of(T... elements);
 
     // -- corresponds

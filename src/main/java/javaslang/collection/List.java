@@ -144,7 +144,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @return A list containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     static <T> List<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -738,7 +737,9 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> intersperse(T element) {
-        return isEmpty() ? Nil.instance() : foldRight(empty(), (x, xs) -> xs.isEmpty() ? xs.prepend(x) : xs.prepend(element).prepend(x));
+        return isEmpty()
+                ? Nil.instance()
+                : foldRight(empty(), (x, xs) -> xs.isEmpty() ? xs.prepend(x) : xs.prepend(element).prepend(x));
     }
 
     @Override
@@ -831,7 +832,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
                 return List.of(this);
             } else {
                 final List<List<T>> zero = Nil.instance();
-                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map(l -> l.prepend(x))));
+                return distinct().foldLeft(zero,
+                        (xs, x) -> xs.appendAll(remove(x).permutations().map(l -> l.prepend(x))));
             }
         }
     }
@@ -975,10 +977,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return found ? result.reverse() : this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     default List<T> removeAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        List<T> removed = List.ofAll(elements).distinct();
+        List<T> removed = (List<T>) (Object) List.ofAll(elements).distinct();
         List<T> result = Nil.instance();
         boolean found = false;
         for (T element : this) {
@@ -1021,13 +1024,14 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return result.reverse();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     default List<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final List<T> keeped = List.ofAll(elements).distinct();
+        final List<T> kept = (List<T>) (Object) List.ofAll(elements).distinct();
         List<T> result = Nil.instance();
         for (T element : this) {
-            if (keeped.contains(element)) {
+            if (kept.contains(element)) {
                 result = result.prepend(element);
             }
         }
@@ -1230,7 +1234,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(
+            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         List<T1> xs = Nil.instance();
         List<T2> ys = Nil.instance();
@@ -1365,7 +1370,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @param <T> Component type of the List.
      * @since 1.1.0
      */
-// DEV NOTE: class declared final because of serialization proxy pattern (see Effective Java, 2nd ed., p. 315)
+    // DEV NOTE: class declared final because of serialization proxy pattern (see Effective Java, 2nd ed., p. 315)
     final class Cons<T> implements List<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
@@ -1550,8 +1555,8 @@ interface ListModule {
         static <T> List<List<T>> apply(List<T> elements, int k) {
             return (k == 0)
                     ? List.of(List.empty())
-                    : elements.zipWithIndex().flatMap(t -> apply(elements.drop(t._2 + 1), (k - 1))
-                    .map((List<T> c) -> c.prepend(t._1)));
+                    : elements.zipWithIndex().flatMap(
+                    t -> apply(elements.drop(t._2 + 1), (k - 1)).map((List<T> c) -> c.prepend(t._1)));
         }
     }
 

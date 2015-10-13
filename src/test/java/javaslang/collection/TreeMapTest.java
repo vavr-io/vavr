@@ -29,7 +29,7 @@ public class TreeMapTest extends AbstractMapTest {
         return TreeMap.<Integer, T> collector();
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
     protected final <K, V> Map<K, V> mapOf(Entry<? extends K, ? extends V>... entries) {

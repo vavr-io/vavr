@@ -122,7 +122,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
      * @param entries Map entries
      * @return A new TreeMap containing the given entries.
      */
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Entry<? extends K, ? extends V>... entries) {
         return of((Comparator<? super K> & Serializable) K::compareTo, entries);
@@ -138,7 +138,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
      * @return A new TreeMap containing the given entries.
      */
     @SafeVarargs
-    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, Entry<? extends K, ? extends V>... entries) {
+    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator,
+                                          Entry<? extends K, ? extends V>... entries) {
         Objects.requireNonNull(keyComparator, "keyComparator is null");
         Objects.requireNonNull(entries, "entries is null");
         TreeMap<K, V> map = TreeMap.empty(keyComparator);
@@ -156,8 +157,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
      * @param entries Map entries
      * @return A new TreeMap containing the given entries.
      */
-    @SuppressWarnings("unchecked")
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(java.lang.Iterable<? extends Entry<? extends K, ? extends V>> entries) {
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(
+            java.lang.Iterable<? extends Entry<? extends K, ? extends V>> entries) {
         return ofAll((Comparator<? super K> & Serializable) K::compareTo, entries);
     }
 
@@ -171,7 +172,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
      * @return A new TreeMap containing the given entries.
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> TreeMap<K, V> ofAll(Comparator<? super K> keyComparator, java.lang.Iterable<? extends Entry<? extends K, ? extends V>> entries) {
+    public static <K, V> TreeMap<K, V> ofAll(Comparator<? super K> keyComparator,
+                                             java.lang.Iterable<? extends Entry<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(keyComparator, "keyComparator is null");
         Objects.requireNonNull(entries, "entries is null");
         if (entries instanceof TreeMap) {
@@ -265,20 +267,24 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     }
 
     @Override
-    public <U, W> TreeMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
+    public <U, W> TreeMap<U, W> flatMap(
+            BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
         return flatMap(naturalComparator(), mapper);
     }
 
     @Override
-    public <U, W> TreeMap<U, W> flatMap(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
+    public <U, W> TreeMap<U, W> flatMap(Comparator<? super U> keyComparator,
+                                        BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return createTreeMap(entryComparator(keyComparator), entries.iterator().flatMap(entry -> mapper.apply(entry.key, entry.value)));
+        return createTreeMap(entryComparator(keyComparator),
+                entries.iterator().flatMap(entry -> mapper.apply(entry.key, entry.value)));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <U> Seq<U> flatMap(Function<? super Entry<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return entries.iterator().flatMap(mapper).toStream();
+        return (Seq<U>) entries.iterator().flatMap(mapper).toStream();
     }
 
     // DEV-NOTE: It is sufficient here to let the mapper return any Iterable, flatMap will do the rest.
@@ -287,7 +293,10 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     public TreeMap<Object, Object> flatten() {
         return flatMap((key, value) -> {
             if (value instanceof java.lang.Iterable) {
-                final Iterator<?> entries = Iterator.ofAll((java.lang.Iterable<?>) value).flatten().filter(e -> e instanceof Entry);
+                final Iterator<?> entries = Iterator
+                        .ofAll((java.lang.Iterable<?>) value)
+                        .flatten()
+                        .filter(e -> e instanceof Entry);
                 if (entries.hasNext()) {
                     return (Iterator<? extends Entry<?, ?>>) entries;
                 } else {
@@ -318,10 +327,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
         Objects.requireNonNull(classifier, "classifier is null");
         return foldLeft(HashMap.empty(), (map, entry) -> {
             final C key = classifier.apply(entry);
-            final TreeMap<K, V> values = map
-                    .get(key)
-                    .map(entries -> entries.put(entry.key, entry.value))
-                    .orElse(createTreeMap(entries.comparator(), Iterator.of(entry)));
+            final TreeMap<K, V> values = map.get(key).map(entries -> entries.put(entry.key, entry.value)).orElse(
+                    createTreeMap(entries.comparator(), Iterator.of(entry)));
             return map.put(key, values);
         });
     }
@@ -384,7 +391,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     public Comparator<? super K> keyComparator() {
         final Comparator<? super Entry<K, V>> comparator = entries.comparator();
         final V ignored = null;
-        return (Comparator<? super K> & Serializable) (k1, k2) -> comparator.compare(Entry.of(k1, ignored), Entry.of(k2, ignored));
+        return (Comparator<? super K> & Serializable) (k1, k2) -> comparator.compare(Entry.of(k1, ignored),
+                Entry.of(k2, ignored));
     }
 
     @Override
@@ -393,20 +401,24 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     }
 
     @Override
-    public <U, W> TreeMap<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper) {
+    public <U, W> TreeMap<U, W> map(
+            BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper) {
         return map(naturalComparator(), mapper);
     }
 
     @Override
-    public <U, W> TreeMap<U, W> map(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper) {
+    public <U, W> TreeMap<U, W> map(Comparator<? super U> keyComparator,
+                                    BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return createTreeMap(entryComparator(keyComparator), entries.iterator().map(entry -> mapper.apply(entry.key, entry.value)));
+        return createTreeMap(entryComparator(keyComparator),
+                entries.iterator().map(entry -> mapper.apply(entry.key, entry.value)));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <U> Seq<U> map(Function<? super Entry<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return entries.iterator().map(mapper).toStream();
+        return (Seq<U>) entries.iterator().map(mapper).toStream();
     }
 
     @Override
@@ -427,7 +439,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     }
 
     @Override
-    public <U extends V> TreeMap<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
+    public <U extends V> TreeMap<K, V> merge(Map<? extends K, U> that,
+                                             BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         if (isEmpty()) {
@@ -438,7 +451,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
             return that.foldLeft(this, (map, entry) -> {
                 final K key = entry.key;
                 final U value = entry.value;
-                final V newValue = map.get(key).map(v -> (V) collisionResolution.apply(v, value)).orElse((V) value);
+                final V newValue = map.get(key).map(v -> (V) collisionResolution.apply(v, value)).orElse(value);
                 return map.put(key, newValue);
             });
         }
@@ -618,7 +631,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
      * @return A new TreeMap.
      */
     @SuppressWarnings("unchecked")
-    private static <K, V> TreeMap<K, V> createTreeMap(Comparator<? super Entry<K, V>> comparator, java.lang.Iterable<? extends Entry<? extends K, ? extends V>> entries) {
+    private static <K, V> TreeMap<K, V> createTreeMap(Comparator<? super Entry<K, V>> comparator,
+                                                      java.lang.Iterable<? extends Entry<? extends K, ? extends V>> entries) {
         RedBlackTree<Entry<K, V>> tree = RedBlackTree.empty(comparator);
         for (Entry<? extends K, ? extends V> entry : entries) {
             tree = tree.insert((Entry<K, V>) entry);

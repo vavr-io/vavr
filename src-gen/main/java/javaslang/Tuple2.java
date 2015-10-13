@@ -108,7 +108,6 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
      * @param <U> New type
      * @return An object of type U
      */
-    @SuppressWarnings("unchecked")
     public <U> U transform(Function<? super Tuple2<T1, T2>, U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);

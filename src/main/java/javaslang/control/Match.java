@@ -108,7 +108,7 @@ public interface Match<R> extends Function<Object, R> {
         return new MatchFunction.WhenUntyped<>(MatchFunction.When.is(prototype));
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     static <T> MatchFunction.WhenUntyped<T> whenIsIn(T... prototypes) {
         Objects.requireNonNull(prototypes, "prototypes is null");
@@ -237,7 +237,7 @@ public interface Match<R> extends Function<Object, R> {
                 return value -> value == prototype || (value != null && value.equals(prototype));
             }
 
-            @SuppressWarnings({ "unchecked", "varargs" })
+            @SuppressWarnings("varargs")
             @SafeVarargs
             private static <T> Predicate<? super Object> isIn(T... prototypes) {
                 return value -> Iterator.of(prototypes).findFirst(prototype -> is(prototype).test(value)).isDefined();
@@ -277,7 +277,7 @@ public interface Match<R> extends Function<Object, R> {
                     return new When<>(When.is(prototype), cases);
                 }
 
-                @SuppressWarnings({ "unchecked", "varargs" })
+                @SuppressWarnings("unchecked")
                 public <T> When<T, R> whenIsIn(T... prototypes) {
                     Objects.requireNonNull(prototypes, "prototypes is null");
                     return new When<>(When.isIn(prototypes), cases);
@@ -357,11 +357,8 @@ public interface Match<R> extends Function<Object, R> {
 
             @Override
             public R apply(Object o) {
-                return cases
-                        .reverse()
-                        .findFirst(caze -> caze.isApplicable(o))
-                        .map(caze -> caze.apply(o))
-                        .orElseGet(() -> function.apply(o));
+                return cases.reverse().findFirst(caze -> caze.isApplicable(o)).map(caze -> caze.apply(o)).orElseGet(
+                        () -> function.apply(o));
             }
         }
 
@@ -402,6 +399,7 @@ public interface Match<R> extends Function<Object, R> {
             return flatMap(result -> (result instanceof MatchMonad) ? ((MatchMonad<?>) result).flatten() : this);
         }
 
+        @Override
         <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper);
 
         @Override
@@ -431,7 +429,7 @@ public interface Match<R> extends Function<Object, R> {
                 return new WhenUntyped<>(value, isMatching);
             }
 
-            @SuppressWarnings({ "unchecked", "varargs" })
+            @SuppressWarnings("unchecked")
             public <U> WhenUntyped<T, U> whenIsIn(U... prototypes) {
                 Objects.requireNonNull(prototypes, "prototypes is null");
                 final boolean isMatching = MatchFunction.When.isIn(prototypes).test(value);
@@ -490,7 +488,8 @@ public interface Match<R> extends Function<Object, R> {
 
             public <R> When.Then<T, R> then(Function<? super U, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                final Option<Supplier<? extends R>> result = When.computeResult(value, None.instance(), isMatching, function);
+                final Option<Supplier<? extends R>> result = When.computeResult(value, None.instance(), isMatching,
+                        function);
                 return new When.Then<>(value, result);
             }
 
@@ -525,7 +524,8 @@ public interface Match<R> extends Function<Object, R> {
 
             public Then<T, R> then(Function<? super U, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                final Option<Supplier<? extends R>> updatedResult = When.computeResult(value, result, isMatching, function);
+                final Option<Supplier<? extends R>> updatedResult = When.computeResult(value, result, isMatching,
+                        function);
                 return new Then<>(value, updatedResult);
             }
 
@@ -545,11 +545,12 @@ public interface Match<R> extends Function<Object, R> {
                 });
             }
 
-
             // DEV-NOTE: should move to MatchMonad interface (staying private) with Java 9+
 
             @SuppressWarnings("unchecked")
-            private static <T, R> Option<Supplier<? extends R>> computeResult(Object value, Option<Supplier<? extends R>> result, boolean isMatching, Function<? super T, ? extends R> function) {
+            private static <T, R> Option<Supplier<? extends R>> computeResult(Object value,
+                                                                              Option<Supplier<? extends R>> result, boolean isMatching,
+                                                                              Function<? super T, ? extends R> function) {
                 if (result.isEmpty() && isMatching) {
                     final Function<? super Object, ? extends R> f = (Function<? super Object, ? extends R>) function;
                     return Option.of(() -> f.apply(value));
@@ -579,7 +580,7 @@ public interface Match<R> extends Function<Object, R> {
                     return new When<>(value, result, isMatching);
                 }
 
-                @SuppressWarnings({ "unchecked", "varargs" })
+                @SuppressWarnings("unchecked")
                 public <U> When<T, U, R> whenIsIn(U... prototypes) {
                     Objects.requireNonNull(prototypes, "prototypes is null");
                     final boolean isMatching = isMatching(() -> MatchFunction.When.isIn(prototypes));
@@ -623,7 +624,6 @@ public interface Match<R> extends Function<Object, R> {
                     return new Otherwise<>(() -> result.orElseThrow(supplier).get());
                 }
 
-                @SuppressWarnings("unchecked")
                 @Override
                 public MatchMonad<R> filter(Predicate<? super R> predicate) {
                     return result.map(supplier -> {
@@ -638,11 +638,14 @@ public interface Match<R> extends Function<Object, R> {
 
                 @SuppressWarnings("unchecked")
                 @Override
-                public <U> MatchMonad<U> flatMap(Function<? super R, ? extends java.lang.Iterable<? extends U>> mapper) {
+                public <U> MatchMonad<U> flatMap(
+                        Function<? super R, ? extends java.lang.Iterable<? extends U>> mapper) {
                     Objects.requireNonNull(mapper, "mapper is null");
-                    return result
-                            .map(supplier -> (MatchMonad<U>) new Then<>(value, new Some<>(() -> Value.get(mapper.apply(supplier.get())))))
-                            .orElse((MatchMonad<U>) this);
+                    return result.map(supplier -> {
+                        final Some<Supplier<? extends U>> some = new Some<>(
+                                () -> Value.get(mapper.apply(supplier.get())));
+                        return (MatchMonad<U>) new Then<>(value, some);
+                    }).orElse((MatchMonad<U>) this);
                 }
 
                 @SuppressWarnings("unchecked")
@@ -650,7 +653,7 @@ public interface Match<R> extends Function<Object, R> {
                 public <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper) {
                     Objects.requireNonNull(mapper, "mapper is null");
                     return result
-                            .map(supplier -> new Then<T, U>(value, new Some<>(() -> (U) mapper.apply(supplier.get()))))
+                            .map(supplier -> new Then<T, U>(value, new Some<>(() -> mapper.apply(supplier.get()))))
                             .orElseGet(() -> (Then<T, U>) this);
                 }
 
@@ -688,7 +691,8 @@ public interface Match<R> extends Function<Object, R> {
             private final boolean isMatching;
             private final Function1<? super U, ? extends R> function;
 
-            public WhenApplicable(T value, Option<Supplier<? extends R>> result, Function1<? super U, ? extends R> function) {
+            public WhenApplicable(T value, Option<Supplier<? extends R>> result,
+                                  Function1<? super U, ? extends R> function) {
                 this.value = value;
                 this.result = result;
                 this.isMatching = result.isEmpty() && function.isApplicableTo(value);
@@ -696,15 +700,17 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             public When.Then<T, R> thenApply() {
-                final Option<Supplier<? extends R>> updatedResult = MatchMonad.When.computeResult(value, result, isMatching, function);
+                final Option<Supplier<? extends R>> updatedResult = MatchMonad.When.computeResult(value, result,
+                        isMatching, function);
                 return new When.Then<>(value, updatedResult);
             }
 
             public When.Then<T, R> thenThrow(Supplier<? extends RuntimeException> supplier) {
                 Objects.requireNonNull(supplier, "supplier is null");
-                final Option<Supplier<? extends R>> updatedResult = MatchMonad.When.computeResult(value, result, isMatching, ignored -> {
-                    throw supplier.get();
-                });
+                final Option<Supplier<? extends R>> updatedResult = MatchMonad.When.computeResult(value, result,
+                        isMatching, ignored -> {
+                            throw supplier.get();
+                        });
                 return new When.Then<T, R>(value, updatedResult);
             }
         }

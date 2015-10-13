@@ -117,7 +117,6 @@ public interface Value<T> extends javaslang.Iterable<T> {
      * @return An object of type T
      * @throws java.util.NoSuchElementException if the given iterable is empty
      */
-    @SuppressWarnings("unchecked")
     static <T> T get(java.lang.Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         if (iterable instanceof Value) {
@@ -460,7 +459,6 @@ public interface Value<T> extends javaslang.Iterable<T> {
     default Vector<T> toVector() {
         return isEmpty() ? Vector.empty() : Vector.ofAll(this);
     }
-
 
     // -- Java types
 

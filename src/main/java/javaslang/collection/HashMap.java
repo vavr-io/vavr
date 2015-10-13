@@ -213,14 +213,16 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         return iterator().findLast(predicate);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <U> Seq<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return iterator().flatMap(mapper).toStream();
+        return (Seq<U>) iterator().flatMap(mapper).toStream();
     }
 
     @Override
-    public <U, W> HashMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
+    public <U, W> HashMap<U, W> flatMap(
+            BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(HashMap.<U, W> empty(), (acc, entry) -> {
             for (Entry<? extends U, ? extends W> mappedEntry : mapper.apply(entry.key, entry.value)) {
@@ -236,7 +238,10 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     public HashMap<Object, Object> flatten() {
         return flatMap((key, value) -> {
             if (value instanceof java.lang.Iterable) {
-                final Iterator<?> entries = Iterator.ofAll((java.lang.Iterable<?>) value).flatten().filter(e -> e instanceof Entry);
+                final Iterator<?> entries = Iterator
+                        .ofAll((java.lang.Iterable<?>) value)
+                        .flatten()
+                        .filter(e -> e instanceof Entry);
                 if (entries.hasNext()) {
                     return (Iterator<? extends Entry<?, ?>>) entries;
                 } else {
@@ -336,19 +341,20 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         return trie.size();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <U> Seq<U> map(Function<? super Entry<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return iterator().map(mapper).toStream();
+        return (Seq<U>) iterator().map(mapper).toStream();
     }
 
     @Override
-    public <U, W> HashMap<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper) {
+    public <U, W> HashMap<U, W> map(
+            BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(HashMap.empty(), (acc, entry) -> acc.put(entry.map(mapper)));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public HashMap<K, V> merge(Map<? extends K, ? extends V> that) {
         Objects.requireNonNull(that, "that is null");
@@ -361,9 +367,9 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <U extends V> HashMap<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
+    public <U extends V> HashMap<K, V> merge(Map<? extends K, U> that,
+                                             BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         if (isEmpty()) {
@@ -374,7 +380,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
             return that.foldLeft(this, (map, entry) -> {
                 final K key = entry.key;
                 final U value = entry.value;
-                final V newValue = map.get(key).map(v -> (V) collisionResolution.apply(v, value)).orElse((V) value);
+                final V newValue = map.get(key).map(v -> (V) collisionResolution.apply(v, value)).orElse(value);
                 return map.put(key, newValue);
             });
         }

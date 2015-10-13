@@ -7,6 +7,7 @@ package javaslang;
 
 import javaslang.collection.List;
 import javaslang.control.Try;
+import javaslang.λModule.ReflectionUtil;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodType;
@@ -98,46 +99,22 @@ public interface λ<R> extends Serializable {
         private final Class<R> returnType;
         private final Class<?>[] parameterTypes;
 
-        private transient final Lazy<Integer> hashCode = Lazy.of(() -> List.of(parameterTypes())
-                        .map(c -> c.getName().hashCode())
-                        .fold(1, (acc, i) -> acc * 31 + i)
-                        * 31 + returnType().getName().hashCode()
-        );
+        private transient final Lazy<Integer> hashCode = Lazy.of(
+                () -> List.of(parameterTypes()).map(c -> c.getName().hashCode()).fold(1, (acc, i) -> acc * 31 + i) * 31
+                        + returnType().getName().hashCode());
 
         /**
          * Internal constructor.
          *
          * @param λ the outer function instance of this type
-         * @deprecated There should be a constructor {@code AbstractType(Class<R> returnType, Class<?>[] parameterArray)} but because of implementation details this one is needed. It will disappear as soon as possible.
          */
         @SuppressWarnings("unchecked")
-        @Deprecated
         protected Type(λ<R> λ) {
-
-            // hiding this functionality
-            final class ReflectionUtil {
-
-                MethodType getLambdaSignature(Serializable lambda) {
-                    final String signature = getSerializedLambda(lambda).getInstantiatedMethodType();
-                    return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
-                }
-
-                private SerializedLambda getSerializedLambda(Serializable lambda) {
-                    return Try.of(() -> {
-                        final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
-                        method.setAccessible(true);
-                        return (SerializedLambda) method.invoke(lambda);
-                    }).get();
-                }
-            }
-
-            final MethodType methodType = new ReflectionUtil().getLambdaSignature(λ);
-
+            final MethodType methodType = ReflectionUtil.getLambdaSignature(λ);
             this.returnType = (Class<R>) methodType.returnType();
             this.parameterTypes = methodType.parameterArray();
         }
 
-        @SuppressWarnings("unchecked")
         public Class<R> returnType() {
             return returnType;
         }
@@ -167,9 +144,27 @@ public interface λ<R> extends Serializable {
 
         @Override
         public String toString() {
-            return List.of(parameterTypes).map(Class::getName).mkString(", ", "(", ")")
-                    + " -> "
-                    + returnType.getName();
+            return List.of(parameterTypes).map(Class::getName).mkString(", ", "(", ")") + " -> " + returnType.getName();
+        }
+    }
+}
+
+interface λModule {
+
+    // hiding this functionality
+    final class ReflectionUtil {
+
+        static MethodType getLambdaSignature(Serializable lambda) {
+            final String signature = getSerializedLambda(lambda).getInstantiatedMethodType();
+            return MethodType.fromMethodDescriptorString(signature, lambda.getClass().getClassLoader());
+        }
+
+        private static SerializedLambda getSerializedLambda(Serializable lambda) {
+            return Try.of(() -> {
+                final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
+                method.setAccessible(true);
+                return (SerializedLambda) method.invoke(lambda);
+            }).get();
         }
     }
 }

@@ -58,15 +58,18 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         };
     }
 
+    @Override
     abstract protected <T> Value<T> empty();
 
+    @Override
     abstract protected <T> Value<T> of(T element);
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @Override
+    @SuppressWarnings("unchecked")
     abstract protected <T> Value<T> of(T... elements);
 
     // DEV-NOTE: needed in addition to of(T...) because may Tree methods return Seq instead of Tree
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("unchecked")
     protected <T> Value<T> result(T... elements) {
         return of(elements);
     }
@@ -271,7 +274,8 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
     @Test
     public void shouldFlatMapElementsToSequentialValuesInTheRightOrder() {
         final AtomicInteger seq = new AtomicInteger(0);
-        final Value<Integer> actualInts = of(0, 1, 2).flatMap(ignored -> of(seq.getAndIncrement(), seq.getAndIncrement()));
+        final Value<Integer> actualInts = of(0, 1, 2)
+                .flatMap(ignored -> of(seq.getAndIncrement(), seq.getAndIncrement()));
         final Value<Integer> expectedInts = of(0, 1, 2, 3, 4, 5);
         assertThat(actualInts).isEqualTo(expectedInts);
     }
@@ -331,10 +335,8 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
     @Test
     public void shouldConvertToCharSeq() {
         Value<Character> v = of('a', 'b', 'c');
-        assertThat(Match.of(v)
-                        .whenTypeIn(Iterator.class).then(Iterator.of("ignore").toString())
-                        .orElse(v.toString())
-        ).isEqualTo(v.toCharSeq().toString());
+        assertThat(Match.of(v).whenTypeIn(Iterator.class).then(Iterator.of("ignore").toString()).orElse(v.toString()))
+                .isEqualTo(v.toCharSeq().toString());
     }
 
     @Test

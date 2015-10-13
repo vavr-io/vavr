@@ -68,7 +68,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     static <T> Iterator<T> concat(java.lang.Iterable<? extends T>... iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
@@ -141,7 +141,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @param <T>      Component type
      * @return A new Iterator
      */
-    @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     static <T> Iterator<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -473,15 +472,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         } else if (step * (from - toExclusive) >= 0) {
             return Iterator.empty();
         } else {
-            final double left = (from == Double.NEGATIVE_INFINITY) ? Double.MIN_VALUE :
-                    (from == Double.POSITIVE_INFINITY) ? Double.MAX_VALUE : from;
-            final double right = (toExclusive == Double.NEGATIVE_INFINITY) ? Double.MIN_VALUE :
-                    (toExclusive == Double.POSITIVE_INFINITY) ? Double.MAX_VALUE : toExclusive;
+            final double left = (from == Double.NEGATIVE_INFINITY)
+                    ? Double.MIN_VALUE
+                    : (from == Double.POSITIVE_INFINITY) ? Double.MAX_VALUE : from;
+            final double right = (toExclusive == Double.NEGATIVE_INFINITY)
+                    ? Double.MIN_VALUE
+                    : (toExclusive == Double.POSITIVE_INFINITY) ? Double.MAX_VALUE : toExclusive;
             return new AbstractIterator<Double>() {
 
                 double prev = Double.NaN;
                 double curr = left;
-                boolean hasNext = (step > 0) ? curr < toExclusive : curr > toExclusive;
+                boolean hasNext = (step > 0) ? curr < right : curr > right;
 
                 @Override
                 public boolean hasNext() {
@@ -494,7 +495,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                         EMPTY.next();
                     }
                     final double next = curr;
-                    if ((step > 0 && curr + step >= toExclusive) || (step < 0 && curr + step <= toExclusive)) {
+                    if ((step > 0 && curr + step >= right) || (step < 0 && curr + step <= right)) {
                         hasNext = false;
                     } else {
                         prev = curr;
@@ -903,7 +904,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @param <T>      value type
      * @return A new {@code Iterator}
      */
-    @SuppressWarnings("unchecked")
     static <T> Iterator<T> gen(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return new AbstractIterator<T>() {
@@ -998,6 +998,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
+    @Override
     default <U> Iterator<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
@@ -1022,6 +1023,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
+    @Override
     default <U> Iterator<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         final java.util.Iterator<U> thatIt = that.iterator();
@@ -1048,6 +1050,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
+    @Override
     default Iterator<Tuple2<T, Integer>> zipWithIndex() {
         if (isEmpty()) {
             return empty();
@@ -1072,7 +1075,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
-    default <T1, T2> Tuple2<Iterator<T1>, Iterator<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    @Override
+    default <T1, T2> Tuple2<Iterator<T1>, Iterator<T2>> unzip(
+            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
@@ -1326,7 +1331,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         if (!hasNext()) {
             return empty();
         } else {
-            return flatMap(t -> () -> (t instanceof java.lang.Iterable) ? ofAll((java.lang.Iterable<?>) t).flatten() : of(t));
+            return flatMap(
+                    t -> () -> (t instanceof java.lang.Iterable) ? ofAll((java.lang.Iterable<?>) t).flatten() : of(t));
         }
     }
 
@@ -1349,10 +1355,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         } else {
             Map<C, Stream<T>> streams = foldLeft(HashMap.empty(), (map, entry) -> {
                 final C key = classifier.apply(entry);
-                final Stream<T> values = map
-                        .get(key)
-                        .map(entries -> entries.append(entry))
-                        .orElse(Stream.of(entry));
+                final Stream<T> values = map.get(key).map(entries -> entries.append(entry)).orElse(Stream.of(entry));
                 return map.put(key, values);
             });
             return streams.map((c, ts) -> Map.Entry.of(c, ts.iterator()));
@@ -1565,10 +1568,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     default Iterator<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return hasNext() ? filter(HashSet.ofAll(elements)::contains) : empty();
+        // DEV-NOTE: Only Eclipse does need this unchecked cast, IntelliJ and javac are fine.
+        return hasNext() ? filter(HashSet.ofAll((java.lang.Iterable<T>) elements)::contains) : empty();
     }
 
     @Override
@@ -1622,7 +1627,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     default Spliterator<T> spliterator() {
         // the focus of the Stream API is on random-access collections of *known size*
         Stream<T> stream = Stream.ofAll(this);
-        return Spliterators.spliterator(stream.iterator(), stream.length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
+        return Spliterators.spliterator(stream.iterator(), stream.length(),
+                Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
     @Override

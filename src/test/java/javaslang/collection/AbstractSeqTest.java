@@ -29,7 +29,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Override
     abstract protected <T> Seq<T> of(T element);
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("unchecked")
     @Override
     abstract protected <T> Seq<T> of(T... elements);
 
@@ -170,7 +170,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldComputeCombinationsOfNonEmptyList() {
-        assertThat(of(1, 2, 3).combinations()).isEqualTo(of(empty(), of(1), of(2), of(3), of(1, 2), of(1, 3), of(2, 3), of(1, 2, 3)));
+        assertThat(of(1, 2, 3).combinations())
+                .isEqualTo(of(empty(), of(1), of(2), of(3), of(1, 2), of(1, 3), of(2, 3), of(1, 2, 3)));
     }
 
     // -- combinations(k)
@@ -223,10 +224,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldCalculateCrossProductOfNonNil() {
         final Traversable<Tuple2<Integer, Integer>> actual = of(1, 2, 3).crossProduct();
-        final Traversable<Tuple2<Integer, Integer>> expected = of(
-                Tuple.of(1, 1), Tuple.of(1, 2), Tuple.of(1, 3),
-                Tuple.of(2, 1), Tuple.of(2, 2), Tuple.of(2, 3),
-                Tuple.of(3, 1), Tuple.of(3, 2), Tuple.of(3, 3));
+        final Traversable<Tuple2<Integer, Integer>> expected = of(Tuple.of(1, 1), Tuple.of(1, 2), Tuple.of(1, 3),
+                Tuple.of(2, 1), Tuple.of(2, 2), Tuple.of(2, 3), Tuple.of(3, 1), Tuple.of(3, 2), Tuple.of(3, 3));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -263,10 +262,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldCalculateCrossProductOfNonNilAndNonNil() {
         final Traversable<Tuple2<Integer, Character>> actual = of(1, 2, 3).crossProduct(of('a', 'b'));
-        final Traversable<Tuple2<Integer, Character>> expected = of(
-                Tuple.of(1, 'a'), Tuple.of(1, 'b'),
-                Tuple.of(2, 'a'), Tuple.of(2, 'b'),
-                Tuple.of(3, 'a'), Tuple.of(3, 'b'));
+        final Traversable<Tuple2<Integer, Character>> expected = of(Tuple.of(1, 'a'), Tuple.of(1, 'b'),
+                Tuple.of(2, 'a'), Tuple.of(2, 'b'), Tuple.of(3, 'a'), Tuple.of(3, 'b'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -324,19 +321,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         empty().grouped(-1);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldGroupedTraversableWithEqualSizedBlocks() {
         assertThat(of(1, 2, 3, 4).grouped(2).toList()).isEqualTo(List.of(Vector.of(1, 2), Vector.of(3, 4)));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldGroupedTraversableWithRemainder() {
-        assertThat(of(1, 2, 3, 4, 5).grouped(2).toList()).isEqualTo(List.of(Vector.of(1, 2), Vector.of(3, 4), Vector.of(5)));
+        assertThat(of(1, 2, 3, 4, 5).grouped(2).toList())
+                .isEqualTo(List.of(Vector.of(1, 2), Vector.of(3, 4), Vector.of(5)));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldGroupedWhenTraversableLengthIsSmallerThanBlockSize() {
         assertThat(of(1, 2, 3, 4).grouped(5).toList()).isEqualTo(List.of(Vector.of(1, 2, 3, 4)));
@@ -540,7 +535,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         empty().insertAll(1, empty());
     }
 
-
     // -- intersperse
 
     @Test
@@ -678,7 +672,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldComputePermutationsOfNonEmptyList() {
-        assertThat(of(1, 2, 3).permutations()).isEqualTo(ofAll(of(of(1, 2, 3), of(1, 3, 2), of(2, 1, 3), of(2, 3, 1), of(3, 1, 2), of(3, 2, 1))));
+        assertThat(of(1, 2, 3).permutations())
+                .isEqualTo(ofAll(of(of(1, 2, 3), of(1, 3, 2), of(2, 1, 3), of(2, 3, 1), of(3, 1, 2), of(3, 2, 1))));
     }
 
     // -- prepend
@@ -1456,7 +1451,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldZipAllEmptyAndNonNil() {
         final Seq<?> actual = empty().zipAll(of(1), null, null);
-        @SuppressWarnings("unchecked")
         final Seq<Tuple2<Object, Integer>> expected = of(Tuple.of(null, 1));
         assertThat(actual).isEqualTo(expected);
     }
@@ -1464,7 +1458,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldZipAllNonEmptyAndNil() {
         final Seq<?> actual = of(1).zipAll(empty(), null, null);
-        @SuppressWarnings("unchecked")
         final Seq<Tuple2<Integer, Object>> expected = of(Tuple.of(1, null));
         assertThat(actual).isEqualTo(expected);
     }

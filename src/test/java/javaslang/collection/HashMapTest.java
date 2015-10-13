@@ -25,7 +25,7 @@ public class HashMapTest extends AbstractMapTest {
         return HashMap.<Integer, T> collector();
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
     protected final <K, V> Map<K, V> mapOf(Map.Entry<? extends K, ? extends V>... entries) {

@@ -57,7 +57,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
         return new Node<>(BLACK, 1, empty, value, empty, empty);
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     static <T extends Comparable<? super T>> RedBlackTree<T> of(T... values) {
         Objects.requireNonNull(values, "values is null");
@@ -513,7 +513,8 @@ interface RedBlackTreeModule {
             return tree.isEmpty() ? tree : ((Node<T>) tree).color(color);
         }
 
-        private static <T> Node<T> balanceLeft(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Empty<T> empty) {
+        private static <T> Node<T> balanceLeft(Color color, int blackHeight, RedBlackTree<T> left, T value,
+                                               RedBlackTree<T> right, Empty<T> empty) {
             if (color == BLACK) {
                 if (!left.isEmpty()) {
                     final Node<T> ln = (Node<T>) left;
@@ -521,7 +522,8 @@ interface RedBlackTreeModule {
                         if (!ln.left.isEmpty()) {
                             final Node<T> lln = (Node<T>) ln.left;
                             if (lln.color == RED) {
-                                final Node<T> newLeft = new Node<>(BLACK, blackHeight, lln.left, lln.value, lln.right, empty);
+                                final Node<T> newLeft = new Node<>(BLACK, blackHeight, lln.left, lln.value, lln.right,
+                                        empty);
                                 final Node<T> newRight = new Node<>(BLACK, blackHeight, ln.right, value, right, empty);
                                 return new Node<>(RED, blackHeight + 1, newLeft, ln.value, newRight, empty);
                             }
@@ -529,7 +531,8 @@ interface RedBlackTreeModule {
                         if (!ln.right.isEmpty()) {
                             final Node<T> lrn = (Node<T>) ln.right;
                             if (lrn.color == RED) {
-                                final Node<T> newLeft = new Node<>(BLACK, blackHeight, ln.left, ln.value, lrn.left, empty);
+                                final Node<T> newLeft = new Node<>(BLACK, blackHeight, ln.left, ln.value, lrn.left,
+                                        empty);
                                 final Node<T> newRight = new Node<>(BLACK, blackHeight, lrn.right, value, right, empty);
                                 return new Node<>(RED, blackHeight + 1, newLeft, lrn.value, newRight, empty);
                             }
@@ -540,7 +543,8 @@ interface RedBlackTreeModule {
             return new Node<>(color, blackHeight, left, value, right, empty);
         }
 
-        private static <T> Node<T> balanceRight(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Empty<T> empty) {
+        private static <T> Node<T> balanceRight(Color color, int blackHeight, RedBlackTree<T> left, T value,
+                                                RedBlackTree<T> right, Empty<T> empty) {
             if (color == BLACK) {
                 if (!right.isEmpty()) {
                     final Node<T> rn = (Node<T>) right;
@@ -549,7 +553,8 @@ interface RedBlackTreeModule {
                             final Node<T> rrn = (Node<T>) rn.right;
                             if (rrn.color == RED) {
                                 final Node<T> newLeft = new Node<>(BLACK, blackHeight, left, value, rn.left, empty);
-                                final Node<T> newRight = new Node<>(BLACK, blackHeight, rrn.left, rrn.value, rrn.right, empty);
+                                final Node<T> newRight = new Node<>(BLACK, blackHeight, rrn.left, rrn.value, rrn.right,
+                                        empty);
                                 return new Node<>(RED, blackHeight + 1, newLeft, rn.value, newRight, empty);
                             }
                         }
@@ -557,7 +562,8 @@ interface RedBlackTreeModule {
                             final Node<T> rln = (Node<T>) rn.left;
                             if (rln.color == RED) {
                                 final Node<T> newLeft = new Node<>(BLACK, blackHeight, left, value, rln.left, empty);
-                                final Node<T> newRight = new Node<>(BLACK, blackHeight, rln.right, rn.value, rn.right, empty);
+                                final Node<T> newRight = new Node<>(BLACK, blackHeight, rln.right, rn.value, rn.right,
+                                        empty);
                                 return new Node<>(RED, blackHeight + 1, newLeft, rln.value, newRight, empty);
                             }
                         }
@@ -588,9 +594,11 @@ interface RedBlackTreeModule {
                     final RedBlackTree<T> l = deleted._1;
                     final boolean d = deleted._2;
                     if (d) {
-                        return Node.unbalancedRight(node.color, node.blackHeight - 1, l, node.value, node.right, node.empty);
+                        return Node.unbalancedRight(node.color, node.blackHeight - 1, l, node.value, node.right,
+                                node.empty);
                     } else {
-                        final Node<T> newNode = new Node<>(node.color, node.blackHeight, l, node.value, node.right, node.empty);
+                        final Node<T> newNode = new Node<>(node.color, node.blackHeight, l, node.value, node.right,
+                                node.empty);
                         return Tuple.of(newNode, false);
                     }
                 } else if (comparison > 0) {
@@ -598,9 +606,11 @@ interface RedBlackTreeModule {
                     final RedBlackTree<T> r = deleted._1;
                     final boolean d = deleted._2;
                     if (d) {
-                        return Node.unbalancedLeft(node.color, node.blackHeight - 1, node.left, node.value, r, node.empty);
+                        return Node.unbalancedLeft(node.color, node.blackHeight - 1, node.left, node.value, r,
+                                node.empty);
                     } else {
-                        final Node<T> newNode = new Node<>(node.color, node.blackHeight, node.left, node.value, r, node.empty);
+                        final Node<T> newNode = new Node<>(node.color, node.blackHeight, node.left, node.value, r,
+                                node.empty);
                         return Tuple.of(newNode, false);
                     }
                 } else {
@@ -619,7 +629,8 @@ interface RedBlackTreeModule {
                         if (d) {
                             return Node.unbalancedLeft(node.color, node.blackHeight - 1, node.left, m, r, node.empty);
                         } else {
-                            final RedBlackTree<T> newNode = new Node<>(node.color, node.blackHeight, node.left, m, r, node.empty);
+                            final RedBlackTree<T> newNode = new Node<>(node.color, node.blackHeight, node.left, m, r,
+                                    node.empty);
                             return Tuple.of(newNode, false);
                         }
                     }
@@ -646,7 +657,8 @@ interface RedBlackTreeModule {
                 final boolean d = newNode._2;
                 final T m = newNode._3;
                 if (d) {
-                    final Tuple2<Node<T>, Boolean> tD = Node.unbalancedRight(node.color, node.blackHeight - 1, l, node.value, node.right, node.empty);
+                    final Tuple2<Node<T>, Boolean> tD = Node.unbalancedRight(node.color, node.blackHeight - 1, l,
+                            node.value, node.right, node.empty);
                     return Tuple.of(tD._1, tD._2, m);
                 } else {
                     final Node<T> tD = new Node<>(node.color, node.blackHeight, l, node.value, node.right, node.empty);
@@ -664,10 +676,16 @@ interface RedBlackTreeModule {
                 final int comparison = node.comparator().compare(value, node.value);
                 if (comparison < 0) {
                     final Node<T> newLeft = insert(node.left, value);
-                    return (newLeft == node.left) ? node : Node.balanceLeft(node.color, node.blackHeight, newLeft, node.value, node.right, node.empty);
+                    return (newLeft == node.left)
+                            ? node
+                            : Node.balanceLeft(node.color, node.blackHeight, newLeft, node.value, node.right,
+                            node.empty);
                 } else if (comparison > 0) {
                     final Node<T> newRight = insert(node.right, value);
-                    return (newRight == node.right) ? node : Node.balanceRight(node.color, node.blackHeight, node.left, node.value, newRight, node.empty);
+                    return (newRight == node.right)
+                            ? node
+                            : Node.balanceRight(node.color, node.blackHeight, node.left, node.value, newRight,
+                            node.empty);
                 } else {
                     // DEV-NOTE: Even if there is no _comparison_ difference, the object may not be _equal_.
                     //           To save an equals() call, which may be expensive, we return a new instance.
@@ -812,7 +830,8 @@ interface RedBlackTreeModule {
             }
         }
 
-        private static <T> Tuple2<Node<T>, Boolean> unbalancedLeft(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Empty<T> empty) {
+        private static <T> Tuple2<Node<T>, Boolean> unbalancedLeft(Color color, int blackHeight, RedBlackTree<T> left,
+                                                                   T value, RedBlackTree<T> right, Empty<T> empty) {
             if (!left.isEmpty()) {
                 final Node<T> ln = (Node<T>) left;
                 if (ln.color == BLACK) {
@@ -821,16 +840,20 @@ interface RedBlackTreeModule {
                 } else if (color == BLACK && !ln.right.isEmpty()) {
                     final Node<T> lrn = (Node<T>) ln.right;
                     if (lrn.color == BLACK) {
-                        final Node<T> newRightNode = Node.balanceLeft(BLACK, blackHeight, lrn.color(RED), value, right, empty);
-                        final Node<T> newNode = new Node<>(BLACK, ln.blackHeight, ln.left, ln.value, newRightNode, empty);
+                        final Node<T> newRightNode = Node.balanceLeft(BLACK, blackHeight, lrn.color(RED), value, right,
+                                empty);
+                        final Node<T> newNode = new Node<>(BLACK, ln.blackHeight, ln.left, ln.value, newRightNode,
+                                empty);
                         return Tuple.of(newNode, false);
                     }
                 }
             }
-            throw new IllegalStateException(String.format("unbalancedLeft(%s, %s, %s, %s, %s)", color, blackHeight, left, value, right));
+            throw new IllegalStateException(
+                    String.format("unbalancedLeft(%s, %s, %s, %s, %s)", color, blackHeight, left, value, right));
         }
 
-        private static <T> Tuple2<Node<T>, Boolean> unbalancedRight(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Empty<T> empty) {
+        private static <T> Tuple2<Node<T>, Boolean> unbalancedRight(Color color, int blackHeight, RedBlackTree<T> left,
+                                                                    T value, RedBlackTree<T> right, Empty<T> empty) {
             if (!right.isEmpty()) {
                 final Node<T> rn = (Node<T>) right;
                 if (rn.color == BLACK) {
@@ -839,13 +862,16 @@ interface RedBlackTreeModule {
                 } else if (color == BLACK && !rn.left.isEmpty()) {
                     final Node<T> rln = (Node<T>) rn.left;
                     if (rln.color == BLACK) {
-                        final Node<T> newLeftNode = Node.balanceRight(BLACK, blackHeight, left, value, rln.color(RED), empty);
-                        final Node<T> newNode = new Node<>(BLACK, rn.blackHeight, newLeftNode, rn.value, rn.right, empty);
+                        final Node<T> newLeftNode = Node.balanceRight(BLACK, blackHeight, left, value, rln.color(RED),
+                                empty);
+                        final Node<T> newNode = new Node<>(BLACK, rn.blackHeight, newLeftNode, rn.value, rn.right,
+                                empty);
                         return Tuple.of(newNode, false);
                     }
                 }
             }
-            throw new IllegalStateException(String.format("unbalancedRight(%s, %s, %s, %s, %s)", color, blackHeight, left, value, right));
+            throw new IllegalStateException(
+                    String.format("unbalancedRight(%s, %s, %s, %s, %s)", color, blackHeight, left, value, right));
         }
     }
 

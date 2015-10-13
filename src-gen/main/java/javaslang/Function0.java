@@ -144,12 +144,10 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
      * @author Daniel Dietrich
      * @since 2.0.0
      */
-    @SuppressWarnings("deprecation")
     final class Type<R> extends λ.Type<R> {
 
         private static final long serialVersionUID = 1L;
 
-        @SuppressWarnings("deprecation")
         private Type(Function0<R> λ) {
             super(λ);
         }

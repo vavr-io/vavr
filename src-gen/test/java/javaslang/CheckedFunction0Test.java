@@ -81,7 +81,6 @@ public class CheckedFunction0Test {
     }
 
     private static CheckedFunction0<Integer> recurrent1 = () -> 11;
-    private static CheckedFunction0<Integer> recurrent2 = CheckedFunction0Test.recurrent1.memoized();
 
     @Test
     public void shouldCalculatedRecursively() throws Throwable {

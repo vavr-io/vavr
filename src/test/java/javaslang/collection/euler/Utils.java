@@ -28,23 +28,28 @@ public final class Utils {
     }
 
     public static Stream<String> readLines(File file) {
-        final Scanner scanner;
         try {
-            scanner = new Scanner(file);
+            return Stream.ofAll(new Iterator<String>() {
+
+                final Scanner scanner = new Scanner(file);
+
+                @Override
+                public boolean hasNext() {
+                    final boolean hasNext = scanner.hasNextLine();
+                    if (!hasNext) {
+                        scanner.close();
+                    }
+                    return hasNext;
+                }
+
+                @Override
+                public String next() {
+                    return scanner.nextLine();
+                }
+            });
         } catch (FileNotFoundException e) {
             return Stream.empty();
         }
-        return Stream.ofAll(new Iterator<String>() {
-            @Override
-            public boolean hasNext() {
-                return scanner.hasNextLine();
-            }
-
-            @Override
-            public String next() {
-                return scanner.nextLine();
-            }
-        });
     }
 
     public static File file(String fileName) {

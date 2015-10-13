@@ -180,7 +180,6 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
      * @param <U> New type
      * @return An object of type U
      */
-    @SuppressWarnings("unchecked")
     public <U> U transform(Function<? super Tuple6<T1, T2, T3, T4, T5, T6>, U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);

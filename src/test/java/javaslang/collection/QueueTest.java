@@ -29,7 +29,7 @@ public class QueueTest extends AbstractSeqTest {
         return Queue.of(element);
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
     protected final <T> Queue<T> of(T... elements) {

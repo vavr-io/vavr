@@ -47,6 +47,7 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
      * @param random a random number generator
      * @return A generated value of type T.
      */
+    @Override
     T apply(Random random);
 
     /**
@@ -194,8 +195,8 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
      * @throws java.lang.NullPointerException     if generators is null
      * @throws java.lang.IllegalArgumentException if generators is empty
      */
-    @SafeVarargs
     @SuppressWarnings("varargs")
+    @SafeVarargs
     static <T> Gen<T> frequency(Tuple2<Integer, Gen<T>>... generators) {
         Objects.requireNonNull(generators, "generators is null");
         if (generators.length == 0) {
@@ -267,7 +268,7 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
             throw new IllegalArgumentException("generators is empty");
         }
         @SuppressWarnings("unchecked")
-        final Gen<T>[] array = stream.toJavaArray((Class<Gen<T>>) (Class) Gen.class);
+        final Gen<T>[] array = stream.toJavaArray((Class<Gen<T>>) (Object) Gen.class);
         return oneOf(array);
     }
 
@@ -338,6 +339,7 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
      * @param <U>    Type of the mapped object
      * @return A new generator
      */
+    @Override
     default <U> Gen<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return random -> mapper.apply(apply(random));

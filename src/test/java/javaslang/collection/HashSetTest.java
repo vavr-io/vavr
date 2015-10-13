@@ -92,7 +92,7 @@ public class HashSetTest extends AbstractSetTest {
         return HashSet.of(element);
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
     protected final <T> HashSet<T> of(T... elements) {
@@ -173,7 +173,6 @@ public class HashSetTest extends AbstractSetTest {
     @Test
     public void shouldZipNonNilsIfThisIsSmaller() {
         final HashSet<Tuple2<Integer, String>> actual = of(1, 2).zip(of("a", "b", "c"));
-        @SuppressWarnings("unchecked")
         final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
         assertThat(actual).isEqualTo(expected);
     }
@@ -181,7 +180,6 @@ public class HashSetTest extends AbstractSetTest {
     @Test
     public void shouldZipNonNilsIfThatIsSmaller() {
         final HashSet<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b"));
-        @SuppressWarnings("unchecked")
         final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
         assertThat(actual).isEqualTo(expected);
     }
@@ -189,7 +187,6 @@ public class HashSetTest extends AbstractSetTest {
     @Test
     public void shouldZipNonNilsOfSameSize() {
         final HashSet<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b", "c"));
-        @SuppressWarnings("unchecked")
         final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
         assertThat(actual).isEqualTo(expected);
     }
@@ -215,7 +212,6 @@ public class HashSetTest extends AbstractSetTest {
     @Test
     public void shouldZipAllNonEmptyAndNil() {
         final HashSet<?> actual = of(1).zipAll(empty(), null, null);
-        @SuppressWarnings("unchecked")
         final HashSet<Tuple2<Integer, Object>> expected = of(Tuple.of(1, null));
         assertThat(actual).isEqualTo(expected);
     }
@@ -223,7 +219,6 @@ public class HashSetTest extends AbstractSetTest {
     @Test
     public void shouldZipAllNonNilsIfThisIsSmaller() {
         final HashSet<Tuple2<Integer, String>> actual = of(1, 2).zipAll(of("a", "b", "c"), 9, "z");
-        @SuppressWarnings("unchecked")
         final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
         assertThat(actual).isEqualTo(expected);
     }
@@ -231,7 +226,6 @@ public class HashSetTest extends AbstractSetTest {
     @Test
     public void shouldZipAllNonNilsIfThatIsSmaller() {
         final HashSet<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b"), 9, "z");
-        @SuppressWarnings("unchecked")
         final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
         assertThat(actual).isEqualTo(expected);
     }
@@ -239,7 +233,6 @@ public class HashSetTest extends AbstractSetTest {
     @Test
     public void shouldZipAllNonNilsOfSameSize() {
         final HashSet<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b", "c"), 9, "z");
-        @SuppressWarnings("unchecked")
         final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
         assertThat(actual).isEqualTo(expected);
     }
@@ -260,7 +253,6 @@ public class HashSetTest extends AbstractSetTest {
     @Test
     public void shouldZipNonNilWithIndex() {
         final HashSet<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex();
-        @SuppressWarnings("unchecked")
         final HashSet<Tuple2<String, Integer>> expected = of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
         assertThat(actual).isEqualTo(expected);
     }
@@ -341,6 +333,7 @@ public class HashSetTest extends AbstractSetTest {
         assertTrue(HashSet.of(1).equals(HashSet.of(1)));
     }
 
+    @Override
     boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
     }

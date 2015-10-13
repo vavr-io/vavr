@@ -6,10 +6,11 @@
 package javaslang.collection.euler;
 
 import javaslang.Tuple;
+import javaslang.Tuple4;
 import javaslang.collection.Stream;
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.StrictAssertions.assertThat;
 
 public class Euler71Test {
 
@@ -35,18 +36,14 @@ public class Euler71Test {
     }
 
     private static int left37(int maxDenominator) {
-        return Stream
-                .gen(Tuple.of(0, 1, 1, 1), t -> {
-                    final int m1 = t._1 + t._3;
-                    final int m2 = t._2 + t._4;
-                    if (m1 * 7 >= m2 * 3) {
-                        return Tuple.of(t._1, t._2, m1, m2);
-                    } else {
-                        return Tuple.of(m1, m2, t._3, t._4);
-                    }
-                })
-                .takeWhile(t -> t._2 <= maxDenominator && t._4 <= maxDenominator)
-                .last()
-                ._1;
+        return Stream.gen(Tuple.of(0, 1, 1, 1), (Tuple4<Integer, Integer, Integer, Integer> t) -> {
+            final int m1 = t._1 + t._3;
+            final int m2 = t._2 + t._4;
+            if (m1 * 7 >= m2 * 3) {
+                return Tuple.of(t._1, t._2, m1, m2);
+            } else {
+                return Tuple.of(m1, m2, t._3, t._4);
+            }
+        }).takeWhile(t -> t._2 <= maxDenominator && t._4 <= maxDenominator).last()._1;
     }
 }

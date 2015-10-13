@@ -29,10 +29,10 @@ public class GenTest {
 
     @Test
     public void shouldUseCustomRandomNumberGenerator() {
-        @SuppressWarnings("SerializableInnerClassWithNonSerializableOuterClass")
         final Random rng = new Random() {
             private static final long serialVersionUID = 1L;
 
+            @Override
             public int nextInt(int bound) {
                 return 0;
             }

@@ -33,7 +33,7 @@ public class StreamTest extends AbstractSeqTest {
         return Stream.of(element);
     }
 
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
     protected final <T> Stream<T> of(T... elements) {
@@ -165,7 +165,8 @@ public class StreamTest extends AbstractSeqTest {
     @Test
     public void shouldGenerateTerminatingIntStream() {
         //noinspection NumericOverflow
-        assertThat(Stream.from(Integer.MAX_VALUE).take(2)).isEqualTo(Stream.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
+        assertThat(Stream.from(Integer.MAX_VALUE).take(2))
+                .isEqualTo(Stream.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
     }
 
     // -- static from(long)
@@ -211,7 +212,8 @@ public class StreamTest extends AbstractSeqTest {
 
     @Test
     public void shouldComputeCombinationsOfNonEmptyStream() {
-        assertThat(Stream.of(1, 2, 3).combinations()).isEqualTo(Stream.of(Stream.empty(), Stream.of(1), Stream.of(2), Stream.of(3), Stream.of(1, 2), Stream.of(1, 3), Stream.of(2, 3), Stream.of(1, 2, 3)));
+        assertThat(Stream.of(1, 2, 3).combinations()).isEqualTo(Stream.of(Stream.empty(), Stream.of(1), Stream.of(2),
+                Stream.of(3), Stream.of(1, 2), Stream.of(1, 3), Stream.of(2, 3), Stream.of(1, 2, 3)));
     }
 
     // -- combinations(k)
@@ -223,14 +225,16 @@ public class StreamTest extends AbstractSeqTest {
 
     @Test
     public void shouldComputeKCombinationsOfNonEmptyStream() {
-        assertThat(Stream.of(1, 2, 3).combinations(2)).isEqualTo(Stream.of(Stream.of(1, 2), Stream.of(1, 3), Stream.of(2, 3)));
+        assertThat(Stream.of(1, 2, 3).combinations(2))
+                .isEqualTo(Stream.of(Stream.of(1, 2), Stream.of(1, 3), Stream.of(2, 3)));
     }
 
     // -- flatMap
 
     @Test
     public void shouldFlatMapInfiniteTraversable() {
-        assertThat(Stream.gen(1, i -> i + 1).flatMap(i -> List.of(i, 2 * i)).take(7)).isEqualTo(Stream.of(1, 2, 2, 4, 3, 6, 4));
+        assertThat(Stream.gen(1, i -> i + 1).flatMap(i -> List.of(i, 2 * i)).take(7))
+                .isEqualTo(Stream.of(1, 2, 2, 4, 3, 6, 4));
     }
 
     // -- peek
@@ -249,19 +253,26 @@ public class StreamTest extends AbstractSeqTest {
 
     @Test
     public void shouldComputePermutationsOfNonEmptyStream() {
-        assertThat(Stream.of(1, 2, 3).permutations()).isEqualTo(Stream.ofAll(Stream.of(Stream.of(1, 2, 3), Stream.of(1, 3, 2), Stream.of(2, 1, 3), Stream.of(2, 3, 1), Stream.of(3, 1, 2), Stream.of(3, 2, 1))));
+        assertThat(Stream.of(1, 2, 3).permutations()).isEqualTo(Stream.ofAll(Stream.of(Stream.of(1, 2, 3),
+                Stream.of(1, 3, 2), Stream.of(2, 1, 3), Stream.of(2, 3, 1), Stream.of(3, 1, 2), Stream.of(3, 2, 1))));
     }
 
     // -- addSelf
 
     @Test
     public void shouldRecurrentlyCalculateFibonacci() {
-        assertThat(Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2)).take(10)).isEqualTo(Stream.of(1, 1, 2, 3, 5, 8, 13, 21, 34, 55));
+        assertThat(Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2)).take(10))
+                .isEqualTo(Stream.of(1, 1, 2, 3, 5, 8, 13, 21, 34, 55));
     }
 
     @Test
     public void shouldRecurrentlyCalculatePrimes() {
-        assertThat(Stream.of(2).appendSelf(self -> Stream.gen(3, i -> i + 2).filter(i -> self.takeWhile(j -> j * j <= i).forAll(k -> i % k > 0))).take(10)).isEqualTo(Stream.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29));
+        assertThat(Stream
+                .of(2)
+                .appendSelf(self -> Stream
+                        .gen(3, i -> i + 2)
+                        .filter(i -> self.takeWhile(j -> j * j <= i).forAll(k -> i % k > 0)))
+                .take(10)).isEqualTo(Stream.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29));
     }
 
     @Test
@@ -317,9 +328,9 @@ public class StreamTest extends AbstractSeqTest {
     public void shouldNotDeserializeStreamWithSizeLessThanOne() throws Throwable {
         try {
             /*
-             * This implementation is stable regarding jvm impl changes of object serialization. The index of the
-             * number of Stream elements is gathered dynamically.
-             */
+			 * This implementation is stable regarding jvm impl changes of object serialization. The index of the number
+			 * of Stream elements is gathered dynamically.
+			 */
             final byte[] listWithOneElement = Serializables.serialize(Stream.of(0));
             final byte[] listWithTwoElements = Serializables.serialize(Stream.of(0, 0));
             int index = -1;
@@ -337,9 +348,9 @@ public class StreamTest extends AbstractSeqTest {
             if (index == -1) {
                 throw new IllegalStateException("Hack incomplete - index not found");
             }
-            /*
-             * Hack the serialized data and fake zero elements.
-             */
+			/*
+			 * Hack the serialized data and fake zero elements.
+			 */
             listWithOneElement[index] = 0;
             Serializables.deserialize(listWithOneElement);
         } catch (IllegalStateException x) {
@@ -367,14 +378,13 @@ public class StreamTest extends AbstractSeqTest {
     }
 
     private <T> Try<Void> flatTryWithJavaslangStream(List<T> vals, Try.CheckedConsumer<T> func) {
-        return vals.toStream()
-                .map(v -> Try.run(() -> func.accept(v)))
-                .findFirst(Try::isFailure)
-                .orElseGet(() -> new Success<>(null));
+        return vals.toStream().map(v -> Try.run(() -> func.accept(v))).findFirst(Try::isFailure).orElseGet(
+                () -> new Success<>(null));
     }
 
     private <T> Try<Void> flatTryWithJavaStream(Integer[] vals, Try.CheckedConsumer<Integer> func) {
-        return java.util.stream.Stream.of(vals)
+        return java.util.stream.Stream
+                .of(vals)
                 .map(v -> Try.run(() -> func.accept(v)))
                 .filter(Try::isFailure)
                 .findFirst()

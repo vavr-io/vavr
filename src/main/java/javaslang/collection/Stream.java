@@ -150,7 +150,6 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param <T>      value type
      * @return A new Stream
      */
-    @SuppressWarnings("unchecked")
     static <T> Stream<T> gen(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return Stream.ofAll(Iterator.gen(supplier));
@@ -218,7 +217,8 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param elements Zero or more elements.
      * @return A list containing the given elements in the same order.
      */
-    @SuppressWarnings({ "unchecked", "varargs" })
+
+    @SuppressWarnings("varargs")
     @SafeVarargs
     static <T> Stream<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -597,8 +597,8 @@ public interface Stream<T> extends LinearSeq<T> {
         if (power < 0) {
             throw new IllegalArgumentException("negative power");
         }
-        return Iterator.range(1, power)
-                .foldLeft(sliding(1).toStream(), (product, ignored) -> product.flatMap(tuple -> map(tuple::append)));
+        return Iterator.range(1, power).foldLeft(sliding(1).toStream(),
+                (product, ignored) -> product.flatMap(tuple -> map(tuple::append)));
     }
 
     @Override
@@ -796,13 +796,14 @@ public interface Stream<T> extends LinearSeq<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     default Stream<T> insertAll(int index, java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
         } else if (index == 0) {
-            return isEmpty() ? Stream.ofAll(elements) : Stream.ofAll(elements).appendAll(this);
+            return isEmpty() ? Stream.ofAll(elements) : Stream.ofAll((java.lang.Iterable<T>) elements).appendAll(this);
         } else if (isEmpty()) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on Nil");
         } else {
@@ -879,7 +880,6 @@ public interface Stream<T> extends LinearSeq<T> {
         return result;
     }
 
-
     @Override
     default Tuple2<Stream<T>, Stream<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
@@ -908,7 +908,8 @@ public interface Stream<T> extends LinearSeq<T> {
                 return Stream.of(this);
             } else {
                 final Stream<Stream<T>> zero = Empty.instance();
-                return distinct().foldLeft(zero, (xs, x) -> xs.appendAll(remove(x).permutations().map(l -> l.prepend(x))));
+                return distinct().foldLeft(zero,
+                        (xs, x) -> xs.appendAll(remove(x).permutations().map(l -> l.prepend(x))));
             }
         }
     }
@@ -918,10 +919,11 @@ public interface Stream<T> extends LinearSeq<T> {
         return new Cons<>(element, () -> this);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     default Stream<T> prependAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.ofAll(elements).appendAll(this);
+        return Stream.ofAll((java.lang.Iterable<T>) elements).appendAll(this);
     }
 
     @Override
@@ -968,10 +970,11 @@ public interface Stream<T> extends LinearSeq<T> {
         return filter(e -> !Objects.equals(e, removed));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     default Stream<T> removeAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final Stream<T> distinct = Stream.ofAll(elements).distinct();
+        final Stream<T> distinct = Stream.ofAll((java.lang.Iterable<T>) elements).distinct();
         return filter(e -> !distinct.contains(e));
     }
 
@@ -1000,13 +1003,14 @@ public interface Stream<T> extends LinearSeq<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     default Stream<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty()) {
             return this;
         } else {
-            final Stream<T> retained = Stream.ofAll(elements).distinct();
+            final Stream<T> retained = Stream.ofAll((java.lang.Iterable<T>) elements).distinct();
             return filter(retained::contains);
         }
     }
@@ -1095,7 +1099,8 @@ public interface Stream<T> extends LinearSeq<T> {
         Stream<T> result = this;
         for (int i = 0; i < beginIndex; i++, result = result.tail()) {
             if (result.isEmpty()) {
-                throw new IndexOutOfBoundsException(String.format("subSequence(%s) on Stream of size %s", beginIndex, i));
+                throw new IndexOutOfBoundsException(
+                        String.format("subSequence(%s) on Stream of size %s", beginIndex, i));
             }
         }
         return result;
@@ -1172,8 +1177,8 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(Function<? super T, Tuple2<? extends
-            T1, ? extends T2>> unzipper) {
+    default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(
+            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Stream<Tuple2<? extends T1, ? extends T2>> stream = map(unzipper);
         final Stream<T1> stream1 = stream.map(t -> t._1);
@@ -1452,7 +1457,6 @@ public interface Stream<T> extends LinearSeq<T> {
              * @throws InvalidObjectException If the stream contains no stream elements.
              * @throws IOException            If an error occurs reading from the stream.
              */
-            @SuppressWarnings("ConstantConditions")
             private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
                 s.defaultReadObject();
                 final int size = s.readInt();
@@ -1510,10 +1514,10 @@ interface StreamModule {
     final class Combinations {
 
         static <T> Stream<Stream<T>> apply(Stream<T> elements, int k) {
-            return (k == 0) ? Stream.of(Stream.empty()) :
-                    elements.zipWithIndex().flatMap(t ->
-                            apply(elements.drop(t._2 + 1), (k - 1))
-                                    .map((Stream<T> c) -> c.prepend(t._1)));
+            return (k == 0)
+                    ? Stream.of(Stream.empty())
+                    : elements.zipWithIndex().flatMap(
+                    t -> apply(elements.drop(t._2 + 1), (k - 1)).map((Stream<T> c) -> c.prepend(t._1)));
 
         }
     }
@@ -1527,7 +1531,8 @@ interface StreamModule {
             } else if (front.isEmpty()) {
                 return apply(rear.reverse(), List.empty(), remaining);
             } else {
-                return new Cons<>(front.head(), () -> apply(front.tail(), rear.prepend(remaining.head()), remaining.tail()));
+                return new Cons<>(front.head(),
+                        () -> apply(front.tail(), rear.prepend(remaining.head()), remaining.tail()));
             }
         }
     }

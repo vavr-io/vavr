@@ -144,7 +144,6 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      * @param <U> New type
      * @return An object of type U
      */
-    @SuppressWarnings("unchecked")
     public <U> U transform(Function<? super Tuple4<T1, T2, T3, T4>, U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
