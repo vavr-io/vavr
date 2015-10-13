@@ -230,6 +230,15 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- crossProduct(int)
+
+    @SuppressWarnings("varargs")
+    @Test
+    public void shouldCalculateCrossProductPower() {
+        Seq<IndexedSeq<?>> expected = of(Vector.of(1, 1), Vector.of(1, 2), Vector.of(2, 1), Vector.of(2, 2));
+        assertThat(of(1, 2).crossProduct(2)).isEqualTo(expected);
+    }
+
     // -- crossProduct(Iterable)
 
     @Test

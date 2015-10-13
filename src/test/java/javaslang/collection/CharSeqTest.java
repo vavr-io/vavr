@@ -199,6 +199,165 @@ public class CharSeqTest {
         assertThat(effect[0]).isEqualTo('1');
     }
 
+    // -- static rangeClosed()
+
+    @Test
+    public void shouldCreateRangeClosedWhereFromIsGreaterThanTo() {
+        assertThat(CharSeq.rangeClosed('b', 'a')).isEmpty();
+    }
+
+    @Test
+    public void shouldCreateRangeClosedWhereFromEqualsTo() {
+        assertThat(CharSeq.rangeClosed('a', 'a')).isEqualTo(CharSeq.of('a'));
+    }
+
+    @Test
+    public void shouldCreateRangeClosedWhereFromIsLessThanTo() {
+        assertThat(CharSeq.rangeClosed('a', 'c')).isEqualTo(CharSeq.of('a', 'b', 'c'));
+    }
+
+    @Test
+    public void shouldCreateRangeClosedWhereFromAndToEqualMIN_VALUE() {
+        assertThat(CharSeq.rangeClosed(Character.MIN_VALUE, Character.MIN_VALUE)).isEqualTo(CharSeq.of(Character.MIN_VALUE));
+    }
+
+    @Test
+    public void shouldCreateRangeClosedWhereFromAndToEqualMAX_VALUE() {
+        assertThat(CharSeq.rangeClosed(Character.MAX_VALUE, Character.MAX_VALUE)).isEqualTo(CharSeq.of(Character.MAX_VALUE));
+    }
+
+    // -- static rangeClosedBy()
+
+    @Test
+    public void shouldCreateRangeClosedByWhereFromIsGreaterThanToAndStepWrongDirection() {
+        assertThat(CharSeq.rangeClosedBy('b', 'a', 1)).isEmpty();
+        assertThat(CharSeq.rangeClosedBy('b', 'a', 3)).isEmpty();
+        assertThat(CharSeq.rangeClosedBy('a', 'b', -1)).isEmpty();
+        assertThat(CharSeq.rangeClosedBy('a', 'b', -3)).isEmpty();
+    }
+
+    @Test
+    public void shouldCreateRangeClosedByWhereFromEqualsTo() {
+        assertThat(CharSeq.rangeClosedBy('a', 'a', 1)).isEqualTo(CharSeq.of('a'));
+        assertThat(CharSeq.rangeClosedBy('a', 'a', 3)).isEqualTo(CharSeq.of('a'));
+        assertThat(CharSeq.rangeClosedBy('a', 'a', -1)).isEqualTo(CharSeq.of('a'));
+        assertThat(CharSeq.rangeClosedBy('a', 'a', -3)).isEqualTo(CharSeq.of('a'));
+    }
+
+    @Test
+    public void shouldCreateRangeClosedByWhereFromIsLessThanToAndStepCorrectDirection() {
+        assertThat(CharSeq.rangeClosedBy('a', 'c', 1)).isEqualTo(CharSeq.of('a', 'b', 'c'));
+        assertThat(CharSeq.rangeClosedBy('a', 'e', 2)).isEqualTo(CharSeq.of('a', 'c', 'e'));
+        assertThat(CharSeq.rangeClosedBy('a', 'f', 2)).isEqualTo(CharSeq.of('a', 'c', 'e'));
+        assertThat(CharSeq.rangeClosedBy((char) (Character.MAX_VALUE - 2), Character.MAX_VALUE, 3)).isEqualTo(CharSeq.of((char) (Character.MAX_VALUE - 2)));
+        assertThat(CharSeq.rangeClosedBy((char) (Character.MAX_VALUE - 3), Character.MAX_VALUE, 3)).isEqualTo(CharSeq.of((char) (Character.MAX_VALUE - 3), Character.MAX_VALUE));
+        assertThat(CharSeq.rangeClosedBy('c', 'a', -1)).isEqualTo(CharSeq.of('c', 'b', 'a'));
+        assertThat(CharSeq.rangeClosedBy('e', 'a', -2)).isEqualTo(CharSeq.of('e', 'c', 'a'));
+        assertThat(CharSeq.rangeClosedBy('e', (char) ('a' - 1), -2)).isEqualTo(CharSeq.of('e', 'c', 'a'));
+        assertThat(CharSeq.rangeClosedBy((char) (Character.MIN_VALUE + 2), Character.MIN_VALUE, -3)).isEqualTo(CharSeq.of((char) (Character.MIN_VALUE + 2)));
+        assertThat(CharSeq.rangeClosedBy((char) (Character.MIN_VALUE + 3), Character.MIN_VALUE, -3)).isEqualTo(CharSeq.of((char) (Character.MIN_VALUE + 3), Character.MIN_VALUE));
+    }
+
+    @Test
+    public void shouldCreateRangeClosedByWhereFromAndToEqualMIN_VALUE() {
+        assertThat(CharSeq.rangeClosedBy(Character.MIN_VALUE, Character.MIN_VALUE, 1)).isEqualTo(CharSeq.of(Character.MIN_VALUE));
+        assertThat(CharSeq.rangeClosedBy(Character.MIN_VALUE, Character.MIN_VALUE, 3)).isEqualTo(CharSeq.of(Character.MIN_VALUE));
+        assertThat(CharSeq.rangeClosedBy(Character.MIN_VALUE, Character.MIN_VALUE, -1)).isEqualTo(CharSeq.of(Character.MIN_VALUE));
+        assertThat(CharSeq.rangeClosedBy(Character.MIN_VALUE, Character.MIN_VALUE, -3)).isEqualTo(CharSeq.of(Character.MIN_VALUE));
+    }
+
+    @Test
+    public void shouldCreateRangeClosedByWhereFromAndToEqualMAX_VALUE() {
+        assertThat(CharSeq.rangeClosedBy(Character.MAX_VALUE, Character.MAX_VALUE, 1)).isEqualTo(CharSeq.of(Character.MAX_VALUE));
+        assertThat(CharSeq.rangeClosedBy(Character.MAX_VALUE, Character.MAX_VALUE, 3)).isEqualTo(CharSeq.of(Character.MAX_VALUE));
+        assertThat(CharSeq.rangeClosedBy(Character.MAX_VALUE, Character.MAX_VALUE, -1)).isEqualTo(CharSeq.of(Character.MAX_VALUE));
+        assertThat(CharSeq.rangeClosedBy(Character.MAX_VALUE, Character.MAX_VALUE, -3)).isEqualTo(CharSeq.of(Character.MAX_VALUE));
+    }
+
+    // -- static range()
+
+    @Test
+    public void shouldCreateRangeWhereFromIsGreaterThanTo() {
+        assertThat(CharSeq.range('b', 'a').isEmpty());
+    }
+
+    @Test
+    public void shouldCreateRangeWhereFromEqualsTo() {
+        assertThat(CharSeq.range('a', 'a')).isEmpty();
+    }
+
+    @Test
+    public void shouldCreateRangeWhereFromIsLessThanTo() {
+        assertThat(CharSeq.range('a', 'c')).isEqualTo(CharSeq.of('a', 'b'));
+    }
+
+    @Test
+    public void shouldCreateRangeWhereFromAndToEqualMIN_VALUE() {
+        assertThat(CharSeq.range(Character.MIN_VALUE, Character.MIN_VALUE)).isEmpty();
+    }
+
+    @Test
+    public void shouldCreateRangeWhereFromAndToEqualMAX_VALUE() {
+        assertThat(CharSeq.range(Character.MAX_VALUE, Character.MAX_VALUE)).isEmpty();
+    }
+
+    // -- static rangeBy()
+
+    @Test
+    public void shouldCreateRangeByWhereFromIsGreaterThanToAndStepWrongDirection() {
+        assertThat(CharSeq.rangeBy('b', 'a', 1)).isEmpty();
+        assertThat(CharSeq.rangeBy('b', 'a', 3)).isEmpty();
+        assertThat(CharSeq.rangeBy('a', 'b', -1)).isEmpty();
+        assertThat(CharSeq.rangeBy('a', 'b', -3)).isEmpty();
+    }
+
+    @Test
+    public void shouldCreateRangeByWhereFromEqualsTo() {
+        assertThat(CharSeq.rangeBy('a', 'a', 1)).isEmpty();
+        assertThat(CharSeq.rangeBy('a', 'a', 3)).isEmpty();
+        assertThat(CharSeq.rangeBy('a', 'a', -1)).isEmpty();
+        assertThat(CharSeq.rangeBy('a', 'a', -3)).isEmpty();
+    }
+
+    @Test
+    public void shouldCreateRangeByWhereFromIsLessThanToAndStepCorrectDirection() {
+        assertThat(CharSeq.rangeBy('a', 'c', 1)).isEqualTo(CharSeq.of('a', 'b'));
+        assertThat(CharSeq.rangeBy('a', 'd', 2)).isEqualTo(CharSeq.of('a', 'c'));
+        assertThat(CharSeq.rangeBy('c', 'a', -1)).isEqualTo(CharSeq.of('c', 'b'));
+        assertThat(CharSeq.rangeBy('d', 'a', -2)).isEqualTo(CharSeq.of('d', 'b'));
+        assertThat(CharSeq.rangeBy((char) (Character.MAX_VALUE - 3), Character.MAX_VALUE, 3)).isEqualTo(CharSeq.of((char) (Character.MAX_VALUE - 3)));
+        assertThat(CharSeq.rangeBy((char) (Character.MAX_VALUE - 4), Character.MAX_VALUE, 3)).isEqualTo(CharSeq.of((char) (Character.MAX_VALUE - 4), (char) (Character.MAX_VALUE - 1)));
+        assertThat(CharSeq.rangeBy((char) (Character.MIN_VALUE + 3), Character.MIN_VALUE, -3)).isEqualTo(CharSeq.of((char) (Character.MIN_VALUE + 3)));
+        assertThat(CharSeq.rangeBy((char) (Character.MIN_VALUE + 4), Character.MIN_VALUE, -3)).isEqualTo(CharSeq.of((char) (Character.MIN_VALUE + 4), (char) (Character.MIN_VALUE + 1)));
+    }
+
+    @Test
+    public void shouldCreateRangeByWhereFromAndToEqualMIN_VALUE() {
+        assertThat(CharSeq.rangeBy(Character.MIN_VALUE, Character.MIN_VALUE, 1)).isEmpty();
+        assertThat(CharSeq.rangeBy(Character.MIN_VALUE, Character.MIN_VALUE, 3)).isEmpty();
+        assertThat(CharSeq.rangeBy(Character.MIN_VALUE, Character.MIN_VALUE, -1)).isEmpty();
+        assertThat(CharSeq.rangeBy(Character.MIN_VALUE, Character.MIN_VALUE, -3)).isEmpty();
+    }
+
+    @Test
+    public void shouldCreateRangeByWhereFromAndToEqualMAX_VALUE() {
+        assertThat(CharSeq.rangeBy(Character.MAX_VALUE, Character.MAX_VALUE, 1)).isEmpty();
+        assertThat(CharSeq.rangeBy(Character.MAX_VALUE, Character.MAX_VALUE, 3)).isEmpty();
+        assertThat(CharSeq.rangeBy(Character.MAX_VALUE, Character.MAX_VALUE, -1)).isEmpty();
+        assertThat(CharSeq.rangeBy(Character.MAX_VALUE, Character.MAX_VALUE, -3)).isEmpty();
+    }
+
+    // step == 0
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldProhibitCharRangeByStepZero() {
+        CharSeq.rangeBy('a', 'b', 0);
+    }
+
+    public void shouldProhibitCharRangeClosedByStepZero() {
+        CharSeq.rangeClosedBy('a', 'b', 0);
+    }
+
     // -- average
 
     @Test
@@ -1507,6 +1666,37 @@ public class CharSeqTest {
         assertThat(CharSeq.of('1', '2', '3').apply(1)).isEqualTo('2');
     }
 
+    // -- combinations
+
+    @Test
+    public void shouldComputeCombinationsOfEmptyList() {
+        assertThat(empty().combinations()).isEqualTo(Vector.of(empty()));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldComputeCombinationsOfNonEmptyList() {
+        assertThat(CharSeq.of("123").combinations()).isEqualTo(Vector.of(empty(), CharSeq.of("1"), CharSeq.of("2"), CharSeq.of("3"), CharSeq.of("12"), CharSeq.of("13"), CharSeq.of("23"), CharSeq.of("123")));
+    }
+
+    // -- combinations(k)
+
+    @Test
+    public void shouldComputeKCombinationsOfEmptyList() {
+        assertThat(empty().combinations(1)).isEmpty();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldComputeKCombinationsOfNonEmptyList() {
+        assertThat(CharSeq.of("123").combinations(2)).isEqualTo(Vector.of(CharSeq.of("12"), CharSeq.of("13"), CharSeq.of("23")));
+    }
+
+    @Test
+    public void shouldComputeKCombinationsOfNegativeK() {
+        assertThat(CharSeq.of("1").combinations(-1)).isEqualTo(Vector.of(CharSeq.empty()));
+    }
+
     // -- containsSlice
 
     @Test
@@ -1544,6 +1734,13 @@ public class CharSeqTest {
                 Tuple.of('2', '1'), Tuple.of('2', '2'), Tuple.of('2', '3'),
                 Tuple.of('3', '1'), Tuple.of('3', '2'), Tuple.of('3', '3'));
         assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- crossProduct(int)
+
+    @Test
+    public void shouldCalculateCrossProductPower() {
+        assertThat(CharSeq.of("12").crossProduct(2)).isEqualTo(Vector.of(Vector.of('1', '1'), Vector.of('1', '2'), Vector.of('2', '1'), Vector.of('2', '2')));
     }
 
     // -- crossProduct(java.lang.Iterable)
@@ -2284,6 +2481,18 @@ public class CharSeqTest {
         assertThat(CharSeq.of('1', '2', '3').removeAt(5)).isEqualTo(CharSeq.of('1', '2', '3'));
     }
 
+    // -- repeat
+
+    @Test
+    public void shouldRepeat() {
+        assertThat(CharSeq.empty().repeat(0)).isEqualTo(CharSeq.empty());
+        assertThat(CharSeq.empty().repeat(5)).isEqualTo(CharSeq.empty());
+        assertThat(CharSeq.of("123").repeat(0)).isEqualTo(CharSeq.empty());
+        assertThat(CharSeq.of("123").repeat(5)).isEqualTo(CharSeq.of("123123123123123"));
+        assertThat(CharSeq.repeat('1', 0)).isEqualTo(CharSeq.empty());
+        assertThat(CharSeq.repeat('!', 5)).isEqualTo(CharSeq.of("!!!!!"));
+    }
+
     // -- subSequence(beginIndex)
 
     @Test
@@ -2564,7 +2773,14 @@ public class CharSeqTest {
         assertThat(actual.length()).isEqualTo(0);
     }
 
-    // -- static javaslang.String.of(T...)
+    // -- static javaslang.String.of()
+
+    @Test
+    public void shouldWrapOtherCharSeq() {
+        CharSeq cs1 = CharSeq.of("123");
+        CharSeq cs2 = CharSeq.of(cs1);
+        assertThat(cs1 == cs2).isTrue();
+    }
 
     @Test
     public void shouldCreateSeqOfElements() {
