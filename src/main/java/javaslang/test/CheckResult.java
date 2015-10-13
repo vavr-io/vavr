@@ -91,56 +91,48 @@ public interface CheckResult {
     /**
      * Asserts that this CheckResult is satisfied.
      *
-     * @return this CheckResult
      * @throws AssertionError if this CheckResult is not satisfied.
      */
-    default CheckResult assertIsSatisfied() {
+    default void assertIsSatisfied() {
         if (!isSatisfied()) {
             throw new AssertionError("Expected satisfied check result but was " + this);
         }
-        return this;
     }
 
     /**
      * Asserts that this CheckResult is satisfied with a given exhausted state.
      *
      * @param exhausted The exhausted state to be checked in the case of a satisfied CheckResult.
-     * @return this CheckResult
      * @throws AssertionError if this CheckResult is not satisfied or the exhausted state does not match.
      */
-    default CheckResult assertIsSatisfiedWithExhaustion(boolean exhausted) {
+    default void assertIsSatisfiedWithExhaustion(boolean exhausted) {
         if (!isSatisfied()) {
             throw new AssertionError("Expected satisfied check result but was " + this);
         } else if (isExhausted() != exhausted) {
             throw new AssertionError("Expected satisfied check result to be " + (exhausted ? "" : "not ") + "exhausted but was: " + this);
         }
-        return this;
     }
 
     /**
      * Asserts that this CheckResult is falsified.
      *
-     * @return this CheckResult
      * @throws AssertionError if this CheckResult is not falsified.
      */
-    default CheckResult assertIsFalsified() {
+    default void assertIsFalsified() {
         if (!isFalsified()) {
             throw new AssertionError("Expected falsified check result but was " + this);
         }
-        return this;
     }
 
     /**
      * Asserts that this CheckResult is erroneous.
      *
-     * @return this CheckResult
      * @throws AssertionError if this CheckResult is not erroneous.
      */
-    default CheckResult assertIsErroneous() {
+    default void assertIsErroneous() {
         if (!isErroneous()) {
             throw new AssertionError("Expected erroneous check result but was " + this);
         }
-        return this;
     }
 
     /**
