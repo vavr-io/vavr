@@ -9,6 +9,7 @@ import javaslang.Function1;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.collection.VectorModule.Combinations;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -467,15 +468,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Vector<Vector<T>> combinations(int k) {
-        class Recursion {
-            Vector<Vector<T>> combinations(Vector<T> elements, int k) {
-                return (k == 0)
-                        ? Vector.of(Vector.empty())
-                        : elements.zipWithIndex().flatMap(t -> combinations(elements.drop(t._2 + 1), (k - 1))
-                        .map((Vector<T> c) -> c.prepend(t._1)));
-            }
-        }
-        return new Recursion().combinations(this, Math.max(k, 0));
+        return Combinations.apply(this, Math.max(k, 0));
     }
 
     @Override
@@ -1243,5 +1236,21 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public String toString() {
         return mkString(", ", "Vector(", ")");
+    }
+}
+
+interface VectorModule {
+
+    final class Combinations {
+
+        static <T> Vector<Vector<T>> apply(Vector<T> elements, int k) {
+            if (k == 0) {
+                return Vector.of(Vector.empty());
+            } else {
+                return elements.zipWithIndex().flatMap(t -> apply(elements.drop(t._2 + 1), (k - 1))
+                                .map((Vector<T> c) -> c.prepend(t._1))
+                );
+            }
+        }
     }
 }

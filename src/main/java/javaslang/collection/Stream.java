@@ -1514,11 +1514,13 @@ interface StreamModule {
     final class Combinations {
 
         static <T> Stream<Stream<T>> apply(Stream<T> elements, int k) {
-            return (k == 0)
-                    ? Stream.of(Stream.empty())
-                    : elements.zipWithIndex().flatMap(
-                    t -> apply(elements.drop(t._2 + 1), (k - 1)).map((Stream<T> c) -> c.prepend(t._1)));
-
+            if (k == 0) {
+                return Stream.of(Stream.empty());
+            } else {
+                return elements.zipWithIndex().flatMap(
+                        t -> apply(elements.drop(t._2 + 1), (k - 1)).map((Stream<T> c) -> c.prepend(t._1))
+                );
+            }
         }
     }
 

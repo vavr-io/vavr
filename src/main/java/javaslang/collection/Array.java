@@ -9,6 +9,7 @@ import javaslang.Function1;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.collection.ArrayModule.Combinations;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -497,15 +498,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<Array<T>> combinations(int k) {
-        class Recursion {
-            Array<Array<T>> combinations(Array<T> elements, int k) {
-                return (k == 0)
-                        ? Array.of(Array.empty())
-                        : elements.zipWithIndex().flatMap(t -> combinations(elements.drop(t._2 + 1), (k - 1))
-                        .map((Array<T> c) -> c.prepend(t._1)));
-            }
-        }
-        return new Recursion().combinations(this, Math.max(k, 0));
+        return Combinations.apply(this, Math.max(k, 0));
     }
 
     @SuppressWarnings("unchecked")
@@ -900,7 +893,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> removeAll(java.lang.Iterable<? extends T> elements) {
-        final java.util.Set<T> removed = new HashSet<T>();
+        final java.util.Set<T> removed = new HashSet<>();
         for (T element : elements) {
             removed.add(element);
         }
@@ -957,7 +950,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Array<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final java.util.Set<T> kept = new HashSet<T>();
+        final java.util.Set<T> kept = new HashSet<>();
         for (T element : elements) {
             kept.add(element);
         }
@@ -1235,6 +1228,22 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
                 list.add(it.next());
             }
             return list.toArray();
+        }
+    }
+}
+
+interface ArrayModule {
+
+    final class Combinations {
+
+        static <T> Array<Array<T>> apply(Array<T> elements, int k) {
+            if (k == 0) {
+                return Array.of(Array.empty());
+            } else {
+                return elements.zipWithIndex().flatMap(
+                        t -> apply(elements.drop(t._2 + 1), (k - 1)).map(c -> c.prepend(t._1))
+                );
+            }
         }
     }
 }

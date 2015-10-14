@@ -1553,10 +1553,13 @@ interface ListModule {
     final class Combinations {
 
         static <T> List<List<T>> apply(List<T> elements, int k) {
-            return (k == 0)
-                    ? List.of(List.empty())
-                    : elements.zipWithIndex().flatMap(
-                    t -> apply(elements.drop(t._2 + 1), (k - 1)).map((List<T> c) -> c.prepend(t._1)));
+            if (k == 0) {
+                return List.of(List.empty());
+            } else {
+                return elements.zipWithIndex().flatMap(
+                        t -> apply(elements.drop(t._2 + 1), (k - 1)).map(c -> c.prepend(t._1))
+                );
+            }
         }
     }
 
