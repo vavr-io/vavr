@@ -954,6 +954,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Vector<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
+        // TODO(Eclipse bug): remove cast + SuppressWarnings
         final Vector<T> kept = (Vector<T>) (Object) Vector.ofAll(elements).distinct();
         HashArrayMappedTrie<Integer, T> result = HashArrayMappedTrie.empty();
         for (T element : this) {
