@@ -10,6 +10,10 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
 import javaslang.collection.Tree.Node;
+import javaslang.control.Option;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.IterableAssert;
+import org.assertj.core.api.ObjectAssert;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
@@ -43,27 +47,63 @@ public class TreeTest extends AbstractTraversableTest {
     final Tree<Integer> tree = $(1, $(2, $(4, $(7)), $(5)), $(3, $(6, $(8), $(9))));
 
     @Override
+    protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
+        return new IterableAssert<T>(actual) {
+            @SuppressWarnings("unchecked")
+            @Override
+            public IterableAssert<T> isEqualTo(Object expected) {
+                if (actual instanceof Option) {
+                    final Option<?> opt1 = ((Option<?>) actual);
+                    final Option<?> opt2 = (Option<?>) expected;
+                    Assertions.assertThat(convOption(opt1)).isEqualTo(convOption(opt2));
+                } else if(expected instanceof Map) {
+                    final Map<?,?> map1 = (Map<?,?>) actual;
+                    final Map<?,?> map2 = (Map<?,?>) expected;
+                    Assertions.assertThat(convMap(map1)).isEqualTo(convMap(map2));
+                } else if(expected instanceof Tree) {
+                    assertThat(Stream.ofAll(actual)).isEqualTo(Stream.ofAll((Tree) expected));
+                } else {
+                    Assertions.assertThat(actual).isEqualTo((Iterable<T>) expected);
+                }
+                return this;
+            }
+
+            private Option<?> convOption(Option<?> option) {
+                return option.map(o -> (o instanceof Iterable) ? Stream.ofAll((Iterable<?>) o) : o);
+            }
+
+            private Map<?,?> convMap(Map<?,?> map) {
+                return map.map((k, v) -> Map.Entry.of(k, v instanceof Iterable ? Stream.ofAll((Iterable<?>) v) : v));
+            }
+        };
+    }
+
+    @Override
+    protected <T> ObjectAssert<T> assertThat(T actual) {
+        return new ObjectAssert<T>(actual) {
+            @Override
+            public ObjectAssert<T> isEqualTo(Object expected) {
+                if (actual instanceof Tuple2) {
+                    final Tuple2<?, ?> t1 = (Tuple2<?, ?>) actual;
+                    final Tuple2<?, ?> t2 = (Tuple2<?, ?>) expected;
+                    assertThat((Iterable<?>) t1._1).isEqualTo(t2._1);
+                    assertThat((Iterable<?>) t1._2).isEqualTo(t2._2);
+                    return this;
+                } else {
+                    return super.isEqualTo(expected);
+                }
+            }
+        };
+    }
+
+    @Override
     protected <T> Collector<T, ArrayList<T>, Tree<T>> collector() {
         return Tree.collector();
     }
 
-    /**
-     * Returns **NOT** the empty tree. Use {@code Tree.empty()} instead.
-     * <p>
-     * This method returns {@code Stream.empty()} because most return types of Tree methods are {@code Seq}.
-     *
-     * @param <T> Component type.
-     * @return An empty {@code Seq}.
-     */
     @Override
-    protected <T> Seq<T> empty() {
-        return Stream.empty();
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    protected <T> Seq<T> result(T... elements) {
-        return Stream.of(elements);
+    protected <T> Tree<T> empty() {
+        return Tree.empty();
     }
 
     @Override
@@ -305,7 +345,7 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     @Override
     public void shouldDropNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).drop(-1)).isEqualTo(result(1, 2, 3));
+        assertThat(of(1, 2, 3).drop(-1)).isEqualTo(of(1, 2, 3));
     }
 
     // -- dropRight
@@ -313,7 +353,7 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     @Override
     public void shouldDropRightNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).dropRight(-1)).isEqualTo(result(1, 2, 3));
+        assertThat(of(1, 2, 3).dropRight(-1)).isEqualTo(of(1, 2, 3));
     }
 
     // -- flatMap
