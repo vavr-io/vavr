@@ -48,14 +48,17 @@ public class Euler14Test {
                 .get()).isEqualTo(837799);
     }
 
-    private final static Function2<Long, Long, Long> collatzRecursive = (len, n) -> {
-        if (n == 1) return len + 1;
-        else if (n % 2 == 0) {
-            return Euler14Test.collatzRecursive.apply(len + 1, n / 2);
+    private final static Function1<Long, Long> collatzRecursive = n -> {
+        if(n == 1) {
+            return 1L;
         } else {
-            return Euler14Test.collatzRecursive.apply(len + 1, (3 * n) + 1);
+            if (n % 2 == 0) {
+                return Euler14Test.collatzRecursive.apply(n / 2) + 1;
+            } else {
+                return Euler14Test.collatzRecursive.apply(3 * n + 1) + 1;
+            }
         }
     };
 
-    private final static Function1<Long, Long> collatzSequenceLength = collatzRecursive.memoized().curried().apply(0L);
+    private final static Function1<Long, Long> collatzSequenceLength = collatzRecursive.memoized();
 }
