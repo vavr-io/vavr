@@ -436,7 +436,7 @@ public interface Tree<T> extends Traversable<T> {
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
-            throw new UnsupportedOperationException("reduceRight of empty Tree");
+            throw new NoSuchElementException("reduceRight of empty Tree");
         } else {
             return iterator().reduceRight(op);
         }
