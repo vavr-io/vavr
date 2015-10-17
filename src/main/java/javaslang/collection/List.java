@@ -981,6 +981,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default List<T> removeAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
+        // TODO(Eclipse bug): remove cast + SuppressWarnings
         List<T> removed = (List<T>) (Object) List.ofAll(elements).distinct();
         List<T> result = Nil.instance();
         boolean found = false;
@@ -1028,6 +1029,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default List<T> retainAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
+        // TODO(Eclipse bug): remove cast + SuppressWarnings
         final List<T> kept = (List<T>) (Object) List.ofAll(elements).distinct();
         List<T> result = Nil.instance();
         for (T element : this) {
@@ -1553,10 +1555,13 @@ interface ListModule {
     final class Combinations {
 
         static <T> List<List<T>> apply(List<T> elements, int k) {
-            return (k == 0)
-                    ? List.of(List.empty())
-                    : elements.zipWithIndex().flatMap(
-                    t -> apply(elements.drop(t._2 + 1), (k - 1)).map((List<T> c) -> c.prepend(t._1)));
+            if (k == 0) {
+                return List.of(List.empty());
+            } else {
+                return elements.zipWithIndex().flatMap(
+                        t -> apply(elements.drop(t._2 + 1), (k - 1)).map(c -> c.prepend(t._1))
+                );
+            }
         }
     }
 

@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.collection.CharSeqModule.Combinations;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
@@ -278,15 +279,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public Vector<CharSeq> combinations(int k) {
-        class Recursion {
-            Vector<CharSeq> combinations(CharSeq elements, int k) {
-                return (k == 0)
-                        ? Vector.of(CharSeq.empty())
-                        : elements.zipWithIndex().flatMap(t -> combinations(elements.drop(t._2 + 1), (k - 1))
-                        .map((CharSeq c) -> c.prepend(t._1)));
-            }
-        }
-        return new Recursion().combinations(this, Math.max(k, 0));
+        return Combinations.apply(this, Math.max(k, 0));
     }
 
     @Override
@@ -2313,5 +2306,21 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @FunctionalInterface
     interface CharFunction<R> {
         R apply(char c);
+    }
+}
+
+interface CharSeqModule {
+
+    final class Combinations {
+
+        static Vector<CharSeq> apply(CharSeq elements, int k) {
+            if (k == 0) {
+                return Vector.of(CharSeq.empty());
+            } else {
+                return elements.zipWithIndex().flatMap(
+                        t -> apply(elements.drop(t._2 + 1), (k - 1)).map((CharSeq c) -> c.prepend(t._1))
+                );
+            }
+        }
     }
 }
