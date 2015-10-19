@@ -60,7 +60,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public String toString() {
-        return mkString(", ", "IntMap(", ")");
+        return original.mkString(", ", "IntMap(", ")");
     }
 
     private Object readResolve() {
@@ -121,9 +121,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMap<Object> flatten() {
-        final Seq<Object> seq = original.values().flatten();
-        final Map<Integer, Object> map = seq.zipWithIndex().toMap(t -> Tuple.of(t._2, t._1));
-        return IntMap.of(map);
+        throw new UnsupportedOperationException();
     }
 
     @Override

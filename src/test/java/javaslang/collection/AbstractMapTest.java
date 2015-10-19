@@ -35,7 +35,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 java.lang.Iterable<T> expected = (java.lang.Iterable<T>) obj;
                 java.util.Map<T, Integer> actualMap = countMap(actual);
                 java.util.Map<T, Integer> expectedMap = countMap(expected);
-                assertThat(actualMap.toString()).isEqualTo(expectedMap.toString());
+                assertThat(actualMap.size()).isEqualTo(expectedMap.size());
+                actualMap.forEach((k, v) -> assertThat(v).isEqualTo(expectedMap.get(k)));
                 return this;
             }
 
@@ -211,6 +212,61 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldFindValue() {
         assertThat(emptyMap().put(1, 2).containsValue(2)).isTrue();
         assertThat(emptyMap().put(1, 2).containsValue(1)).isFalse();
+    }
+
+    // -- flatten
+
+    @Override
+    public void shouldFlattenEmptyTraversable() {
+        assertThat(emptyMap().flatten()).isEqualTo(emptyMap());
+    }
+
+    @Override
+    public void shouldFlattenTraversableOfPlainElements() {
+        Map<?,?> actual = emptyMap()
+                .put(0, 1)
+                .put(1, 2)
+                .put(2, 3)
+                .flatten();
+        assertThat(actual).isEqualTo(of(1, 2, 3).original());
+    }
+
+    @Override
+    public void shouldFlattenTraversableOfTraversables() {
+        Map<?,?> actual = emptyMap()
+                .put(0, 1)
+                .put(1, emptyMap()
+                        .put(1, 2)
+                        .put(2, 3))
+                .flatten();
+        assertThat(actual).isEqualTo(of(1, 2, 3).original());
+    }
+
+    @Override
+    public void shouldFlattenTraversableOfTraversablesAndPlainElements() {
+        Map<?,?> actual = emptyMap()
+                .put(0, 1)
+                .put(1, emptyMap()
+                        .put(0, emptyMap()
+                                .put(1, 2)
+                                .put(2, 3))
+                        .put(3, 4))
+                .put(4, 5)
+                .flatten();
+        assertThat(actual).isEqualTo(of(1, 2, 3, 4, 5).original());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void shouldFlattenDifferentElementTypes() {
+        Map<?,?> actual = emptyMap()
+                .put(0, 1)
+                .put(1, "2")
+                .put(2, emptyMap()
+                        .put(2, 3.1415)
+                        .put(3, 1L))
+                .flatten();
+        assertThat(actual).isEqualTo(of(1, "2", 3.1415, 1L).original());
     }
 
     // -- flatMap

@@ -292,7 +292,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     @Override
     public TreeMap<Object, Object> flatten() {
         return flatMap((key, value) -> {
-            if (value instanceof java.lang.Iterable) {
+            if (value instanceof Map) {
+                return ((Map<?,?>) value).flatten();
+            } else if (value instanceof java.lang.Iterable) {
                 final Iterator<?> entries = Iterator
                         .ofAll((java.lang.Iterable<?>) value)
                         .flatten()
