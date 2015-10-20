@@ -72,6 +72,11 @@ public interface Option<T> extends Value<T> {
 
     T get();
 
+    @Override
+    default Option<T> getOption() {
+        return this;
+    }
+
     /**
      * Returns the value if this is a {@code Some} or the {@code other} value if this is a {@code None}.
      * <p>
