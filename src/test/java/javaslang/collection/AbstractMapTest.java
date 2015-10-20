@@ -265,8 +265,10 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 .put(2, emptyMap()
                         .put(2, 3.1415)
                         .put(3, 1L))
+                .put(4, List.of(7, 8))
+                .put(5, List.of(Entry.of(5, "11"), Entry.of(6, "22")))
                 .flatten();
-        assertThat(actual).isEqualTo(of(1, "2", 3.1415, 1L).original());
+        assertThat(actual).isEqualTo(of(1, "2", 3.1415, 1L, List.of(7, 8), "11", "22").original());
     }
 
     // -- flatMap
