@@ -237,7 +237,9 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<Object, Object> flatten() {
         return flatMap((key, value) -> {
-            if (value instanceof java.lang.Iterable) {
+            if (value instanceof Map) {
+                return ((Map<?,?>) value).flatten();
+            } else if (value instanceof java.lang.Iterable) {
                 final Iterator<?> entries = Iterator
                         .ofAll((java.lang.Iterable<?>) value)
                         .flatten()
