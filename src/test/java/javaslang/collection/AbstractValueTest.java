@@ -9,10 +9,7 @@ import javaslang.AbstractIterableTest;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Value;
-import javaslang.control.Match;
-import javaslang.control.None;
-import javaslang.control.Option;
-import javaslang.control.Try;
+import javaslang.control.*;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
@@ -20,6 +17,7 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 public abstract class AbstractValueTest extends AbstractIterableTest {
 
@@ -381,8 +379,27 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
     }
 
     @Test
-    public void shouldConvertToTry() {
+    public void shouldConvertNonEmptyToTry() {
         assertThat(of(1, 2, 3).toTry()).isEqualTo(Try.of(() -> 1));
+    }
+
+    @Test
+    public void shouldConvertEmptyToTry() {
+        final Try<?> actual = empty().toTry();
+        assertThat(actual.isFailure()).isTrue();
+        assertThat(actual.getCause().getCause().getClass()).isEqualTo(NoSuchElementException.class);
+    }
+
+    @Test
+    public void shouldConvertNonEmptyToTryUsingExceptionSupplier() {
+        final Exception x = new Exception("test");
+        assertThat(of(1, 2, 3).toTry(() -> x)).isEqualTo(Try.of(() -> 1));
+    }
+
+    @Test
+    public void shouldConvertEmptyToTryUsingExceptionSupplier() {
+        final Exception x = new Exception("test");
+        assertThat(empty().toTry(() -> x)).isEqualTo(new Failure<>(x));
     }
 
     @Test
