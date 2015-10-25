@@ -13,6 +13,8 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
 
 /**
  * A tuple of two elements which can be seen as cartesian product of two components.
@@ -86,6 +88,11 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
     @Override
     public int arity() {
         return 2;
+    }
+
+    @Override
+    public Seq<?> toSeq() {
+        return List.empty().append(_1).append(_2);
     }
 
     @Override

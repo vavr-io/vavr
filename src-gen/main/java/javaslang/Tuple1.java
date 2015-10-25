@@ -13,6 +13,8 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
 
 /**
  * A tuple of one element which can be seen as cartesian product of one component.
@@ -68,6 +70,11 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
     @Override
     public int arity() {
         return 1;
+    }
+
+    @Override
+    public Seq<?> toSeq() {
+        return List.empty().append(_1);
     }
 
     @Override

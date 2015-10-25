@@ -13,6 +13,8 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
 
 /**
  * A tuple of no elements which can be seen as cartesian product of no components.
@@ -54,6 +56,11 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
     @Override
     public int arity() {
         return 0;
+    }
+
+    @Override
+    public Seq<?> toSeq() {
+        return List.empty();
     }
 
     @Override

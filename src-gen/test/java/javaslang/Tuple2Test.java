@@ -13,6 +13,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Comparator;
 import java.util.Objects;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
 import org.junit.Test;
 
 public class Tuple2Test {
@@ -27,6 +29,12 @@ public class Tuple2Test {
     public void shouldGetArity() {
         final Tuple2<Object, Object> tuple = createTuple();
         assertThat(tuple.arity()).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldConvertToSeq() {
+        final Seq<?> actual = createIntTuple(1, 0).toSeq();
+        assertThat(actual).isEqualTo(List.of(1, 0));
     }
 
     @Test

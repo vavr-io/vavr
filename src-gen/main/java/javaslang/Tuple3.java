@@ -13,6 +13,8 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
 
 /**
  * A tuple of three elements which can be seen as cartesian product of three components.
@@ -104,6 +106,11 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2
     @Override
     public int arity() {
         return 3;
+    }
+
+    @Override
+    public Seq<?> toSeq() {
+        return List.empty().append(_1).append(_2).append(_3);
     }
 
     @Override

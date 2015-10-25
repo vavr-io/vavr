@@ -676,6 +676,8 @@ def generateMainClasses(): Unit = {
       val functionType = s"Function$i"
       val Comparator = im.getType("java.util.Comparator")
       val Objects = im.getType("java.util.Objects")
+      val Seq = im.getType("javaslang.collection.Seq")
+      val List = im.getType("javaslang.collection.List")
 
       xs"""
         /**
@@ -770,6 +772,11 @@ def generateMainClasses(): Unit = {
             }
 
             @Override
+            public $Seq<?> toSeq() {
+                return $List.empty()${(1 to i).gen(j => xs".append(_$j)")};
+            }
+
+            @Override
             public int compareTo($className$generics that) {
                 ${if (i == 0) xs"""
                   return 0;
@@ -854,6 +861,7 @@ def generateMainClasses(): Unit = {
      * Generates Tuple
      */
     def genBaseTuple(im: ImportManager, packageName: String, className: String): String = {
+      val Seq = im.getType("javaslang.collection.Seq")
 
       def genFactoryMethod(i: Int) = {
         val generics = (1 to i).gen(j => s"T$j")(", ")
@@ -887,6 +895,11 @@ def generateMainClasses(): Unit = {
              * @return the number of elements.
              */
             int arity();
+
+            /**
+             * Converts this tuple to {@link javaslang.collection.Seq}.
+             */
+            $Seq<?> toSeq();
 
             // -- factory methods
 
@@ -1482,6 +1495,8 @@ def generateTestClasses(): Unit = {
       genJavaslangFile("javaslang", s"Tuple${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
         val test = im.getType("org.junit.Test")
+        val seq = im.getType("javaslang.collection.Seq")
+        val list = im.getType("javaslang.collection.List")
         val comparator = im.getType("java.util.Comparator")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
         val functionType = s"Function$i"
@@ -1503,6 +1518,12 @@ def generateTestClasses(): Unit = {
               public void shouldGetArity() {
                   final Tuple$i<$generics> tuple = createTuple();
                   $assertThat(tuple.arity()).isEqualTo($i);
+              }
+
+              @$test
+              public void shouldConvertToSeq() {
+                  final $seq<?> actual = createIntTuple(${genArgsForComparing(i, 1)}).toSeq();
+                  $assertThat(actual).isEqualTo($list.of(${genArgsForComparing(i, 1)}));
               }
 
               @$test

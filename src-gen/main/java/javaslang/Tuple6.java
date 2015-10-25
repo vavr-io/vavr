@@ -13,6 +13,8 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
 
 /**
  * A tuple of 6 elements which can be seen as cartesian product of 6 components.
@@ -158,6 +160,11 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
     @Override
     public int arity() {
         return 6;
+    }
+
+    @Override
+    public Seq<?> toSeq() {
+        return List.empty().append(_1).append(_2).append(_3).append(_4).append(_5).append(_6);
     }
 
     @Override

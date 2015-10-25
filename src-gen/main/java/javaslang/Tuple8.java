@@ -13,6 +13,8 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
 
 /**
  * A tuple of 8 elements which can be seen as cartesian product of 8 components.
@@ -194,6 +196,11 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     @Override
     public int arity() {
         return 8;
+    }
+
+    @Override
+    public Seq<?> toSeq() {
+        return List.empty().append(_1).append(_2).append(_3).append(_4).append(_5).append(_6).append(_7).append(_8);
     }
 
     @Override

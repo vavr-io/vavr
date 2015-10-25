@@ -13,6 +13,8 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
 
 /**
  * A tuple of 4 elements which can be seen as cartesian product of 4 components.
@@ -122,6 +124,11 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
     @Override
     public int arity() {
         return 4;
+    }
+
+    @Override
+    public Seq<?> toSeq() {
+        return List.empty().append(_1).append(_2).append(_3).append(_4);
     }
 
     @Override

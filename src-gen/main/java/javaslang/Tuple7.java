@@ -13,6 +13,8 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
 
 /**
  * A tuple of 7 elements which can be seen as cartesian product of 7 components.
@@ -176,6 +178,11 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     @Override
     public int arity() {
         return 7;
+    }
+
+    @Override
+    public Seq<?> toSeq() {
+        return List.empty().append(_1).append(_2).append(_3).append(_4).append(_5).append(_6).append(_7);
     }
 
     @Override
