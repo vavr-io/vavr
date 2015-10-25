@@ -6,10 +6,7 @@
 package javaslang;
 
 import javaslang.collection.*;
-import javaslang.control.None;
-import javaslang.control.Option;
-import javaslang.control.Some;
-import javaslang.control.Try;
+import javaslang.control.*;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -430,9 +427,12 @@ public interface Value<T> extends javaslang.Iterable<T> {
     }
 
     /**
-     * Converts this value to an {@link Option}.
+     * Converts this value to a {@link Try}.
+     * <p>
+     * If this value is undefined, i.e. empty, then a new {@code Failure(NoSuchElementException)} is returned,
+     * otherwise a new {@code Success(value)} is returned.
      *
-     * @return A new {@link Option}.
+     * @return A new {@link Try}.
      */
     default Try<T> toTry() {
         if (this instanceof Try) {
@@ -440,6 +440,20 @@ public interface Value<T> extends javaslang.Iterable<T> {
         } else {
             return Try.of(this::get);
         }
+    }
+
+    /**
+     * Converts this value to a {@link Try}.
+     * <p>
+     * If this value is undefined, i.e. empty, then a new {@code Failure(ifEmpty.get())} is returned,
+     * otherwise a new {@code Success(value)} is returned.
+     *
+     * @param ifEmpty an exception supplier
+     * @return A new {@link Try}.
+     */
+    default Try<T> toTry(Supplier<? extends Throwable> ifEmpty) {
+        Objects.requireNonNull(ifEmpty, "ifEmpty is null");
+        return isEmpty() ? new Failure<>(ifEmpty.get()) : toTry();
     }
 
     /**

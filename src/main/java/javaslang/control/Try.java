@@ -386,7 +386,7 @@ public interface Try<T> extends Value<T> {
      * @param f A recovery function taking a Throwable
      * @return a new Try
      */
-    default Try<T> recover(Function<Throwable, ? extends T> f) {
+    default Try<T> recover(Function<? super Throwable, ? extends T> f) {
         if (isFailure()) {
             return Try.of(() -> f.apply(getCause().getCause()));
         } else {
@@ -402,7 +402,7 @@ public interface Try<T> extends Value<T> {
      * @param f A recovery function taking a Throwable
      * @return a new Try
      */
-    default Try<T> recoverWith(Function<Throwable, Try<T>> f) {
+    default Try<T> recoverWith(Function<? super Throwable, Try<T>> f) {
         if (isFailure()) {
             try {
                 return f.apply(getCause().getCause());
