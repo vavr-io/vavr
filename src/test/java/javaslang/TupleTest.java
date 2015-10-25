@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import javaslang.collection.List;
 import org.junit.Test;
 
 import java.util.Objects;
@@ -30,6 +31,11 @@ public class TupleTest {
     @Test
     public void shouldReturnCorrectArityOfTuple0() {
         assertThat(tuple0().arity()).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldReturnCorrectSeqOfTuple0() {
+        assertThat(tuple0().toSeq()).isEqualTo(List.empty());
     }
 
     @Test

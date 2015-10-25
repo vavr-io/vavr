@@ -164,7 +164,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
 
     @Override
     public Seq<?> toSeq() {
-        return List.empty().append(_1).append(_2).append(_3).append(_4).append(_5).append(_6);
+        return List.empty().prepend(_6).prepend(_5).prepend(_4).prepend(_3).prepend(_2).prepend(_1);
     }
 
     @Override

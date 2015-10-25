@@ -92,7 +92,7 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
 
     @Override
     public Seq<?> toSeq() {
-        return List.empty().append(_1).append(_2);
+        return List.empty().prepend(_2).prepend(_1);
     }
 
     @Override

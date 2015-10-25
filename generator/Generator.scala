@@ -773,7 +773,7 @@ def generateMainClasses(): Unit = {
 
             @Override
             public $Seq<?> toSeq() {
-                return $List.empty()${(1 to i).gen(j => xs".append(_$j)")};
+                return $List.empty()${(i to (1, -1)).gen(j => xs".prepend(_$j)")};
             }
 
             @Override

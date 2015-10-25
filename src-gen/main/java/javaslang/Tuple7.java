@@ -182,7 +182,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
 
     @Override
     public Seq<?> toSeq() {
-        return List.empty().append(_1).append(_2).append(_3).append(_4).append(_5).append(_6).append(_7);
+        return List.empty().prepend(_7).prepend(_6).prepend(_5).prepend(_4).prepend(_3).prepend(_2).prepend(_1);
     }
 
     @Override

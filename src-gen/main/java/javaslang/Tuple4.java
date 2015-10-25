@@ -128,7 +128,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
 
     @Override
     public Seq<?> toSeq() {
-        return List.empty().append(_1).append(_2).append(_3).append(_4);
+        return List.empty().prepend(_4).prepend(_3).prepend(_2).prepend(_1);
     }
 
     @Override
