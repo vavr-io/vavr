@@ -95,8 +95,10 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toSet()}</li>
  * <li>{@link #toStack()}</li>
  * <li>{@link #toStream()}</li>
+ * <li>{@link #toString()}</li>
  * <li>{@link #toTree()}</li>
  * <li>{@link #toTry()}</li>
+ * <li>{@link #toTry(Supplier)}</li>
  * <li>{@link #toVector()}</li>
  * </ul>
  *
