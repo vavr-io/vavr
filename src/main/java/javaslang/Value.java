@@ -33,25 +33,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #get(java.lang.Iterable)}</li>
  * </ul>
  *
- * Filter-monadic operations:
- *
- * <ul>
- * <li>{@link #filter(Predicate)}</li>
- * <li>{@link #flatMap(Function)}</li>
- * <li>{@link #flatten()}</li>
- * <li>{@link #map(Function)}</li>
- * </ul>
- *
- * Side-effects:
- *
- * <ul>
- * <li>{@link #out(PrintStream)}</li>
- * <li>{@link #out(PrintWriter)}</li>
- * <li>{@link #stderr()}</li>
- * <li>{@link #stdout()}</li>
- * </ul>
- *
- * Terminal operations:
+ * Basic operations:
  *
  * <ul>
  * <li>{@link #get()}</li>
@@ -60,23 +42,19 @@ import java.util.stream.StreamSupport;
  * <li>{@link #ifDefined(Object, Object)}</li>
  * <li>{@link #ifEmpty(Supplier, Supplier)}</li>
  * <li>{@link #ifEmpty(Object, Object)}</li>
+ * <li>{@link #isDefined()}</li>
+ * <li>{@link #isEmpty()}</li>
  * <li>{@link #orElse(Object)}</li>
  * <li>{@link #orElseGet(Supplier)}</li>
  * <li>{@link #orElseThrow(Supplier)}</li>
  * </ul>
  *
- * Tests:
- *
- * <ul>
- * <li>{@link #isDefined()}</li>
- * <li>{@link #isEmpty()}</li>
- * </ul>
- *
- * Type conversions:
+ * Conversions:
  *
  * <ul>
  * <li>{@link #toArray()}</li>
  * <li>{@link #toCharSeq()}</li>
+ * <li>{@link #toJavaArray()}</li>
  * <li>{@link #toJavaArray(Class)}</li>
  * <li>{@link #toJavaList()}</li>
  * <li>{@link #toJavaMap(Function)}</li>
@@ -95,6 +73,25 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toTry()}</li>
  * <li>{@link #toTry(Supplier)}</li>
  * <li>{@link #toVector()}</li>
+ * </ul>
+ *
+ * Filter-monadic operations:
+ *
+ * <ul>
+ * <li>{@link #filter(Predicate)}</li>
+ * <li>{@link #flatMap(Function)}</li>
+ * <li>{@link #flatten()}</li>
+ * <li>{@link #map(Function)}</li>
+ * </ul>
+ *
+ * Side-effects:
+ *
+ * <ul>
+ * <li>{@link #out(PrintStream)}</li>
+ * <li>{@link #out(PrintWriter)}</li>
+ * <li>{@link #peek(Consumer)}</li>
+ * <li>{@link #stderr()}</li>
+ * <li>{@link #stdout()}</li>
  * </ul>
  *
  * @param <T> The type of the wrapped value.
@@ -242,6 +239,16 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, FilterM
     }
 
     /**
+     * Performs the given {@code action} on the first element if this is an <em>eager</em> implementation.
+     * Performs the given {@code action} on all elements (the first immediately, successive deferred),
+     * if this is a <em>lazy</em> implementation.
+     *
+     * @param action The action that will be performed on the element(s).
+     * @return this instance
+     */
+    Value<T> peek(Consumer<? super T> action);
+
+    /**
      * Clarifies that values have a proper equals() method implemented.
      * <p>
      * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals-java.lang.Object-">Object.equals(Object)</a>.
@@ -271,11 +278,6 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, FilterM
      */
     @Override
     String toString();
-
-    // -- Adjusted return types of Iterable
-
-    @Override
-    Value<T> peek(Consumer<? super T> action);
 
     // -- Adjusted return types of FilterMonadic
 
@@ -474,7 +476,16 @@ interface Convertible<T> {
     CharSeq toCharSeq();
 
     /**
-     * Converts this value to a Java array.
+     * Converts this value to an untyped Java array.
+     *
+     * @return A new Java array.
+     */
+    default Object[] toJavaArray() {
+        return toJavaList().toArray();
+    }
+
+    /**
+     * Converts this value to a typed Java array.
      *
      * @param componentType Component type of the array
      * @return A new Java array.

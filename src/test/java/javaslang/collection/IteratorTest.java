@@ -49,7 +49,7 @@ public class IteratorTest extends AbstractTraversableOnceTest {
                 if (actual instanceof Tuple2) {
                     final Tuple2<?, ?> t1 = ((Tuple2<?, ?>) actual).map(this::toList);
                     final Tuple2<?, ?> t2 = ((Tuple2<?, ?>) expected).map(this::toList);
-                    Assertions.assertThat(t1).isEqualTo(t2);
+                    Assertions.assertThat((Object) t1).isEqualTo(t2);
                     return this;
                 } else {
                     return super.isEqualTo(expected);
