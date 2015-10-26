@@ -9,6 +9,8 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import javaslang.collection.Seq;
+
 /**
  * The base interface of all tuples.
  *
@@ -23,6 +25,13 @@ public interface Tuple {
      * @return the number of elements.
      */
     int arity();
+
+    /**
+     * Converts this tuple to a sequence.
+     *
+     * @return A new {@code Seq}.
+     */
+    Seq<?> toSeq();
 
     // -- factory methods
 

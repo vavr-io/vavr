@@ -676,6 +676,8 @@ def generateMainClasses(): Unit = {
       val functionType = s"Function$i"
       val Comparator = im.getType("java.util.Comparator")
       val Objects = im.getType("java.util.Objects")
+      val Seq = im.getType("javaslang.collection.Seq")
+      val List = im.getType("javaslang.collection.List")
 
       xs"""
         /**
@@ -807,6 +809,17 @@ def generateMainClasses(): Unit = {
             }
 
             @Override
+            public $Seq<?> toSeq() {
+                ${if (i == 0) xs"""
+                  return $List.empty();
+                """ else xs"""
+                  return $List.of($params);
+                """}
+            }
+
+            // -- Object
+
+            @Override
             public boolean equals(Object o) {
                 ${if (i == 0) xs"""
                   return o == this;
@@ -855,6 +868,8 @@ def generateMainClasses(): Unit = {
      */
     def genBaseTuple(im: ImportManager, packageName: String, className: String): String = {
 
+      val Seq = im.getType("javaslang.collection.Seq")
+
       def genFactoryMethod(i: Int) = {
         val generics = (1 to i).gen(j => s"T$j")(", ")
         val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
@@ -887,6 +902,13 @@ def generateMainClasses(): Unit = {
              * @return the number of elements.
              */
             int arity();
+
+            /**
+             * Converts this tuple to a sequence.
+             *
+             * @return A new {@code Seq}.
+             */
+            $Seq<?> toSeq();
 
             // -- factory methods
 

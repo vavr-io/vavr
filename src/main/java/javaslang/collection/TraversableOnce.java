@@ -110,8 +110,6 @@ import java.util.function.Predicate;
  * <li>{@link #partition(Predicate)}</li>
  * <li>{@link #replace(Object, Object)}</li>
  * <li>{@link #replaceAll(Object, Object)}</li>
- * <li>{@link #sliding(int)}</li>
- * <li>{@link #sliding(int, int)}</li>
  * <li>{@link #span(Predicate)}</li>
  * </ul>
  *
