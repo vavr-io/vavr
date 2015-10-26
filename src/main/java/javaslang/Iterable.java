@@ -16,6 +16,13 @@ import java.util.function.Predicate;
 /**
  * A rich extension of {@code java.lang.Iterable} and basis of all {@link Value} types, e.g. controls, collections et al.
  *
+ * Tests:
+ *
+ * <ul>
+ * <li>{@link #exists(Predicate)}</li>
+ * <li>{@link #forAll(Predicate)}</li>
+ * </ul>
+ *
  * @param <T> Component type
  * @author Daniel Dietrich
  * @since 2.0.0
@@ -29,6 +36,16 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
      */
     @Override
     Iterator<T> iterator();
+
+    /**
+     * Performs the given {@code action} on the first element if this is an <em>eager</em> implementation.
+     * Performs the given {@code action} on all elements (the first immediately, successive deferred),
+     * if this is a <em>lazy</em> implementation.
+     *
+     * @param action The action that will be performed on the element(s).
+     * @return this instance
+     */
+    Iterable<T> peek(Consumer<? super T> action);
 
     /**
      * Tests whether every element of this iterable relates to the corresponding element of another iterable by
