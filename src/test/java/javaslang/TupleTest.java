@@ -66,6 +66,16 @@ public class TupleTest {
     }
 
     @Test
+    public void shouldReturnComparator() {
+        assertThat(Tuple0.comparator().compare(Tuple0.instance(), Tuple0.instance())).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldTransformTuple0() {
+        assertThat(Tuple0.instance().transform(t -> 1) == 1).isTrue();
+    }
+
+    @Test
     public void shouldCompareTuple0() {
         assertThat(Tuple0.instance().compareTo(Tuple0.instance())).isEqualTo(0);
     }
