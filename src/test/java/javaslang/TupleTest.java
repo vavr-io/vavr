@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import javaslang.collection.List;
 import org.junit.Test;
 
 import java.util.Objects;
@@ -33,6 +34,11 @@ public class TupleTest {
     }
 
     @Test
+    public void shouldReturnCorrectSeqOfTuple0() {
+        assertThat(tuple0().toSeq()).isEqualTo(List.empty());
+    }
+
+    @Test
     public void shouldEqualSameTuple0Instances() {
         final Tuple0 t = tuple0();
         assertThat(t.equals(t)).isTrue();
@@ -57,6 +63,16 @@ public class TupleTest {
     public void shouldDeserializeSingletonOfTuple0() {
         Object tuple0 = Serializables.deserialize(Serializables.serialize(Tuple0.instance()));
         assertThat(tuple0 == Tuple0.instance()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnComparator() {
+        assertThat(Tuple0.comparator().compare(Tuple0.instance(), Tuple0.instance())).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldTransformTuple0() {
+        assertThat(Tuple0.instance().transform(t -> 1) == 1).isTrue();
     }
 
     @Test

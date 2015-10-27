@@ -1504,6 +1504,8 @@ def generateTestClasses(): Unit = {
       genJavaslangFile("javaslang", s"Tuple${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
         val test = im.getType("org.junit.Test")
+        val seq = im.getType("javaslang.collection.Seq")
+        val list = im.getType("javaslang.collection.List")
         val comparator = im.getType("java.util.Comparator")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
         val functionType = s"Function$i"
@@ -1525,6 +1527,12 @@ def generateTestClasses(): Unit = {
               public void shouldGetArity() {
                   final Tuple$i<$generics> tuple = createTuple();
                   $assertThat(tuple.arity()).isEqualTo($i);
+              }
+
+              @$test
+              public void shouldConvertToSeq() {
+                  final $seq<?> actual = createIntTuple(${genArgsForComparing(i, 1)}).toSeq();
+                  $assertThat(actual).isEqualTo($list.of(${genArgsForComparing(i, 1)}));
               }
 
               @$test
