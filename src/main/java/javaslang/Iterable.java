@@ -15,6 +15,27 @@ import java.util.function.Predicate;
 
 /**
  * A rich extension of {@code java.lang.Iterable} and basis of all {@link Value} types, e.g. controls, collections et al.
+ * <p>
+ *
+ * Equality:
+ *
+ * <ul>
+ * <li>{@link #corresponds(java.lang.Iterable, BiPredicate)}</li>
+ * <li>{@link #eq(Object)}</li>
+ * <li>{@link #equals(Object)}</li>
+ * </ul>
+ *
+ * java.lang.Iterable extensions:
+ *
+ * <ul>
+ * <li>{@link #exists(Predicate)}</li>
+ * <li>{@link #forAll(Predicate)}</li>
+ * <li>{@link #forEach(Consumer)}</li>
+ * <li>{@link #grouped(int)}</li>
+ * <li>{@link #iterator()}</li>
+ * <li>{@link #sliding(int)}</li>
+ * <li>{@link #sliding(int, int)}</li>
+ * </ul>
  *
  * @param <T> Component type
  * @author Daniel Dietrich
@@ -144,7 +165,7 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
     }
 
     /**
-     * Groups this {@code Traversable} into fixed size blocks.
+     * Groups this {@code Iterable} into fixed size blocks.
      * <p>
      * Let length be the length of this Iterable. Then grouped is defined as follows:
      * <ul>

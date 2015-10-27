@@ -109,11 +109,6 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2
     }
 
     @Override
-    public Seq<?> toSeq() {
-        return List.empty().prepend(_3).prepend(_2).prepend(_1);
-    }
-
-    @Override
     public int compareTo(Tuple3<T1, T2, T3> that) {
         return Tuple3.compareTo(this, that);
     }
@@ -137,6 +132,13 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
+
+    @Override
+    public Seq<?> toSeq() {
+        return List.of(_1, _2, _3);
+    }
+
+    // -- Object
 
     @Override
     public boolean equals(Object o) {

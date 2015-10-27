@@ -199,11 +199,6 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     }
 
     @Override
-    public Seq<?> toSeq() {
-        return List.empty().prepend(_8).prepend(_7).prepend(_6).prepend(_5).prepend(_4).prepend(_3).prepend(_2).prepend(_1);
-    }
-
-    @Override
     public int compareTo(Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> that) {
         return Tuple8.compareTo(this, that);
     }
@@ -227,6 +222,13 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
+
+    @Override
+    public Seq<?> toSeq() {
+        return List.of(_1, _2, _3, _4, _5, _6, _7, _8);
+    }
+
+    // -- Object
 
     @Override
     public boolean equals(Object o) {

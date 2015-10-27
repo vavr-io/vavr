@@ -27,7 +27,9 @@ public interface Tuple {
     int arity();
 
     /**
-     * Converts this tuple to {@link javaslang.collection.Seq}.
+     * Converts this tuple to a sequence.
+     *
+     * @return A new {@code Seq}.
      */
     Seq<?> toSeq();
 

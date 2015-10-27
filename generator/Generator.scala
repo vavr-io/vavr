@@ -772,11 +772,6 @@ def generateMainClasses(): Unit = {
             }
 
             @Override
-            public $Seq<?> toSeq() {
-                return $List.empty()${(i to (1, -1)).gen(j => xs".prepend(_$j)")};
-            }
-
-            @Override
             public int compareTo($className$generics that) {
                 ${if (i == 0) xs"""
                   return 0;
@@ -812,6 +807,17 @@ def generateMainClasses(): Unit = {
                 $Objects.requireNonNull(f, "f is null");
                 return f.apply(this);
             }
+
+            @Override
+            public $Seq<?> toSeq() {
+                ${if (i == 0) xs"""
+                  return $List.empty();
+                """ else xs"""
+                  return $List.of($params);
+                """}
+            }
+
+            // -- Object
 
             @Override
             public boolean equals(Object o) {
@@ -861,6 +867,7 @@ def generateMainClasses(): Unit = {
      * Generates Tuple
      */
     def genBaseTuple(im: ImportManager, packageName: String, className: String): String = {
+
       val Seq = im.getType("javaslang.collection.Seq")
 
       def genFactoryMethod(i: Int) = {
@@ -897,7 +904,9 @@ def generateMainClasses(): Unit = {
             int arity();
 
             /**
-             * Converts this tuple to {@link javaslang.collection.Seq}.
+             * Converts this tuple to a sequence.
+             *
+             * @return A new {@code Seq}.
              */
             $Seq<?> toSeq();
 

@@ -59,11 +59,6 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
     }
 
     @Override
-    public Seq<?> toSeq() {
-        return List.empty();
-    }
-
-    @Override
     public int compareTo(Tuple0 that) {
         return 0;
     }
@@ -79,6 +74,13 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
+
+    @Override
+    public Seq<?> toSeq() {
+        return List.empty();
+    }
+
+    // -- Object
 
     @Override
     public boolean equals(Object o) {

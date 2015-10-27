@@ -181,11 +181,6 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     }
 
     @Override
-    public Seq<?> toSeq() {
-        return List.empty().prepend(_7).prepend(_6).prepend(_5).prepend(_4).prepend(_3).prepend(_2).prepend(_1);
-    }
-
-    @Override
     public int compareTo(Tuple7<T1, T2, T3, T4, T5, T6, T7> that) {
         return Tuple7.compareTo(this, that);
     }
@@ -209,6 +204,13 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
+
+    @Override
+    public Seq<?> toSeq() {
+        return List.of(_1, _2, _3, _4, _5, _6, _7);
+    }
+
+    // -- Object
 
     @Override
     public boolean equals(Object o) {

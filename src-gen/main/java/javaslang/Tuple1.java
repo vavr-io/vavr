@@ -73,11 +73,6 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
     }
 
     @Override
-    public Seq<?> toSeq() {
-        return List.empty().prepend(_1);
-    }
-
-    @Override
     public int compareTo(Tuple1<T1> that) {
         return Tuple1.compareTo(this, that);
     }
@@ -97,6 +92,13 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
+
+    @Override
+    public Seq<?> toSeq() {
+        return List.of(_1);
+    }
+
+    // -- Object
 
     @Override
     public boolean equals(Object o) {
