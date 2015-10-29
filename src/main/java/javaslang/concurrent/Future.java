@@ -268,7 +268,7 @@ final class FutureImpl<T> implements Future<T> {
                 if (isCompleted()) {
                    perform(action);
                 } else if (!isCancelled()) {
-                    actions.enqueue(action);
+                    actions = actions.enqueue(action);
                 }
             }
         }
