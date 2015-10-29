@@ -39,7 +39,7 @@ public class FutureTest {
     }
 
     // checks the invariant for cancelled state
-    void assertCancelled(Future future) {
+    void assertCancelled(Future<?> future) {
         assertThat(future.isCancelled()).isTrue();
         assertThat(future.isCompleted()).isFalse();
         assertThat(future.getValue()).isEqualTo(None.instance());
