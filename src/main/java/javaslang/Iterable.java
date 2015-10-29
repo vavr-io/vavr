@@ -22,7 +22,6 @@ import java.util.function.Predicate;
  * <ul>
  * <li>{@link #corresponds(java.lang.Iterable, BiPredicate)}</li>
  * <li>{@link #eq(Object)}</li>
- * <li>{@link #equals(Object)}</li>
  * </ul>
  *
  * java.lang.Iterable extensions:

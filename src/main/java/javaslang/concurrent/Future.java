@@ -42,7 +42,7 @@ import java.util.function.Consumer;
 public interface Future<T> {
 
     /**
-     * Starts an asynchronous computation, using the {@link ExecutorService} {@link ForkJoinPool#commonPool()}.
+     * Starts an asynchronous computation using the {@link ExecutorService} {@link ForkJoinPool#commonPool()}.
      *
      * @param computation A computation.
      * @param <T>         Type of the computation result.
@@ -55,8 +55,9 @@ public interface Future<T> {
     }
 
     /**
-     * Starts an asynchronous computation, using the given {@link ExecutorService}.
+     * Starts an asynchronous computation using the given {@link ExecutorService}.
      *
+     * @param executorService An executor service.
      * @param computation A computation.
      * @param <T>         Type of the computation result.
      * @return A new Future instance.
