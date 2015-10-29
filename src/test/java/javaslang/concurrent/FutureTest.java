@@ -89,22 +89,13 @@ public class FutureTest {
     public void shouldInterruptLockedFuture() {
 
         final Future<?> future = Future.of(() -> {
-            final Object lock = new Object();
-            synchronized (lock) {
-                lock.wait();
+            while(true) {
+                Try.run(() -> Thread.sleep(100));
             }
-            return null;
         });
 
         future.onComplete(r -> Assertions.fail("future should lock forever"));
-
-        int count = 0;
-        while (!future.isCompleted() && !future.isCancelled()) {
-            Try.run(() -> Thread.sleep(100));
-            if (++count > 3) {
-                future.cancel();
-            }
-        }
+        future.cancel();
 
         assertCancelled(future);
     }
@@ -126,9 +117,10 @@ public class FutureTest {
     static void waitUntil(Supplier<Boolean> condition) {
         int count = 0;
         while(!condition.get()) {
-            Try.run(() -> Thread.sleep(WAIT_MILLIS));
             if (++count > WAIT_COUNT) {
                 fail("Condition not met.");
+            } else {
+                Try.run(() -> Thread.sleep(WAIT_MILLIS));
             }
         }
     }
