@@ -79,6 +79,8 @@ public class FutureTest {
     public void shouldPerformActionAfterFutureCompleted() {
         final int[] actual = new int[] { -1 };
         final Future<Integer> future = Future.of(TRIVIAL_EXECUTOR_SERVICE, () -> 1);
+        assertCompleted(future, 1);
+        assertThat(actual[0]).isEqualTo(-1);
         future.onComplete(result -> actual[0] = result.get());
         assertThat(actual[0]).isEqualTo(1);
     }
