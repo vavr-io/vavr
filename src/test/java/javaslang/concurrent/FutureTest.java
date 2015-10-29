@@ -79,6 +79,8 @@ public class FutureTest {
     public void shouldPerformActionAfterFutureCompleted() {
         final int[] actual = new int[] { -1 };
         final Future<Integer> future = Future.of(TRIVIAL_EXECUTOR_SERVICE, () -> 1);
+        assertCompleted(future, 1);
+        assertThat(actual[0]).isEqualTo(-1);
         future.onComplete(result -> actual[0] = result.get());
         assertThat(actual[0]).isEqualTo(1);
     }
@@ -87,22 +89,13 @@ public class FutureTest {
     public void shouldInterruptLockedFuture() {
 
         final Future<?> future = Future.of(() -> {
-            final Object lock = new Object();
-            synchronized (lock) {
-                lock.wait();
+            while(true) {
+                Try.run(() -> Thread.sleep(100));
             }
-            return null;
         });
 
         future.onComplete(r -> Assertions.fail("future should lock forever"));
-
-        int count = 0;
-        while (!future.isCompleted() && !future.isCancelled()) {
-            Try.run(() -> Thread.sleep(100));
-            if (++count > 3) {
-                future.cancel();
-            }
-        }
+        future.cancel();
 
         assertCancelled(future);
     }
@@ -124,9 +117,10 @@ public class FutureTest {
     static void waitUntil(Supplier<Boolean> condition) {
         int count = 0;
         while(!condition.get()) {
-            Try.run(() -> Thread.sleep(WAIT_MILLIS));
             if (++count > WAIT_COUNT) {
                 fail("Condition not met.");
+            } else {
+                Try.run(() -> Thread.sleep(WAIT_MILLIS));
             }
         }
     }
