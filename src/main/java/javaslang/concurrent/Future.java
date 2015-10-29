@@ -36,6 +36,8 @@ import java.util.function.Consumer;
  * If no {@code Executor} is specified, {@link ForkJoinPool#commonPool()} is used.
  *
  * @param <T> Type of the computation result.
+ * @author Daniel Dietrich
+ * @since 2.0.0
  */
 public interface Future<T> {
 
