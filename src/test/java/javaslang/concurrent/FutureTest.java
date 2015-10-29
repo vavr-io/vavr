@@ -42,7 +42,7 @@ public class FutureTest {
     }
 
     @Test
-    public void shouldPerformActionBeforeFutureCompletes() {
+    public void shouldRegisterCallBackBeforeFutureCompletes() {
 
         // instead of delaying we wait/notify
         final Object lock = new Object();
