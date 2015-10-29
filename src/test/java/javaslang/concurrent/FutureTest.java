@@ -25,8 +25,8 @@ public class FutureTest {
     static final TrivialExecutorService TRIVIAL_EXECUTOR_SERVICE = new TrivialExecutorService();
 
     // Max wait time = WAIT_MILLIS * WAIT_COUNT (however, most probably it will take only WAIT_MILLIS * 1)
-    static final long WAIT_MILLIS = 100;
-    static final int WAIT_COUNT = 50;
+    static final long WAIT_MILLIS = 50;
+    static final int WAIT_COUNT = 100;
 
     @Test
     public void shouldCreateAndCompleteAFutureUsingTrivialExecutorService() {
@@ -69,7 +69,7 @@ public class FutureTest {
         }
 
         // give the future thread some time to complete
-        waitForCompletion(future);
+        waitUntil(future::isCompleted);
 
         // the callback is also executed on its own thread - we have to wait for it to complete.
         waitUntil(() -> actual[0] == expected);
@@ -119,16 +119,6 @@ public class FutureTest {
         assertThat(future.isCancelled()).isFalse();
         assertThat(future.isCompleted()).isTrue();
         assertThat(future.getValue()).isEqualTo(new Some<>(new Success<>(value)));
-    }
-
-    static void waitForCompletion(Future<?> future) {
-        int count = 0;
-        while(!future.isCompleted()) {
-            Try.run(() -> Thread.sleep(WAIT_MILLIS));
-            if (++count > WAIT_COUNT) {
-                fail("Future not completed.");
-            }
-        }
     }
 
     static void waitUntil(Supplier<Boolean> condition) {
