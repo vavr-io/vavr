@@ -41,14 +41,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         this.hash = Lazy.of(() -> Traversable.hash(trie::iterator));
     }
 
-    private static <K, V> HashMap<K, V> of(HashArrayMappedTrie<K, V> trie) {
-        if (trie.isEmpty()) {
-            return empty();
-        } else {
-            return new HashMap<>(trie);
-        }
-    }
-
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.HashMap}.
@@ -217,7 +209,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <U> Seq<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return (Seq<U>) iterator().flatMap(mapper).toStream();
+        return iterator().flatMap(mapper).toStream();
     }
 
     @Override
@@ -347,7 +339,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <U> Seq<U> map(Function<? super Entry<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return (Seq<U>) iterator().map(mapper).toStream();
+        return iterator().map(mapper).toStream();
     }
 
     @Override
@@ -436,7 +428,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         for (K key : keys) {
             result = result.remove(key);
         }
-        return HashMap.of(result);
+        return result.isEmpty() ? empty() : new HashMap<>(result);
     }
 
     @Override
@@ -460,7 +452,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
                 tree = tree.put(entry.key, entry.value);
             }
         }
-        return new HashMap<>(tree);
+        return tree.isEmpty() ? empty() : new HashMap<>(tree);
     }
 
     @Override
