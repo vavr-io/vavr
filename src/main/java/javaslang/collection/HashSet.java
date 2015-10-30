@@ -71,7 +71,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @param <T>     The component type
      * @return A new HashSet instance containing the given element
      */
-    static <T> HashSet<T> of(T element) {
+    public static <T> HashSet<T> of(T element) {
         return HashSet.<T> empty().add(element);
     }
 
@@ -86,7 +86,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    static <T> HashSet<T> of(T... elements) {
+    public static <T> HashSet<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<T, T> tree = HashArrayMappedTrie.empty();
         for (T element : elements) {
@@ -119,7 +119,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @param array a boolean array
      * @return A new HashSet of Boolean values
      */
-    static HashSet<Boolean> ofAll(boolean[] array) {
+    public static HashSet<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }
@@ -130,7 +130,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @param array a byte array
      * @return A new HashSet of Byte values
      */
-    static HashSet<Byte> ofAll(byte[] array) {
+    public static HashSet<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }
@@ -141,7 +141,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @param array a char array
      * @return A new HashSet of Character values
      */
-    static HashSet<Character> ofAll(char[] array) {
+    public static HashSet<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }
@@ -152,7 +152,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @param array a double array
      * @return A new HashSet of Double values
      */
-    static HashSet<Double> ofAll(double[] array) {
+    public static HashSet<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }
@@ -163,7 +163,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @param array a float array
      * @return A new HashSet of Float values
      */
-    static HashSet<Float> ofAll(float[] array) {
+    public static HashSet<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }
@@ -174,7 +174,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @param array an int array
      * @return A new HashSet of Integer values
      */
-    static HashSet<Integer> ofAll(int[] array) {
+    public static HashSet<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }
@@ -185,7 +185,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @param array a long array
      * @return A new HashSet of Long values
      */
-    static HashSet<Long> ofAll(long[] array) {
+    public static HashSet<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }
@@ -196,7 +196,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @param array a short array
      * @return A new HashSet of Short values
      */
-    static HashSet<Short> ofAll(short[] array) {
+    public static HashSet<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }

@@ -256,7 +256,6 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(of(1, 2, 3, 4, 5).original());
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void shouldFlattenDifferentElementTypes() {
         Map<?,?> actual = emptyMap()
