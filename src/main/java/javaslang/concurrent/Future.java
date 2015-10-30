@@ -20,24 +20,16 @@ import java.util.function.Consumer;
 /**
  * A Future is a computation result that becomes available at some point.
  * <p>
- * <strong>State</strong>
- * <p>
- * A Future has four states: complete, cancelled, running and not running.
- * <p>
- * If a Future is <em>not complete</em> and <em>not cancelled</em>, {@code getValue()} returns {@code None}
- * and {@code onComplete()} will then enqueue the given {@code action}.
- * <p>
- * If a Future is <em>complete</em>, {@code getValue()} returns {@code Some(value)}
- * and {@code onComplete()} will immediately perform the given {@code action}.
- * A complete Future cannot be cancelled any more.
- * <p>
- * If a Future is <em>cancelled</em>, {@code getValue()} returns {@code None} and {@code onComplete()} will not
- * perform the given {@code action}.
- * <p>
- * <strong>Execution</strong>
- * <p>
- * Both the given {@code computation} and the given {@code actions} are executed using the underlying {@code Executor}.
- * If no {@code Executor} is specified, {@link ForkJoinPool#commonPool()} is used.
+ * A Future has three disjoint states: pending, completed, cancelled.
+ * <ul>
+ * <li>Pending: The computation is ongoing. Only a pending future may be cancelled.</li>
+ * <li>Completed: The computation finished successfully with a result or failed with an exception.</li>
+ * <li>Cancelled: A pending computation was cancelled. A cancelled Future will never reach the completed state.</li>
+ * </ul>
+ * Callbacks man be registered on a Future at each point of time. These actions are performed as soon as the Future
+ * is completed. An action which is registered on a completed Future is immediately performed. The action may run on
+ * a separate Thread, depending on the underlying ExecutionService. Actions which are registered on a cancelled
+ * Future are never performed.
  *
  * @param <T> Type of the computation result.
  * @author Daniel Dietrich
@@ -46,7 +38,7 @@ import java.util.function.Consumer;
 public interface Future<T> {
 
     /**
-     * Starts an asynchronous computation using the {@link ExecutorService} {@link ForkJoinPool#commonPool()}.
+     * Starts an asynchronous computation using the default {@link ExecutorService} {@link ForkJoinPool#commonPool()}.
      *
      * @param computation A computation.
      * @param <T>         Type of the computation result.
@@ -76,19 +68,9 @@ public interface Future<T> {
     }
 
     /**
-     * Cancels the Future.
-     * <p>
-     * It is ensured that a future that hasn't run yet will never run after this call.
-     * If the Future is running, it may be interrupted.
-     * <p>
-     * If the Future is already completed or cancelled, nothing happens and the result is false.
-     * Otherwise the state will be changed to cancelled and the result is true.
-     * <p>
-     * Please note that (different to {@link java.util.concurrent.Future#cancel(boolean)}) {@code isCompleted()}
-     * (= isDone) and {@code isCancelled()} are mutually exclusive. If a Future {@code isCompleted()}, it is implied
-     * that the Future value is defined, i.e. {@code Some}.
+     * Cancels the Future. A pending Future may be interrupted, depending on the underlying ExecutionService.
      *
-     * @return true, if the Future hasn't run, isn't completed and wasn't cancelled yet, otherwise false.
+     * @return false, if the Future is already completed or cancelled, otherwise true.
      */
     boolean cancel();
 
@@ -107,9 +89,9 @@ public interface Future<T> {
     boolean isCancelled();
 
     /**
-     * Checks if the Future is complete, i.e. has a value.
+     * Checks if the Future is completed, i.e. has a value.
      *
-     * @return true, if the computation finished, false otherwise.
+     * @return true, if the computation successfully finished or failed, false otherwise.
      */
     boolean isCompleted();
 
@@ -135,8 +117,6 @@ public interface Future<T> {
  * <li>{@code job = null}</li>
  * <li>{@code cancelled = false}</li>
  * </ul>
- * The Future is *not* complete and *not* cancelled and does *not* process a computation. New actions may be added.
- * <p>
  * 2) Run
  * <ul>
  * <li>{@code value = None}</li>
@@ -144,17 +124,13 @@ public interface Future<T> {
  * <li>{@code job = java.util.concurrent.Future}</li>
  * <li>{@code cancelled = false}</li>
  * </ul>
- * The Future is *not* complete and *not* cancelled and *does* process a computation. New actions may be added.
- * <p>
  * 3) Complete
  * <ul>
- * <li>{@code value = Some(result)}</li>
+ * <li>{@code value = Some(Try)}</li>
  * <li>{@code actions = null}</li>
  * <li>{@code job = null}</li>
  * <li>{@code cancelled = false}</li>
  * </ul>
- * The Future *is* complete and *not* cancelled. New actions are performed immediately.
- * <p>
  * 4) Cancel
  * <ul>
  * <li>{@code value = None}</li>
@@ -162,7 +138,6 @@ public interface Future<T> {
  * <li>{@code job = null}</li>
  * <li>{@code cancelled = true}</li>
  * </ul>
- * The Future *is* cancelled and *not* complete. New actions are not performed at all.
  *
  * @param <T> Result of the computation.
  */
@@ -174,10 +149,7 @@ final class FutureImpl<T> implements Future<T> {
     private final ExecutorService executorService;
 
     /**
-     * Ensures validity of the {@code Future} invariants reflected by the state of the {@code FutureImpl}
-     * ({@code value}, {@code actions} and {@code job}).
-     * <p>
-     * {@code cancelled} and {@code value} are also accessed for reading without lock and therefore {@code volatile}
+     * Used to synchronize state changes.
      */
     private final Object lock = new Object();
 
@@ -189,25 +161,22 @@ final class FutureImpl<T> implements Future<T> {
     private volatile boolean cancelled = false;
 
     /**
-     * Once the Future is completed, the value is defined and the actions are performed and set to null.
-     * The fields 'value', 'actions' and 'job' are guarded by 'lock'.
-     * Value represents the completed state.
+     * Once the Future is completed, the value is defined.
      *
      * @@GuardedBy("lock")
      */
     private volatile Option<Try<T>> value = None.instance();
 
     /**
-     * The queue of actions is built when calling onComplete() before the Future is completed.
-     * After the Future is completed, the queue is set to null and actions are performed immediately.
+     * The queue of actions is filled when calling onComplete() before the Future is completed or cancelled.
+     * Otherwise actions = null.
      *
      * @@GuardedBy("lock")
      */
     private Queue<Consumer<? super Try<T>>> actions = Queue.empty();
 
     /**
-     * Once a computation is started via run(), the job can be used to control the lifecycle of the computation
-     * and to wait for the result.
+     * Once a computation is started via run(), job is defined and used to control the lifecycle of the computation.
      *
      * @@GuardedBy("lock")
      */
@@ -275,15 +244,11 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     /**
-     * Running this Future.
-     * <p>
+     * Runs a computation using the underlying ExecutorService.
      * If the Future already has been cancelled nothing happens.
-     * <p>
-     * Notes: Running outside of the constructor to ensure 'this' is fully initialized.
-     * This comes handy for Promise, a writable Future.
      *
-     * @throws IllegalStateException if the future is running or completed
-     * @throws NullPointerException  if computation is null.
+     * @throws IllegalStateException if the Future is pending or completed
+     * @throws NullPointerException if {@code computation} is null.
      */
     void run(CheckedSupplier<T> computation) {
         Objects.requireNonNull(computation, "computation is null");
@@ -299,17 +264,17 @@ final class FutureImpl<T> implements Future<T> {
             if (isCompleted()) {
                 throw new IllegalStateException("The Future is completed.");
             }
-            // the current lock ensure that the job is assigned before the computation completes
+            // the current lock ensures that the job is assigned before the computation completes
             job = executorService.submit(() -> {
 
                 final Try<T> value = Try.of(computation);
                 final Queue<Consumer<? super Try<T>>> actions;
 
-                // Depending on the underlying ExecutorService implementation cancel() may have been called without
-                // doing anything at all. In this case the state of this Future is 'cancelled' (by definition), because
-                // there is no way to figure out the semantics of our ExecutorService.
-                // To deal with this, we make additional isCancelled() checks to ensure not to perform actions once
-                // this Future is cancelled.
+                // Depending on the underlying ExecutorService implementation, cancel() may have been called without
+                // doing anything at all. In other words this thread might still run. Then the Future is 'cancelled'
+                // (by definition), because there is no way to figure out the semantics of our ExecutorService.
+                // To deal with threads that still run despite of cancellation, we make additional isCancelled() checks
+                // to ensure 1) not to overwrite the cancelled state and 2) not to perform any actions.
 
                 synchronized (lock) {
                     actions = this.actions;
