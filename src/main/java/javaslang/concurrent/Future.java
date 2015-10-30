@@ -154,13 +154,6 @@ final class FutureImpl<T> implements Future<T> {
     private final Object lock = new Object();
 
     /**
-     * Reflects the cancelled state of the Future.
-     *
-     * @@GuardedBy("lock")
-     */
-    private volatile boolean cancelled = false;
-
-    /**
      * Once the Future is completed, the value is defined.
      *
      * @@GuardedBy("lock")
@@ -183,9 +176,16 @@ final class FutureImpl<T> implements Future<T> {
     private java.util.concurrent.Future<Try<T>> job = null;
 
     /**
+     * Reflects the cancelled state of the Future.
+     *
+     * @@GuardedBy("lock")
+     */
+    private volatile boolean cancelled = false;
+
+    /**
      * Creates a Future, {@link #run(CheckedSupplier)} has to be called separately.
      *
-     * @param executorService An {@link ExecutorService} to start and control a computation.
+     * @param executorService An {@link ExecutorService} to run and control the computation and to perform the actions.
      */
     FutureImpl(ExecutorService executorService) {
         Objects.requireNonNull(executorService, "executorService is null");
@@ -199,8 +199,7 @@ final class FutureImpl<T> implements Future<T> {
                 return false;
             } else {
                 if (job != null) {
-                    // may return false
-                    job.cancel(true);
+                    Try.run(() -> job.cancel(true));
                 }
                 // we know that value is None because we hold the lock and checked it already
                 cancelled = true;
@@ -264,7 +263,9 @@ final class FutureImpl<T> implements Future<T> {
             if (isCompleted()) {
                 throw new IllegalStateException("The Future is completed.");
             }
-            // the current lock ensures that the job is assigned before the computation completes
+            
+            // The current lock ensures that the job is assigned before the computation completes.
+            // If submit() throws, actions and job are in a dirty state, which should not matter.
             job = executorService.submit(() -> {
 
                 final Try<T> value = Try.of(computation);
@@ -296,7 +297,7 @@ final class FutureImpl<T> implements Future<T> {
 
     private void perform(Consumer<? super Try<T>> action) {
         if (!isCancelled()) {
-            executorService.execute(() -> action.accept(value.get()));
+            Try.run(() -> executorService.execute(() -> action.accept(value.get())));
         }
     }
 }
