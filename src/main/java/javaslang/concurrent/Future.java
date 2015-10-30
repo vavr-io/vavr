@@ -263,9 +263,9 @@ final class FutureImpl<T> implements Future<T> {
             if (isCompleted()) {
                 throw new IllegalStateException("The Future is completed.");
             }
-            
+
             // The current lock ensures that the job is assigned before the computation completes.
-            // If submit() throws, actions and job are in a dirty state, which should not matter.
+            // If submit() throws, actions may be in a dirty state, which should not matter.
             job = executorService.submit(() -> {
 
                 final Try<T> value = Try.of(computation);
