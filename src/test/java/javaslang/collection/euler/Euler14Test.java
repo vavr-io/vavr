@@ -6,7 +6,6 @@
 package javaslang.collection.euler;
 
 import javaslang.Function1;
-import javaslang.Function2;
 import javaslang.collection.Stream;
 import org.junit.Test;
 

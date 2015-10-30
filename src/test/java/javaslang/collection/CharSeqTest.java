@@ -1674,7 +1674,6 @@ public class CharSeqTest {
         assertThat(empty().combinations()).isEqualTo(Vector.of(empty()));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldComputeCombinationsOfNonEmptyList() {
         assertThat(CharSeq.of("123").combinations()).isEqualTo(Vector.of(empty(), CharSeq.of("1"), CharSeq.of("2"), CharSeq.of("3"), CharSeq.of("12"), CharSeq.of("13"), CharSeq.of("23"), CharSeq.of("123")));
@@ -1687,7 +1686,6 @@ public class CharSeqTest {
         assertThat(empty().combinations(1)).isEmpty();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldComputeKCombinationsOfNonEmptyList() {
         assertThat(CharSeq.of("123").combinations(2)).isEqualTo(Vector.of(CharSeq.of("12"), CharSeq.of("13"), CharSeq.of("23")));
