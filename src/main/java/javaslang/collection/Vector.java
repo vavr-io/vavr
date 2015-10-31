@@ -457,8 +457,8 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public <U> Vector<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
-        final Vector<? extends U> other = Vector.ofAll(that);
-        return flatMap(a -> other.map(b -> Tuple.of(a, b)));
+        final Vector<U> other = Vector.ofAll(that);
+        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
     }
 
     @Override
@@ -790,8 +790,10 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
                 return Vector.of(this);
             } else {
                 final Vector<Vector<T>> zero = empty();
-                return distinct().foldLeft(zero, (xs, x) -> xs
-                        .appendAll(remove(x).permutations().map((Function<Vector<T>, Vector<T>>) l -> l.prepend(x))));
+                return distinct().foldLeft(zero, (xs, x) -> {
+                    final Function<Vector<T>, Vector<T>> prepend = l -> l.prepend(x);
+                    return xs.appendAll(remove(x).permutations().map(prepend));
+                });
             }
         }
     }
