@@ -209,7 +209,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <U> Seq<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return iterator().flatMap(mapper).toStream();
+        return (Seq<U>) iterator().flatMap(mapper).toStream();
     }
 
     @Override
@@ -339,7 +339,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <U> Seq<U> map(Function<? super Entry<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return iterator().map(mapper).toStream();
+        return (Seq<U>) iterator().map(mapper).toStream();
     }
 
     @Override

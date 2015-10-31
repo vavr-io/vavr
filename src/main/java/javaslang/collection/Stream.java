@@ -604,8 +604,8 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default <U> Stream<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
-        final Stream<? extends U> other = Stream.ofAll(that);
-        return flatMap(a -> other.map(b -> Tuple.of(a, b)));
+        final Stream<U> other = Stream.ofAll(that);
+        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
     }
 
     @Override
@@ -908,8 +908,10 @@ public interface Stream<T> extends LinearSeq<T> {
                 return Stream.of(this);
             } else {
                 final Stream<Stream<T>> zero = Empty.instance();
-                return distinct().foldLeft(zero,
-                        (xs, x) -> xs.appendAll(remove(x).permutations().map(l -> l.prepend(x))));
+                return distinct().foldLeft(zero, (xs, x) -> {
+                    final Function<Stream<T>, Stream<T>> prepend = l -> l.prepend(x);
+                    return xs.appendAll(remove(x).permutations().map(prepend));
+                });
             }
         }
     }

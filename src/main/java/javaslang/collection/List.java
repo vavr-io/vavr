@@ -514,8 +514,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default <U> List<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
-        final List<? extends U> other = unit(that);
-        return flatMap(a -> other.map(b -> Tuple.of(a, b)));
+        final List<U> other = unit(that);
+        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
     }
 
     @Override
@@ -832,8 +832,10 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
                 return List.of(this);
             } else {
                 final List<List<T>> zero = Nil.instance();
-                return distinct().foldLeft(zero,
-                        (xs, x) -> xs.appendAll(remove(x).permutations().map(l -> l.prepend(x))));
+                return distinct().foldLeft(zero, (xs, x) -> {
+                    final Function<List<T>, List<T>> prepend = l -> l.prepend(x);
+                    return xs.appendAll(remove(x).permutations().map(prepend));
+                });
             }
         }
     }
