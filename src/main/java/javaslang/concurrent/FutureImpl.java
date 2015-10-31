@@ -52,6 +52,8 @@ import java.util.function.Consumer;
  * </ul>
  *
  * @param <T> Result of the computation.
+ * @author Daniel Dietrich
+ * @since 2.0.0
  */
 final class FutureImpl<T> implements Future<T> {
 
