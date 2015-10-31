@@ -61,7 +61,7 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
      * is {@code true} for all corresponding elements {@code x} of this iterable and {@code y} of {@code that},
      * otherwise {@code false}.
      */
-    default <U> boolean corresponds(java.lang.Iterable<U> that, BiPredicate<T, U> predicate) {
+    default <U> boolean corresponds(java.lang.Iterable<U> that, BiPredicate<? super T, ? super U> predicate) {
         final java.util.Iterator<T> it1 = iterator();
         final java.util.Iterator<U> it2 = that.iterator();
         while (it1.hasNext() && it2.hasNext()) {

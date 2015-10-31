@@ -32,7 +32,7 @@ public interface Try<T> extends Value<T> {
      * @return {@code Success(supplier.get())} if no exception occurs, otherwise {@code Failure(throwable)} if an
      * exception occurs calling {@code supplier.get()}.
      */
-    static <T> Try<T> of(CheckedSupplier<T> supplier) {
+    static <T> Try<T> of(CheckedSupplier<? extends T> supplier) {
         try {
             return new Success<>(supplier.get());
         } catch (Throwable t) {
