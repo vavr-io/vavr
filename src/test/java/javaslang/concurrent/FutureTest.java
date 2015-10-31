@@ -12,31 +12,20 @@ import javaslang.control.Try;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.*;
-import java.util.function.Supplier;
-
+import static javaslang.concurrent.Concurrent.waitUntil;
 import static org.assertj.core.api.StrictAssertions.assertThat;
-import static org.assertj.core.api.StrictAssertions.fail;
 
 public class FutureTest {
 
-    static final TrivialExecutorService TRIVIAL_EXECUTOR_SERVICE = new TrivialExecutorService();
-
-    // Max wait time = WAIT_MILLIS * WAIT_COUNT (however, most probably it will take only WAIT_MILLIS * 1)
-    static final long WAIT_MILLIS = 50;
-    static final int WAIT_COUNT = 100;
-
     @Test
     public void shouldCreateAndCompleteAFutureUsingTrivialExecutorService() {
-        final Future<Integer> future = Future.of(TRIVIAL_EXECUTOR_SERVICE, () -> 1);
+        final Future<Integer> future = Future.of(TrivialExecutorService.instance(), () -> 1);
         assertCompleted(future, 1);
     }
 
     @Test
     public void shouldNotCancelCompletedFutureUsingTrivialExecutorService() {
-        final Future<Integer> future = Future.of(TRIVIAL_EXECUTOR_SERVICE, () -> 1);
+        final Future<Integer> future = Future.of(TrivialExecutorService.instance(), () -> 1);
         assertThat(future.cancel()).isFalse();
         assertCompleted(future, 1);
     }
@@ -78,7 +67,7 @@ public class FutureTest {
     @Test
     public void shouldPerformActionAfterFutureCompleted() {
         final int[] actual = new int[] { -1 };
-        final Future<Integer> future = Future.of(TRIVIAL_EXECUTOR_SERVICE, () -> 1);
+        final Future<Integer> future = Future.of(TrivialExecutorService.instance(), () -> 1);
         assertCompleted(future, 1);
         assertThat(actual[0]).isEqualTo(-1);
         future.onComplete(result -> actual[0] = result.get());
@@ -89,7 +78,7 @@ public class FutureTest {
     public void shouldInterruptLockedFuture() {
 
         final Future<?> future = Future.of(() -> {
-            while(true) {
+            while (true) {
                 Try.run(() -> Thread.sleep(100));
             }
         });
@@ -112,132 +101,5 @@ public class FutureTest {
         assertThat(future.isCancelled()).isFalse();
         assertThat(future.isCompleted()).isTrue();
         assertThat(future.getValue()).isEqualTo(new Some<>(new Success<>(value)));
-    }
-
-    static void waitUntil(Supplier<Boolean> condition) {
-        int count = 0;
-        while(!condition.get()) {
-            if (++count > WAIT_COUNT) {
-                fail("Condition not met.");
-            } else {
-                Try.run(() -> Thread.sleep(WAIT_MILLIS));
-            }
-        }
-    }
-
-    /**
-     * A submitted Callable is immediately done (without running in a different thread).
-     */
-    static class TrivialExecutorService implements ExecutorService {
-
-        // -- relevant methods
-
-        @Override
-        public <T> Done<T> submit(Callable<T> task) {
-            try {
-                return new Done<>(task.call());
-            } catch (Exception x) {
-                throw new IllegalStateException("Error calling task.", x);
-            }
-        }
-
-
-        @Override
-        public void execute(Runnable command) {
-            command.run();
-        }
-
-        // -- not needed
-
-        @Override
-        public void shutdown() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public List<Runnable> shutdownNow() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean isShutdown() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean isTerminated() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public <T> java.util.concurrent.Future<T> submit(Runnable task, T result) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public java.util.concurrent.Future<?> submit(Runnable task) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public <T> List<java.util.concurrent.Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public <T> List<java.util.concurrent.Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-            throw new UnsupportedOperationException();
-        }
-
-        // -- immediately done future
-
-        static class Done<T> implements java.util.concurrent.Future<T> {
-
-            final T value;
-
-            Done(T value) {
-                this.value = value;
-            }
-
-            @Override
-            public boolean cancel(boolean mayInterruptIfRunning) {
-                return false;
-            }
-
-            @Override
-            public boolean isCancelled() {
-                return false;
-            }
-
-            @Override
-            public boolean isDone() {
-                return true;
-            }
-
-            @Override
-            public T get() {
-                return value;
-            }
-
-            @Override
-            public T get(long timeout, TimeUnit unit) {
-                return value;
-            }
-        }
     }
 }
