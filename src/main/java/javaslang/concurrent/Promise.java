@@ -9,12 +9,18 @@ import javaslang.control.Failure;
 import javaslang.control.Success;
 import javaslang.control.Try;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
+
+import static javaslang.concurrent.Future.DEFAULT_EXECUTOR_SERVICE;
 
 /**
  * A Promise is a write-once wrapper around a read-only Future which can complete the underlying Future with a value
  * or an exception.
+ * <p>
+ * The underlying {@code ExecutorService} is used to execute asynchronous handlers, e.g. via
+ * {@code promise.future().onComplete(...)}.
  *
  * @param <T> The result type of the underlying {@code Future}.
  * @author Daniel Dietrich
@@ -23,113 +29,107 @@ import java.util.concurrent.ForkJoinPool;
 public interface Promise<T> {
 
     /**
-     * Makes a {@code Promise} that isn't fulfilled yet, using the default {@link ExecutorService}
+     * Creates a failed {@code Promise}, backed by the {@link Future#DEFAULT_EXECUTOR_SERVICE}.
+     *
+     * @param exception The reason why it failed.
+     * @param <T>       The value type of a successful result.
+     * @return A failed {@code Promise}.
+     * @throws NullPointerException if exception is null
+     */
+    static <T> Promise<T> failed(Throwable exception) {
+        Objects.requireNonNull(exception, "exception is null");
+        return failed(DEFAULT_EXECUTOR_SERVICE, exception);
+    }
+
+    /**
+     * Creates a failed {@code Promise}, backed by the given {@link ExecutorService}.
+     *
+     * @param executorService An {@code ExecutorService} passed to the underlying {@link Future}.
+     * @param exception       The reason why it failed.
+     * @param <T>             The value type of a successful result.
+     * @return A failed {@code Promise}.
+     * @throws NullPointerException if executorService or exception is null
+     */
+    static <T> Promise<T> failed(ExecutorService executorService, Throwable exception) {
+        Objects.requireNonNull(executorService, "executorService is null");
+        Objects.requireNonNull(exception, "exception is null");
+        return Promise.<T> make(executorService).failure(exception);
+    }
+
+    /**
+     * Creates a {@code Promise} from a {@link Try}, backed by the {@link Future#DEFAULT_EXECUTOR_SERVICE}.
+     *
+     * @param result The result.
+     * @param <T>    The value type of a successful result.
+     * @return A completed {@code Promise} which contains either a {@code Success} or a {@code Failure}.
+     * @throws NullPointerException if result is null
+     */
+    static <T> Promise<T> fromTry(Try<T> result) {
+        return fromTry(DEFAULT_EXECUTOR_SERVICE, result);
+    }
+
+    /**
+     * Creates a {@code Promise} from a {@link Try}, backed by the given {@link ExecutorService}.
+     *
+     * @param executorService An {@code ExecutorService} passed to the underlying {@link Future}.
+     * @param result          The result.
+     * @param <T>             The value type of a successful result.
+     * @return A completed {@code Promise} which contains either a {@code Success} or a {@code Failure}.
+     * @throws NullPointerException if executorService or result is null
+     */
+    static <T> Promise<T> fromTry(ExecutorService executorService, Try<T> result) {
+        Objects.requireNonNull(executorService, "executorService is null");
+        Objects.requireNonNull(result, "result is null");
+        return Promise.<T> make(executorService).complete(result);
+    }
+
+    /**
+     * Makes a {@code Promise} that isn't fulfilled yet, backed by the {@link Future#DEFAULT_EXECUTOR_SERVICE}.
      * {@link ForkJoinPool#commonPool()}.
      *
      * @param <T> Result type of the {@code Promise}.
      * @return A new {@code Promise}.
      */
     static <T> Promise<T> make() {
-        return make(ForkJoinPool.commonPool());
+        return make(DEFAULT_EXECUTOR_SERVICE);
     }
 
     /**
-     * Makes a {@code Promise} that isn't fulfilled yet, using the given {@link ExecutorService}.
+     * Makes a {@code Promise} that isn't fulfilled yet, backed by the given {@link ExecutorService}.
      *
      * @param executorService An {@code ExecutorService} passed to the underlying {@link Future}.
      * @param <T>             Result type of the {@code Promise}.
      * @return A new {@code Promise}.
+     * @throws NullPointerException if executorService is null
      */
     static <T> Promise<T> make(ExecutorService executorService) {
+        Objects.requireNonNull(executorService, "executorService is null");
         return new PromiseImpl<>(new FutureImpl<>(executorService));
     }
 
     /**
-     * Creates a failed {@code Promise} using the default {@link ExecutorService} {@link ForkJoinPool#commonPool()}.
-     * <p>
-     * The {@code ExecutorService} is used to execute asynchronous handlers, e.g. via
-     * {@code promise.future().onComplete(...)}.
-     *
-     * @param exception The reason why it failed.
-     * @param <T>       The value type of a successful result.
-     * @return A failed {@code Promise}.
-     */
-    static <T> Promise<T> failed(Throwable exception) {
-        return Promise.<T> make().failure(exception);
-    }
-
-    /**
-     * Creates a failed {@code Promise} using the given {@link ExecutorService}.
-     * <p>
-     * The {@code ExecutorService} is used to execute asynchronous handlers, e.g. via
-     * {@code promise.future().onComplete(...)}.
-     *
-     * @param executorService An {@code ExecutorService} passed to the underlying {@link Future}.
-     * @param exception       The reason why it failed.
-     * @param <T>             The value type of a successful result.
-     * @return A failed {@code Promise}.
-     */
-    static <T> Promise<T> failed(ExecutorService executorService, Throwable exception) {
-        return Promise.<T> make(executorService).failure(exception);
-    }
-
-    /**
-     * Creates a succeeded {@code Promise} using the default {@link ExecutorService} {@link ForkJoinPool#commonPool()}.
-     * <p>
-     * The {@code ExecutorService} is used to execute asynchronous handlers, e.g. via
-     * {@code promise.future().onComplete(...)}.
+     * Creates a succeeded {@code Promise}, backed by the {@link Future#DEFAULT_EXECUTOR_SERVICE}.
      *
      * @param result The result.
      * @param <T>    The value type of a successful result.
      * @return A succeeded {@code Promise}.
      */
     static <T> Promise<T> successful(T result) {
-        return Promise.<T> make().success(result);
+        return successful(DEFAULT_EXECUTOR_SERVICE, result);
     }
 
     /**
-     * Creates a succeeded {@code Promise} using the given {@link ExecutorService}.
-     * <p>
-     * The {@code ExecutorService} is used to execute asynchronous handlers, e.g. via
-     * {@code promise.future().onComplete(...)}.
+     * Creates a succeeded {@code Promise}, backed by the given {@link ExecutorService}.
      *
      * @param executorService An {@code ExecutorService} passed to the underlying {@link Future}.
      * @param result          The result.
      * @param <T>             The value type of a successful result.
      * @return A succeeded {@code Promise}.
+     * @throws NullPointerException if executorService is null
      */
     static <T> Promise<T> successful(ExecutorService executorService, T result) {
+        Objects.requireNonNull(executorService, "executorService is null");
         return Promise.<T> make(executorService).success(result);
-    }
-
-    /**
-     * Creates a {@code Promise} from a {@link Try} using the default {@link ExecutorService}
-     * {@link ForkJoinPool#commonPool()}.
-     * <p>
-     * The {@code ExecutorService} is used to execute asynchronous handlers, e.g. via
-     * {@code promise.future().onComplete(...)}.
-     *
-     * @param result The result.
-     * @param <T>    The value type of a successful result.
-     * @return A completed {@code Promise} which contains either a {@code Success} or a {@code Failure}.
-     */
-    static <T> Promise<T> fromTry(Try<T> result) {
-        return Promise.<T> make().complete(result);
-    }
-
-    /**
-     * Creates a {@code Promise} from a {@link Try} using the given {@link ExecutorService}.
-     * <p>
-     * The {@code ExecutorService} is used to execute asynchronous handlers, e.g. via
-     * {@code promise.future().onComplete(...)}.
-     *
-     * @param executorService An {@code ExecutorService} passed to the underlying {@link Future}.
-     * @param result          The result.
-     * @param <T>             The value type of a successful result.
-     * @return A completed {@code Promise} which contains either a {@code Success} or a {@code Failure}.
-     */
-    static <T> Promise<T> fromTry(ExecutorService executorService, Try<T> result) {
-        return Promise.<T> make(executorService).complete(result);
     }
 
     /**
