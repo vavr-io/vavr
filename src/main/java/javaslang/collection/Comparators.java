@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
- * This class may move to another package in a future release and is not intended to be public API.
+ * <strong>INTERNAL API - This class is subject to change.</strong>
  */
 final class Comparators {
 
