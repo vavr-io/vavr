@@ -234,7 +234,7 @@ final class FutureImpl<T> implements Future<T> {
         } else {
             synchronized (lock) {
                 if (isCompleted()) {
-                   perform(action);
+                    perform(action);
                 } else if (!isCancelled()) {
                     actions = actions.enqueue(action);
                 }
@@ -247,51 +247,49 @@ final class FutureImpl<T> implements Future<T> {
      * If the Future already has been cancelled nothing happens.
      *
      * @throws IllegalStateException if the Future is pending or completed
-     * @throws NullPointerException if {@code computation} is null.
+     * @throws NullPointerException  if {@code computation} is null.
      */
     void run(CheckedSupplier<T> computation) {
         Objects.requireNonNull(computation, "computation is null");
         synchronized (lock) {
-
-            // guards
-            if (isCancelled()) {
-                return;
-            }
             if (job != null) {
                 throw new IllegalStateException("The Future is already running.");
             }
             if (isCompleted()) {
                 throw new IllegalStateException("The Future is completed.");
             }
+            if (!isCancelled()) {
+                // The current lock ensures that the job is assigned before the computation completes.
+                job = executorService.submit(() -> complete(Try.of(computation)));
+            }
+        }
+    }
 
-            // The current lock ensures that the job is assigned before the computation completes.
-            // If submit() throws, actions may be in a dirty state, which should not matter.
-            job = executorService.submit(() -> {
-
-                final Try<T> value = Try.of(computation);
+    /**
+     * Completes this Future with a value. Does nothing, if the Future is cancelled.
+     *
+     * @param value A Success containing a result or a Failure containing an Exception.
+     * @return The given {@code value} for convenience purpose.
+     * @throws IllegalStateException if the Future is already completed.
+     * @throws NullPointerException if the given {@code value} is null.
+     */
+    Try<T> complete(Try<T> value) {
+        Objects.requireNonNull(value, "value is null");
+        synchronized (lock) {
+            if (isCompleted()) {
+                throw new IllegalStateException("The Future is completed.");
+            }
+            if (!isCancelled()) {
                 final Queue<Consumer<? super Try<T>>> actions;
-
-                // Depending on the underlying ExecutorService implementation, cancel() may have been called without
-                // doing anything at all. In other words this thread might still run. Then the Future is 'cancelled'
-                // (by definition), because there is no way to figure out the semantics of our ExecutorService.
-                // To deal with threads that still run despite of cancellation, we make additional isCancelled() checks
-                // to ensure 1) not to overwrite the cancelled state and 2) not to perform any actions.
-
                 synchronized (lock) {
                     actions = this.actions;
-                    if (!isCancelled()) {
-                        this.value = new Some<>(value);
-                        this.actions = null;
-                        this.job = null;
-                    }
+                    this.value = new Some<>(value);
+                    this.actions = null;
+                    this.job = null;
                 }
-
-                if (!isCancelled()) {
-                    actions.forEach(this::perform);
-                }
-
-                return value;
-            });
+                actions.forEach(this::perform);
+            }
+            return value;
         }
     }
 
