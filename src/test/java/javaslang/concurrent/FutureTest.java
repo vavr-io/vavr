@@ -5,9 +5,9 @@
  */
 package javaslang.concurrent;
 
-import javaslang.control.Some;
-import javaslang.control.Success;
-import javaslang.control.Try;
+import javaslang.collection.Seq;
+import javaslang.collection.Stream;
+import javaslang.control.*;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -17,6 +17,70 @@ import static javaslang.concurrent.Concurrent.waitUntil;
 import static org.assertj.core.api.StrictAssertions.assertThat;
 
 public class FutureTest {
+
+    // -- static failed()
+
+    @Test
+    public void shouldCreateAndFailAFutureUsingForkJoinPool() {
+        final Future<Integer> future = Future.of(() -> {
+            throw new Error();
+        });
+        waitUntil(future::isCompleted);
+        assertFailed(future, Error.class);
+    }
+
+    @Test
+    public void shouldCreateAndFailAFutureUsingTrivialExecutorService() {
+        final Future<Integer> future = Future.of(TrivialExecutorService.instance(), () -> {
+            throw new Error();
+        });
+        assertFailed(future, Error.class);
+    }
+
+    // -- static find()
+
+    @Test
+    public void shouldFindFirstValueThatSatisfiesAPredicateUsingForkJoinPool() {
+        final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.of(() -> i)).take(20);
+        final Future<Option<Integer>> testee = Future.find(futures, i -> i == 13);
+        waitUntil(testee::isCompleted);
+        assertCompleted(testee, new Some<>(13));
+    }
+
+    @Test
+    public void shouldFailFindingFirstValueBecauseNoResultSatisfiesTheGivenPredicateUsingForkJoinPool() {
+        final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.of(() -> i)).take(20);
+        final Future<Option<Integer>> testee = Future.find(futures, i -> false);
+        waitUntil(testee::isCompleted);
+        assertCompleted(testee, None.instance());
+    }
+
+    @Test
+    public void shouldFindOneSucceedingFutureWhenAllOthersFailUsingForkJoinPool() {
+        final Seq<Future<Integer>> futures = Stream.from(1)
+                .map(i -> Future.<Integer> of(() -> {
+                    throw new Error(String.valueOf(i));
+                }))
+                .take(12)
+                .append(Future.of(() -> 13));
+        final Future<Option<Integer>> testee = Future.find(futures, i -> i == 13);
+        waitUntil(testee::isCompleted);
+        assertCompleted(testee, new Some<>(13));
+    }
+
+    @Test
+    public void shouldFindNoneWhenAllFuturesFailUsingForkJoinPool() {
+        final Seq<Future<Integer>> futures = Stream.from(1)
+                .map(i -> Future.<Integer> of(() -> {
+                    throw new Error(String.valueOf(i));
+                }))
+                .take(20);
+        final Future<Option<Integer>> testee = Future.find(futures, i -> i == 13);
+        waitUntil(testee::isCompleted);
+        assertCompleted(testee, None.instance());
+    }
+
+    // -- static of()
 
     @Test
     public void shouldCreateAndCompleteAFutureUsingTrivialExecutorService() {
@@ -30,6 +94,25 @@ public class FutureTest {
         assertThat(future.cancel()).isFalse();
         assertCompleted(future, 1);
     }
+
+    // -- cancel()
+
+    @Test
+    public void shouldInterruptLockedFuture() {
+
+        final Future<?> future = Future.of(() -> {
+            while (true) {
+                Try.run(() -> Thread.sleep(100));
+            }
+        });
+
+        future.onComplete(r -> Assertions.fail("future should lock forever"));
+        future.cancel();
+
+        assertCancelled(future);
+    }
+
+    // -- onComplete()
 
     @Test
     public void shouldRegisterCallbackBeforeFutureCompletes() {
@@ -74,25 +157,16 @@ public class FutureTest {
         assertThat(actual[0]).isEqualTo(1);
     }
 
-    @Test
-    public void shouldInterruptLockedFuture() {
-
-        final Future<?> future = Future.of(() -> {
-            while (true) {
-                Try.run(() -> Thread.sleep(100));
-            }
-        });
-
-        future.onComplete(r -> Assertions.fail("future should lock forever"));
-        future.cancel();
-
-        assertCancelled(future);
-    }
+    // -- (helpers)
 
     // checks the invariant for cancelled state
     static void assertCancelled(Future<?> future) {
+        assertFailed(future, CancellationException.class);
+    }
+
+    static void assertFailed(Future<?> future, Class<? extends Throwable> exception) {
         assertThat(future.isCompleted()).isTrue();
-        assertThat(future.getValue().get().failed().get()).isExactlyInstanceOf(CancellationException.class);
+        assertThat(future.getValue().get().failed().get()).isExactlyInstanceOf(exception);
     }
 
     // checks the invariant for cancelled state

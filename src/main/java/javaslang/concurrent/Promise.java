@@ -64,7 +64,7 @@ public interface Promise<T> {
      * @return A completed {@code Promise} which contains either a {@code Success} or a {@code Failure}.
      * @throws NullPointerException if result is null
      */
-    static <T> Promise<T> fromTry(Try<T> result) {
+    static <T> Promise<T> fromTry(Try<? extends T> result) {
         return fromTry(DEFAULT_EXECUTOR_SERVICE, result);
     }
 
@@ -77,7 +77,7 @@ public interface Promise<T> {
      * @return A completed {@code Promise} which contains either a {@code Success} or a {@code Failure}.
      * @throws NullPointerException if executorService or result is null
      */
-    static <T> Promise<T> fromTry(ExecutorService executorService, Try<T> result) {
+    static <T> Promise<T> fromTry(ExecutorService executorService, Try<? extends T> result) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(result, "result is null");
         return Promise.<T> make(executorService).complete(result);
@@ -271,5 +271,27 @@ final class PromiseImpl<T> implements Promise<T> {
     @Override
     public boolean tryComplete(Try<? extends T> value) {
         return Try.of(() -> future.complete(value)).isSuccess();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof PromiseImpl) {
+            final PromiseImpl<?> that = (PromiseImpl<?>) o;
+            return Objects.equals(this.future, that.future);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return future.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Promise(" + future + ")";
     }
 }
