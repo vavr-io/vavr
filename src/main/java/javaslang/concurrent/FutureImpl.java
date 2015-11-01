@@ -6,12 +6,10 @@
 package javaslang.concurrent;
 
 import javaslang.collection.Queue;
-import javaslang.control.None;
-import javaslang.control.Option;
-import javaslang.control.Some;
-import javaslang.control.Try;
+import javaslang.control.*;
 
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
@@ -27,28 +25,24 @@ import java.util.function.Consumer;
  * <li>{@code value = None}</li>
  * <li>{@code actions = Queue.empty()}</li>
  * <li>{@code job = null}</li>
- * <li>{@code cancelled = false}</li>
  * </ul>
  * 2) Run
  * <ul>
  * <li>{@code value = None}</li>
  * <li>{@code actions = Queue(...)}</li>
  * <li>{@code job = java.util.concurrent.Future}</li>
- * <li>{@code cancelled = false}</li>
  * </ul>
  * 3) Complete
  * <ul>
  * <li>{@code value = Some(Try)}</li>
  * <li>{@code actions = null}</li>
  * <li>{@code job = null}</li>
- * <li>{@code cancelled = false}</li>
  * </ul>
  * 4) Cancel
  * <ul>
- * <li>{@code value = None}</li>
+ * <li>{@code value = Some(Failure)}</li>
  * <li>{@code actions = null}</li>
  * <li>{@code job = null}</li>
- * <li>{@code cancelled = true}</li>
  * </ul>
  *
  * @param <T> Result of the computation.
@@ -90,13 +84,6 @@ final class FutureImpl<T> implements Future<T> {
     private java.util.concurrent.Future<Try<T>> job = null;
 
     /**
-     * Reflects the cancelled state of the Future.
-     *
-     * @@GuardedBy("lock")
-     */
-    private volatile boolean cancelled = false;
-
-    /**
      * Creates a Future, {@link #run(Try.CheckedSupplier)} has to be called separately.
      *
      * @param executorService An {@link ExecutorService} to run and control the computation and to perform the actions.
@@ -109,17 +96,15 @@ final class FutureImpl<T> implements Future<T> {
     @Override
     public boolean cancel() {
         synchronized (lock) {
-            if (isCompleted() || isCancelled()) {
+            if (isCompleted()) {
                 return false;
             } else {
                 if (job != null) {
                     Try.run(() -> job.cancel(true));
                 }
-                // we know that value is None because we hold the lock and checked it already
-                cancelled = true;
+                value = new Some<>(new Failure<>(new CancellationException()));
                 actions = null;
                 job = null;
-                // by definition cancellation succeeded
                 return true;
             }
         }
@@ -136,11 +121,6 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    @Override
     public boolean isCompleted() {
         return value.isDefined();
     }
@@ -154,7 +134,7 @@ final class FutureImpl<T> implements Future<T> {
             synchronized (lock) {
                 if (isCompleted()) {
                     perform(action);
-                } else if (!isCancelled()) {
+                } else {
                     actions = actions.enqueue(action);
                 }
             }
@@ -163,11 +143,10 @@ final class FutureImpl<T> implements Future<T> {
 
     /**
      * Runs a computation using the underlying ExecutorService.
-     * If the Future already has been cancelled nothing happens.
      * <p>
      * DEV-NOTE: Internally this method is called by the static {@code Future} factory methods.
      *
-     * @throws IllegalStateException if the Future is pending or completed
+     * @throws IllegalStateException if the Future is pending, completed or cancelled
      * @throws NullPointerException  if {@code computation} is null.
      */
     void run(Try.CheckedSupplier<? extends T> computation) {
@@ -179,21 +158,19 @@ final class FutureImpl<T> implements Future<T> {
             if (isCompleted()) {
                 throw new IllegalStateException("The Future is completed.");
             }
-            if (!isCancelled()) {
-                // The current lock ensures that the job is assigned before the computation completes.
-                job = executorService.submit(() -> complete(Try.of(computation)));
-            }
+            // The current lock ensures that the job is assigned before the computation completes.
+            job = executorService.submit(() -> complete(Try.of(computation)));
         }
     }
 
     /**
-     * Completes this Future with a value. Does nothing, if the Future is cancelled.
+     * Completes this Future with a value.
      * <p>
      * DEV-NOTE: Internally this method is called by the {@code Future.run()} method and by {@code Promise}.
      *
      * @param value A Success containing a result or a Failure containing an Exception.
      * @return The given {@code value} for convenience purpose.
-     * @throws IllegalStateException if the Future is already completed.
+     * @throws IllegalStateException if the Future is already completed or cancelled.
      * @throws NullPointerException  if the given {@code value} is null.
      */
     @SuppressWarnings("unchecked")
@@ -204,23 +181,19 @@ final class FutureImpl<T> implements Future<T> {
                 throw new IllegalStateException("The Future is completed.");
             }
             final Try<T> that = (Try<T>) value;
-            if (!isCancelled()) {
-                final Queue<Consumer<? super Try<T>>> actions;
-                synchronized (lock) {
-                    actions = this.actions;
-                    this.value = new Some<>(that);
-                    this.actions = null;
-                    this.job = null;
-                }
-                actions.forEach(this::perform);
+            final Queue<Consumer<? super Try<T>>> actions;
+            synchronized (lock) {
+                actions = this.actions;
+                this.value = new Some<>(that);
+                this.actions = null;
+                this.job = null;
             }
+            actions.forEach(this::perform);
             return that;
         }
     }
 
     private void perform(Consumer<? super Try<T>> action) {
-        if (!isCancelled()) {
-            Try.run(() -> executorService.execute(() -> action.accept(value.get())));
-        }
+        Try.run(() -> executorService.execute(() -> action.accept(value.get())));
     }
 }
