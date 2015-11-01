@@ -5,12 +5,13 @@
  */
 package javaslang.concurrent;
 
-import javaslang.control.None;
 import javaslang.control.Some;
 import javaslang.control.Success;
 import javaslang.control.Try;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+
+import java.util.concurrent.CancellationException;
 
 import static javaslang.concurrent.Concurrent.waitUntil;
 import static org.assertj.core.api.StrictAssertions.assertThat;
@@ -49,7 +50,6 @@ public class FutureTest {
         // the future now is on hold and we have time to register a callback
         future.onComplete(result -> actual[0] = result.get());
         assertThat(future.isCompleted()).isFalse();
-        assertThat(future.isCancelled()).isFalse();
         assertThat(actual[0]).isEqualTo(-1);
 
         // now awake the future
@@ -91,14 +91,12 @@ public class FutureTest {
 
     // checks the invariant for cancelled state
     static void assertCancelled(Future<?> future) {
-        assertThat(future.isCancelled()).isTrue();
-        assertThat(future.isCompleted()).isFalse();
-        assertThat(future.getValue()).isEqualTo(None.instance());
+        assertThat(future.isCompleted()).isTrue();
+        assertThat(future.getValue().get().failed().get()).isExactlyInstanceOf(CancellationException.class);
     }
 
     // checks the invariant for cancelled state
     static <T> void assertCompleted(Future<?> future, T value) {
-        assertThat(future.isCancelled()).isFalse();
         assertThat(future.isCompleted()).isTrue();
         assertThat(future.getValue()).isEqualTo(new Some<>(new Success<>(value)));
     }

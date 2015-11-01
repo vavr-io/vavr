@@ -5,40 +5,43 @@
  */
 package javaslang.concurrent;
 
-import javaslang.control.Failure;
-import javaslang.control.Option;
-import javaslang.control.Success;
-import javaslang.control.Try;
+import javaslang.Value;
+import javaslang.collection.Iterator;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
+import javaslang.collection.Stream;
+import javaslang.control.*;
 import javaslang.control.Try.CheckedRunnable;
 import javaslang.control.Try.CheckedSupplier;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
-import java.util.function.Consumer;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.*;
 
 /**
- * A Future is a computation result that becomes available at some point.
+ * A Future is a computation result that becomes available at some point. All operations provided are non-blocking.
  * <p>
  * The underlying {@code ExecutorService} is used to execute asynchronous handlers, e.g. via
  * {@code onComplete(...)}.
  * <p>
- * A Future has three disjoint states: pending, completed, cancelled.
+ * A Future has three two states: pending and completed.
  * <ul>
  * <li>Pending: The computation is ongoing. Only a pending future may be cancelled.</li>
- * <li>Completed: The computation finished successfully with a result or failed with an exception.</li>
- * <li>Cancelled: A pending computation was cancelled. A cancelled Future will never reach the completed state.</li>
+ * <li>Completed: The computation finished successfully with a result, failed with an exception or was cancelled.</li>
  * </ul>
- * Callbacks man be registered on a Future at each point of time. These actions are performed as soon as the Future
+ * Callbacks may be registered on a Future at each point of time. These actions are performed as soon as the Future
  * is completed. An action which is registered on a completed Future is immediately performed. The action may run on
  * a separate Thread, depending on the underlying ExecutionService. Actions which are registered on a cancelled
- * Future are never performed.
+ * Future are performed with the failed result.
  *
  * @param <T> Type of the computation result.
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Future<T> {
+public interface Future<T> extends Value<T> {
 
     /**
      * The default executor service is {@link ForkJoinPool#commonPool()}.
@@ -73,7 +76,63 @@ public interface Future<T> {
         return Promise.<T> failed(executorService, exception).future();
     }
 
-    // TODO: find
+    /**
+     * Returns a {@code Future} that eventually succeeds with the first result of the given {@code Future}s which
+     * matches the given {@code predicate}. If no result matches, the {@code Future} will contain {@link None}.
+     * <p>
+     * The returned {@code Future} is backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
+     *
+     * @param futures   An iterable of futures.
+     * @param predicate A predicate that tests successful future results.
+     * @param <T>       Result type of the futures.
+     * @return A Future of an {@link Option} of the first result of the given {@code futures} that satisfies the given {@code predicate}.
+     * @throws NullPointerException if one of the arguments is null
+     */
+    static <T> Future<Option<T>> find(Iterable<Future<? extends T>> futures, Predicate<? super T> predicate) {
+        return find(DEFAULT_EXECUTOR_SERVICE, futures, predicate);
+    }
+
+    /**
+     * Returns a {@code Future} that eventually succeeds with the first result of the given {@code Future}s which
+     * matches the given {@code predicate}. If no result matches, the {@code Future} will contain {@link None}.
+     * <p>
+     * The returned {@code Future} is backed by the given {@link ExecutorService}.
+     *
+     * @param executorService An executor service.
+     * @param futures         An iterable of futures.
+     * @param predicate       A predicate that tests successful future results.
+     * @param <T>             Result type of the futures.
+     * @return A Future of an {@link Option} of the first result of the given {@code futures} that satisfies the given {@code predicate}.
+     * @throws NullPointerException if one of the arguments is null
+     */
+    static <T> Future<Option<T>> find(ExecutorService executorService, Iterable<Future<? extends T>> futures, Predicate<? super T> predicate) {
+        Objects.requireNonNull(executorService, "executorService is null");
+        Objects.requireNonNull(futures, "futures is null");
+        Objects.requireNonNull(predicate, "predicate is null");
+        final Promise<Option<T>> promise = Promise.make(executorService);
+        final List<Future<? extends T>> list = List.ofAll(futures);
+        if (list.isEmpty()) {
+            promise.success(None.instance());
+        } else {
+            final AtomicInteger count = new AtomicInteger(list.length());
+            list.forEach(future -> future.onComplete(result -> {
+                // if the promise is already completed we already found our result and there is nothing more to do.
+                if (!promise.isCompleted()) {
+                    // when there are no more results we return a None
+                    final boolean wasLast = count.decrementAndGet() == 0;
+                    // when result is a Failure or predicate is false then we check in onFailure for finish
+                    result.filter(predicate)
+                            .onSuccess(value -> promise.trySuccess(new Some<>(value)))
+                            .onFailure(ignored -> {
+                                if (wasLast) {
+                                    promise.trySuccess(None.instance());
+                                }
+                            });
+                }
+            }));
+        }
+        return promise.future();
+    }
 
     /**
      * Returns a new {@code Future} that will contain the result of the first of the given futures that is completed,
@@ -82,6 +141,7 @@ public interface Future<T> {
      * @param futures An iterable of futures.
      * @param <T>     The result type.
      * @return A new {@code Future}.
+     * @throws NullPointerException if futures is null
      */
     static <T> Future<T> firstCompletedOf(Iterable<Future<? extends T>> futures) {
         return firstCompletedOf(DEFAULT_EXECUTOR_SERVICE, futures);
@@ -95,15 +155,60 @@ public interface Future<T> {
      * @param futures         An iterable of futures.
      * @param <T>             The result type.
      * @return A new {@code Future}.
+     * @throws NullPointerException if executorService or futures is null
      */
     static <T> Future<T> firstCompletedOf(ExecutorService executorService, Iterable<Future<? extends T>> futures) {
+        Objects.requireNonNull(executorService, "executorService is null");
+        Objects.requireNonNull(futures, "futures is null");
         final Promise<T> promise = Promise.make(executorService);
         final Consumer<Try<? extends T>> completeFirst = promise::tryComplete;
         futures.forEach(future -> future.onComplete(completeFirst));
         return promise.future();
     }
 
-    // TODO: fold
+    /**
+     * Returns a Future which contains the result of the fold of the given future values. If any future or the fold
+     * fail, the result is a failure.
+     * <p>
+     * The resulting {@code Future} is backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
+     *
+     * @param futures An iterable of futures.
+     * @param zero    The zero element of the fold.
+     * @param f       The fold operation.
+     * @param <T>     The result type of the given {@code Futures}.
+     * @param <U>     The fold result type.
+     * @return A new {@code Future} that will contain the fold result.
+     * @throws NullPointerException if futures or f is null.
+     */
+    static <T, U> Future<U> fold(Iterable<Future<? extends T>> futures, U zero, BiFunction<? super U, ? super T, ? extends U> f) {
+        return fold(DEFAULT_EXECUTOR_SERVICE, futures, zero, f);
+    }
+
+    /**
+     * Returns a Future which contains the result of the fold of the given future values. If any future or the fold
+     * fail, the result is a failure.
+     * <p>
+     * The resulting {@code Future} is backed by the given {@link ExecutorService}.
+     *
+     * @param executorService An {@code ExecutorService}.
+     * @param futures         An iterable of futures.
+     * @param zero            The zero element of the fold.
+     * @param f               The fold operation.
+     * @param <T>             The result type of the given {@code Futures}.
+     * @param <U>             The fold result type.
+     * @return A new {@code Future} that will contain the fold result.
+     * @throws NullPointerException if executorService, futures or f is null.
+     */
+    static <T, U> Future<U> fold(ExecutorService executorService, Iterable<Future<? extends T>> futures, U zero, BiFunction<? super U, ? super T, ? extends U> f) {
+        Objects.requireNonNull(executorService, "executorService is null");
+        Objects.requireNonNull(futures, "futures is null");
+        Objects.requireNonNull(f, "f is null");
+        if (!futures.iterator().hasNext()) {
+            return successful(executorService, zero);
+        } else {
+            return sequence(executorService, futures).map(seq -> seq.foldLeft(zero, f));
+        }
+    }
 
     /**
      * Creates a {@code Future} from a {@link Try}, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
@@ -161,7 +266,42 @@ public interface Future<T> {
         return future;
     }
 
-    // TODO: reduce
+    /**
+     * Returns a Future which contains the reduce result of the given future values. The zero is the result of the
+     * first future that completes. If any future or the reduce operation fail, the result is a failure.
+     * <p>
+     * The resulting {@code Future} is backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
+     *
+     * @param futures An iterable of futures.
+     * @param f       The reduce operation.
+     * @param <T>     The result type of the given {@code Futures}.
+     * @return A new {@code Future} that will contain the reduce result.
+     * @throws NullPointerException if executorService, futures or f is null.
+     */
+    static <T> Future<T> reduce(Iterable<Future<? extends T>> futures, BiFunction<? super T, ? super T, ? extends T> f) {
+        return reduce(DEFAULT_EXECUTOR_SERVICE, futures, f);
+    }
+
+    /**
+     * Returns a Future which contains the reduce result of the given future values. The zero is the result of the
+     * first future that completes. If any future or the reduce operation fail, the result is a failure.
+     * <p>
+     * The resulting {@code Future} is backed by the given {@link ExecutorService}.
+     *
+     * @param executorService An {@code ExecutorService}.
+     * @param futures         An iterable of futures.
+     * @param f               The reduce operation.
+     * @param <T>             The result type of the given {@code Futures}.
+     * @return A new {@code Future} that will contain the reduce result.
+     * @throws NullPointerException if executorService, futures or f is null.
+     */
+    static <T> Future<T> reduce(ExecutorService executorService, Iterable<Future<? extends T>> futures, BiFunction<? super T, ? super T, ? extends T> f) {
+        if (!futures.iterator().hasNext()) {
+            throw new NoSuchElementException("Future.reduce on empty futures");
+        } else {
+            return sequence(futures).map(seq -> seq.reduceLeft(f));
+        }
+    }
 
     /**
      * Runs an asynchronous computation, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
@@ -195,7 +335,41 @@ public interface Future<T> {
         });
     }
 
-    // TODO: sequence
+    /**
+     * Reduces many {@code Future}s into a single {@code Future} by transforming an
+     * {@code Iterable<Future<? extends T>>} into a {@code Future<Seq<T>>}.
+     * <p>
+     * The resulting {@code Future} is backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
+     *
+     * @param futures An {@code Iterable} of {@code Future}s.
+     * @param <T>     Result type of the futures.
+     * @return A {@code Future} of a {@link Seq} of results.
+     * @throws NullPointerException if futures is null.
+     */
+    static <T> Future<Seq<T>> sequence(Iterable<Future<? extends T>> futures) {
+        return sequence(DEFAULT_EXECUTOR_SERVICE, futures);
+    }
+
+    /**
+     * Reduces many {@code Future}s into a single {@code Future} by transforming an
+     * {@code Iterable<Future<? extends T>>} into a {@code Future<Seq<T>>}.
+     * <p>
+     * The resulting {@code Future} is backed by the given {@link ExecutorService}.
+     *
+     * @param executorService An {@code ExecutorService}.
+     * @param futures         An {@code Iterable} of {@code Future}s.
+     * @param <T>             Result type of the futures.
+     * @return A {@code Future} of a {@link Seq} of results.
+     * @throws NullPointerException if executorService or futures is null.
+     */
+    static <T> Future<Seq<T>> sequence(ExecutorService executorService, Iterable<Future<? extends T>> futures) {
+        Objects.requireNonNull(executorService, "executorService is null");
+        Objects.requireNonNull(futures, "futures is null");
+        final Future<Seq<T>> zero = successful(executorService, Stream.empty());
+        final BiFunction<Future<Seq<T>>, Future<? extends T>, Future<Seq<T>>> f =
+                (result, future) -> result.flatMap(seq -> future.map(value -> seq.append(value)));
+        return Iterator.ofAll(futures).foldLeft(zero, f);
+    }
 
     /**
      * Creates a succeeded {@code Future}, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
@@ -222,7 +396,43 @@ public interface Future<T> {
         return Promise.successful(executorService, result).future();
     }
 
-    // TODO: traverse
+    /**
+     * Maps the values of an iterable in parallel to a sequence of mapped values into a single {@code Future} by
+     * transforming an {@code Iterable<? extends T>} into a {@code Future<Seq<U>>}.
+     * <p>
+     * The resulting {@code Future} is backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
+     *
+     * @param values An {@code Iterable} of {@code Future}s.
+     * @param f      A mapper of values to Futures
+     * @param <T>    The type of the given values.
+     * @param <U>    The mapped value type.
+     * @return A {@code Future} of a {@link Seq} of results.
+     * @throws NullPointerException if values or f is null.
+     */
+    static <T, U> Future<Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, Future<? extends U>> f) {
+        return traverse(DEFAULT_EXECUTOR_SERVICE, values, f);
+    }
+
+    /**
+     * Maps the values of an iterable in parallel to a sequence of mapped values into a single {@code Future} by
+     * transforming an {@code Iterable<? extends T>} into a {@code Future<Seq<U>>}.
+     * <p>
+     * The resulting {@code Future} is backed by the given {@link ExecutorService}.
+     *
+     * @param executorService An {@code ExecutorService}.
+     * @param values          An {@code Iterable} of values.
+     * @param f               A mapper of values to Futures
+     * @param <T>    The type of the given values.
+     * @param <U>    The mapped value type.
+     * @return A {@code Future} of a {@link Seq} of results.
+     * @throws NullPointerException if executorService, values or f is null.
+     */
+    static <T, U> Future<Seq<U>> traverse(ExecutorService executorService, Iterable<? extends T> values, Function<? super T, Future<? extends U>> f) {
+        Objects.requireNonNull(executorService, "executorService is null");
+        Objects.requireNonNull(values, "values is null");
+        Objects.requireNonNull(f, "f is null");
+        return sequence(Iterator.ofAll(values).map(f));
+    }
 
     /**
      * Cancels the Future. A pending Future may be interrupted, depending on the underlying ExecutionService.
@@ -246,21 +456,14 @@ public interface Future<T> {
     Option<Try<T>> getValue();
 
     /**
-     * Checks if the Future was cancelled.
-     *
-     * @return true, if the Future was cancelled, false otherwise.
-     */
-    boolean isCancelled();
-
-    /**
      * Checks if the Future is completed, i.e. has a value.
      *
-     * @return true, if the computation successfully finished or failed, false otherwise.
+     * @return true, if the computation successfully finished, failed or was cancelled, false otherwise.
      */
     boolean isCompleted();
 
     /**
-     * Performs the action once the Future is complete. Does nothing if the Future is cancelled.
+     * Performs the action once the Future is complete.
      *
      * @param action An action to be performed when this future is complete.
      * @throws NullPointerException if {@code action} is null.
@@ -268,8 +471,8 @@ public interface Future<T> {
     void onComplete(Consumer<? super Try<T>> action);
 
     /**
-     * Performs the action once the Future is complete and the result is a {@link Failure}.
-     * Does nothing if the Future is cancelled.
+     * Performs the action once the Future is complete and the result is a {@link Failure}. Please note that the
+     * future is also a failure when it was cancelled.
      *
      * @param action An action to be performed when this future failed.
      * @throws NullPointerException if {@code action} is null.
@@ -281,9 +484,8 @@ public interface Future<T> {
 
     /**
      * Performs the action once the Future is complete and the result is a {@link Success}.
-     * Does nothing if the Future is cancelled.
      *
-     * @param action An action to be performed when this future failed.
+     * @param action An action to be performed when this future succeeded.
      * @throws NullPointerException if {@code action} is null.
      */
     default void onSuccess(Consumer<? super T> action) {
@@ -291,4 +493,92 @@ public interface Future<T> {
         onComplete(result -> result.onSuccess(action));
     }
 
+    // -- Value implementation
+
+    @Override
+    default Future<T> filter(Predicate<? super T> predicate) {
+        final Promise<T> promise = Promise.make();
+        onComplete(result -> promise.complete(result.filter(predicate)));
+        return promise.future();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default Future<Object> flatten() {
+        final Promise<Object> promise = Promise.make();
+        onComplete(result -> result
+                        .onSuccess(t -> {
+                            if (t instanceof Future) {
+                                promise.completeWith(((Future<Object>) t).flatten());
+                            } else if (t instanceof Iterable) {
+                                final Object o = Iterator.ofAll(((Iterable<Object>) t)).flatten().get();
+                                promise.success(o);
+                            } else {
+                                promise.success(t);
+                            }
+                        })
+                        .onFailure(promise::failure)
+        );
+        return promise.future();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Future<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+        final Promise<U> promise = Promise.make();
+        onComplete(result -> result.map(mapper::apply)
+                        .onSuccess(us -> {
+                            if (us instanceof Future) {
+                                promise.completeWith((Future<U>) us);
+                            } else {
+                                final java.util.Iterator<? extends U> iter = us.iterator();
+                                if (iter.hasNext()) {
+                                    promise.success(iter.next());
+                                } else {
+                                    promise.complete(new Failure<>(new NoSuchElementException()));
+                                }
+                            }
+                        })
+                        .onFailure(promise::failure)
+        );
+        return promise.future();
+    }
+
+    /**
+     * Returns the value of the future or throws if the value is not yet present. It is essential not to block.
+     *
+     * @return The value of this future.
+     * @throws NoSuchElementException if the future is not completed, failed or was cancelled.
+     */
+    @Override
+    default T get() {
+        return getValue().get().orElseThrow((Supplier<NoSuchElementException>) NoSuchElementException::new);
+    }
+
+    /**
+     * Checks, if this future has a value.
+     *
+     * @return true, if this future succeeded with a value, false otherwise.
+     */
+    @Override
+    default boolean isEmpty() {
+        return getValue().map(Try::isFailure).orElse(true);
+    }
+
+    default Iterator<T> iterator() {
+        return isEmpty() ? Iterator.empty() : Iterator.of(get());
+    }
+
+    @Override
+    default <U> Future<U> map(Function<? super T, ? extends U> mapper) {
+        final Promise<U> promise = Promise.make();
+        onComplete(result -> promise.complete(result.map(mapper)));
+        return promise.future();
+    }
+
+    @Override
+    default Future<T> peek(Consumer<? super T> action) {
+        onSuccess(action);
+        return this;
+    }
 }
