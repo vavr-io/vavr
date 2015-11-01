@@ -116,18 +116,20 @@ public interface Future<T> extends Value<T> {
         } else {
             final AtomicInteger count = new AtomicInteger(list.length());
             list.forEach(future -> future.onComplete(result -> {
-                // if the promise is already completed we already found our result and there is nothing more to do.
-                if (!promise.isCompleted()) {
-                    // when there are no more results we return a None
-                    final boolean wasLast = count.decrementAndGet() == 0;
-                    // when result is a Failure or predicate is false then we check in onFailure for finish
-                    result.filter(predicate)
-                            .onSuccess(value -> promise.trySuccess(new Some<>(value)))
-                            .onFailure(ignored -> {
-                                if (wasLast) {
-                                    promise.trySuccess(None.instance());
-                                }
-                            });
+                synchronized (count) {
+                    // if the promise is already completed we already found our result and there is nothing more to do.
+                    if (!promise.isCompleted()) {
+                        // when there are no more results we return a None
+                        final boolean wasLast = count.decrementAndGet() == 0;
+                        // when result is a Failure or predicate is false then we check in onFailure for finish
+                        result.filter(predicate)
+                                .onSuccess(value -> promise.trySuccess(new Some<>(value)))
+                                .onFailure(ignored -> {
+                                    if (wasLast) {
+                                        promise.trySuccess(None.instance());
+                                    }
+                                });
+                    }
                 }
             }));
         }
