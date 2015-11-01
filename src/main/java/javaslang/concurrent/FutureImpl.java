@@ -94,18 +94,18 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     @Override
-    public boolean cancel() {
+    public boolean cancel(boolean mayInterruptIfRunning) {
         synchronized (lock) {
             if (isCompleted()) {
                 return false;
             } else {
-                if (job != null) {
-                    Try.run(() -> job.cancel(true));
-                }
-                value = new Some<>(new Failure<>(new CancellationException()));
-                actions = null;
-                job = null;
-                return true;
+                return Try.of(() -> job != null && job.cancel(mayInterruptIfRunning)).onSuccess(cancelled -> {
+                    if (cancelled) {
+                        value = new Some<>(new Failure<>(new CancellationException()));
+                        actions = null;
+                        job = null;
+                    }
+                }).orElse(false);
             }
         }
     }
