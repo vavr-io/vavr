@@ -435,11 +435,23 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
+     * Cancels the Future. A running thread is interrupted.
+     *
+     * @return {@code false}, if this {@code Future} is already completed or could not be cancelled, otherwise {@code true}.
+     */
+    default boolean cancel() {
+        return cancel(true);
+    }
+
+    /**
      * Cancels the Future. A pending Future may be interrupted, depending on the underlying ExecutionService.
      *
-     * @return false, if the Future is already completed or cancelled, otherwise true.
+     * @param mayInterruptIfRunning {@code true} if a running thread should be interrupted, otherwise a running thread
+     *                              is allowed to complete its computation.
+     * @return {@code false}, if this {@code Future} is already completed or could not be cancelled, otherwise {@code true}.
+     * @see java.util.concurrent.Future#cancel(boolean)
      */
-    boolean cancel();
+    boolean cancel(boolean mayInterruptIfRunning);
 
     /**
      * Returns the {@link ExecutorService} used by this {@code Future}.
