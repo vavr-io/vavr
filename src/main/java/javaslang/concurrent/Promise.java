@@ -278,6 +278,6 @@ final class PromiseImpl<T> implements Promise<T> {
 
     @Override
     public String toString() {
-        return "Promise(" + future + ")";
+        return "Promise(" + future.getValue().map(String::valueOf).orElse("?") + ")";
     }
 }
