@@ -145,7 +145,7 @@ public class HashSetTest extends AbstractSetTest {
     }
 
     @Override
-    int getPeekNonNilPerformingAnAction() {
+    protected int getPeekNonNilPerformingAnAction() {
         return 1;
     }
 
@@ -334,7 +334,7 @@ public class HashSetTest extends AbstractSetTest {
     }
 
     @Override
-    boolean useIsEqualToInsteadOfIsSameAs() {
+    protected boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
     }
 

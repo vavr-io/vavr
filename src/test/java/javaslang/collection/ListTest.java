@@ -154,7 +154,7 @@ public class ListTest extends AbstractSeqTest {
     }
 
     @Override
-    int getPeekNonNilPerformingAnAction() {
+    protected int getPeekNonNilPerformingAnAction() {
         return 1;
     }
 
@@ -212,7 +212,7 @@ public class ListTest extends AbstractSeqTest {
     }
 
     @Override
-    boolean useIsEqualToInsteadOfIsSameAs() {
+    protected boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
     }
 

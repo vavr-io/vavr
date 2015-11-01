@@ -129,12 +129,12 @@ public class IteratorTest extends AbstractTraversableOnceTest {
     }
 
     @Override
-    boolean useIsEqualToInsteadOfIsSameAs() {
+    protected boolean useIsEqualToInsteadOfIsSameAs() {
         return true;
     }
 
     @Override
-    int getPeekNonNilPerformingAnAction() {
+    protected int getPeekNonNilPerformingAnAction() {
         return 3;
     }
 

@@ -240,7 +240,7 @@ public class StreamTest extends AbstractSeqTest {
     // -- peek
 
     @Override
-    int getPeekNonNilPerformingAnAction() {
+    protected int getPeekNonNilPerformingAnAction() {
         return 3;
     }
 
@@ -359,7 +359,7 @@ public class StreamTest extends AbstractSeqTest {
     }
 
     @Override
-    boolean useIsEqualToInsteadOfIsSameAs() {
+    protected boolean useIsEqualToInsteadOfIsSameAs() {
         return true;
     }
 
