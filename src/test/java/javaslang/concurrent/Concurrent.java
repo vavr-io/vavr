@@ -6,6 +6,7 @@
 package javaslang.concurrent;
 
 import javaslang.control.Try;
+import javaslang.control.Try.CheckedSupplier;
 
 import java.util.Random;
 import java.util.function.Supplier;
@@ -45,5 +46,19 @@ interface Concurrent {
      */
     static void zZz() {
         Try.run(() -> Thread.sleep(RND.nextInt(SLEEP_MAX_MILLIS)));
+    }
+
+    static <T> CheckedSupplier<T> zZz(T value) {
+        return () -> {
+            zZz();
+            return value;
+        };
+    }
+
+    static <T, X extends Throwable> CheckedSupplier<T> zZz(X exception) {
+        return () -> {
+            zZz();
+            throw exception;
+        };
     }
 }

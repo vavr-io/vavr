@@ -96,12 +96,12 @@ public class TreeSetTest extends AbstractSortedSetTest {
     }
 
     @Override
-    boolean useIsEqualToInsteadOfIsSameAs() {
+    protected boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
     }
 
     @Override
-    int getPeekNonNilPerformingAnAction() {
+    protected int getPeekNonNilPerformingAnAction() {
         return 1;
     }
 

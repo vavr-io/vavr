@@ -236,7 +236,7 @@ public interface Future<T> extends Value<T> {
     static <T> Future<T> fromTry(ExecutorService executorService, Try<? extends T> result) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(result, "result is null");
-        return Promise.fromTry(executorService, result).future();
+        return Promise.<T> fromTry(executorService, result).future();
     }
 
     /**
@@ -301,7 +301,7 @@ public interface Future<T> extends Value<T> {
         if (!futures.iterator().hasNext()) {
             throw new NoSuchElementException("Future.reduce on empty futures");
         } else {
-            return sequence(futures).map(seq -> seq.reduceLeft(f));
+            return Future.<T> sequence(futures).map(seq -> seq.reduceLeft(f));
         }
     }
 
@@ -342,6 +342,29 @@ public interface Future<T> extends Value<T> {
      * {@code Iterable<Future<? extends T>>} into a {@code Future<Seq<T>>}.
      * <p>
      * The resulting {@code Future} is backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
+     *
+     * <ul>
+     * <li>
+     * If all of the given Futures succeed, sequence() succeeds too:
+     * <pre><code>// = Future(Success(Seq(1, 2)))
+     * sequence(
+     *     List.of(
+     *         Future.of(() -&gt; 1),
+     *         Future.of(() -&gt; 2)
+     *     )
+     * );</code></pre>
+     * </li>
+     * <li>
+     * If a given Future fails, sequence() fails too:
+     * <pre><code>// = Future(Failure(Error)))
+     * sequence(
+     *     List.of(
+     *         Future.of(() -&gt; 1),
+     *         Future.of(() -&gt; { throw new Error(); }
+     *     )
+     * );</code></pre>
+     * </li>
+     * </ul>
      *
      * @param futures An {@code Iterable} of {@code Future}s.
      * @param <T>     Result type of the futures.

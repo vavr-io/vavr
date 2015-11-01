@@ -105,12 +105,12 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     abstract protected <K, V> Map<K, V> mapOf(Entry<? extends K, ? extends V>... entries);
 
     @Override
-    boolean useIsEqualToInsteadOfIsSameAs() {
+    protected boolean useIsEqualToInsteadOfIsSameAs() {
         return true;
     }
 
     @Override
-    int getPeekNonNilPerformingAnAction() {
+    protected int getPeekNonNilPerformingAnAction() {
         return 1;
     }
 
