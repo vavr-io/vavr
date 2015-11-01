@@ -88,7 +88,7 @@ public interface Future<T> extends Value<T> {
      * @return A Future of an {@link Option} of the first result of the given {@code futures} that satisfies the given {@code predicate}.
      * @throws NullPointerException if one of the arguments is null
      */
-    static <T> Future<Option<T>> find(Iterable<Future<? extends T>> futures, Predicate<? super T> predicate) {
+    static <T> Future<Option<T>> find(Iterable<? extends Future<? extends T>> futures, Predicate<? super T> predicate) {
         return find(DEFAULT_EXECUTOR_SERVICE, futures, predicate);
     }
 
@@ -105,7 +105,7 @@ public interface Future<T> extends Value<T> {
      * @return A Future of an {@link Option} of the first result of the given {@code futures} that satisfies the given {@code predicate}.
      * @throws NullPointerException if one of the arguments is null
      */
-    static <T> Future<Option<T>> find(ExecutorService executorService, Iterable<Future<? extends T>> futures, Predicate<? super T> predicate) {
+    static <T> Future<Option<T>> find(ExecutorService executorService, Iterable<? extends Future<? extends T>> futures, Predicate<? super T> predicate) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(futures, "futures is null");
         Objects.requireNonNull(predicate, "predicate is null");
@@ -143,7 +143,7 @@ public interface Future<T> extends Value<T> {
      * @return A new {@code Future}.
      * @throws NullPointerException if futures is null
      */
-    static <T> Future<T> firstCompletedOf(Iterable<Future<? extends T>> futures) {
+    static <T> Future<T> firstCompletedOf(Iterable<? extends Future<? extends T>> futures) {
         return firstCompletedOf(DEFAULT_EXECUTOR_SERVICE, futures);
     }
 
@@ -157,7 +157,7 @@ public interface Future<T> extends Value<T> {
      * @return A new {@code Future}.
      * @throws NullPointerException if executorService or futures is null
      */
-    static <T> Future<T> firstCompletedOf(ExecutorService executorService, Iterable<Future<? extends T>> futures) {
+    static <T> Future<T> firstCompletedOf(ExecutorService executorService, Iterable<? extends Future<? extends T>> futures) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(futures, "futures is null");
         final Promise<T> promise = Promise.make(executorService);
@@ -180,7 +180,7 @@ public interface Future<T> extends Value<T> {
      * @return A new {@code Future} that will contain the fold result.
      * @throws NullPointerException if futures or f is null.
      */
-    static <T, U> Future<U> fold(Iterable<Future<? extends T>> futures, U zero, BiFunction<? super U, ? super T, ? extends U> f) {
+    static <T, U> Future<U> fold(Iterable<? extends Future<? extends T>> futures, U zero, BiFunction<? super U, ? super T, ? extends U> f) {
         return fold(DEFAULT_EXECUTOR_SERVICE, futures, zero, f);
     }
 
@@ -199,7 +199,7 @@ public interface Future<T> extends Value<T> {
      * @return A new {@code Future} that will contain the fold result.
      * @throws NullPointerException if executorService, futures or f is null.
      */
-    static <T, U> Future<U> fold(ExecutorService executorService, Iterable<Future<? extends T>> futures, U zero, BiFunction<? super U, ? super T, ? extends U> f) {
+    static <T, U> Future<U> fold(ExecutorService executorService, Iterable<? extends Future<? extends T>> futures, U zero, BiFunction<? super U, ? super T, ? extends U> f) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(futures, "futures is null");
         Objects.requireNonNull(f, "f is null");
@@ -218,7 +218,7 @@ public interface Future<T> extends Value<T> {
      * @return A completed {@code Future} which contains either a {@code Success} or a {@code Failure}.
      * @throws NullPointerException if result is null
      */
-    static <T> Future<T> fromTry(Try<T> result) {
+    static <T> Future<T> fromTry(Try<? extends T> result) {
         return fromTry(DEFAULT_EXECUTOR_SERVICE, result);
     }
 
@@ -231,7 +231,7 @@ public interface Future<T> extends Value<T> {
      * @return A completed {@code Future} which contains either a {@code Success} or a {@code Failure}.
      * @throws NullPointerException if executorService or result is null
      */
-    static <T> Future<T> fromTry(ExecutorService executorService, Try<T> result) {
+    static <T> Future<T> fromTry(ExecutorService executorService, Try<? extends T> result) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(result, "result is null");
         return Promise.fromTry(executorService, result).future();
@@ -278,7 +278,7 @@ public interface Future<T> extends Value<T> {
      * @return A new {@code Future} that will contain the reduce result.
      * @throws NullPointerException if executorService, futures or f is null.
      */
-    static <T> Future<T> reduce(Iterable<Future<? extends T>> futures, BiFunction<? super T, ? super T, ? extends T> f) {
+    static <T> Future<T> reduce(Iterable<? extends Future<? extends T>> futures, BiFunction<? super T, ? super T, ? extends T> f) {
         return reduce(DEFAULT_EXECUTOR_SERVICE, futures, f);
     }
 
@@ -295,7 +295,7 @@ public interface Future<T> extends Value<T> {
      * @return A new {@code Future} that will contain the reduce result.
      * @throws NullPointerException if executorService, futures or f is null.
      */
-    static <T> Future<T> reduce(ExecutorService executorService, Iterable<Future<? extends T>> futures, BiFunction<? super T, ? super T, ? extends T> f) {
+    static <T> Future<T> reduce(ExecutorService executorService, Iterable<? extends Future<? extends T>> futures, BiFunction<? super T, ? super T, ? extends T> f) {
         if (!futures.iterator().hasNext()) {
             throw new NoSuchElementException("Future.reduce on empty futures");
         } else {
@@ -346,7 +346,7 @@ public interface Future<T> extends Value<T> {
      * @return A {@code Future} of a {@link Seq} of results.
      * @throws NullPointerException if futures is null.
      */
-    static <T> Future<Seq<T>> sequence(Iterable<Future<? extends T>> futures) {
+    static <T> Future<Seq<T>> sequence(Iterable<? extends Future<? extends T>> futures) {
         return sequence(DEFAULT_EXECUTOR_SERVICE, futures);
     }
 
@@ -362,12 +362,12 @@ public interface Future<T> extends Value<T> {
      * @return A {@code Future} of a {@link Seq} of results.
      * @throws NullPointerException if executorService or futures is null.
      */
-    static <T> Future<Seq<T>> sequence(ExecutorService executorService, Iterable<Future<? extends T>> futures) {
+    static <T> Future<Seq<T>> sequence(ExecutorService executorService, Iterable<? extends Future<? extends T>> futures) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(futures, "futures is null");
         final Future<Seq<T>> zero = successful(executorService, Stream.empty());
         final BiFunction<Future<Seq<T>>, Future<? extends T>, Future<Seq<T>>> f =
-                (result, future) -> result.flatMap(seq -> future.map(value -> seq.append(value)));
+                (result, future) -> result.flatMap(seq -> future.map(seq::append));
         return Iterator.ofAll(futures).foldLeft(zero, f);
     }
 
@@ -403,14 +403,14 @@ public interface Future<T> extends Value<T> {
      * The resulting {@code Future} is backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
      *
      * @param values An {@code Iterable} of {@code Future}s.
-     * @param f      A mapper of values to Futures
+     * @param mapper A mapper of values to Futures
      * @param <T>    The type of the given values.
      * @param <U>    The mapped value type.
      * @return A {@code Future} of a {@link Seq} of results.
      * @throws NullPointerException if values or f is null.
      */
-    static <T, U> Future<Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, Future<? extends U>> f) {
-        return traverse(DEFAULT_EXECUTOR_SERVICE, values, f);
+    static <T, U> Future<Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Future<? extends U>> mapper) {
+        return traverse(DEFAULT_EXECUTOR_SERVICE, values, mapper);
     }
 
     /**
@@ -421,17 +421,17 @@ public interface Future<T> extends Value<T> {
      *
      * @param executorService An {@code ExecutorService}.
      * @param values          An {@code Iterable} of values.
-     * @param f               A mapper of values to Futures
-     * @param <T>    The type of the given values.
-     * @param <U>    The mapped value type.
+     * @param mapper          A mapper of values to Futures
+     * @param <T>             The type of the given values.
+     * @param <U>             The mapped value type.
      * @return A {@code Future} of a {@link Seq} of results.
      * @throws NullPointerException if executorService, values or f is null.
      */
-    static <T, U> Future<Seq<U>> traverse(ExecutorService executorService, Iterable<? extends T> values, Function<? super T, Future<? extends U>> f) {
+    static <T, U> Future<Seq<U>> traverse(ExecutorService executorService, Iterable<? extends T> values, Function<? super T, ? extends Future<? extends U>> mapper) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(values, "values is null");
-        Objects.requireNonNull(f, "f is null");
-        return sequence(Iterator.ofAll(values).map(f));
+        Objects.requireNonNull(mapper, "mapper is null");
+        return sequence(Iterator.ofAll(values).map(mapper));
     }
 
     /**
@@ -565,6 +565,7 @@ public interface Future<T> extends Value<T> {
         return getValue().map(Try::isFailure).orElse(true);
     }
 
+    @Override
     default Iterator<T> iterator() {
         return isEmpty() ? Iterator.empty() : Iterator.of(get());
     }
