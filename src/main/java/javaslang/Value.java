@@ -548,12 +548,12 @@ interface Convertible<T> {
     /**
      * Converts this value to a {@link Map}.
      *
-     * @param f   A function that maps an element to a key/value pair represented by Tuple2
-     * @param <K> The key type
-     * @param <V> The value type
+     * @param mapper A function that maps an element to a key/value pair represented by Tuple2
+     * @param <K>    The key type
+     * @param <V>    The value type
      * @return A new {@link HashMap}.
      */
-    <K, V> Map<K, V> toMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f);
+    <K, V> Map<K, V> toMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> mapper);
 
     /**
      * Converts this value to an {@link Option}.
