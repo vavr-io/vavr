@@ -197,22 +197,8 @@ final class FutureImpl<T> implements Future<T> {
         Try.run(() -> executorService.execute(() -> action.accept(value.get())));
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof FutureImpl) {
-            final FutureImpl<?> that = (FutureImpl<?>) o;
-            return this.isCompleted() && that.isCompleted() && Objects.equals(this.value, that.value);
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash();
-    }
+    // This class is MUTABLE and therefore CANNOT CHANGE DEFAULT equals() and hashCode() behavior.
+    // See http://stackoverflow.com/questions/4718009/mutable-objects-and-hashcode
 
     @Override
     public String toString() {
