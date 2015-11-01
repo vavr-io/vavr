@@ -273,22 +273,8 @@ final class PromiseImpl<T> implements Promise<T> {
         return Try.of(() -> future.complete(value)).isSuccess();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof PromiseImpl) {
-            final PromiseImpl<?> that = (PromiseImpl<?>) o;
-            return Objects.equals(this.future, that.future);
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return future.hashCode();
-    }
+    // The underlying FutureImpl is MUTABLE and therefore we CANNOT CHANGE DEFAULT equals() and hashCode() behavior.
+    // See http://stackoverflow.com/questions/4718009/mutable-objects-and-hashcode
 
     @Override
     public String toString() {
