@@ -40,7 +40,7 @@ import java.util.function.Consumer;
  * </ul>
  * 4) Cancel
  * <ul>
- * <li>{@code value = Some(Failure)}</li>
+ * <li>{@code value = Some(Failure(CancellationException))}</li>
  * <li>{@code actions = null}</li>
  * <li>{@code job = null}</li>
  * </ul>
