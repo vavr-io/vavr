@@ -99,7 +99,7 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
      * @return A new instance of T
      */
     @SuppressWarnings("unchecked")
-    public static <T> T asVal(Supplier<? extends T> supplier, Class<T> type) {
+    public static <T> T val(Supplier<? extends T> supplier, Class<T> type) {
         Objects.requireNonNull(supplier, "supplier is null");
         Objects.requireNonNull(type, "type is null");
         if (!type.isInterface()) {
