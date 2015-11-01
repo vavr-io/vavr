@@ -65,10 +65,10 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
     @SuppressWarnings("unchecked")
     abstract protected <T> Value<T> of(T... elements);
 
-    abstract boolean useIsEqualToInsteadOfIsSameAs();
+    abstract protected boolean useIsEqualToInsteadOfIsSameAs();
 
     // returns the peek result of the specific Traversable implementation
-    abstract int getPeekNonNilPerformingAnAction();
+    abstract protected int getPeekNonNilPerformingAnAction();
 
     // -- get(Iterable)
 

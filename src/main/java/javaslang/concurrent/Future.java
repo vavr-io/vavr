@@ -343,6 +343,29 @@ public interface Future<T> extends Value<T> {
      * <p>
      * The resulting {@code Future} is backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
      *
+     * <ul>
+     * <li>
+     * If all of the given Futures succeed, sequence() succeeds too:
+     * <pre><code>// = Future(Success(Seq(1, 2)))
+     * sequence(
+     *     List.of(
+     *         Future.of(() -&gt; 1),
+     *         Future.of(() -&gt; 2)
+     *     )
+     * );</code></pre>
+     * </li>
+     * <li>
+     * If a given Future fails, sequence() fails too:
+     * <pre><code>// = Future(Failure(Error)))
+     * sequence(
+     *     List.of(
+     *         Future.of(() -&gt; 1),
+     *         Future.of(() -&gt; { throw new Error(); }
+     *     )
+     * );</code></pre>
+     * </li>
+     * </ul>
+     *
      * @param futures An {@code Iterable} of {@code Future}s.
      * @param <T>     Result type of the futures.
      * @return A {@code Future} of a {@link Seq} of results.
