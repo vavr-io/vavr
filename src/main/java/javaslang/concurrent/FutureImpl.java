@@ -176,20 +176,29 @@ final class FutureImpl<T> implements Future<T> {
     @SuppressWarnings("unchecked")
     Try<T> complete(Try<? extends T> value) {
         Objects.requireNonNull(value, "value is null");
+        final Queue<Consumer<? super Try<T>>> actions;
         synchronized (lock) {
             if (isCompleted()) {
                 throw new IllegalStateException("The Future is completed.");
             }
-            final Try<T> that = (Try<T>) value;
-            final Queue<Consumer<? super Try<T>>> actions;
-            synchronized (lock) {
-                actions = this.actions;
-                this.value = new Some<>(that);
-                this.actions = null;
-                this.job = null;
+            actions = this.actions;
+            this.value = new Some<>((Try<T>) value);
+            this.actions = null;
+            this.job = null;
+        }
+        actions.forEach(this::perform);
+        return (Try<T>) value;
+    }
+
+    boolean tryComplete(Try<? extends T> value) {
+        Objects.requireNonNull(value, "value is null");
+        synchronized (lock) {
+            if (isCompleted()) {
+                return false;
+            } else {
+                complete(value);
+                return true;
             }
-            actions.forEach(this::perform);
-            return that;
         }
     }
 
