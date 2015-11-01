@@ -99,7 +99,7 @@ final class FutureImpl<T> implements Future<T> {
             if (isCompleted()) {
                 return false;
             } else {
-                return Try.of(() -> job != null && job.cancel(mayInterruptIfRunning)).onSuccess(cancelled -> {
+                return Try.of(() -> job == null || job.cancel(mayInterruptIfRunning)).onSuccess(cancelled -> {
                     if (cancelled) {
                         value = new Some<>(new Failure<>(new CancellationException()));
                         actions = null;
