@@ -270,7 +270,7 @@ final class PromiseImpl<T> implements Promise<T> {
 
     @Override
     public boolean tryComplete(Try<? extends T> value) {
-        return Try.of(() -> future.complete(value)).isSuccess();
+        return future.tryComplete(value);
     }
 
     // The underlying FutureImpl is MUTABLE and therefore we CANNOT CHANGE DEFAULT equals() and hashCode() behavior.
