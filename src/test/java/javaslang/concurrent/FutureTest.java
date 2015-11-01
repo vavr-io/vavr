@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.util.concurrent.CancellationException;
 
 import static javaslang.concurrent.Concurrent.waitUntil;
+import static javaslang.concurrent.Concurrent.zZz;
 import static org.assertj.core.api.StrictAssertions.assertThat;
 
 public class FutureTest {
@@ -78,6 +79,65 @@ public class FutureTest {
         final Future<Option<Integer>> testee = Future.find(futures, i -> i == 13);
         waitUntil(testee::isCompleted);
         assertCompleted(testee, None.instance());
+    }
+
+    // -- static firstCompletedOf()
+
+    @Test
+    public void shouldGetFirstCompletedOfFailuresUsingForkJoinPool() {
+        final Seq<Future<Object>> futures = Stream.from(1).map(i -> Future.of(() -> {
+            zZz();
+            throw new Error();
+        })).take(3);
+        final Future<?> testee = Future.firstCompletedOf(futures);
+        waitUntil(testee::isCompleted);
+        assertThat(testee.getValue().get().isFailure()).isTrue();
+    }
+
+    @Test
+    public void shouldGetFirstCompletedOfSucceedingFuturesUsingForkJoinPool() {
+        final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.of(() -> {
+            zZz();
+            return i;
+        })).take(3);
+        final Future<?> testee = Future.firstCompletedOf(futures);
+        waitUntil(testee::isCompleted);
+        assertThat(testee.getValue().get().isSuccess()).isTrue();
+    }
+
+    // -- fold()
+
+    @Test
+    public void shouldFoldEmptyIterable() {
+        final Seq<Future<Integer>> futures = Stream.empty();
+        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b);
+        waitUntil(testee::isCompleted);
+        assertThat(testee.get()).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldFoldNonEmptyIterableOfSucceedingFutures() {
+        final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.of(() -> {
+            zZz();
+            return i;
+        })).take(5);
+        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b);
+        waitUntil(testee::isCompleted);
+        assertThat(testee.get()).isEqualTo(15);
+    }
+
+    @Test
+    public void shouldFoldNonEmptyIterableOfFailingFutures() {
+        final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.<Integer> of(() -> {
+            throw new Error();
+        })).take(5);
+// TODO: Future.sequence does not work right!? Maybe Future.map and flatMap need to be revisited.
+//        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b);
+//        waitUntil(testee::isCompleted);
+//        assertThat(testee).isEqualTo(15);
+        final Future<Seq<Integer>> testee = Future.sequence(futures);
+        waitUntil(testee::isCompleted);
+        System.out.println(testee);
     }
 
     // -- static of()

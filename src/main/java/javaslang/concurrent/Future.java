@@ -470,11 +470,29 @@ public interface Future<T> extends Value<T> {
     Option<Try<T>> getValue();
 
     /**
-     * Checks if the Future is completed, i.e. has a value.
+     * Checks if this Future is completed, i.e. has a value.
      *
      * @return true, if the computation successfully finished, failed or was cancelled, false otherwise.
      */
     boolean isCompleted();
+
+    /**
+     * Checks if this Future completed with a success.
+     *
+     * @return true, if this Future completed and is a Success, false otherwise.
+     */
+    default boolean isSuccess() {
+        return getValue().map(Try::isSuccess).orElse(false);
+    }
+
+    /**
+     * Checks if this Future completed with a failure.
+     *
+     * @return true, if this Future completed and is a Failure, false otherwise.
+     */
+    default boolean isFailure() {
+        return getValue().map(Try::isFailure).orElse(false);
+    }
 
     /**
      * Performs the action once the Future is complete.
