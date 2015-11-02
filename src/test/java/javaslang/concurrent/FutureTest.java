@@ -300,6 +300,24 @@ public class FutureTest {
 
     // TODO: filter, flatten, flatMap, get, isEmpty, iterator, map, peek
 
+    // TODO: also test what happens an exception occurs within one of these method calls and compare it with Scala
+
+    // -- map()
+
+    @Test
+    public void shouldMapTheHappyPath() {
+        final Future<String> testee = Future.of(zZz(1)).map(Object::toString);
+        waitUntil(testee::isCompleted);
+        System.out.println(testee);
+    }
+
+    @Test
+    public void shouldMapWhenCrashing() {
+        final Future<String> testee = Future.of(zZz(new Error())).map(Object::toString);
+        waitUntil(testee::isCompleted);
+        System.out.println(testee);
+    }
+
     // -- (helpers)
 
     // checks the invariant for cancelled state

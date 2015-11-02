@@ -21,6 +21,44 @@ import static javaslang.concurrent.Future.DEFAULT_EXECUTOR_SERVICE;
  * <p>
  * The underlying {@code ExecutorService} is used to execute asynchronous handlers, e.g. via
  * {@code promise.future().onComplete(...)}.
+ * <p>
+ * <h3>Creation</h3>
+ * <p>
+ * Promise offers static factory methods to create new promises which hasn't been fulfilled yet:
+ * <ul>
+ * <li>create new promises: {@link Promise#make()}</li>
+ * </ul>
+ * And we may create new promises that are already finished:
+ * <ul>
+ * <li>{@link #failed(Throwable)}</li>
+ * <li>{@link #fromTry(Try)}</li>
+ * <li>{@link #successful(Object)}</li>
+ * </ul>
+ * All the static factory methods mentioned above have additional versions which take an {@link ExecutorService} as
+ * argument. This gives us more control over thread creation and thread pool sizes.
+ * <p>
+ * <h3>One-shot API</h3>
+ * <p>
+ * The main purpose of a {@code Promise} is to complete its underlying {@code Future}. When only a single {@code Thread}
+ * will eventually complete the {@code Promise}, we use on of these methods. Calls will throw if the {@code Promise} is already
+ * completed.
+ * <ul>
+ * <li>{@link #complete(Try)}</li>
+ * <li>{@link #completeWith(Future)}</li>
+ * <li>{@link #failure(Throwable)}</li>
+ * <li>{@link #success(Object)}</li>
+ * </ul>
+ * <p>
+ * <h3>API for competing threads</h3>
+ * <p>
+ * When multiple {@code Thread}s may complete our {@code Promise}, we typically use one of these methods. Calls will
+ * gracefully return {@code false} if the {@code Promise} is already completed.
+ * <ul>
+ * <li>{@link #tryComplete(Try)}</li>
+ * <li>{@link #tryCompleteWith(Future)}</li>
+ * <li>{@link #tryFailure(Throwable)}</li>
+ * <li>{@link #trySuccess(Object)}</li>
+ * </ul>
  *
  * @param <T> The result type of the underlying {@code Future}.
  * @author Daniel Dietrich
