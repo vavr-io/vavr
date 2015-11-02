@@ -266,8 +266,9 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                         .put(3, 1L))
                 .put(4, List.of(7, 8))
                 .put(5, List.of(Entry.of(5, "11"), Entry.of(6, "22")))
+                .put(7, Entry.of(7, 9))
                 .flatten();
-        assertThat(actual).isEqualTo(of(1, "2", 3.1415, 1L, List.of(7, 8), "11", "22").original());
+        assertThat(actual).isEqualTo(of(1, "2", 3.1415, 1L, List.of(7, 8), "11", "22", 9).original());
     }
 
     // -- flatMap
@@ -282,6 +283,15 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Map<String, String> expected = mapOf(Entry.of("1", "11"), Entry.of("10", "110"), Entry.of("2", "22"),
                 Entry.of("20", "220"), Entry.of("3", "33"), Entry.of("30", "330"));
         assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- keySet
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldReturnsKeySet() {
+        final javaslang.collection.Set<Integer> actual = mapOf(Entry.of(1, 11), Entry.of(2, 22), Entry.of(3, 33)).keySet();
+        assertThat(actual).isEqualTo(HashSet.of(1, 2, 3));
     }
 
     // -- map
@@ -309,6 +319,30 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 .isEqualTo(HashSet.of(Entry.of(1, "1"), Entry.of(2, "2")));
     }
 
+    // -- merge
+
+    @Test
+    public void shouldMerge() {
+        Map<Integer, Integer> m1 = emptyIntInt().put(1, 1).put(2, 2);
+        Map<Integer, Integer> m2 = emptyIntInt().put(1, 1).put(4, 4);
+        Map<Integer, Integer> m3 = emptyIntInt().put(3, 3).put(4, 4);
+        assertThat(emptyIntInt().merge(m2)).isEqualTo(m2);
+        assertThat(m2.merge(emptyIntInt())).isEqualTo(m2);
+        assertThat(m1.merge(m2)).isEqualTo(emptyIntInt().put(1, 1).put(2, 2).put(4, 4));
+        assertThat(m1.merge(m3)).isEqualTo(emptyIntInt().put(1, 1).put(2, 2).put(3, 3).put(4, 4));
+    }
+
+    @Test
+    public void shouldMergeCollisions() {
+        Map<Integer, Integer> m1 = emptyIntInt().put(1, 1).put(2, 2);
+        Map<Integer, Integer> m2 = emptyIntInt().put(1, 2).put(4, 4);
+        Map<Integer, Integer> m3 = emptyIntInt().put(3, 3).put(4, 4);
+        assertThat(emptyIntInt().merge(m2, Math::max)).isEqualTo(m2);
+        assertThat(m2.merge(emptyIntInt(), Math::max)).isEqualTo(m2);
+        assertThat(m1.merge(m2, Math::max)).isEqualTo(emptyIntInt().put(1, 2).put(2, 2).put(4, 4));
+        assertThat(m1.merge(m3, Math::max)).isEqualTo(emptyIntInt().put(1, 1).put(2, 2).put(3, 3).put(4, 4));
+    }
+
     // -- equality
 
     @Test
@@ -316,6 +350,13 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Map<?, ?> map1 = emptyMap().put(1, 'a').put(2, 'b').put(3, 'c');
         final Map<?, ?> map2 = emptyMap().put(3, 'c').put(2, 'b').put(1, 'a').remove(2).put(2, 'b');
         assertThat(map1).isEqualTo(map2);
+    }
+
+    // -- put
+
+    @Test
+    public void shouldPutTuple() {
+        assertThat(emptyIntInt().put(Tuple.of(1, 2))).isEqualTo(emptyIntInt().put(1, 2));
     }
 
     // -- removeAll
