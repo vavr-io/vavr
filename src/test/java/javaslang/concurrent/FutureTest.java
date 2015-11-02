@@ -312,7 +312,14 @@ public class FutureTest {
     }
 
     @Test
-    public void shouldMapWhenCrashing() {
+    public void shouldMapWhenCrashingDuringFutureComputation() {
+        final Future<String> testee = Future.<Integer> of(zZz(new Error())).map(Object::toString);
+        waitUntil(testee::isCompleted);
+        assertFailed(testee, Error.class);
+    }
+
+    @Test
+    public void shouldMapWhenCrashingDuringMapping() {
         final Future<String> testee = Future.of(zZz(1)).map(i -> { throw new IllegalStateException(); });
         waitUntil(testee::isCompleted);
         assertFailed(testee, IllegalStateException.class);
