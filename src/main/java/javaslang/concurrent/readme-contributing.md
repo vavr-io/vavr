@@ -7,8 +7,10 @@ The design follows separation of concerns in two manners:
 
 ### Interfaces vs. internal classes
 
-The internal implementations encapsulate the state. Their number of methods drill down to these which access instance
-variables. These classes are typically very short. They represent a clean and easy to maintain, thread-safe core.
+Concurrent programming is all about synchronized state. To keep this as simple as possible, it is a good idea to
+separate readable and writable state. The internal implementations encapsulate the state. Their number of methods
+drill down to those which access instance variables. These classes are typically very short. They represent a
+clean and easy to maintain, thread-safe core.
 
 The interfaces define, beside abstract methods, static factory methods, static extension methods and default methods.
 The default implementations are built on top of the tread-safe core mentioned above. Typically, no additional
@@ -16,11 +18,10 @@ synchronization takes place here.
 
 ### Read-only vs. write-once
 
-Concurrent programming is all about synchronized state. To keep this as simple as possible, it is a good idea to
-separate readable and writable state. The Future interface provides the read-only API, the Promise interface the
-write-once API.
-
-This split allows us to easily perform concurrent tasks:
+Separating the end-user API into the Future interface, providing the read-only API, and the Promise interface,
+providing the write-once API, solves a different concurrency problem than state synchronization. By separating
+these concerns, we define a specific _programming model_ that allows us to easily deal with common tasks in
+concurrent programming.
 
 ```java
 final Promise<String> promise = Promise.make();
