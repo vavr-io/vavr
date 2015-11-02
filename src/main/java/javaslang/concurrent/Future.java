@@ -486,6 +486,38 @@ public interface Future<T> extends Value<T> {
     ExecutorService executorService();
 
     /**
+     * A projection that inverses the result of this Future.
+     * <p>
+     * If this Future succeeds, the failed projection returns a failure containing a {@code NoSuchElementException}.
+     * <p>
+     * If this Future fails, the failed projection returns a success containing the exception.
+     *
+     * @return A new Future which contains an exception at a point of time.
+     */
+    default Future<Throwable> failed() {
+        final Promise<Throwable> promise = Promise.make(executorService());
+        onComplete(result -> {
+            if (result.isFailure()) {
+                promise.success(result.getCause());
+            } else {
+                promise.failure(new NoSuchElementException("Future.failed completed without a throwable"));
+            }
+        });
+        return promise.future();
+    }
+
+    /**
+     * Performs the given {@code action} asynchronously hence this Future result becomes available.
+     * The {@code action} is not performed, if the result is a failure.
+     *
+     * @param action A {@code Consumer}
+     */
+    @Override
+    default void forEach(Consumer<? super T> action) {
+        onComplete(result -> result.forEach(action));
+    }
+
+    /**
      * Returns the value of the Future.
      *
      * @return {@code None}, if the Future is not yet completed or was cancelled, otherwise {@code Some(Try)}.
@@ -548,7 +580,14 @@ public interface Future<T> extends Value<T> {
         onComplete(result -> result.onSuccess(action));
     }
 
+    // TODO: andThen, recover, recoverWith, fallbackTo, zip
+
     // -- Value implementation
+
+    /* TODO: ensure that all Value operations act asynchronously and non-blocking by overriding them.
+     *       isEmpty() and get() return the _current state_ of this Future. Also the conversion methods toXxx().
+     *       Calling Iterable ops makes only sense when the Future completed. Otherwise the iterable is empty.
+     */
 
     @Override
     default Future<T> filter(Predicate<? super T> predicate) {
