@@ -21,7 +21,7 @@ import static javaslang.concurrent.Future.DEFAULT_EXECUTOR_SERVICE;
  * <p>
  * The underlying {@code ExecutorService} is used to execute asynchronous handlers, e.g. via
  * {@code promise.future().onComplete(...)}.
- * <p>
+ *
  * <h3>Creation</h3>
  * <p>
  * Promise offers static factory methods to create new promises which hasn't been fulfilled yet:
@@ -36,7 +36,7 @@ import static javaslang.concurrent.Future.DEFAULT_EXECUTOR_SERVICE;
  * </ul>
  * All the static factory methods mentioned above have additional versions which take an {@link ExecutorService} as
  * argument. This gives us more control over thread creation and thread pool sizes.
- * <p>
+ *
  * <h3>One-shot API</h3>
  * <p>
  * The main purpose of a {@code Promise} is to complete its underlying {@code Future}. When only a single {@code Thread}
@@ -48,7 +48,7 @@ import static javaslang.concurrent.Future.DEFAULT_EXECUTOR_SERVICE;
  * <li>{@link #failure(Throwable)}</li>
  * <li>{@link #success(Object)}</li>
  * </ul>
- * <p>
+ *
  * <h3>API for competing threads</h3>
  * <p>
  * When multiple {@code Thread}s may complete our {@code Promise}, we typically use one of these methods. Calls will

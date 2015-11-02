@@ -308,14 +308,14 @@ public class FutureTest {
     public void shouldMapTheHappyPath() {
         final Future<String> testee = Future.of(zZz(1)).map(Object::toString);
         waitUntil(testee::isCompleted);
-        System.out.println(testee);
+        assertCompleted(testee, "1");
     }
 
     @Test
     public void shouldMapWhenCrashing() {
-        final Future<String> testee = Future.of(zZz(new Error())).map(Object::toString);
+        final Future<String> testee = Future.of(zZz(1)).map(i -> { throw new IllegalStateException(); });
         waitUntil(testee::isCompleted);
-        System.out.println(testee);
+        assertFailed(testee, IllegalStateException.class);
     }
 
     // -- (helpers)
