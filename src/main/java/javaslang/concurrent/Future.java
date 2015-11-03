@@ -27,14 +27,14 @@ import java.util.function.*;
  * The underlying {@code ExecutorService} is used to execute asynchronous handlers, e.g. via
  * {@code onComplete(...)}.
  * <p>
- * A Future has three two states: pending and completed.
+ * A Future has two states: pending and completed.
  * <ul>
- * <li>Pending: The computation is ongoing. Only a pending future may be cancelled.</li>
+ * <li>Pending: The computation is ongoing. Only a pending future may be completed or cancelled.</li>
  * <li>Completed: The computation finished successfully with a result, failed with an exception or was cancelled.</li>
  * </ul>
  * Callbacks may be registered on a Future at each point of time. These actions are performed as soon as the Future
  * is completed. An action which is registered on a completed Future is immediately performed. The action may run on
- * a separate Thread, depending on the underlying ExecutionService. Actions which are registered on a cancelled
+ * a separate Thread, depending on the underlying ExecutorService. Actions which are registered on a cancelled
  * Future are performed with the failed result.
  *
  * @param <T> Type of the computation result.
@@ -486,6 +486,38 @@ public interface Future<T> extends Value<T> {
     ExecutorService executorService();
 
     /**
+     * A projection that inverses the result of this Future.
+     * <p>
+     * If this Future succeeds, the failed projection returns a failure containing a {@code NoSuchElementException}.
+     * <p>
+     * If this Future fails, the failed projection returns a success containing the exception.
+     *
+     * @return A new Future which contains an exception at a point of time.
+     */
+    default Future<Throwable> failed() {
+        final Promise<Throwable> promise = Promise.make(executorService());
+        onComplete(result -> {
+            if (result.isFailure()) {
+                promise.success(result.getCause());
+            } else {
+                promise.failure(new NoSuchElementException("Future.failed completed without a throwable"));
+            }
+        });
+        return promise.future();
+    }
+
+    /**
+     * Performs the given {@code action} asynchronously hence this Future result becomes available.
+     * The {@code action} is not performed, if the result is a failure.
+     *
+     * @param action A {@code Consumer}
+     */
+    @Override
+    default void forEach(Consumer<? super T> action) {
+        onComplete(result -> result.forEach(action));
+    }
+
+    /**
      * Returns the value of the Future.
      *
      * @return {@code None}, if the Future is not yet completed or was cancelled, otherwise {@code Some(Try)}.
@@ -548,11 +580,18 @@ public interface Future<T> extends Value<T> {
         onComplete(result -> result.onSuccess(action));
     }
 
+    // TODO: andThen, recover, recoverWith, fallbackTo, zip
+
     // -- Value implementation
+
+    /* TODO: ensure that all Value operations act asynchronously and non-blocking by overriding them.
+     *       isEmpty() and get() return the _current state_ of this Future. Also the conversion methods toXxx().
+     *       Calling Iterable ops makes only sense when the Future completed. Otherwise the iterable is empty.
+     */
 
     @Override
     default Future<T> filter(Predicate<? super T> predicate) {
-        final Promise<T> promise = Promise.make();
+        final Promise<T> promise = Promise.make(executorService());
         onComplete(result -> promise.complete(result.filter(predicate)));
         return promise.future();
     }
@@ -560,7 +599,7 @@ public interface Future<T> extends Value<T> {
     @SuppressWarnings("unchecked")
     @Override
     default Future<Object> flatten() {
-        final Promise<Object> promise = Promise.make();
+        final Promise<Object> promise = Promise.make(executorService());
         onComplete(result -> result
                         .onSuccess(t -> {
                             if (t instanceof Future) {
@@ -580,7 +619,7 @@ public interface Future<T> extends Value<T> {
     @SuppressWarnings("unchecked")
     @Override
     default <U> Future<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
-        final Promise<U> promise = Promise.make();
+        final Promise<U> promise = Promise.make(executorService());
         onComplete(result -> result.map(mapper::apply)
                         .onSuccess(us -> {
                             if (us instanceof Future) {
@@ -627,7 +666,7 @@ public interface Future<T> extends Value<T> {
 
     @Override
     default <U> Future<U> map(Function<? super T, ? extends U> mapper) {
-        final Promise<U> promise = Promise.make();
+        final Promise<U> promise = Promise.make(executorService());
         onComplete(result -> promise.complete(result.map(mapper)));
         return promise.future();
     }
