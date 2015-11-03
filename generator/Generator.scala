@@ -922,6 +922,24 @@ def generateMainClasses(): Unit = {
             }
 
             ${(1 to N).gen(genFactoryMethod)("\n\n")}
+
+            /$javadoc
+             * Creates a tuple from elements of given sequence
+             *
+             * @return A new tuple
+             */
+            @SuppressWarnings("unchecked")
+            static <T extends Tuple> T ofAll(Seq<?> seq) {
+                switch (seq.length()) {
+                  ${(0 to 8).gen(j => xs"""
+
+                  case $j:
+                    return (T) Tuple.${if (j > 0) "of" else "empty"}(${(0 to j-1).map(k => s"seq.get($k)") mkString ", "});
+                  """)}
+                  default:
+                    throw new IllegalArgumentException("Sequence length should be <= 8");
+                }
+            }
         }
       """
     }
@@ -1533,6 +1551,12 @@ def generateTestClasses(): Unit = {
               public void shouldConvertToSeq() {
                   final $seq<?> actual = createIntTuple(${genArgsForComparing(i, 1)}).toSeq();
                   $assertThat(actual).isEqualTo($list.of(${genArgsForComparing(i, 1)}));
+              }
+
+              @$test
+              public void shouldCreateTupleFromSeq() {
+                  final Tuple$i<$generics> tuple = Tuple.ofAll(List.of(${genArgsForComparing(i, 1)}));
+                  $assertThat(tuple).isEqualTo(Tuple.of(${genArgsForComparing(i, 1)}));
               }
 
               @$test

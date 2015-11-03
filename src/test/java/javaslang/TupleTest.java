@@ -55,6 +55,16 @@ public class TupleTest {
     }
 
     @Test
+    public void shouldCreateTuple0FromSeq() {
+        assertThat(Tuple.ofAll(List.empty()).equals(tuple0())).isTrue();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailOnCreateTupleOfLongSeq() {
+        Tuple.ofAll(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
+    }
+
+    @Test
     public void shouldTuple0EqualTuple0() {
         assertThat(tuple0().equals(tuple0())).isTrue();
     }
