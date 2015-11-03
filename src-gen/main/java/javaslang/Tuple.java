@@ -187,4 +187,36 @@ public interface Tuple {
     static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> of(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
         return new Tuple8<>(t1, t2, t3, t4, t5, t6, t7, t8);
     }
+
+    /**
+     * Creates a tuple from elements of given sequence
+     *
+     * @return A new tuple
+     */
+    @SuppressWarnings("unchecked")
+    static <T extends Tuple> T ofAll(Seq<?> seq) {
+        switch (seq.length()) {
+
+          case 0:
+            return (T) Tuple.empty();  
+          case 1:
+            return (T) Tuple.of(seq.get(0));  
+          case 2:
+            return (T) Tuple.of(seq.get(0), seq.get(1));  
+          case 3:
+            return (T) Tuple.of(seq.get(0), seq.get(1), seq.get(2));  
+          case 4:
+            return (T) Tuple.of(seq.get(0), seq.get(1), seq.get(2), seq.get(3));  
+          case 5:
+            return (T) Tuple.of(seq.get(0), seq.get(1), seq.get(2), seq.get(3), seq.get(4));  
+          case 6:
+            return (T) Tuple.of(seq.get(0), seq.get(1), seq.get(2), seq.get(3), seq.get(4), seq.get(5));  
+          case 7:
+            return (T) Tuple.of(seq.get(0), seq.get(1), seq.get(2), seq.get(3), seq.get(4), seq.get(5), seq.get(6));  
+          case 8:
+            return (T) Tuple.of(seq.get(0), seq.get(1), seq.get(2), seq.get(3), seq.get(4), seq.get(5), seq.get(6), seq.get(7));
+          default:
+            throw new IllegalArgumentException("Sequence length should be <= 8");
+        }
+    }
 }

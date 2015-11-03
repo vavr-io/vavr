@@ -38,6 +38,12 @@ public class Tuple2Test {
     }
 
     @Test
+    public void shouldCreateTupleFromSeq() {
+        final Tuple2<Object, Object> tuple = Tuple.ofAll(List.of(1, 0));
+        assertThat(tuple).isEqualTo(Tuple.of(1, 0));
+    }
+
+    @Test
     public void shouldCompareEqual() {
         final Tuple2<Integer, Integer> t0 = createIntTuple(0, 0);
         assertThat(t0.compareTo(t0)).isZero();
