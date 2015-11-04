@@ -43,6 +43,30 @@ import java.util.function.Predicate;
 public interface Either<L, R> {
 
     /**
+     * Constructs a {@link Right}
+     *
+     * @param right The value.
+     * @param <L>   Type of left value.
+     * @param <R>   Type of right value.
+     * @return A new {@code Right} instance.
+     */
+    static <L, R> Either<L, R> right(R right) {
+        return new Right<>(right);
+    }
+
+    /**
+     * Constructs a {@link Left}
+     *
+     * @param left The value.
+     * @param <L>  Type of left value.
+     * @param <R>  Type of right value.
+     * @return A new {@code Left} instance.
+     */
+    static <L, R> Either<L, R> left(L left) {
+        return new Left<>(left);
+    }
+
+    /**
      * Returns whether this Either is a Left.
      *
      * @return true, if this is a Left, false otherwise

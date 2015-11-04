@@ -1328,7 +1328,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * <p>
      * <strong>Caution:</strong> Because {@code Iterator} is lazy, there is no way to detect non-iterable elements on
      * {@code flatten()}. A possible {@code ClassCastException} is therefore deferred until elemnts are accessed with
-     * {@link #next()} }.
+     * {@link #next()}.
      *
      * @param <U> the nested component type
      * @return An Iterator of flattened elements.
