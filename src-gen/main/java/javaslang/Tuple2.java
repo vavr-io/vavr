@@ -95,6 +95,24 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
         return Tuple2.compareTo(this, that);
     }
 
+    /**
+     * Getter of the 1st element of this tuple.
+     *
+     * @return the 1st element of this Tuple.
+     */
+    public T1 _1() {
+        return _1;
+    }
+
+    /**
+     * Getter of the 2nd element of this tuple.
+     *
+     * @return the 2nd element of this Tuple.
+     */
+    public T2 _2() {
+        return _2;
+    }
+
     public <U1, U2> Tuple2<U1, U2> map(Function2<? super T1, ? super T2, Tuple2<U1, U2>> f) {
         return f.apply(_1, _2);
     }

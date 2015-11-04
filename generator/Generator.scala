@@ -780,6 +780,17 @@ def generateMainClasses(): Unit = {
                 """}
             }
 
+            ${(1 to i).gen(j => xs"""
+              /$javadoc
+               * Getter of the ${j.ordinal} element of this tuple.
+               *
+               * @return the ${j.ordinal} element of this Tuple.
+               */
+              public T$j _$j() {
+                  return _$j;
+              }
+            """)("\n\n")}
+
             ${(i > 0).gen(xs"""
               public $resultGenerics $className$resultGenerics map($functionType<$paramTypes, $resultType> f) {
                   ${if (i > 1) { xs"""
