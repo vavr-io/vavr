@@ -243,6 +243,16 @@ public interface Try<T> extends Value<T> {
     boolean isFailure();
 
     /**
+     * A try is a singleton type.
+     *
+     * @return {@code true}
+     */
+    @Override
+    default boolean isSingletonType() {
+        return true;
+    }
+
+    /**
      * Checks if this is a Success.
      *
      * @return true, if this is a Success, otherwise false, if this is a Failure

@@ -10,6 +10,7 @@ import javaslang.control.*;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -92,6 +93,12 @@ import java.util.stream.StreamSupport;
  * <li>{@link #peek(Consumer)}</li>
  * <li>{@link #stderr()}</li>
  * <li>{@link #stdout()}</li>
+ * </ul>
+ *
+ * Tests:
+ *
+ * <ul>
+ * <li>{@link #isSingletonType()}</li>
  * </ul>
  *
  * @param <T> The type of the wrapped value.
@@ -199,6 +206,15 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, FilterM
     }
 
     /**
+     * States, if this value may contain (at most) one element or more than one element, like collections.
+     * <p>
+     * We call a type <em>singleton type</em>, which may contain at most one element.
+     *
+     * @return {@code true}, if this is a singleton type, {@code false} otherwise.
+     */
+    boolean isSingletonType();
+
+    /**
      * Returns the underlying value if present, otherwise {@code other}.
      *
      * @param other An alternative value.
@@ -297,7 +313,13 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, FilterM
 
     @Override
     default Array<T> toArray() {
-        return isEmpty() ? Array.empty() : Array.ofAll(this);
+        if (isEmpty()) {
+            return Array.empty();
+        } else if (isSingletonType()) {
+            return Array.of(get());
+        } else {
+            return Array.ofAll(this);
+        }
     }
 
     @Override
@@ -315,9 +337,15 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, FilterM
 
     @Override
     default java.util.List<T> toJavaList() {
-        final java.util.List<T> result = new java.util.ArrayList<>();
-        for (T a : this) {
-            result.add(a);
+        final java.util.List<T> result = new ArrayList<>();
+        if (isDefined()) {
+            if (isSingletonType()) {
+                result.add(get());
+            } else {
+                for (T a : this) {
+                    result.add(a);
+                }
+            }
         }
         return result;
     }
@@ -326,9 +354,16 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, FilterM
     default <K, V> java.util.Map<K, V> toJavaMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         final java.util.Map<K, V> map = new java.util.HashMap<>();
-        for (T a : this) {
-            final Tuple2<? extends K, ? extends V> entry = f.apply(a);
-            map.put(entry._1, entry._2);
+        if (isDefined()) {
+            if (isSingletonType()) {
+                final Tuple2<? extends K, ? extends V> entry = f.apply(get());
+                map.put(entry._1, entry._2);
+            } else {
+                for (T a : this) {
+                    final Tuple2<? extends K, ? extends V> entry = f.apply(a);
+                    map.put(entry._1, entry._2);
+                }
+            }
         }
         return map;
     }
@@ -341,8 +376,14 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, FilterM
     @Override
     default java.util.Set<T> toJavaSet() {
         final java.util.Set<T> result = new java.util.HashSet<>();
-        for (T a : this) {
-            result.add(a);
+        if (isDefined()) {
+            if (isSingletonType()) {
+                result.add(get());
+            } else {
+                for (T a : this) {
+                    result.add(a);
+                }
+            }
         }
         return result;
     }
@@ -369,12 +410,13 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, FilterM
     @Override
     default <K, V> Map<K, V> toMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
-        Map<K, V> map = HashMap.empty();
-        for (T a : this) {
-            final Tuple2<? extends K, ? extends V> entry = f.apply(a);
-            map = map.put(entry._1, entry._2);
+        if (isEmpty()) {
+            return HashMap.empty();
+        } else if (isSingletonType()) {
+            return HashMap.of(Map.Entry.of(f.apply(get())));
+        } else {
+            return HashMap.ofAll(Iterator.ofAll(this).map(f).map(Map.Entry::of));
         }
-        return map;
     }
 
     @Override
@@ -388,22 +430,46 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, FilterM
 
     @Override
     default Queue<T> toQueue() {
-        return isEmpty() ? Queue.empty() : Queue.ofAll(this);
+        if (isEmpty()) {
+            return Queue.empty();
+        } else if (isSingletonType()) {
+            return Queue.of(get());
+        } else {
+            return Queue.ofAll(this);
+        }
     }
 
     @Override
     default Set<T> toSet() {
-        return isEmpty() ? HashSet.empty() : HashSet.ofAll(this);
+        if (isEmpty()) {
+            return HashSet.empty();
+        } else if (isSingletonType()) {
+            return HashSet.of(get());
+        } else {
+            return HashSet.ofAll(this);
+        }
     }
 
     @Override
     default Stack<T> toStack() {
-        return isEmpty() ? Stack.empty() : Stack.ofAll(this);
+        if (isEmpty()) {
+            return Stack.empty();
+        } else if (isSingletonType()) {
+            return Stack.of(get());
+        } else {
+            return Stack.ofAll(this);
+        }
     }
 
     @Override
     default Stream<T> toStream() {
-        return isEmpty() ? Stream.empty() : Stream.ofAll(this);
+        if (isEmpty()) {
+            return Stream.empty();
+        } else if (isSingletonType()) {
+            return Stream.of(get());
+        } else {
+            return Stream.ofAll(this);
+        }
     }
 
     @Override
@@ -423,12 +489,24 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, FilterM
 
     @Override
     default Tree<T> toTree() {
-        return isEmpty() ? Tree.empty() : Tree.ofAll(this);
+        if (isEmpty()) {
+            return Tree.empty();
+        } else if (isSingletonType()) {
+            return Tree.of(get());
+        } else {
+            return Tree.ofAll(this);
+        }
     }
 
     @Override
     default Vector<T> toVector() {
-        return isEmpty() ? Vector.empty() : Vector.ofAll(this);
+        if (isEmpty()) {
+            return Vector.empty();
+        } else if (isSingletonType()) {
+            return Vector.of(get());
+        } else {
+            return Vector.ofAll(this);
+        }
     }
 
     // -- Printable implementation

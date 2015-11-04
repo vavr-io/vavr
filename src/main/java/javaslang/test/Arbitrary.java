@@ -138,6 +138,17 @@ public interface Arbitrary<T> extends Value<T> {
         return false;
     }
 
+    /**
+     * This is philosophical. An arbitrary value is a singleton type.
+     * However, subsequent calls may return different objects.
+     *
+     * @return {@code true}
+     */
+    @Override
+    default boolean isSingletonType() {
+        return true;
+    }
+
     @Override
     default Iterator<T> iterator() {
         return apply(Checkable.DEFAULT_SIZE).iterator();

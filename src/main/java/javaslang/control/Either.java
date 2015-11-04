@@ -160,6 +160,16 @@ public interface Either<L, R> {
         }
 
         /**
+         * A left projection is a singleton type.
+         *
+         * @return {@code true}
+         */
+        @Override
+        public boolean isSingletonType() {
+            return true;
+        }
+
+        /**
          * Gets the Left value or throws.
          *
          * @return the left value, if the underlying Either is a Left
@@ -366,6 +376,16 @@ public interface Either<L, R> {
         @Override
         public boolean isEmpty() {
             return either.isLeft();
+        }
+
+        /**
+         * A right projection is a singleton type.
+         *
+         * @return {@code true}
+         */
+        @Override
+        public boolean isSingletonType() {
+            return true;
         }
 
         /**

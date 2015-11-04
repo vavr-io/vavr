@@ -366,6 +366,17 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
         return false;
     }
 
+    /**
+     * This is philosophical. A random generated value is a singleton type.
+     * However, subsequent calls may return different objects.
+     *
+     * @return {@code true}
+     */
+    @Override
+    default boolean isSingletonType() {
+        return true;
+    }
+
     @Override
     default Iterator<T> iterator() {
         final Random random = Checkable.RNG.get();

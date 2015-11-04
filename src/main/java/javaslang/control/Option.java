@@ -70,6 +70,16 @@ public interface Option<T> extends Value<T> {
         return !isEmpty();
     }
 
+    /**
+     * An option is a singleton type.
+     *
+     * @return {@code true}
+     */
+    @Override
+    default boolean isSingletonType() {
+        return true;
+    }
+
     T get();
 
     @Override

@@ -143,6 +143,16 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
     }
 
     /**
+     * A lazy value is a singleton type.
+     *
+     * @return {@code true}
+     */
+    @Override
+    public boolean isSingletonType() {
+        return true;
+    }
+
+    /**
      * Checks, if this lazy value is evaluated.
      * <p>
      * Note: A value is internally evaluated (once) by calling {@link #get()}.
