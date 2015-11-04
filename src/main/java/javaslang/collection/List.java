@@ -605,19 +605,10 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default List<Object> flatten() {
-        if (isEmpty()) {
-            return Nil.instance();
-        } else {
-            return flatMap(t -> {
-                if (t instanceof java.lang.Iterable) {
-                    return List.ofAll((java.lang.Iterable<?>) t).flatten();
-                } else {
-                    return List.of(t);
-                }
-            });
-        }
+    default <U> List<U> flatten() {
+        return ((List<? extends Iterable<U>>) this).flatMap(Function.identity());
     }
 
     @Override

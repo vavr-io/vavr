@@ -327,19 +327,10 @@ public interface Tree<T> extends Traversable<T> {
         return isEmpty() ? Empty.instance() : FlatMap.apply((Node<T>) this, mapper);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Tree<?> flatten() {
-        if (isEmpty()) {
-            return Empty.instance();
-        } else {
-            return flatMap(t -> {
-                if (t instanceof java.lang.Iterable) {
-                    return Tree.ofAll((java.lang.Iterable<?>) t).flatten();
-                } else {
-                    return Tree.of(t);
-                }
-            });
-        }
+    default <U> Tree<U> flatten() {
+        return ((Tree<? extends Iterable<U>>) this).flatMap(Function.identity());
     }
 
     @Override
@@ -894,11 +885,15 @@ interface TreeModule {
         @SuppressWarnings("unchecked")
         static <T, U> Tree<U> apply(Node<T> node, Function<? super T, ? extends Iterable<? extends U>> mapper) {
             final Tree<U> mapped = Tree.ofAll(mapper.apply(node.getValue()));
-            final List<Node<U>> children = (List<Node<U>>) (Object) node
-                    .getChildren()
-                    .map(child -> FlatMap.apply(child, mapper))
-                    .filter(Tree::isDefined);
-            return Tree.of(mapped.getValue(), children.prependAll(mapped.getChildren()));
+            if (mapped.isEmpty()) {
+                return Tree.empty();
+            } else {
+                final List<Node<U>> children = (List<Node<U>>) (Object) node
+                        .getChildren()
+                        .map(child -> FlatMap.apply(child, mapper))
+                        .filter(Tree::isDefined);
+                return Tree.of(mapped.getValue(), children.prependAll(mapped.getChildren()));
+            }
         }
     }
 

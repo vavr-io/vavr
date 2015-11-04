@@ -205,16 +205,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         return iterator().findLast(predicate);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <U> Seq<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return (Seq<U>) iterator().flatMap(mapper).toStream();
-    }
-
-    @Override
-    public <U, W> HashMap<U, W> flatMap(
-            BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
+    public <U, W> HashMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(HashMap.<U, W> empty(), (acc, entry) -> {
             for (Entry<? extends U, ? extends W> mappedEntry : mapper.apply(entry.key, entry.value)) {
@@ -224,29 +216,17 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         });
     }
 
-    // DEV-NOTE: It is sufficient here to let the mapper return any Iterable, flatMap will do the rest.
     @SuppressWarnings("unchecked")
     @Override
-    public HashMap<Object, Object> flatten() {
-        return flatMap((key, value) -> {
-            if (value instanceof Map) {
-                return ((Map<?,?>) value).flatten();
-            } else if (value instanceof java.lang.Iterable) {
-                final Iterator<?> entries = Iterator
-                        .ofAll((java.lang.Iterable<?>) value)
-                        .flatten()
-                        .filter(e -> e instanceof Entry);
-                if (entries.hasNext()) {
-                    return (Iterator<? extends Entry<?, ?>>) entries;
-                } else {
-                    return List.of(new Entry<>(key, value));
-                }
-            } else if (value instanceof Entry) {
-                return HashMap.of((Entry<?, ?>) value).flatten();
-            } else {
-                return List.of(new Entry<>(key, value));
-            }
-        });
+    public <U> Seq<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return (Seq<U>) iterator().flatMap(mapper).toStream();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Seq<U> flatten() {
+        return ((HashMap<?, ? extends Iterable<U>>) this).flatMap(entry -> entry.value);
     }
 
     @Override

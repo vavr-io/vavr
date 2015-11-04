@@ -202,12 +202,8 @@ public interface Try<T> extends Value<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default Try<Object> flatten() {
-        if (isFailure()) {
-            return (Failure<Object>) this;
-        } else {
-            return flatMap(value -> (value instanceof Try) ? ((Try<?>) get()).flatten() : this);
-        }
+    default <U> Try<U> flatten() {
+        return ((Try<? extends Iterable<U>>) this).flatMap(Function.identity());
     }
 
     /**

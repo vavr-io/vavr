@@ -108,8 +108,25 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     @Override
     <U> Seq<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
 
+    /**
+     * Entries of a {@code Map} are flattened to the elements of their {@code Iterable} values.
+     * <p>
+     * <strong>Caution:</strong> Behaves different than most other {@code Value.flatten()} implementations.
+     * <p>
+     * Example:
+     *
+     * <pre><code>// = Seq(1, 2)
+     * HashMap.empty()
+     *     .put(0, Option.of(1))
+     *     .put(1, Option.of(2))
+     *     .flatten();</code></pre>
+     *
+     * @param <U> the component type of the resulting sequence
+     * @return an indexed sequence of elements of type U
+     * @throws ClassCastException if the value of a map entry {@code (key, value)} is not {@code Iterable}.
+     */
     @Override
-    Map<Object, Object> flatten();
+    <U> Seq<U> flatten();
 
     @Override
     <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Entry<K, V>, ? extends C> classifier);

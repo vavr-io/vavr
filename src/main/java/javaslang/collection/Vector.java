@@ -563,11 +563,10 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Vector<Object> flatten() {
-        return flatMap(t -> (t instanceof java.lang.Iterable)
-                ? Vector.ofAll((java.lang.Iterable<?>) t).flatten()
-                : Vector.of(t));
+    public <U> Vector<U> flatten() {
+        return ((Vector<? extends Iterable<U>>) this).flatMap(Function.identity());
     }
 
     @Override

@@ -598,26 +598,6 @@ public interface Future<T> extends Value<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default Future<Object> flatten() {
-        final Promise<Object> promise = Promise.make(executorService());
-        onComplete(result -> result
-                        .onSuccess(t -> {
-                            if (t instanceof Future) {
-                                promise.completeWith(((Future<Object>) t).flatten());
-                            } else if (t instanceof Iterable) {
-                                final Object o = Iterator.ofAll(((Iterable<Object>) t)).flatten().get();
-                                promise.success(o);
-                            } else {
-                                promise.success(t);
-                            }
-                        })
-                        .onFailure(promise::failure)
-        );
-        return promise.future();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
     default <U> Future<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         final Promise<U> promise = Promise.make(executorService());
         onComplete(result -> result.map(mapper::apply)
@@ -636,6 +616,12 @@ public interface Future<T> extends Value<T> {
                         .onFailure(promise::failure)
         );
         return promise.future();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Future<U> flatten() {
+        return ((Future<? extends Iterable<U>>) this).flatMap(Function.identity());
     }
 
     /**

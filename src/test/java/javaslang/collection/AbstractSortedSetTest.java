@@ -19,12 +19,6 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
 
     @Override
     @Test
-    public void shouldFlattenDifferentElementTypes() {
-        // can't find a comparable for different element types in a generic way
-    }
-
-    @Override
-    @Test
     public void shouldPreserveSingletonInstanceOnDeserialization() {
         // not possible, because the empty instance stores information about the underlying comparator
     }

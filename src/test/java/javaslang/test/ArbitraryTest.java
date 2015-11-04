@@ -55,7 +55,8 @@ public class ArbitraryTest {
 
     @Test
     public void shouldFlatteningArbitraryIntegerUsingFunction() {
-        assertThat(Arbitrary.integer().flatten().apply(1).apply(new Random())).isNotNull();
+        final Arbitrary<Arbitrary<Integer>> testee = size -> random -> Arbitrary.integer();
+        assertThat(testee.flatten().apply(1).apply(new Random())).isNotNull();
     }
 
     // -- exists

@@ -128,13 +128,8 @@ public class LazyTest {
     }
 
     @Test
-    public void shouldFlattenNonEmptyLazy() {
-        assertThat(Lazy.of(() -> 1).flatten()).isEqualTo(Lazy.of(() -> 1));
-    }
-
-    @Test
     public void shouldFlattenLazyOfLazy() {
-        assertThat(Lazy.of(Lazy.of(() -> 1)).flatten()).isEqualTo(Lazy.of(() -> 1));
+        assertThat(Lazy.of(() -> Lazy.of(() -> 1)).flatten()).isEqualTo(Lazy.of(() -> 1));
     }
 
     // -- flatMap

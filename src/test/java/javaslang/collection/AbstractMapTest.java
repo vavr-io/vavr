@@ -217,58 +217,22 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     // -- flatten
 
     @Override
+    @Test
     public void shouldFlattenEmptyTraversable() {
         assertThat(emptyMap().flatten()).isEqualTo(emptyMap());
     }
 
     @Override
-    public void shouldFlattenTraversableOfPlainElements() {
-        Map<?,?> actual = emptyMap()
-                .put(0, 1)
-                .put(1, 2)
-                .put(2, 3)
-                .flatten();
-        assertThat(actual).isEqualTo(of(1, 2, 3).original());
-    }
-
-    @Override
+    @Test
     public void shouldFlattenTraversableOfTraversables() {
-        Map<?,?> actual = emptyMap()
-                .put(0, 1)
-                .put(1, emptyMap()
-                        .put(1, 2)
-                        .put(2, 3))
-                .flatten();
-        assertThat(actual).isEqualTo(of(1, 2, 3).original());
+        Seq<Integer> actual = emptyMap().put(0, new Some<>(1)).put(1, new Some<>(2)).put(2, new Some<>(3)).flatten();
+        assertThat(actual).isEqualTo(Stream.of(1, 2, 3));
     }
 
-    @Override
-    public void shouldFlattenTraversableOfTraversablesAndPlainElements() {
-        Map<?,?> actual = emptyMap()
-                .put(0, 1)
-                .put(1, emptyMap()
-                        .put(0, emptyMap()
-                                .put(1, 2)
-                                .put(2, 3))
-                        .put(3, 4))
-                .put(4, 5)
-                .flatten();
-        assertThat(actual).isEqualTo(of(1, 2, 3, 4, 5).original());
-    }
-
-    @Override
-    public void shouldFlattenDifferentElementTypes() {
-        Map<?,?> actual = emptyMap()
-                .put(0, 1)
-                .put(1, "2")
-                .put(2, emptyMap()
-                        .put(2, 3.1415)
-                        .put(3, 1L))
-                .put(4, List.of(7, 8))
-                .put(5, List.of(Entry.of(5, "11"), Entry.of(6, "22")))
-                .put(7, Entry.of(7, 9))
-                .flatten();
-        assertThat(actual).isEqualTo(of(1, "2", 3.1415, 1L, List.of(7, 8), "11", "22", 9).original());
+    @Test
+    public void shouldFlattenMapOfMaps() {
+        Seq<Integer> actual = emptyMap().put(0, emptyMap().put(0, 1)).put(1, emptyMap().put(1, 2).put(2, 3)).flatten();
+        assertThat(actual).isEqualTo(Stream.of(Entry.of(0, 1), Entry.of(1, 2), Entry.of(2, 3)));
     }
 
     // -- flatMap

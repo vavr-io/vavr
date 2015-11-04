@@ -77,7 +77,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     <U> IndexedSeq<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    IndexedSeq<Object> flatten();
+    <U> IndexedSeq<U> flatten();
 
     @Override
     <C> Map<C, ? extends IndexedSeq<T>> groupBy(Function<? super T, ? extends C> classifier);
