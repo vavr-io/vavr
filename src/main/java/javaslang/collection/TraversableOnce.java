@@ -95,6 +95,8 @@ import java.util.function.Predicate;
  *
  * <ul>
  * <li>{@link #existsUnique(Predicate)}</li>
+ * <li>{@link #hasDefiniteSize()}</li>
+ * <li>{@link #isTraversableAgain()}</li>
  * </ul>
  *
  * Transformation:
@@ -449,6 +451,16 @@ public interface TraversableOnce<T> extends Value<T> {
      */
     @Override
     boolean isEmpty();
+
+    /**
+     * Each of Javaslang's collections may contain more than one element.
+     *
+     * @return {@code false}
+     */
+    @Override
+    default boolean isSingletonType() {
+        return false;
+    }
 
     /**
      * Checks if this Traversable can be repeatedly traversed.

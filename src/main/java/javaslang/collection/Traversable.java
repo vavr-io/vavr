@@ -19,13 +19,6 @@ import java.util.function.Predicate;
  * {@link java.lang.Iterable#iterator()}, which may vary each time it is called.
  * <p>
  * Implementations of {@code Traversable} should calculate the {@code hashCode} via {@link #hash(java.lang.Iterable)}.
- * <p>
- * Additionally to {@link TraversableOnce} this interface has the following methods:
- *
- * <ul>
- * <li>{@link #hasDefiniteSize()}</li>
- * <li>{@link #isTraversableAgain()}</li>
- * </ul>
  *
  * @param <T> Component type
  * @author Daniel Dietrich and others

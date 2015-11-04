@@ -404,6 +404,16 @@ public interface Match<R> extends Function<Object, R> {
             }
         }
 
+        /**
+         * A match is a singleton type.
+         *
+         * @return {@code true}
+         */
+        @Override
+        default boolean isSingletonType() {
+            return true;
+        }
+
         @Override
         <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper);
 

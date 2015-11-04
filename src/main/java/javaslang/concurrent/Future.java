@@ -649,6 +649,16 @@ public interface Future<T> extends Value<T> {
         return getValue().map(Try::isFailure).orElse(true);
     }
 
+    /**
+     * A future is a singleton type.
+     *
+     * @return {@code true}
+     */
+    @Override
+    default boolean isSingletonType() {
+        return true;
+    }
+
     @Override
     default Iterator<T> iterator() {
         return isEmpty() ? Iterator.empty() : Iterator.of(get());
