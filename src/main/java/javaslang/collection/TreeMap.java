@@ -290,7 +290,11 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     @SuppressWarnings("unchecked")
     @Override
     public <U> Seq<U> flatten() {
-        return ((TreeMap<?, ? extends Iterable<U>>) this).flatMap(entry -> entry.value);
+        try {
+            return ((TreeMap<?, ? extends Iterable<U>>) this).flatMap(entry -> entry.value);
+        } catch(ClassCastException x) {
+            throw new UnsupportedOperationException("flatten of non-iterable map values");
+        }
     }
 
     @Override

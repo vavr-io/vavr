@@ -221,6 +221,27 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         assertThat(of(of(1), of(2, 3)).flatten()).isEqualTo(of(1, 2, 3));
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldDetectNonIterableElementsOnFlatten() {
+        final Value<?> unsafe = of(new Object(), new Object()).flatten();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldNotDetectWrongReturnTypeOnFlattenButWhenReadingFlattenedElements() {
+        // this is wrong but it compiles and even executes at runtime because of type erasure
+        final Value<String> unsafe = of(of(1), of(2)).flatten();
+        // but when we get an element our con trick is blowing...
+        try {
+            final String s = unsafe.get();
+            throw new AssertionError("Expected ClassCastException");
+        } catch(ClassCastException x) {
+            // ok!
+        } catch(Exception x) {
+            throw new AssertionError("Unexpected exception:" + x);
+        }
+    }
+
     // -- flatMap
 
     @Test

@@ -203,7 +203,11 @@ public interface Try<T> extends Value<T> {
     @SuppressWarnings("unchecked")
     @Override
     default <U> Try<U> flatten() {
-        return ((Try<? extends Iterable<U>>) this).flatMap(Function.identity());
+        try {
+            return ((Try<? extends Iterable<U>>) this).flatMap(Function.identity());
+        } catch(ClassCastException x) {
+            throw new UnsupportedOperationException("flatten of non-iterable elements");
+        }
     }
 
     /**

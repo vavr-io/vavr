@@ -330,7 +330,11 @@ public interface Tree<T> extends Traversable<T> {
     @SuppressWarnings("unchecked")
     @Override
     default <U> Tree<U> flatten() {
-        return ((Tree<? extends Iterable<U>>) this).flatMap(Function.identity());
+        try {
+            return ((Tree<? extends Iterable<U>>) this).flatMap(Function.identity());
+        } catch(ClassCastException x) {
+            throw new UnsupportedOperationException("flatten of non-iterable elements");
+        }
     }
 
     @Override

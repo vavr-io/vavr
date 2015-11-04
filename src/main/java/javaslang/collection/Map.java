@@ -123,7 +123,7 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
      *
      * @param <U> the component type of the resulting sequence
      * @return an indexed sequence of elements of type U
-     * @throws ClassCastException if the value of a map entry {@code (key, value)} is not {@code Iterable}.
+     * @throws UnsupportedOperationException if the value of a map entry {@code (key, value)} is not {@code Iterable}.
      */
     @Override
     <U> Seq<U> flatten();

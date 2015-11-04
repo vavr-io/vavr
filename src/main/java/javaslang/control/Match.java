@@ -397,7 +397,11 @@ public interface Match<R> extends Function<Object, R> {
         @SuppressWarnings("unchecked")
         @Override
         default <U> MatchMonad<U> flatten() {
-            return ((MatchMonad<? extends Iterable<U>>) this).flatMap(Function.identity());
+            try {
+                return ((MatchMonad<? extends Iterable<U>>) this).flatMap(Function.identity());
+            } catch(ClassCastException x) {
+                throw new UnsupportedOperationException("flatten of non-iterable elements");
+            }
         }
 
         @Override
