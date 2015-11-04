@@ -673,7 +673,7 @@ interface FilterMonadic<T> {
      *
      * @param <U> the nested component type
      * @return A flattened version of this {@code Value}.
-     * @throws ClassCastException if this elements are not of type {@code ? extends java.lang.Iterable<? extends T>}.
+     * @throws UnsupportedOperationException if this elements are not of type {@code ? extends java.lang.Iterable<? extends T>}.
      */
     <U> FilterMonadic<U> flatten();
 

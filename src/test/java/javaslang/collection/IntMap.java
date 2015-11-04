@@ -120,7 +120,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public <U> Seq<U> flatten() {
-        throw new UnsupportedOperationException();
+        return original.flatten();
     }
 
     @Override

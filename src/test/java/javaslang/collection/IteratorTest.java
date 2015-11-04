@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.Option;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
@@ -177,6 +178,16 @@ public class IteratorTest extends AbstractTraversableOnceTest {
     @Test
     public void shouldGenerateInfiniteStreamBasedOnSupplierWithAccessToPreviousValue() {
         assertThat(Iterator.gen(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
+    }
+
+    // -- flatten
+
+    @Override
+    @Test(expected = ClassCastException.class)
+    public void shouldDetectNonIterableElementsOnFlatten() {
+        final Iterator<?> unsafe = of(new Object(), new Object()).flatten();
+        // Iterator is lazy and defers the UnsupportOperationException until elements are accessed
+        unsafe.next();
     }
 
     // ++++++ OBJECT ++++++

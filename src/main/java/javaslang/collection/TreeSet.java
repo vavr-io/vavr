@@ -524,7 +524,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public <U> TreeSet<U> flatten() {
-        return ((TreeSet<? extends Iterable<U>>) this).flatMap(Function.identity());
+        try {
+            return ((TreeSet<? extends Iterable<U>>) this).flatMap(Function.identity());
+        } catch(ClassCastException x) {
+            throw new UnsupportedOperationException("flatten of non-iterable elements");
+        }
     }
 
     @Override

@@ -707,7 +707,11 @@ public interface Stream<T> extends LinearSeq<T> {
     @SuppressWarnings("unchecked")
     @Override
     default <U> Stream<U> flatten() {
-        return ((Stream<? extends Iterable<U>>) this).flatMap(Function.identity());
+        try {
+            return ((Stream<? extends Iterable<U>>) this).flatMap(Function.identity());
+        } catch(ClassCastException x) {
+            throw new UnsupportedOperationException("flatten of non-iterable elements");
+        }
     }
 
     @Override

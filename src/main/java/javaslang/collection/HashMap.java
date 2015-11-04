@@ -226,7 +226,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public <U> Seq<U> flatten() {
-        return ((HashMap<?, ? extends Iterable<U>>) this).flatMap(entry -> entry.value);
+        try {
+            return ((HashMap<?, ? extends Iterable<U>>) this).flatMap(entry -> entry.value);
+        } catch(ClassCastException x) {
+            throw new UnsupportedOperationException("flatten of non-iterable map values");
+        }
     }
 
     @Override

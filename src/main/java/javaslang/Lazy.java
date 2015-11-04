@@ -184,7 +184,11 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public <U> Lazy<U> flatten() {
-        return ((Lazy<? extends java.lang.Iterable<U>>) this).flatMap(Function.identity());
+        try {
+            return ((Lazy<? extends java.lang.Iterable<U>>) this).flatMap(Function.identity());
+        } catch(ClassCastException x) {
+            throw new UnsupportedOperationException("flatten of non-iterable elements");
+        }
     }
 
     @Override

@@ -82,9 +82,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     public static CharSeq of(char... characters) {
         Objects.requireNonNull(characters, "characters is null");
         final char[] chrs = new char[characters.length];
-        for (int i = 0; i < characters.length; i++) {
-            chrs[i] = characters[i];
-        }
+        System.arraycopy(characters, 0, chrs, 0, characters.length);
         return new CharSeq(new java.lang.String(chrs));
     }
 
@@ -385,12 +383,16 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @param <U> the component type of the result, needs to be {@code Character}
      * @return an indexed sequence of characters
-     * @throws ClassCastException if {@code U} is not {@code Character}.
+     * @throws UnsupportedOperationException if {@code U} is not {@code Character}. Note: We can't return {@code IndexedSeq<Character>} directly.
      */
     @SuppressWarnings("unchecked")
     @Override
     public <U> IndexedSeq<U> flatten() {
-        return (IndexedSeq<U>) Vector.ofAll(this);
+        try {
+            return (IndexedSeq<U>) Vector.ofAll(this);
+        } catch (ClassCastException x) {
+            throw new UnsupportedOperationException("flatten of non-iterable elements");
+        }
     }
 
     @Override

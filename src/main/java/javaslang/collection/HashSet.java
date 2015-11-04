@@ -510,7 +510,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public <U> HashSet<U> flatten() {
-        return ((HashSet<? extends Iterable<U>>) this).flatMap(Function.identity());
+        try {
+            return ((HashSet<? extends Iterable<U>>) this).flatMap(Function.identity());
+        } catch(ClassCastException x) {
+            throw new UnsupportedOperationException("flatten of non-iterable elements");
+        }
     }
 
     @Override

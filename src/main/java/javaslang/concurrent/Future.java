@@ -621,7 +621,11 @@ public interface Future<T> extends Value<T> {
     @SuppressWarnings("unchecked")
     @Override
     default <U> Future<U> flatten() {
-        return ((Future<? extends Iterable<U>>) this).flatMap(Function.identity());
+        try {
+            return ((Future<? extends Iterable<U>>) this).flatMap(Function.identity());
+        } catch(ClassCastException x) {
+            throw new UnsupportedOperationException("flatten of non-iterable elements");
+        }
     }
 
     /**

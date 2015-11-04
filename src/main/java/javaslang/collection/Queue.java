@@ -642,7 +642,11 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public <U> Queue<U> flatten() {
-        return ((Queue<? extends Iterable<U>>) this).flatMap(Function.identity());
+        try {
+            return ((Queue<? extends Iterable<U>>) this).flatMap(Function.identity());
+        } catch(ClassCastException x) {
+            throw new UnsupportedOperationException("flatten of non-iterable elements");
+        }
     }
 
     @Override

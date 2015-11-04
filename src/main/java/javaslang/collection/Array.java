@@ -599,7 +599,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public <U> Array<U> flatten() {
-        return ((Array<? extends Iterable<U>>) this).flatMap(Function.identity());
+        try {
+            return ((Array<? extends Iterable<U>>) this).flatMap(Function.identity());
+        } catch(ClassCastException x) {
+            throw new UnsupportedOperationException("flatten of non-iterable elements");
+        }
     }
 
     @Override
