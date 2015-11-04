@@ -161,13 +161,10 @@ public interface Option<T> extends Value<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Option<Object> flatten() {
-        if (isEmpty()) {
-            return None.instance();
-        } else {
-            return flatMap(value -> (value instanceof Option) ? ((Option<?>) value).flatten() : this);
-        }
+    default <U> Option<U> flatten() {
+        return ((Option<? extends Iterable<U>>) this).flatMap(Function.identity());
     }
 
     /**

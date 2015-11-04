@@ -406,29 +406,12 @@ public class TreeTest extends AbstractTraversableTest {
     @Override
     public void shouldFlattenTraversableOfTraversables() {
 
-        // (((1 1 1) 2 3) ((4 4 4) 5 6) ((7 7 7) 8 9))
-        final Tree<?> testee = $($($(1, $(1), $(1)), $(2), $(3)), $($(4, $(4), $(4)), $(5), $(6)),
-                $($(7, $(7), $(7)), $(8), $(9)));
+        // ((1) (2) (3))
+        final Tree<?> testee = $($(1), $($(2)), $($(3)));
         final Tree<?> actual = testee.flatten();
 
-        // (1 1 1 2 3 (4 4 4 5 6) (7 7 7 8 9))
-        final Tree<?> expected = $(1, $(1), $(1), $(2), $(3), $(4, $(4), $(4), $(5), $(6)),
-                $(7, $(7), $(7), $(8), $(9)));
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    @Override
-    public void shouldFlattenTraversableOfTraversablesAndPlainElements() {
-        assertThat($(1, $($(2, $(3)), $(4)), $(5)).flatten()).isEqualTo($(1, $(2, $(3), $(4)), $(5)));
-    }
-
-    @Test
-    @Override
-    public void shouldFlattenDifferentElementTypes() {
-        final Tree<?> testee = $(1, $($("2", $(3.1415, $(1L)))));
-        final Tree<?> actual = testee.flatten();
-        final Tree<?> expected = $(1, $("2", $(3.1415, $(1L))));
+        // (1 2 3)
+        final Tree<?> expected = $(1, $(2), $(3));
         assertThat(actual).isEqualTo(expected);
     }
 

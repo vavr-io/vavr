@@ -287,29 +287,10 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
         return (Seq<U>) entries.iterator().flatMap(mapper).toStream();
     }
 
-    // DEV-NOTE: It is sufficient here to let the mapper return any Iterable, flatMap will do the rest.
     @SuppressWarnings("unchecked")
     @Override
-    public TreeMap<Object, Object> flatten() {
-        return flatMap((key, value) -> {
-            if (value instanceof Map) {
-                return ((Map<?,?>) value).flatten();
-            } else if (value instanceof java.lang.Iterable) {
-                final Iterator<?> entries = Iterator
-                        .ofAll((java.lang.Iterable<?>) value)
-                        .flatten()
-                        .filter(e -> e instanceof Entry);
-                if (entries.hasNext()) {
-                    return (Iterator<? extends Entry<?, ?>>) entries;
-                } else {
-                    return List.of(new Entry<>(key, value));
-                }
-            } else if (value instanceof Entry) {
-                return HashMap.of((Entry<?, ?>) value).flatten();
-            } else {
-                return List.of(new Entry<>(key, value));
-            }
-        });
+    public <U> Seq<U> flatten() {
+        return ((TreeMap<?, ? extends Iterable<U>>) this).flatMap(entry -> entry.value);
     }
 
     @Override

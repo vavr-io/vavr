@@ -521,9 +521,10 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return flatMap(naturalComparator(), mapper);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public TreeSet<Object> flatten() {
-        return TreeSet.ofAll(naturalComparator(), iterator().flatten());
+    public <U> TreeSet<U> flatten() {
+        return ((TreeSet<? extends Iterable<U>>) this).flatMap(Function.identity());
     }
 
     @Override

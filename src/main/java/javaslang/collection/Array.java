@@ -596,11 +596,10 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Array<Object> flatten() {
-        return flatMap(t -> (t instanceof java.lang.Iterable)
-                ? Array.ofAll((java.lang.Iterable<?>) t).flatten()
-                : Array.of(t));
+    public <U> Array<U> flatten() {
+        return ((Array<? extends Iterable<U>>) this).flatMap(Function.identity());
     }
 
     @Override

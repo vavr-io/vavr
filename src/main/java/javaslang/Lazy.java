@@ -173,6 +173,7 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public <U> Lazy<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return (Lazy<U>) this;
         } else {
@@ -180,12 +181,10 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Lazy<Object> flatten() {
-        return Lazy.of(() -> {
-            final T value = get();
-            return (value instanceof Value) ? Lazy.of(((Value<?>) value)::get).flatten().get() : value;
-        });
+    public <U> Lazy<U> flatten() {
+        return ((Lazy<? extends java.lang.Iterable<U>>) this).flatMap(Function.identity());
     }
 
     @Override

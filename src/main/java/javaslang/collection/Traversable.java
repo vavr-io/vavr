@@ -112,7 +112,7 @@ public interface Traversable<T> extends TraversableOnce<T> {
     <U> Traversable<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    Traversable<? extends Object> flatten();
+    <U> Traversable<U> flatten();
 
     @Override
     <C> Map<C, ? extends Traversable<T>> groupBy(Function<? super T, ? extends C> classifier);

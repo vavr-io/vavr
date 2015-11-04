@@ -264,7 +264,8 @@ public class GenTest {
 
     @Test
     public void shouldFlatteningGenOfIntegerUsingFunction() {
-        assertThat(Gen.of(1).flatten().apply(new Random())).isNotNull();
+        final Gen<Gen<Integer>> testee = random -> Gen.of(1);
+        assertThat(testee.flatten().apply(new Random())).isNotNull();
     }
 
     // -- exists

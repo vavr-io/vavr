@@ -1321,19 +1321,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         }
     }
 
-    /**
-     * Flattens the elements of this Iterator.
-     *
-     * @return A flattened Iterator
-     */
+    @SuppressWarnings("unchecked")
     @Override
-    default Iterator<Object> flatten() {
-        if (!hasNext()) {
-            return empty();
-        } else {
-            return flatMap(
-                    t -> () -> (t instanceof java.lang.Iterable) ? ofAll((java.lang.Iterable<?>) t).flatten() : of(t));
-        }
+    default <U> Iterator<U> flatten() {
+        return ((Iterator<? extends Iterable<U>>) this).flatMap(Function.identity());
     }
 
     @Override

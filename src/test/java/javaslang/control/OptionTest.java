@@ -160,11 +160,6 @@ public class OptionTest {
     // -- flatten()
 
     @Test
-    public void shouldFlattenUnnestedSome() {
-        assertThat(new Some<>(1).flatten()).isEqualTo(new Some<>(1));
-    }
-
-    @Test
     public void shouldFlattenSomeOfSome() {
         assertThat(new Some<>(new Some<>(1)).flatten()).isEqualTo(new Some<>(1));
     }

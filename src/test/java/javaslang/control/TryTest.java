@@ -25,11 +25,6 @@ public class TryTest {
     // -- flatten()
 
     @Test
-    public void shouldFlattenUnnestedSuccess() {
-        assertThat(new Success<>(1).flatten()).isEqualTo(new Success<>(1));
-    }
-
-    @Test
     public void shouldFlattenSuccessOfSuccess() {
         assertThat(new Success<>(new Success<>(1)).flatten()).isEqualTo(new Success<>(1));
     }

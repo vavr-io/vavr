@@ -507,11 +507,10 @@ public final class HashSet<T> implements Set<T>, Serializable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public HashSet<Object> flatten() {
-        return flatMap(t -> (t instanceof java.lang.Iterable)
-                ? HashSet.ofAll((java.lang.Iterable<?>) t).flatten()
-                : HashSet.of(t));
+    public <U> HashSet<U> flatten() {
+        return ((HashSet<? extends Iterable<U>>) this).flatMap(Function.identity());
     }
 
     @Override

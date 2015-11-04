@@ -98,12 +98,10 @@ public interface Arbitrary<T> extends Value<T> {
         };
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Arbitrary<Object> flatten() {
-        return size -> random -> {
-            final T value = apply(size).apply(random);
-            return (value instanceof Arbitrary) ? ((Arbitrary<?>) value).flatten().apply(size).apply(random) : value;
-        };
+    default <U> Arbitrary<U> flatten() {
+        return ((Arbitrary<? extends Iterable<U>>) this).flatMap(Function.identity());
     }
 
     /**

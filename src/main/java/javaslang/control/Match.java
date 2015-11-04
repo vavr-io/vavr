@@ -394,9 +394,10 @@ public interface Match<R> extends Function<Object, R> {
         @Override
         <U> MatchMonad<U> flatMap(Function<? super R, ? extends java.lang.Iterable<? extends U>> mapper);
 
+        @SuppressWarnings("unchecked")
         @Override
-        default MatchMonad<Object> flatten() {
-            return flatMap(result -> (result instanceof MatchMonad) ? ((MatchMonad<?>) result).flatten() : this);
+        default <U> MatchMonad<U> flatten() {
+            return ((MatchMonad<? extends Iterable<U>>) this).flatMap(Function.identity());
         }
 
         @Override

@@ -704,19 +704,10 @@ public interface Stream<T> extends LinearSeq<T> {
         });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Stream<Object> flatten() {
-        if (isEmpty()) {
-            return empty();
-        } else {
-            return flatMap(t -> {
-                if (t instanceof java.lang.Iterable) {
-                    return Stream.ofAll((java.lang.Iterable<?>) t).flatten();
-                } else {
-                    return Stream.of(t);
-                }
-            });
-        }
+    default <U> Stream<U> flatten() {
+        return ((Stream<? extends Iterable<U>>) this).flatMap(Function.identity());
     }
 
     @Override

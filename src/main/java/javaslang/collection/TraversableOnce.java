@@ -324,7 +324,7 @@ public interface TraversableOnce<T> extends Value<T> {
     <U> TraversableOnce<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    TraversableOnce<? extends Object> flatten();
+    <U> TraversableOnce<U> flatten();
 
     /**
      * Accumulates the elements of this TraversableOnce by successively calling the given operator {@code op}.

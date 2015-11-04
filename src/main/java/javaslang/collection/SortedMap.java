@@ -92,7 +92,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
     <U, W> SortedMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper);
 
     @Override
-    SortedMap<Object, Object> flatten();
+    <U> Seq<U> flatten();
 
     @Override
     <C> Map<C, ? extends SortedMap<K, V>> groupBy(Function<? super Entry<K, V>, ? extends C> classifier);

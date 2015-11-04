@@ -114,12 +114,12 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U> Seq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return original.flatMap(e -> mapper.apply(e.value));
     }
 
     @Override
-    public IntMap<Object> flatten() {
+    public <U> Seq<U> flatten() {
         throw new UnsupportedOperationException();
     }
 

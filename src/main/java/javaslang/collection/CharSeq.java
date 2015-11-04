@@ -373,9 +373,24 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         }
     }
 
+    /**
+     * Elements of a {@code CharSeq} are flattened to identical characters.
+     * <p>
+     * <strong>Caution:</strong> Behaves different than most other {@code Value.flatten()} implementations.
+     * <p>
+     * Example:
+     *
+     * <pre><code>// = IndexedSeq('a', 'b', 'c')
+     * CharSeq.of("abc").flatten();</code></pre>
+     *
+     * @param <U> the component type of the result, needs to be {@code Character}
+     * @return an indexed sequence of characters
+     * @throws ClassCastException if {@code U} is not {@code Character}.
+     */
+    @SuppressWarnings("unchecked")
     @Override
-    public Vector<Object> flatten() {
-        return Vector.ofAll(iterator());
+    public <U> IndexedSeq<U> flatten() {
+        return (IndexedSeq<U>) Vector.ofAll(this);
     }
 
     @Override

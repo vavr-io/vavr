@@ -324,12 +324,10 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
         };
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Gen<Object> flatten() {
-        return random -> {
-            final T value = apply(random);
-            return (value instanceof Gen) ? ((Gen<?>) value).flatten().apply(random) : value;
-        };
+    default <U> Gen<U> flatten() {
+        return ((Gen<? extends Iterable<U>>) this).flatMap(Function.identity());
     }
 
     /**

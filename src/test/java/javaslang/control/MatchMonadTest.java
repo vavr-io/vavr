@@ -638,19 +638,19 @@ public class MatchMonadTest {
 
     @Test
     public void shouldFlatttenMatched() {
-        final Object actual = Match.of(1).whenIs(1).then(1).flatten().get();
+        final Object actual = Match.of(1).whenIs(1).then(new Some<>(1)).flatten().get();
         assertThat(actual).isEqualTo(1);
     }
 
     @Test
     public void shouldFlattenUnmatched() {
-        final Object actual = Match.of(0).whenIs(1).then(1).flatten().orElse(-1);
+        final Object actual = Match.of(0).whenIs(1).then(new Some<>(1)).flatten().orElse(-1);
         assertThat(actual).isEqualTo(-1);
     }
 
     @Test
     public void shouldFlattenOtherwise() {
-        final Object actual = Match.of(0).whenIs(1).then(1).otherwise(-1).flatten().get();
+        final Object actual = Match.of(0).whenIs(1).then(new Some<>(1)).otherwise(new Some<>(-1)).flatten().get();
         assertThat(actual).isEqualTo(-1);
     }
 

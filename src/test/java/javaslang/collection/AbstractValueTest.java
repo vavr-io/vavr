@@ -215,26 +215,10 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         assertThat(empty().flatten()).isEqualTo(empty());
     }
 
-    @Test
-    public void shouldFlattenTraversableOfPlainElements() {
-        assertThat(of(1, 2, 3).flatten()).isEqualTo(of(1, 2, 3));
-    }
-
     @SuppressWarnings("unchecked")
     @Test
     public void shouldFlattenTraversableOfTraversables() {
         assertThat(of(of(1), of(2, 3)).flatten()).isEqualTo(of(1, 2, 3));
-    }
-
-    @Test
-    public void shouldFlattenTraversableOfTraversablesAndPlainElements() {
-        assertThat(of(1, of(of(2, 3), 4), 5).flatten()).isEqualTo(of(1, 2, 3, 4, 5));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldFlattenDifferentElementTypes() {
-        assertThat(of(1, "2", of(3.1415, 1L)).flatten()).isEqualTo(of(1, "2", 3.1415, 1L));
     }
 
     // -- flatMap
