@@ -185,6 +185,69 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
         return Tuple7.compareTo(this, that);
     }
 
+    /**
+     * Getter of the 1st element of this tuple.
+     *
+     * @return the 1st element of this Tuple.
+     */
+    public T1 _1() {
+        return _1;
+    }
+
+    /**
+     * Getter of the 2nd element of this tuple.
+     *
+     * @return the 2nd element of this Tuple.
+     */
+    public T2 _2() {
+        return _2;
+    }
+
+    /**
+     * Getter of the 3rd element of this tuple.
+     *
+     * @return the 3rd element of this Tuple.
+     */
+    public T3 _3() {
+        return _3;
+    }
+
+    /**
+     * Getter of the 4th element of this tuple.
+     *
+     * @return the 4th element of this Tuple.
+     */
+    public T4 _4() {
+        return _4;
+    }
+
+    /**
+     * Getter of the 5th element of this tuple.
+     *
+     * @return the 5th element of this Tuple.
+     */
+    public T5 _5() {
+        return _5;
+    }
+
+    /**
+     * Getter of the 6th element of this tuple.
+     *
+     * @return the 6th element of this Tuple.
+     */
+    public T6 _6() {
+        return _6;
+    }
+
+    /**
+     * Getter of the 7th element of this tuple.
+     *
+     * @return the 7th element of this Tuple.
+     */
+    public T7 _7() {
+        return _7;
+    }
+
     public <U1, U2, U3, U4, U5, U6, U7> Tuple7<U1, U2, U3, U4, U5, U6, U7> map(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Tuple7<U1, U2, U3, U4, U5, U6, U7>> f) {
         return f.apply(_1, _2, _3, _4, _5, _6, _7);
     }
