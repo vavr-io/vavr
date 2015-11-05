@@ -80,7 +80,7 @@ public class CheckedFunction0Test {
         assertThat(memo.isMemoized()).isTrue();
     }
 
-    private static CheckedFunction0<Integer> recurrent1 = () -> 11;
+    private static final CheckedFunction0<Integer> recurrent1 = () -> 11;
 
     @Test
     public void shouldCalculatedRecursively() throws Throwable {

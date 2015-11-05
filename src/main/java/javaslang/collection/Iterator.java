@@ -1800,7 +1800,7 @@ interface IteratorModule {
 
         private final Iterator<? extends T> that;
         private Set<U> known;
-        private Function<? super T, ? extends U> keyExtractor;
+        private final Function<? super T, ? extends U> keyExtractor;
         private T next = null;
 
         DistinctIterator(Iterator<? extends T> that, Set<U> set, Function<? super T, ? extends U> keyExtractor) {

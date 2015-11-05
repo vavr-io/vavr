@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler48Test {
 
-    private static long MOD = 10_000_000_000L;
+    private static final long MOD = 10_000_000_000L;
 
     /**
      * <strong>Problem 48: Self powers</strong>

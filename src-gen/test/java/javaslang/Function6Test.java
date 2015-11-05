@@ -138,8 +138,8 @@ public class Function6Test {
         assertThat(memo.isMemoized()).isTrue();
     }
 
-    private static Function6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> recurrent1 = (i1, i2, i3, i4, i5, i6) -> i1 <= 0 ? i1 : Function6Test.recurrent2.apply(i1 - 1, i2, i3, i4, i5, i6) + 1;
-    private static Function6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> recurrent2 = Function6Test.recurrent1.memoized();
+    private static final Function6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> recurrent1 = (i1, i2, i3, i4, i5, i6) -> i1 <= 0 ? i1 : Function6Test.recurrent2.apply(i1 - 1, i2, i3, i4, i5, i6) + 1;
+    private static final Function6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> recurrent2 = Function6Test.recurrent1.memoized();
 
     @Test
     public void shouldCalculatedRecursively() {
