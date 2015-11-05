@@ -115,10 +115,11 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, FilterM
      * @return An object of type T
      * @throws java.util.NoSuchElementException if the given iterable is empty
      */
+    @SuppressWarnings("unchecked")
     static <T> T get(java.lang.Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         if (iterable instanceof Value) {
-            return ((Value<? extends T>) iterable).get();
+            return ((Value<T>) iterable).get();
         } else {
             return iterable.iterator().next();
         }

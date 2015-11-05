@@ -14,7 +14,7 @@ import java.util.concurrent.*;
  */
 final class TrivialExecutorService implements ExecutorService {
 
-    private static TrivialExecutorService INSTANCE = new TrivialExecutorService();
+    private static final TrivialExecutorService INSTANCE = new TrivialExecutorService();
 
     private TrivialExecutorService() {
     }

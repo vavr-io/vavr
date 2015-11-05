@@ -138,8 +138,8 @@ public class CheckedFunction6Test {
         assertThat(memo.isMemoized()).isTrue();
     }
 
-    private static CheckedFunction6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> recurrent1 = (i1, i2, i3, i4, i5, i6) -> i1 <= 0 ? i1 : CheckedFunction6Test.recurrent2.apply(i1 - 1, i2, i3, i4, i5, i6) + 1;
-    private static CheckedFunction6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> recurrent2 = CheckedFunction6Test.recurrent1.memoized();
+    private static final CheckedFunction6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> recurrent1 = (i1, i2, i3, i4, i5, i6) -> i1 <= 0 ? i1 : CheckedFunction6Test.recurrent2.apply(i1 - 1, i2, i3, i4, i5, i6) + 1;
+    private static final CheckedFunction6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> recurrent2 = CheckedFunction6Test.recurrent1.memoized();
 
     @Test
     public void shouldCalculatedRecursively() throws Throwable {
