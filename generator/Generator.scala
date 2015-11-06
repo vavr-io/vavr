@@ -1541,6 +1541,12 @@ def generateTestClasses(): Unit = {
               }
 
               @$test
+              public void shouldReturnElements() {
+                  final Tuple$i<$intGenerics> tuple = createIntTuple(${(1 to i).gen(j => s"$j") mkString ", "});
+                  ${(1 to i).gen(j => s"$assertThat(tuple._$j()).isEqualTo($j);\n")}
+              }
+
+              @$test
               public void shouldConvertToSeq() {
                   final $seq<?> actual = createIntTuple(${genArgsForComparing(i, 1)}).toSeq();
                   $assertThat(actual).isEqualTo($list.of(${genArgsForComparing(i, 1)}));
