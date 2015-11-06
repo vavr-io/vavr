@@ -29,6 +29,7 @@ import java.util.function.Predicate;
  * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
  *
  * @param <T> component type of this monad
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 public interface Monad<T> {
