@@ -592,10 +592,16 @@ public interface TraversableOnce<T> extends Value<T> {
         if (isEmpty()) {
             return None.instance();
         } else {
-            return new Some<>(foldLeft((Tuple2<U, T>) null, (u, t) -> {
-                final U tu = f.apply(t);
-                return u != null && u._1.compareTo(tu) >= 0 ? u : Tuple.of(tu, t);
-            })._2);
+            T tm = null;
+            U um = null;
+            for (T t : Iterator.ofAll(this)) {
+                U u = f.apply(t);
+                if (um == null || u.compareTo(um) >= 0) {
+                    um = u;
+                    tm = t;
+                }
+            }
+            return new Some<>(tm);
         }
     }
 
@@ -643,10 +649,16 @@ public interface TraversableOnce<T> extends Value<T> {
         if (isEmpty()) {
             return None.instance();
         } else {
-            return new Some<>(foldLeft((Tuple2<U, T>) null, (u, t) -> {
-                final U tu = f.apply(t);
-                return u != null && u._1.compareTo(tu) <= 0 ? u : Tuple.of(tu, t);
-            })._2);
+            T tm = null;
+            U um = null;
+            for (T t : Iterator.ofAll(this)) {
+                U u = f.apply(t);
+                if (um == null || u.compareTo(um) <= 0) {
+                    um = u;
+                    tm = t;
+                }
+            }
+            return new Some<>(tm);
         }
     }
 
