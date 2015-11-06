@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import javaslang.algebra.Monad;
 import javaslang.collection.*;
 import javaslang.control.*;
 
@@ -105,7 +106,7 @@ import java.util.stream.StreamSupport;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, FilterMonadic<T>, Printable {
+public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Monad<T>, Printable {
 
     /**
      * Gets the first value of the given Iterable if exists, otherwise throws.
@@ -703,78 +704,6 @@ interface Convertible<T> {
      * @return A new {@link Vector}.
      */
     Vector<T> toVector();
-
-}
-
-/**
- * Monadic and filter operations.
- *
- * @param <T> Component type.
- */
-interface FilterMonadic<T> {
-
-    /**
-     * Filters this {@code Value} by testing a predicate.
-     * <p>
-     * The semantics may vary from class to class, e.g. for single-valued type (like Option) and multi-values types
-     * (like Traversable). The commonality is, that filtered.isEmpty() will return true, if no element satisfied
-     * the given predicate.
-     * <p>
-     * Also, an implementation may throw {@code NoSuchElementException}, if no element makes it through the filter
-     * and this state cannot be reflected. E.g. this is the case for {@link javaslang.control.Either.LeftProjection} and
-     * {@link javaslang.control.Either.RightProjection}.
-     *
-     * @param predicate A predicate
-     * @return a new Value instance
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    FilterMonadic<T> filter(Predicate<? super T> predicate);
-
-    /**
-     * Flattens this {@code Value} by one level.
-     * <p>
-     * Example:
-     *
-     * <pre><code>List(Some(1), Some(2), None).flatten() = List(1, 2)</code></pre>
-     *
-     * <strong>Caution:</strong> Effectively {@code flatMap(Function.identity())} is called. That requires this
-     * elements to be of type {@code java.lang.Iterable<U>}. More specifically this type {@code FilterMonadic<T>}
-     * has to be of type {@code FilterMonadic<? extends java.lang.Iterable<U>>} for some given {@code U}.
-     * We (currently) can't express this constraint with Java's type system. If this type does not fulfill the
-     * requirement at runtime, a {@code ClassCastException} is thrown.
-     * <p>
-     * <strong>It is unsafe to use {@code flatten()}.</strong> Especially this compiles but throws at runtime:
-     *
-     * <pre><code>// Compiles. Throws at runtime because elements are not Iterable!
-     * List&lt;String&gt; list = List(1, 2, 3).flatten();</code></pre>
-     *
-     * <strong>Also beware of the following exceptional cases:</strong> {@link CharSeq#flatten()} and {@link Map#flatten()}.
-     *
-     * @param <U> the nested component type
-     * @return A flattened version of this {@code Value}.
-     * @throws UnsupportedOperationException if this elements are not of type {@code ? extends java.lang.Iterable<? extends T>}.
-     */
-    <U> FilterMonadic<U> flatten();
-
-    /**
-     * FlatMaps this value to a new value with different component type.
-     *
-     * @param mapper A mapper
-     * @param <U>    Component type of the mapped {@code Value}
-     * @return a mapped {@code Value}
-     * @throws NullPointerException if {@code mapper} is null
-     */
-    <U> FilterMonadic<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
-
-    /**
-     * Maps this value to a new value with different component type.
-     *
-     * @param mapper A mapper
-     * @param <U>    Component type of the mapped {@code Value}
-     * @return a mapped {@code Value}
-     * @throws NullPointerException if {@code mapper} is null
-     */
-    <U> FilterMonadic<U> map(Function<? super T, ? extends U> mapper);
 
 }
 

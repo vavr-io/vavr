@@ -102,7 +102,7 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
     default boolean eq(Object o) {
         if (o == this) {
             return true;
-        } else if (o instanceof Iterable) {
+        } else if (o instanceof javaslang.Iterable) {
             final Iterable<?> that = (Iterable<?>) o;
             return this.iterator().corresponds(that.iterator(), (o1, o2) -> {
                 if (o1 instanceof Iterable) {
@@ -114,7 +114,7 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
                 }
             });
         } else if (o instanceof java.lang.Iterable) {
-            final Iterable<?> that = Iterator.ofAll((java.lang.Iterable<?>) o);
+            final javaslang.Iterable<?> that = Iterator.ofAll((java.lang.Iterable<?>) o);
             return this.eq(that);
         } else {
             return false;
