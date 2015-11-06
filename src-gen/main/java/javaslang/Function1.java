@@ -32,31 +32,32 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
     long serialVersionUID = 1L;
 
     /**
-     * Lifts a <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method
-     * reference</a> or a
-     * <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html#syntax">lambda
-     * expression</a> to a {@code Function1}.
-     * <p>
+     * Creates a {@code Function1} based on
+     * <ul>
+     * <li><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method reference</a></li>
+     * <li><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html#syntax">lambda expression</a></li>
+     * </ul>
+     *
      * Examples (w.l.o.g. referring to Function1):
-     * <pre><code>// lifting a lambda expression
-     * Function1&lt;Integer, Integer&gt; add1 = Function1.lift(i -&gt; i + 1);
+     * <pre><code>// using a lambda expression
+     * Function1&lt;Integer, Integer&gt; add1 = Function1.of(i -&gt; i + 1);
      *
-     * // lifting a method reference (, e.g. Integer method(Integer i) { return i + 1; })
-     * Function1&lt;Integer, Integer&gt; add2 = Function1.lift(this::method);
+     * // using a method reference (, e.g. Integer method(Integer i) { return i + 1; })
+     * Function1&lt;Integer, Integer&gt; add2 = Function1.of(this::method);
      *
-     * // lifting a lambda reference
-     * Function1&lt;Integer, Integer&gt; add3 = Function1.lift(add1::apply);
+     * // using a lambda reference
+     * Function1&lt;Integer, Integer&gt; add3 = Function1.of(add1::apply);
      * </code></pre>
      * <p>
-     * <strong>Caution:</strong> Reflection loses type information of lifted lambda reference.
-     * <pre><code>// type of lifted a lambda expression
-     * MethodType type1 = add1.getType(); // (Integer)Integer
+     * <strong>Caution:</strong> Reflection loses type information of lambda references.
+     * <pre><code>// type of a lambda expression
+     * Type&lt;?, ?&gt; type1 = add1.getType(); // (Integer) -&gt; Integer
      *
-     * // type of lifted method reference
-     * MethodType type2 = add2.getType(); // (Integer)Integer
+     * // type of a method reference
+     * Type&lt;?, ?&gt; type2 = add2.getType(); // (Integer) -&gt; Integer
      *
-     * // type of lifted lambda reference
-     * MethodType type2 = add3.getType(); // (Object)Object
+     * // type of a lambda reference
+     * Type&lt;?, ?&gt; type3 = add3.getType(); // (Object) -&gt; Object
      * </code></pre>
      *
      * @param methodReference (typically) a method reference, e.g. {@code Type::method}
@@ -64,7 +65,7 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
      * @param <T1> 1st argument
      * @return a {@code Function1}
      */
-    static <T1, R> Function1<T1, R> lift(Function1<T1, R> methodReference) {
+    static <T1, R> Function1<T1, R> of(Function1<T1, R> methodReference) {
         return methodReference;
     }
 

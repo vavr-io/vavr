@@ -764,7 +764,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public <U> CharSeq sortBy(Comparator<? super U> comparator, Function<? super Character, ? extends U> mapper) {
-        final Function<? super Character, ? extends U> domain = Function1.lift(mapper::apply).memoized();
+        final Function<? super Character, ? extends U> domain = Function1.of(mapper::apply).memoized();
         return toJavaStream()
                 .sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
                 .collect(collector());
