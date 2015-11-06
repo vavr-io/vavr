@@ -592,11 +592,13 @@ public interface TraversableOnce<T> extends Value<T> {
         if (isEmpty()) {
             return None.instance();
         } else {
-            T tm = null;
-            U um = null;
-            for (T t : Iterator.ofAll(this)) {
-                U u = f.apply(t);
-                if (um == null || u.compareTo(um) >= 0) {
+            final Iterator<T> iter = iterator();
+            T tm = iter.next();
+            U um = f.apply(tm);
+            while (iter.hasNext()) {
+                final T t = iter.next();
+                final U u = f.apply(t);
+                if (u.compareTo(um) > 0) {
                     um = u;
                     tm = t;
                 }
@@ -649,11 +651,13 @@ public interface TraversableOnce<T> extends Value<T> {
         if (isEmpty()) {
             return None.instance();
         } else {
-            T tm = null;
-            U um = null;
-            for (T t : Iterator.ofAll(this)) {
-                U u = f.apply(t);
-                if (um == null || u.compareTo(um) <= 0) {
+            final Iterator<T> iter = iterator();
+            T tm = iter.next();
+            U um = f.apply(tm);
+            while (iter.hasNext()) {
+                final T t = iter.next();
+                final U u = f.apply(t);
+                if (u.compareTo(um) < 0) {
                     um = u;
                     tm = t;
                 }
