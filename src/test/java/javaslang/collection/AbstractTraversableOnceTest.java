@@ -779,6 +779,16 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
         assertThat(of(1, 2, 3).maxBy(i -> -i)).isEqualTo(new Some<>(1));
     }
 
+    @Test
+    public void shouldCallMaxFunctionOncePerElement() {
+        final int[] cnt = {0};
+        assertThat(of(1, 2, 3).maxBy(i -> {
+            cnt[0]++;
+            return i;
+        })).isEqualTo(new Some<>(3));
+        assertThat(cnt[0]).isEqualTo(3);
+    }
+
     // -- min
 
     @Test
@@ -883,6 +893,16 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
     @Test
     public void shouldCalculateInverseMinByFunctionOfInts() {
         assertThat(of(1, 2, 3).minBy(i -> -i)).isEqualTo(new Some<>(3));
+    }
+
+    @Test
+    public void shouldCallMinFunctionOncePerElement() {
+        final int[] cnt = {0};
+        assertThat(of(1, 2, 3).minBy(i -> {
+            cnt[0]++;
+            return i;
+        })).isEqualTo(new Some<>(1));
+        assertThat(cnt[0]).isEqualTo(3);
     }
 
     // -- product
