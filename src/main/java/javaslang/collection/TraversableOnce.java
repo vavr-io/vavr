@@ -67,7 +67,6 @@ import java.util.function.Predicate;
  * Reduction:
  *
  * <ul>
- * <li>{@link #fold(Object, BiFunction)}</li>
  * <li>{@link #foldLeft(Object, BiFunction)}</li>
  * <li>{@link #foldRight(Object, BiFunction)}</li>
  * <li>{@link #mkString()}</li>
@@ -329,21 +328,6 @@ public interface TraversableOnce<T> extends Value<T> {
     <U> TraversableOnce<U> flatten();
 
     /**
-     * Accumulates the elements of this TraversableOnce by successively calling the given operator {@code op}.
-     * <p>
-     * Example: {@code List("a", "b", "c").fold("", (xs, x) -> xs + x) = "abc"}
-     *
-     * @param zero Value to start the accumulation with.
-     * @param op   The accumulator operator.
-     * @return an accumulated version of this.
-     * @throws NullPointerException if {@code op} is null
-     */
-    default T fold(T zero, BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        return foldLeft(zero, op);
-    }
-
-    /**
      * Accumulates the elements of this TraversableOnce by successively calling the given function {@code f} from the left,
      * starting with a value {@code zero} of type B.
      * <p>
@@ -359,6 +343,7 @@ public interface TraversableOnce<T> extends Value<T> {
      * @return an accumulated version of this.
      * @throws NullPointerException if {@code f} is null
      */
+    @Override
     default <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         U xs = zero;
@@ -389,6 +374,7 @@ public interface TraversableOnce<T> extends Value<T> {
      * @return an accumulated version of this.
      * @throws NullPointerException if {@code f} is null
      */
+    @Override
     <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f);
 
     @Override

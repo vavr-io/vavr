@@ -403,17 +403,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
     // -- fold
 
     @Test
-    public void shouldFoldNil() {
-        assertThat(this.<String> empty().fold("", (a, b) -> a + b)).isEqualTo("");
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenFoldNullOperator() {
-        this.<String> empty().fold(null, null);
-    }
-
-    @Test
-    public void shouldFoldNonNil() {
+    public void shouldFoldMultipleElements() {
         assertThat(of(1, 2, 3).fold(0, (a, b) -> a + b)).isEqualTo(6);
     }
 
