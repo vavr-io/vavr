@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
 import javaslang.control.None;
@@ -591,7 +592,10 @@ public interface TraversableOnce<T> extends Value<T> {
         if (isEmpty()) {
             return None.instance();
         } else {
-            return maxBy((t1, t2) -> f.apply(t1).compareTo(f.apply(t2)));
+            return new Some<>(foldLeft((Tuple2<U, T>) null, (u, t) -> {
+                final U tu = f.apply(t);
+                return u != null && u._1.compareTo(tu) >= 0 ? u : Tuple.of(tu, t);
+            })._2);
         }
     }
 
@@ -639,7 +643,10 @@ public interface TraversableOnce<T> extends Value<T> {
         if (isEmpty()) {
             return None.instance();
         } else {
-            return minBy((t1, t2) -> f.apply(t1).compareTo(f.apply(t2)));
+            return new Some<>(foldLeft((Tuple2<U, T>) null, (u, t) -> {
+                final U tu = f.apply(t);
+                return u != null && u._1.compareTo(tu) <= 0 ? u : Tuple.of(tu, t);
+            })._2);
         }
     }
 
