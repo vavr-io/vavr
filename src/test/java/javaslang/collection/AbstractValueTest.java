@@ -276,6 +276,23 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         assertThat(actualInts).isEqualTo(expectedInts);
     }
 
+    // -- fold
+
+    @Test
+    public void shouldFoldNil() {
+        assertThat(this.<String> empty().fold("", (a, b) -> a + b)).isEqualTo("");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenFoldNullOperator() {
+        this.<String> empty().fold(null, null);
+    }
+
+    @Test
+    public void shouldFoldSingleElement() {
+        assertThat(of(1).fold(0, (a, b) -> a + b)).isEqualTo(1);
+    }
+
     // -- map
 
     @Test

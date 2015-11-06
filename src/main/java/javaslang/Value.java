@@ -5,7 +5,9 @@
  */
 package javaslang;
 
+import javaslang.algebra.Foldable;
 import javaslang.algebra.Monad;
+import javaslang.algebra.Monoid;
 import javaslang.collection.*;
 import javaslang.control.*;
 
@@ -14,10 +16,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.StreamSupport;
 
 /**
@@ -106,7 +105,7 @@ import java.util.stream.StreamSupport;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Monad<T>, Printable {
+public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldable<T>, Monad<T>, Printable {
 
     /**
      * Gets the first value of the given Iterable if exists, otherwise throws.
@@ -307,6 +306,18 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Monad<T
 
     @Override
     <U> Value<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+
+    // DEV-NOTE: default implementations for singleton types, needs to be overridden by multi valued types
+    @Override
+    default <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> combine) {
+        return isEmpty() ? zero : combine.apply(zero, get());
+    }
+
+    // DEV-NOTE: default implementations for singleton types, needs to be overridden by multi valued types
+    @Override
+    default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> combine) {
+        return isEmpty() ? zero : combine.apply(get(), zero);
+    }
 
     @Override
     <U> Value<U> map(Function<? super T, ? extends U> mapper);
