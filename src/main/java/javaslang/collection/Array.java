@@ -1219,7 +1219,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public String toString() {
-        return mkString(", ", "Array(", ")");
+        return mkString("Array(", ", ", ")");
     }
 
     private static <T> Object[] create(java.lang.Iterable<T> elements) {

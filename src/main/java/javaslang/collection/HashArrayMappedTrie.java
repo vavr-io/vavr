@@ -139,7 +139,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public String toString() {
-            return iterator().map(t -> t._1 + " -> " + t._2).mkString(", ", "HashArrayMappedTrie(", ")");
+            return iterator().map(t -> t._1 + " -> " + t._2).mkString("HashArrayMappedTrie(", ", ", ")");
         }
     }
 

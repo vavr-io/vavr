@@ -649,7 +649,7 @@ public interface TraversableOnce<T> extends Value<T> {
      * @return A new String
      */
     default String mkString(CharSequence delimiter) {
-        return mkString(delimiter, "", "");
+        return mkString("", delimiter, "");
     }
 
     /**
@@ -657,12 +657,12 @@ public interface TraversableOnce<T> extends Value<T> {
      * <p>
      * Example: {@code List.of("a", "b", "c").mkString(", ", "Chars(", ")") = "Chars(a, b, c)"}
      *
-     * @param delimiter A delimiter string put between string representations of elements of this
      * @param prefix    prefix of the resulting string
+     * @param delimiter A delimiter string put between string representations of elements of this
      * @param suffix    suffix of the resulting string
      * @return a new String
      */
-    default String mkString(CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
+    default String mkString(CharSequence prefix, CharSequence delimiter, CharSequence suffix) {
         final StringBuilder builder = new StringBuilder(prefix);
         iterator().map(String::valueOf).intersperse(String.valueOf(delimiter)).forEach(builder::append);
         return builder.append(suffix).toString();

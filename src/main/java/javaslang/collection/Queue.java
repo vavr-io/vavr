@@ -1097,6 +1097,6 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public String toString() {
-        return mkString(", ", "Queue(", ")");
+        return mkString("Queue(", ", ", ")");
     }
 }

@@ -297,8 +297,8 @@ public class HashSetTest extends AbstractSetTest {
 
     @Override
     public void shouldMkStringWithDelimiterAndPrefixAndSuffixNonNil() {
-        final String actual = of('a', 'b', 'c').mkString(",", "[", "]");
-        final List<String> expected = List.of('a', 'b', 'c').permutations().map(l -> l.mkString(",", "[", "]"));
+        final String actual = of('a', 'b', 'c').mkString("[", ",", "]");
+        final List<String> expected = List.of('a', 'b', 'c').permutations().map(l -> l.mkString("[", ",", "]"));
         assertThat(actual).isIn(expected);
     }
 

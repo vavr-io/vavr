@@ -604,8 +604,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public String mkString(CharSequence delimiter, CharSequence prefix, CharSequence suffix) {
-        return iterator().mkString(delimiter, prefix, suffix);
+    public String mkString(CharSequence prefix, CharSequence delimiter, CharSequence suffix) {
+        return iterator().mkString(prefix, delimiter, suffix);
     }
 
     @Override

@@ -592,12 +592,12 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldMkStringWithDelimiterAndPrefixAndSuffixNil() {
-        assertThat(empty().mkString(",", "[", "]")).isEqualTo("[]");
+        assertThat(empty().mkString("[", ",", "]")).isEqualTo("[]");
     }
 
     @Test
     public void shouldMkStringWithDelimiterAndPrefixAndSuffixNonNil() {
-        assertThat(of('a', 'b', 'c').mkString(",", "[", "]")).isEqualTo("[a,b,c]");
+        assertThat(of('a', 'b', 'c').mkString("[", ",", "]")).isEqualTo("[a,b,c]");
     }
 
     // -- last
@@ -1183,7 +1183,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
         final PrintStream out = new PrintStream(baos);
         of(1, 2, 3).out(out);
-        assertThat(baos.toString()).isEqualTo(of(1, 2, 3).mkString("\n", "", "\n"));
+        assertThat(baos.toString()).isEqualTo(of(1, 2, 3).mkString("", "\n", "\n"));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -1200,7 +1200,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
         final StringWriter sw = new StringWriter();
         final PrintWriter out = new PrintWriter(sw);
         of(1, 2, 3).out(out);
-        assertThat(sw.toString()).isEqualTo(of(1, 2, 3).mkString("\n", "", "\n"));
+        assertThat(sw.toString()).isEqualTo(of(1, 2, 3).mkString("", "\n", "\n"));
     }
 
     @Test(expected = IllegalStateException.class)
