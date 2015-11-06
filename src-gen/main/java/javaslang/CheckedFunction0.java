@@ -11,6 +11,7 @@ package javaslang;
 
 import java.util.Objects;
 import javaslang.CheckedFunction0Module.Memoized;
+import javaslang.control.Option;
 import javaslang.control.Try;
 
 /**
@@ -63,6 +64,18 @@ public interface CheckedFunction0<R> extends λ<R> {
      */
     static <R> CheckedFunction0<R> of(CheckedFunction0<R> methodReference) {
         return methodReference;
+    }
+
+    /**
+     * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
+     *
+     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
+     * @param <R> return type
+     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
+     *         if the function is defined for the given arguments, and {@code None} otherwise.
+     */
+    static <R> Function0<Option<R>> lift(CheckedFunction0<R> partialFunction) {
+        return () -> Try.of(() -> partialFunction.apply()).getOption();
     }
 
     /**

@@ -12,6 +12,8 @@ package javaslang;
 import java.util.Objects;
 import java.util.function.Supplier;
 import javaslang.Function0Module.Memoized;
+import javaslang.control.Option;
+import javaslang.control.Try;
 
 /**
  * Represents a function with no arguments.
@@ -63,6 +65,18 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
      */
     static <R> Function0<R> of(Function0<R> methodReference) {
         return methodReference;
+    }
+
+    /**
+     * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
+     *
+     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
+     * @param <R> return type
+     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
+     *         if the function is defined for the given arguments, and {@code None} otherwise.
+     */
+    static <R> Function0<Option<R>> lift(Function0<R> partialFunction) {
+        return () -> Try.of(() -> partialFunction.apply()).getOption();
     }
 
     /**
