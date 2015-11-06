@@ -23,7 +23,7 @@ public class FunctionsTest {
 
     @Test
     public void shouldRecognizeLiftedLambdaSignature() {
-        final Function1<Integer, Integer> f = Function1.lift(i -> i + 1);
+        final Function1<Integer, Integer> f = Function1.of(i -> i + 1);
         assertThat(f.getType().toString()).isEqualTo("(java.lang.Integer) -> java.lang.Integer");
     }
 
@@ -49,7 +49,7 @@ public class FunctionsTest {
     @Test
     public void shouldRecognizeLiftedLambdaCallSignature() {
         final Function<Integer, Integer> f1 = i -> i + 1;
-        final Function1<Integer, Integer> f2 = Function1.lift(i -> f1.apply(i));
+        final Function1<Integer, Integer> f2 = Function1.of(i -> f1.apply(i));
         assertThat(f2.getType().toString()).isEqualTo("(java.lang.Integer) -> java.lang.Integer");
     }
 
@@ -63,7 +63,7 @@ public class FunctionsTest {
     @Test
     public void shouldRecognizeLiftedMethodReferenceSignature() {
         final Function<Integer, Integer> f1 = i -> i + 1;
-        final Function1<Integer, Integer> f2 = Function1.lift(f1::apply);
+        final Function1<Integer, Integer> f2 = Function1.of(f1::apply);
         assertThat(f2.getType().toString()).isEqualTo("(java.lang.Integer) -> java.lang.Integer");
     }
 

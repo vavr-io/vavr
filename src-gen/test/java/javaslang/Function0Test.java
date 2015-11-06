@@ -24,7 +24,7 @@ public class Function0Test {
             }
         }
         final Type type = new Type();
-        assertThat(Function0.lift(type::methodReference)).isNotNull();
+        assertThat(Function0.of(type::methodReference)).isNotNull();
     }
 
     @Test

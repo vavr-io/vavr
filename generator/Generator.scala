@@ -995,7 +995,7 @@ def generateTestClasses(): Unit = {
                       }
                   }
                   final Type type = new Type();
-                  assertThat($name$i.lift(type::methodReference)).isNotNull();
+                  assertThat($name$i.of(type::methodReference)).isNotNull();
               }
 
               ${(1 to i - 1).gen(j => {

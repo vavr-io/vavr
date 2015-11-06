@@ -31,7 +31,7 @@ public class MapSetBench {
     });
 
     private static final Function<Integer, TreeSet<Integer>> treeCache = Function1
-            .lift((Integer i) -> treeGen.get())
+            .of((Integer i) -> treeGen.get())
             .memoized();
 
     private static final Iterator<TreeSet<Integer>> trees = new Iterator<TreeSet<Integer>>() {
