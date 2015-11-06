@@ -32,6 +32,15 @@ public class Tuple4Test {
     }
 
     @Test
+    public void shouldReturnElements() {
+        final Tuple4<Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4);
+        assertThat(tuple._1()).isEqualTo(1);
+        assertThat(tuple._2()).isEqualTo(2);
+        assertThat(tuple._3()).isEqualTo(3);
+        assertThat(tuple._4()).isEqualTo(4);
+    }
+
+    @Test
     public void shouldConvertToSeq() {
         final Seq<?> actual = createIntTuple(1, 0, 0, 0).toSeq();
         assertThat(actual).isEqualTo(List.of(1, 0, 0, 0));
