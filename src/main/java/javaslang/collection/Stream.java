@@ -1049,7 +1049,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default <U> Stream<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
-        final Function<? super T, ? extends U> domain = Function1.lift(mapper::apply).memoized();
+        final Function<? super T, ? extends U> domain = Function1.of(mapper::apply).memoized();
         return toJavaStream()
                 .sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
                 .collect(collector());

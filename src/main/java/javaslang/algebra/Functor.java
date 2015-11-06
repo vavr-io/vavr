@@ -19,6 +19,7 @@ import java.util.function.Function;
  *
  * @param <T> component type of this functor
  * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 public interface Functor<T> {

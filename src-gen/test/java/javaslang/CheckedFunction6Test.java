@@ -24,7 +24,7 @@ public class CheckedFunction6Test {
             }
         }
         final Type type = new Type();
-        assertThat(CheckedFunction6.lift(type::methodReference)).isNotNull();
+        assertThat(CheckedFunction6.of(type::methodReference)).isNotNull();
     }
 
     @Test

@@ -43,7 +43,7 @@ public class Euler67Test {
         return smart.apply(loadTriangle(fileName), 0, 0);
     }
 
-    private final static Function3<Vector<Vector<Integer>>, Integer, Integer, Integer> smart = Function3.lift(
+    private final static Function3<Vector<Vector<Integer>>, Integer, Integer, Integer> smart = Function3.of(
             (Vector<Vector<Integer>> tr, Integer row, Integer col) -> {
                 int value = tr.get(row).get(col);
                 if (row == tr.length() - 1) {

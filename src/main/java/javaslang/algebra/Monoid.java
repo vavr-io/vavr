@@ -23,6 +23,7 @@ import java.util.function.Function;
  * on numbers.</p>
  *
  * @param <A> A type.
+ * @author Daniel Dietrich
  * @since 1.1.0
  */
 public interface Monoid<A> extends Semigroup<A> {

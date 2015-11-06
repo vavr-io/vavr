@@ -43,7 +43,7 @@ public class Euler18Test {
         return naive.apply(Euler67Test.loadTriangle(fileName), 0, 0);
     }
 
-    private final static Function3<Vector<Vector<Integer>>, Integer, Integer, Integer> naive = Function3.lift(
+    private final static Function3<Vector<Vector<Integer>>, Integer, Integer, Integer> naive = Function3.of(
             (Vector<Vector<Integer>> tr, Integer row, Integer col) -> {
                 int value = tr.get(row).get(col);
                 if (row == tr.length() - 1) {

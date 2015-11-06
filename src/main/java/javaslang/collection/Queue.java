@@ -936,7 +936,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public <U> Queue<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
-        final Function<? super T, ? extends U> domain = Function1.lift(mapper::apply).memoized();
+        final Function<? super T, ? extends U> domain = Function1.of(mapper::apply).memoized();
         return toJavaStream()
                 .sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
                 .collect(collector());
