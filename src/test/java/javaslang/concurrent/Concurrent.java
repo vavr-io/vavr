@@ -11,7 +11,7 @@ import javaslang.control.Try.CheckedSupplier;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import static org.assertj.core.api.StrictAssertions.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 interface Concurrent {
 

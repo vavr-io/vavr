@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 // Specific tests. For general tests, see AbstractIterableTest.
 public class IterableTest {

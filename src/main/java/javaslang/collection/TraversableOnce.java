@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
 import javaslang.control.None;
