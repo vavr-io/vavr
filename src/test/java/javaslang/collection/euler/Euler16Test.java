@@ -17,9 +17,9 @@ public class Euler16Test {
     /**
      * <strong>Problem 16: Power digit sum</strong>
      * <p>
-     * 2<sup>15</sup> = 32768 and the sum of its digits is 3 + 2 + 7 + 6 + 8 = 26.
+     * 2<sup>15</sup> = 32768 and the sum ofAll its digits is 3 + 2 + 7 + 6 + 8 = 26.
      * <p>
-     * What is the sum of the digits of the number 2<sup>1000</sup>?
+     * What is the sum ofAll the digits ofAll the number 2<sup>1000</sup>?
      * <p>
      * See also <a href="https://projecteuler.net/problem=16">projecteuler.net problem 16</a>.
      */

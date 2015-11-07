@@ -28,13 +28,13 @@ public class FutureTest {
     }
 
     @Override
-    protected <T> Future<T> of(T element) {
-        return Future.of(TrivialExecutorService.instance(), () -> element);
+    protected <T> Future<T> ofAll(T element) {
+        return Future.ofAll(TrivialExecutorService.instance(), () -> element);
     }
 
     @Override
-    protected <T> Seq<T> of(T... elements) {
-        return List.of(elements);
+    protected <T> Seq<T> ofAll(T... elements) {
+        return List.ofAll(elements);
     }
 
     @Override
@@ -158,7 +158,7 @@ public class FutureTest {
 
     // TODO
 
-    // -- static of()
+    // -- static ofAll()
 
     @Test
     public void shouldCreateAndCompleteAFutureUsingTrivialExecutorService() {
@@ -186,16 +186,16 @@ public class FutureTest {
     @Test
     public void shoudCompleteWithSeqOfValueIfSequenceOfFuturesContainsNoError() {
         final Future<Seq<Integer>> sequence = Future.sequence(
-                List.of(Future.of(zZz(1)), Future.of(zZz(2)))
+                List.ofAll(Future.of(zZz(1)), Future.of(zZz(2)))
         );
         waitUntil(sequence::isCompleted);
-        assertThat(sequence.getValue().get()).isEqualTo(new Success<>(Stream.of(1, 2)));
+        assertThat(sequence.getValue().get()).isEqualTo(new Success<>(Stream.ofAll(1, 2)));
     }
 
     @Test
     public void shoudCompleteWithErrorIfSequenceOfFuturesContainsOneError() {
         final Future<Seq<Integer>> sequence = Future.sequence(
-                List.of(Future.of(zZz(13)), Future.of(zZz(new Error())))
+                List.ofAll(Future.of(zZz(13)), Future.of(zZz(new Error())))
         );
         waitUntil(sequence::isCompleted);
         assertFailed(sequence, Error.class);
@@ -248,7 +248,7 @@ public class FutureTest {
     @Test
     public void shouldRegisterCallbackBeforeFutureCompletes() {
 
-        // instead of delaying we wait/notify
+        // instead ofAll delaying we wait/notify
         final Object lock = new Object();
         final int[] actual = new int[] { -1 };
         final boolean[] futureWaiting = new boolean[] { false };
@@ -305,7 +305,7 @@ public class FutureTest {
 
     // TODO: filter, flatten, flatMap, get, isEmpty, iterator, map, peek
 
-    // TODO: also test what happens an exception occurs within one of these method calls and compare it with Scala
+    // TODO: also test what happens an exception occurs within one ofAll these method calls and compare it with Scala
 
     // -- map()
 

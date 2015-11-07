@@ -220,7 +220,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @SuppressWarnings("varargs")
     @SafeVarargs
-    static <T> Stream<T> of(T... elements) {
+    static <T> Stream<T> ofAll(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(new Iterator<T>() {
             int i = 0;

@@ -30,7 +30,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <T> TreeSet<T> of(T... elements) {
+    protected final <T> TreeSet<T> ofAll(T... elements) {
         boolean allLongs = true;
         boolean allNumbers = true;
         for (T element : elements) {
@@ -42,11 +42,11 @@ public class TreeSetTest extends AbstractSortedSetTest {
             }
         }
         if (allLongs) {
-            return TreeSet.ofAll(toLongComparator(), Iterator.of(elements));
+            return TreeSet.ofAll(toLongComparator(), Iterator.ofAll(elements));
         } else if (allNumbers) {
-            return TreeSet.ofAll(toDoubleComparator(), Iterator.of(elements));
+            return TreeSet.ofAll(toDoubleComparator(), Iterator.ofAll(elements));
         } else {
-            return TreeSet.ofAll(toStringComparator(), Iterator.of(elements));
+            return TreeSet.ofAll(toStringComparator(), Iterator.ofAll(elements));
         }
     }
 

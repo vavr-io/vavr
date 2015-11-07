@@ -40,7 +40,7 @@ public class Tuple1Test {
     @Test
     public void shouldConvertToSeq() {
         final Seq<?> actual = createIntTuple(1).toSeq();
-        assertThat(actual).isEqualTo(List.of(1));
+        assertThat(actual).isEqualTo(List.ofAll(1));
     }
 
     @Test

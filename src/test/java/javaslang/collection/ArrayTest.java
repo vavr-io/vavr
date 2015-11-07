@@ -30,8 +30,8 @@ public class ArrayTest extends AbstractSeqTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <T> Array<T> of(T... elements) {
-        return Array.of(elements);
+    protected final <T> Array<T> ofAll(T... elements) {
+        return Array.ofAll(elements);
     }
 
     @Override
@@ -168,7 +168,7 @@ public class ArrayTest extends AbstractSeqTest {
 
     @Test
     public void shouldStringifyNonNil() {
-        assertThat(of(1, 2, 3).toString()).isEqualTo("Array(1, 2, 3)");
+        assertThat(ofAll(1, 2, 3).toString()).isEqualTo("Array(1, 2, 3)");
     }
 
 }

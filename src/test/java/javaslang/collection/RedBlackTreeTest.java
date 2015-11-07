@@ -69,7 +69,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldRecognizeContainedElement() {
-        assertThat(RedBlackTree.of(1, 2, 3).contains(2)).isTrue();
+        assertThat(RedBlackTree.ofAll(1, 2, 3).contains(2)).isTrue();
     }
 
     @Test
@@ -79,7 +79,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldRecognizeNonContainedElementOfNonEmptyTree() {
-        assertThat(RedBlackTree.of(1, 2, 3).contains(0)).isFalse();
+        assertThat(RedBlackTree.ofAll(1, 2, 3).contains(0)).isFalse();
     }
 
     // insert
@@ -145,7 +145,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldReturnTheSameInstanceWhenInsertingAnAlreadyContainedELement() {
-        final RedBlackTree<Integer> testee = RedBlackTree.of(1, 2, 3);
+        final RedBlackTree<Integer> testee = RedBlackTree.ofAll(1, 2, 3);
         final RedBlackTree<Integer> actual = testee.insert(2);
         assertThat(actual).isEqualTo(testee);
     }
@@ -154,7 +154,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldDelete_2_from_2_1_4_5_9_3_6_7() {
-        final RedBlackTree<Integer> testee = RedBlackTree.of(2, 1, 4, 5, 9, 3, 6, 7);
+        final RedBlackTree<Integer> testee = RedBlackTree.ofAll(2, 1, 4, 5, 9, 3, 6, 7);
         final RedBlackTree<Integer> actual = testee.delete(2);
         assertThat(actual.toString()).isEqualTo("(B:4 (B:3 R:1) (R:6 B:5 (B:9 R:7)))");
         assertThat(actual.size()).isEqualTo(7);
@@ -164,7 +164,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldShouldSubtractEmptyFromNonEmpty() {
-        final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
+        final RedBlackTree<Integer> t1 = RedBlackTree.ofAll(3, 5);
         final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> actual = t1.difference(t2);
         assertThat(actual).isEqualTo(t1);
@@ -173,15 +173,15 @@ public class RedBlackTreeTest {
     @Test
     public void shouldShouldSubtractNonEmptyFromEmpty() {
         final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty();
-        final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
+        final RedBlackTree<Integer> t2 = RedBlackTree.ofAll(5, 7);
         final RedBlackTree<Integer> actual = t1.difference(t2);
         assertThat(actual).isEqualTo(t1);
     }
 
     @Test
     public void shouldShouldSubtractNonEmptyFromNonEmpty() {
-        final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
-        final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
+        final RedBlackTree<Integer> t1 = RedBlackTree.ofAll(3, 5);
+        final RedBlackTree<Integer> t2 = RedBlackTree.ofAll(5, 7);
         final RedBlackTree<Integer> actual = t1.difference(t2);
         final RedBlackTree<Integer> expected = RedBlackTree.of(3);
         assertThat(actual).isEqualTo(expected);
@@ -191,7 +191,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldShouldIntersectOnNonEmptyGivenEmpty() {
-        final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
+        final RedBlackTree<Integer> t1 = RedBlackTree.ofAll(3, 5);
         final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> actual = t1.intersection(t2);
         final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty();
@@ -201,7 +201,7 @@ public class RedBlackTreeTest {
     @Test
     public void shouldShouldIntersectOnEmptyGivenNonEmpty() {
         final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty();
-        final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
+        final RedBlackTree<Integer> t2 = RedBlackTree.ofAll(5, 7);
         final RedBlackTree<Integer> actual = t1.intersection(t2);
         final RedBlackTree<Integer> expected = RedBlackTree.<Integer> empty();
         assertThat(actual).isEqualTo(expected);
@@ -209,8 +209,8 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldShouldIntersectOnNonEmptyGivenNonEmpty() {
-        final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
-        final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
+        final RedBlackTree<Integer> t1 = RedBlackTree.ofAll(3, 5);
+        final RedBlackTree<Integer> t2 = RedBlackTree.ofAll(5, 7);
         final RedBlackTree<Integer> actual = t1.intersection(t2);
         final RedBlackTree<Integer> expected = RedBlackTree.of(5);
         assertThat(actual).isEqualTo(expected);
@@ -220,37 +220,37 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldShouldUnionOnNonEmptyGivenEmpty() {
-        final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
+        final RedBlackTree<Integer> t1 = RedBlackTree.ofAll(3, 5);
         final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> actual = t1.union(t2);
-        final RedBlackTree<Integer> expected = RedBlackTree.of(3, 5);
+        final RedBlackTree<Integer> expected = RedBlackTree.ofAll(3, 5);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldShouldUnionOnEmptyGivenNonEmpty() {
         final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty();
-        final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
+        final RedBlackTree<Integer> t2 = RedBlackTree.ofAll(5, 7);
         final RedBlackTree<Integer> actual = t1.union(t2);
-        final RedBlackTree<Integer> expected = RedBlackTree.of(5, 7);
+        final RedBlackTree<Integer> expected = RedBlackTree.ofAll(5, 7);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldShouldUnionOnNonEmptyGivenNonEmpty() {
-        final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
-        final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
+        final RedBlackTree<Integer> t1 = RedBlackTree.ofAll(3, 5);
+        final RedBlackTree<Integer> t2 = RedBlackTree.ofAll(5, 7);
         final RedBlackTree<Integer> actual = t1.union(t2);
-        final RedBlackTree<Integer> expected = RedBlackTree.of(3, 5, 7);
+        final RedBlackTree<Integer> expected = RedBlackTree.ofAll(3, 5, 7);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldComputeUnionAndEqualTreesOfDifferentShapeButSameELements() {
-        final RedBlackTree<Integer> t1 = RedBlackTree.of(-1, -1, 0, 1);
-        final RedBlackTree<Integer> t2 = RedBlackTree.of(-2, -1, 0, 1);
+        final RedBlackTree<Integer> t1 = RedBlackTree.ofAll(-1, -1, 0, 1);
+        final RedBlackTree<Integer> t2 = RedBlackTree.ofAll(-2, -1, 0, 1);
         final RedBlackTree<Integer> actual = t1.union(t2);
-        final RedBlackTree<Integer> expected = RedBlackTree.of(-2, -1, 0, 1);
+        final RedBlackTree<Integer> expected = RedBlackTree.ofAll(-2, -1, 0, 1);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -276,7 +276,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldIterateNonEmptyTree() {
-        final RedBlackTree<Integer> testee = RedBlackTree.of(7, 1, 6, 2, 5, 3, 4);
+        final RedBlackTree<Integer> testee = RedBlackTree.ofAll(7, 1, 6, 2, 5, 3, 4);
         final List<Integer> actual = testee.iterator().toList();
         assertThat(actual.toString()).isEqualTo("List(1, 2, 3, 4, 5, 6, 7)");
     }
@@ -307,7 +307,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldObeyInvariant2() {
-        Property.def("Every path from the root to an empty node contains the same number of black nodes")
+        Property.def("Every path from the root to an empty node contains the same number ofAll black nodes")
                 .forAll(TREES)
                 .suchThat(RedBlackTreeTest::invariant2)
                 .check()
@@ -343,7 +343,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldNotExceedMaximumDepth() {
-        Property.def("n := size(tree) => depth(node) <= 2 * floor(log2(n + 1)), for all nodes of tree")
+        Property.def("n := size(tree) => depth(node) <= 2 * floor(log2(n + 1)), for all nodes ofAll tree")
                 .forAll(TREES)
                 .suchThat(RedBlackTreeTest::doesNotExceedMaximumDepth)
                 .check()

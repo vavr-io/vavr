@@ -76,7 +76,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         if (iterables.length == 0) {
             return empty();
         } else {
-            return new ConcatIterator<>(Stream.of(iterables).map(Iterator::ofAll).iterator());
+            return new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
         }
     }
 
@@ -143,7 +143,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
      * @return A new Iterator
      */
     @SafeVarargs
-    static <T> Iterator<T> of(T... elements) {
+    static <T> Iterator<T> ofAll(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return new AbstractIterator<T>() {
 

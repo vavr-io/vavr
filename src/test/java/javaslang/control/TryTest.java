@@ -75,7 +75,7 @@ public class TryTest {
         assertThat(new Success<>(1).forAll(i -> i == 2)).isFalse();
     }
 
-    @Test // a property holds for all elements of no elements
+    @Test // a property holds for all elements ofAll no elements
     public void shouldNotHoldPropertyForAllOfFailure() {
         assertThat(failure().forAll(e -> true)).isTrue();
     }
@@ -99,7 +99,7 @@ public class TryTest {
         assertThat((Iterator<Object>) failure().iterator()).isNotNull();
     }
 
-    // -- Try.of
+    // -- Try.ofAll
 
     @Test
     public void shouldCreateSuccessWhenCallingTryOfSupplier() {

@@ -95,8 +95,8 @@ public class HashSetTest extends AbstractSetTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <T> HashSet<T> of(T... elements) {
-        return HashSet.of(elements);
+    protected final <T> HashSet<T> ofAll(T... elements) {
+        return HashSet.ofAll(elements);
     }
 
     @Override
@@ -172,22 +172,22 @@ public class HashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldZipNonNilsIfThisIsSmaller() {
-        final HashSet<Tuple2<Integer, String>> actual = of(1, 2).zip(of("a", "b", "c"));
-        final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        final HashSet<Tuple2<Integer, String>> actual = ofAll(1, 2).zip(ofAll("a", "b", "c"));
+        final HashSet<Tuple2<Integer, String>> expected = ofAll(Tuple.of(1, "a"), Tuple.of(2, "b"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipNonNilsIfThatIsSmaller() {
-        final HashSet<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b"));
-        final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        final HashSet<Tuple2<Integer, String>> actual = ofAll(1, 2, 3).zip(ofAll("a", "b"));
+        final HashSet<Tuple2<Integer, String>> expected = ofAll(Tuple.of(1, "a"), Tuple.of(2, "b"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipNonNilsOfSameSize() {
-        final HashSet<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b", "c"));
-        final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        final HashSet<Tuple2<Integer, String>> actual = ofAll(1, 2, 3).zip(ofAll("a", "b", "c"));
+        final HashSet<Tuple2<Integer, String>> expected = ofAll(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -218,22 +218,22 @@ public class HashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldZipAllNonNilsIfThisIsSmaller() {
-        final HashSet<Tuple2<Integer, String>> actual = of(1, 2).zipAll(of("a", "b", "c"), 9, "z");
-        final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
+        final HashSet<Tuple2<Integer, String>> actual = ofAll(1, 2).zipAll(ofAll("a", "b", "c"), 9, "z");
+        final HashSet<Tuple2<Integer, String>> expected = ofAll(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsIfThatIsSmaller() {
-        final HashSet<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b"), 9, "z");
-        final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
+        final HashSet<Tuple2<Integer, String>> actual = ofAll(1, 2, 3).zipAll(ofAll("a", "b"), 9, "z");
+        final HashSet<Tuple2<Integer, String>> expected = ofAll(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsOfSameSize() {
-        final HashSet<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b", "c"), 9, "z");
-        final HashSet<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        final HashSet<Tuple2<Integer, String>> actual = ofAll(1, 2, 3).zipAll(ofAll("a", "b", "c"), 9, "z");
+        final HashSet<Tuple2<Integer, String>> expected = ofAll(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -252,8 +252,8 @@ public class HashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldZipNonNilWithIndex() {
-        final HashSet<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex();
-        final HashSet<Tuple2<String, Integer>> expected = of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
+        final HashSet<Tuple2<String, Integer>> actual = ofAll("a", "b", "c").zipWithIndex();
+        final HashSet<Tuple2<String, Integer>> expected = ofAll(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -261,44 +261,44 @@ public class HashSetTest extends AbstractSetTest {
 
     @Override
     public void shouldDropRightAsExpectedIfCountIsLessThanSize() {
-        assertThat(of(1, 2, 3).dropRight(2)).isEqualTo(of(3));
+        assertThat(ofAll(1, 2, 3).dropRight(2)).isEqualTo(of(3));
     }
 
     @Override
     public void shouldTakeRightAsExpectedIfCountIsLessThanSize() {
-        assertThat(of(1, 2, 3).takeRight(2)).isEqualTo(of(1, 2));
+        assertThat(ofAll(1, 2, 3).takeRight(2)).isEqualTo(ofAll(1, 2));
     }
 
     @Override
     public void shouldGetInitOfNonNil() {
-        assertThat(of(1, 2, 3).init()).isEqualTo(of(2, 3));
+        assertThat(ofAll(1, 2, 3).init()).isEqualTo(ofAll(2, 3));
     }
 
     @Override
     public void shouldFoldRightNonNil() {
-        final String actual = of('a', 'b', 'c').foldRight("", (x, xs) -> x + xs);
-        final List<String> expected = List.of('a', 'b', 'c').permutations().map(List::mkString);
+        final String actual = ofAll('a', 'b', 'c').foldRight("", (x, xs) -> x + xs);
+        final List<String> expected = List.ofAll('a', 'b', 'c').permutations().map(List::mkString);
         assertThat(actual).isIn(expected);
     }
 
     @Override
     public void shouldReduceRightNonNil() {
-        final String actual = of("a", "b", "c").reduceRight((x, xs) -> x + xs);
-        final List<String> expected = List.of("a", "b", "c").permutations().map(List::mkString);
+        final String actual = ofAll("a", "b", "c").reduceRight((x, xs) -> x + xs);
+        final List<String> expected = List.ofAll("a", "b", "c").permutations().map(List::mkString);
         assertThat(actual).isIn(expected);
     }
 
     @Override
     public void shouldMkStringWithDelimiterNonNil() {
-        final String actual = of('a', 'b', 'c').mkString(",");
-        final List<String> expected = List.of('a', 'b', 'c').permutations().map(l -> l.mkString(","));
+        final String actual = ofAll('a', 'b', 'c').mkString(",");
+        final List<String> expected = List.ofAll('a', 'b', 'c').permutations().map(l -> l.mkString(","));
         assertThat(actual).isIn(expected);
     }
 
     @Override
     public void shouldMkStringWithDelimiterAndPrefixAndSuffixNonNil() {
-        final String actual = of('a', 'b', 'c').mkString("[", ",", "]");
-        final List<String> expected = List.of('a', 'b', 'c').permutations().map(l -> l.mkString("[", ",", "]"));
+        final String actual = ofAll('a', 'b', 'c').mkString("[", ",", "]");
+        final List<String> expected = List.ofAll('a', 'b', 'c').permutations().map(l -> l.mkString("[", ",", "]"));
         assertThat(actual).isIn(expected);
     }
 
@@ -314,8 +314,8 @@ public class HashSetTest extends AbstractSetTest {
 
     @Override
     public void shouldFindLastOfNonNil() {
-        final int actual = of(1, 2, 3, 4).findLast(i -> i % 2 == 0).get();
-        assertThat(actual).isIn(List.of(1, 2, 3, 4));
+        final int actual = ofAll(1, 2, 3, 4).findLast(i -> i % 2 == 0).get();
+        assertThat(actual).isIn(List.ofAll(1, 2, 3, 4));
     }
 
     @Override

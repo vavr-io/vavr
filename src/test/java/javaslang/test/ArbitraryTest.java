@@ -131,7 +131,7 @@ public class ArbitraryTest {
     // helpers
 
     /**
-     * Represents arbitrary binary trees of a certain depth n with values of type int.
+     * Represents arbitrary binary trees ofAll a certain depth n with values ofAll type int.
      */
     static class ArbitraryBinaryTree implements Arbitrary<BinaryTree<Integer>> {
 

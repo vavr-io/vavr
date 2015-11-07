@@ -31,7 +31,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @SuppressWarnings("unchecked")
     @Override
-    abstract protected <T> TraversableOnce<T> of(T... elements);
+    abstract protected <T> TraversableOnce<T> ofAll(T... elements);
 
     abstract protected <T> TraversableOnce<T> ofAll(java.lang.Iterable<? extends T> elements);
 
@@ -59,7 +59,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
         assertThat(actual.length()).isEqualTo(0);
     }
 
-    // -- static of()
+    // -- static ofAll()
 
     @Test
     public void shouldCreateSeqOfSeqUsingCons() {
@@ -67,12 +67,12 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
         assertThat(actual).isEqualTo(List.of(List.empty()));
     }
 
-    // -- static of(T...)
+    // -- static ofAll(T...)
 
     @Test
     public void shouldCreateInstanceOfElements() {
-        final List<Integer> actual = of(1, 2).toList();
-        assertThat(actual).isEqualTo(List.of(1, 2));
+        final List<Integer> actual = ofAll(1, 2).toList();
+        assertThat(actual).isEqualTo(List.ofAll(1, 2));
     }
 
     // -- static ofAll(Iterable)
@@ -81,7 +81,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
     public void shouldCreateListOfIterable() {
         final java.util.List<Integer> arrayList = Arrays.asList(1, 2);
         final List<Integer> actual = ofAll(arrayList).toList();
-        assertThat(actual).isEqualTo(List.of(1, 2));
+        assertThat(actual).isEqualTo(List.ofAll(1, 2));
     }
 
     // -- static ofAll(<primitive array>)
@@ -89,56 +89,56 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
     @Test
     public void shouldCreateListOfPrimitiveBooleanArray() {
         final TraversableOnce<Boolean> actual = ofAll(new boolean[] { true, false });
-        final TraversableOnce<Boolean> expected = of(true, false);
+        final TraversableOnce<Boolean> expected = ofAll(true, false);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateListOfPrimitiveByteArray() {
         final TraversableOnce<Byte> actual = ofAll(new byte[] { 1, 2, 3 });
-        final TraversableOnce<Byte> expected = of((byte) 1, (byte) 2, (byte) 3);
+        final TraversableOnce<Byte> expected = ofAll((byte) 1, (byte) 2, (byte) 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateListOfPrimitiveCharArray() {
         final TraversableOnce<Character> actual = ofAll(new char[] { 'a', 'b', 'c' });
-        final TraversableOnce<Character> expected = of('a', 'b', 'c');
+        final TraversableOnce<Character> expected = ofAll('a', 'b', 'c');
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateListOfPrimitiveDoubleArray() {
         final TraversableOnce<Double> actual = ofAll(new double[] { 1d, 2d, 3d });
-        final TraversableOnce<Double> expected = of(1d, 2d, 3d);
+        final TraversableOnce<Double> expected = ofAll(1d, 2d, 3d);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateListOfPrimitiveFloatArray() {
         final TraversableOnce<Float> actual = ofAll(new float[] { 1f, 2f, 3f });
-        final TraversableOnce<Float> expected = of(1f, 2f, 3f);
+        final TraversableOnce<Float> expected = ofAll(1f, 2f, 3f);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateListOfPrimitiveIntArray() {
         final TraversableOnce<Integer> actual = ofAll(new int[] { 1, 2, 3 });
-        final TraversableOnce<Integer> expected = of(1, 2, 3);
+        final TraversableOnce<Integer> expected = ofAll(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateListOfPrimitiveLongArray() {
         final TraversableOnce<Long> actual = ofAll(new long[] { 1L, 2L, 3L });
-        final TraversableOnce<Long> expected = of(1L, 2L, 3L);
+        final TraversableOnce<Long> expected = ofAll(1L, 2L, 3L);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateListOfPrimitiveShortArray() {
         final TraversableOnce<Short> actual = ofAll(new short[] { (short) 1, (short) 2, (short) 3 });
-        final TraversableOnce<Short> expected = of((short) 1, (short) 2, (short) 3);
+        final TraversableOnce<Short> expected = ofAll((short) 1, (short) 2, (short) 3);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -151,47 +151,47 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenComputingAverageOfStrings() {
-        of("1", "2", "3").average();
+        ofAll("1", "2", "3").average();
     }
 
     @Test
     public void shouldComputeAverageOfByte() {
-        assertThat(of((byte) 1, (byte) 2).average().get()).isEqualTo(1.5);
+        assertThat(ofAll((byte) 1, (byte) 2).average().get()).isEqualTo(1.5);
     }
 
     @Test
     public void shouldComputeAverageOfDouble() {
-        assertThat(of(.1, .2, .3).average().get()).isEqualTo(.2, within(10e-17));
+        assertThat(ofAll(.1, .2, .3).average().get()).isEqualTo(.2, within(10e-17));
     }
 
     @Test
     public void shouldComputeAverageOfFloat() {
-        assertThat(of(.1f, .2f, .3f).average().get()).isEqualTo(.2, within(10e-9));
+        assertThat(ofAll(.1f, .2f, .3f).average().get()).isEqualTo(.2, within(10e-9));
     }
 
     @Test
     public void shouldComputeAverageOfInt() {
-        assertThat(of(1, 2, 3).average().get()).isEqualTo(2);
+        assertThat(ofAll(1, 2, 3).average().get()).isEqualTo(2);
     }
 
     @Test
     public void shouldComputeAverageOfLong() {
-        assertThat(of(1L, 2L, 3L).average().get()).isEqualTo(2);
+        assertThat(ofAll(1L, 2L, 3L).average().get()).isEqualTo(2);
     }
 
     @Test
     public void shouldComputeAverageOfShort() {
-        assertThat(of((short) 1, (short) 2, (short) 3).average().get()).isEqualTo(2);
+        assertThat(ofAll((short) 1, (short) 2, (short) 3).average().get()).isEqualTo(2);
     }
 
     @Test
     public void shouldComputeAverageOfBigInteger() {
-        assertThat(of(BigInteger.ZERO, BigInteger.ONE).average().get()).isEqualTo(.5);
+        assertThat(ofAll(BigInteger.ZERO, BigInteger.ONE).average().get()).isEqualTo(.5);
     }
 
     @Test
     public void shouldComputeAverageOfBigDecimal() {
-        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).average().get()).isEqualTo(.5);
+        assertThat(ofAll(BigDecimal.ZERO, BigDecimal.ONE).average().get()).isEqualTo(.5);
     }
 
     // -- clear
@@ -204,7 +204,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldClearNonNil() {
-        assertThat(of(1, 2, 3).clear()).isEmpty();
+        assertThat(ofAll(1, 2, 3).clear()).isEmpty();
     }
 
     // -- contains
@@ -217,13 +217,13 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldRecognizeNonNilDoesNotContainElement() {
-        final boolean actual = of(1, 2, 3).contains(0);
+        final boolean actual = ofAll(1, 2, 3).contains(0);
         assertThat(actual).isFalse();
     }
 
     @Test
     public void shouldRecognizeNonNilDoesContainElement() {
-        final boolean actual = of(1, 2, 3).contains(2);
+        final boolean actual = ofAll(1, 2, 3).contains(2);
         assertThat(actual).isTrue();
     }
 
@@ -231,19 +231,19 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldRecognizeNilNotContainsAllElements() {
-        final boolean actual = empty().containsAll(of(1, 2, 3));
+        final boolean actual = empty().containsAll(ofAll(1, 2, 3));
         assertThat(actual).isFalse();
     }
 
     @Test
     public void shouldRecognizeNonNilNotContainsAllOverlappingElements() {
-        final boolean actual = of(1, 2, 3).containsAll(of(2, 3, 4));
+        final boolean actual = ofAll(1, 2, 3).containsAll(ofAll(2, 3, 4));
         assertThat(actual).isFalse();
     }
 
     @Test
     public void shouldRecognizeNonNilContainsAllOnSelf() {
-        final boolean actual = of(1, 2, 3).containsAll(of(1, 2, 3));
+        final boolean actual = ofAll(1, 2, 3).containsAll(ofAll(1, 2, 3));
         assertThat(actual).isTrue();
     }
 
@@ -256,7 +256,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeDistinctOfNonEmptyTraversable() {
-        assertThat(of(1, 1, 2, 2, 3, 3).distinct()).isEqualTo(of(1, 2, 3));
+        assertThat(ofAll(1, 1, 2, 2, 3, 3).distinct()).isEqualTo(ofAll(1, 2, 3));
     }
 
     // -- distinct(Comparator)
@@ -270,7 +270,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
     @Test
     public void shouldComputeDistinctByOfNonEmptyTraversableUsingComparator() {
         final Comparator<String> comparator = (s1, s2) -> (s1.charAt(1)) - (s2.charAt(1));
-        assertThat(of("1a", "2a", "3a", "3b", "4b", "5c").distinctBy(comparator)).isEqualTo(of("1a", "3b", "5c"));
+        assertThat(ofAll("1a", "2a", "3a", "3b", "4b", "5c").distinctBy(comparator)).isEqualTo(ofAll("1a", "3b", "5c"));
     }
 
     // -- distinct(Function)
@@ -282,8 +282,8 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeDistinctByOfNonEmptyTraversableUsingKeyExtractor() {
-        assertThat(of("1a", "2a", "3a", "3b", "4b", "5c").distinctBy(c -> c.charAt(1)))
-                .isEqualTo(of("1a", "3b", "5c"));
+        assertThat(ofAll("1a", "2a", "3a", "3b", "4b", "5c").distinctBy(c -> c.charAt(1)))
+                .isEqualTo(ofAll("1a", "3b", "5c"));
     }
 
     // -- drop
@@ -295,18 +295,18 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldDropNoneIfCountIsNegative() {
-        final TraversableOnce<Integer> t = of(1, 2, 3);
+        final TraversableOnce<Integer> t = ofAll(1, 2, 3);
         assertThat(t.drop(-1)).isSameAs(t);
     }
 
     @Test
     public void shouldDropAsExpectedIfCountIsLessThanSize() {
-        assertThat(of(1, 2, 3).drop(2)).isEqualTo(of(3));
+        assertThat(ofAll(1, 2, 3).drop(2)).isEqualTo(of(3));
     }
 
     @Test
     public void shouldDropAllIfCountExceedsSize() {
-        assertThat(of(1, 2, 3).drop(4)).isEqualTo(empty());
+        assertThat(ofAll(1, 2, 3).drop(4)).isEqualTo(empty());
     }
 
     // -- dropRight
@@ -318,18 +318,18 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldDropRightNoneIfCountIsNegative() {
-        final TraversableOnce<Integer> t = of(1, 2, 3);
+        final TraversableOnce<Integer> t = ofAll(1, 2, 3);
         assertThat(t.dropRight(-1)).isSameAs(t);
     }
 
     @Test
     public void shouldDropRightAsExpectedIfCountIsLessThanSize() {
-        assertThat(of(1, 2, 3).dropRight(2)).isEqualTo(of(1));
+        assertThat(ofAll(1, 2, 3).dropRight(2)).isEqualTo(of(1));
     }
 
     @Test
     public void shouldDropRightAllIfCountExceedsSize() {
-        assertThat(of(1, 2, 3).dropRight(4)).isEqualTo(empty());
+        assertThat(ofAll(1, 2, 3).dropRight(4)).isEqualTo(empty());
     }
 
     // -- dropWhile
@@ -342,28 +342,28 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
     @Test
     public void shouldDropWhileNoneIfPredicateIsFalse() {
         if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(of(1, 2, 3).dropWhile(ignored -> false)).isEqualTo(of(1, 2, 3));
+            assertThat(ofAll(1, 2, 3).dropWhile(ignored -> false)).isEqualTo(ofAll(1, 2, 3));
         } else {
-            TraversableOnce<Integer> t = of(1, 2, 3);
+            TraversableOnce<Integer> t = ofAll(1, 2, 3);
             assertThat(t.dropWhile(ignored -> false)).isSameAs(t);
         }
     }
 
     @Test
     public void shouldDropWhileAllIfPredicateIsTrue() {
-        assertThat(of(1, 2, 3).dropWhile(ignored -> true)).isEqualTo(empty());
+        assertThat(ofAll(1, 2, 3).dropWhile(ignored -> true)).isEqualTo(empty());
     }
 
     @Test
     public void shouldDropWhileCorrect() {
-        assertThat(of(1, 2, 3).dropWhile(i -> i < 2)).isEqualTo(of(2, 3));
+        assertThat(ofAll(1, 2, 3).dropWhile(i -> i < 2)).isEqualTo(ofAll(2, 3));
     }
 
     // -- existsUnique
 
     @Test
     public void shouldBeAwareOfExistingUniqueElement() {
-        assertThat(of(1, 2).existsUnique(i -> i == 1)).isTrue();
+        assertThat(ofAll(1, 2).existsUnique(i -> i == 1)).isTrue();
     }
 
     @Test
@@ -373,7 +373,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldBeAwareOfExistingNonUniqueElement() {
-        assertThat(of(1, 1, 2).existsUnique(i -> i == 1)).isFalse();
+        assertThat(ofAll(1, 1, 2).existsUnique(i -> i == 1)).isFalse();
     }
 
     // -- findFirst
@@ -385,7 +385,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldFindFirstOfNonNil() {
-        assertThat(of(1, 2, 3, 4).findFirst(i -> i % 2 == 0)).isEqualTo(Option.of(2));
+        assertThat(ofAll(1, 2, 3, 4).findFirst(i -> i % 2 == 0)).isEqualTo(Option.of(2));
     }
 
     // -- findLast
@@ -397,14 +397,14 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldFindLastOfNonNil() {
-        assertThat(of(1, 2, 3, 4).findLast(i -> i % 2 == 0)).isEqualTo(Option.of(4));
+        assertThat(ofAll(1, 2, 3, 4).findLast(i -> i % 2 == 0)).isEqualTo(Option.of(4));
     }
 
     // -- fold
 
     @Test
     public void shouldFoldMultipleElements() {
-        assertThat(of(1, 2, 3).fold(0, (a, b) -> a + b)).isEqualTo(6);
+        assertThat(ofAll(1, 2, 3).fold(0, (a, b) -> a + b)).isEqualTo(6);
     }
 
     // -- foldLeft
@@ -421,7 +421,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldFoldLeftNonNil() {
-        assertThat(of("a", "b", "c").foldLeft("", (xs, x) -> xs + x)).isEqualTo("abc");
+        assertThat(ofAll("a", "b", "c").foldLeft("", (xs, x) -> xs + x)).isEqualTo("abc");
     }
 
     // -- foldRight
@@ -438,7 +438,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldFoldRightNonNil() {
-        assertThat(of("a", "b", "c").foldRight("", (x, xs) -> x + xs)).isEqualTo("abc");
+        assertThat(ofAll("a", "b", "c").foldRight("", (x, xs) -> x + xs)).isEqualTo("abc");
     }
 
     // -- hasDefiniteSize
@@ -457,7 +457,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnHeadOfNonNil() {
-        assertThat(of(1, 2, 3).head()).isEqualTo(1);
+        assertThat(ofAll(1, 2, 3).head()).isEqualTo(1);
     }
 
     // -- headOption
@@ -469,7 +469,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnSomeHeadWhenCallingHeadOptionOnNonNil() {
-        assertThat(of(1, 2, 3).headOption()).isEqualTo(new Some<>(1));
+        assertThat(ofAll(1, 2, 3).headOption()).isEqualTo(new Some<>(1));
     }
 
     // -- init
@@ -481,7 +481,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldGetInitOfNonNil() {
-        assertThat(of(1, 2, 3).init()).isEqualTo(of(1, 2));
+        assertThat(ofAll(1, 2, 3).init()).isEqualTo(ofAll(1, 2));
     }
 
     // -- groupBy
@@ -493,15 +493,15 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldNonNilGroupByIdentity() {
-        Map<?, ?> actual = of('a', 'b', 'c').groupBy(Function.identity());
+        Map<?, ?> actual = ofAll('a', 'b', 'c').groupBy(Function.identity());
         Map<?, ?> expected = HashMap.empty().put('a', of('a')).put('b', of('b')).put('c', of('c'));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldNonNilGroupByEqual() {
-        Map<?, ?> actual = of('a', 'b', 'c').groupBy(c -> 1);
-        Map<?, ?> expected = HashMap.empty().put(1, of('a', 'b', 'c'));
+        Map<?, ?> actual = ofAll('a', 'b', 'c').groupBy(c -> 1);
+        Map<?, ?> expected = HashMap.empty().put(1, ofAll('a', 'b', 'c'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -514,7 +514,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnSomeInitWhenCallingInitOptionOnNonNil() {
-        assertThat(of(1, 2, 3).initOption()).isEqualTo(new Some<>(of(1, 2)));
+        assertThat(ofAll(1, 2, 3).initOption()).isEqualTo(new Some<>(ofAll(1, 2)));
     }
 
     // -- isEmpty
@@ -550,12 +550,12 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldIterateFirstElementOfNonNil() {
-        assertThat(of(1, 2, 3).iterator().next()).isEqualTo(1);
+        assertThat(ofAll(1, 2, 3).iterator().next()).isEqualTo(1);
     }
 
     @Test
     public void shouldFullyIterateNonNil() {
-        final Iterator<Integer> iterator = of(1, 2, 3).iterator();
+        final Iterator<Integer> iterator = ofAll(1, 2, 3).iterator();
         int actual;
         for (int i = 1; i <= 3; i++) {
             actual = iterator.next();
@@ -573,7 +573,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldMkStringNonNil() {
-        assertThat(of('a', 'b', 'c').mkString()).isEqualTo("abc");
+        assertThat(ofAll('a', 'b', 'c').mkString()).isEqualTo("abc");
     }
 
     // -- mkString(delimiter)
@@ -585,7 +585,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldMkStringWithDelimiterNonNil() {
-        assertThat(of('a', 'b', 'c').mkString(",")).isEqualTo("a,b,c");
+        assertThat(ofAll('a', 'b', 'c').mkString(",")).isEqualTo("a,b,c");
     }
 
     // -- mkString(delimiter, prefix, suffix)
@@ -597,7 +597,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldMkStringWithDelimiterAndPrefixAndSuffixNonNil() {
-        assertThat(of('a', 'b', 'c').mkString("[", ",", "]")).isEqualTo("[a,b,c]");
+        assertThat(ofAll('a', 'b', 'c').mkString("[", ",", "]")).isEqualTo("[a,b,c]");
     }
 
     // -- last
@@ -609,7 +609,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnLastOfNonNil() {
-        assertThat(of(1, 2, 3).last()).isEqualTo(3);
+        assertThat(ofAll(1, 2, 3).last()).isEqualTo(3);
     }
 
     // -- lastOption
@@ -621,7 +621,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnSomeLastWhenCallingLastOptionOnNonNil() {
-        assertThat(of(1, 2, 3).lastOption()).isEqualTo(new Some<>(3));
+        assertThat(ofAll(1, 2, 3).lastOption()).isEqualTo(new Some<>(3));
     }
 
     // -- length
@@ -633,7 +633,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeLengthOfNonNil() {
-        assertThat(of(1, 2, 3).length()).isEqualTo(3);
+        assertThat(ofAll(1, 2, 3).length()).isEqualTo(3);
     }
 
     // -- partition
@@ -650,17 +650,17 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldPartitionIntsInOddAndEvenHavingOddAndEvenNumbers() {
-        assertThat(of(1, 2, 3, 4).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(of(1, 3), of(2, 4)));
+        assertThat(ofAll(1, 2, 3, 4).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(ofAll(1, 3), ofAll(2, 4)));
     }
 
     @Test
     public void shouldPartitionIntsInOddAndEvenHavingOnlyOddNumbers() {
-        assertThat(of(1, 3).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(of(1, 3), empty()));
+        assertThat(ofAll(1, 3).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(ofAll(1, 3), empty()));
     }
 
     @Test
     public void shouldPartitionIntsInOddAndEvenHavingOnlyEvenNumbers() {
-        assertThat(of(2, 4).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(empty(), of(2, 4)));
+        assertThat(ofAll(2, 4).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(empty(), ofAll(2, 4)));
     }
 
     // -- max
@@ -672,57 +672,57 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeMaxOfStrings() {
-        assertThat(of("1", "2", "3").max()).isEqualTo(new Some<>("3"));
+        assertThat(ofAll("1", "2", "3").max()).isEqualTo(new Some<>("3"));
     }
 
     @Test
     public void shouldComputeMaxOfBoolean() {
-        assertThat(of(true, false).max()).isEqualTo(new Some<>(true));
+        assertThat(ofAll(true, false).max()).isEqualTo(new Some<>(true));
     }
 
     @Test
     public void shouldComputeMaxOfByte() {
-        assertThat(of((byte) 1, (byte) 2).max()).isEqualTo(new Some<>((byte) 2));
+        assertThat(ofAll((byte) 1, (byte) 2).max()).isEqualTo(new Some<>((byte) 2));
     }
 
     @Test
     public void shouldComputeMaxOfChar() {
-        assertThat(of('a', 'b', 'c').max()).isEqualTo(new Some<>('c'));
+        assertThat(ofAll('a', 'b', 'c').max()).isEqualTo(new Some<>('c'));
     }
 
     @Test
     public void shouldComputeMaxOfDouble() {
-        assertThat(of(.1, .2, .3).max()).isEqualTo(new Some<>(.3));
+        assertThat(ofAll(.1, .2, .3).max()).isEqualTo(new Some<>(.3));
     }
 
     @Test
     public void shouldComputeMaxOfFloat() {
-        assertThat(of(.1f, .2f, .3f).max()).isEqualTo(new Some<>(.3f));
+        assertThat(ofAll(.1f, .2f, .3f).max()).isEqualTo(new Some<>(.3f));
     }
 
     @Test
     public void shouldComputeMaxOfInt() {
-        assertThat(of(1, 2, 3).max()).isEqualTo(new Some<>(3));
+        assertThat(ofAll(1, 2, 3).max()).isEqualTo(new Some<>(3));
     }
 
     @Test
     public void shouldComputeMaxOfLong() {
-        assertThat(of(1L, 2L, 3L).max()).isEqualTo(new Some<>(3L));
+        assertThat(ofAll(1L, 2L, 3L).max()).isEqualTo(new Some<>(3L));
     }
 
     @Test
     public void shouldComputeMaxOfShort() {
-        assertThat(of((short) 1, (short) 2, (short) 3).max()).isEqualTo(new Some<>((short) 3));
+        assertThat(ofAll((short) 1, (short) 2, (short) 3).max()).isEqualTo(new Some<>((short) 3));
     }
 
     @Test
     public void shouldComputeMaxOfBigInteger() {
-        assertThat(of(BigInteger.ZERO, BigInteger.ONE).max()).isEqualTo(new Some<>(BigInteger.ONE));
+        assertThat(ofAll(BigInteger.ZERO, BigInteger.ONE).max()).isEqualTo(new Some<>(BigInteger.ONE));
     }
 
     @Test
     public void shouldComputeMaxOfBigDecimal() {
-        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).max()).isEqualTo(new Some<>(BigDecimal.ONE));
+        assertThat(ofAll(BigDecimal.ZERO, BigDecimal.ONE).max()).isEqualTo(new Some<>(BigDecimal.ONE));
     }
 
     // -- maxBy(Comparator)
@@ -739,12 +739,12 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldCalculateMaxByOfInts() {
-        assertThat(of(1, 2, 3).maxBy((i1, i2) -> i1 - i2)).isEqualTo(new Some<>(3));
+        assertThat(ofAll(1, 2, 3).maxBy((i1, i2) -> i1 - i2)).isEqualTo(new Some<>(3));
     }
 
     @Test
     public void shouldCalculateInverseMaxByOfInts() {
-        assertThat(of(1, 2, 3).maxBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>(1));
+        assertThat(ofAll(1, 2, 3).maxBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>(1));
     }
 
     // -- maxBy(Function)
@@ -761,18 +761,18 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldCalculateMaxByFunctionOfInts() {
-        assertThat(of(1, 2, 3).maxBy(i -> i)).isEqualTo(new Some<>(3));
+        assertThat(ofAll(1, 2, 3).maxBy(i -> i)).isEqualTo(new Some<>(3));
     }
 
     @Test
     public void shouldCalculateInverseMaxByFunctionOfInts() {
-        assertThat(of(1, 2, 3).maxBy(i -> -i)).isEqualTo(new Some<>(1));
+        assertThat(ofAll(1, 2, 3).maxBy(i -> -i)).isEqualTo(new Some<>(1));
     }
 
     @Test
     public void shouldCallMaxFunctionOncePerElement() {
         final int[] cnt = {0};
-        assertThat(of(1, 2, 3).maxBy(i -> {
+        assertThat(ofAll(1, 2, 3).maxBy(i -> {
             cnt[0]++;
             return i;
         })).isEqualTo(new Some<>(3));
@@ -788,57 +788,57 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeMinOfStrings() {
-        assertThat(of("1", "2", "3").min()).isEqualTo(new Some<>("1"));
+        assertThat(ofAll("1", "2", "3").min()).isEqualTo(new Some<>("1"));
     }
 
     @Test
     public void shouldComputeMinOfBoolean() {
-        assertThat(of(true, false).min()).isEqualTo(new Some<>(false));
+        assertThat(ofAll(true, false).min()).isEqualTo(new Some<>(false));
     }
 
     @Test
     public void shouldComputeMinOfByte() {
-        assertThat(of((byte) 1, (byte) 2).min()).isEqualTo(new Some<>((byte) 1));
+        assertThat(ofAll((byte) 1, (byte) 2).min()).isEqualTo(new Some<>((byte) 1));
     }
 
     @Test
     public void shouldComputeMinOfChar() {
-        assertThat(of('a', 'b', 'c').min()).isEqualTo(new Some<>('a'));
+        assertThat(ofAll('a', 'b', 'c').min()).isEqualTo(new Some<>('a'));
     }
 
     @Test
     public void shouldComputeMinOfDouble() {
-        assertThat(of(.1, .2, .3).min()).isEqualTo(new Some<>(.1));
+        assertThat(ofAll(.1, .2, .3).min()).isEqualTo(new Some<>(.1));
     }
 
     @Test
     public void shouldComputeMinOfFloat() {
-        assertThat(of(.1f, .2f, .3f).min()).isEqualTo(new Some<>(.1f));
+        assertThat(ofAll(.1f, .2f, .3f).min()).isEqualTo(new Some<>(.1f));
     }
 
     @Test
     public void shouldComputeMinOfInt() {
-        assertThat(of(1, 2, 3).min()).isEqualTo(new Some<>(1));
+        assertThat(ofAll(1, 2, 3).min()).isEqualTo(new Some<>(1));
     }
 
     @Test
     public void shouldComputeMinOfLong() {
-        assertThat(of(1L, 2L, 3L).min()).isEqualTo(new Some<>(1L));
+        assertThat(ofAll(1L, 2L, 3L).min()).isEqualTo(new Some<>(1L));
     }
 
     @Test
     public void shouldComputeMinOfShort() {
-        assertThat(of((short) 1, (short) 2, (short) 3).min()).isEqualTo(new Some<>((short) 1));
+        assertThat(ofAll((short) 1, (short) 2, (short) 3).min()).isEqualTo(new Some<>((short) 1));
     }
 
     @Test
     public void shouldComputeMinOfBigInteger() {
-        assertThat(of(BigInteger.ZERO, BigInteger.ONE).min()).isEqualTo(new Some<>(BigInteger.ZERO));
+        assertThat(ofAll(BigInteger.ZERO, BigInteger.ONE).min()).isEqualTo(new Some<>(BigInteger.ZERO));
     }
 
     @Test
     public void shouldComputeMinOfBigDecimal() {
-        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).min()).isEqualTo(new Some<>(BigDecimal.ZERO));
+        assertThat(ofAll(BigDecimal.ZERO, BigDecimal.ONE).min()).isEqualTo(new Some<>(BigDecimal.ZERO));
     }
 
     // -- minBy(Comparator)
@@ -855,12 +855,12 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldCalculateMinByOfInts() {
-        assertThat(of(1, 2, 3).minBy((i1, i2) -> i1 - i2)).isEqualTo(new Some<>(1));
+        assertThat(ofAll(1, 2, 3).minBy((i1, i2) -> i1 - i2)).isEqualTo(new Some<>(1));
     }
 
     @Test
     public void shouldCalculateInverseMinByOfInts() {
-        assertThat(of(1, 2, 3).minBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>(3));
+        assertThat(ofAll(1, 2, 3).minBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>(3));
     }
 
     // -- minBy(Function)
@@ -877,18 +877,18 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldCalculateMinByFunctionOfInts() {
-        assertThat(of(1, 2, 3).minBy(i -> i)).isEqualTo(new Some<>(1));
+        assertThat(ofAll(1, 2, 3).minBy(i -> i)).isEqualTo(new Some<>(1));
     }
 
     @Test
     public void shouldCalculateInverseMinByFunctionOfInts() {
-        assertThat(of(1, 2, 3).minBy(i -> -i)).isEqualTo(new Some<>(3));
+        assertThat(ofAll(1, 2, 3).minBy(i -> -i)).isEqualTo(new Some<>(3));
     }
 
     @Test
     public void shouldCallMinFunctionOncePerElement() {
         final int[] cnt = {0};
-        assertThat(of(1, 2, 3).minBy(i -> {
+        assertThat(ofAll(1, 2, 3).minBy(i -> {
             cnt[0]++;
             return i;
         })).isEqualTo(new Some<>(1));
@@ -904,47 +904,47 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenComputingProductOfStrings() {
-        of("1", "2", "3").product();
+        ofAll("1", "2", "3").product();
     }
 
     @Test
     public void shouldComputeProductOfByte() {
-        assertThat(of((byte) 1, (byte) 2).product()).isEqualTo(2);
+        assertThat(ofAll((byte) 1, (byte) 2).product()).isEqualTo(2);
     }
 
     @Test
     public void shouldComputeProductOfDouble() {
-        assertThat(of(.1, .2, .3).product().doubleValue()).isEqualTo(.006, within(10e-18));
+        assertThat(ofAll(.1, .2, .3).product().doubleValue()).isEqualTo(.006, within(10e-18));
     }
 
     @Test
     public void shouldComputeProductOfFloat() {
-        assertThat(of(.1f, .2f, .3f).product().doubleValue()).isEqualTo(.006, within(10e-10));
+        assertThat(ofAll(.1f, .2f, .3f).product().doubleValue()).isEqualTo(.006, within(10e-10));
     }
 
     @Test
     public void shouldComputeProductOfInt() {
-        assertThat(of(1, 2, 3).product()).isEqualTo(6);
+        assertThat(ofAll(1, 2, 3).product()).isEqualTo(6);
     }
 
     @Test
     public void shouldComputeProductOfLong() {
-        assertThat(of(1L, 2L, 3L).product()).isEqualTo(6L);
+        assertThat(ofAll(1L, 2L, 3L).product()).isEqualTo(6L);
     }
 
     @Test
     public void shouldComputeProductOfShort() {
-        assertThat(of((short) 1, (short) 2, (short) 3).product()).isEqualTo(6);
+        assertThat(ofAll((short) 1, (short) 2, (short) 3).product()).isEqualTo(6);
     }
 
     @Test
     public void shouldComputeProductOfBigInteger() {
-        assertThat(of(BigInteger.ZERO, BigInteger.ONE).product()).isEqualTo(0L);
+        assertThat(ofAll(BigInteger.ZERO, BigInteger.ONE).product()).isEqualTo(0L);
     }
 
     @Test
     public void shouldComputeProductOfBigDecimal() {
-        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).product()).isEqualTo(0.0);
+        assertThat(ofAll(BigDecimal.ZERO, BigDecimal.ONE).product()).isEqualTo(0.0);
     }
 
     // -- reduce
@@ -961,7 +961,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldReduceNonNil() {
-        assertThat(of(1, 2, 3).reduce((a, b) -> a + b)).isEqualTo(6);
+        assertThat(ofAll(1, 2, 3).reduce((a, b) -> a + b)).isEqualTo(6);
     }
 
     // -- reduceLeft
@@ -978,7 +978,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldReduceLeftNonNil() {
-        assertThat(of("a", "b", "c").reduceLeft((xs, x) -> xs + x)).isEqualTo("abc");
+        assertThat(ofAll("a", "b", "c").reduceLeft((xs, x) -> xs + x)).isEqualTo("abc");
     }
 
     // -- reduceRight
@@ -995,7 +995,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldReduceRightNonNil() {
-        assertThat(of("a", "b", "c").reduceRight((x, xs) -> x + xs)).isEqualTo("abc");
+        assertThat(ofAll("a", "b", "c").reduceRight((x, xs) -> x + xs)).isEqualTo("abc");
     }
 
     // -- replace(curr, new)
@@ -1007,15 +1007,15 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldReplaceFirstOccurrenceOfNonNilUsingCurrNewWhenMultipleOccurrencesExist() {
-        final TraversableOnce<Integer> testee = of(0, 1, 2, 1);
+        final TraversableOnce<Integer> testee = ofAll(0, 1, 2, 1);
         final TraversableOnce<Integer> actual = testee.replace(1, 3);
-        final TraversableOnce<Integer> expected = of(0, 3, 2, 1);
+        final TraversableOnce<Integer> expected = ofAll(0, 3, 2, 1);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldReplaceElementOfNonNilUsingCurrNewWhenOneOccurrenceExists() {
-        assertThat(of(0, 1, 2).replace(1, 3)).isEqualTo(of(0, 3, 2));
+        assertThat(ofAll(0, 1, 2).replace(1, 3)).isEqualTo(ofAll(0, 3, 2));
     }
 
     // -- replaceAll(curr, new)
@@ -1027,24 +1027,24 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldReplaceAllElementsOfNonNilUsingCurrNew() {
-        assertThat(of(0, 1, 2, 1).replaceAll(1, 3)).isEqualTo(of(0, 3, 2, 3));
+        assertThat(ofAll(0, 1, 2, 1).replaceAll(1, 3)).isEqualTo(ofAll(0, 3, 2, 3));
     }
 
     // -- retainAll
 
     @Test
     public void shouldRetainAllElementsFromNil() {
-        assertThat(empty().retainAll(of(1, 2, 3))).isEqualTo(empty());
+        assertThat(empty().retainAll(ofAll(1, 2, 3))).isEqualTo(empty());
     }
 
     @Test
     public void shouldRetainAllExistingElementsFromNonNil() {
-        assertThat(of(1, 2, 3, 1, 2, 3).retainAll(of(1, 2))).isEqualTo(of(1, 2, 1, 2));
+        assertThat(ofAll(1, 2, 3, 1, 2, 3).retainAll(ofAll(1, 2))).isEqualTo(ofAll(1, 2, 1, 2));
     }
 
     @Test
     public void shouldNotRetainAllNonExistingElementsFromNonNil() {
-        assertThat(of(1, 2, 3).retainAll(of(4, 5))).isEqualTo(empty());
+        assertThat(ofAll(1, 2, 3).retainAll(ofAll(4, 5))).isEqualTo(empty());
     }
 
     // -- sliding(size)
@@ -1076,13 +1076,13 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldSlideNonNilBySize1() {
-        assertThat(of(1, 2, 3).sliding(1).toList()).isEqualTo(List.of(Vector.of(1), Vector.of(2), Vector.of(3)));
+        assertThat(ofAll(1, 2, 3).sliding(1).toList()).isEqualTo(List.ofAll(Vector.of(1), Vector.of(2), Vector.of(3)));
     }
 
     @Test // #201
     public void shouldSlideNonNilBySize2() {
-        assertThat(of(1, 2, 3, 4, 5).sliding(2).toList())
-                .isEqualTo(List.of(Vector.of(1, 2), Vector.of(2, 3), Vector.of(3, 4), Vector.of(4, 5)));
+        assertThat(ofAll(1, 2, 3, 4, 5).sliding(2).toList())
+                .isEqualTo(List.ofAll(Vector.ofAll(1, 2), Vector.ofAll(2, 3), Vector.ofAll(3, 4), Vector.ofAll(4, 5)));
     }
 
     // -- sliding(size, step)
@@ -1094,22 +1094,22 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldSlide5ElementsBySize2AndStep3() {
-        assertThat(of(1, 2, 3, 4, 5).sliding(2, 3).toList()).isEqualTo(List.of(Vector.of(1, 2), Vector.of(4, 5)));
+        assertThat(ofAll(1, 2, 3, 4, 5).sliding(2, 3).toList()).isEqualTo(List.ofAll(Vector.ofAll(1, 2), Vector.ofAll(4, 5)));
     }
 
     @Test
     public void shouldSlide5ElementsBySize2AndStep4() {
-        assertThat(of(1, 2, 3, 4, 5).sliding(2, 4).toList()).isEqualTo(List.of(Vector.of(1, 2), Vector.of(5)));
+        assertThat(ofAll(1, 2, 3, 4, 5).sliding(2, 4).toList()).isEqualTo(List.ofAll(Vector.ofAll(1, 2), Vector.of(5)));
     }
 
     @Test
     public void shouldSlide5ElementsBySize2AndStep5() {
-        assertThat(of(1, 2, 3, 4, 5).sliding(2, 5).toList()).isEqualTo(List.of(Vector.of(1, 2)));
+        assertThat(ofAll(1, 2, 3, 4, 5).sliding(2, 5).toList()).isEqualTo(List.of(Vector.ofAll(1, 2)));
     }
 
     @Test
     public void shouldSlide4ElementsBySize5AndStep3() {
-        assertThat(of(1, 2, 3, 4).sliding(5, 3).toList()).isEqualTo(List.of(Vector.of(1, 2, 3, 4)));
+        assertThat(ofAll(1, 2, 3, 4).sliding(5, 3).toList()).isEqualTo(List.of(Vector.ofAll(1, 2, 3, 4)));
     }
 
     // -- span
@@ -1121,7 +1121,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldSpanNonNil() {
-        assertThat(of(0, 1, 2, 3).span(i -> i < 2)).isEqualTo(Tuple.of(of(0, 1), of(2, 3)));
+        assertThat(ofAll(0, 1, 2, 3).span(i -> i < 2)).isEqualTo(Tuple.of(ofAll(0, 1), ofAll(2, 3)));
     }
 
     // -- spliterator
@@ -1136,35 +1136,35 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
     @Test
     public void shouldSplitNonNil() {
         final java.util.List<Integer> actual = new java.util.ArrayList<>();
-        of(1, 2, 3).spliterator().forEachRemaining(actual::add);
+        ofAll(1, 2, 3).spliterator().forEachRemaining(actual::add);
         assertThat(actual).isEqualTo(Arrays.asList(1, 2, 3));
     }
 
     @Test
     public void shouldHaveImmutableSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().characteristics() & Spliterator.IMMUTABLE).isNotZero();
+        assertThat(ofAll(1, 2, 3).spliterator().characteristics() & Spliterator.IMMUTABLE).isNotZero();
     }
 
     @Test
     public void shouldHaveOrderedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().characteristics() & Spliterator.ORDERED).isNotZero();
+        assertThat(ofAll(1, 2, 3).spliterator().characteristics() & Spliterator.ORDERED).isNotZero();
     }
 
     @Test
     public void shouldHaveSizedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().characteristics() & Spliterator.SIZED).isNotZero();
+        assertThat(ofAll(1, 2, 3).spliterator().characteristics() & Spliterator.SIZED).isNotZero();
     }
 
     @Test
     public void shouldReturnSizeWhenSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+        assertThat(ofAll(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
     }
 
     // -- stderr
 
     @Test
     public void shouldWriteToStderr() {
-        of(1, 2, 3).stderr();
+        ofAll(1, 2, 3).stderr();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -1182,7 +1182,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldWriteToStdout() {
-        of(1, 2, 3).stdout();
+        ofAll(1, 2, 3).stdout();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -1202,8 +1202,8 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
     public void shouldWriteToPrintStream() {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
         final PrintStream out = new PrintStream(baos);
-        of(1, 2, 3).out(out);
-        assertThat(baos.toString()).isEqualTo(of(1, 2, 3).mkString("", "\n", "\n"));
+        ofAll(1, 2, 3).out(out);
+        assertThat(baos.toString()).isEqualTo(ofAll(1, 2, 3).mkString("", "\n", "\n"));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -1219,8 +1219,8 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
     public void shouldWriteToPrintWriter() {
         final StringWriter sw = new StringWriter();
         final PrintWriter out = new PrintWriter(sw);
-        of(1, 2, 3).out(out);
-        assertThat(sw.toString()).isEqualTo(of(1, 2, 3).mkString("", "\n", "\n"));
+        ofAll(1, 2, 3).out(out);
+        assertThat(sw.toString()).isEqualTo(ofAll(1, 2, 3).mkString("", "\n", "\n"));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -1239,47 +1239,47 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenComputingSumOfStrings() {
-        of("1", "2", "3").sum();
+        ofAll("1", "2", "3").sum();
     }
 
     @Test
     public void shouldComputeSumOfByte() {
-        assertThat(of((byte) 1, (byte) 2).sum()).isEqualTo(3);
+        assertThat(ofAll((byte) 1, (byte) 2).sum()).isEqualTo(3);
     }
 
     @Test
     public void shouldComputeSumOfDouble() {
-        assertThat(of(.1, .2, .3).sum().doubleValue()).isEqualTo(.6, within(10e-16));
+        assertThat(ofAll(.1, .2, .3).sum().doubleValue()).isEqualTo(.6, within(10e-16));
     }
 
     @Test
     public void shouldComputeSumOfFloat() {
-        assertThat(of(.1f, .2f, .3f).sum().doubleValue()).isEqualTo(.6, within(10e-8));
+        assertThat(ofAll(.1f, .2f, .3f).sum().doubleValue()).isEqualTo(.6, within(10e-8));
     }
 
     @Test
     public void shouldComputeSumOfInt() {
-        assertThat(of(1, 2, 3).sum()).isEqualTo(6);
+        assertThat(ofAll(1, 2, 3).sum()).isEqualTo(6);
     }
 
     @Test
     public void shouldComputeSumOfLong() {
-        assertThat(of(1L, 2L, 3L).sum()).isEqualTo(6L);
+        assertThat(ofAll(1L, 2L, 3L).sum()).isEqualTo(6L);
     }
 
     @Test
     public void shouldComputeSumOfShort() {
-        assertThat(of((short) 1, (short) 2, (short) 3).sum()).isEqualTo(6);
+        assertThat(ofAll((short) 1, (short) 2, (short) 3).sum()).isEqualTo(6);
     }
 
     @Test
     public void shouldComputeSumOfBigInteger() {
-        assertThat(of(BigInteger.ZERO, BigInteger.ONE).sum()).isEqualTo(1L);
+        assertThat(ofAll(BigInteger.ZERO, BigInteger.ONE).sum()).isEqualTo(1L);
     }
 
     @Test
     public void shouldComputeSumOfBigDecimal() {
-        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).sum()).isEqualTo(1.0);
+        assertThat(ofAll(BigDecimal.ZERO, BigDecimal.ONE).sum()).isEqualTo(1.0);
     }
 
     // -- take
@@ -1291,20 +1291,20 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).take(-1)).isEqualTo(empty());
+        assertThat(ofAll(1, 2, 3).take(-1)).isEqualTo(empty());
     }
 
     @Test
     public void shouldTakeAsExpectedIfCountIsLessThanSize() {
-        assertThat(of(1, 2, 3).take(2)).isEqualTo(of(1, 2));
+        assertThat(ofAll(1, 2, 3).take(2)).isEqualTo(ofAll(1, 2));
     }
 
     @Test
     public void shouldTakeAllIfCountExceedsSize() {
         if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(of(1, 2, 3).take(4)).isEqualTo(of(1, 2, 3));
+            assertThat(ofAll(1, 2, 3).take(4)).isEqualTo(ofAll(1, 2, 3));
         } else {
-            final TraversableOnce<Integer> t = of(1, 2, 3);
+            final TraversableOnce<Integer> t = ofAll(1, 2, 3);
             assertThat(t.take(4)).isSameAs(t);
         }
     }
@@ -1318,20 +1318,20 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeRightNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).takeRight(-1)).isEqualTo(empty());
+        assertThat(ofAll(1, 2, 3).takeRight(-1)).isEqualTo(empty());
     }
 
     @Test
     public void shouldTakeRightAsExpectedIfCountIsLessThanSize() {
-        assertThat(of(1, 2, 3).takeRight(2)).isEqualTo(of(2, 3));
+        assertThat(ofAll(1, 2, 3).takeRight(2)).isEqualTo(ofAll(2, 3));
     }
 
     @Test
     public void shouldTakeRightAllIfCountExceedsSize() {
         if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(of(1, 2, 3).takeRight(4)).isEqualTo(of(1, 2, 3));
+            assertThat(ofAll(1, 2, 3).takeRight(4)).isEqualTo(ofAll(1, 2, 3));
         } else {
-            final TraversableOnce<Integer> t = of(1, 2, 3);
+            final TraversableOnce<Integer> t = ofAll(1, 2, 3);
             assertThat(t.takeRight(4)).isSameAs(t);
         }
     }
@@ -1345,9 +1345,9 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeUntilAllOnFalseCondition() {
-        final TraversableOnce<Integer> t = of(1, 2, 3);
+        final TraversableOnce<Integer> t = ofAll(1, 2, 3);
         if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(of(1, 2, 3).takeUntil(x -> false)).isEqualTo(of(1, 2, 3));
+            assertThat(ofAll(1, 2, 3).takeUntil(x -> false)).isEqualTo(ofAll(1, 2, 3));
         } else {
             assertThat(t.takeUntil(x -> false)).isSameAs(t);
         }
@@ -1355,12 +1355,12 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeUntilAllOnTrueCondition() {
-        assertThat(of(1, 2, 3).takeUntil(x -> true)).isEqualTo(empty());
+        assertThat(ofAll(1, 2, 3).takeUntil(x -> true)).isEqualTo(empty());
     }
 
     @Test
     public void shouldTakeUntilAsExpected() {
-        assertThat(of(2, 4, 5, 6).takeUntil(x -> x % 2 != 0)).isEqualTo(of(2, 4));
+        assertThat(ofAll(2, 4, 5, 6).takeUntil(x -> x % 2 != 0)).isEqualTo(ofAll(2, 4));
     }
 
     // -- takeWhile
@@ -1372,14 +1372,14 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeWhileAllOnFalseCondition() {
-        assertThat(of(1, 2, 3).takeWhile(x -> false)).isEqualTo(empty());
+        assertThat(ofAll(1, 2, 3).takeWhile(x -> false)).isEqualTo(empty());
     }
 
     @Test
     public void shouldTakeWhileAllOnTrueCondition() {
-        final TraversableOnce<Integer> t = of(1, 2, 3);
+        final TraversableOnce<Integer> t = ofAll(1, 2, 3);
         if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(of(1, 2, 3).takeWhile(x -> true)).isEqualTo(of(1, 2, 3));
+            assertThat(ofAll(1, 2, 3).takeWhile(x -> true)).isEqualTo(ofAll(1, 2, 3));
         } else {
             assertThat(t.takeWhile(x -> true)).isSameAs(t);
         }
@@ -1387,7 +1387,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeWhileAsExpected() {
-        assertThat(of(2, 4, 5, 6).takeWhile(x -> x % 2 == 0)).isEqualTo(of(2, 4));
+        assertThat(ofAll(2, 4, 5, 6).takeWhile(x -> x % 2 == 0)).isEqualTo(ofAll(2, 4));
     }
 
     // -- tail
@@ -1399,7 +1399,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnTailOfNonNil() {
-        assertThat(of(1, 2, 3).tail()).isEqualTo(of(2, 3));
+        assertThat(ofAll(1, 2, 3).tail()).isEqualTo(ofAll(2, 3));
     }
 
     // -- tailOption
@@ -1411,7 +1411,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
-        assertThat(of(1, 2, 3).tailOption()).isEqualTo(new Some<>(of(2, 3)));
+        assertThat(ofAll(1, 2, 3).tailOption()).isEqualTo(new Some<>(ofAll(2, 3)));
     }
 
     // -- toJavaArray(Class)
@@ -1425,7 +1425,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertNonNilToJavaArray() {
-        final Integer[] array = of(1, 2).toJavaArray(Integer.class);
+        final Integer[] array = ofAll(1, 2).toJavaArray(Integer.class);
         final Integer[] expected = new Integer[] { 1, 2 };
         assertThat(array).isEqualTo(expected);
     }
@@ -1439,7 +1439,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertNonNilToArrayList() {
-        assertThat(of(1, 2, 3).toJavaList()).isEqualTo(Arrays.asList(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).toJavaList()).isEqualTo(Arrays.asList(1, 2, 3));
     }
 
     // -- toJavaMap(Function)
@@ -1454,7 +1454,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
         final java.util.Map<Integer, Integer> expected = new java.util.HashMap<>();
         expected.put(1, 1);
         expected.put(2, 2);
-        assertThat(of(1, 2).toJavaMap(x -> Tuple.of(x, x))).isEqualTo(expected);
+        assertThat(ofAll(1, 2).toJavaMap(x -> Tuple.of(x, x))).isEqualTo(expected);
     }
 
     // -- toJavaSet
@@ -1470,7 +1470,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
         expected.add(2);
         expected.add(1);
         expected.add(3);
-        assertThat(of(1, 2, 2, 3).toJavaSet()).isEqualTo(expected);
+        assertThat(ofAll(1, 2, 2, 3).toJavaSet()).isEqualTo(expected);
     }
 
     // ++++++ OBJECT ++++++
@@ -1510,17 +1510,17 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldRecognizeEqualityOfNonNils() {
-        assertThat(of(1, 2, 3).equals(of(1, 2, 3))).isTrue();
+        assertThat(ofAll(1, 2, 3).equals(ofAll(1, 2, 3))).isTrue();
     }
 
     @Test
     public void shouldRecognizeNonEqualityOfTraversablesOfSameSize() {
-        assertThat(of(1, 2, 3).equals(of(1, 2, 4))).isFalse();
+        assertThat(ofAll(1, 2, 3).equals(ofAll(1, 2, 4))).isFalse();
     }
 
     @Test
     public void shouldRecognizeNonEqualityOfTraversablesOfDifferentSize() {
-        assertThat(of(1, 2, 3).equals(of(1, 2))).isFalse();
+        assertThat(ofAll(1, 2, 3).equals(ofAll(1, 2))).isFalse();
     }
 
     // -- hashCode
@@ -1532,12 +1532,12 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldCalculateHashCodeOfNonNil() {
-        assertThat(of(1, 2).hashCode() == of(1, 2).hashCode()).isTrue();
+        assertThat(ofAll(1, 2).hashCode() == ofAll(1, 2).hashCode()).isTrue();
     }
 
     @Test
     public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
-        assertThat(of(1, 2).hashCode() != of(2, 3).hashCode()).isTrue();
+        assertThat(ofAll(1, 2).hashCode() != ofAll(2, 3).hashCode()).isTrue();
     }
 
     // -- Serializable interface
@@ -1557,8 +1557,8 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldSerializeDeserializeNonNil() {
-        final Object actual = deserialize(serialize(of(1, 2, 3)));
-        final Object expected = of(1, 2, 3);
+        final Object actual = deserialize(serialize(ofAll(1, 2, 3)));
+        final Object expected = ofAll(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 

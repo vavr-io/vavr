@@ -18,7 +18,7 @@ public class Euler67Test {
     /**
      * <strong>Problem 67: Maximum path sum II</strong>
      * <p>
-     * By starting at the top of the triangle below and moving to adjacent numbers on the row below, the maximum total from top to bottom is 23.
+     * By starting at the top ofAll the triangle below and moving to adjacent numbers on the row below, the maximum total from top to bottom is 23.
      * <pre>
      *        3
      *       7 4
@@ -29,7 +29,7 @@ public class Euler67Test {
      * <p>
      * Find the maximum total from top to bottom in p067_triangle.txt, a 15K text file containing a triangle with one-hundred rows.
      * <p>
-     * <strong>NOTE</strong>: This is a much more difficult version of Problem 18.
+     * <strong>NOTE</strong>: This is a much more difficult version ofAll Problem 18.
      * <p>
      * See also <a href="https://projecteuler.net/problem=67">projecteuler.net problem 67</a>.
      */

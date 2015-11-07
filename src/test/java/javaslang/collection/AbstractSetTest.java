@@ -17,57 +17,57 @@ public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
 
     @SuppressWarnings("unchecked")
     @Override
-    abstract protected <T> Set<T> of(T... elements);
+    abstract protected <T> Set<T> ofAll(T... elements);
 
     @Test
     public void shouldAddAllOfIterable() {
-        assertThat(of(1, 2, 3).addAll(empty())).isEqualTo(of(1, 2, 3));
-        assertThat(empty().addAll(of(2, 3, 4))).isEqualTo(of(2, 3, 4));
-        assertThat(of(1, 2, 3).addAll(of(2, 3, 4))).isEqualTo(of(1, 2, 3, 4));
+        assertThat(ofAll(1, 2, 3).addAll(empty())).isEqualTo(ofAll(1, 2, 3));
+        assertThat(empty().addAll(ofAll(2, 3, 4))).isEqualTo(ofAll(2, 3, 4));
+        assertThat(ofAll(1, 2, 3).addAll(ofAll(2, 3, 4))).isEqualTo(ofAll(1, 2, 3, 4));
     }
 
     @Test
     public void shouldCalculateDifference() {
-        assertThat(of(1, 2, 3).diff(of(2))).isEqualTo(of(1, 3));
-        assertThat(of(1, 2, 3).diff(of(5))).isEqualTo(of(1, 2, 3));
-        assertThat(of(1, 2, 3).diff(of(1, 2, 3))).isEqualTo(empty());
-        assertThat(empty().diff(of(1, 2))).isEqualTo(empty());
+        assertThat(ofAll(1, 2, 3).diff(of(2))).isEqualTo(ofAll(1, 3));
+        assertThat(ofAll(1, 2, 3).diff(of(5))).isEqualTo(ofAll(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).diff(ofAll(1, 2, 3))).isEqualTo(empty());
+        assertThat(empty().diff(ofAll(1, 2))).isEqualTo(empty());
     }
 
     @Test
     public void shouldCalculateIntersect() {
-        assertThat(of(1, 2, 3).intersect(of(2))).isEqualTo(of(2));
-        assertThat(of(1, 2, 3).intersect(of(5))).isEqualTo(empty());
-        assertThat(of(1, 2, 3).intersect(of(1, 2, 3))).isEqualTo(of(1, 2, 3));
-        assertThat(empty().intersect(of(1, 2))).isEqualTo(empty());
+        assertThat(ofAll(1, 2, 3).intersect(of(2))).isEqualTo(of(2));
+        assertThat(ofAll(1, 2, 3).intersect(of(5))).isEqualTo(empty());
+        assertThat(ofAll(1, 2, 3).intersect(ofAll(1, 2, 3))).isEqualTo(ofAll(1, 2, 3));
+        assertThat(empty().intersect(ofAll(1, 2))).isEqualTo(empty());
     }
 
     @Test
     public void shouldCalculateUnion() {
-        assertThat(of(1, 2, 3).union(of(2))).isEqualTo(of(1, 2, 3));
-        assertThat(of(1, 2, 3).union(of(5))).isEqualTo(of(1, 2, 3, 5));
-        assertThat(of(1, 2, 3).union(of(1, 2, 3))).isEqualTo(of(1, 2, 3));
-        assertThat(empty().union(of(1, 2))).isEqualTo(of(1, 2));
+        assertThat(ofAll(1, 2, 3).union(of(2))).isEqualTo(ofAll(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).union(of(5))).isEqualTo(ofAll(1, 2, 3, 5));
+        assertThat(ofAll(1, 2, 3).union(ofAll(1, 2, 3))).isEqualTo(ofAll(1, 2, 3));
+        assertThat(empty().union(ofAll(1, 2))).isEqualTo(ofAll(1, 2));
     }
 
     @Test
     public void shouldRemoveElement() {
-        assertThat(of(1, 2, 3).remove(2)).isEqualTo(of(1, 3));
-        assertThat(of(1, 2, 3).remove(5)).isEqualTo(of(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).remove(2)).isEqualTo(ofAll(1, 3));
+        assertThat(ofAll(1, 2, 3).remove(5)).isEqualTo(ofAll(1, 2, 3));
         assertThat(empty().remove(5)).isEqualTo(empty());
     }
 
     @Test
     public void shouldRemoveAllElements() {
-        assertThat(of(1, 2, 3).removeAll(empty())).isEqualTo(of(1, 2, 3));
-        assertThat(of(1, 2, 3).removeAll(of(2))).isEqualTo(of(1, 3));
-        assertThat(of(1, 2, 3).removeAll(of(5))).isEqualTo(of(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).removeAll(empty())).isEqualTo(ofAll(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).removeAll(of(2))).isEqualTo(ofAll(1, 3));
+        assertThat(ofAll(1, 2, 3).removeAll(of(5))).isEqualTo(ofAll(1, 2, 3));
         assertThat(empty().removeAll(of(5))).isEqualTo(empty());
     }
 
     @Test
     public void shouldMapDistinctElementsToOneElement() {
-        assertThat(of(1, 2, 3).map(i -> 0)).isEqualTo(of(0));
+        assertThat(ofAll(1, 2, 3).map(i -> 0)).isEqualTo(of(0));
     }
 
     @Override
