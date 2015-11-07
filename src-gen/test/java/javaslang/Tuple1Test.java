@@ -61,10 +61,10 @@ public class Tuple1Test {
     }
 
     @Test
-    public void shouldMap() {
+    public void shouldFlatMap() {
         final Tuple1<Object> tuple = createTuple();
         final Function1<Object, Object> mapper = o1 -> o1;
-        final Tuple1<Object> actual = tuple.map(mapper);
+        final Tuple1<Object> actual = tuple.flatMap(mapper);
         assertThat(actual).isEqualTo(tuple);
     }
 

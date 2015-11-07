@@ -113,12 +113,12 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
         return _2;
     }
 
-    public <U1, U2> Tuple2<U1, U2> map(Function2<? super T1, ? super T2, Tuple2<U1, U2>> f) {
+    public <U1, U2> Tuple2<U1, U2> flatMap(Function2<? super T1, ? super T2, Tuple2<U1, U2>> f) {
         return f.apply(_1, _2);
     }
 
     public <U1, U2> Tuple2<U1, U2> map(Function1<? super T1, ? extends U1> f1, Function1<? super T2, ? extends U2> f2) {
-        return map((t1, t2) -> Tuple.of(f1.apply(t1), f2.apply(t2)));
+        return Tuple.of(f1.apply(_1), f2.apply(_2));
     }
 
     /**

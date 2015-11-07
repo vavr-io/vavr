@@ -806,7 +806,7 @@ def generateMainClasses(): Unit = {
             """)("\n\n")}
 
             ${(i > 0).gen(xs"""
-              public $resultGenerics $className$resultGenerics map($functionType<$paramTypes, $resultType> f) {
+              public $resultGenerics $className$resultGenerics flatMap($functionType<$paramTypes, $resultType> f) {
                   ${if (i > 1) { xs"""
                     return f.apply($params);"""
                   } else { xs"""
@@ -817,7 +817,7 @@ def generateMainClasses(): Unit = {
 
             ${(i > 1).gen(xs"""
               public $resultGenerics $className$resultGenerics map(${(1 to i).gen(j => s"${im.getType("javaslang.Function1")}<? super T$j, ? extends U$j> f$j")(", ")}) {
-                  return map((${(1 to i).gen(j => s"t$j")(", ")}) -> ${im.getType("javaslang.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(t$j)")(", ")}));
+                  return ${im.getType("javaslang.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(_$j)")(", ")});
               }
             """)}
 
@@ -1588,14 +1588,14 @@ def generateTestClasses(): Unit = {
               """)}
 
               @$test
-              public void shouldMap() {
+              public void shouldFlatMap() {
                   final Tuple$i<$generics> tuple = createTuple();
                   ${if (i == 1) {
                     s"final $functionType<$generics, Object> mapper = $functionArgTypes -> o1;"
                   } else {
                     s"final $functionType<$generics, Tuple$i<$generics>> mapper = ($functionArgTypes) -> tuple;"
                   }}
-                  final Tuple$i<$generics> actual = tuple.map(mapper);
+                  final Tuple$i<$generics> actual = tuple.flatMap(mapper);
                   $assertThat(actual).isEqualTo(tuple);
               }
 

@@ -7,7 +7,6 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.Value;
 import javaslang.control.Option;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
@@ -48,8 +47,8 @@ public class IteratorTest extends AbstractTraversableOnceTest {
             @Override
             public ObjectAssert<T> isEqualTo(Object expected) {
                 if (actual instanceof Tuple2) {
-                    final Tuple2<?, ?> t1 = ((Tuple2<?, ?>) actual).map(this::toList);
-                    final Tuple2<?, ?> t2 = ((Tuple2<?, ?>) expected).map(this::toList);
+                    final Tuple2<?, ?> t1 = ((Tuple2<?, ?>) actual).flatMap(this::toList);
+                    final Tuple2<?, ?> t2 = ((Tuple2<?, ?>) expected).flatMap(this::toList);
                     Assertions.assertThat((Object) t1).isEqualTo(t2);
                     return this;
                 } else {
