@@ -251,15 +251,20 @@ public class FutureTest {
         // instead of delaying we wait/notify
         final Object lock = new Object();
         final int[] actual = new int[] { -1 };
+        final boolean[] futureWaiting = new boolean[] { false };
         final int expected = 1;
 
         // create a future and put it to sleep
         final Future<Integer> future = Future.of(() -> {
             synchronized (lock) {
+                futureWaiting[0] = true;
                 lock.wait();
             }
             return expected;
         });
+
+        // give the future thread some time to sleep
+        waitUntil(() -> futureWaiting[0]);
 
         // the future now is on hold and we have time to register a callback
         future.onComplete(result -> actual[0] = result.get());
