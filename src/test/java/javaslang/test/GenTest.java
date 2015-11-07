@@ -284,14 +284,10 @@ public class GenTest {
 
     // -- forEach
 
-    @Test(expected = RuntimeException.class)
     public void shouldThrowOnForEach() {
         final int[] count = { 0 };
-        Gen.of(1).forEach(i -> {
-            if (count[0]++ > 0) {
-                throw new RuntimeException("OK");
-            }
-        });
+        Gen.of(1).forEach(i -> count[0]++);
+        assertThat(count[0]).isEqualTo(1);
     }
 
     // -- peek

@@ -149,6 +149,12 @@ public interface Arbitrary<T> extends Value<T> {
         return true;
     }
 
+    /**
+     * Iterator of <em>one</em> arbitrary value using the default size {@link Checkable#DEFAULT_SIZE}
+     * and the default random generator {@link Checkable#RNG}.
+     *
+     * @return A new Iterator having one value.
+     */
     @Override
     default Iterator<T> iterator() {
         return apply(Checkable.DEFAULT_SIZE).iterator();
