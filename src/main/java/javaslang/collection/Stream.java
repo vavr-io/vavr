@@ -550,6 +550,17 @@ public interface Stream<T> extends LinearSeq<T> {
         return Stream.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * Repeats an element infinitely often.
+     *
+     * @param t An element
+     * @param <T> Element type
+     * @return A new Stream containing infinite {@code t}'s.
+     */
+    static <T> Stream<T> repeat(T t) {
+        return Stream.ofAll(Iterator.repeat(t));
+    }
+
     @Override
     default Stream<T> append(T element) {
         return isEmpty() ? Stream.of(element) : new Cons<>(((Cons<T>) this).head, () -> tail().append(element));

@@ -948,6 +948,27 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
         };
     }
 
+    /**
+     * Repeats an element infinitely often.
+     *
+     * @param t An element
+     * @param <T> Element type
+     * @return A new Iterator containing infinite {@code t}'s.
+     */
+    static <T> Iterator<T> repeat(T t) {
+        return new AbstractIterator<T>() {
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public T next() {
+                return t;
+            }
+        };
+    }
+
     // -- Additional methods of Iterator
 
     // DEV-NOTE: cannot use arg java.lang.Iterable, it would be ambiguous
