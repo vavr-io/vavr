@@ -1440,7 +1440,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
         @Override
         public String toString() {
-            return mkString(", ", "List(", ")");
+            return mkString("List(", ", ", ")");
         }
 
         /**

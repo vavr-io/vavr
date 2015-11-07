@@ -528,6 +528,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public String toString() {
-        return mkString(", ", "HashMap(", ")");
+        return mkString("HashMap(", ", ", ")");
     }
 }

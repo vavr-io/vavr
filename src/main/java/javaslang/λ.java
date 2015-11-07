@@ -144,7 +144,7 @@ public interface λ<R> extends Serializable {
 
         @Override
         public String toString() {
-            return List.of(parameterTypes).map(Class::getName).mkString(", ", "(", ")") + " -> " + returnType.getName();
+            return List.of(parameterTypes).map(Class::getName).mkString("(", ", ", ")") + " -> " + returnType.getName();
         }
     }
 }

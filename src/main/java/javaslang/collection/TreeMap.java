@@ -648,6 +648,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
 
     @Override
     public String toString() {
-        return mkString(", ", "TreeMap(", ")");
+        return mkString("TreeMap(", ", ", ")");
     }
 }

@@ -821,6 +821,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public String toString() {
-        return mkString(", ", "TreeSet(", ")");
+        return mkString("TreeSet(", ", ", ")");
     }
 }

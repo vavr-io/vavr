@@ -808,12 +808,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldMkStringWithDelimiterAndPrefixAndSuffixNil() {
-        assertThat(empty().mkString(",", "[", "]")).isEqualTo("[]");
+        assertThat(empty().mkString("[", ",", "]")).isEqualTo("[]");
     }
 
     @Test
     public void shouldMkStringWithDelimiterAndPrefixAndSuffixNonNil() {
-        assertThat(CharSeq.of('a', 'b', 'c').mkString(",", "[", "]")).isEqualTo("[a,b,c]");
+        assertThat(CharSeq.of('a', 'b', 'c').mkString("[", ",", "]")).isEqualTo("[a,b,c]");
     }
 
     // -- last
