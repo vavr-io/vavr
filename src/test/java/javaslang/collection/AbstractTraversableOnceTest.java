@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
-import static org.assertj.core.api.StrictAssertions.within;
+import static org.assertj.core.api.Assertions.within;
 
 public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
