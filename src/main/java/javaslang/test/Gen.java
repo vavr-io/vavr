@@ -7,7 +7,6 @@ package javaslang.test;
 
 import javaslang.Tuple2;
 import javaslang.Value;
-import javaslang.collection.AbstractIterator;
 import javaslang.collection.Iterator;
 import javaslang.collection.Stream;
 

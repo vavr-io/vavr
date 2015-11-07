@@ -6,8 +6,6 @@
 package javaslang.control;
 
 import javaslang.Serializables;
-import javaslang.Value;
-import javaslang.collection.AbstractValueTest;
 import org.junit.Test;
 
 import java.util.*;

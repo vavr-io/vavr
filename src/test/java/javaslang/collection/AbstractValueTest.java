@@ -223,7 +223,7 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldDetectNonIterableElementsOnFlatten() {
-        final Value<?> unsafe = ofAll(new Object(), new Object()).flatten();
+        ofAll(new Object(), new Object()).flatten();
     }
 
     @SuppressWarnings("unchecked")
@@ -234,7 +234,7 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         // but when we get an element our con trick is blowing...
         try {
             final String s = unsafe.get();
-            throw new AssertionError("Expected ClassCastException");
+            throw new AssertionError("Expected ClassCastException but got " + s);
         } catch(ClassCastException x) {
             // ok!
         } catch(Exception x) {

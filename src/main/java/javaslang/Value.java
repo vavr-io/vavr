@@ -7,7 +7,6 @@ package javaslang;
 
 import javaslang.algebra.Foldable;
 import javaslang.algebra.Monad;
-import javaslang.algebra.Monoid;
 import javaslang.collection.*;
 import javaslang.control.*;
 
