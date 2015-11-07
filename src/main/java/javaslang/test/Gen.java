@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 /**
  * Generators are the building blocks for providing arbitrary objects.
  * <p>
- * To ease the creation of Arbitraries, Gen is a FunctionalInterface which extends {@code Function1<Random, T>}.
+ * To ease the creation of Arbitraries, Gen is a FunctionalInterface which extends {@code Function<Random, T>}.
  * <p>
  * Gen objects are obtained via one of the methods {@code choose}, {@code fail}, {@code frequency}, {@code of} and
  * {@code oneOf}.
@@ -377,20 +377,13 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
         return true;
     }
 
+    /**
+     * Iterator of <em>one</em> generated value using the default random generator {@link Checkable#RNG}.
+     *
+     * @return A new Iterator having one value.
+     */
     @Override
     default Iterator<T> iterator() {
-        final Random random = Checkable.RNG.get();
-        return new AbstractIterator<T>() {
-
-            @Override
-            public boolean hasNext() {
-                return true;
-            }
-
-            @Override
-            public T next() {
-                return apply(random);
-            }
-        };
+        return Iterator.of(get());
     }
 }
