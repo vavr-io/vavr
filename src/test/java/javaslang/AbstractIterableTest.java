@@ -16,7 +16,7 @@ public abstract class AbstractIterableTest {
     abstract protected <T> Iterable<T> of(T element);
 
     @SuppressWarnings("unchecked")
-    abstract protected <T> Iterable<T> of(T... elements);
+    abstract protected <T> Iterable<T> ofAll(T... elements);
 
     // -- corresponds
 
@@ -37,14 +37,14 @@ public abstract class AbstractIterableTest {
 
     @Test
     public void shouldntCorrespondsDifferentLengths() {
-        assertThat(of(1, 2, 3).corresponds(of(1, 2), (i1, i2) -> true)).isFalse();
-        assertThat(of(1, 2).corresponds(of(1, 2, 3), (i1, i2) -> true)).isFalse();
+        assertThat(ofAll(1, 2, 3).corresponds(ofAll(1, 2), (i1, i2) -> true)).isFalse();
+        assertThat(ofAll(1, 2).corresponds(ofAll(1, 2, 3), (i1, i2) -> true)).isFalse();
     }
 
     @Test
     public void shouldCorresponds() {
-        assertThat(of(1, 2, 3).corresponds(of(3, 4, 5), (i1, i2) -> i1 == i2 - 2)).isTrue();
-        assertThat(of(1, 2, 3).corresponds(of(1, 2, 3), (i1, i2) -> i1 == i2 + 1)).isFalse();
+        assertThat(ofAll(1, 2, 3).corresponds(ofAll(3, 4, 5), (i1, i2) -> i1 == i2 - 2)).isTrue();
+        assertThat(ofAll(1, 2, 3).corresponds(ofAll(1, 2, 3), (i1, i2) -> i1 == i2 + 1)).isFalse();
     }
 
 }

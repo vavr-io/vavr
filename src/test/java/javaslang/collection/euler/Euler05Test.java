@@ -15,10 +15,10 @@ public class Euler05Test {
     /**
      * <strong>Problem 5: Smallest multiple</strong>
      * <p>
-     * 2520 is the smallest number that can be divided by each of the numbers from 1
+     * 2520 is the smallest number that can be divided by each ofAll the numbers from 1
      * to 10 without any remainder.
      * <p>
-     * What is the smallest positive number that is evenly divisible by all of the
+     * What is the smallest positive number that is evenly divisible by all ofAll the
      * numbers from 1 to 20?
      * <p>
      * See also <a href="https://projecteuler.net/problem=5">projecteuler.net problem 5</a>.

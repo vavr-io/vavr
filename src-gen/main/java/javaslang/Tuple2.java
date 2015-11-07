@@ -135,7 +135,7 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
 
     @Override
     public Seq<?> toSeq() {
-        return List.of(_1, _2);
+        return List.ofAll(_1, _2);
     }
 
     // -- Object

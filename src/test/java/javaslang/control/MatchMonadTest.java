@@ -446,7 +446,7 @@ public class MatchMonadTest {
         assertThat(actual).isTrue();
     }
 
-    // should declare common result type of multiple cases
+    // should declare common result type ofAll multiple cases
 
     @Test
     public void shouldMatchTypedResultByValue() {

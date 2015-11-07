@@ -267,7 +267,7 @@ interface HashArrayMappedTrieModule {
                 AbstractNode<K, V> newLeaves = mergeLeaves(shift + SIZE, other);
                 return new IndexedNode<>(newBitmap, newLeaves.size(), List.of(newLeaves));
             } else {
-                return new IndexedNode<>(newBitmap, size + other.size, subH1 < subH2 ? List.of(this, other) : List.of(other, this));
+                return new IndexedNode<>(newBitmap, size + other.size, subH1 < subH2 ? List.ofAll(this, other) : List.ofAll(other, this));
             }
         }
 

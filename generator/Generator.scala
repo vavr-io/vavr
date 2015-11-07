@@ -838,7 +838,7 @@ def generateMainClasses(): Unit = {
                 ${if (i == 0) xs"""
                   return $List.empty();
                 """ else xs"""
-                  return $List.of($params);
+                  return $List.ofAll($params);
                 """}
             }
 
@@ -1563,7 +1563,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldConvertToSeq() {
                   final $seq<?> actual = createIntTuple(${genArgsForComparing(i, 1)}).toSeq();
-                  $assertThat(actual).isEqualTo($list.of(${genArgsForComparing(i, 1)}));
+                  $assertThat(actual).isEqualTo($list.ofAll(${genArgsForComparing(i, 1)}));
               }
 
               @$test

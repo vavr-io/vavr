@@ -16,7 +16,7 @@ public class Euler18Test {
     /**
      * <strong>Problem 18: Maximum path sum I</strong>
      * <p>
-     * By starting at the top of the triangle below and moving to adjacent numbers on the row below, the maximum total from top to bottom is 23.
+     * By starting at the top ofAll the triangle below and moving to adjacent numbers on the row below, the maximum total from top to bottom is 23.
      * <pre>
      *        3
      *       7 4

@@ -89,9 +89,9 @@ public interface Stack<T> extends LinearSeq<T> {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    static <T> Stack<T> of(T... elements) {
+    static <T> Stack<T> ofAll(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return List.of(elements);
+        return List.ofAll(elements);
     }
 
     /**

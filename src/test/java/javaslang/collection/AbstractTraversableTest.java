@@ -22,7 +22,7 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
 
     @SuppressWarnings("unchecked")
     @Override
-    abstract protected <T> Traversable<T> of(T... elements);
+    abstract protected <T> Traversable<T> ofAll(T... elements);
 
     @Override
     abstract protected <T> Traversable<T> ofAll(java.lang.Iterable<? extends T> elements);
@@ -62,7 +62,7 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
     @Test
     public void shouldStreamAndCollectNonNil() {
         final Traversable<?> actual = java.util.stream.Stream.of(1, 2, 3).collect(this.<Object> collector());
-        assertThat(actual).isEqualTo(of(1, 2, 3));
+        assertThat(actual).isEqualTo(ofAll(1, 2, 3));
     }
 
     @Test
@@ -74,7 +74,7 @@ public abstract class AbstractTraversableTest extends AbstractTraversableOnceTes
     @Test
     public void shouldParallelStreamAndCollectNonNil() {
         final Traversable<?> actual = java.util.stream.Stream.of(1, 2, 3).parallel().collect(this.<Object> collector());
-        assertThat(actual).isEqualTo(of(1, 2, 3));
+        assertThat(actual).isEqualTo(ofAll(1, 2, 3));
     }
 
 }

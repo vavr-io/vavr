@@ -35,7 +35,7 @@ public final class Serializables {
     }
 
     /**
-     * Deserializes a given object, returning the correct target type of assignment or cast.
+     * Deserializes a given object, returning the correct target type ofAll assignment or cast.
      * <p>
      * Examples:
      *

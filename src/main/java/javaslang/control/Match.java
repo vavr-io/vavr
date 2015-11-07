@@ -240,7 +240,7 @@ public interface Match<R> extends Function<Object, R> {
             @SuppressWarnings("varargs")
             @SafeVarargs
             private static <T> Predicate<? super Object> isIn(T... prototypes) {
-                return value -> Iterator.of(prototypes).findFirst(prototype -> is(prototype).test(value)).isDefined();
+                return value -> Iterator.ofAll(prototypes).findFirst(prototype -> is(prototype).test(value)).isDefined();
             }
 
             private static <T> Predicate<? super Object> type(Class<T> type) {
@@ -248,7 +248,7 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             private static <T> Predicate<? super Object> typeIn(Class<?>... types) {
-                return value -> Iterator.of(types).findFirst(type -> type(type).test(value)).isDefined();
+                return value -> Iterator.ofAll(types).findFirst(type -> type(type).test(value)).isDefined();
             }
 
             public static final class Then<R> implements Match<R> {

@@ -63,11 +63,11 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Override
     @SuppressWarnings("unchecked")
-    abstract protected <T> Value<T> of(T... elements);
+    abstract protected <T> Value<T> ofAll(T... elements);
 
     abstract protected boolean useIsEqualToInsteadOfIsSameAs();
 
-    // returns the peek result of the specific Traversable implementation
+    // returns the peek result ofAll the specific Traversable implementation
     abstract protected int getPeekNonNilPerformingAnAction();
 
     // -- get(Iterable)
@@ -193,17 +193,17 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldFilterNonEmptyTraversable() {
-        assertThat(of(1, 2, 3, 4).filter(i -> i % 2 == 0)).isEqualTo(of(2, 4));
+        assertThat(ofAll(1, 2, 3, 4).filter(i -> i % 2 == 0)).isEqualTo(ofAll(2, 4));
     }
 
     @Test
     public void shouldFilterNonEmptyTraversableAllMatch() {
         if (useIsEqualToInsteadOfIsSameAs()) {
-            final Value<Integer> v1 = of(1, 2, 3, 4);
-            final Value<Integer> v2 = of(1, 2, 3, 4);
+            final Value<Integer> v1 = ofAll(1, 2, 3, 4);
+            final Value<Integer> v2 = ofAll(1, 2, 3, 4);
             assertThat(v1.filter(i -> true)).isEqualTo(v2);
         } else {
-            final Value<Integer> v = of(1, 2, 3, 4);
+            final Value<Integer> v = ofAll(1, 2, 3, 4);
             assertThat(v.filter(i -> true)).isSameAs(v);
         }
     }
@@ -218,19 +218,19 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldFlattenTraversableOfTraversables() {
-        assertThat(of(of(1), of(2, 3)).flatten()).isEqualTo(of(1, 2, 3));
+        assertThat(ofAll(of(1), ofAll(2, 3)).flatten()).isEqualTo(ofAll(1, 2, 3));
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldDetectNonIterableElementsOnFlatten() {
-        final Value<?> unsafe = of(new Object(), new Object()).flatten();
+        final Value<?> unsafe = ofAll(new Object(), new Object()).flatten();
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldNotDetectWrongReturnTypeOnFlattenButWhenReadingFlattenedElements() {
-        // this is wrong but it compiles and even executes at runtime because of type erasure
-        final Value<String> unsafe = of(of(1), of(2)).flatten();
+        // this is wrong but it compiles and even executes at runtime because ofAll type erasure
+        final Value<String> unsafe = ofAll(of(1), of(2)).flatten();
         // but when we get an element our con trick is blowing...
         try {
             final String s = unsafe.get();
@@ -251,28 +251,28 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldFlatMapNonEmptyTraversable() {
-        assertThat(of(1, 2, 3).flatMap(this::of)).isEqualTo(of(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).flatMap(this::of)).isEqualTo(ofAll(1, 2, 3));
     }
 
     @Test
     public void shouldFlatMapTraversableByExpandingElements() {
-        assertThat(of(1, 2, 3).flatMap(i -> {
+        assertThat(ofAll(1, 2, 3).flatMap(i -> {
             if (i == 1) {
-                return of(1, 2, 3);
+                return ofAll(1, 2, 3);
             } else if (i == 2) {
-                return of(4, 5);
+                return ofAll(4, 5);
             } else {
                 return of(6);
             }
-        })).isEqualTo(of(1, 2, 3, 4, 5, 6));
+        })).isEqualTo(ofAll(1, 2, 3, 4, 5, 6));
     }
 
     @Test
     public void shouldFlatMapElementsToSequentialValuesInTheRightOrder() {
         final AtomicInteger seq = new AtomicInteger(0);
-        final Value<Integer> actualInts = of(0, 1, 2)
-                .flatMap(ignored -> of(seq.getAndIncrement(), seq.getAndIncrement()));
-        final Value<Integer> expectedInts = of(0, 1, 2, 3, 4, 5);
+        final Value<Integer> actualInts = ofAll(0, 1, 2)
+                .flatMap(ignored -> ofAll(seq.getAndIncrement(), seq.getAndIncrement()));
+        final Value<Integer> expectedInts = ofAll(0, 1, 2, 3, 4, 5);
         assertThat(actualInts).isEqualTo(expectedInts);
     }
 
@@ -302,14 +302,14 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldMapNonNil() {
-        assertThat(of(1, 2, 3).map(i -> i + 1)).isEqualTo(of(2, 3, 4));
+        assertThat(ofAll(1, 2, 3).map(i -> i + 1)).isEqualTo(ofAll(2, 3, 4));
     }
 
     @Test
     public void shouldMapElementsToSequentialValuesInTheRightOrder() {
         final AtomicInteger seq = new AtomicInteger(0);
-        final Value<Integer> expectedInts = of(0, 1, 2, 3, 4);
-        final Value<Integer> actualInts = of(0, 1, 2, 3, 4).map(ignored -> seq.getAndIncrement());
+        final Value<Integer> expectedInts = ofAll(0, 1, 2, 3, 4);
+        final Value<Integer> actualInts = ofAll(0, 1, 2, 3, 4).map(ignored -> seq.getAndIncrement());
         assertThat(actualInts).isEqualTo(expectedInts);
     }
 
@@ -338,8 +338,8 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
     @Test
     public void shouldPeekNonNilPerformingAnAction() {
         final int[] effect = { 0 };
-        final Value<Integer> actual = of(1, 2, 3).peek(i -> effect[0] = i);
-        assertThat(actual).isEqualTo(of(1, 2, 3)); // traverses all elements in the lazy case
+        final Value<Integer> actual = ofAll(1, 2, 3).peek(i -> effect[0] = i);
+        assertThat(actual).isEqualTo(ofAll(1, 2, 3)); // traverses all elements in the lazy case
         assertThat(effect[0]).isEqualTo(getPeekNonNilPerformingAnAction());
     }
 
@@ -347,7 +347,7 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldConvertToCharSeq() {
-        Value<Character> v = of('a', 'b', 'c');
+        Value<Character> v = ofAll('a', 'b', 'c');
         assertThat(Match.of(v).whenTypeIn(Iterator.class).then(Iterator.of("ignore").toString()).orElse(v.toString()))
                 .isEqualTo(v.toCharSeq().toString());
     }
@@ -360,17 +360,17 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldConvertToArray() {
-        assertThat(of(1, 2, 3).toArray()).isEqualTo(Array.of(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).toArray()).isEqualTo(Array.ofAll(1, 2, 3));
     }
 
     @Test
     public void shouldConvertToList() {
-        assertThat(of(1, 2, 3).toList()).isEqualTo(List.of(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).toList()).isEqualTo(List.ofAll(1, 2, 3));
     }
 
     @Test
     public void shouldConvertToMap() {
-        assertThat(of(1, 2, 3).toMap(v -> Tuple.of(v, v))).isEqualTo(HashMap.empty().put(1, 1).put(2, 2).put(3, 3));
+        assertThat(ofAll(1, 2, 3).toMap(v -> Tuple.of(v, v))).isEqualTo(HashMap.empty().put(1, 1).put(2, 2).put(3, 3));
     }
 
     @Test
@@ -381,27 +381,27 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldConvertToQueue() {
-        assertThat(of(1, 2, 3).toQueue()).isEqualTo(Queue.of(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).toQueue()).isEqualTo(Queue.ofAll(1, 2, 3));
     }
 
     @Test
     public void shouldConvertToSet() {
-        assertThat(of(1, 2, 3).toSet()).isEqualTo(HashSet.of(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).toSet()).isEqualTo(HashSet.ofAll(1, 2, 3));
     }
 
     @Test
     public void shouldConvertToStack() {
-        assertThat(of(1, 2, 3).toStack()).isEqualTo(Stack.of(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).toStack()).isEqualTo(Stack.ofAll(1, 2, 3));
     }
 
     @Test
     public void shouldConvertToStream() {
-        assertThat(of(1, 2, 3).toStream()).isEqualTo(Stream.of(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).toStream()).isEqualTo(Stream.ofAll(1, 2, 3));
     }
 
     @Test
     public void shouldConvertNonEmptyToTry() {
-        assertThat(of(1, 2, 3).toTry()).isEqualTo(Try.of(() -> 1));
+        assertThat(ofAll(1, 2, 3).toTry()).isEqualTo(Try.of(() -> 1));
     }
 
     @Test
@@ -414,7 +414,7 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
     @Test
     public void shouldConvertNonEmptyToTryUsingExceptionSupplier() {
         final Exception x = new Exception("test");
-        assertThat(of(1, 2, 3).toTry(() -> x)).isEqualTo(Try.of(() -> 1));
+        assertThat(ofAll(1, 2, 3).toTry(() -> x)).isEqualTo(Try.of(() -> 1));
     }
 
     @Test
@@ -425,12 +425,12 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldConvertToVector() {
-        assertThat(of(1, 2, 3).toVector()).isEqualTo(Vector.of(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).toVector()).isEqualTo(Vector.ofAll(1, 2, 3));
     }
 
     @Test
     public void shouldConvertToJavaArray() {
-        assertThat(of(1, 2, 3).toJavaArray(Integer.class)).isEqualTo(new int[] { 1, 2, 3 });
+        assertThat(ofAll(1, 2, 3).toJavaArray(Integer.class)).isEqualTo(new int[] { 1, 2, 3 });
     }
 
     @Test
@@ -439,7 +439,7 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         list.add(1);
         list.add(2);
         list.add(3);
-        assertThat(of(1, 2, 3).toJavaList()).isEqualTo(list);
+        assertThat(ofAll(1, 2, 3).toJavaList()).isEqualTo(list);
     }
 
     @Test
@@ -448,12 +448,12 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         map.put(1, 1);
         map.put(2, 2);
         map.put(3, 3);
-        assertThat(of(1, 2, 3).toJavaMap(v -> Tuple.of(v, v))).isEqualTo(map);
+        assertThat(ofAll(1, 2, 3).toJavaMap(v -> Tuple.of(v, v))).isEqualTo(map);
     }
 
     @Test
     public void shouldConvertToJavaOptional() {
-        assertThat(of(1, 2, 3).toJavaOptional()).isEqualTo(Optional.of(1));
+        assertThat(ofAll(1, 2, 3).toJavaOptional()).isEqualTo(Optional.of(1));
     }
 
     @Test
@@ -462,12 +462,12 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         set.add(1);
         set.add(2);
         set.add(3);
-        assertThat(of(1, 2, 3).toJavaSet()).isEqualTo(set);
+        assertThat(ofAll(1, 2, 3).toJavaSet()).isEqualTo(set);
     }
 
     @Test
     public void shouldConvertToJavaStream() {
-        java.util.stream.Stream<Integer> s1 = of(1, 2, 3).toJavaStream();
+        java.util.stream.Stream<Integer> s1 = ofAll(1, 2, 3).toJavaStream();
         java.util.stream.Stream<Integer> s2 = java.util.stream.Stream.of(1, 2, 3);
         assertThat(List.ofAll(s1::iterator)).isEqualTo(List.ofAll(s2::iterator));
     }
@@ -476,7 +476,7 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldBeAwareOfExistingElement() {
-        assertThat(of(1, 2).exists(i -> i == 2)).isTrue();
+        assertThat(ofAll(1, 2).exists(i -> i == 2)).isTrue();
     }
 
     @Test
@@ -488,11 +488,11 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldBeAwareOfPropertyThatHoldsForAll() {
-        assertThat(of(2, 4).forAll(i -> i % 2 == 0)).isTrue();
+        assertThat(ofAll(2, 4).forAll(i -> i % 2 == 0)).isTrue();
     }
 
     @Test
     public void shouldBeAwareOfPropertyThatNotHoldsForAll() {
-        assertThat(of(2, 3).forAll(i -> i % 2 == 0)).isFalse();
+        assertThat(ofAll(2, 3).forAll(i -> i % 2 == 0)).isFalse();
     }
 }

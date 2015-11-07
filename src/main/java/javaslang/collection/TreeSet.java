@@ -76,17 +76,17 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T extends Comparable<? super T>> TreeSet<T> of(T... values) {
+    public static <T extends Comparable<? super T>> TreeSet<T> ofAll(T... values) {
         Objects.requireNonNull(values, "values is null");
-        return new TreeSet<>(RedBlackTree.of(values));
+        return new TreeSet<>(RedBlackTree.ofAll(values));
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> TreeSet<T> of(Comparator<? super T> comparator, T... values) {
+    public static <T> TreeSet<T> ofAll(Comparator<? super T> comparator, T... values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
-        return new TreeSet<>(RedBlackTree.of(comparator, values));
+        return new TreeSet<>(RedBlackTree.ofAll(comparator, values));
     }
 
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(java.lang.Iterable<? extends T> values) {

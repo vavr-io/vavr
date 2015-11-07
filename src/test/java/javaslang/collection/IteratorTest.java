@@ -79,8 +79,8 @@ public class IteratorTest extends AbstractTraversableOnceTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <T> Iterator<T> of(T... elements) {
-        return Iterator.of(elements);
+    protected final <T> Iterator<T> ofAll(T... elements) {
+        return Iterator.ofAll(elements);
     }
 
     @Override
@@ -142,27 +142,27 @@ public class IteratorTest extends AbstractTraversableOnceTest {
 
     @Test
     public void shouldGenerateIntStream() {
-        assertThat(Iterator.from(-1).take(3)).isEqualTo(Iterator.of(-1, 0, 1));
+        assertThat(Iterator.from(-1).take(3)).isEqualTo(Iterator.ofAll(-1, 0, 1));
     }
 
     @Test
     public void shouldGenerateTerminatingIntStream() {
         //noinspection NumericOverflow
         assertThat(Iterator.from(Integer.MAX_VALUE).take(2))
-                .isEqualTo(Iterator.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
+                .isEqualTo(Iterator.ofAll(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
     }
 
     // -- static from(long)
 
     @Test
     public void shouldGenerateLongStream() {
-        assertThat(Iterator.from(-1L).take(3)).isEqualTo(Iterator.of(-1L, 0L, 1L));
+        assertThat(Iterator.from(-1L).take(3)).isEqualTo(Iterator.ofAll(-1L, 0L, 1L));
     }
 
     @Test
     public void shouldGenerateTerminatingLongStream() {
         //noinspection NumericOverflow
-        assertThat(Iterator.from(Long.MAX_VALUE).take(2)).isEqualTo(Iterator.of(Long.MAX_VALUE, Long.MAX_VALUE + 1));
+        assertThat(Iterator.from(Long.MAX_VALUE).take(2)).isEqualTo(Iterator.ofAll(Long.MAX_VALUE, Long.MAX_VALUE + 1));
     }
 
     // -- static gen(Supplier)
@@ -184,7 +184,7 @@ public class IteratorTest extends AbstractTraversableOnceTest {
     @Override
     @Test(expected = ClassCastException.class)
     public void shouldDetectNonIterableElementsOnFlatten() {
-        final Iterator<?> unsafe = of(new Object(), new Object()).flatten();
+        final Iterator<?> unsafe = ofAll(new Object(), new Object()).flatten();
         // Iterator is lazy and defers the UnsupportOperationException until elements are accessed
         unsafe.next();
     }
@@ -199,7 +199,7 @@ public class IteratorTest extends AbstractTraversableOnceTest {
         // a equals impl would enforce evaluation which is not wanted
     }
 
-    // TODO: equals of same object and different objects of same shape
+    // TODO: equals ofAll same object and different objects ofAll same shape
 
     // -- hashCode
 
@@ -221,7 +221,7 @@ public class IteratorTest extends AbstractTraversableOnceTest {
     @SuppressWarnings("unchecked")
     public void shouldNonNilGroupByIdentity() {
         // we can't compare iterators, should map it to sequences
-        Seq<?> actual = of('a', 'b', 'c')
+        Seq<?> actual = ofAll('a', 'b', 'c')
                 .groupBy(Function.identity())
                 .map(e -> Map.Entry.of(e.key, List.ofAll(e.value)));
         Seq<?> expected = HashMap.empty().put('a', of('a')).put('b', of('b')).put('c', of('c')).map(
@@ -233,8 +233,8 @@ public class IteratorTest extends AbstractTraversableOnceTest {
     @SuppressWarnings("unchecked")
     public void shouldNonNilGroupByEqual() {
         // we can't compare iterators, should map it to sequences
-        Seq<?> actual = of('a', 'b', 'c').groupBy(c -> 1).map(e -> Map.Entry.of(e.key, List.ofAll(e.value)));
-        Seq<?> expected = HashMap.empty().put(1, of('a', 'b', 'c')).map(
+        Seq<?> actual = ofAll('a', 'b', 'c').groupBy(c -> 1).map(e -> Map.Entry.of(e.key, List.ofAll(e.value)));
+        Seq<?> expected = HashMap.empty().put(1, ofAll('a', 'b', 'c')).map(
                 e -> Map.Entry.of(e.key, List.ofAll((java.lang.Iterable<Character>) e.value)));
         assertThat(actual).isEqualTo(expected);
     }

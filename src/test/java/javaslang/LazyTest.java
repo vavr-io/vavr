@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LazyTest {
 
-    // -- of(Supplier)
+    // -- ofAll(Supplier)
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowOnNullSupplier() {
@@ -34,7 +34,7 @@ public class LazyTest {
         }
     }
 
-    // -- of(Supplier, Class) -- Proxy
+    // -- ofAll(Supplier, Class) -- Proxy
 
     @Test
     public void shouldCreateLazyProxy() {

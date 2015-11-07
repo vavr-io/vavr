@@ -83,7 +83,7 @@ public interface Tree<T> extends Traversable<T> {
     @SafeVarargs
     static <T> Node<T> of(T value, Node<T>... children) {
         Objects.requireNonNull(children, "children is null");
-        return new Node<>(value, List.of(children));
+        return new Node<>(value, List.ofAll(children));
     }
 
     /**

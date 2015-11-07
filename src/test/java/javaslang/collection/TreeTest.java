@@ -114,8 +114,8 @@ public class TreeTest extends AbstractTraversableTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <T> Tree<T> of(T... elements) {
-        return Tree.ofAll(List.of(elements));
+    protected final <T> Tree<T> ofAll(T... elements) {
+        return Tree.ofAll(List.ofAll(elements));
     }
 
     @Override
@@ -184,7 +184,7 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     public void shouldInstantiateTreeBranchWithOf() {
         final Tree<Integer> actual = Tree.of(1, Tree.of(2), Tree.of(3));
-        final Tree<Integer> expected = new Node<>(1, List.of(new Node<>(2, List.empty()), new Node<>(3, List.empty())));
+        final Tree<Integer> expected = new Node<>(1, List.ofAll(new Node<>(2, List.empty()), new Node<>(3, List.empty())));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -345,7 +345,7 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     @Override
     public void shouldDropNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).drop(-1)).isEqualTo(of(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).drop(-1)).isEqualTo(ofAll(1, 2, 3));
     }
 
     // -- dropRight
@@ -353,7 +353,7 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     @Override
     public void shouldDropRightNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).dropRight(-1)).isEqualTo(of(1, 2, 3));
+        assertThat(ofAll(1, 2, 3).dropRight(-1)).isEqualTo(ofAll(1, 2, 3));
     }
 
     // -- flatMap
@@ -374,11 +374,11 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     @Override
     public void shouldFlatMapTraversableByExpandingElements() {
-        assertThat(of(1, 2, 3).flatMap(i -> {
+        assertThat(ofAll(1, 2, 3).flatMap(i -> {
             if (i == 1) {
-                return of(1, 2, 3);
+                return ofAll(1, 2, 3);
             } else if (i == 2) {
-                return of(4, 5);
+                return ofAll(4, 5);
             } else {
                 return of(6);
             }
@@ -390,7 +390,7 @@ public class TreeTest extends AbstractTraversableTest {
     public void shouldFlatMapElementsToSequentialValuesInTheRightOrder() {
         final AtomicInteger seq = new AtomicInteger(0);
         final Value<Integer> actualInts = $(0, $(1), $(2))
-                .flatMap(ignored -> of(seq.getAndIncrement(), seq.getAndIncrement()));
+                .flatMap(ignored -> ofAll(seq.getAndIncrement(), seq.getAndIncrement()));
         final Value<Integer> expectedInts = $(0, $(1), $(2, $(3)), $(4, $(5)));
         assertThat(actualInts).isEqualTo(expectedInts);
     }
@@ -439,7 +439,7 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     public void shouldFullyIterateNonNil() {
         final int length = List
-                .of(1, 2, 4, 7, 5, 3, 6, 8, 9)
+                .ofAll(1, 2, 4, 7, 5, 3, 6, 8, 9)
                 .zip(tree::iterator)
                 .filter(t -> Objects.equals(t._1, t._2))
                 .length();
@@ -494,22 +494,22 @@ public class TreeTest extends AbstractTraversableTest {
 
     @Test
     public void shouldTraverseTreeUsingPreOrder() {
-        assertThat(tree.traverse(Tree.Order.PRE_ORDER)).isEqualTo(Stream.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
+        assertThat(tree.traverse(Tree.Order.PRE_ORDER)).isEqualTo(Stream.ofAll(1, 2, 4, 7, 5, 3, 6, 8, 9));
     }
 
     @Test
     public void shouldTraverseTreeUsingInOrder() {
-        assertThat(tree.traverse(Tree.Order.IN_ORDER)).isEqualTo(Stream.of(7, 4, 2, 5, 1, 8, 6, 9, 3));
+        assertThat(tree.traverse(Tree.Order.IN_ORDER)).isEqualTo(Stream.ofAll(7, 4, 2, 5, 1, 8, 6, 9, 3));
     }
 
     @Test
     public void shouldTraverseTreeUsingPostOrder() {
-        assertThat(tree.traverse(Tree.Order.POST_ORDER)).isEqualTo(Stream.of(7, 4, 5, 2, 8, 9, 6, 3, 1));
+        assertThat(tree.traverse(Tree.Order.POST_ORDER)).isEqualTo(Stream.ofAll(7, 4, 5, 2, 8, 9, 6, 3, 1));
     }
 
     @Test
     public void shouldTraverseTreeUsingLevelOrder() {
-        assertThat(tree.traverse(Tree.Order.LEVEL_ORDER)).isEqualTo(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
+        assertThat(tree.traverse(Tree.Order.LEVEL_ORDER)).isEqualTo(Stream.ofAll(1, 2, 3, 4, 5, 6, 7, 8, 9));
     }
 
     // -- unzip
