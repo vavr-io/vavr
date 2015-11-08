@@ -74,7 +74,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given entry
      */
     public static <K, V> HashMap<K, V> of(Tuple2<? extends K, ? extends V> entry) {
-        return HashMap.<K, V> empty().put(entry._1, entry._2);
+        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(entry._1, entry._2));
     }
 
     /**
@@ -86,13 +86,13 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given entries
      */
     @SafeVarargs
-    public static <K, V> HashMap<K, V> of(Tuple2<? extends K, ? extends V>... entries) {
+    public static <K, V> HashMap<K, V> ofAll(Tuple2<? extends K, ? extends V>... entries) {
         Objects.requireNonNull(entries, "entries is null");
-        HashMap<K, V> map = HashMap.empty();
+        HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
         for (Tuple2<? extends K, ? extends V> entry : entries) {
-            map = map.put(entry._1, entry._2);
+            trie = trie.put(entry._1, entry._2);
         }
-        return map;
+        return new HashMap<>(trie);
     }
 
     /**
@@ -109,11 +109,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         if (entries instanceof HashMap) {
             return (HashMap<K, V>) entries;
         } else {
-            HashMap<K, V> map = HashMap.empty();
+            HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
             for (Tuple2<? extends K, ? extends V> entry : entries) {
-                map = map.put(entry._1, entry._2);
+                trie = trie.put(entry._1, entry._2);
             }
-            return map;
+            return new HashMap<>(trie);
         }
     }
 
