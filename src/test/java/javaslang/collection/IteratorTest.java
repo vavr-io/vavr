@@ -223,9 +223,9 @@ public class IteratorTest extends AbstractTraversableOnceTest {
         // we can't compare iterators, should map it to sequences
         Seq<?> actual = ofAll('a', 'b', 'c')
                 .groupBy(Function.identity())
-                .map(e -> Map.Entry.of(e.key, List.ofAll(e.value)));
+                .map(e -> Tuple.of(e._1, List.ofAll(e._2)));
         Seq<?> expected = HashMap.empty().put('a', of('a')).put('b', of('b')).put('c', of('c')).map(
-                e -> Map.Entry.of(e.key, List.ofAll((java.lang.Iterable<Character>) e.value)));
+                e -> Tuple.of(e._1, List.ofAll((java.lang.Iterable<Character>) e._2)));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -233,9 +233,9 @@ public class IteratorTest extends AbstractTraversableOnceTest {
     @SuppressWarnings("unchecked")
     public void shouldNonNilGroupByEqual() {
         // we can't compare iterators, should map it to sequences
-        Seq<?> actual = ofAll('a', 'b', 'c').groupBy(c -> 1).map(e -> Map.Entry.of(e.key, List.ofAll(e.value)));
+        Seq<?> actual = ofAll('a', 'b', 'c').groupBy(c -> 1).map(e -> Tuple.of(e._1, List.ofAll(e._2)));
         Seq<?> expected = HashMap.empty().put(1, ofAll('a', 'b', 'c')).map(
-                e -> Map.Entry.of(e.key, List.ofAll((java.lang.Iterable<Character>) e.value)));
+                e -> Tuple.of(e._1, List.ofAll((java.lang.Iterable<Character>) e._2)));
         assertThat(actual).isEqualTo(expected);
     }
 

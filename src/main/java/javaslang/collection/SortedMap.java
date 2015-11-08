@@ -42,7 +42,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
      * @param <W>           New value type
      * @return A new Map instance containing mapped entries
      */
-    <U, W> SortedMap<U, W> flatMap(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper);
+    <U, W> SortedMap<U, W> flatMap(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper);
 
     /**
      * Same as {@link #map(BiFunction)} but using a specific comparator for values of the codomain of the given
@@ -54,7 +54,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
      * @param <W>           New value type
      * @return A new Map instance containing mapped entries
      */
-    <U, W> SortedMap<U, W> map(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper);
+    <U, W> SortedMap<U, W> map(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper);
 
     // -- Adjusted return types of Map methods
 
@@ -65,10 +65,10 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> distinct();
 
     @Override
-    SortedMap<K, V> distinctBy(Comparator<? super Entry<K, V>> comparator);
+    SortedMap<K, V> distinctBy(Comparator<? super Tuple2<K, V>> comparator);
 
     @Override
-    <U> SortedMap<K, V> distinctBy(Function<? super Entry<K, V>, ? extends U> keyExtractor);
+    <U> SortedMap<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor);
 
     @Override
     SortedMap<K, V> drop(int n);
@@ -77,28 +77,25 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> dropRight(int n);
 
     @Override
-    SortedMap<K, V> dropWhile(Predicate<? super Entry<K, V>> predicate);
+    SortedMap<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    SortedSet<Entry<K, V>> entrySet();
+    SortedMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    SortedMap<K, V> filter(Predicate<? super Entry<K, V>> predicate);
+    <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    <U> Seq<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
-
-    @Override
-    <U, W> SortedMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper);
+    <U, W> SortedMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper);
 
     @Override
     <U> Seq<U> flatten();
 
     @Override
-    <C> Map<C, ? extends SortedMap<K, V>> groupBy(Function<? super Entry<K, V>, ? extends C> classifier);
+    <C> Map<C, ? extends SortedMap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
 
     @Override
-    Entry<K, V> head();
+    Tuple2<K, V> head();
 
     @Override
     SortedMap<K, V> init();
@@ -110,15 +107,15 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedSet<K> keySet();
 
     @Override
-    default Entry<K, V> last() {
+    default Tuple2<K, V> last() {
         return max().orElseThrow(() -> new NoSuchElementException("last on empty SortedMap"));
     }
 
     @Override
-    <U> Seq<U> map(Function<? super Entry<K, V>, ? extends U> mapper);
+    <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper);
 
     @Override
-    <U, W> SortedMap<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper);
+    <U, W> SortedMap<U, W> map(BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper);
 
     @Override
     SortedMap<K, V> merge(Map<? extends K, ? extends V> that);
@@ -127,16 +124,13 @@ public interface SortedMap<K, V> extends Map<K, V> {
     <U extends V> SortedMap<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution);
 
     @Override
-    Tuple2<? extends SortedMap<K, V>, ? extends SortedMap<K, V>> partition(Predicate<? super Entry<K, V>> predicate);
+    Tuple2<? extends SortedMap<K, V>, ? extends SortedMap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    SortedMap<K, V> peek(Consumer<? super Entry<K, V>> action);
+    SortedMap<K, V> peek(Consumer<? super Tuple2<K, V>> action);
 
     @Override
     SortedMap<K, V> put(K key, V value);
-
-    @Override
-    SortedMap<K, V> put(Entry<? extends K, ? extends V> entry);
 
     @Override
     SortedMap<K, V> put(Tuple2<? extends K, ? extends V> entry);
@@ -148,16 +142,16 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> removeAll(java.lang.Iterable<? extends K> keys);
 
     @Override
-    SortedMap<K, V> replace(Entry<K, V> currentElement, Entry<K, V> newElement);
+    SortedMap<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
 
     @Override
-    SortedMap<K, V> replaceAll(Entry<K, V> currentElement, Entry<K, V> newElement);
+    SortedMap<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
 
     @Override
-    SortedMap<K, V> retainAll(java.lang.Iterable<? extends Entry<K, V>> elements);
+    SortedMap<K, V> retainAll(java.lang.Iterable<? extends Tuple2<K, V>> elements);
 
     @Override
-    Tuple2<? extends SortedMap<K, V>, ? extends SortedMap<K, V>> span(Predicate<? super Entry<K, V>> predicate);
+    Tuple2<? extends SortedMap<K, V>, ? extends SortedMap<K, V>> span(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
     SortedMap<K, V> tail();
@@ -172,10 +166,10 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> takeRight(int n);
 
     @Override
-    SortedMap<K, V> takeUntil(Predicate<? super Entry<K, V>> predicate);
+    SortedMap<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    SortedMap<K, V> takeWhile(Predicate<? super Entry<K, V>> predicate);
+    SortedMap<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
     Seq<V> values();

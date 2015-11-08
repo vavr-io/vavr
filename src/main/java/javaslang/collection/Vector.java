@@ -568,7 +568,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     public <U> Vector<U> flatten() {
         try {
             return ((Vector<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
     }
@@ -602,7 +602,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public <C> Map<C, Vector<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).map((c, it) -> Map.Entry.of(c, Vector.ofAll(it)));
+        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, Vector.ofAll(it)));
     }
 
     @Override
@@ -1254,7 +1254,7 @@ interface VectorModule {
                 return Vector.of(Vector.empty());
             } else {
                 return elements.zipWithIndex().flatMap(t -> apply(elements.drop(t._2 + 1), (k - 1))
-                                .map((Vector<T> c) -> c.prepend(t._1))
+                        .map((Vector<T> c) -> c.prepend(t._1))
                 );
             }
         }

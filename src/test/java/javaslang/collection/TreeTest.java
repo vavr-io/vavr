@@ -56,11 +56,11 @@ public class TreeTest extends AbstractTraversableTest {
                     final Option<?> opt1 = ((Option<?>) actual);
                     final Option<?> opt2 = (Option<?>) expected;
                     Assertions.assertThat(convOption(opt1)).isEqualTo(convOption(opt2));
-                } else if(expected instanceof Map) {
-                    final Map<?,?> map1 = (Map<?,?>) actual;
-                    final Map<?,?> map2 = (Map<?,?>) expected;
+                } else if (expected instanceof Map) {
+                    final Map<?, ?> map1 = (Map<?, ?>) actual;
+                    final Map<?, ?> map2 = (Map<?, ?>) expected;
                     Assertions.assertThat(convMap(map1)).isEqualTo(convMap(map2));
-                } else if(expected instanceof Tree) {
+                } else if (expected instanceof Tree) {
                     assertThat(Stream.ofAll(actual)).isEqualTo(Stream.ofAll((Tree<?>) expected));
                 } else {
                     Assertions.assertThat(actual).isEqualTo((Iterable<T>) expected);
@@ -72,8 +72,8 @@ public class TreeTest extends AbstractTraversableTest {
                 return option.map(o -> (o instanceof Iterable) ? Stream.ofAll((Iterable<?>) o) : o);
             }
 
-            private Map<?,?> convMap(Map<?,?> map) {
-                return map.map((k, v) -> Map.Entry.of(k, v instanceof Iterable ? Stream.ofAll((Iterable<?>) v) : v));
+            private Map<?, ?> convMap(Map<?, ?> map) {
+                return map.map((k, v) -> Tuple.of(k, v instanceof Iterable ? Stream.ofAll((Iterable<?>) v) : v));
             }
         };
     }

@@ -188,7 +188,7 @@ public class HashArrayMappedTrieTest {
 
         void test() {
             assertThat(hamt.size()).isEqualTo(classic.size());
-            hamt.iterator().forEachRemaining(e -> assertThat(classic.get(e.key)).isEqualTo(e.value));
+            hamt.iterator().forEachRemaining(e -> assertThat(classic.get(e._1)).isEqualTo(e._2));
             classic.forEach((k, v) -> assertThat(hamt.get(k).get()).isEqualTo(v));
         }
 
