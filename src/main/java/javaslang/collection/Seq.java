@@ -757,12 +757,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> filter(Predicate<? super T> predicate);
 
     @Override
-    default Option<T> findLast(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return reverse().findFirst(predicate);
-    }
-
-    @Override
     <U> Seq<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
@@ -791,16 +785,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     @Override
     Seq<T> peek(Consumer<? super T> action);
-
-    @Override
-    default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        if (isEmpty()) {
-            throw new NoSuchElementException("reduceRight on empty");
-        } else {
-            return iterator().reduceRight(op);
-        }
-    }
 
     @Override
     Seq<T> replace(T currentElement, T newElement);

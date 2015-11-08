@@ -195,12 +195,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public Option<Tuple2<K, V>> findLast(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return iterator().findLast(predicate);
-    }
-
-    @Override
     public <U, W> HashMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(HashMap.<U, W> empty(), (acc, entry) -> {
@@ -383,11 +377,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
         return put(entry._1, entry._2);
-    }
-
-    @Override
-    public Tuple2<K, V> reduceRight(BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> op) {
-        return reduceLeft(op);
     }
 
     @Override

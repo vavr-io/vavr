@@ -319,7 +319,10 @@ public interface TraversableOnce<T> extends Value<T> {
      * @return Some(element) or None, where element may be null (i.e. {@code List.of(null).findFirst(e -> e == null)}).
      * @throws NullPointerException if {@code predicate} is null
      */
-    Option<T> findLast(Predicate<? super T> predicate);
+    default Option<T> findLast(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return iterator().findLast(predicate);
+    }
 
     @Override
     <U> TraversableOnce<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
@@ -781,7 +784,14 @@ public interface TraversableOnce<T> extends Value<T> {
      * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
-    T reduceRight(BiFunction<? super T, ? super T, ? extends T> op);
+    default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
+        if (isEmpty()) {
+            throw new NoSuchElementException("reduceRight on empty");
+        } else {
+            return iterator().reduceRight(op);
+        }
+    }
 
     /**
      * Replaces the first occurrence (if exists) of the given currentElement with newElement.
