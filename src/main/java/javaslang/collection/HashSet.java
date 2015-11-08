@@ -491,11 +491,6 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Option<T> findLast(Predicate<? super T> predicate) {
-        return findFirst(predicate);
-    }
-
-    @Override
     public <U> HashSet<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
@@ -622,11 +617,6 @@ public final class HashSet<T> implements Set<T>, Serializable {
             action.accept(iterator().head());
         }
         return this;
-    }
-
-    @Override
-    public T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        return reduceLeft(op);
     }
 
     @Override

@@ -261,12 +261,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
     }
 
     @Override
-    public Option<Entry<K, V>> findLast(Predicate<? super Entry<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return entries.iterator().findLast(predicate);
-    }
-
-    @Override
     public <U, W> TreeMap<U, W> flatMap(
             BiFunction<? super K, ? super V, ? extends Iterable<? extends Entry<? extends U, ? extends W>>> mapper) {
         return flatMap(naturalComparator(), mapper);
@@ -465,16 +459,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Entry<K, V
             action.accept(entries.min().get());
         }
         return this;
-    }
-
-    @Override
-    public Entry<K, V> reduceRight(BiFunction<? super Entry<K, V>, ? super Entry<K, V>, ? extends Entry<K, V>> op) {
-        Objects.requireNonNull(op, "op is null");
-        if (isEmpty()) {
-            throw new NoSuchElementException("reduceRight on empty TreeMap");
-        } else {
-            return iterator().reduceRight(op);
-        }
     }
 
     @Override

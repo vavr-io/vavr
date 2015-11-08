@@ -1526,7 +1526,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
-            throw new NoSuchElementException("reduceLeft on Nil");
+            throw new NoSuchElementException("reduceRight on Nil");
         } else {
             Stream<T> reversed = Stream.ofAll(this).reverse();
             return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));

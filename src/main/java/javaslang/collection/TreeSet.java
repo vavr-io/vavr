@@ -504,12 +504,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public Option<T> findLast(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return iterator().findLast(predicate);
-    }
-
-    @Override
     public <U> TreeSet<U> flatMap(Comparator<? super U> comparator,
                                   Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
@@ -644,12 +638,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
             action.accept(head());
         }
         return this;
-    }
-
-    @Override
-    public T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        return iterator().reduceRight(op);
     }
 
     @Override

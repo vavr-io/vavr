@@ -109,11 +109,6 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Option<T> findLast(Predicate<? super T> predicate) {
-        return original.findLast(p -> predicate.test(p.value)).map(o -> o.value);
-    }
-
-    @Override
     public <U> Seq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return original.flatMap(e -> mapper.apply(e.value));
     }
@@ -188,12 +183,6 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     @Override
     public IntMap<T> peek(Consumer<? super T> action) {
         return IntMap.of(original.peek(e -> action.accept(e.value)));
-    }
-
-    @Override
-    public T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        return original.reduceRight((t1, t2) -> Map.Entry.of(t2.key, op.apply(t1.value, t2.value))).value;
     }
 
     @Override

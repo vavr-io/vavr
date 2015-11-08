@@ -312,16 +312,6 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Option<T> findLast(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        if (isEmpty()) {
-            return None.instance();
-        } else {
-            return iterator().findLast(predicate);
-        }
-    }
-
-    @Override
     default <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Empty.instance() : FlatMap.apply((Node<T>) this, mapper);
@@ -425,16 +415,6 @@ public interface Tree<T> extends Traversable<T> {
             action.accept(head());
         }
         return this;
-    }
-
-    @Override
-    default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        if (isEmpty()) {
-            throw new NoSuchElementException("reduceRight of empty Tree");
-        } else {
-            return iterator().reduceRight(op);
-        }
     }
 
     @Override
