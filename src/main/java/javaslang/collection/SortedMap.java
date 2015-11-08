@@ -30,7 +30,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
      *
      * @return This map's key-comparator.
      */
-    Comparator<? super K> keyComparator();
+    Comparator<K> keyComparator();
 
     /**
      * Same as {@link #flatMap(BiFunction)} but using a specific comparator for values of the codomain of the given
