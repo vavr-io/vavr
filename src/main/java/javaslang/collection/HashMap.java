@@ -246,7 +246,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
             final C key = classifier.apply(entry);
             final HashMap<K, V> values = map
                     .get(key)
-                    .map(entries -> entries.put(entry._1, entry._2))
+                    .map(entries -> entries.put(entry))
                     .orElse(HashMap.of(entry));
             return map.put(key, values);
         });
