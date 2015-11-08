@@ -127,7 +127,7 @@ public interface RedBlackTree<T> extends java.lang.Iterable<T> {
      *
      * @return The comparator.
      */
-    Comparator<? super T> comparator();
+    Comparator<T> comparator();
 
     /**
      * Checks, if this {@code RedBlackTree} contains the given {@code value}.
@@ -403,7 +403,7 @@ interface RedBlackTreeModule {
         }
 
         @Override
-        public Comparator<? super T> comparator() {
+        public Comparator<T> comparator() {
             return empty.comparator;
         }
 
@@ -884,11 +884,12 @@ interface RedBlackTreeModule {
 
         private static final long serialVersionUID = 1L;
 
-        final Comparator<? super T> comparator;
+        final Comparator<T> comparator;
 
         // This is no public API! The RedBlackTree takes care of passing the correct Comparator.
+        @SuppressWarnings("unchecked")
         Empty(Comparator<? super T> comparator) {
-            this.comparator = comparator;
+            this.comparator = (Comparator<T>) comparator;
         }
 
         @Override
@@ -902,7 +903,7 @@ interface RedBlackTreeModule {
         }
 
         @Override
-        public Comparator<? super T> comparator() {
+        public Comparator<T> comparator() {
             return comparator;
         }
 

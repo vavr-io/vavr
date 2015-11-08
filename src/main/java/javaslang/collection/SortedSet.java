@@ -28,7 +28,7 @@ public interface SortedSet<T> extends Set<T> {
      *
      * @return This set's comparator.
      */
-    Comparator<? super T> comparator();
+    Comparator<T> comparator();
 
     /**
      * Same as {@link #flatMap(Function)} but using a specific comparator for values of the codomain of the given

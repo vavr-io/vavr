@@ -430,7 +430,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public Comparator<? super T> comparator() {
+    public Comparator<T> comparator() {
         return tree.comparator();
     }
 
@@ -521,7 +521,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     public <U> TreeSet<U> flatten() {
         try {
             return ((TreeSet<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
     }

@@ -82,7 +82,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
      */
     public static <K, V> TreeMap<K, V> empty(Comparator<? super K> keyComparator) {
         Objects.requireNonNull(keyComparator, "keyComparator is null");
-        return new TreeMap<>(RedBlackTree.empty(entryComparator(keyComparator)));
+        return new TreeMap<>(RedBlackTree.empty(new EntryComparator<>(keyComparator)));
     }
 
     /**
@@ -141,7 +141,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     public static <K, V> TreeMap<K, V> ofAll(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V>... entries) {
         Objects.requireNonNull(keyComparator, "keyComparator is null");
         Objects.requireNonNull(entries, "entries is null");
-        RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(entryComparator(keyComparator));
+        RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(new EntryComparator<>(keyComparator));
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             tree = tree.insert((Tuple2<K, V>) entry);
         }
@@ -177,7 +177,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
         if (entries instanceof TreeMap) {
             return (TreeMap<K, V>) entries;
         } else {
-            RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(entryComparator(keyComparator));
+            RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(new EntryComparator<>(keyComparator));
             for (Tuple2<? extends K, ? extends V> entry : entries) {
                 tree = tree.insert((Tuple2<K, V>) entry);
             }
@@ -261,7 +261,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     @Override
     public <U, W> TreeMap<U, W> flatMap(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return createTreeMap(entryComparator(keyComparator),
+        return createTreeMap(new EntryComparator<>(keyComparator),
                 entries.iterator().flatMap(entry -> mapper.apply(entry._1, entry._2)));
     }
 
@@ -360,10 +360,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     }
 
     @Override
-    public Comparator<? super K> keyComparator() {
-        final Comparator<? super Tuple2<K, V>> comparator = entries.comparator();
-        final V ignored = null;
-        return (Comparator<? super K> & Serializable) (k1, k2) -> comparator.compare(new Tuple2<>(k1, ignored), new Tuple2<>(k2, ignored));
+    public Comparator<K> keyComparator() {
+        return ((EntryComparator<K, V>) entries.comparator()).keyComparator;
     }
 
     @Override
@@ -381,7 +379,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     public <U, W> TreeMap<U, W> map(Comparator<? super U> keyComparator,
                                     BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return createTreeMap(entryComparator(keyComparator),
+        return createTreeMap(new EntryComparator<>(keyComparator),
                 entries.iterator().map(entry -> mapper.apply(entry._1, entry._2)));
     }
 
@@ -571,10 +569,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
         return iterator().map(Tuple2::_2).toStream();
     }
 
-    private static <K, V> Comparator<Tuple2<K, V>> entryComparator(Comparator<? super K> keyComparator) {
-        return (Comparator<Tuple2<K, V>> & Serializable) (e1, e2) -> keyComparator.compare(e1._1, e2._1);
-    }
-
     /**
      * Internal factory method, used with Tuple2 comparator instead of a key comparator.
      *
@@ -616,5 +610,28 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     @Override
     public String toString() {
         return mkString("TreeMap(", ", ", ")");
+    }
+
+    /**
+     * Used to compare entries by key and store the keyComparator for later access.
+     *
+     * @param <K> key type
+     * @param <V> value type, needed at compile time for the Comparator interface
+     */
+    static class EntryComparator<K, V> implements Comparator<Tuple2<K, V>>, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        final Comparator<K> keyComparator;
+
+        @SuppressWarnings("unchecked")
+        EntryComparator(Comparator<? super K> keyComparator) {
+            this.keyComparator = (Comparator<K>) keyComparator;
+        }
+
+        @Override
+        public int compare(Tuple2<K, V> e1, Tuple2<K, V> e2) {
+            return keyComparator.compare(e1._1, e2._1);
+        }
     }
 }
