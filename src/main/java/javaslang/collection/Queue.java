@@ -644,7 +644,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     public <U> Queue<U> flatten() {
         try {
             return ((Queue<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
     }
@@ -675,7 +675,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     @Override
     public <C> Map<C, Queue<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).map((c, it) -> Map.Entry.of(c, Queue.ofAll(it)));
+        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, Queue.ofAll(it)));
     }
 
     @Override

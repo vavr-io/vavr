@@ -425,9 +425,9 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldabl
         if (isEmpty()) {
             return HashMap.empty();
         } else if (isSingletonType()) {
-            return HashMap.of(Map.Entry.of(f.apply(get())));
+            return HashMap.of(f.apply(get()));
         } else {
-            return HashMap.ofAll(Iterator.ofAll(this).map(f).map(Map.Entry::of));
+            return HashMap.ofAll(Iterator.ofAll(this).map(f));
         }
     }
 

@@ -86,8 +86,13 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
         return _1;
     }
 
-    public <U1> Tuple1<U1> flatMap(Function1<? super T1, ? extends U1> f) {
-        return new Tuple1<>(f.apply(_1));
+    @SuppressWarnings("unchecked")
+    public <U1> Tuple1<U1> flatMap(Function<? super T1, ? extends Tuple1<? extends U1>> f) {
+        return (Tuple1<U1>) f.apply(_1);
+    }
+
+    public <U1> Tuple1<U1> map(Function<? super T1, ? extends U1> f1) {
+        return Tuple.of(f1.apply(_1));
     }
 
     /**

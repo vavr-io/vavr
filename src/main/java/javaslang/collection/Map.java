@@ -5,11 +5,9 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -24,7 +22,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich, Ruslan Sennov
  * @since 2.0.0
  */
-public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> {
+public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
 
     @Override
     default V apply(K key) {
@@ -35,30 +33,20 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
 
     boolean containsValue(V value);
 
-    Set<Entry<K, V>> entrySet();
-
-    <U, W> Map<U, W> flatMap(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Entry<? extends U, ? extends W>>> mapper);
+    <U, W> Map<U, W> flatMap(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper);
 
     Option<V> get(K key);
 
     Set<K> keySet();
 
-    <U, W> Map<U, W> map(BiFunction<? super K, ? super V, ? extends Entry<? extends U, ? extends W>> mapper);
+    <U, W> Map<U, W> map(BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper);
 
     Map<K, V> put(K key, V value);
 
     /**
-     * Convenience method for {@code put(entry.key, entry.value)}.
-     *
-     * @param entry A Map.Entry
-     * @return A new Map containing these elements and that entry.
-     */
-    Map<K, V> put(Entry<? extends K, ? extends V> entry);
-
-    /**
      * Convenience method for {@code put(entry._1, entry._2)}.
      *
-     * @param entry A Map.Entry
+     * @param entry A Map.Tuple2
      * @return A new Map containing these elements and that entry.
      */
     Map<K, V> put(Tuple2<? extends K, ? extends V> entry);
@@ -71,7 +59,7 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
 
     default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        return unzip(entry -> unzipper.apply(entry.key, entry.value));
+        return unzip(entry -> unzipper.apply(entry._1, entry._2));
     }
 
     Seq<V> values();
@@ -82,16 +70,16 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     Map<K, V> clear();
 
     @Override
-    boolean contains(Entry<K, V> element);
+    boolean contains(Tuple2<K, V> element);
 
     @Override
     Map<K, V> distinct();
 
     @Override
-    Map<K, V> distinctBy(Comparator<? super Entry<K, V>> comparator);
+    Map<K, V> distinctBy(Comparator<? super Tuple2<K, V>> comparator);
 
     @Override
-    <U> Map<K, V> distinctBy(Function<? super Entry<K, V>, ? extends U> keyExtractor);
+    <U> Map<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor);
 
     @Override
     Map<K, V> drop(int n);
@@ -100,13 +88,13 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     Map<K, V> dropRight(int n);
 
     @Override
-    Map<K, V> dropWhile(Predicate<? super Entry<K, V>> predicate);
+    Map<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    Map<K, V> filter(Predicate<? super Entry<K, V>> predicate);
+    Map<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    <U> Seq<U> flatMap(Function<? super Entry<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
 
     /**
      * Entries of a {@code Map} are flattened to the elements of their {@code Iterable} values.
@@ -129,7 +117,7 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     <U> Seq<U> flatten();
 
     @Override
-    <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Entry<K, V>, ? extends C> classifier);
+    <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
 
     @Override
     Map<K, V> init();
@@ -138,13 +126,13 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     Option<? extends Map<K, V>> initOption();
 
     @Override
-    Iterator<Entry<K, V>> iterator();
+    Iterator<Tuple2<K, V>> iterator();
 
     @Override
     int length();
 
     @Override
-    <U> Seq<U> map(Function<? super Entry<K, V>, ? extends U> mapper);
+    <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper);
 
     /**
      * Creates a new map which by merging the entries of {@code this} map and {@code that} map.
@@ -173,25 +161,25 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     <U extends V> Map<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution);
 
     @Override
-    Tuple2<? extends Map<K, V>, ? extends Map<K, V>> partition(Predicate<? super Entry<K, V>> predicate);
+    Tuple2<? extends Map<K, V>, ? extends Map<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    Map<K, V> peek(Consumer<? super Entry<K, V>> action);
+    Map<K, V> peek(Consumer<? super Tuple2<K, V>> action);
 
     @Override
-    Map<K, V> replace(Entry<K, V> currentElement, Entry<K, V> newElement);
+    Map<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
 
     @Override
-    Map<K, V> replaceAll(Entry<K, V> currentElement, Entry<K, V> newElement);
+    Map<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
 
     @Override
-    Map<K, V> retainAll(java.lang.Iterable<? extends Entry<K, V>> elements);
+    Map<K, V> retainAll(java.lang.Iterable<? extends Tuple2<K, V>> elements);
 
     @Override
-    Tuple2<? extends Map<K, V>, ? extends Map<K, V>> span(Predicate<? super Entry<K, V>> predicate);
+    Tuple2<? extends Map<K, V>, ? extends Map<K, V>> span(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    default Spliterator<Entry<K, V>> spliterator() {
+    default Spliterator<Tuple2<K, V>> spliterator() {
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
@@ -208,140 +196,32 @@ public interface Map<K, V> extends Traversable<Map.Entry<K, V>>, Function<K, V> 
     Map<K, V> takeRight(int n);
 
     @Override
-    Map<K, V> takeUntil(Predicate<? super Entry<K, V>> predicate);
+    Map<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    Map<K, V> takeWhile(Predicate<? super Entry<K, V>> predicate);
+    Map<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super Entry<K, V>, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super Tuple2<K, V>, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip(unzipper).map(Stream::ofAll, Stream::ofAll);
     }
 
     @Override
-    default <U> Seq<Tuple2<Entry<K, V>, U>> zip(java.lang.Iterable<U> that) {
+    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zip(java.lang.Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         return Stream.ofAll(iterator().zip(that));
     }
 
     @Override
-    default <U> Seq<Tuple2<Entry<K, V>, U>> zipAll(java.lang.Iterable<U> that, Entry<K, V> thisElem, U thatElem) {
+    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zipAll(java.lang.Iterable<U> that, Tuple2<K, V> thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return Stream.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
 
     @Override
-    default Seq<Tuple2<Entry<K, V>, Integer>> zipWithIndex() {
+    default Seq<Tuple2<Tuple2<K, V>, Integer>> zipWithIndex() {
         return Stream.ofAll(iterator().zipWithIndex());
     }
 
-    /**
-     * Representation of a Map entry.
-     *
-     * @param <K> Key type
-     * @param <V> Value type
-     */
-    final class Entry<K, V> implements Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        public final K key;
-        public final V value;
-
-        public Entry(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        /**
-         * Convenience method for {@code new Entry<>(t._1, t._2)}.
-         *
-         * @param t   A tuple of arity 2
-         * @param <K> Key type
-         * @param <V> Value type
-         * @return A new Entry instance containing the first tuple component as key and the second tuple component as value.
-         */
-        public static <K, V> Entry<K, V> of(Tuple2<K, V> t) {
-            return new Entry<>(t._1, t._2);
-        }
-
-        /**
-         * Convenience method for {@code new Entry<>(key, value)}.
-         *
-         * @param key   An map entry key
-         * @param value An map entry value
-         * @param <K>   Key type
-         * @param <V>   Value type
-         * @return A new Entry instance containing the specified key and value.
-         */
-        public static <K, V> Entry<K, V> of(K key, V value) {
-            return new Entry<>(key, value);
-        }
-
-        /**
-         * Returns the key.
-         * <p>
-         * Convenience method, intended to be used as method reference {@code Entry::key}.
-         * Use {@code entry.key} to access the key directly.
-         *
-         * @return The key of this entry.
-         */
-        public K key() {
-            return key;
-        }
-
-        /**
-         * Returns the value.
-         * <p>
-         * Convenience method, intended to be used as method reference {@code Entry::value}.
-         * Use {@code entry.value} to access the value directly.
-         *
-         * @return The value of this entry.
-         */
-        public V value() {
-            return value;
-        }
-
-        @SuppressWarnings("unchecked")
-        public <X, Y> Entry<X, Y> flatMap(BiFunction<? super K, ? super V, ? extends Entry<? extends X, ? extends Y>> mapper) {
-            return (Entry<X, Y>) mapper.apply(key, value);
-        }
-
-        @SuppressWarnings("unchecked")
-        public <X, Y> Entry<X, Y> map(BiFunction<? super K, ? super V, ? extends Entry<? extends X, ? extends Y>> mapper) {
-            return (Entry<X, Y>) mapper.apply(key, value);
-        }
-
-        public <X, Y> Entry<X, Y> map(Function<? super K, ? extends X> keyMapper, Function<? super V, ? extends Y> valueMapper) {
-            return new Entry<>(keyMapper.apply(key), valueMapper.apply(value));
-        }
-
-        public Tuple2<K, V> toTuple() {
-            return Tuple.of(key, value);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof Entry) {
-                final Entry<?, ?> that = (Entry<?, ?>) o;
-                return Objects.equals(this.key, that.key)
-                        && Objects.equals(this.value, that.value);
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(key, value);
-        }
-
-        @Override
-        public String toString() {
-            return key + " -> " + value;
-        }
-    }
 }

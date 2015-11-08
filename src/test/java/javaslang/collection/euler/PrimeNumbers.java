@@ -5,8 +5,8 @@
  */
 package javaslang.collection.euler;
 
+import javaslang.Tuple;
 import javaslang.collection.HashMap;
-import javaslang.collection.Map;
 import javaslang.collection.Stream;
 
 public final class PrimeNumbers {
@@ -30,7 +30,7 @@ public final class PrimeNumbers {
             return HashMap.empty();
         } else {
             return primeFactors(num)
-                    .map(p -> HashMap.of(Map.Entry.of(p, 1L))
+                    .map(p -> HashMap.of(Tuple.of(p, 1L))
                             .merge(factorization(num / p), (a, b) -> a + b))
                     .orElseGet(HashMap::empty);
         }
