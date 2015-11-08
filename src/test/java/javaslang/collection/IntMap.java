@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
@@ -78,12 +79,12 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMap<T> distinctBy(Comparator<? super T> comparator) {
-        return IntMap.of(original.distinctBy((o1, o2) -> comparator.compare(o1.value, o2.value)));
+        return IntMap.of(original.distinctBy((o1, o2) -> comparator.compare(o1._2, o2._2)));
     }
 
     @Override
     public <U> IntMap<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        return IntMap.of(original.distinctBy(f -> keyExtractor.apply(f.value)));
+        return IntMap.of(original.distinctBy(f -> keyExtractor.apply(f._2)));
     }
 
     @Override
@@ -100,17 +101,17 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMap<T> dropWhile(Predicate<? super T> predicate) {
-        return IntMap.of(original.dropWhile(p -> predicate.test(p.value)));
+        return IntMap.of(original.dropWhile(p -> predicate.test(p._2)));
     }
 
     @Override
     public IntMap<T> filter(Predicate<? super T> predicate) {
-        return IntMap.of(original.filter(p -> predicate.test(p.value)));
+        return IntMap.of(original.filter(p -> predicate.test(p._2)));
     }
 
     @Override
     public <U> Seq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        return original.flatMap(e -> mapper.apply(e.value));
+        return original.flatMap(e -> mapper.apply(e._2));
     }
 
     @Override
@@ -121,12 +122,12 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
-        return original.foldRight(zero, (e, u) -> f.apply(e.value, u));
+        return original.foldRight(zero, (e, u) -> f.apply(e._2, u));
     }
 
     @Override
     public <C> Map<C, ? extends IntMap<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        return original.groupBy(e -> classifier.apply(e.value)).map((k, v) -> Map.Entry.of(k, IntMap.of(v)));
+        return original.groupBy(e -> classifier.apply(e._2)).map((k, v) -> Tuple.of(k, IntMap.of(v)));
     }
 
     @Override
@@ -136,12 +137,12 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public T head() {
-        return original.head().value;
+        return original.head()._2;
     }
 
     @Override
     public Option<T> headOption() {
-        return original.headOption().map(o -> o.value);
+        return original.headOption().map(o -> o._2);
     }
 
     @Override
@@ -171,26 +172,26 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public <U> Traversable<U> map(Function<? super T, ? extends U> mapper) {
-        return original.map(e -> mapper.apply(e.value));
+        return original.map(e -> mapper.apply(e._2));
     }
 
     @Override
     public Tuple2<IntMap<T>, IntMap<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return original.partition(p -> predicate.test(p.value)).map(IntMap::of, IntMap::of);
+        return original.partition(p -> predicate.test(p._2)).map(IntMap::of, IntMap::of);
     }
 
     @Override
     public IntMap<T> peek(Consumer<? super T> action) {
-        return IntMap.of(original.peek(e -> action.accept(e.value)));
+        return IntMap.of(original.peek(e -> action.accept(e._2)));
     }
 
     @Override
     public IntMap<T> replace(T currentElement, T newElement) {
-        final Option<Map.Entry<Integer, T>> currentEntryOpt = original.findFirst(e -> e.value.equals(currentElement));
+        final Option<Tuple2<Integer, T>> currentEntryOpt = original.findFirst(e -> e._2.equals(currentElement));
         if (currentEntryOpt.isDefined()) {
-            final Map.Entry<Integer, T> currentEntry = currentEntryOpt.get();
-            return IntMap.of(original.replace(currentEntry, Map.Entry.of(currentEntry.key, newElement)));
+            final Tuple2<Integer, T> currentEntry = currentEntryOpt.get();
+            return IntMap.of(original.replace(currentEntry, Tuple.of(currentEntry._1, newElement)));
         } else {
             return this;
         }
@@ -199,8 +200,8 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     @Override
     public IntMap<T> replaceAll(T currentElement, T newElement) {
         Map<Integer, T> result = original;
-        for (Map.Entry<Integer, T> entry : original.filter(e -> e.value.equals(currentElement))) {
-            result = result.replaceAll(entry, Map.Entry.of(entry.key, newElement));
+        for (Tuple2<Integer, T> entry : original.filter(e -> e._2.equals(currentElement))) {
+            result = result.replaceAll(entry, Tuple.of(entry._1, newElement));
         }
         return IntMap.of(result);
     }
@@ -208,25 +209,25 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     @Override
     public IntMap<T> retainAll(Iterable<? extends T> elements) {
         final Set<T> elementsSet = HashSet.ofAll(elements);
-        return IntMap.of(original.retainAll(original.filter(e -> elementsSet.contains(e.value))));
+        return IntMap.of(original.retainAll(original.filter(e -> elementsSet.contains(e._2))));
     }
 
     @Override
     public Tuple2<? extends IntMap<T>, ? extends IntMap<T>> span(Predicate<? super T> predicate) {
-        return original.span(p -> predicate.test(p.value)).map(IntMap::of, IntMap::of);
+        return original.span(p -> predicate.test(p._2)).map(IntMap::of, IntMap::of);
     }
 
     public Spliterator<T> spliterator() {
         class SpliteratorProxy implements Spliterator<T> {
-            private final Spliterator<Map.Entry<Integer, T>> spliterator;
+            private final Spliterator<Tuple2<Integer, T>> spliterator;
 
-            SpliteratorProxy(Spliterator<Map.Entry<Integer, T>> spliterator) {
+            SpliteratorProxy(Spliterator<Tuple2<Integer, T>> spliterator) {
                 this.spliterator = spliterator;
             }
 
             @Override
             public boolean tryAdvance(Consumer<? super T> action) {
-                return spliterator.tryAdvance(a -> action.accept(a.value));
+                return spliterator.tryAdvance(a -> action.accept(a._2));
             }
 
             @Override
@@ -275,7 +276,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMap<T> takeWhile(Predicate<? super T> predicate) {
-        return IntMap.of(original.takeWhile(p -> predicate.test(p.value)));
+        return IntMap.of(original.takeWhile(p -> predicate.test(p._2)));
     }
 
     @Override

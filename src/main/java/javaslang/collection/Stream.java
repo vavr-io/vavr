@@ -553,7 +553,7 @@ public interface Stream<T> extends LinearSeq<T> {
     /**
      * Repeats an element infinitely often.
      *
-     * @param t An element
+     * @param t   An element
      * @param <T> Element type
      * @return A new Stream containing infinite {@code t}'s.
      */
@@ -720,7 +720,7 @@ public interface Stream<T> extends LinearSeq<T> {
     default <U> Stream<U> flatten() {
         try {
             return ((Stream<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
     }
@@ -746,7 +746,7 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default <C> Map<C, Stream<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).map((c, it) -> Map.Entry.of(c, Stream.ofAll(it)));
+        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, Stream.ofAll(it)));
     }
 
     @Override

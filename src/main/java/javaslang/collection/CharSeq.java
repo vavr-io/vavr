@@ -63,6 +63,22 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     /**
+     * Creates a String of {@code CharSequence}.
+     *
+     * @param sequence {@code CharSequence} instance.
+     * @return A new {@code javaslang.String}
+     */
+    // DEV-NOTE: Needs to be 'of' instead of 'ofAll' because 'ofAll(CharSeq)' is ambiguous.
+    public static CharSeq of(CharSequence sequence) {
+        Objects.requireNonNull(sequence, "sequence is null");
+        if (sequence instanceof CharSeq) {
+            return (CharSeq) sequence;
+        } else {
+            return sequence.length() == 0 ? empty() : new CharSeq(sequence.toString());
+        }
+    }
+
+    /**
      * Returns a singleton {@code CharSeq}, i.e. a {@code CharSeq} of one character.
      *
      * @param character A character.
@@ -79,26 +95,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return A string containing the given characters in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    public static CharSeq of(char... characters) {
+    public static CharSeq ofAll(char... characters) {
         Objects.requireNonNull(characters, "characters is null");
         final char[] chrs = new char[characters.length];
         System.arraycopy(characters, 0, chrs, 0, characters.length);
         return new CharSeq(new java.lang.String(chrs));
-    }
-
-    /**
-     * Creates a String of {@code CharSequence}.
-     *
-     * @param sequence {@code CharSequence} instance.
-     * @return A new {@code javaslang.String}
-     */
-    public static CharSeq of(CharSequence sequence) {
-        Objects.requireNonNull(sequence, "sequence is null");
-        if (sequence instanceof CharSeq) {
-            return (CharSeq) sequence;
-        } else {
-            return sequence.length() == 0 ? empty() : new CharSeq(sequence.toString());
-        }
     }
 
     /**
@@ -118,17 +119,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
             sb.append(character);
         }
         return sb.length() == 0 ? EMPTY : of(sb.toString());
-    }
-
-    /**
-     * Creates a CharSeq based on the elements of a char array.
-     *
-     * @param array a char array
-     * @return A new List of Character values
-     */
-    public static CharSeq ofAll(char[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return new CharSeq(String.valueOf(array));
     }
 
     /**
@@ -398,7 +388,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public <C> Map<C, CharSeq> groupBy(Function<? super Character, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).map((c, it) -> Map.Entry.of(c, CharSeq.ofAll(it)));
+        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, CharSeq.ofAll(it)));
     }
 
     @Override

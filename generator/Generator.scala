@@ -683,11 +683,17 @@ def generateMainClasses(): Unit = {
       val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
       val params = (1 to i).gen(j => s"_$j")(", ")
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
-      val resultType = if (i == 1) "? extends U1" else s"Tuple$i<${(1 to i).gen(j => s"U$j")(", ")}>"
+      val resultType = s"Tuple$i<${(1 to i).gen(j => s"U$j")(", ")}>"
       val resultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j")(", ")}>"
+      val flatMapResultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
       val comparableGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j extends Comparable<? super U$j>")(", ")}>"
       val untyped = if (i == 0) "" else s"<${(1 to i).gen(j => "?")(", ")}>"
-      val functionType = s"Function$i"
+      val Function = im.getType("java.util.function.Function")
+      val functionType = i match {
+        case 1 => Function
+        case 2 => im.getType("java.util.function.BiFunction")
+        case _ => s"Function$i"
+      }
       val Comparator = im.getType("java.util.Comparator")
       val Objects = im.getType("java.util.Objects")
       val Seq = im.getType("javaslang.collection.Seq")
@@ -806,17 +812,14 @@ def generateMainClasses(): Unit = {
             """)("\n\n")}
 
             ${(i > 0).gen(xs"""
-              public $resultGenerics $className$resultGenerics flatMap($functionType<$paramTypes, $resultType> f) {
-                  ${if (i > 1) { xs"""
-                    return f.apply($params);"""
-                  } else { xs"""
-                    return new $className<>(f.apply($params));"""
-                  }}
+              @SuppressWarnings("unchecked")
+              public $resultGenerics $className$resultGenerics flatMap($functionType<$paramTypes, ? extends $className$flatMapResultGenerics> f) {
+                  return ($className$resultGenerics) f.apply($params);
               }
             """)}
 
-            ${(i > 1).gen(xs"""
-              public $resultGenerics $className$resultGenerics map(${(1 to i).gen(j => s"${im.getType("javaslang.Function1")}<? super T$j, ? extends U$j> f$j")(", ")}) {
+            ${(i > 0).gen(xs"""
+              public $resultGenerics $className$resultGenerics map(${(1 to i).gen(j => s"$Function<? super T$j, ? extends U$j> f$j")(", ")}) {
                   return ${im.getType("javaslang.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(_$j)")(", ")});
               }
             """)}
@@ -828,7 +831,7 @@ def generateMainClasses(): Unit = {
              * @param <U> New type
              * @return An object of type U
              */
-            public <U> U transform(${im.getType("java.util.function.Function")}<? super $className$generics, U> f) {
+            public <U> U transform($Function<? super $className$generics, U> f) {
                 $Objects.requireNonNull(f, "f is null");
                 return f.apply(this);
             }
@@ -1592,11 +1595,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldFlatMap() {
                   final Tuple$i<$generics> tuple = createTuple();
-                  ${if (i == 1) {
-                    s"final $functionType<$generics, Object> mapper = $functionArgTypes -> o1;"
-                  } else {
-                    s"final $functionType<$generics, Tuple$i<$generics>> mapper = ($functionArgTypes) -> tuple;"
-                  }}
+                  final $functionType<$generics, Tuple$i<$generics>> mapper = ($functionArgTypes) -> tuple;
                   final Tuple$i<$generics> actual = tuple.flatMap(mapper);
                   $assertThat(actual).isEqualTo(tuple);
               }

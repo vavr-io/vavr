@@ -5,6 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple2;
+
 import java.util.ArrayList;
 import java.util.stream.Collector;
 
@@ -21,14 +23,14 @@ public class HashMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <T> Collector<Map.Entry<Integer, T>, ArrayList<Map.Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
+    protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
         return HashMap.<Integer, T> collector();
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> Map<K, V> mapOf(Map.Entry<? extends K, ? extends V>... entries) {
-        return HashMap.of(entries);
+    protected final <K, V> Map<K, V> mapOf(Tuple2<? extends K, ? extends V>... entries) {
+        return HashMap.ofAll(entries);
     }
 }

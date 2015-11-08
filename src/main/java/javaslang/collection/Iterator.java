@@ -951,7 +951,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
     /**
      * Repeats an element infinitely often.
      *
-     * @param t An element
+     * @param t   An element
      * @param <T> Element type
      * @return A new Iterator containing infinite {@code t}'s.
      */
@@ -1384,7 +1384,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
                 final Stream<T> values = map.get(key).map(entries -> entries.append(entry)).orElse(Stream.of(entry));
                 return map.put(key, values);
             });
-            return streams.map((c, ts) -> Map.Entry.of(c, ts.iterator()));
+            return streams.map((c, ts) -> Tuple.of(c, ts.iterator()));
         }
     }
 

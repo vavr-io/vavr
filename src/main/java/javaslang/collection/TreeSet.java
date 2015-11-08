@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
@@ -535,7 +536,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     public <C> Map<C, TreeSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
         return iterator().groupBy(classifier).map(
-                (key, iterator) -> new Map.Entry<>(key, TreeSet.ofAll(tree.comparator(), iterator)));
+                (key, iterator) -> Tuple.of(key, TreeSet.ofAll(tree.comparator(), iterator)));
     }
 
     @Override

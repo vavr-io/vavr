@@ -68,7 +68,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldBeAwareOfExistingElement() {
-        assertThat(CharSeq.of('1', '2').exists(i -> i == '2')).isTrue();
+        assertThat(CharSeq.ofAll('1', '2').exists(i -> i == '2')).isTrue();
     }
 
     @Test
@@ -80,12 +80,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldBeAwareOfPropertyThatHoldsForAll() {
-        assertThat(CharSeq.of('2', '4').forAll(i -> i % 2 == 0)).isTrue();
+        assertThat(CharSeq.ofAll('2', '4').forAll(i -> i % 2 == 0)).isTrue();
     }
 
     @Test
     public void shouldBeAwareOfPropertyThatNotHoldsForAll() {
-        assertThat(CharSeq.of('2', '3').forAll(i -> i % 2 == 0)).isFalse();
+        assertThat(CharSeq.ofAll('2', '3').forAll(i -> i % 2 == 0)).isFalse();
     }
 
     // -- padTo
@@ -97,7 +97,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldPadEmptyToNonEmpty() {
-        assertThat(empty().padTo(2, 'a')).isEqualTo(CharSeq.of('a', 'a'));
+        assertThat(empty().padTo(2, 'a')).isEqualTo(CharSeq.ofAll('a', 'a'));
     }
 
     @Test
@@ -108,9 +108,9 @@ public class CharSeqTest {
 
     @Test
     public void shouldPadNonEmpty() {
-        assertThat(CharSeq.of('a').padTo(2, 'a')).isEqualTo(CharSeq.of('a', 'a'));
-        assertThat(CharSeq.of('a').padTo(2, 'b')).isEqualTo(CharSeq.of('a', 'b'));
-        assertThat(CharSeq.of('a').padTo(3, 'b')).isEqualTo(CharSeq.of('a', 'b', 'b'));
+        assertThat(CharSeq.of('a').padTo(2, 'a')).isEqualTo(CharSeq.ofAll('a', 'a'));
+        assertThat(CharSeq.of('a').padTo(2, 'b')).isEqualTo(CharSeq.ofAll('a', 'b'));
+        assertThat(CharSeq.of('a').padTo(3, 'b')).isEqualTo(CharSeq.ofAll('a', 'b', 'b'));
     }
 
     // -- patch
@@ -126,7 +126,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldPatchEmptyByNonEmpty() {
-        Seq<Character> s = CharSeq.of('1', '2', '3');
+        Seq<Character> s = CharSeq.ofAll('1', '2', '3');
         assertThat(empty().patch(0, s, 0)).isEqualTo(s);
         assertThat(empty().patch(-1, s, -1)).isEqualTo(s);
         assertThat(empty().patch(-1, s, 1)).isEqualTo(s);
@@ -136,45 +136,45 @@ public class CharSeqTest {
 
     @Test
     public void shouldPatchNonEmptyByEmpty() {
-        Seq<Character> s = CharSeq.of('1', '2', '3');
-        assertThat(s.patch(-1, empty(), -1)).isEqualTo(CharSeq.of('1', '2', '3'));
-        assertThat(s.patch(-1, empty(), 0)).isEqualTo(CharSeq.of('1', '2', '3'));
-        assertThat(s.patch(-1, empty(), 1)).isEqualTo(CharSeq.of('2', '3'));
+        Seq<Character> s = CharSeq.ofAll('1', '2', '3');
+        assertThat(s.patch(-1, empty(), -1)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
+        assertThat(s.patch(-1, empty(), 0)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
+        assertThat(s.patch(-1, empty(), 1)).isEqualTo(CharSeq.ofAll('2', '3'));
         assertThat(s.patch(-1, empty(), 3)).isEqualTo(empty());
-        assertThat(s.patch(0, empty(), -1)).isEqualTo(CharSeq.of('1', '2', '3'));
-        assertThat(s.patch(0, empty(), 0)).isEqualTo(CharSeq.of('1', '2', '3'));
-        assertThat(s.patch(0, empty(), 1)).isEqualTo(CharSeq.of('2', '3'));
+        assertThat(s.patch(0, empty(), -1)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
+        assertThat(s.patch(0, empty(), 0)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
+        assertThat(s.patch(0, empty(), 1)).isEqualTo(CharSeq.ofAll('2', '3'));
         assertThat(s.patch(0, empty(), 3)).isEqualTo(empty());
-        assertThat(s.patch(1, empty(), -1)).isEqualTo(CharSeq.of('1', '2', '3'));
-        assertThat(s.patch(1, empty(), 0)).isEqualTo(CharSeq.of('1', '2', '3'));
-        assertThat(s.patch(1, empty(), 1)).isEqualTo(CharSeq.of('1', '3'));
+        assertThat(s.patch(1, empty(), -1)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
+        assertThat(s.patch(1, empty(), 0)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
+        assertThat(s.patch(1, empty(), 1)).isEqualTo(CharSeq.ofAll('1', '3'));
         assertThat(s.patch(1, empty(), 3)).isEqualTo(CharSeq.of('1'));
-        assertThat(s.patch(4, empty(), -1)).isEqualTo(CharSeq.of('1', '2', '3'));
-        assertThat(s.patch(4, empty(), 0)).isEqualTo(CharSeq.of('1', '2', '3'));
-        assertThat(s.patch(4, empty(), 1)).isEqualTo(CharSeq.of('1', '2', '3'));
-        assertThat(s.patch(4, empty(), 3)).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(s.patch(4, empty(), -1)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
+        assertThat(s.patch(4, empty(), 0)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
+        assertThat(s.patch(4, empty(), 1)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
+        assertThat(s.patch(4, empty(), 3)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
     }
 
     @Test
     public void shouldPatchNonEmptyByNonEmpty() {
-        Seq<Character> s = CharSeq.of('1', '2', '3');
-        Seq<Character> d = CharSeq.of('4', '5', '6');
-        assertThat(s.patch(-1, d, -1)).isEqualTo(CharSeq.of('4', '5', '6', '1', '2', '3'));
-        assertThat(s.patch(-1, d, 0)).isEqualTo(CharSeq.of('4', '5', '6', '1', '2', '3'));
-        assertThat(s.patch(-1, d, 1)).isEqualTo(CharSeq.of('4', '5', '6', '2', '3'));
-        assertThat(s.patch(-1, d, 3)).isEqualTo(CharSeq.of('4', '5', '6'));
-        assertThat(s.patch(0, d, -1)).isEqualTo(CharSeq.of('4', '5', '6', '1', '2', '3'));
-        assertThat(s.patch(0, d, 0)).isEqualTo(CharSeq.of('4', '5', '6', '1', '2', '3'));
-        assertThat(s.patch(0, d, 1)).isEqualTo(CharSeq.of('4', '5', '6', '2', '3'));
-        assertThat(s.patch(0, d, 3)).isEqualTo(CharSeq.of('4', '5', '6'));
-        assertThat(s.patch(1, d, -1)).isEqualTo(CharSeq.of('1', '4', '5', '6', '2', '3'));
-        assertThat(s.patch(1, d, 0)).isEqualTo(CharSeq.of('1', '4', '5', '6', '2', '3'));
-        assertThat(s.patch(1, d, 1)).isEqualTo(CharSeq.of('1', '4', '5', '6', '3'));
-        assertThat(s.patch(1, d, 3)).isEqualTo(CharSeq.of('1', '4', '5', '6'));
-        assertThat(s.patch(4, d, -1)).isEqualTo(CharSeq.of('1', '2', '3', '4', '5', '6'));
-        assertThat(s.patch(4, d, 0)).isEqualTo(CharSeq.of('1', '2', '3', '4', '5', '6'));
-        assertThat(s.patch(4, d, 1)).isEqualTo(CharSeq.of('1', '2', '3', '4', '5', '6'));
-        assertThat(s.patch(4, d, 3)).isEqualTo(CharSeq.of('1', '2', '3', '4', '5', '6'));
+        Seq<Character> s = CharSeq.ofAll('1', '2', '3');
+        Seq<Character> d = CharSeq.ofAll('4', '5', '6');
+        assertThat(s.patch(-1, d, -1)).isEqualTo(CharSeq.ofAll('4', '5', '6', '1', '2', '3'));
+        assertThat(s.patch(-1, d, 0)).isEqualTo(CharSeq.ofAll('4', '5', '6', '1', '2', '3'));
+        assertThat(s.patch(-1, d, 1)).isEqualTo(CharSeq.ofAll('4', '5', '6', '2', '3'));
+        assertThat(s.patch(-1, d, 3)).isEqualTo(CharSeq.ofAll('4', '5', '6'));
+        assertThat(s.patch(0, d, -1)).isEqualTo(CharSeq.ofAll('4', '5', '6', '1', '2', '3'));
+        assertThat(s.patch(0, d, 0)).isEqualTo(CharSeq.ofAll('4', '5', '6', '1', '2', '3'));
+        assertThat(s.patch(0, d, 1)).isEqualTo(CharSeq.ofAll('4', '5', '6', '2', '3'));
+        assertThat(s.patch(0, d, 3)).isEqualTo(CharSeq.ofAll('4', '5', '6'));
+        assertThat(s.patch(1, d, -1)).isEqualTo(CharSeq.ofAll('1', '4', '5', '6', '2', '3'));
+        assertThat(s.patch(1, d, 0)).isEqualTo(CharSeq.ofAll('1', '4', '5', '6', '2', '3'));
+        assertThat(s.patch(1, d, 1)).isEqualTo(CharSeq.ofAll('1', '4', '5', '6', '3'));
+        assertThat(s.patch(1, d, 3)).isEqualTo(CharSeq.ofAll('1', '4', '5', '6'));
+        assertThat(s.patch(4, d, -1)).isEqualTo(CharSeq.ofAll('1', '2', '3', '4', '5', '6'));
+        assertThat(s.patch(4, d, 0)).isEqualTo(CharSeq.ofAll('1', '2', '3', '4', '5', '6'));
+        assertThat(s.patch(4, d, 1)).isEqualTo(CharSeq.ofAll('1', '2', '3', '4', '5', '6'));
+        assertThat(s.patch(4, d, 3)).isEqualTo(CharSeq.ofAll('1', '2', '3', '4', '5', '6'));
     }
 
     // -- peek
@@ -213,7 +213,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldCreateRangeClosedWhereFromIsLessThanTo() {
-        assertThat(CharSeq.rangeClosed('a', 'c')).isEqualTo(CharSeq.of('a', 'b', 'c'));
+        assertThat(CharSeq.rangeClosed('a', 'c')).isEqualTo(CharSeq.ofAll('a', 'b', 'c'));
     }
 
     @Test
@@ -246,16 +246,16 @@ public class CharSeqTest {
 
     @Test
     public void shouldCreateRangeClosedByWhereFromIsLessThanToAndStepCorrectDirection() {
-        assertThat(CharSeq.rangeClosedBy('a', 'c', 1)).isEqualTo(CharSeq.of('a', 'b', 'c'));
-        assertThat(CharSeq.rangeClosedBy('a', 'e', 2)).isEqualTo(CharSeq.of('a', 'c', 'e'));
-        assertThat(CharSeq.rangeClosedBy('a', 'f', 2)).isEqualTo(CharSeq.of('a', 'c', 'e'));
+        assertThat(CharSeq.rangeClosedBy('a', 'c', 1)).isEqualTo(CharSeq.ofAll('a', 'b', 'c'));
+        assertThat(CharSeq.rangeClosedBy('a', 'e', 2)).isEqualTo(CharSeq.ofAll('a', 'c', 'e'));
+        assertThat(CharSeq.rangeClosedBy('a', 'f', 2)).isEqualTo(CharSeq.ofAll('a', 'c', 'e'));
         assertThat(CharSeq.rangeClosedBy((char) (Character.MAX_VALUE - 2), Character.MAX_VALUE, 3)).isEqualTo(CharSeq.of((char) (Character.MAX_VALUE - 2)));
-        assertThat(CharSeq.rangeClosedBy((char) (Character.MAX_VALUE - 3), Character.MAX_VALUE, 3)).isEqualTo(CharSeq.of((char) (Character.MAX_VALUE - 3), Character.MAX_VALUE));
-        assertThat(CharSeq.rangeClosedBy('c', 'a', -1)).isEqualTo(CharSeq.of('c', 'b', 'a'));
-        assertThat(CharSeq.rangeClosedBy('e', 'a', -2)).isEqualTo(CharSeq.of('e', 'c', 'a'));
-        assertThat(CharSeq.rangeClosedBy('e', (char) ('a' - 1), -2)).isEqualTo(CharSeq.of('e', 'c', 'a'));
+        assertThat(CharSeq.rangeClosedBy((char) (Character.MAX_VALUE - 3), Character.MAX_VALUE, 3)).isEqualTo(CharSeq.ofAll((char) (Character.MAX_VALUE - 3), Character.MAX_VALUE));
+        assertThat(CharSeq.rangeClosedBy('c', 'a', -1)).isEqualTo(CharSeq.ofAll('c', 'b', 'a'));
+        assertThat(CharSeq.rangeClosedBy('e', 'a', -2)).isEqualTo(CharSeq.ofAll('e', 'c', 'a'));
+        assertThat(CharSeq.rangeClosedBy('e', (char) ('a' - 1), -2)).isEqualTo(CharSeq.ofAll('e', 'c', 'a'));
         assertThat(CharSeq.rangeClosedBy((char) (Character.MIN_VALUE + 2), Character.MIN_VALUE, -3)).isEqualTo(CharSeq.of((char) (Character.MIN_VALUE + 2)));
-        assertThat(CharSeq.rangeClosedBy((char) (Character.MIN_VALUE + 3), Character.MIN_VALUE, -3)).isEqualTo(CharSeq.of((char) (Character.MIN_VALUE + 3), Character.MIN_VALUE));
+        assertThat(CharSeq.rangeClosedBy((char) (Character.MIN_VALUE + 3), Character.MIN_VALUE, -3)).isEqualTo(CharSeq.ofAll((char) (Character.MIN_VALUE + 3), Character.MIN_VALUE));
     }
 
     @Test
@@ -288,7 +288,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldCreateRangeWhereFromIsLessThanTo() {
-        assertThat(CharSeq.range('a', 'c')).isEqualTo(CharSeq.of('a', 'b'));
+        assertThat(CharSeq.range('a', 'c')).isEqualTo(CharSeq.ofAll('a', 'b'));
     }
 
     @Test
@@ -321,14 +321,14 @@ public class CharSeqTest {
 
     @Test
     public void shouldCreateRangeByWhereFromIsLessThanToAndStepCorrectDirection() {
-        assertThat(CharSeq.rangeBy('a', 'c', 1)).isEqualTo(CharSeq.of('a', 'b'));
-        assertThat(CharSeq.rangeBy('a', 'd', 2)).isEqualTo(CharSeq.of('a', 'c'));
-        assertThat(CharSeq.rangeBy('c', 'a', -1)).isEqualTo(CharSeq.of('c', 'b'));
-        assertThat(CharSeq.rangeBy('d', 'a', -2)).isEqualTo(CharSeq.of('d', 'b'));
+        assertThat(CharSeq.rangeBy('a', 'c', 1)).isEqualTo(CharSeq.ofAll('a', 'b'));
+        assertThat(CharSeq.rangeBy('a', 'd', 2)).isEqualTo(CharSeq.ofAll('a', 'c'));
+        assertThat(CharSeq.rangeBy('c', 'a', -1)).isEqualTo(CharSeq.ofAll('c', 'b'));
+        assertThat(CharSeq.rangeBy('d', 'a', -2)).isEqualTo(CharSeq.ofAll('d', 'b'));
         assertThat(CharSeq.rangeBy((char) (Character.MAX_VALUE - 3), Character.MAX_VALUE, 3)).isEqualTo(CharSeq.of((char) (Character.MAX_VALUE - 3)));
-        assertThat(CharSeq.rangeBy((char) (Character.MAX_VALUE - 4), Character.MAX_VALUE, 3)).isEqualTo(CharSeq.of((char) (Character.MAX_VALUE - 4), (char) (Character.MAX_VALUE - 1)));
+        assertThat(CharSeq.rangeBy((char) (Character.MAX_VALUE - 4), Character.MAX_VALUE, 3)).isEqualTo(CharSeq.ofAll((char) (Character.MAX_VALUE - 4), (char) (Character.MAX_VALUE - 1)));
         assertThat(CharSeq.rangeBy((char) (Character.MIN_VALUE + 3), Character.MIN_VALUE, -3)).isEqualTo(CharSeq.of((char) (Character.MIN_VALUE + 3)));
-        assertThat(CharSeq.rangeBy((char) (Character.MIN_VALUE + 4), Character.MIN_VALUE, -3)).isEqualTo(CharSeq.of((char) (Character.MIN_VALUE + 4), (char) (Character.MIN_VALUE + 1)));
+        assertThat(CharSeq.rangeBy((char) (Character.MIN_VALUE + 4), Character.MIN_VALUE, -3)).isEqualTo(CharSeq.ofAll((char) (Character.MIN_VALUE + 4), (char) (Character.MIN_VALUE + 1)));
     }
 
     @Test
@@ -367,7 +367,7 @@ public class CharSeqTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenComputingAverageOfStrings() {
-        CharSeq.of('1', '2', '3').average();
+        CharSeq.ofAll('1', '2', '3').average();
     }
 
     // -- clear
@@ -380,7 +380,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldClearNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').clear()).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').clear()).isEqualTo(empty());
     }
 
     // -- contains
@@ -393,13 +393,13 @@ public class CharSeqTest {
 
     @Test
     public void shouldRecognizeNonNilDoesNotContainElement() {
-        final boolean actual = CharSeq.of('1', '2', '3').contains('0');
+        final boolean actual = CharSeq.ofAll('1', '2', '3').contains('0');
         assertThat(actual).isFalse();
     }
 
     @Test
     public void shouldRecognizeNonNilDoesContainElement() {
-        final boolean actual = CharSeq.of('1', '2', '3').contains('2');
+        final boolean actual = CharSeq.ofAll('1', '2', '3').contains('2');
         assertThat(actual).isTrue();
     }
 
@@ -407,19 +407,19 @@ public class CharSeqTest {
 
     @Test
     public void shouldRecognizeNilNotContainsAllElements() {
-        final boolean actual = empty().containsAll(CharSeq.of('1', '2', '3'));
+        final boolean actual = empty().containsAll(CharSeq.ofAll('1', '2', '3'));
         assertThat(actual).isFalse();
     }
 
     @Test
     public void shouldRecognizeNonNilNotContainsAllOverlappingElements() {
-        final boolean actual = CharSeq.of('1', '2', '3').containsAll(CharSeq.of('2', '3', '4'));
+        final boolean actual = CharSeq.ofAll('1', '2', '3').containsAll(CharSeq.ofAll('2', '3', '4'));
         assertThat(actual).isFalse();
     }
 
     @Test
     public void shouldRecognizeNonNilContainsAllOnSelf() {
-        final boolean actual = CharSeq.of('1', '2', '3').containsAll(CharSeq.of('1', '2', '3'));
+        final boolean actual = CharSeq.ofAll('1', '2', '3').containsAll(CharSeq.ofAll('1', '2', '3'));
         assertThat(actual).isTrue();
     }
 
@@ -432,7 +432,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldComputeDistinctOfNonEmptyTraversable() {
-        assertThat(CharSeq.of('1', '1', '2', '2', '3', '3').distinct()).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(CharSeq.ofAll('1', '1', '2', '2', '3', '3').distinct()).isEqualTo(CharSeq.ofAll('1', '2', '3'));
     }
 
     // -- distinct(Comparator)
@@ -446,8 +446,8 @@ public class CharSeqTest {
     @Test
     public void shouldComputeDistinctByOfNonEmptyTraversableUsingComparator() {
         final Comparator<Character> comparator = (s1, s2) -> (s1 - s2);
-        assertThat(CharSeq.of('1', '2', '3', '3', '4', '5').distinctBy(comparator))
-                .isEqualTo(CharSeq.of('1', '2', '3', '4', '5'));
+        assertThat(CharSeq.ofAll('1', '2', '3', '3', '4', '5').distinctBy(comparator))
+                .isEqualTo(CharSeq.ofAll('1', '2', '3', '4', '5'));
     }
 
     // -- distinct(Function)
@@ -459,8 +459,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldComputeDistinctByOfNonEmptyTraversableUsingKeyExtractor() {
-        assertThat(CharSeq.of('1', '2', '3', '3', '4', '5').distinctBy(c -> c))
-                .isEqualTo(CharSeq.of('1', '2', '3', '4', '5'));
+        assertThat(CharSeq.ofAll('1', '2', '3', '3', '4', '5').distinctBy(c -> c))
+                .isEqualTo(CharSeq.ofAll('1', '2', '3', '4', '5'));
     }
 
     // -- drop
@@ -472,18 +472,18 @@ public class CharSeqTest {
 
     @Test
     public void shouldDropNoneIfCountIsNegative() {
-        final CharSeq t = CharSeq.of('1', '2', '3');
+        final CharSeq t = CharSeq.ofAll('1', '2', '3');
         assertThat(t.drop(-1)).isSameAs(t);
     }
 
     @Test
     public void shouldDropAsExpectedIfCountIsLessThanSize() {
-        assertThat(CharSeq.of('1', '2', '3').drop(2)).isEqualTo(CharSeq.of('3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').drop(2)).isEqualTo(CharSeq.of('3'));
     }
 
     @Test
     public void shouldDropAllIfCountExceedsSize() {
-        assertThat(CharSeq.of('1', '2', '3').drop('4')).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').drop('4')).isEqualTo(empty());
     }
 
     // -- dropRight
@@ -495,18 +495,18 @@ public class CharSeqTest {
 
     @Test
     public void shouldDropRightNoneIfCountIsNegative() {
-        final CharSeq t = CharSeq.of('1', '2', '3');
+        final CharSeq t = CharSeq.ofAll('1', '2', '3');
         assertThat(t.dropRight(-1)).isSameAs(t);
     }
 
     @Test
     public void shouldDropRightAsExpectedIfCountIsLessThanSize() {
-        assertThat(CharSeq.of('1', '2', '3').dropRight(2)).isEqualTo(CharSeq.of('1'));
+        assertThat(CharSeq.ofAll('1', '2', '3').dropRight(2)).isEqualTo(CharSeq.of('1'));
     }
 
     @Test
     public void shouldDropRightAllIfCountExceedsSize() {
-        assertThat(CharSeq.of('1', '2', '3').dropRight(4)).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').dropRight(4)).isEqualTo(empty());
     }
 
     // -- dropWhile
@@ -518,25 +518,25 @@ public class CharSeqTest {
 
     @Test
     public void shouldDropWhileNoneIfPredicateIsFalse() {
-        CharSeq t = CharSeq.of('1', '2', '3');
+        CharSeq t = CharSeq.ofAll('1', '2', '3');
         assertThat(t.dropWhile(ignored -> false)).isSameAs(t);
     }
 
     @Test
     public void shouldDropWhileAllIfPredicateIsTrue() {
-        assertThat(CharSeq.of('1', '2', '3').dropWhile(ignored -> true)).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').dropWhile(ignored -> true)).isEqualTo(empty());
     }
 
     @Test
     public void shouldDropWhileCorrect() {
-        assertThat(CharSeq.of('1', '2', '3').dropWhile(i -> i == '1')).isEqualTo(CharSeq.of('2', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').dropWhile(i -> i == '1')).isEqualTo(CharSeq.ofAll('2', '3'));
     }
 
     // -- existsUnique
 
     @Test
     public void shouldBeAwareOfExistingUniqueElement() {
-        assertThat(CharSeq.of('1', '2').existsUnique(i -> i == '1')).isTrue();
+        assertThat(CharSeq.ofAll('1', '2').existsUnique(i -> i == '1')).isTrue();
     }
 
     @Test
@@ -546,7 +546,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldBeAwareOfExistingNonUniqueElement() {
-        assertThat(CharSeq.of('1', '1', '2').existsUnique(i -> i == '1')).isFalse();
+        assertThat(CharSeq.ofAll('1', '1', '2').existsUnique(i -> i == '1')).isFalse();
     }
 
     // -- filter
@@ -558,12 +558,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldFilterNonEmptyTraversable() {
-        assertThat(CharSeq.of('1', '2', '3', '4').filter(i -> i == '2' || i == '4')).isEqualTo(CharSeq.of('2', '4'));
+        assertThat(CharSeq.ofAll('1', '2', '3', '4').filter(i -> i == '2' || i == '4')).isEqualTo(CharSeq.ofAll('2', '4'));
     }
 
     @Test
     public void shouldFilterNonEmptyTraversableAllMatch() {
-        final CharSeq t = CharSeq.of('1', '2', '3', '4');
+        final CharSeq t = CharSeq.ofAll('1', '2', '3', '4');
         if (isThisLazyCollection()) {
             assertThat(t.filter(i -> true)).isEqualTo(t);
         } else {
@@ -580,7 +580,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldFindFirstOfNonNil() {
-        assertThat(CharSeq.of('1', '2', '3', '4').findFirst(i -> i % 2 == 0)).isEqualTo(Option.of('2'));
+        assertThat(CharSeq.ofAll('1', '2', '3', '4').findFirst(i -> i % 2 == 0)).isEqualTo(Option.of('2'));
     }
 
     // -- findLast
@@ -592,7 +592,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldFindLastOfNonNil() {
-        assertThat(CharSeq.of('1', '2', '3', '4').findLast(i -> i % 2 == 0)).isEqualTo(Option.of('4'));
+        assertThat(CharSeq.ofAll('1', '2', '3', '4').findLast(i -> i % 2 == 0)).isEqualTo(Option.of('4'));
     }
 
     // -- flatMap
@@ -604,16 +604,16 @@ public class CharSeqTest {
 
     @Test
     public void shouldFlatMapNonEmptyTraversable() {
-        assertThat(CharSeq.of('1', '2', '3').flatMap(CharSeq::of)).isEqualTo(Vector.ofAll('1', '2', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').flatMap(CharSeq::of)).isEqualTo(Vector.ofAll('1', '2', '3'));
     }
 
     @Test
     public void shouldFlatMapTraversableByExpandingElements() {
-        assertThat(CharSeq.of('1', '2', '3').flatMap(i -> {
+        assertThat(CharSeq.ofAll('1', '2', '3').flatMap(i -> {
             if (i == '1') {
-                return CharSeq.of('1', '2', '3');
+                return CharSeq.ofAll('1', '2', '3');
             } else if (i == '2') {
-                return CharSeq.of('4', '5');
+                return CharSeq.ofAll('4', '5');
             } else {
                 return CharSeq.of('6');
             }
@@ -623,7 +623,7 @@ public class CharSeqTest {
     @Test
     public void shouldFlatMapElementsToSequentialValuesInTheRightOrder() {
         final AtomicInteger seq = new AtomicInteger('0');
-        final Vector<Character> actualInts = CharSeq.of('0', '1', '2').flatMap(
+        final Vector<Character> actualInts = CharSeq.ofAll('0', '1', '2').flatMap(
                 ignored -> Vector.ofAll((char) seq.getAndIncrement(), (char) seq.getAndIncrement()));
         final Vector<Character> expectedInts = Vector.ofAll('0', '1', '2', '3', '4', '5');
         assertThat(actualInts).isEqualTo(expectedInts);
@@ -638,7 +638,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldFlattenTraversableOfPlainElements() {
-        assertThat(CharSeq.of('1', '2', '3').flatten()).isEqualTo(Vector.ofAll('1', '2', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').flatten()).isEqualTo(Vector.ofAll('1', '2', '3'));
     }
 
     // -- fold
@@ -655,7 +655,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldFoldNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').fold('0', (a, b) -> b)).isEqualTo('3');
+        assertThat(CharSeq.ofAll('1', '2', '3').fold('0', (a, b) -> b)).isEqualTo('3');
     }
 
     // -- foldLeft
@@ -672,7 +672,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldFoldLeftNonNil() {
-        assertThat(CharSeq.of('a', 'b', 'c').foldLeft("", (xs, x) -> xs + x)).isEqualTo("abc");
+        assertThat(CharSeq.ofAll('a', 'b', 'c').foldLeft("", (xs, x) -> xs + x)).isEqualTo("abc");
     }
 
     // -- foldRight
@@ -689,7 +689,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldFoldRightNonNil() {
-        assertThat(CharSeq.of('a', 'b', 'c').foldRight("", (x, xs) -> x + xs)).isEqualTo("abc");
+        assertThat(CharSeq.ofAll('a', 'b', 'c').foldRight("", (x, xs) -> x + xs)).isEqualTo("abc");
     }
 
     // -- head
@@ -701,7 +701,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReturnHeadOfNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').head()).isEqualTo('1');
+        assertThat(CharSeq.ofAll('1', '2', '3').head()).isEqualTo('1');
     }
 
     // -- headOption
@@ -713,7 +713,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReturnSomeHeadWhenCallingHeadOptionOnNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').headOption()).isEqualTo(new Some<>('1'));
+        assertThat(CharSeq.ofAll('1', '2', '3').headOption()).isEqualTo(new Some<>('1'));
     }
 
     // -- init
@@ -725,7 +725,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldGetInitOfNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').init()).isEqualTo(CharSeq.of('1', '2'));
+        assertThat(CharSeq.ofAll('1', '2', '3').init()).isEqualTo(CharSeq.ofAll('1', '2'));
     }
 
     // -- initOption
@@ -737,7 +737,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReturnSomeInitWhenCallingInitOptionOnNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').initOption()).isEqualTo(new Some<>(CharSeq.of('1', '2')));
+        assertThat(CharSeq.ofAll('1', '2', '3').initOption()).isEqualTo(new Some<>(CharSeq.ofAll('1', '2')));
     }
 
     // -- isEmpty
@@ -766,12 +766,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldIterateFirstElementOfNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').iterator().next()).isEqualTo('1');
+        assertThat(CharSeq.ofAll('1', '2', '3').iterator().next()).isEqualTo('1');
     }
 
     @Test
     public void shouldFullyIterateNonNil() {
-        final Iterator<Character> iterator = CharSeq.of('1', '2', '3').iterator();
+        final Iterator<Character> iterator = CharSeq.ofAll('1', '2', '3').iterator();
         int actual;
         for (int i = 1; i <= 3; i++) {
             actual = iterator.next();
@@ -789,7 +789,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldMkStringNonNil() {
-        assertThat(CharSeq.of('a', 'b', 'c').mkString()).isEqualTo("abc");
+        assertThat(CharSeq.ofAll('a', 'b', 'c').mkString()).isEqualTo("abc");
     }
 
     // -- mkString(delimiter)
@@ -801,7 +801,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldMkStringWithDelimiterNonNil() {
-        assertThat(CharSeq.of('a', 'b', 'c').mkString(",")).isEqualTo("a,b,c");
+        assertThat(CharSeq.ofAll('a', 'b', 'c').mkString(",")).isEqualTo("a,b,c");
     }
 
     // -- mkString(delimiter, prefix, suffix)
@@ -813,7 +813,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldMkStringWithDelimiterAndPrefixAndSuffixNonNil() {
-        assertThat(CharSeq.of('a', 'b', 'c').mkString("[", ",", "]")).isEqualTo("[a,b,c]");
+        assertThat(CharSeq.ofAll('a', 'b', 'c').mkString("[", ",", "]")).isEqualTo("[a,b,c]");
     }
 
     // -- last
@@ -825,7 +825,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReturnLastOfNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').last()).isEqualTo('3');
+        assertThat(CharSeq.ofAll('1', '2', '3').last()).isEqualTo('3');
     }
 
     // -- lastOption
@@ -837,7 +837,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReturnSomeLastWhenCallingLastOptionOnNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').lastOption()).isEqualTo(new Some<>('3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').lastOption()).isEqualTo(new Some<>('3'));
     }
 
     // -- length
@@ -849,7 +849,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldComputeLengthOfNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').length()).isEqualTo(3);
+        assertThat(CharSeq.ofAll('1', '2', '3').length()).isEqualTo(3);
     }
 
     // -- map
@@ -861,7 +861,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldMapNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').map(i -> (char) (i + 1))).isEqualTo(Vector.ofAll('2', '3', '4'));
+        assertThat(CharSeq.ofAll('1', '2', '3').map(i -> (char) (i + 1))).isEqualTo(Vector.ofAll('2', '3', '4'));
     }
 
     @Test
@@ -874,12 +874,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldMapToVectorWhenMapIsUsed() {
-        assertThat(CharSeq.of('a', 'b', 'c').map(Integer::valueOf)).isInstanceOf(Vector.class);
+        assertThat(CharSeq.ofAll('a', 'b', 'c').map(Integer::valueOf)).isInstanceOf(Vector.class);
     }
 
     @Test
     public void shouldMapToCharSeqWhenMapCharsIsUsed() {
-        assertThat(CharSeq.of('a', 'b', 'c').mapChars(c -> (char) (c + 1))).isInstanceOf(CharSeq.class);
+        assertThat(CharSeq.ofAll('a', 'b', 'c').mapChars(c -> (char) (c + 1))).isInstanceOf(CharSeq.class);
     }
 
     // -- partition
@@ -896,18 +896,18 @@ public class CharSeqTest {
 
     @Test
     public void shouldPartitionIntsInOddAndEvenHavingOddAndEventNumbers() {
-        assertThat(CharSeq.of('1', '2', '3', '4').partition(i -> i % 2 != 0))
-                .isEqualTo(Tuple.of(CharSeq.of('1', '3'), CharSeq.of('2', '4')));
+        assertThat(CharSeq.ofAll('1', '2', '3', '4').partition(i -> i % 2 != 0))
+                .isEqualTo(Tuple.of(CharSeq.ofAll('1', '3'), CharSeq.ofAll('2', '4')));
     }
 
     @Test
     public void shouldPartitionIntsInOddAndEvenHavingOnlyOddNumbers() {
-        assertThat(CharSeq.of('1', '3').partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(CharSeq.of('1', '3'), empty()));
+        assertThat(CharSeq.ofAll('1', '3').partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(CharSeq.ofAll('1', '3'), empty()));
     }
 
     @Test
     public void shouldPartitionIntsInOddAndEvenHavingOnlyEvenNumbers() {
-        assertThat(CharSeq.of('2', '4').partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(empty(), CharSeq.of('2', '4')));
+        assertThat(CharSeq.ofAll('2', '4').partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(empty(), CharSeq.ofAll('2', '4')));
     }
 
     // -- max
@@ -919,7 +919,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldComputeMaxOfChar() {
-        assertThat(CharSeq.of('a', 'b', 'c').max()).isEqualTo(new Some<>('c'));
+        assertThat(CharSeq.ofAll('a', 'b', 'c').max()).isEqualTo(new Some<>('c'));
     }
 
     // -- maxBy(Comparator)
@@ -936,12 +936,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldCalculateMaxByOfInts() {
-        assertThat(CharSeq.of('1', '2', '3').maxBy((i1, i2) -> i1 - i2)).isEqualTo(new Some<>('3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').maxBy((i1, i2) -> i1 - i2)).isEqualTo(new Some<>('3'));
     }
 
     @Test
     public void shouldCalculateInverseMaxByOfInts() {
-        assertThat(CharSeq.of('1', '2', '3').maxBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>('1'));
+        assertThat(CharSeq.ofAll('1', '2', '3').maxBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>('1'));
     }
 
     // -- maxBy(Function)
@@ -958,12 +958,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldCalculateMaxByFunctionOfInts() {
-        assertThat(CharSeq.of('1', '2', '3').maxBy(i -> i)).isEqualTo(new Some<>('3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').maxBy(i -> i)).isEqualTo(new Some<>('3'));
     }
 
     @Test
     public void shouldCalculateInverseMaxByFunctionOfInts() {
-        assertThat(CharSeq.of('1', '2', '3').maxBy(i -> -i)).isEqualTo(new Some<>('1'));
+        assertThat(CharSeq.ofAll('1', '2', '3').maxBy(i -> -i)).isEqualTo(new Some<>('1'));
     }
 
     // -- min
@@ -975,7 +975,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldComputeMinOfChar() {
-        assertThat(CharSeq.of('a', 'b', 'c').min()).isEqualTo(new Some<>('a'));
+        assertThat(CharSeq.ofAll('a', 'b', 'c').min()).isEqualTo(new Some<>('a'));
     }
 
     // -- minBy(Comparator)
@@ -992,12 +992,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldCalculateMinByOfInts() {
-        assertThat(CharSeq.of('1', '2', '3').minBy((i1, i2) -> i1 - i2)).isEqualTo(new Some<>('1'));
+        assertThat(CharSeq.ofAll('1', '2', '3').minBy((i1, i2) -> i1 - i2)).isEqualTo(new Some<>('1'));
     }
 
     @Test
     public void shouldCalculateInverseMinByOfInts() {
-        assertThat(CharSeq.of('1', '2', '3').minBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>('3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').minBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>('3'));
     }
 
     // -- minBy(Function)
@@ -1014,12 +1014,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldCalculateMinByFunctionOfInts() {
-        assertThat(CharSeq.of('1', '2', '3').minBy(i -> i)).isEqualTo(new Some<>('1'));
+        assertThat(CharSeq.ofAll('1', '2', '3').minBy(i -> i)).isEqualTo(new Some<>('1'));
     }
 
     @Test
     public void shouldCalculateInverseMinByFunctionOfInts() {
-        assertThat(CharSeq.of('1', '2', '3').minBy(i -> -i)).isEqualTo(new Some<>('3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').minBy(i -> -i)).isEqualTo(new Some<>('3'));
     }
 
     // -- peek
@@ -1027,8 +1027,8 @@ public class CharSeqTest {
     @Test
     public void shouldPeekNonNilPerformingAnAction() {
         final char[] effect = { 0 };
-        final CharSeq actual = CharSeq.of('1', '2', '3').peek(i -> effect[0] = i);
-        assertThat(actual).isEqualTo(CharSeq.of('1', '2', '3')); // traverses all elements in the lazy case
+        final CharSeq actual = CharSeq.ofAll('1', '2', '3').peek(i -> effect[0] = i);
+        assertThat(actual).isEqualTo(CharSeq.ofAll('1', '2', '3')); // traverses all elements in the lazy case
         assertThat(effect[0]).isEqualTo('1');
     }
 
@@ -1041,7 +1041,7 @@ public class CharSeqTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenComputingProductOfStrings() {
-        CharSeq.of('1', '2', '3').product();
+        CharSeq.ofAll('1', '2', '3').product();
     }
 
     // -- reduce
@@ -1058,7 +1058,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReduceNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').reduce((a, b) -> b)).isEqualTo('3');
+        assertThat(CharSeq.ofAll('1', '2', '3').reduce((a, b) -> b)).isEqualTo('3');
     }
 
     // -- reduceLeft
@@ -1075,7 +1075,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReduceLeftNonNil() {
-        assertThat(CharSeq.of('a', 'b', 'c').reduceLeft((xs, x) -> x)).isEqualTo('c');
+        assertThat(CharSeq.ofAll('a', 'b', 'c').reduceLeft((xs, x) -> x)).isEqualTo('c');
     }
 
     // -- reduceRight
@@ -1092,7 +1092,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReduceRightNonNil() {
-        assertThat(CharSeq.of('a', 'b', 'c').reduceRight((x, xs) -> x)).isEqualTo('a');
+        assertThat(CharSeq.ofAll('a', 'b', 'c').reduceRight((x, xs) -> x)).isEqualTo('a');
     }
 
     // -- replace(curr, new)
@@ -1104,7 +1104,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReplaceElementOfNonNilUsingCurrNew() {
-        assertThat(CharSeq.of('0', '1', '2', '1').replace('1', '3')).isEqualTo(CharSeq.of('0', '3', '2', '1'));
+        assertThat(CharSeq.ofAll('0', '1', '2', '1').replace('1', '3')).isEqualTo(CharSeq.ofAll('0', '3', '2', '1'));
     }
 
     // -- replaceAll(curr, new)
@@ -1116,25 +1116,25 @@ public class CharSeqTest {
 
     @Test
     public void shouldReplaceAllElementsOfNonNilUsingCurrNew() {
-        assertThat(CharSeq.of('0', '1', '2', '1').replaceAll('1', '3')).isEqualTo(CharSeq.of('0', '3', '2', '3'));
+        assertThat(CharSeq.ofAll('0', '1', '2', '1').replaceAll('1', '3')).isEqualTo(CharSeq.ofAll('0', '3', '2', '3'));
     }
 
     // -- retainAll
 
     @Test
     public void shouldRetainAllElementsFromNil() {
-        assertThat(empty().retainAll(CharSeq.of('1', '2', '3'))).isEqualTo(empty());
+        assertThat(empty().retainAll(CharSeq.ofAll('1', '2', '3'))).isEqualTo(empty());
     }
 
     @Test
     public void shouldRetainAllExistingElementsFromNonNil() {
-        assertThat(CharSeq.of('1', '2', '3', '1', '2', '3').retainAll(CharSeq.of('1', '2')))
-                .isEqualTo(CharSeq.of('1', '2', '1', '2'));
+        assertThat(CharSeq.ofAll('1', '2', '3', '1', '2', '3').retainAll(CharSeq.ofAll('1', '2')))
+                .isEqualTo(CharSeq.ofAll('1', '2', '1', '2'));
     }
 
     @Test
     public void shouldNotRetainAllNonExistingElementsFromNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').retainAll(CharSeq.of('4', '5'))).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').retainAll(CharSeq.ofAll('4', '5'))).isEqualTo(empty());
     }
 
     // -- sliding(size)
@@ -1166,13 +1166,13 @@ public class CharSeqTest {
 
     @Test
     public void shouldSlideNonNilBySize1() {
-        assertThat(CharSeq.of('1', '2', '3').sliding(1).toList())
+        assertThat(CharSeq.ofAll('1', '2', '3').sliding(1).toList())
                 .isEqualTo(List.ofAll(Vector.of('1'), Vector.of('2'), Vector.of('3')));
     }
 
     @Test // #201
     public void shouldSlideNonNilBySize2() {
-        assertThat(CharSeq.of('1', '2', '3', '4', '5').sliding(2).toList())
+        assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').sliding(2).toList())
                 .isEqualTo(List.ofAll(Vector.ofAll('1', '2'), Vector.ofAll('2', '3'), Vector.ofAll('3', '4'), Vector.ofAll('4', '5')));
     }
 
@@ -1185,24 +1185,24 @@ public class CharSeqTest {
 
     @Test
     public void shouldSlide5ElementsBySize2AndStep3() {
-        assertThat(CharSeq.of('1', '2', '3', '4', '5').sliding(2, 3).toList())
+        assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').sliding(2, 3).toList())
                 .isEqualTo(List.ofAll(Vector.ofAll('1', '2'), Vector.ofAll('4', '5')));
     }
 
     @Test
     public void shouldSlide5ElementsBySize2AndStep4() {
-        assertThat(CharSeq.of('1', '2', '3', '4', '5').sliding(2, 4).toList())
+        assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').sliding(2, 4).toList())
                 .isEqualTo(List.ofAll(Vector.ofAll('1', '2'), Vector.of('5')));
     }
 
     @Test
     public void shouldSlide5ElementsBySize2AndStep5() {
-        assertThat(CharSeq.of('1', '2', '3', '4', '5').sliding(2, 5).toList()).isEqualTo(List.of(Vector.ofAll('1', '2')));
+        assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').sliding(2, 5).toList()).isEqualTo(List.of(Vector.ofAll('1', '2')));
     }
 
     @Test
     public void shouldSlide4ElementsBySize5AndStep3() {
-        assertThat(CharSeq.of('1', '2', '3', '4').sliding(5, 3).toList())
+        assertThat(CharSeq.ofAll('1', '2', '3', '4').sliding(5, 3).toList())
                 .isEqualTo(List.of(Vector.ofAll('1', '2', '3', '4')));
     }
 
@@ -1215,8 +1215,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldSpanNonNil() {
-        assertThat(CharSeq.of('0', '1', '2', '3').span(i -> i == '0' || i == '1'))
-                .isEqualTo(Tuple.of(CharSeq.of('0', '1'), CharSeq.of('2', '3')));
+        assertThat(CharSeq.ofAll('0', '1', '2', '3').span(i -> i == '0' || i == '1'))
+                .isEqualTo(Tuple.of(CharSeq.ofAll('0', '1'), CharSeq.ofAll('2', '3')));
     }
 
     // -- spliterator
@@ -1231,28 +1231,28 @@ public class CharSeqTest {
     @Test
     public void shouldSplitNonNil() {
         final java.util.List<Character> actual = new java.util.ArrayList<>();
-        CharSeq.of('1', '2', '3').spliterator().forEachRemaining(actual::add);
+        CharSeq.ofAll('1', '2', '3').spliterator().forEachRemaining(actual::add);
         assertThat(actual).isEqualTo(Arrays.asList('1', '2', '3'));
     }
 
     @Test
     public void shouldHaveImmutableSpliterator() {
-        assertThat(CharSeq.of('1', '2', '3').spliterator().characteristics() & Spliterator.IMMUTABLE).isNotZero();
+        assertThat(CharSeq.ofAll('1', '2', '3').spliterator().characteristics() & Spliterator.IMMUTABLE).isNotZero();
     }
 
     @Test
     public void shouldHaveOrderedSpliterator() {
-        assertThat(CharSeq.of('1', '2', '3').spliterator().characteristics() & Spliterator.ORDERED).isNotZero();
+        assertThat(CharSeq.ofAll('1', '2', '3').spliterator().characteristics() & Spliterator.ORDERED).isNotZero();
     }
 
     @Test
     public void shouldHaveSizedSpliterator() {
-        assertThat(CharSeq.of('1', '2', '3').spliterator().characteristics() & Spliterator.SIZED).isNotZero();
+        assertThat(CharSeq.ofAll('1', '2', '3').spliterator().characteristics() & Spliterator.SIZED).isNotZero();
     }
 
     @Test
     public void shouldReturnSizeWhenSpliterator() {
-        assertThat(CharSeq.of('1', '2', '3').spliterator().getExactSizeIfKnown()).isEqualTo(3);
+        assertThat(CharSeq.ofAll('1', '2', '3').spliterator().getExactSizeIfKnown()).isEqualTo(3);
     }
 
     // -- startsWith
@@ -1279,34 +1279,34 @@ public class CharSeqTest {
 
     @Test
     public void shouldStartsNonNilOfNilCalculate() {
-        assertThat(CharSeq.of('a', 'b', 'c').startsWith(empty())).isTrue();
+        assertThat(CharSeq.ofAll('a', 'b', 'c').startsWith(empty())).isTrue();
     }
 
     @Test
     public void shouldStartsNonNilOfNonNilCalculate() {
-        assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('a', 'b'))).isTrue();
-        assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('a', 'b', 'c'))).isTrue();
-        assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('a', 'b', 'c', 'd'))).isFalse();
-        assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('a', 'c'))).isFalse();
+        assertThat(CharSeq.ofAll('a', 'b', 'c').startsWith(CharSeq.ofAll('a', 'b'))).isTrue();
+        assertThat(CharSeq.ofAll('a', 'b', 'c').startsWith(CharSeq.ofAll('a', 'b', 'c'))).isTrue();
+        assertThat(CharSeq.ofAll('a', 'b', 'c').startsWith(CharSeq.ofAll('a', 'b', 'c', 'd'))).isFalse();
+        assertThat(CharSeq.ofAll('a', 'b', 'c').startsWith(CharSeq.ofAll('a', 'c'))).isFalse();
     }
 
     @Test
     public void shouldStartsNonNilOfNilWithOffsetCalculate() {
-        assertThat(CharSeq.of('a', 'b', 'c').startsWith(empty(), 1)).isTrue();
+        assertThat(CharSeq.ofAll('a', 'b', 'c').startsWith(empty(), 1)).isTrue();
     }
 
     @Test
     public void shouldStartsNonNilOfNonNilWithOffsetCalculate() {
-        assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('b', 'c'), 1)).isTrue();
-        assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('b', 'c', 'd'), 1)).isFalse();
-        assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('b', 'd'), 1)).isFalse();
+        assertThat(CharSeq.ofAll('a', 'b', 'c').startsWith(CharSeq.ofAll('b', 'c'), 1)).isTrue();
+        assertThat(CharSeq.ofAll('a', 'b', 'c').startsWith(CharSeq.ofAll('b', 'c', 'd'), 1)).isFalse();
+        assertThat(CharSeq.ofAll('a', 'b', 'c').startsWith(CharSeq.ofAll('b', 'd'), 1)).isFalse();
     }
 
     // -- stderr
 
     @Test
     public void shouldWriteToStderr() {
-        CharSeq.of('1', '2', '3').stderr();
+        CharSeq.ofAll('1', '2', '3').stderr();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -1324,7 +1324,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldWriteToStdout() {
-        CharSeq.of('1', '2', '3').stdout();
+        CharSeq.ofAll('1', '2', '3').stdout();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -1347,7 +1347,7 @@ public class CharSeqTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenComputingSumOfStrings() {
-        CharSeq.of('1', '2', '3').sum();
+        CharSeq.ofAll('1', '2', '3').sum();
     }
 
     // -- take
@@ -1359,17 +1359,17 @@ public class CharSeqTest {
 
     @Test
     public void shouldTakeNoneIfCountIsNegative() {
-        assertThat(CharSeq.of('1', '2', '3').take(-1)).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').take(-1)).isEqualTo(empty());
     }
 
     @Test
     public void shouldTakeAsExpectedIfCountIsLessThanSize() {
-        assertThat(CharSeq.of('1', '2', '3').take(2)).isEqualTo(CharSeq.of('1', '2'));
+        assertThat(CharSeq.ofAll('1', '2', '3').take(2)).isEqualTo(CharSeq.ofAll('1', '2'));
     }
 
     @Test
     public void shouldTakeAllIfCountExceedsSize() {
-        final CharSeq t = CharSeq.of('1', '2', '3');
+        final CharSeq t = CharSeq.ofAll('1', '2', '3');
         if (isThisLazyCollection()) {
             assertThat(t.take(4)).isEqualTo(t);
         } else {
@@ -1386,17 +1386,17 @@ public class CharSeqTest {
 
     @Test
     public void shouldTakeRightNoneIfCountIsNegative() {
-        assertThat(CharSeq.of('1', '2', '3').takeRight(-1)).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').takeRight(-1)).isEqualTo(empty());
     }
 
     @Test
     public void shouldTakeRightAsExpectedIfCountIsLessThanSize() {
-        assertThat(CharSeq.of('1', '2', '3').takeRight(2)).isEqualTo(CharSeq.of('2', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').takeRight(2)).isEqualTo(CharSeq.ofAll('2', '3'));
     }
 
     @Test
     public void shouldTakeRightAllIfCountExceedsSize() {
-        final CharSeq t = CharSeq.of('1', '2', '3');
+        final CharSeq t = CharSeq.ofAll('1', '2', '3');
         assertThat(t.takeRight(4)).isSameAs(t);
     }
 
@@ -1409,12 +1409,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldTakeWhileAllOnFalseCondition() {
-        assertThat(CharSeq.of('1', '2', '3').takeWhile(x -> false)).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').takeWhile(x -> false)).isEqualTo(empty());
     }
 
     @Test
     public void shouldTakeWhileAllOnTrueCondition() {
-        final CharSeq t = CharSeq.of('1', '2', '3');
+        final CharSeq t = CharSeq.ofAll('1', '2', '3');
         if (isThisLazyCollection()) {
             assertThat(t.takeWhile(x -> true)).isEqualTo(t);
         } else {
@@ -1424,7 +1424,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldTakeWhileAsExpected() {
-        assertThat(CharSeq.of('2', '4', '5', '6').takeWhile(x -> x % 2 == 0)).isEqualTo(CharSeq.of('2', '4'));
+        assertThat(CharSeq.ofAll('2', '4', '5', '6').takeWhile(x -> x % 2 == 0)).isEqualTo(CharSeq.ofAll('2', '4'));
     }
 
     // -- tail
@@ -1436,7 +1436,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReturnTailOfNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').tail()).isEqualTo(CharSeq.of('2', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').tail()).isEqualTo(CharSeq.ofAll('2', '3'));
     }
 
     // -- tailOption
@@ -1448,7 +1448,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').tailOption()).isEqualTo(new Some<>(CharSeq.of('2', '3')));
+        assertThat(CharSeq.ofAll('1', '2', '3').tailOption()).isEqualTo(new Some<>(CharSeq.ofAll('2', '3')));
     }
 
     // -- toJavaArray(Class)
@@ -1462,7 +1462,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldConvertNonNilToJavaArray() {
-        final Character[] array = CharSeq.of('1', '2').toJavaArray(Character.class);
+        final Character[] array = CharSeq.ofAll('1', '2').toJavaArray(Character.class);
         final Character[] expected = new Character[] { '1', '2' };
         assertThat(array).isEqualTo(expected);
     }
@@ -1476,7 +1476,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldConvertNonNilToArrayList() {
-        assertThat(CharSeq.of('1', '2', '3').toJavaList()).isEqualTo(Arrays.asList('1', '2', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').toJavaList()).isEqualTo(Arrays.asList('1', '2', '3'));
     }
 
     // -- toJavaMap(Function)
@@ -1491,7 +1491,7 @@ public class CharSeqTest {
         final java.util.Map<Character, Character> expected = new java.util.HashMap<>();
         expected.put('1', '1');
         expected.put('2', '2');
-        assertThat(CharSeq.of('1', '2').toJavaMap(x -> Tuple.of(x, x))).isEqualTo(expected);
+        assertThat(CharSeq.ofAll('1', '2').toJavaMap(x -> Tuple.of(x, x))).isEqualTo(expected);
     }
 
     // -- toJavaSet
@@ -1507,7 +1507,7 @@ public class CharSeqTest {
         expected.add('2');
         expected.add('1');
         expected.add('3');
-        assertThat(CharSeq.of('1', '2', '2', '3').toJavaSet()).isEqualTo(expected);
+        assertThat(CharSeq.ofAll('1', '2', '2', '3').toJavaSet()).isEqualTo(expected);
     }
 
     // ++++++ OBJECT ++++++
@@ -1547,17 +1547,17 @@ public class CharSeqTest {
 
     @Test
     public void shouldRecognizeEqualityOfNonNils() {
-        assertThat(CharSeq.of('1', '2', '3').equals(CharSeq.of('1', '2', '3'))).isTrue();
+        assertThat(CharSeq.ofAll('1', '2', '3').equals(CharSeq.ofAll('1', '2', '3'))).isTrue();
     }
 
     @Test
     public void shouldRecognizeNonEqualityOfTraversablesOfSameSize() {
-        assertThat(CharSeq.of('1', '2', '3').equals(CharSeq.of('1', '2', '4'))).isFalse();
+        assertThat(CharSeq.ofAll('1', '2', '3').equals(CharSeq.ofAll('1', '2', '4'))).isFalse();
     }
 
     @Test
     public void shouldRecognizeNonEqualityOfTraversablesOfDifferentSize() {
-        assertThat(CharSeq.of('1', '2', '3').equals(CharSeq.of('1', '2'))).isFalse();
+        assertThat(CharSeq.ofAll('1', '2', '3').equals(CharSeq.ofAll('1', '2'))).isFalse();
     }
 
     // -- hashCode
@@ -1569,12 +1569,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldCalculateHashCodeOfNonNil() {
-        assertThat(CharSeq.of('1', '2').hashCode() == CharSeq.of('1', '2').hashCode()).isTrue();
+        assertThat(CharSeq.ofAll('1', '2').hashCode() == CharSeq.ofAll('1', '2').hashCode()).isTrue();
     }
 
     @Test
     public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
-        assertThat(CharSeq.of('1', '2').hashCode() != CharSeq.of('2', '3').hashCode()).isTrue();
+        assertThat(CharSeq.ofAll('1', '2').hashCode() != CharSeq.ofAll('2', '3').hashCode()).isTrue();
     }
 
     // -- Serializable interface
@@ -1594,8 +1594,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldSerializeDeserializeNonNil() {
-        final Object actual = deserialize(serialize(CharSeq.of('1', '2', '3')));
-        final Object expected = CharSeq.of('1', '2', '3');
+        final Object actual = deserialize(serialize(CharSeq.ofAll('1', '2', '3')));
+        final Object expected = CharSeq.ofAll('1', '2', '3');
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1620,8 +1620,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldAppendElementToNonNil() {
-        final CharSeq actual = CharSeq.of('1', '2').append('3');
-        final CharSeq expected = CharSeq.of('1', '2', '3');
+        final CharSeq actual = CharSeq.ofAll('1', '2').append('3');
+        final CharSeq expected = CharSeq.ofAll('1', '2', '3');
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1641,22 +1641,22 @@ public class CharSeqTest {
 
     @Test
     public void shouldAppendAllNonNilToNil() {
-        final CharSeq actual = empty().appendAll(CharSeq.of('1', '2', '3'));
-        final CharSeq expected = CharSeq.of('1', '2', '3');
+        final CharSeq actual = empty().appendAll(CharSeq.ofAll('1', '2', '3'));
+        final CharSeq expected = CharSeq.ofAll('1', '2', '3');
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldAppendAllNilToNonNil() {
-        final CharSeq actual = CharSeq.of('1', '2', '3').appendAll(empty());
-        final CharSeq expected = CharSeq.of('1', '2', '3');
+        final CharSeq actual = CharSeq.ofAll('1', '2', '3').appendAll(empty());
+        final CharSeq expected = CharSeq.ofAll('1', '2', '3');
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldAppendAllNonNilToNonNil() {
-        final CharSeq actual = CharSeq.of('1', '2', '3').appendAll(CharSeq.of('4', '5', '6'));
-        final CharSeq expected = CharSeq.of('1', '2', '3', '4', '5', '6');
+        final CharSeq actual = CharSeq.ofAll('1', '2', '3').appendAll(CharSeq.ofAll('4', '5', '6'));
+        final CharSeq expected = CharSeq.ofAll('1', '2', '3', '4', '5', '6');
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1664,7 +1664,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldUseSeqAsPartialFunction() {
-        assertThat(CharSeq.of('1', '2', '3').apply(1)).isEqualTo('2');
+        assertThat(CharSeq.ofAll('1', '2', '3').apply(1)).isEqualTo('2');
     }
 
     // -- combinations
@@ -1700,19 +1700,19 @@ public class CharSeqTest {
 
     @Test
     public void shouldRecognizeNilNotContainsSlice() {
-        final boolean actual = empty().containsSlice(CharSeq.of('1', '2', '3'));
+        final boolean actual = empty().containsSlice(CharSeq.ofAll('1', '2', '3'));
         assertThat(actual).isFalse();
     }
 
     @Test
     public void shouldRecognizeNonNilDoesContainSlice() {
-        final boolean actual = CharSeq.of('1', '2', '3', '4', '5').containsSlice(CharSeq.of('2', '3'));
+        final boolean actual = CharSeq.ofAll('1', '2', '3', '4', '5').containsSlice(CharSeq.ofAll('2', '3'));
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldRecognizeNonNilDoesNotContainSlice() {
-        final boolean actual = CharSeq.of('1', '2', '3', '4', '5').containsSlice(CharSeq.of('2', '1', '4'));
+        final boolean actual = CharSeq.ofAll('1', '2', '3', '4', '5').containsSlice(CharSeq.ofAll('2', '1', '4'));
         assertThat(actual).isFalse();
     }
 
@@ -1726,7 +1726,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldCalculateCrossProductOfNonNil() {
-        final Vector<Tuple2<Character, Character>> actual = CharSeq.of('1', '2', '3').crossProduct();
+        final Vector<Tuple2<Character, Character>> actual = CharSeq.ofAll('1', '2', '3').crossProduct();
         final Vector<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', '1'), Tuple.of('1', '2'),
                 Tuple.of('1', '3'), Tuple.of('2', '1'), Tuple.of('2', '2'), Tuple.of('2', '3'), Tuple.of('3', '1'),
                 Tuple.of('3', '2'), Tuple.of('3', '3'));
@@ -1750,14 +1750,14 @@ public class CharSeqTest {
 
     @Test
     public void shouldCalculateCrossProductOfNilAndNonNil() {
-        final Traversable<Tuple2<Character, Object>> actual = empty().crossProduct(CharSeq.of('1', '2', '3'));
+        final Traversable<Tuple2<Character, Object>> actual = empty().crossProduct(CharSeq.ofAll('1', '2', '3'));
         assertThat(actual).isEqualTo(Vector.empty());
     }
 
     @Test
     public void shouldCalculateCrossProductOfNonNilAndNil() {
         final Traversable<Tuple2<Character, Character>> actual = CharSeq
-                .of('1', '2', '3')
+                .ofAll('1', '2', '3')
                 .crossProduct(CharSeq.empty());
         assertThat(actual).isEqualTo(Vector.empty());
     }
@@ -1765,8 +1765,8 @@ public class CharSeqTest {
     @Test
     public void shouldCalculateCrossProductOfNonNilAndNonNil() {
         final Vector<Tuple2<Character, Character>> actual = CharSeq
-                .of('1', '2', '3')
-                .crossProduct(CharSeq.of('a', 'b'));
+                .ofAll('1', '2', '3')
+                .crossProduct(CharSeq.ofAll('a', 'b'));
         final Vector<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', 'a'), Tuple.of('1', 'b'),
                 Tuple.of('2', 'a'), Tuple.of('2', 'b'), Tuple.of('3', 'a'), Tuple.of('3', 'b'));
         assertThat(actual).isEqualTo(expected);
@@ -1801,12 +1801,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldGetFirstElement() {
-        assertThat(CharSeq.of('1', '2', '3').get(0)).isEqualTo('1');
+        assertThat(CharSeq.ofAll('1', '2', '3').get(0)).isEqualTo('1');
     }
 
     @Test
     public void shouldGetLastElement() {
-        assertThat(CharSeq.of('1', '2', '3').get(2)).isEqualTo('3');
+        assertThat(CharSeq.ofAll('1', '2', '3').get(2)).isEqualTo('3');
     }
 
     // -- grouped
@@ -1828,19 +1828,19 @@ public class CharSeqTest {
 
     @Test
     public void shouldGroupedTraversableWithEqualSizedBlocks() {
-        assertThat(CharSeq.of('1', '2', '3', '4').grouped(2).toList())
+        assertThat(CharSeq.ofAll('1', '2', '3', '4').grouped(2).toList())
                 .isEqualTo(List.ofAll(Vector.ofAll('1', '2'), Vector.ofAll('3', '4')));
     }
 
     @Test
     public void shouldGroupedTraversableWithRemainder() {
-        assertThat(CharSeq.of('1', '2', '3', '4', '5').grouped(2).toList())
+        assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').grouped(2).toList())
                 .isEqualTo(List.ofAll(Vector.ofAll('1', '2'), Vector.ofAll('3', '4'), Vector.of('5')));
     }
 
     @Test
     public void shouldGroupedWhenTraversableLengthIsSmallerThanBlockSize() {
-        assertThat(CharSeq.of('1', '2', '3', '4').grouped(5).toList())
+        assertThat(CharSeq.ofAll('1', '2', '3', '4').grouped(5).toList())
                 .isEqualTo(List.of(Vector.ofAll('1', '2', '3', '4')));
     }
 
@@ -1853,49 +1853,49 @@ public class CharSeqTest {
 
     @Test
     public void shouldNotFindIndexOfElementWhenStartIsGreater() {
-        assertThat(CharSeq.of('1', '2', '3', '4').indexOf(2, 2)).isEqualTo(-1);
+        assertThat(CharSeq.ofAll('1', '2', '3', '4').indexOf(2, 2)).isEqualTo(-1);
     }
 
     @Test
     public void shouldFindIndexOfFirstElement() {
-        assertThat(CharSeq.of('1', '2', '3').indexOf('1')).isEqualTo(0);
+        assertThat(CharSeq.ofAll('1', '2', '3').indexOf('1')).isEqualTo(0);
     }
 
     @Test
     public void shouldFindIndexOfInnerElement() {
-        assertThat(CharSeq.of('1', '2', '3').indexOf('2')).isEqualTo(1);
+        assertThat(CharSeq.ofAll('1', '2', '3').indexOf('2')).isEqualTo(1);
     }
 
     @Test
     public void shouldFindIndexOfLastElement() {
-        assertThat(CharSeq.of('1', '2', '3').indexOf('3')).isEqualTo(2);
+        assertThat(CharSeq.ofAll('1', '2', '3').indexOf('3')).isEqualTo(2);
     }
 
     // -- indexOfSlice
 
     @Test
     public void shouldNotFindIndexOfSliceWhenSeqIsEmpty() {
-        assertThat(empty().indexOfSlice(CharSeq.of('2', '3'))).isEqualTo(-1);
+        assertThat(empty().indexOfSlice(CharSeq.ofAll('2', '3'))).isEqualTo(-1);
     }
 
     @Test
     public void shouldNotFindIndexOfSliceWhenStartIsGreater() {
-        assertThat(CharSeq.of('1', '2', '3', '4').indexOfSlice(CharSeq.of('2', '3'), 2)).isEqualTo(-1);
+        assertThat(CharSeq.ofAll('1', '2', '3', '4').indexOfSlice(CharSeq.ofAll('2', '3'), 2)).isEqualTo(-1);
     }
 
     @Test
     public void shouldFindIndexOfFirstSlice() {
-        assertThat(CharSeq.of('1', '2', '3', '4').indexOfSlice(CharSeq.of('1', '2'))).isEqualTo(0);
+        assertThat(CharSeq.ofAll('1', '2', '3', '4').indexOfSlice(CharSeq.ofAll('1', '2'))).isEqualTo(0);
     }
 
     @Test
     public void shouldFindIndexOfInnerSlice() {
-        assertThat(CharSeq.of('1', '2', '3', '4').indexOfSlice(CharSeq.of('2', '3'))).isEqualTo(1);
+        assertThat(CharSeq.ofAll('1', '2', '3', '4').indexOfSlice(CharSeq.ofAll('2', '3'))).isEqualTo(1);
     }
 
     @Test
     public void shouldFindIndexOfLastSlice() {
-        assertThat(CharSeq.of('1', '2', '3').indexOfSlice(CharSeq.of('2', '3'))).isEqualTo(1);
+        assertThat(CharSeq.ofAll('1', '2', '3').indexOfSlice(CharSeq.ofAll('2', '3'))).isEqualTo(1);
     }
 
     // -- lastIndexOf
@@ -1907,44 +1907,44 @@ public class CharSeqTest {
 
     @Test
     public void shouldNotFindLastIndexOfElementWhenEndIdLess() {
-        assertThat(CharSeq.of('1', '2', '3', '4').lastIndexOf(3, 1)).isEqualTo(-1);
+        assertThat(CharSeq.ofAll('1', '2', '3', '4').lastIndexOf(3, 1)).isEqualTo(-1);
     }
 
     @Test
     public void shouldFindLastIndexOfElement() {
-        assertThat(CharSeq.of('1', '2', '3', '1', '2', '3').lastIndexOf('1')).isEqualTo(3);
+        assertThat(CharSeq.ofAll('1', '2', '3', '1', '2', '3').lastIndexOf('1')).isEqualTo(3);
     }
 
     @Test
     public void shouldFindLastIndexOfElementWithEnd() {
-        assertThat(CharSeq.of('1', '2', '3', '1', '2', '3').lastIndexOf('1', 1)).isEqualTo(0);
+        assertThat(CharSeq.ofAll('1', '2', '3', '1', '2', '3').lastIndexOf('1', 1)).isEqualTo(0);
     }
 
     // -- lastIndexOfSlice
 
     @Test
     public void shouldNotFindLastIndexOfSliceWhenSeqIsEmpty() {
-        assertThat(empty().lastIndexOfSlice(CharSeq.of('2', '3'))).isEqualTo(-1);
+        assertThat(empty().lastIndexOfSlice(CharSeq.ofAll('2', '3'))).isEqualTo(-1);
     }
 
     @Test
     public void shouldNotFindLastIndexOfSliceWhenEndIdLess() {
-        assertThat(CharSeq.of('1', '2', '3', '4', '5').lastIndexOfSlice(CharSeq.of('3', '4'), 1)).isEqualTo(-1);
+        assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').lastIndexOfSlice(CharSeq.ofAll('3', '4'), 1)).isEqualTo(-1);
     }
 
     @Test
     public void shouldFindLastIndexOfSlice() {
-        assertThat(CharSeq.of('1', '2', '3', '1', '2').lastIndexOfSlice(empty())).isEqualTo(5);
-        assertThat(CharSeq.of('1', '2', '3', '1', '2').lastIndexOfSlice(CharSeq.of('2'))).isEqualTo(4);
-        assertThat(CharSeq.of('1', '2', '3', '1', '2', '3', '4').lastIndexOfSlice(CharSeq.of('2', '3'))).isEqualTo(4);
+        assertThat(CharSeq.ofAll('1', '2', '3', '1', '2').lastIndexOfSlice(empty())).isEqualTo(5);
+        assertThat(CharSeq.ofAll('1', '2', '3', '1', '2').lastIndexOfSlice(CharSeq.of('2'))).isEqualTo(4);
+        assertThat(CharSeq.ofAll('1', '2', '3', '1', '2', '3', '4').lastIndexOfSlice(CharSeq.ofAll('2', '3'))).isEqualTo(4);
     }
 
     @Test
     public void shouldFindLastIndexOfSliceWithEnd() {
-        assertThat(CharSeq.of('1', '2', '3', '1', '2', '3').lastIndexOfSlice(empty(), 2)).isEqualTo(2);
-        assertThat(CharSeq.of('1', '2', '3', '1', '2', '3').lastIndexOfSlice(CharSeq.of('2'), 2)).isEqualTo(1);
-        assertThat(CharSeq.of('1', '2', '3', '1', '2', '3').lastIndexOfSlice(CharSeq.of('2', '3'), 2)).isEqualTo(1);
-        assertThat(CharSeq.of('1', '2', '3', '1', '2', '3', '4').lastIndexOfSlice(CharSeq.of('2', '3'), 2))
+        assertThat(CharSeq.ofAll('1', '2', '3', '1', '2', '3').lastIndexOfSlice(empty(), 2)).isEqualTo(2);
+        assertThat(CharSeq.ofAll('1', '2', '3', '1', '2', '3').lastIndexOfSlice(CharSeq.of('2'), 2)).isEqualTo(1);
+        assertThat(CharSeq.ofAll('1', '2', '3', '1', '2', '3').lastIndexOfSlice(CharSeq.ofAll('2', '3'), 2)).isEqualTo(1);
+        assertThat(CharSeq.ofAll('1', '2', '3', '1', '2', '3', '4').lastIndexOfSlice(CharSeq.ofAll('2', '3'), 2))
                 .isEqualTo(1);
     }
 
@@ -1960,21 +1960,21 @@ public class CharSeqTest {
     @Test
     public void shouldInsertInFrontOfElement() {
         final CharSeq actual = CharSeq.of('4').insert(0, '1');
-        final CharSeq expected = CharSeq.of('1', '4');
+        final CharSeq expected = CharSeq.ofAll('1', '4');
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertBehindOfElement() {
         final CharSeq actual = CharSeq.of('4').insert(1, '1');
-        final CharSeq expected = CharSeq.of('4', '1');
+        final CharSeq expected = CharSeq.ofAll('4', '1');
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertIntoSeq() {
-        final CharSeq actual = CharSeq.of('1', '2', '3').insert(2, '4');
-        final CharSeq expected = CharSeq.of('1', '2', '4', '3');
+        final CharSeq actual = CharSeq.ofAll('1', '2', '3').insert(2, '4');
+        final CharSeq expected = CharSeq.ofAll('1', '2', '4', '3');
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1997,29 +1997,29 @@ public class CharSeqTest {
 
     @Test
     public void shouldInserAlltIntoNil() {
-        final CharSeq actual = empty().insertAll(0, CharSeq.of('1', '2', '3'));
-        final CharSeq expected = CharSeq.of('1', '2', '3');
+        final CharSeq actual = empty().insertAll(0, CharSeq.ofAll('1', '2', '3'));
+        final CharSeq expected = CharSeq.ofAll('1', '2', '3');
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertAllInFrontOfElement() {
-        final CharSeq actual = CharSeq.of('4').insertAll(0, CharSeq.of('1', '2', '3'));
-        final CharSeq expected = CharSeq.of('1', '2', '3', '4');
+        final CharSeq actual = CharSeq.of('4').insertAll(0, CharSeq.ofAll('1', '2', '3'));
+        final CharSeq expected = CharSeq.ofAll('1', '2', '3', '4');
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertAllBehindOfElement() {
-        final CharSeq actual = CharSeq.of('4').insertAll(1, CharSeq.of('1', '2', '3'));
-        final CharSeq expected = CharSeq.of('4', '1', '2', '3');
+        final CharSeq actual = CharSeq.of('4').insertAll(1, CharSeq.ofAll('1', '2', '3'));
+        final CharSeq expected = CharSeq.ofAll('4', '1', '2', '3');
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertAllIntoSeq() {
-        final CharSeq actual = CharSeq.of('1', '2', '3').insertAll(2, CharSeq.of('4', '5'));
-        final CharSeq expected = CharSeq.of('1', '2', '4', '5', '3');
+        final CharSeq actual = CharSeq.ofAll('1', '2', '3').insertAll(2, CharSeq.ofAll('4', '5'));
+        final CharSeq expected = CharSeq.ofAll('1', '2', '4', '5', '3');
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -2057,7 +2057,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldIntersperseMultipleElements() {
-        assertThat(CharSeq.of('a', 'b').intersperse(',')).isEqualTo(CharSeq.of('a', ',', 'b'));
+        assertThat(CharSeq.ofAll('a', 'b').intersperse(',')).isEqualTo(CharSeq.ofAll('a', ',', 'b'));
     }
 
     // -- iterator(int)
@@ -2069,13 +2069,13 @@ public class CharSeqTest {
 
     @Test
     public void shouldIterateFirstElementOfNonNilStartingAtIndex() {
-        assertThat(CharSeq.of('1', '2', '3').iterator(1).next()).isEqualTo('2');
+        assertThat(CharSeq.ofAll('1', '2', '3').iterator(1).next()).isEqualTo('2');
     }
 
     @Test
     public void shouldFullyIterateNonNilStartingAtIndex() {
         int actual = -1;
-        for (java.util.Iterator<Character> iter = CharSeq.of('1', '2', '3').iterator(1); iter.hasNext(); ) {
+        for (java.util.Iterator<Character> iter = CharSeq.ofAll('1', '2', '3').iterator(1); iter.hasNext(); ) {
             actual = iter.next();
         }
         assertThat(actual).isEqualTo('3');
@@ -2092,8 +2092,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldPrependElementToNonNil() {
-        final CharSeq actual = CharSeq.of('2', '3').prepend('1');
-        final CharSeq expected = CharSeq.of('1', '2', '3');
+        final CharSeq actual = CharSeq.ofAll('2', '3').prepend('1');
+        final CharSeq expected = CharSeq.ofAll('1', '2', '3');
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -2113,22 +2113,22 @@ public class CharSeqTest {
 
     @Test
     public void shouldPrependAllNilToNonNil() {
-        final CharSeq actual = CharSeq.of('1', '2', '3').prependAll(empty());
-        final CharSeq expected = CharSeq.of('1', '2', '3');
+        final CharSeq actual = CharSeq.ofAll('1', '2', '3').prependAll(empty());
+        final CharSeq expected = CharSeq.ofAll('1', '2', '3');
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldPrependAllNonNilToNil() {
-        final CharSeq actual = empty().prependAll(CharSeq.of('1', '2', '3'));
-        final CharSeq expected = CharSeq.of('1', '2', '3');
+        final CharSeq actual = empty().prependAll(CharSeq.ofAll('1', '2', '3'));
+        final CharSeq expected = CharSeq.ofAll('1', '2', '3');
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldPrependAllNonNilToNonNil() {
-        final CharSeq actual = CharSeq.of('4', '5', '6').prependAll(CharSeq.of('1', '2', '3'));
-        final CharSeq expected = CharSeq.of('1', '2', '3', '4', '5', '6');
+        final CharSeq actual = CharSeq.ofAll('4', '5', '6').prependAll(CharSeq.ofAll('1', '2', '3'));
+        final CharSeq expected = CharSeq.ofAll('1', '2', '3', '4', '5', '6');
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -2141,22 +2141,22 @@ public class CharSeqTest {
 
     @Test
     public void shouldRemoveFirstElement() {
-        assertThat(CharSeq.of('1', '2', '3').remove('1')).isEqualTo(CharSeq.of('2', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').remove('1')).isEqualTo(CharSeq.ofAll('2', '3'));
     }
 
     @Test
     public void shouldRemoveLastElement() {
-        assertThat(CharSeq.of('1', '2', '3').remove('3')).isEqualTo(CharSeq.of('1', '2'));
+        assertThat(CharSeq.ofAll('1', '2', '3').remove('3')).isEqualTo(CharSeq.ofAll('1', '2'));
     }
 
     @Test
     public void shouldRemoveInnerElement() {
-        assertThat(CharSeq.of('1', '2', '3').remove('2')).isEqualTo(CharSeq.of('1', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').remove('2')).isEqualTo(CharSeq.ofAll('1', '3'));
     }
 
     @Test
     public void shouldRemoveNonExistingElement() {
-        final CharSeq t = CharSeq.of('1', '2', '3');
+        final CharSeq t = CharSeq.ofAll('1', '2', '3');
         if (isThisLazyCollection()) {
             assertThat(t.remove('4')).isEqualTo(t);
         } else {
@@ -2177,34 +2177,34 @@ public class CharSeqTest {
 
     @Test
     public void shouldRemoveFirstElementByPredicateBegin() {
-        assertThat(CharSeq.of('1', '2', '3').removeFirst(v -> v == '1')).isEqualTo(CharSeq.of('2', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').removeFirst(v -> v == '1')).isEqualTo(CharSeq.ofAll('2', '3'));
     }
 
     @Test
     public void shouldRemoveFirstElementByPredicateBeginM() {
-        assertThat(CharSeq.of('1', '2', '1', '3').removeFirst(v -> v == '1')).isEqualTo(CharSeq.of('2', '1', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '1', '3').removeFirst(v -> v == '1')).isEqualTo(CharSeq.ofAll('2', '1', '3'));
     }
 
     @Test
     public void shouldRemoveFirstElementByPredicateEnd() {
-        assertThat(CharSeq.of('1', '2', '3').removeFirst(v -> v == '3')).isEqualTo(CharSeq.of('1', '2'));
+        assertThat(CharSeq.ofAll('1', '2', '3').removeFirst(v -> v == '3')).isEqualTo(CharSeq.ofAll('1', '2'));
     }
 
     @Test
     public void shouldRemoveFirstElementByPredicateInner() {
-        assertThat(CharSeq.of('1', '2', '3', '4', '5').removeFirst(v -> v == '3'))
-                .isEqualTo(CharSeq.of('1', '2', '4', '5'));
+        assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').removeFirst(v -> v == '3'))
+                .isEqualTo(CharSeq.ofAll('1', '2', '4', '5'));
     }
 
     @Test
     public void shouldRemoveFirstElementByPredicateInnerM() {
-        assertThat(CharSeq.of('1', '2', '3', '2', '5').removeFirst(v -> v == '2'))
-                .isEqualTo(CharSeq.of('1', '3', '2', '5'));
+        assertThat(CharSeq.ofAll('1', '2', '3', '2', '5').removeFirst(v -> v == '2'))
+                .isEqualTo(CharSeq.ofAll('1', '3', '2', '5'));
     }
 
     @Test
     public void shouldRemoveFirstElementByPredicateNonExisting() {
-        final CharSeq t = CharSeq.of('1', '2', '3');
+        final CharSeq t = CharSeq.ofAll('1', '2', '3');
         if (isThisLazyCollection()) {
             assertThat(t.removeFirst(v -> v == 4)).isEqualTo(t);
         } else {
@@ -2221,34 +2221,34 @@ public class CharSeqTest {
 
     @Test
     public void shouldRemoveLastElementByPredicateBegin() {
-        assertThat(CharSeq.of('1', '2', '3').removeLast(v -> v == '1')).isEqualTo(CharSeq.of('2', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').removeLast(v -> v == '1')).isEqualTo(CharSeq.ofAll('2', '3'));
     }
 
     @Test
     public void shouldRemoveLastElementByPredicateEnd() {
-        assertThat(CharSeq.of('1', '2', '3').removeLast(v -> v == '3')).isEqualTo(CharSeq.of('1', '2'));
+        assertThat(CharSeq.ofAll('1', '2', '3').removeLast(v -> v == '3')).isEqualTo(CharSeq.ofAll('1', '2'));
     }
 
     @Test
     public void shouldRemoveLastElementByPredicateEndM() {
-        assertThat(CharSeq.of('1', '3', '2', '3').removeLast(v -> v == '3')).isEqualTo(CharSeq.of('1', '3', '2'));
+        assertThat(CharSeq.ofAll('1', '3', '2', '3').removeLast(v -> v == '3')).isEqualTo(CharSeq.ofAll('1', '3', '2'));
     }
 
     @Test
     public void shouldRemoveLastElementByPredicateInner() {
-        assertThat(CharSeq.of('1', '2', '3', '4', '5').removeLast(v -> v == '3'))
-                .isEqualTo(CharSeq.of('1', '2', '4', '5'));
+        assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').removeLast(v -> v == '3'))
+                .isEqualTo(CharSeq.ofAll('1', '2', '4', '5'));
     }
 
     @Test
     public void shouldRemoveLastElementByPredicateInnerM() {
-        assertThat(CharSeq.of('1', '2', '3', '2', '5').removeLast(v -> v == '2'))
-                .isEqualTo(CharSeq.of('1', '2', '3', '5'));
+        assertThat(CharSeq.ofAll('1', '2', '3', '2', '5').removeLast(v -> v == '2'))
+                .isEqualTo(CharSeq.ofAll('1', '2', '3', '5'));
     }
 
     @Test
     public void shouldRemoveLastElementByPredicateNonExisting() {
-        final CharSeq t = CharSeq.of('1', '2', '3');
+        final CharSeq t = CharSeq.ofAll('1', '2', '3');
         assertThat(t.removeLast(v -> v == 4)).isSameAs(t);
     }
 
@@ -2256,22 +2256,22 @@ public class CharSeqTest {
 
     @Test
     public void shouldRemoveAllElementsFromNil() {
-        assertThat(empty().removeAll(CharSeq.of('1', '2', '3'))).isEqualTo(empty());
+        assertThat(empty().removeAll(CharSeq.ofAll('1', '2', '3'))).isEqualTo(empty());
     }
 
     @Test
     public void shouldRemoveAllExistingElementsFromNonNil() {
-        assertThat(CharSeq.of('1', '2', '3', '1', '2', '3').removeAll(CharSeq.of('1', '2')))
-                .isEqualTo(CharSeq.of('3', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3', '1', '2', '3').removeAll(CharSeq.ofAll('1', '2')))
+                .isEqualTo(CharSeq.ofAll('3', '3'));
     }
 
     @Test
     public void shouldNotRemoveAllNonExistingElementsFromNonNil() {
-        final CharSeq t = CharSeq.of('1', '2', '3');
+        final CharSeq t = CharSeq.ofAll('1', '2', '3');
         if (isThisLazyCollection()) {
-            assertThat(t.removeAll(CharSeq.of('4', '5'))).isEqualTo(t);
+            assertThat(t.removeAll(CharSeq.ofAll('4', '5'))).isEqualTo(t);
         } else {
-            assertThat(t.removeAll(CharSeq.of('4', '5'))).isSameAs(t);
+            assertThat(t.removeAll(CharSeq.ofAll('4', '5'))).isSameAs(t);
         }
     }
 
@@ -2284,12 +2284,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldRemoveAllExistingObjectsFromNonNil() {
-        assertThat(CharSeq.of('1', '2', '3', '1', '2', '3').removeAll('1')).isEqualTo(CharSeq.of('2', '3', '2', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3', '1', '2', '3').removeAll('1')).isEqualTo(CharSeq.ofAll('2', '3', '2', '3'));
     }
 
     @Test
     public void shouldNotRemoveAllNonObjectsElementsFromNonNil() {
-        final CharSeq t = CharSeq.of('1', '2', '3');
+        final CharSeq t = CharSeq.ofAll('1', '2', '3');
         if (isThisLazyCollection()) {
             assertThat(t.removeAll('4')).isEqualTo(t);
         } else {
@@ -2306,7 +2306,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReverseNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').reverse()).isEqualTo(CharSeq.of('3', '2', '1'));
+        assertThat(CharSeq.ofAll('1', '2', '3').reverse()).isEqualTo(CharSeq.ofAll('3', '2', '1'));
     }
 
     // -- set
@@ -2338,12 +2338,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldSetFirstElement() {
-        assertThat(CharSeq.of('1', '2', '3').update(0, '4')).isEqualTo(CharSeq.of('4', '2', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').update(0, '4')).isEqualTo(CharSeq.ofAll('4', '2', '3'));
     }
 
     @Test
     public void shouldSetLastElement() {
-        assertThat(CharSeq.of('1', '2', '3').update(2, '4')).isEqualTo(CharSeq.of('1', '2', '4'));
+        assertThat(CharSeq.ofAll('1', '2', '3').update(2, '4')).isEqualTo(CharSeq.ofAll('1', '2', '4'));
     }
 
     // -- sort()
@@ -2355,7 +2355,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldSortNonNil() {
-        assertThat(CharSeq.of('3', '4', '1', '2').sort()).isEqualTo(CharSeq.of('1', '2', '3', '4'));
+        assertThat(CharSeq.ofAll('3', '4', '1', '2').sort()).isEqualTo(CharSeq.ofAll('1', '2', '3', '4'));
     }
 
     // -- sort(Comparator)
@@ -2367,7 +2367,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldSortNonNilUsingComparator() {
-        assertThat(CharSeq.of('3', '4', '1', '2').sort((i, j) -> j - i)).isEqualTo(CharSeq.of('4', '3', '2', '1'));
+        assertThat(CharSeq.ofAll('3', '4', '1', '2').sort((i, j) -> j - i)).isEqualTo(CharSeq.ofAll('4', '3', '2', '1'));
     }
 
     // -- splitAt(index)
@@ -2379,23 +2379,23 @@ public class CharSeqTest {
 
     @Test
     public void shouldSplitAtNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').splitAt(1)).isEqualTo(Tuple.of(CharSeq.of('1'), CharSeq.of('2', '3')));
+        assertThat(CharSeq.ofAll('1', '2', '3').splitAt(1)).isEqualTo(Tuple.of(CharSeq.of('1'), CharSeq.ofAll('2', '3')));
     }
 
     @Test
     public void shouldSplitAtBegin() {
-        assertThat(CharSeq.of('1', '2', '3').splitAt(0)).isEqualTo(Tuple.of(empty(), CharSeq.of('1', '2', '3')));
+        assertThat(CharSeq.ofAll('1', '2', '3').splitAt(0)).isEqualTo(Tuple.of(empty(), CharSeq.ofAll('1', '2', '3')));
     }
 
     @Test
     public void shouldSplitAtEnd() {
-        assertThat(CharSeq.of('1', '2', '3').splitAt(3)).isEqualTo(Tuple.of(CharSeq.of('1', '2', '3'), empty()));
+        assertThat(CharSeq.ofAll('1', '2', '3').splitAt(3)).isEqualTo(Tuple.of(CharSeq.ofAll('1', '2', '3'), empty()));
     }
 
     @Test
     public void shouldSplitAtOutOfBounds() {
-        assertThat(CharSeq.of('1', '2', '3').splitAt(5)).isEqualTo(Tuple.of(CharSeq.of('1', '2', '3'), empty()));
-        assertThat(CharSeq.of('1', '2', '3').splitAt(-1)).isEqualTo(Tuple.of(empty(), CharSeq.of('1', '2', '3')));
+        assertThat(CharSeq.ofAll('1', '2', '3').splitAt(5)).isEqualTo(Tuple.of(CharSeq.ofAll('1', '2', '3'), empty()));
+        assertThat(CharSeq.ofAll('1', '2', '3').splitAt(-1)).isEqualTo(Tuple.of(empty(), CharSeq.ofAll('1', '2', '3')));
     }
 
     // -- splitAt(predicate)
@@ -2407,26 +2407,26 @@ public class CharSeqTest {
 
     @Test
     public void shouldSplitPredicateAtNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').splitAt(e -> e == '2'))
-                .isEqualTo(Tuple.of(CharSeq.of('1'), CharSeq.of('2', '3')));
+        assertThat(CharSeq.ofAll('1', '2', '3').splitAt(e -> e == '2'))
+                .isEqualTo(Tuple.of(CharSeq.of('1'), CharSeq.ofAll('2', '3')));
     }
 
     @Test
     public void shouldSplitAtPredicateBegin() {
-        assertThat(CharSeq.of('1', '2', '3').splitAt(e -> e == '1'))
-                .isEqualTo(Tuple.of(empty(), CharSeq.of('1', '2', '3')));
+        assertThat(CharSeq.ofAll('1', '2', '3').splitAt(e -> e == '1'))
+                .isEqualTo(Tuple.of(empty(), CharSeq.ofAll('1', '2', '3')));
     }
 
     @Test
     public void shouldSplitAtPredicateEnd() {
-        assertThat(CharSeq.of('1', '2', '3').splitAt(e -> e == '3'))
-                .isEqualTo(Tuple.of(CharSeq.of('1', '2'), CharSeq.of('3')));
+        assertThat(CharSeq.ofAll('1', '2', '3').splitAt(e -> e == '3'))
+                .isEqualTo(Tuple.of(CharSeq.ofAll('1', '2'), CharSeq.of('3')));
     }
 
     @Test
     public void shouldSplitAtPredicateNotFound() {
-        assertThat(CharSeq.of('1', '2', '3').splitAt(e -> e == '5'))
-                .isEqualTo(Tuple.of(CharSeq.of('1', '2', '3'), empty()));
+        assertThat(CharSeq.ofAll('1', '2', '3').splitAt(e -> e == '5'))
+                .isEqualTo(Tuple.of(CharSeq.ofAll('1', '2', '3'), empty()));
     }
 
     // -- splitAtInclusive(predicate)
@@ -2438,26 +2438,26 @@ public class CharSeqTest {
 
     @Test
     public void shouldSplitInclusivePredicateAtNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').splitAtInclusive(e -> e == '2'))
-                .isEqualTo(Tuple.of(CharSeq.of('1', '2'), CharSeq.of('3')));
+        assertThat(CharSeq.ofAll('1', '2', '3').splitAtInclusive(e -> e == '2'))
+                .isEqualTo(Tuple.of(CharSeq.ofAll('1', '2'), CharSeq.of('3')));
     }
 
     @Test
     public void shouldSplitAtInclusivePredicateBegin() {
-        assertThat(CharSeq.of('1', '2', '3').splitAtInclusive(e -> e == '1'))
-                .isEqualTo(Tuple.of(CharSeq.of('1'), CharSeq.of('2', '3')));
+        assertThat(CharSeq.ofAll('1', '2', '3').splitAtInclusive(e -> e == '1'))
+                .isEqualTo(Tuple.of(CharSeq.of('1'), CharSeq.ofAll('2', '3')));
     }
 
     @Test
     public void shouldSplitAtInclusivePredicateEnd() {
-        assertThat(CharSeq.of('1', '2', '3').splitAtInclusive(e -> e == '3'))
-                .isEqualTo(Tuple.of(CharSeq.of('1', '2', '3'), empty()));
+        assertThat(CharSeq.ofAll('1', '2', '3').splitAtInclusive(e -> e == '3'))
+                .isEqualTo(Tuple.of(CharSeq.ofAll('1', '2', '3'), empty()));
     }
 
     @Test
     public void shouldSplitAtInclusivePredicateNotFound() {
-        assertThat(CharSeq.of('1', '2', '3').splitAtInclusive(e -> e == '5'))
-                .isEqualTo(Tuple.of(CharSeq.of('1', '2', '3'), empty()));
+        assertThat(CharSeq.ofAll('1', '2', '3').splitAtInclusive(e -> e == '5'))
+                .isEqualTo(Tuple.of(CharSeq.ofAll('1', '2', '3'), empty()));
     }
 
     // -- removeAt(index)
@@ -2469,27 +2469,27 @@ public class CharSeqTest {
 
     @Test
     public void shouldRemoveIndxAtNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').removeAt(1)).isEqualTo(CharSeq.of('1', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').removeAt(1)).isEqualTo(CharSeq.ofAll('1', '3'));
     }
 
     @Test
     public void shouldRemoveIndxAtBegin() {
-        assertThat(CharSeq.of('1', '2', '3').removeAt(0)).isEqualTo(CharSeq.of('2', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').removeAt(0)).isEqualTo(CharSeq.ofAll('2', '3'));
     }
 
     @Test
     public void shouldRemoveIndxAtEnd() {
-        assertThat(CharSeq.of('1', '2', '3').removeAt(2)).isEqualTo(CharSeq.of('1', '2'));
+        assertThat(CharSeq.ofAll('1', '2', '3').removeAt(2)).isEqualTo(CharSeq.ofAll('1', '2'));
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldRemoveIndxOutOfBoundsLeft() {
-        assertThat(CharSeq.of('1', '2', '3').removeAt(-1)).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').removeAt(-1)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldRemoveIndxOutOfBoundsRight() {
-        assertThat(CharSeq.of('1', '2', '3').removeAt(5)).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').removeAt(5)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
     }
 
     // -- repeat
@@ -2526,13 +2526,13 @@ public class CharSeqTest {
 
     @Test
     public void shouldReturnSubSequenceWhenIndexIsWithinRange() {
-        final CharSeq actual = CharSeq.of('1', '2', '3').subSequence(1);
-        assertThat(actual).isEqualTo(CharSeq.of('2', '3'));
+        final CharSeq actual = CharSeq.ofAll('1', '2', '3').subSequence(1);
+        assertThat(actual).isEqualTo(CharSeq.ofAll('2', '3'));
     }
 
     @Test
     public void shouldReturnNilWhenSubSequenceBeginningWithSize() {
-        final CharSeq actual = CharSeq.of('1', '2', '3').subSequence(3);
+        final CharSeq actual = CharSeq.ofAll('1', '2', '3').subSequence(3);
         assertThat(actual).isEqualTo(empty());
     }
 
@@ -2543,12 +2543,12 @@ public class CharSeqTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSubSequenceWithOutOfLowerBound() {
-        CharSeq.of('1', '2', '3').subSequence(-1);
+        CharSeq.ofAll('1', '2', '3').subSequence(-1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSubSequenceWithOutOfUpperBound() {
-        CharSeq.of('1', '2', '3').subSequence(4);
+        CharSeq.ofAll('1', '2', '3').subSequence(4);
     }
 
     // -- subSequence(beginIndex, endIndex)
@@ -2579,19 +2579,19 @@ public class CharSeqTest {
 
     @Test
     public void shouldReturnSubSequenceWhenIndicesAreWithinRange() {
-        final CharSeq actual = CharSeq.of('1', '2', '3').subSequence(1, 3);
-        assertThat(actual).isEqualTo(CharSeq.of('2', '3'));
+        final CharSeq actual = CharSeq.ofAll('1', '2', '3').subSequence(1, 3);
+        assertThat(actual).isEqualTo(CharSeq.ofAll('2', '3'));
     }
 
     @Test
     public void shouldReturnNilWhenIndicesBothAreUpperBound() {
-        final CharSeq actual = CharSeq.of('1', '2', '3').subSequence(3, 3);
+        final CharSeq actual = CharSeq.ofAll('1', '2', '3').subSequence(3, 3);
         assertThat(actual).isEqualTo(empty());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubSequenceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
-        CharSeq.of('1', '2', '3').subSequence(1, 0);
+        CharSeq.ofAll('1', '2', '3').subSequence(1, 0);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -2601,7 +2601,7 @@ public class CharSeqTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubSequenceOnNonNilWhenBeginIndexExceedsLowerBound() {
-        CharSeq.of('1', '2', '3').subSequence(-'1', '2');
+        CharSeq.ofAll('1', '2', '3').subSequence(-'1', '2');
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -2616,7 +2616,7 @@ public class CharSeqTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubSequenceWhenEndIndexExceedsUpperBound() {
-        CharSeq.of('1', '2', '3').subSequence(1, 4).mkString(); // force computation ofAll last element, e.g. because Stream is lazy
+        CharSeq.ofAll('1', '2', '3').subSequence(1, 4).mkString(); // force computation ofAll last element, e.g. because Stream is lazy
     }
 
     // -- unzip
@@ -2628,7 +2628,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldUnzipNonNil() {
-        final Tuple actual = CharSeq.of('0', '1').unzip(i -> Tuple.of(i, i == '0' ? 'a' : 'b'));
+        final Tuple actual = CharSeq.ofAll('0', '1').unzip(i -> Tuple.of(i, i == '0' ? 'a' : 'b'));
         final Tuple expected = Tuple.of(Vector.ofAll('0', '1'), Vector.ofAll('a', 'b'));
         assertThat(actual).isEqualTo(expected);
     }
@@ -2655,21 +2655,21 @@ public class CharSeqTest {
 
     @Test
     public void shouldZipNonNilsIfThisIsSmaller() {
-        final Vector<Tuple2<Character, Character>> actual = CharSeq.of('1', '2').zip(CharSeq.of('a', 'b', 'c'));
+        final Vector<Tuple2<Character, Character>> actual = CharSeq.ofAll('1', '2').zip(CharSeq.ofAll('a', 'b', 'c'));
         final Vector<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', 'a'), Tuple.of('2', 'b'));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipNonNilsIfThatIsSmaller() {
-        final Vector<Tuple2<Character, Character>> actual = CharSeq.of('1', '2', '3').zip(CharSeq.of('a', 'b'));
+        final Vector<Tuple2<Character, Character>> actual = CharSeq.ofAll('1', '2', '3').zip(CharSeq.ofAll('a', 'b'));
         final Vector<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', 'a'), Tuple.of('2', 'b'));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipNonNilsOfSameSize() {
-        final Vector<Tuple2<Character, Character>> actual = CharSeq.of('1', '2', '3').zip(CharSeq.of('a', 'b', 'c'));
+        final Vector<Tuple2<Character, Character>> actual = CharSeq.ofAll('1', '2', '3').zip(CharSeq.ofAll('a', 'b', 'c'));
         final Vector<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', 'a'), Tuple.of('2', 'b'),
                 Tuple.of('3', 'c'));
         assertThat(actual).isEqualTo(expected);
@@ -2704,7 +2704,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldZipAllNonNilsIfThisIsSmaller() {
-        final Vector<Tuple2<Character, Character>> actual = CharSeq.of('1', '2').zipAll(CharSeq.of('a', 'b', 'c'), '9',
+        final Vector<Tuple2<Character, Character>> actual = CharSeq.ofAll('1', '2').zipAll(CharSeq.ofAll('a', 'b', 'c'), '9',
                 'z');
         final Vector<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', 'a'), Tuple.of('2', 'b'),
                 Tuple.of('9', 'c'));
@@ -2713,7 +2713,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldZipAllNonNilsIfThatIsSmaller() {
-        final Vector<Tuple2<Character, Character>> actual = CharSeq.of('1', '2', '3').zipAll(CharSeq.of('a', 'b'), '9',
+        final Vector<Tuple2<Character, Character>> actual = CharSeq.ofAll('1', '2', '3').zipAll(CharSeq.ofAll('a', 'b'), '9',
                 'z');
         final Vector<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', 'a'), Tuple.of('2', 'b'),
                 Tuple.of('3', 'z'));
@@ -2722,7 +2722,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldZipAllNonNilsOfSameSize() {
-        final Vector<Tuple2<Character, Character>> actual = CharSeq.of('1', '2', '3').zipAll(CharSeq.of('a', 'b', 'c'),
+        final Vector<Tuple2<Character, Character>> actual = CharSeq.ofAll('1', '2', '3').zipAll(CharSeq.ofAll('a', 'b', 'c'),
                 '9', 'z');
         final Vector<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', 'a'), Tuple.of('2', 'b'),
                 Tuple.of('3', 'c'));
@@ -2760,7 +2760,7 @@ public class CharSeqTest {
     @Test
     public void shouldStreamAndCollectNonNil() {
         final Seq<?> actual = java.util.stream.Stream.of('1', '2', '3').collect(CharSeq.collector());
-        assertThat(actual).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(actual).isEqualTo(CharSeq.ofAll('1', '2', '3'));
     }
 
     @Test
@@ -2772,7 +2772,7 @@ public class CharSeqTest {
     @Test
     public void shouldParallelStreamAndCollectNonNil() {
         final Seq<?> actual = java.util.stream.Stream.of('1', '2', '3').parallel().collect(CharSeq.collector());
-        assertThat(actual).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(actual).isEqualTo(CharSeq.ofAll('1', '2', '3'));
     }
 
     // -- static empty()
@@ -2794,7 +2794,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldCreateSeqOfElements() {
-        final CharSeq actual = CharSeq.of('1', '2');
+        final CharSeq actual = CharSeq.ofAll('1', '2');
         assertThat(actual.length()).isEqualTo(2);
         assertThat(actual.get(0)).isEqualTo('1');
         assertThat(actual.get(1)).isEqualTo('2');

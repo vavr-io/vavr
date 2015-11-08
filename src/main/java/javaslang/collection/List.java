@@ -610,7 +610,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     default <U> List<U> flatten() {
         try {
             return ((List<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
     }
@@ -648,7 +648,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).map((c, it) -> Map.Entry.of(c, List.ofAll(it)));
+        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, List.ofAll(it)));
     }
 
     @Override

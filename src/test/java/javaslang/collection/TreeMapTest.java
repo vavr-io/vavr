@@ -5,7 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.collection.Map.Entry;
+
+import javaslang.Tuple2;
 
 import java.util.ArrayList;
 import java.util.stream.Collector;
@@ -25,15 +26,15 @@ public class TreeMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <T> Collector<Entry<Integer, T>, ArrayList<Entry<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
+    protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
         return TreeMap.<Integer, T> collector();
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> Map<K, V> mapOf(Entry<? extends K, ? extends V>... entries) {
-        return TreeMap.of(naturalComparator(), entries);
+    protected final <K, V> Map<K, V> mapOf(Tuple2<? extends K, ? extends V>... entries) {
+        return TreeMap.ofAll(naturalComparator(), entries);
     }
 
     // -- obsolete tests
