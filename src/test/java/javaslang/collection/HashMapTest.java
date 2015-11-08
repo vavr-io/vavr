@@ -31,6 +31,6 @@ public class HashMapTest extends AbstractMapTest {
     @SafeVarargs
     @Override
     protected final <K, V> Map<K, V> mapOf(Tuple2<? extends K, ? extends V>... entries) {
-        return HashMap.of(entries);
+        return HashMap.ofAll(entries);
     }
 }

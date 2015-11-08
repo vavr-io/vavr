@@ -34,7 +34,7 @@ public class TreeMapTest extends AbstractMapTest {
     @SafeVarargs
     @Override
     protected final <K, V> Map<K, V> mapOf(Tuple2<? extends K, ? extends V>... entries) {
-        return TreeMap.of(naturalComparator(), entries);
+        return TreeMap.ofAll(naturalComparator(), entries);
     }
 
     // -- obsolete tests
