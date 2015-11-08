@@ -104,7 +104,7 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
 
     @Override
     public Seq<?> toSeq() {
-        return List.ofAll(_1);
+        return List.of(_1);
     }
 
     // -- Object
