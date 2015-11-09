@@ -325,13 +325,7 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldabl
 
     @Override
     default Array<T> toArray() {
-        if (isEmpty()) {
-            return Array.empty();
-        } else if (isSingletonType()) {
-            return Array.of(get());
-        } else {
-            return Array.ofAll(this);
-        }
+        return ValueModule.toSeq(this, Array.empty());
     }
 
     @Override
@@ -349,17 +343,7 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldabl
 
     @Override
     default java.util.List<T> toJavaList() {
-        final java.util.List<T> result = new ArrayList<>();
-        if (isDefined()) {
-            if (isSingletonType()) {
-                result.add(get());
-            } else {
-                for (T a : this) {
-                    result.add(a);
-                }
-            }
-        }
-        return result;
+        return ValueModule.toJavaCollection(this, new ArrayList<>());
     }
 
     @Override
@@ -387,17 +371,7 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldabl
 
     @Override
     default java.util.Set<T> toJavaSet() {
-        final java.util.Set<T> result = new java.util.HashSet<>();
-        if (isDefined()) {
-            if (isSingletonType()) {
-                result.add(get());
-            } else {
-                for (T a : this) {
-                    result.add(a);
-                }
-            }
-        }
-        return result;
+        return ValueModule.toJavaCollection(this, new java.util.HashSet<>());
     }
 
     @Override
@@ -416,7 +390,7 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldabl
 
     @Override
     default List<T> toList() {
-        return isEmpty() ? List.empty() : List.ofAll(this);
+        return ValueModule.toSeq(this, List.empty());
     }
 
     @Override
@@ -442,13 +416,7 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldabl
 
     @Override
     default Queue<T> toQueue() {
-        if (isEmpty()) {
-            return Queue.empty();
-        } else if (isSingletonType()) {
-            return Queue.of(get());
-        } else {
-            return Queue.ofAll(this);
-        }
+        return ValueModule.toSeq(this, Queue.empty());
     }
 
     @Override
@@ -464,24 +432,12 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldabl
 
     @Override
     default Stack<T> toStack() {
-        if (isEmpty()) {
-            return Stack.empty();
-        } else if (isSingletonType()) {
-            return Stack.of(get());
-        } else {
-            return Stack.ofAll(this);
-        }
+        return ValueModule.toSeq(this, Stack.empty());
     }
 
     @Override
     default Stream<T> toStream() {
-        if (isEmpty()) {
-            return Stream.empty();
-        } else if (isSingletonType()) {
-            return Stream.of(get());
-        } else {
-            return Stream.ofAll(this);
-        }
+        return ValueModule.toSeq(this, Stream.empty());
     }
 
     @Override
@@ -512,13 +468,7 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldabl
 
     @Override
     default Vector<T> toVector() {
-        if (isEmpty()) {
-            return Vector.empty();
-        } else if (isSingletonType()) {
-            return Vector.of(get());
-        } else {
-            return Vector.ofAll(this);
-        }
+        return ValueModule.toSeq(this, Vector.empty());
     }
 
     // -- Printable implementation
@@ -541,6 +491,31 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldabl
                 throw new IllegalStateException("Error writing to PrintWriter");
             }
         }
+    }
+}
+
+interface ValueModule {
+
+    @SuppressWarnings("unchecked")
+    static <T extends Seq<V>, V> T toSeq(Value<V> value, T empty) {
+        if (value.isEmpty()) {
+            return empty;
+        } else if (value.isSingletonType()) {
+            return (T) empty.append(value.get());
+        } else {
+            return (T) empty.appendAll(value);
+        }
+    }
+
+    static <T extends java.util.Collection<V>, V> T toJavaCollection(Value<V> value, T empty) {
+        if (value.isDefined()) {
+            if (value.isSingletonType()) {
+                empty.add(value.get());
+            } else {
+                value.forEach(empty::add);
+            }
+        }
+        return empty;
     }
 }
 
