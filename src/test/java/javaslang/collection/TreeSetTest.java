@@ -5,6 +5,8 @@
  */
 package javaslang.collection;
 
+import org.junit.Test;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -105,7 +107,19 @@ public class TreeSetTest extends AbstractSortedSetTest {
         return 1;
     }
 
+    // -- addAll
+
+    @Test
+    public void shouldKeepComparator() {
+        List<?> list = TreeSet.empty(inverseIntComparator()).addAll(TreeSet.ofAll(1, 2, 3)).toList();
+        assertThat(list).isEqualTo(List.ofAll(3, 2, 1));
+    }
+
     // -- helpers
+
+    private static Comparator<Integer> inverseIntComparator() {
+        return (i1, i2) -> Integer.compare(i2, i1);
+    }
 
     private static Comparator<Object> toStringComparator() {
         return (Comparator<Object> & Serializable) (o1, o2) -> String.valueOf(o1).compareTo(String.valueOf(o2));
