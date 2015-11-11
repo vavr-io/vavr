@@ -8,9 +8,11 @@ package javaslang.concurrent;
 import javaslang.collection.Queue;
 import javaslang.control.*;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -116,6 +118,17 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     @Override
+    public T get() {
+        throw new UnsupportedOperationException("TODO: get()");
+    }
+
+    @Override
+    public T get(long timeout, TimeUnit unit) {
+        Objects.requireNonNull(unit, "time unit is null");
+        throw new UnsupportedOperationException("TODO: get(timeout, unit)");
+    }
+
+    @Override
     public Option<Try<T>> getValue() {
         return value;
     }
@@ -158,8 +171,14 @@ final class FutureImpl<T> implements Future<T> {
             if (isCompleted()) {
                 throw new IllegalStateException("The Future is completed.");
             }
-            // The current lock ensures that the job is assigned before the computation completes.
-            job = executorService.submit(() -> complete(Try.of(computation)));
+            // The current lock ensures that the job is assigned before the computation completes,
+            // if the ExecutorService runs the computation in a different thread.
+            // If the ExecutorService runs the computation in the current thread, the job is already finished and
+            // we must not overwrite the state variable 'job', which must remain null.
+            final java.util.concurrent.Future<Try<T>> tmpJob = executorService.submit(() -> complete(Try.of(computation)));
+            if (!isCompleted()) {
+                job = tmpJob;
+            }
         }
     }
 

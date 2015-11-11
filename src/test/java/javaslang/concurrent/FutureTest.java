@@ -10,6 +10,7 @@ import javaslang.collection.Seq;
 import javaslang.collection.Stream;
 import javaslang.control.*;
 import org.assertj.core.api.Assertions;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.CancellationException;
@@ -135,7 +136,7 @@ public class FutureTest {
         final Seq<Future<Integer>> futures = Stream.empty();
         final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b);
         waitUntil(testee::isCompleted);
-        assertThat(testee.get()).isEqualTo(0);
+        assertThat(testee.getValue().get()).isEqualTo(new Success<>(0));
     }
 
     @Test
@@ -143,7 +144,7 @@ public class FutureTest {
         final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.of(zZz(i))).take(5);
         final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b);
         waitUntil(testee::isCompleted);
-        assertThat(testee.get()).isEqualTo(15);
+        assertThat(testee.getValue().get()).isEqualTo(new Success<>(15));
     }
 
     @Test
