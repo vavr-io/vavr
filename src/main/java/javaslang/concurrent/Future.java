@@ -18,8 +18,12 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * A Future is a computation result that becomes available at some point. All operations provided are non-blocking.
@@ -518,6 +522,25 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
+     * Returns the value of the future. Waits for the result if necessary.
+     *
+     * @return The value of this future.
+     * @throws IllegalStateException if the computation unexpectedly failed or was interrupted
+     */
+    @Override
+    T get();
+
+    /**
+     * Returns the value of the future. Waits for the result for at most the given time if necessary.
+     *
+     * @param timeout the maximum time to wait
+     * @param unit    the time unit of {@code timeout}
+     * @return The value of this future.
+     * @throws IllegalStateException if the computation unexpectedly failed, was interrupted or a timeout occurred
+     */
+    T get(long timeout, TimeUnit unit);
+
+    /**
      * Returns the value of the Future.
      *
      * @return {@code None}, if the Future is not yet completed or was cancelled, otherwise {@code Some(Try)}.
@@ -580,12 +603,34 @@ public interface Future<T> extends Value<T> {
         onComplete(result -> result.onSuccess(action));
     }
 
-    // TODO: andThen, recover, recoverWith, fallbackTo, zip
+    /**
+     * Support for chaining of callbacks that are guaranteed to be executed in a specific order.
+     * <p>
+     * An exception, which occurs when performing the given {@code action}, is not propagated to the outside.
+     * <pre><code>
+     * // prints
+     * Future.of(() -&gt; 1)
+     *       .andThen(t -&gt; { throw new Error(""); })
+     *       .andThen(System.out::println);
+     * </code></pre>
+     *
+     * @param action A side-effecting action.
+     * @return A new Future that contains this result and which is completed after the given action was performed.
+     */
+    default Future<T> andThen(Consumer<? super Try<T>> action) {
+        final Promise<T> promise = Promise.make();
+        onComplete(t -> {
+            Try.run(() -> action.accept(t));
+            promise.complete(t);
+        });
+        return promise.future();
+    }
+
+    // TODO: recover, recoverWith, fallbackTo, zip
 
     // -- Value implementation
 
-    /* TODO: ensure that all Value operations act asynchronously and non-blocking by overriding them.
-     *       isEmpty() and get() return the _current state_ of this Future. Also the conversion methods toXxx().
+    /* TODO: ensure that all Value operations act asynchronously. get() and isEmpty() do block
      *       Calling Iterable ops makes only sense when the Future completed. Otherwise the iterable is empty.
      */
 
@@ -601,19 +646,19 @@ public interface Future<T> extends Value<T> {
     default <U> Future<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
         final Promise<U> promise = Promise.make(executorService());
         onComplete(result -> result.map(mapper::apply)
-                        .onSuccess(us -> {
-                            if (us instanceof Future) {
-                                promise.completeWith((Future<U>) us);
-                            } else {
-                                final java.util.Iterator<? extends U> iter = us.iterator();
-                                if (iter.hasNext()) {
-                                    promise.success(iter.next());
-                                } else {
-                                    promise.complete(new Failure<>(new NoSuchElementException()));
-                                }
-                            }
-                        })
-                        .onFailure(promise::failure)
+                .onSuccess(us -> {
+                    if (us instanceof Future) {
+                        promise.completeWith((Future<U>) us);
+                    } else {
+                        final java.util.Iterator<? extends U> iter = us.iterator();
+                        if (iter.hasNext()) {
+                            promise.success(iter.next());
+                        } else {
+                            promise.complete(new Failure<>(new NoSuchElementException()));
+                        }
+                    }
+                })
+                .onFailure(promise::failure)
         );
         return promise.future();
     }
@@ -623,20 +668,9 @@ public interface Future<T> extends Value<T> {
     default <U> Future<U> flatten() {
         try {
             return ((Future<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
-    }
-
-    /**
-     * Returns the value of the future or throws if the value is not yet present. It is essential not to block.
-     *
-     * @return The value of this future.
-     * @throws NoSuchElementException if the future is not completed, failed or was cancelled.
-     */
-    @Override
-    default T get() {
-        return getValue().get().orElseThrow((Supplier<NoSuchElementException>) NoSuchElementException::new);
     }
 
     /**
@@ -646,7 +680,7 @@ public interface Future<T> extends Value<T> {
      */
     @Override
     default boolean isEmpty() {
-        return getValue().map(Try::isFailure).orElse(true);
+        throw new UnsupportedOperationException("TODO: isEmpty");
     }
 
     /**
