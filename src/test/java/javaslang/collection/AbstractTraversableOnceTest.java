@@ -488,7 +488,7 @@ public abstract class AbstractTraversableOnceTest extends AbstractValueTest {
 
     @Test
     public void shouldNilGroupBy() {
-        assertThat(HashMap.empty().groupBy(Function.identity())).isEqualTo(HashMap.empty());
+        assertThat(empty().groupBy(Function.identity())).isEqualTo(HashMap.empty());
     }
 
     @Test

@@ -567,7 +567,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
                 Vector<CharSeq> result = Vector.empty();
                 for (Character t : distinct()) {
                     for (CharSeq ts : remove(t).permutations()) {
-                        result = result.append(ts);
+                        result = result.append(CharSeq.of(t).appendAll(ts));
                     }
                 }
                 return result;

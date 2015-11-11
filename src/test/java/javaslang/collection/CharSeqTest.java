@@ -629,6 +629,14 @@ public class CharSeqTest {
         assertThat(actualInts).isEqualTo(expectedInts);
     }
 
+    // -- flatMapChars()
+
+    @Test
+    public void sholdFlatMapChars() {
+        assertThat(CharSeq.empty().flatMapChars(c -> "X")).isEqualTo(CharSeq.empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').flatMapChars(c -> c == '1' ? "*" : "-")).isEqualTo(CharSeq.of("*--"));
+    }
+
     // -- flatten()
 
     @Test
@@ -714,6 +722,34 @@ public class CharSeqTest {
     @Test
     public void shouldReturnSomeHeadWhenCallingHeadOptionOnNonNil() {
         assertThat(CharSeq.ofAll('1', '2', '3').headOption()).isEqualTo(new Some<>('1'));
+    }
+
+    // -- hasDefiniteSize
+
+    @Test
+    public void shouldReturnSomethingOnHasDefiniteSize() {
+        assertThat(empty().hasDefiniteSize()).isTrue();
+    }
+
+    // -- groupBy
+
+    @Test
+    public void shouldNilGroupBy() {
+        assertThat(CharSeq.empty().groupBy(Function.identity())).isEqualTo(HashMap.empty());
+    }
+
+    @Test
+    public void shouldNonNilGroupByIdentity() {
+        Map<?, ?> actual = CharSeq.ofAll('a', 'b', 'c').groupBy(Function.identity());
+        Map<?, ?> expected = HashMap.empty().put('a', CharSeq.of('a')).put('b', CharSeq.of('b')).put('c', CharSeq.of('c'));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldNonNilGroupByEqual() {
+        Map<?, ?> actual = CharSeq.ofAll('a', 'b', 'c').groupBy(c -> 1);
+        Map<?, ?> expected = HashMap.empty().put(1, CharSeq.ofAll('a', 'b', 'c'));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- init
@@ -879,7 +915,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldMapToCharSeqWhenMapCharsIsUsed() {
-        assertThat(CharSeq.ofAll('a', 'b', 'c').mapChars(c -> (char) (c + 1))).isInstanceOf(CharSeq.class);
+        assertThat(CharSeq.empty().mapChars(c -> (char) (c + 1))).isEqualTo(CharSeq.empty());
+        assertThat(CharSeq.ofAll('a', 'b', 'c').mapChars(c -> (char) (c + 1))).isEqualTo(CharSeq.of("bcd"));
     }
 
     // -- partition
@@ -908,6 +945,19 @@ public class CharSeqTest {
     @Test
     public void shouldPartitionIntsInOddAndEvenHavingOnlyEvenNumbers() {
         assertThat(CharSeq.ofAll('2', '4').partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(empty(), CharSeq.ofAll('2', '4')));
+    }
+
+    // -- permutations
+
+    @Test
+    public void shouldComputePermutationsOfEmptyList() {
+        assertThat(empty().permutations()).isEmpty();
+    }
+
+    @Test
+    public void shouldComputePermutationsOfNonEmpty() {
+        assertThat(CharSeq.of("123").permutations())
+                .isEqualTo(Vector.ofAll(CharSeq.of("123"), CharSeq.of("132"), CharSeq.of("213"), CharSeq.of("231"), CharSeq.of("312"), CharSeq.of("321")));
     }
 
     // -- max
@@ -2346,6 +2396,18 @@ public class CharSeqTest {
         assertThat(CharSeq.ofAll('1', '2', '3').update(2, '4')).isEqualTo(CharSeq.ofAll('1', '2', '4'));
     }
 
+    // -- slice()
+
+    @Test
+    public void shouldSlice() {
+        assertThat(CharSeq.empty().slice(0, 0)).isEqualTo(CharSeq.empty());
+        assertThat(CharSeq.of("123").slice(0, 0)).isEqualTo(CharSeq.empty());
+        assertThat(CharSeq.of("123").slice(1, 0)).isEqualTo(CharSeq.empty());
+        assertThat(CharSeq.of("123").slice(4, 5)).isEqualTo(CharSeq.empty());
+        assertThat(CharSeq.of("123").slice(0, 3)).isEqualTo(CharSeq.of("123"));
+        assertThat(CharSeq.of("123").slice(1, 3)).isEqualTo(CharSeq.of("23"));
+    }
+
     // -- sort()
 
     @Test
@@ -2368,6 +2430,18 @@ public class CharSeqTest {
     @Test
     public void shouldSortNonNilUsingComparator() {
         assertThat(CharSeq.ofAll('3', '4', '1', '2').sort((i, j) -> j - i)).isEqualTo(CharSeq.ofAll('4', '3', '2', '1'));
+    }
+
+    // -- sortBy()
+
+    @Test
+    public void shouldSortByFunction() {
+        assertThat(CharSeq.of("123").sortBy(c -> -c)).isEqualTo(CharSeq.of("321"));
+    }
+
+    @Test
+    public void shouldSortByComparator() {
+        assertThat(CharSeq.of("123").sortBy((i, j) -> j - i, c -> c)).isEqualTo(CharSeq.of("321"));
     }
 
     // -- splitAt(index)
