@@ -10,7 +10,6 @@ import javaslang.collection.Seq;
 import javaslang.collection.Stream;
 import javaslang.control.*;
 import org.assertj.core.api.Assertions;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.CancellationException;
@@ -129,67 +128,6 @@ public class FutureTest {
         assertThat(testee.getValue().get().isSuccess()).isTrue();
     }
 
-    // -- andThen
-
-    // TODO
-
-    // -- fallbackTo
-
-    @Test
-    public void shouldFallbackToThisResult() {
-        final Future<Integer> future = Future.of(() -> 1);
-        final Future<Integer> that = Future.of(() -> { throw new Error(); });
-        final Future<Integer> testee = future.fallbackTo(that);
-        waitUntil(testee::isCompleted);
-        assertThat(testee.getValue().get()).isEqualTo(new Success<>(1));
-    }
-
-    @Test
-    public void shouldFallbackToThatResult() {
-        final Future<Integer> future = Future.of(() -> { throw new Error(); });
-        final Future<Integer> that = Future.of(() -> 1);
-        final Future<Integer> testee = future.fallbackTo(that);
-        waitUntil(testee::isCompleted);
-        assertThat(testee.getValue().get()).isEqualTo(new Success<>(1));
-    }
-
-    @Test
-    public void shouldFallbackToThisFailure() {
-        final Future<Integer> future = Future.of(() -> { throw new Error("ok"); });
-        final Future<Integer> that = Future.of(() -> { throw new Error(); });
-        final Future<Integer> testee = future.fallbackTo(that);
-        waitUntil(testee::isCompleted);
-        final Try<Integer> result = testee.getValue().get();
-        assertThat(result.isFailure()).isTrue();
-        assertThat(result.getCause().getCause().getMessage()).isEqualTo("ok");
-    }
-
-    // -- fold()
-
-    @Test
-    public void shouldFoldEmptyIterable() {
-        final Seq<Future<Integer>> futures = Stream.empty();
-        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b);
-        waitUntil(testee::isCompleted);
-        assertThat(testee.getValue().get()).isEqualTo(new Success<>(0));
-    }
-
-    @Test
-    public void shouldFoldNonEmptyIterableOfSucceedingFutures() {
-        final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.of(zZz(i))).take(5);
-        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b);
-        waitUntil(testee::isCompleted);
-        assertThat(testee.getValue().get()).isEqualTo(new Success<>(15));
-    }
-
-    @Test
-    public void shouldFoldNonEmptyIterableOfFailingFutures() {
-        final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.<Integer> of(zZz(new Error()))).take(5);
-        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b);
-        waitUntil(testee::isCompleted);
-        assertFailed(testee, Error.class);
-    }
-
     // -- static fromTry()
 
     // TODO
@@ -244,6 +182,86 @@ public class FutureTest {
     // -- static traverse()
 
     // TODO
+
+    // -- andThen
+
+    // TODO
+
+    // -- await
+
+    @Test
+    public void shouldAwaitOnGet() {
+        final Future<Integer> future = Future.of(() -> {
+            Try.run(() -> Thread.sleep(250L));
+            return 1;
+        });
+        assertThat(future.get()).isEqualTo(1);
+    }
+
+    // -- fallbackTo
+
+    @Test
+    public void shouldFallbackToThisResult() {
+        final Future<Integer> future = Future.of(() -> 1);
+        final Future<Integer> that = Future.of(() -> {
+            throw new Error();
+        });
+        final Future<Integer> testee = future.fallbackTo(that);
+        waitUntil(testee::isCompleted);
+        assertThat(testee.getValue().get()).isEqualTo(new Success<>(1));
+    }
+
+    @Test
+    public void shouldFallbackToThatResult() {
+        final Future<Integer> future = Future.of(() -> {
+            throw new Error();
+        });
+        final Future<Integer> that = Future.of(() -> 1);
+        final Future<Integer> testee = future.fallbackTo(that);
+        waitUntil(testee::isCompleted);
+        assertThat(testee.getValue().get()).isEqualTo(new Success<>(1));
+    }
+
+    @Test
+    public void shouldFallbackToThisFailure() {
+        final Future<Integer> future = Future.of(() -> {
+            throw new Error("ok");
+        });
+        final Future<Integer> that = Future.of(() -> {
+            throw new Error();
+        });
+        final Future<Integer> testee = future.fallbackTo(that);
+        waitUntil(testee::isCompleted);
+        final Try<Integer> result = testee.getValue().get();
+        assertThat(result.isFailure()).isTrue();
+        assertThat(result.getCause().getCause().getMessage()).isEqualTo("ok");
+    }
+
+    // -- fold()
+
+    @Test
+    public void shouldFoldEmptyIterable() {
+        final Seq<Future<Integer>> futures = Stream.empty();
+        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b);
+        waitUntil(testee::isCompleted);
+        assertThat(testee.getValue().get()).isEqualTo(new Success<>(0));
+    }
+
+    @Test
+    public void shouldFoldNonEmptyIterableOfSucceedingFutures() {
+        final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.of(zZz(i))).take(5);
+        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b);
+        waitUntil(testee::isCompleted);
+        assertThat(testee.getValue().get()).isEqualTo(new Success<>(15));
+    }
+
+    @Test
+    public void shouldFoldNonEmptyIterableOfFailingFutures() {
+        final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.<Integer> of(zZz(new Error()))).take(5);
+        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b);
+        waitUntil(testee::isCompleted);
+        assertFailed(testee, Error.class);
+    }
 
     // -- cancel()
 
@@ -361,7 +379,9 @@ public class FutureTest {
 
     @Test
     public void shouldMapWhenCrashingDuringMapping() {
-        final Future<String> testee = Future.of(zZz(1)).map(i -> { throw new IllegalStateException(); });
+        final Future<String> testee = Future.of(zZz(1)).map(i -> {
+            throw new IllegalStateException();
+        });
         waitUntil(testee::isCompleted);
         assertFailed(testee, IllegalStateException.class);
     }

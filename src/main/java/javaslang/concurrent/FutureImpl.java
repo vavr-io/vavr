@@ -8,11 +8,9 @@ package javaslang.concurrent;
 import javaslang.collection.Queue;
 import javaslang.control.*;
 
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -96,6 +94,21 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     @Override
+    public void await() {
+        final Object monitor = new Object();
+        onComplete(ignored -> {
+            synchronized (monitor) {
+                monitor.notify();
+            }
+        });
+        synchronized (monitor) {
+            if (!isCompleted()) {
+                Try.run(monitor::wait);
+            }
+        }
+    }
+
+    @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
         synchronized (lock) {
             if (isCompleted()) {
@@ -115,17 +128,6 @@ final class FutureImpl<T> implements Future<T> {
     @Override
     public ExecutorService executorService() {
         return executorService;
-    }
-
-    @Override
-    public T get() {
-        throw new UnsupportedOperationException("TODO: get()");
-    }
-
-    @Override
-    public T get(long timeout, TimeUnit unit) {
-        Objects.requireNonNull(unit, "time unit is null");
-        throw new UnsupportedOperationException("TODO: get(timeout, unit)");
     }
 
     @Override
@@ -196,6 +198,7 @@ final class FutureImpl<T> implements Future<T> {
     Try<T> complete(Try<? extends T> value) {
         Objects.requireNonNull(value, "value is null");
         final Queue<Consumer<? super Try<T>>> actions;
+        // it is essential to make the completed state public *before* performing the actions
         synchronized (lock) {
             if (isCompleted()) {
                 throw new IllegalStateException("The Future is completed.");

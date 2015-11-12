@@ -492,6 +492,11 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
+     * Blocks the current Thread until this Future completed or returns immediately if this Future is already completed.
+     */
+    void await();
+
+    /**
      * Cancels the Future. A running thread is interrupted.
      *
      * @return {@code false}, if this {@code Future} is already completed or could not be cancelled, otherwise {@code true}.
@@ -594,17 +599,14 @@ public interface Future<T> extends Value<T> {
      * @throws IllegalStateException if the computation unexpectedly failed or was interrupted
      */
     @Override
-    T get();
-
-    /**
-     * Returns the value of the future. Waits for the result for at most the given time if necessary.
-     *
-     * @param timeout the maximum time to wait
-     * @param unit    the time unit of {@code timeout}
-     * @return The value of this future.
-     * @throws IllegalStateException if the computation unexpectedly failed, was interrupted or a timeout occurred
-     */
-    T get(long timeout, TimeUnit unit);
+    default T get() {
+        // is empty will block until result is available
+        if (isEmpty()) {
+            throw new NoSuchElementException("get on failed future");
+        } else {
+            return getValue().get().get();
+        }
+    }
 
     /**
      * Returns the value of the Future.
@@ -723,7 +725,11 @@ public interface Future<T> extends Value<T> {
      */
     @Override
     default boolean isEmpty() {
-        throw new UnsupportedOperationException("TODO: isEmpty");
+        // does not need to be synchronized, wait() has to check the completed state again
+        if (!isCompleted()) {
+            await();
+        }
+        return getValue().get().isEmpty();
     }
 
     /**
