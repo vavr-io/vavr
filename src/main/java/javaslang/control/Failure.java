@@ -41,8 +41,8 @@ public final class Failure<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public NonFatal getCause() {
-        return cause;
+    public Throwable getCause() {
+        return cause.getCause();
     }
 
     @Override

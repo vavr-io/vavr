@@ -125,7 +125,7 @@ public interface Try<T> extends Value<T> {
      */
     default Try<Throwable> failed() {
         if (isFailure()) {
-            return new Success<>(getCause().getCause());
+            return new Success<>(getCause());
         } else {
             return new Failure<>(new NoSuchElementException("Success.failed()"));
         }
@@ -225,7 +225,7 @@ public interface Try<T> extends Value<T> {
      * @return The cause if this is a Failure
      * @throws UnsupportedOperationException if this is a Success
      */
-    NonFatal getCause();
+    Throwable getCause();
 
     /**
      * Checks whether this Try has no result, i.e. is a Failure.
@@ -323,7 +323,7 @@ public interface Try<T> extends Value<T> {
     default Try<T> onFailure(Consumer<? super Throwable> action) {
         if (isFailure()) {
             try {
-                action.accept(getCause().getCause());
+                action.accept(getCause());
                 return this;
             } catch (Throwable t) {
                 return new Failure<>(t);
@@ -355,7 +355,7 @@ public interface Try<T> extends Value<T> {
 
     default T orElseGet(Function<? super Throwable, ? extends T> other) {
         if (isFailure()) {
-            return other.apply(getCause().getCause());
+            return other.apply(getCause());
         } else {
             return get();
         }
@@ -363,13 +363,13 @@ public interface Try<T> extends Value<T> {
 
     default void orElseRun(Consumer<? super Throwable> action) {
         if (isFailure()) {
-            action.accept(getCause().getCause());
+            action.accept(getCause());
         }
     }
 
     default <X extends Throwable> T orElseThrow(Function<? super Throwable, X> exceptionProvider) throws X {
         if (isFailure()) {
-            throw exceptionProvider.apply(getCause().getCause());
+            throw exceptionProvider.apply(getCause());
         } else {
             return get();
         }
@@ -398,7 +398,7 @@ public interface Try<T> extends Value<T> {
      */
     default Try<T> recover(Function<? super Throwable, ? extends T> f) {
         if (isFailure()) {
-            return Try.of(() -> f.apply(getCause().getCause()));
+            return Try.of(() -> f.apply(getCause()));
         } else {
             return this;
         }
@@ -416,7 +416,7 @@ public interface Try<T> extends Value<T> {
     default Try<T> recoverWith(Function<? super Throwable, ? extends Try< ? extends T>> f) {
         if (isFailure()) {
             try {
-                return (Try<T>) f.apply(getCause().getCause());
+                return (Try<T>) f.apply(getCause());
             } catch (Throwable t) {
                 return new Failure<>(t);
             }
@@ -428,7 +428,7 @@ public interface Try<T> extends Value<T> {
 
     default Either<Throwable, T> toEither() {
         if (isFailure()) {
-            return new Left<>(getCause().getCause());
+            return new Left<>(getCause());
         } else {
             return new Right<>(get());
         }

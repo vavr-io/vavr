@@ -408,7 +408,7 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
     public void shouldConvertEmptyToTry() {
         final Try<?> actual = empty().toTry();
         assertThat(actual.isFailure()).isTrue();
-        assertThat(actual.getCause().getCause().getClass()).isEqualTo(NoSuchElementException.class);
+        assertThat(actual.getCause().getClass()).isEqualTo(NoSuchElementException.class);
     }
 
     @Test

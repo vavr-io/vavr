@@ -234,7 +234,7 @@ public class FutureTest {
         waitUntil(testee::isCompleted);
         final Try<Integer> result = testee.getValue().get();
         assertThat(result.isFailure()).isTrue();
-        assertThat(result.getCause().getCause().getMessage()).isEqualTo("ok");
+        assertThat(result.getCause().getMessage()).isEqualTo("ok");
     }
 
     // -- fold()
