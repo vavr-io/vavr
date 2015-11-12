@@ -464,6 +464,34 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
+     * Support for chaining of callbacks that are guaranteed to be executed in a specific order.
+     * <p>
+     * An exception, which occurs when performing the given {@code action}, is not propagated to the outside.
+     * In other words, subsequent actions are performed based on the value of the original Future.
+     * <p>
+     * Example:
+     * <pre><code>
+     * // prints Success(1)
+     * Future.of(() -&gt; 1)
+     *       .andThen(t -&gt; { throw new Error(""); })
+     *       .andThen(System.out::println);
+     * </code></pre>
+     *
+     * @param action A side-effecting action.
+     * @return A new Future that contains this result and which is completed after the given action was performed.
+     * @throws NullPointerException if action is null
+     */
+    default Future<T> andThen(Consumer<? super Try<T>> action) {
+        Objects.requireNonNull(action, "action is null");
+        final Promise<T> promise = Promise.make(executorService());
+        onComplete(t -> {
+            Try.run(() -> action.accept(t));
+            promise.complete(t);
+        });
+        return promise.future();
+    }
+
+    /**
      * Cancels the Future. A running thread is interrupted.
      *
      * @return {@code false}, if this {@code Future} is already completed or could not be cancelled, otherwise {@code true}.
@@ -505,6 +533,44 @@ public interface Future<T> extends Value<T> {
                 promise.success(result.getCause());
             } else {
                 promise.failure(new NoSuchElementException("Future.failed completed without a throwable"));
+            }
+        });
+        return promise.future();
+    }
+
+    /**
+     * Returns a Future that returns the result of this Future, if it is a success. If the value of this Future is a
+     * failure, the result of {@code that} Future is returned, if that is a success. If both Futures fail, the failure
+     * of this Future is returned.
+     * <p>
+     * Example:
+     * <pre><code>
+     * Future&lt;Integer&gt; future = Future.of(() -&gt; { throw new Error(); });
+     * Future&lt;Integer&gt; that = Future.of(() -&gt; 1);
+     * Future&lt;Integer&gt; result = future.fallbackTo(that);
+     *
+     * // prints Some(1)
+     * result.onComplete(System.out::println);
+     * </code></pre>
+     *
+     * @param that A fallback future computation
+     * @return A new Future
+     * @throws NullPointerException if that is null
+     */
+    default Future<T> fallbackTo(Future<? extends T> that) {
+        Objects.requireNonNull(that, "that is null");
+        final Promise<T> promise = Promise.make(executorService());
+        onComplete(t -> {
+            if (t.isSuccess()) {
+                promise.complete(t);
+            } else {
+                that.onComplete(alt -> {
+                    if (alt.isSuccess()) {
+                        promise.complete(alt);
+                    } else {
+                        promise.complete(t);
+                    }
+                });
             }
         });
         return promise.future();
@@ -601,29 +667,6 @@ public interface Future<T> extends Value<T> {
     default void onSuccess(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         onComplete(result -> result.onSuccess(action));
-    }
-
-    /**
-     * Support for chaining of callbacks that are guaranteed to be executed in a specific order.
-     * <p>
-     * An exception, which occurs when performing the given {@code action}, is not propagated to the outside.
-     * <pre><code>
-     * // prints
-     * Future.of(() -&gt; 1)
-     *       .andThen(t -&gt; { throw new Error(""); })
-     *       .andThen(System.out::println);
-     * </code></pre>
-     *
-     * @param action A side-effecting action.
-     * @return A new Future that contains this result and which is completed after the given action was performed.
-     */
-    default Future<T> andThen(Consumer<? super Try<T>> action) {
-        final Promise<T> promise = Promise.make();
-        onComplete(t -> {
-            Try.run(() -> action.accept(t));
-            promise.complete(t);
-        });
-        return promise.future();
     }
 
     // TODO: recover, recoverWith, fallbackTo, zip
