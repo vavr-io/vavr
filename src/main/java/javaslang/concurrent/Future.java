@@ -600,6 +600,7 @@ public interface Future<T> extends Value<T> {
      */
     @Override
     default T get() {
+        // is empty will block until result is available
         if (isEmpty()) {
             throw new NoSuchElementException("get on failed future");
         } else {
@@ -724,6 +725,7 @@ public interface Future<T> extends Value<T> {
      */
     @Override
     default boolean isEmpty() {
+        // does not need to be synchronized, wait() has to check the completed state again
         if (!isCompleted()) {
             await();
         }
