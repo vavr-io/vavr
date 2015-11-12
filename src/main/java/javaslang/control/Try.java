@@ -412,10 +412,11 @@ public interface Try<T> extends Value<T> {
      * @param f A recovery function taking a Throwable
      * @return a new Try
      */
-    default Try<T> recoverWith(Function<? super Throwable, Try<T>> f) {
+    @SuppressWarnings("unchecked")
+    default Try<T> recoverWith(Function<? super Throwable, ? extends Try< ? extends T>> f) {
         if (isFailure()) {
             try {
-                return f.apply(getCause().getCause());
+                return (Try<T>) f.apply(getCause().getCause());
             } catch (Throwable t) {
                 return new Failure<>(t);
             }

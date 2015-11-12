@@ -463,6 +463,8 @@ public interface Future<T> extends Value<T> {
         return sequence(Iterator.ofAll(values).map(mapper));
     }
 
+    // -- non-static Future API
+
     /**
      * Support for chaining of callbacks that are guaranteed to be executed in a specific order.
      * <p>
@@ -582,33 +584,6 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
-     * Performs the given {@code action} asynchronously hence this Future result becomes available.
-     * The {@code action} is not performed, if the result is a failure.
-     *
-     * @param action A {@code Consumer}
-     */
-    @Override
-    default void forEach(Consumer<? super T> action) {
-        onComplete(result -> result.forEach(action));
-    }
-
-    /**
-     * Returns the value of the future. Waits for the result if necessary.
-     *
-     * @return The value of this future.
-     * @throws IllegalStateException if the computation unexpectedly failed or was interrupted
-     */
-    @Override
-    default T get() {
-        // is empty will block until result is available
-        if (isEmpty()) {
-            throw new NoSuchElementException("get on failed future");
-        } else {
-            return getValue().get().get();
-        }
-    }
-
-    /**
      * Returns the value of the Future.
      *
      * @return {@code None}, if the Future is not yet completed or was cancelled, otherwise {@code Some(Try)}.
@@ -671,13 +646,57 @@ public interface Future<T> extends Value<T> {
         onComplete(result -> result.onSuccess(action));
     }
 
-    // TODO: recover, recoverWith, fallbackTo, zip
+    /**
+     * Handles a failure of this Future by returning another result.
+     * <p>
+     * Example:
+     * <pre><code>
+     * // = "oh!"
+     * Future.of(() -&gt; new Error("oh!")).recover(Throwable::getMessage);
+     * </code></pre>
+     *
+     * @param f A function which takes the exception of a failure and returns a new value.
+     * @return A new Future.
+     * @throws NullPointerException if {@code f} is null
+     */
+    default Future<T> recover(Function<? super Throwable, ? extends T> f) {
+        Objects.requireNonNull(f, "f is null");
+        final Promise<T> promise = Promise.make(executorService());
+        onComplete(t -> promise.complete(t.recover(f)));
+        return promise.future();
+    }
+
+    /**
+     * Handles a failure of this Future by returning the result of another Future.
+     * <p>
+     * Example:
+     * <pre><code>
+     * // = "oh!"
+     * Future.of(() -&gt; { throw new Error("oh!"); }).recoverWith(x -&gt; Future.of(x::getMessage));
+     * </code></pre>
+     *
+     * @param f A function which takes the exception of a failure and returns a new future.
+     * @return A new Future.
+     * @throws NullPointerException if {@code f} is null
+     */
+    default Future<T> recoverWith(Function<? super Throwable, ? extends Future< ? extends T>> f) {
+        Objects.requireNonNull(f, "f is null");
+        final Promise<T> promise = Promise.make(executorService());
+        onComplete(t -> {
+            if (t.isFailure()) {
+                Try.run(() -> f.apply(t.getCause().getCause()).onComplete(promise::complete)).onFailure(promise::failure);
+            } else {
+                promise.complete(t);
+            }
+        });
+        return promise.future();
+    }
+
+    // TODO: zip
 
     // -- Value implementation
 
-    /* TODO: ensure that all Value operations act asynchronously. get() and isEmpty() do block
-     *       Calling Iterable ops makes only sense when the Future completed. Otherwise the iterable is empty.
-     */
+    // TODO: ensure that all Value operations act asynchronously. get() and isEmpty() do block
 
     @Override
     default Future<T> filter(Predicate<? super T> predicate) {
@@ -715,6 +734,33 @@ public interface Future<T> extends Value<T> {
             return ((Future<? extends Iterable<U>>) this).flatMap(Function.identity());
         } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
+        }
+    }
+
+    /**
+     * Performs the given {@code action} asynchronously hence this Future result becomes available.
+     * The {@code action} is not performed, if the result is a failure.
+     *
+     * @param action A {@code Consumer}
+     */
+    @Override
+    default void forEach(Consumer<? super T> action) {
+        onComplete(result -> result.forEach(action));
+    }
+
+    /**
+     * Returns the value of the future. Waits for the result if necessary.
+     *
+     * @return The value of this future.
+     * @throws IllegalStateException if the computation unexpectedly failed or was interrupted
+     */
+    @Override
+    default T get() {
+        // is empty will block until result is available
+        if (isEmpty()) {
+            throw new NoSuchElementException("get on failed future");
+        } else {
+            return getValue().get().get();
         }
     }
 
