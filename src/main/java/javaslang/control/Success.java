@@ -36,7 +36,7 @@ public final class Success<T> implements Try<T>, Serializable {
     }
 
     @Override
-    public Failure.NonFatal getCause() {
+    public Throwable getCause() {
         throw new UnsupportedOperationException("getCause on Success");
     }
 

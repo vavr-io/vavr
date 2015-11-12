@@ -684,7 +684,7 @@ public interface Future<T> extends Value<T> {
         final Promise<T> promise = Promise.make(executorService());
         onComplete(t -> {
             if (t.isFailure()) {
-                Try.run(() -> f.apply(t.getCause().getCause()).onComplete(promise::complete)).onFailure(promise::failure);
+                Try.run(() -> f.apply(t.getCause()).onComplete(promise::complete)).onFailure(promise::failure);
             } else {
                 promise.complete(t);
             }
