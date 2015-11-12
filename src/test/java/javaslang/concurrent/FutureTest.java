@@ -129,6 +129,41 @@ public class FutureTest {
         assertThat(testee.getValue().get().isSuccess()).isTrue();
     }
 
+    // -- andThen
+
+    // TODO
+
+    // -- fallbackTo
+
+    @Test
+    public void shouldFallbackToThisResult() {
+        final Future<Integer> future = Future.of(() -> 1);
+        final Future<Integer> that = Future.of(() -> { throw new Error(); });
+        final Future<Integer> testee = future.fallbackTo(that);
+        waitUntil(testee::isCompleted);
+        assertThat(testee.getValue().get()).isEqualTo(new Success<>(1));
+    }
+
+    @Test
+    public void shouldFallbackToThatResult() {
+        final Future<Integer> future = Future.of(() -> { throw new Error(); });
+        final Future<Integer> that = Future.of(() -> 1);
+        final Future<Integer> testee = future.fallbackTo(that);
+        waitUntil(testee::isCompleted);
+        assertThat(testee.getValue().get()).isEqualTo(new Success<>(1));
+    }
+
+    @Test
+    public void shouldFallbackToThisFailure() {
+        final Future<Integer> future = Future.of(() -> { throw new Error("ok"); });
+        final Future<Integer> that = Future.of(() -> { throw new Error(); });
+        final Future<Integer> testee = future.fallbackTo(that);
+        waitUntil(testee::isCompleted);
+        final Try<Integer> result = testee.getValue().get();
+        assertThat(result.isFailure()).isTrue();
+        assertThat(result.getCause().getCause().getMessage()).isEqualTo("ok");
+    }
+
     // -- fold()
 
     @Test
