@@ -43,7 +43,7 @@ import java.util.function.Predicate;
  * Future are performed with the failed result.
  *
  * @param <T> Type of the computation result.
- * @author Daniel Dietrich
+ * @author Daniel Dietrich, Dillon Jett Callis
  * @since 2.0.0
  */
 public interface Future<T> extends Value<T> {
