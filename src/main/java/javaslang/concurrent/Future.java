@@ -5,6 +5,8 @@
  */
 package javaslang.concurrent;
 
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -18,7 +20,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -679,7 +680,7 @@ public interface Future<T> extends Value<T> {
      * @return A new Future.
      * @throws NullPointerException if {@code f} is null
      */
-    default Future<T> recoverWith(Function<? super Throwable, ? extends Future< ? extends T>> f) {
+    default Future<T> recoverWith(Function<? super Throwable, ? extends Future<? extends T>> f) {
         Objects.requireNonNull(f, "f is null");
         final Promise<T> promise = Promise.make(executorService());
         onComplete(t -> {
@@ -692,7 +693,31 @@ public interface Future<T> extends Value<T> {
         return promise.future();
     }
 
-    // TODO: zip
+    /**
+     * Returns a tuple of this and that Future result.
+     * <p>
+     * If this Future failed the result contains this failure. Otherwise the result contains that failure or
+     * a tuple of both successful Future results.
+     *
+     * @param that Another Future
+     * @param <U>  Result type of {@code that}
+     * @return A new Future that returns both Future results.
+     */
+    @SuppressWarnings("unchecked")
+    default <U> Future<Tuple2<T, U>> zip(Future<? extends U> that) {
+        final Promise<Tuple2<T, U>> promise = Promise.make(executorService());
+        onComplete(res1 -> {
+            if (res1.isFailure()) {
+                promise.complete((Failure<Tuple2<T, U>>) res1);
+            } else {
+                that.onComplete(res2 -> {
+                    final Try<Tuple2<T, U>> result = res1.flatMap(t -> res2.map(u -> Tuple.of(t, u)));
+                    promise.complete(result);
+                });
+            }
+        });
+        return promise.future();
+    }
 
     // -- Value implementation
 
