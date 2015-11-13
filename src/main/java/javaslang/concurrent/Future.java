@@ -303,6 +303,9 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if executorService, futures or f is null.
      */
     static <T> Future<T> reduce(ExecutorService executorService, Iterable<? extends Future<? extends T>> futures, BiFunction<? super T, ? super T, ? extends T> f) {
+        Objects.requireNonNull(executorService, "executorService is null");
+        Objects.requireNonNull(futures, "futures is null");
+        Objects.requireNonNull(f, "f is null");
         if (!futures.iterator().hasNext()) {
             throw new NoSuchElementException("Future.reduce on empty futures");
         } else {
@@ -702,9 +705,11 @@ public interface Future<T> extends Value<T> {
      * @param that Another Future
      * @param <U>  Result type of {@code that}
      * @return A new Future that returns both Future results.
+     * @throws NullPointerException if {@code that} is null
      */
     @SuppressWarnings("unchecked")
     default <U> Future<Tuple2<T, U>> zip(Future<? extends U> that) {
+        Objects.requireNonNull(that, "that is null");
         final Promise<Tuple2<T, U>> promise = Promise.make(executorService());
         onComplete(res1 -> {
             if (res1.isFailure()) {
@@ -721,10 +726,9 @@ public interface Future<T> extends Value<T> {
 
     // -- Value implementation
 
-    // TODO: ensure that all Value operations act asynchronously. get() and isEmpty() do block
-
     @Override
     default Future<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         final Promise<T> promise = Promise.make(executorService());
         onComplete(result -> promise.complete(result.filter(predicate)));
         return promise.future();
@@ -733,6 +737,7 @@ public interface Future<T> extends Value<T> {
     @SuppressWarnings("unchecked")
     @Override
     default <U> Future<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());
         onComplete(result -> result.map(mapper::apply)
                 .onSuccess(us -> {
@@ -743,7 +748,7 @@ public interface Future<T> extends Value<T> {
                         if (iter.hasNext()) {
                             promise.success(iter.next());
                         } else {
-                            promise.complete(new Failure<>(new NoSuchElementException()));
+                            promise.complete(new Failure<>(new NoSuchElementException("flatMap resulted in empty Iterable")));
                         }
                     }
                 })
@@ -770,6 +775,7 @@ public interface Future<T> extends Value<T> {
      */
     @Override
     default void forEach(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
         onComplete(result -> result.forEach(action));
     }
 
@@ -820,6 +826,7 @@ public interface Future<T> extends Value<T> {
 
     @Override
     default <U> Future<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());
         onComplete(result -> promise.complete(result.map(mapper)));
         return promise.future();
@@ -827,6 +834,7 @@ public interface Future<T> extends Value<T> {
 
     @Override
     default Future<T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
         onSuccess(action);
         return this;
     }
