@@ -13,9 +13,11 @@ import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.function.Function;
+import java.util.stream.Collector;
 
-public class IteratorTest extends AbstractTraversableOnceTest {
+public class IteratorTest extends AbstractTraversableTest {
 
     @Override
     protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
@@ -64,6 +66,16 @@ public class IteratorTest extends AbstractTraversableOnceTest {
                 return (o instanceof Iterator) ? List.ofAll((Iterator<?>) o) : o;
             }
         };
+    }
+
+    @Override
+    protected boolean isTraversableAgain() {
+        return false;
+    }
+
+    @Override
+    protected <T> Collector<T, ArrayList<T>, ? extends Iterator<T>> collector() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
