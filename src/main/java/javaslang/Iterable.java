@@ -40,7 +40,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Iterable<T> extends java.lang.Iterable<T> {
+interface Iterable<T> extends java.lang.Iterable<T> {
 
     /**
      * Returns a rich {@code javaslang.collection.Iterator}.
