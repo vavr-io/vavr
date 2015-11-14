@@ -22,7 +22,7 @@ import java.util.Objects;
  * @author Ruslan Sennov
  * @since 2.0.0
  */
-public interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, V>> {
+interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, V>> {
 
     static <K, V> HashArrayMappedTrie<K, V> empty() {
         return EmptyNode.instance();

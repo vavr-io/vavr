@@ -36,7 +36,7 @@ import static javaslang.collection.RedBlackTree.Color.RED;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface RedBlackTree<T> extends java.lang.Iterable<T> {
+interface RedBlackTree<T> extends java.lang.Iterable<T> {
 
     static <T extends Comparable<? super T>> Empty<T> empty() {
         return new Empty<>((Comparator<? super T> & Serializable) T::compareTo);
