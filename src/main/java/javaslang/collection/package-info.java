@@ -1,5 +1,5 @@
 /**
- * Purely functional collections based on {@linkplain javaslang.collection.TraversableOnce}.
+ * Purely functional collections based on {@linkplain javaslang.collection.Traversable}.
  *
  * <h2>Performance Characteristics of Javaslang Collections</h2>
  * <table cellpadding="5" cellspacing="0" border="1" style="border-collapse: collapse">

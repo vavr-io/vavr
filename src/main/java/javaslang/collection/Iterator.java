@@ -42,7 +42,7 @@ import java.util.function.*;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Iterator<T> extends java.util.Iterator<T>, TraversableOnce<T> {
+public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     // DEV-NOTE: we prefer returning empty() over this if !hasNext() == true in order to free memory.
 
