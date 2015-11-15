@@ -100,6 +100,7 @@ public interface Tree<T> extends Traversable<T> {
      * @param <T>      Value type
      * @return A new Node instance.
      */
+    @SuppressWarnings("varargs")
     @SafeVarargs
     static <T> Node<T> of(T value, Node<T>... children) {
         Objects.requireNonNull(children, "children is null");

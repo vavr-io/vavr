@@ -890,7 +890,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
             xs = xs.append(t._1);
             ys = ys.append(t._2);
         }
-        return Tuple.of(xs.length() == 0 ? Vector.<T1> empty() : xs, ys.length() == 0 ? Vector.<T2> empty() : ys);
+        return Tuple.of(xs, ys);
     }
 
     @Override
@@ -906,9 +906,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
             ys = ys.append(t._2);
 			zs = zs.append(t._3);
         }
-        return Tuple.of(xs.isEmpty() ? Vector.<T1> empty() : xs, 
-						ys.isEmpty() ? Vector.<T2> empty() : ys,
-						zs.isEmpty() ? Vector.<T3> empty() : zs);
+        return Tuple.of(xs, ys, zs);
     }
     
     @Override

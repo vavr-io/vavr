@@ -1189,7 +1189,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             xs = xs.put(xs.size(), t._1);
             ys = ys.put(ys.size(), t._2);
         }
-        return Tuple.of(xs.isEmpty() ? empty() : new Vector<>(xs), ys.isEmpty() ? empty() : new Vector<>(ys));
+        return Tuple.of(new Vector<>(xs), new Vector<>(ys));
     }
     
     @Override
@@ -1204,9 +1204,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             ys = ys.put(ys.size(), t._2);
 			zs = zs.put(zs.size(), t._3);
         }
-        return Tuple.of(xs.isEmpty() ? empty() : new Vector<>(xs), 
-						ys.isEmpty() ? empty() : new Vector<>(ys),
-						zs.isEmpty() ? empty() : new Vector<>(zs));
+        return Tuple.of(new Vector<>(xs), new Vector<>(ys), new Vector<>(zs));
     }
 
     @Override
