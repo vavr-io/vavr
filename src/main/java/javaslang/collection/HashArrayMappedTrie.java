@@ -14,6 +14,7 @@ import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -374,7 +375,7 @@ interface HashArrayMappedTrieModule {
                 }
                 bit = bit >>> 1;
             }
-            return new ArrayNode<>(count, size + child.size(), Array.wrap(arr));
+            return new ArrayNode<>(count, size + child.size(), arr);
         }
 
         @Override
@@ -408,47 +409,56 @@ interface HashArrayMappedTrieModule {
 
         private static final long serialVersionUID = 1L;
 
-        private final Array<AbstractNode<K, V>> subNodes;
+        private final Object[] subNodes;
         private final int count;
         private final int size;
 
-        ArrayNode(int count, int size, Array<AbstractNode<K, V>> subNodes) {
+        ArrayNode(int count, int size, Object[] subNodes) {
             this.subNodes = subNodes;
             this.count = count;
             this.size = size;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         Option<V> lookup(int shift, K key) {
             int frag = hashFragment(shift, key.hashCode());
-            AbstractNode<K, V> child = subNodes.get(frag);
+            AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
             return child.lookup(shift + SIZE, key);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
             int frag = hashFragment(shift, key.hashCode());
-            AbstractNode<K, V> child = subNodes.get(frag);
+            AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
             AbstractNode<K, V> newChild = child.modify(shift + SIZE, key, value);
             if (child.isEmpty() && !newChild.isEmpty()) {
-                return new ArrayNode<>(count + 1, size + newChild.size(), subNodes.update(frag, newChild));
+                return new ArrayNode<>(count + 1, size + newChild.size(), update(subNodes, frag, newChild));
             } else if (!child.isEmpty() && newChild.isEmpty()) {
                 if (count - 1 <= MIN_ARRAY_NODE) {
                     return pack(frag, subNodes);
                 } else {
-                    return new ArrayNode<>(count - 1, size - child.size(), subNodes.update(frag, EmptyNode.instance()));
+                    return new ArrayNode<>(count - 1, size - child.size(), update(subNodes, frag, EmptyNode.instance()));
                 }
             } else {
-                return new ArrayNode<>(count, size - child.size() + newChild.size(), subNodes.update(frag, newChild));
+                return new ArrayNode<>(count, size - child.size() + newChild.size(), update(subNodes, frag, newChild));
             }
         }
 
-        private IndexedNode<K, V> pack(int idx, Array<AbstractNode<K, V>> elements) {
+        private static Object[] update(Object[] arr, int index, Object newElement) {
+            Object[] newArr = Arrays.copyOf(arr, arr.length);
+            newArr[index] = newElement;
+            return newArr;
+        }
+
+        @SuppressWarnings("unchecked")
+        private IndexedNode<K, V> pack(int idx, Object[] elements) {
             List<AbstractNode<K, V>> arr = List.empty();
             int bitmap = 0;
             int size = 0;
             for (int i = BUCKET_SIZE - 1; i >= 0; i--) {
-                AbstractNode<K, V> elem = elements.get(i);
+                AbstractNode<K, V> elem = (AbstractNode<K, V>) elements[i];
                 if (i != idx && !elem.isEmpty()) {
                     size += elem.size();
                     arr = arr.prepend(elem);
@@ -475,7 +485,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            return Iterator.concat(subNodes);
+            return Iterator.concat(Array.wrap(subNodes));
         }
     }
 }
