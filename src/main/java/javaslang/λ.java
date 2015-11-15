@@ -131,7 +131,7 @@ public interface λ<R> extends Serializable {
         }
         final Class<?>[] paramTypes = getType().parameterTypes();
         for (int i = 0; i < types.length; i++) {
-            final Class<?> type = Objects.requireNonNull(types[i], "type[" + i + "] is null");
+            final Class<?> type = Objects.requireNonNull(types[i], "types[" + i + "] is null");
             if (!paramTypes[i].isAssignableFrom(type)) {
                 return false;
             }
