@@ -1011,14 +1011,16 @@ def generateTestClasses(): Unit = {
                 }
               """)}
 
-              @$test
-              public void shouldPartiallyApply()${checked.gen(" throws Throwable")} {
-                  final $name$i<$generics> f = ($functionArgs) -> null;
-                  ${(1 to i - 1).gen(j => {
-                    val partialArgs = (1 to j).gen(k => "null")(", ")
-                    s"$assertThat(f.apply($partialArgs)).isNotNull();"
-                  })("\n")}
-              }
+              ${(i > 1).gen(xs"""
+                @$test
+                public void shouldPartiallyApply()${checked.gen(" throws Throwable")} {
+                    final $name$i<$generics> f = ($functionArgs) -> null;
+                    ${(1 to i - 1).gen(j => {
+                      val partialArgs = (1 to j).gen(k => "null")(", ")
+                      s"$assertThat(f.apply($partialArgs)).isNotNull();"
+                    })("\n")}
+                }
+              """)}
 
               ${(i > 0).gen(xs"""
                 @$test

@@ -33,12 +33,6 @@ public class CheckedFunction0Test {
     }
 
     @Test
-    public void shouldPartiallyApply() throws Throwable {
-        final CheckedFunction0<Object> f = () -> null;
-
-    }
-
-    @Test
     public void shouldGetArity() {
         final CheckedFunction0<Object> f = () -> null;
         assertThat(f.arity()).isEqualTo(0);

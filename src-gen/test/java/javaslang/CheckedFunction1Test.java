@@ -40,12 +40,6 @@ public class CheckedFunction1Test {
     }
 
     @Test
-    public void shouldPartiallyApply() throws Throwable {
-        final CheckedFunction1<Object, Object> f = (o1) -> null;
-
-    }
-
-    @Test
     public void shouldRecognizeApplicabilityOfNonNull() {
         final CheckedFunction1<Integer, Integer> f = (i1) -> null;
         assertThat(f.isApplicableTo(1)).isTrue();

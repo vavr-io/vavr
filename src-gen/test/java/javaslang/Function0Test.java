@@ -40,12 +40,6 @@ public class Function0Test {
     }
 
     @Test
-    public void shouldPartiallyApply() {
-        final Function0<Object> f = () -> null;
-
-    }
-
-    @Test
     public void shouldGetArity() {
         final Function0<Object> f = () -> null;
         assertThat(f.arity()).isEqualTo(0);
