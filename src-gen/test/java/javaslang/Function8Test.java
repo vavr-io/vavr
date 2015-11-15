@@ -33,44 +33,14 @@ public class Function8Test {
     }
 
     @Test
-    public void shouldPartiallyApplyWith1Arguments() {
+    public void shouldPartiallyApply() {
         final Function8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.apply(null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith2Arguments() {
-        final Function8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.apply(null, null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith3Arguments() {
-        final Function8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.apply(null, null, null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith4Arguments() {
-        final Function8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.apply(null, null, null, null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith5Arguments() {
-        final Function8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.apply(null, null, null, null, null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith6Arguments() {
-        final Function8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.apply(null, null, null, null, null, null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith7Arguments() {
-        final Function8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.apply(null, null, null, null, null, null, null)).isNotNull();
     }
 

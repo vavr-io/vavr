@@ -33,14 +33,9 @@ public class CheckedFunction3Test {
     }
 
     @Test
-    public void shouldPartiallyApplyWith1Arguments() throws Throwable {
+    public void shouldPartiallyApply() throws Throwable {
         final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
         assertThat(f.apply(null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith2Arguments() throws Throwable {
-        final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
         assertThat(f.apply(null, null)).isNotNull();
     }
 

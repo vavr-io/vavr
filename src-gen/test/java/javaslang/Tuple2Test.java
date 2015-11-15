@@ -59,9 +59,7 @@ public class Tuple2Test {
         assertThat(t1.compareTo(t0)).isPositive();
         assertThat(intTupleComparator.compare(t0, t1)).isNegative();
         assertThat(intTupleComparator.compare(t1, t0)).isPositive();
-    }
-
-    @Test
+    }@Test
     public void shouldCompare2thArg() {
         final Tuple2<Integer, Integer> t0 = createIntTuple(0, 0);
         final Tuple2<Integer, Integer> t2 = createIntTuple(0, 1);
@@ -107,6 +105,13 @@ public class Tuple2Test {
         final Tuple2<Object, Object> tuple = createTuple();
         final Object other = new Object();
         assertThat(tuple).isNotEqualTo(other);
+    }
+
+    @Test
+    public void shouldRecognizeNonEqualityPerComponent() {
+        final Tuple2<String, String> tuple = Tuple.of("1", "2");
+        assertThat(tuple.equals(Tuple.of("X", "2"))).isFalse();
+        assertThat(tuple.equals(Tuple.of("1", "X"))).isFalse();
     }
 
     @Test

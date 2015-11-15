@@ -33,44 +33,14 @@ public class CheckedFunction8Test {
     }
 
     @Test
-    public void shouldPartiallyApplyWith1Arguments() throws Throwable {
+    public void shouldPartiallyApply() throws Throwable {
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.apply(null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith2Arguments() throws Throwable {
-        final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.apply(null, null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith3Arguments() throws Throwable {
-        final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.apply(null, null, null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith4Arguments() throws Throwable {
-        final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.apply(null, null, null, null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith5Arguments() throws Throwable {
-        final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.apply(null, null, null, null, null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith6Arguments() throws Throwable {
-        final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.apply(null, null, null, null, null, null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith7Arguments() throws Throwable {
-        final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
         assertThat(f.apply(null, null, null, null, null, null, null)).isNotNull();
     }
 

@@ -33,7 +33,7 @@ public class Function2Test {
     }
 
     @Test
-    public void shouldPartiallyApplyWith1Arguments() {
+    public void shouldPartiallyApply() {
         final Function2<Object, Object, Object> f = (o1, o2) -> null;
         assertThat(f.apply(null)).isNotNull();
     }

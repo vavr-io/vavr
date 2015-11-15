@@ -33,6 +33,19 @@ public class Function1Test {
     }
 
     @Test
+    public void shouldCreateIdentityFunction() {
+        final Function1<String, String> identity = Function1.identity();
+        final String s = "test";
+        assertThat(identity.apply(s)).isEqualTo(s);
+    }
+
+    @Test
+    public void shouldPartiallyApply() {
+        final Function1<Object, Object> f = (o1) -> null;
+
+    }
+
+    @Test
     public void shouldRecognizeApplicabilityOfNonNull() {
         final Function1<Integer, Integer> f = (i1) -> null;
         assertThat(f.isApplicableTo(1)).isTrue();

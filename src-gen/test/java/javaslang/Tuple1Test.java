@@ -69,6 +69,14 @@ public class Tuple1Test {
     }
 
     @Test
+    public void shouldMapComponents() {
+      final Tuple1<Object> tuple = createTuple();
+      final Function1<Object, Object> f1 = Function1.identity();
+      final Tuple1<Object> actual = tuple.map(f1);
+      assertThat(actual).isEqualTo(tuple);
+    }
+
+    @Test
     public void shouldTransformTuple() {
         final Tuple1<Object> tuple = createTuple();
         final Tuple0 actual = tuple.transform(t -> Tuple0.instance());
@@ -87,6 +95,12 @@ public class Tuple1Test {
         final Tuple1<Object> tuple = createTuple();
         final Object other = new Object();
         assertThat(tuple).isNotEqualTo(other);
+    }
+
+    @Test
+    public void shouldRecognizeNonEqualityPerComponent() {
+        final Tuple1<String> tuple = Tuple.of("1");
+        assertThat(tuple.equals(Tuple.of("X"))).isFalse();
     }
 
     @Test
