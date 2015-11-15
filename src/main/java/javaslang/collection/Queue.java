@@ -131,6 +131,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @return A queue containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
+    @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T> Queue<T> ofAll(T... elements) {
         Objects.requireNonNull(elements, "elements is null");

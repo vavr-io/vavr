@@ -57,6 +57,7 @@ interface RedBlackTree<T> extends java.lang.Iterable<T> {
         return new Node<>(BLACK, 1, empty, value, empty, empty);
     }
 
+    @SuppressWarnings("varargs")
     @SafeVarargs
     static <T extends Comparable<? super T>> RedBlackTree<T> ofAll(T... values) {
         Objects.requireNonNull(values, "values is null");

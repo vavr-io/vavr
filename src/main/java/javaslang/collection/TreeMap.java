@@ -121,6 +121,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
      * @param entries Map entries
      * @return A new TreeMap containing the given entries.
      */
+    @SuppressWarnings("varargs")
     @SafeVarargs
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(Tuple2<? extends K, ? extends V>... entries) {
         return ofAll((Comparator<? super K> & Serializable) K::compareTo, entries);

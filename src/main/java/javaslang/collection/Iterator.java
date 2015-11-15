@@ -70,6 +70,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
+    @SuppressWarnings("varargs")
     @SafeVarargs
     static <T> Iterator<T> concat(java.lang.Iterable<? extends T>... iterables) {
         Objects.requireNonNull(iterables, "iterables is null");

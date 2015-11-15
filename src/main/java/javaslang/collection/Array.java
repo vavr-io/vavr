@@ -96,6 +96,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return A Array containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
+    @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T> Array<T> ofAll(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
