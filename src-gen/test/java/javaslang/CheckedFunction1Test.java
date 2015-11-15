@@ -17,7 +17,7 @@ import org.junit.Test;
 public class CheckedFunction1Test {
 
     @Test
-    public void shouldLift() {
+    public void shouldCreateFromMethodReference() {
         class Type {
             Object methodReference(Object o1) {
                 return null;
@@ -28,9 +28,8 @@ public class CheckedFunction1Test {
     }
 
     @Test
-    public void shouldRecognizeApplicabilityOfNull() {
-        final CheckedFunction1<Object, Object> f = (o1) -> null;
-        assertThat(f.isApplicableTo(null)).isTrue();
+    public void shouldLiftPartialFunction() {
+        assertThat(CheckedFunction1.lift((o1) -> { while(true); })).isNotNull();
     }
 
     @Test
@@ -40,9 +39,15 @@ public class CheckedFunction1Test {
     }
 
     @Test
-    public void shouldRecognizeApplicabilityToType() {
+    public void shouldRecognizeApplicabilityToTypes() {
         final CheckedFunction1<Integer, Integer> f = (i1) -> null;
-        assertThat(f.isApplicableToType(Integer.class)).isTrue();
+        assertThat(f.isApplicableToTypes(Integer.class)).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType1() {
+        final CheckedFunction1<Number, Number> f = (i1) -> null;
+        assertThat(f.isApplicableToTypes(String.class)).isFalse();
     }
 
     @Test
