@@ -5,18 +5,14 @@
  */
 package javaslang.collection;
 
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
-
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.Tuple3;
 import javaslang.control.Option;
+
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.*;
 
 /**
  * Interface for immutable sequential data structures.
@@ -822,9 +818,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     @Override
     <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
-    
-    @Override
-    <T1, T2, T3> Tuple3<? extends Seq<T1>, ? extends Seq<T2>, ? extends Seq<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     @Override
     <U> Seq<Tuple2<T, U>> zip(java.lang.Iterable<U> that);

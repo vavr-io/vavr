@@ -5,6 +5,12 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple2;
+import javaslang.Value;
+import javaslang.control.None;
+import javaslang.control.Option;
+import javaslang.control.Some;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Comparator;
@@ -14,13 +20,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.Value;
-import javaslang.control.None;
-import javaslang.control.Option;
-import javaslang.control.Some;
 
 /**
  * An interface for inherently recursive, multi-valued data structures. The order of elements is determined by
@@ -981,7 +980,7 @@ public interface Traversable<T> extends Value<T> {
     Traversable<T> takeWhile(Predicate<? super T> predicate);
 
     /**
-     * Unzips this elements by mapping this elements to pairs which are subsequently split into two distinct
+     * Unzips this elements by mapping this elements to pairs which are subsequentially split into two distinct
      * sets.
      *
      * @param unzipper a function which converts elements of this to pairs
@@ -993,19 +992,6 @@ public interface Traversable<T> extends Value<T> {
     <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
-    /**
-     * Unzips this elements by mapping this elements to triples which are subsequently split into three distinct
-     * sets.
-     *
-     * @param unzipper a function which converts elements of this to pairs
-     * @param <T1>     1st element type of a triplet returned by unzipper
-     * @param <T2>     2nd element type of a triplet returned by unzipper
-     * @param <T3>     3rd element type of a triplet returned by unzipper
-     * @return A triplet of set containing elements split by unzipper
-     * @throws NullPointerException if {@code unzipper} is null
-     */    
-    <T1, T2, T3> Tuple3<? extends Traversable<T1>, ? extends Traversable<T2>, ? extends Traversable<T3>> unzip3(
-    		Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
     /**
      * Returns a traversable formed from this traversable and another java.lang.Iterable collection by combining
      * corresponding elements in pairs. If one of the two iterables is longer than the other, its remaining elements

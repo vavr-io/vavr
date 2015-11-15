@@ -5,35 +5,22 @@
  */
 package javaslang.collection;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.regex.PatternSyntaxException;
-import java.util.stream.Collector;
-
 import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.Tuple3;
 import javaslang.collection.CharSeqModule.Combinations;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
+
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.HashSet;
+import java.util.function.*;
+import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collector;
 
 /**
  * The CharSeq (read: character sequence) collection essentially is a rich String wrapper having all operations
@@ -893,24 +880,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return Tuple.of(xs.length() == 0 ? Vector.<T1> empty() : xs, ys.length() == 0 ? Vector.<T2> empty() : ys);
     }
 
-    @Override
-    public <T1, T2, T3> Tuple3<Vector<T1>, Vector<T2>, Vector<T3>> unzip3(
-            Function<? super Character, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        Vector<T1> xs = Vector.empty();
-        Vector<T2> ys = Vector.empty();
-		Vector<T3> zs = Vector.empty();
-        for (int i = 0; i < length(); i++) {
-            final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(back.charAt(i));
-            xs = xs.append(t._1);
-            ys = ys.append(t._2);
-			zs = zs.append(t._3);
-        }
-        return Tuple.of(xs.isEmpty() ? Vector.<T1> empty() : xs, 
-						ys.isEmpty() ? Vector.<T2> empty() : ys,
-						zs.isEmpty() ? Vector.<T3> empty() : zs);
-    }
-    
     @Override
     public CharSeq update(int index, Character element) {
         if (index < 0) {

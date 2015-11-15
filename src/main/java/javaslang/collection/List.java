@@ -5,38 +5,21 @@
  */
 package javaslang.collection;
 
-import java.io.IOException;
-import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.ListIterator;
-import java.util.NavigableSet;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
-
 import javaslang.Function1;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.Tuple3;
 import javaslang.collection.List.Nil;
 import javaslang.collection.ListModule.Combinations;
 import javaslang.collection.ListModule.SplitAt;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
+
+import java.io.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 /**
  * An immutable {@code List} is an eager sequence of elements. Its immutability makes it suitable for concurrent programming.
@@ -1263,22 +1246,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return Tuple.of(xs.reverse(), ys.reverse());
     }
 
-    @Override
-    default <T1, T2, T3> Tuple3<List<T1>, List<T2>, List<T3>> unzip3(
-            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        List<T1> xs = Nil.instance();
-        List<T2> ys = Nil.instance();
-		List<T3> zs = Nil.instance();
-        for (T element : this) {
-            final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(element);
-            xs = xs.prepend(t._1);
-            ys = ys.prepend(t._2);
-			zs = zs.prepend(t._3);
-        }
-        return Tuple.of(xs.reverse(), ys.reverse(), zs.reverse());
-    }
-    
     @Override
     default List<T> update(int index, T element) {
         if (isEmpty()) {

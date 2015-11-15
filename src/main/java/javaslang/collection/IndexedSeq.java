@@ -5,16 +5,15 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple2;
+import javaslang.control.Option;
+
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.control.Option;
 
 /**
  * Interface for immutable, indexed sequences.
@@ -229,9 +228,6 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     <T1, T2> Tuple2<? extends IndexedSeq<T1>, ? extends IndexedSeq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
-
-    @Override
-    <T1, T2, T3> Tuple3<? extends IndexedSeq<T1>, ? extends IndexedSeq<T2>, ? extends IndexedSeq<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     @Override
     IndexedSeq<T> update(int index, T element);

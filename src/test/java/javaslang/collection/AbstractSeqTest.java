@@ -1391,18 +1391,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test
-    public void shouldUnzip3Nil() {
-        assertThat(empty().unzip3(x -> Tuple.of(x, x, x))).isEqualTo(Tuple.of(empty(), empty(), empty()));
-    }
-
-    @Test
-    public void shouldUnzip3NonNil() {
-        final Tuple actual = ofAll(0, 1).unzip3(i -> Tuple.of(i, (char) ((short) 'a' + i), (char) ((short) 'a' + i + 1)));
-        final Tuple expected = Tuple.of(ofAll(0, 1), this.<Character> ofAll('a', 'b'), this.<Character> ofAll('b', 'c'));
-        assertThat(actual).isEqualTo(expected);
-    }
-
     // -- zip
 
     @Test

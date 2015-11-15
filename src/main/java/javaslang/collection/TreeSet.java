@@ -5,28 +5,21 @@
  */
 package javaslang.collection;
 
-import static javaslang.collection.Comparators.naturalComparator;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.control.None;
+import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collector;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.control.None;
-import javaslang.control.Option;
-import javaslang.control.Some;
+import static javaslang.collection.Comparators.naturalComparator;
 
 /**
  * SortedSet implementation, backed by a Red/Black Tree.
@@ -82,12 +75,14 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return new TreeSet<>(RedBlackTree.of(comparator, value));
     }
 
+    @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(T... values) {
         Objects.requireNonNull(values, "values is null");
         return new TreeSet<>(RedBlackTree.ofAll(values));
     }
 
+    @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T> TreeSet<T> ofAll(Comparator<? super T> comparator, T... values) {
         Objects.requireNonNull(comparator, "comparator is null");
@@ -410,6 +405,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return new TreeSet<>(tree.insert(element));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public TreeSet<T> addAll(java.lang.Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -766,16 +762,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip(unzipper).map(i1 -> TreeSet.ofAll(naturalComparator(), i1),
                 i2 -> TreeSet.ofAll(naturalComparator(), i2));
-    }
-
-    @Override
-    public <T1, T2, T3> Tuple3<TreeSet<T1>, TreeSet<T2>, TreeSet<T3>> unzip3(
-            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        return iterator().unzip3(unzipper).map(
-        		i1 -> TreeSet.ofAll(naturalComparator(), i1),
-                i2 -> TreeSet.ofAll(naturalComparator(), i2),
-                i3 -> TreeSet.ofAll(naturalComparator(), i3));
     }
 
     @Override

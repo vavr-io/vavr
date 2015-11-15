@@ -346,21 +346,6 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test
-    public void shouldUnzip3Nil() {
-        assertThat(emptyMap().unzip3(x -> Tuple.of(x, x, x))).isEqualTo(Tuple.of(Stream.empty(), Stream.empty(), Stream.empty()));
-        assertThat(emptyMap().unzip3((k, v) -> Tuple.of(Tuple.of(k, v), Tuple.of(k, v), Tuple.of(k, v))))
-                .isEqualTo(Tuple.of(Stream.empty(), Stream.empty(), Stream.empty()));
-    }
-
-    @Test
-    public void shouldUnzip3NonNil() {
-        Map<Integer, Integer> map = emptyIntInt().put(0, 0).put(1, 1);
-        final Tuple actual = map.unzip3(entry -> Tuple.of(entry._1, entry._2 + 1, entry._2 + 5));
-        final Tuple expected = Tuple.of(Stream.ofAll(0, 1), Stream.ofAll(1, 2), Stream.ofAll(5, 6));
-        assertThat(actual).isEqualTo(expected);
-    }
-
     // -- zip
 
     @Test
