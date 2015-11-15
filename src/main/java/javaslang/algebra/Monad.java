@@ -32,7 +32,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public interface Monad<T> {
+public interface Monad<T> extends Functor<T> {
 
     /**
      * Filters this {@code Monad} by testing a predicate.
@@ -88,6 +88,8 @@ public interface Monad<T> {
      */
     <U> Monad<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
+    // -- adjusting return types of super interface methods
+
     /**
      * Maps this value to a new value with different component type.
      *
@@ -96,6 +98,7 @@ public interface Monad<T> {
      * @return a mapped {@code Monad}
      * @throws NullPointerException if {@code mapper} is null
      */
+    @Override
     <U> Monad<U> map(Function<? super T, ? extends U> mapper);
 
 }
