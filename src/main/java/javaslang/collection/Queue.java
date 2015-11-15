@@ -5,18 +5,29 @@
  */
 package javaslang.collection;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+
 import javaslang.Function1;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
-
-import java.io.Serializable;
-import java.util.*;
-import java.util.function.*;
-import java.util.stream.Collector;
 
 /**
  * An immutable {@code Queue} stores elements allowing a first-in-first-out (FIFO) retrieval.
@@ -120,7 +131,6 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @return A queue containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T> Queue<T> ofAll(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -1052,6 +1062,12 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
         return toList().unzip(unzipper).map(List::toQueue, List::toQueue);
     }
 
+    @Override
+    public <T1, T2, T3> Tuple3<Queue<T1>, Queue<T2>, Queue<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {    
+    	Objects.requireNonNull(unzipper, "unzipper is null");
+        return toList().unzip3(unzipper).map(List::toQueue, List::toQueue, List::toQueue);
+    }
+    
     @Override
     public Queue<T> update(int index, T element) {
         return toList().update(index, element).toQueue();

@@ -5,19 +5,30 @@
  */
 package javaslang.collection;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+
 import javaslang.Function1;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.collection.VectorModule.Combinations;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
-
-import java.io.Serializable;
-import java.util.*;
-import java.util.function.*;
-import java.util.stream.Collector;
 
 /**
  * Vector is the default Seq implementation. It provides the best performance in between Array (with constant time element access)
@@ -1179,6 +1190,23 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             ys = ys.put(ys.size(), t._2);
         }
         return Tuple.of(xs.isEmpty() ? empty() : new Vector<>(xs), ys.isEmpty() ? empty() : new Vector<>(ys));
+    }
+    
+    @Override
+    public <T1, T2, T3> Tuple3<Vector<T1>, Vector<T2>, Vector<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        HashArrayMappedTrie<Integer, T1> xs = HashArrayMappedTrie.empty();
+        HashArrayMappedTrie<Integer, T2> ys = HashArrayMappedTrie.empty();
+		HashArrayMappedTrie<Integer, T3> zs = HashArrayMappedTrie.empty();
+        for (T element : this) {
+            final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(element);
+            xs = xs.put(xs.size(), t._1);
+            ys = ys.put(ys.size(), t._2);
+			zs = zs.put(zs.size(), t._3);
+        }
+        return Tuple.of(xs.isEmpty() ? empty() : new Vector<>(xs), 
+						ys.isEmpty() ? empty() : new Vector<>(ys),
+						zs.isEmpty() ? empty() : new Vector<>(zs));
     }
 
     @Override
