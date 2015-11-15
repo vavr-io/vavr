@@ -5,16 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.Serializables;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Value;
-import javaslang.collection.Tree.Node;
-import javaslang.control.Option;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.IterableAssert;
-import org.assertj.core.api.ObjectAssert;
-import org.junit.Test;
+import static javaslang.Serializables.deserialize;
+import static javaslang.Serializables.serialize;
 
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
@@ -23,8 +15,18 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collector;
 
-import static javaslang.Serializables.deserialize;
-import static javaslang.Serializables.serialize;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.IterableAssert;
+import org.assertj.core.api.ObjectAssert;
+import org.junit.Test;
+
+import javaslang.Serializables;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
+import javaslang.Value;
+import javaslang.collection.Tree.Node;
+import javaslang.control.Option;
 
 /**
  * Tests all methods defined in {@link javaslang.collection.Tree}.
@@ -524,6 +526,19 @@ public class TreeTest extends AbstractTraversableTest {
         final Tree<Integer> testee = $(1, $(2), $(3));
         final Tuple2<Tree<Integer>, Tree<Integer>> actual = testee.unzip(i -> Tuple.of(i, -i));
         final Tuple2<Tree<Integer>, Tree<Integer>> expected = Tuple.of($(1, $(2), $(3)), $(-1, $(-2), $(-3)));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldUnzip3EmptyTree() {
+        assertThat(Tree.empty().unzip3(t -> Tuple.of(t, t, t))).isEqualTo(Tuple.of(Tree.empty(), Tree.empty(), Tree.empty()));
+    }
+
+    @Test
+    public void shouldUnzip3NonEmptyTree() {
+        final Tree<Integer> testee = $(1, $(2), $(3));
+        final Tuple3<Tree<Integer>, Tree<Integer>, Tree<Integer>> actual = testee.unzip3(i -> Tuple.of(i, -i, -i-1));
+        final Tuple3<Tree<Integer>, Tree<Integer>, Tree<Integer>> expected = Tuple.of($(1, $(2), $(3)), $(-1, $(-2), $(-3)), $(-2, $(-3), $(-4)));
         assertThat(actual).isEqualTo(expected);
     }
 

@@ -5,21 +5,33 @@
  */
 package javaslang.collection;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+
 import javaslang.Function1;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.collection.ArrayModule.Combinations;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
-
-import java.io.Serializable;
-import java.util.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.function.*;
-import java.util.stream.Collector;
 
 /**
  * Array is a Traversable wrapper for {@code Object[]} containing elements of type {@code T}.
@@ -84,7 +96,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return A Array containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T> Array<T> ofAll(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -1166,6 +1177,25 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
                 ys[i] = t._2;
             }
             return Tuple.of(wrap(xs), wrap(ys));
+        }
+    }
+    
+    @Override
+    public <T1, T2, T3> Tuple3<Array<T1>, Array<T2>, Array<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        if (isEmpty()) {
+            return Tuple.of(empty(), empty(), empty());
+        } else {
+            final Object[] xs = new Object[back.length];
+            final Object[] ys = new Object[back.length];
+			final Object[] zs = new Object[back.length];
+            for (int i = 0; i < back.length; i++) {
+                final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(get(i));
+                xs[i] = t._1;
+                ys[i] = t._2;
+				zs[i] = t._3;
+            }
+            return Tuple.of(wrap(xs), wrap(ys), wrap(zs));
         }
     }
 
