@@ -33,6 +33,13 @@ public class CheckedFunction1Test {
     }
 
     @Test
+    public void shouldCreateIdentityFunction() throws Throwable {
+        final CheckedFunction1<String, String> identity = CheckedFunction1.identity();
+        final String s = "test";
+        assertThat(identity.apply(s)).isEqualTo(s);
+    }
+
+    @Test
     public void shouldRecognizeApplicabilityOfNonNull() {
         final CheckedFunction1<Integer, Integer> f = (i1) -> null;
         assertThat(f.isApplicableTo(1)).isTrue();

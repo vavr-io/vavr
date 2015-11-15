@@ -33,7 +33,7 @@ public class CheckedFunction2Test {
     }
 
     @Test
-    public void shouldPartiallyApplyWith1Arguments() throws Throwable {
+    public void shouldPartiallyApply() throws Throwable {
         final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
         assertThat(f.apply(null)).isNotNull();
     }

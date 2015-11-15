@@ -33,32 +33,12 @@ public class Function6Test {
     }
 
     @Test
-    public void shouldPartiallyApplyWith1Arguments() {
+    public void shouldPartiallyApply() {
         final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
         assertThat(f.apply(null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith2Arguments() {
-        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
         assertThat(f.apply(null, null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith3Arguments() {
-        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
         assertThat(f.apply(null, null, null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith4Arguments() {
-        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
         assertThat(f.apply(null, null, null, null)).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApplyWith5Arguments() {
-        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
         assertThat(f.apply(null, null, null, null, null)).isNotNull();
     }
 

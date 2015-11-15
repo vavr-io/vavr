@@ -33,6 +33,13 @@ public class Function0Test {
     }
 
     @Test
+    public void shouldGetValue() {
+        final String s = "test";
+        final Function0<String> supplier = () -> s;
+        assertThat(supplier.get()).isEqualTo(s);
+    }
+
+    @Test
     public void shouldGetArity() {
         final Function0<Object> f = () -> null;
         assertThat(f.arity()).isEqualTo(0);

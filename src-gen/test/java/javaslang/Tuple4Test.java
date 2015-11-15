@@ -61,9 +61,7 @@ public class Tuple4Test {
         assertThat(t1.compareTo(t0)).isPositive();
         assertThat(intTupleComparator.compare(t0, t1)).isNegative();
         assertThat(intTupleComparator.compare(t1, t0)).isPositive();
-    }
-
-    @Test
+    }@Test
     public void shouldCompare2thArg() {
         final Tuple4<Integer, Integer, Integer, Integer> t0 = createIntTuple(0, 0, 0, 0);
         final Tuple4<Integer, Integer, Integer, Integer> t2 = createIntTuple(0, 1, 0, 0);
@@ -71,9 +69,7 @@ public class Tuple4Test {
         assertThat(t2.compareTo(t0)).isPositive();
         assertThat(intTupleComparator.compare(t0, t2)).isNegative();
         assertThat(intTupleComparator.compare(t2, t0)).isPositive();
-    }
-
-    @Test
+    }@Test
     public void shouldCompare3thArg() {
         final Tuple4<Integer, Integer, Integer, Integer> t0 = createIntTuple(0, 0, 0, 0);
         final Tuple4<Integer, Integer, Integer, Integer> t3 = createIntTuple(0, 0, 1, 0);
@@ -81,9 +77,7 @@ public class Tuple4Test {
         assertThat(t3.compareTo(t0)).isPositive();
         assertThat(intTupleComparator.compare(t0, t3)).isNegative();
         assertThat(intTupleComparator.compare(t3, t0)).isPositive();
-    }
-
-    @Test
+    }@Test
     public void shouldCompare4thArg() {
         final Tuple4<Integer, Integer, Integer, Integer> t0 = createIntTuple(0, 0, 0, 0);
         final Tuple4<Integer, Integer, Integer, Integer> t4 = createIntTuple(0, 0, 0, 1);
@@ -131,6 +125,15 @@ public class Tuple4Test {
         final Tuple4<Object, Object, Object, Object> tuple = createTuple();
         final Object other = new Object();
         assertThat(tuple).isNotEqualTo(other);
+    }
+
+    @Test
+    public void shouldRecognizeNonEqualityPerComponent() {
+        final Tuple4<String, String, String, String> tuple = Tuple.of("1", "2", "3", "4");
+        assertThat(tuple.equals(Tuple.of("X", "2", "3", "4"))).isFalse();
+        assertThat(tuple.equals(Tuple.of("1", "X", "3", "4"))).isFalse();
+        assertThat(tuple.equals(Tuple.of("1", "2", "X", "4"))).isFalse();
+        assertThat(tuple.equals(Tuple.of("1", "2", "3", "X"))).isFalse();
     }
 
     @Test

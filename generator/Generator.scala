@@ -993,16 +993,34 @@ def generateTestClasses(): Unit = {
                   assertThat($name$i.lift(($functionArgs) -> { while(true); })).isNotNull();
               }
 
-              ${(1 to i - 1).gen(j => {
-                val partialArgs = (1 to j).gen(k => "null")(", ")
-                xs"""
-                  @$test
-                  public void shouldPartiallyApplyWith${j}Argument${(i > 1).gen("s")}()${checked.gen(" throws Throwable")} {
-                      final $name$i<$generics> f = ($functionArgs) -> null;
-                      $assertThat(f.apply($partialArgs)).isNotNull();
-                  }
-                """
-              })("\n\n")}
+              ${(i == 1).gen(xs"""
+                @$test
+                public void shouldCreateIdentityFunction()${checked.gen(" throws Throwable")} {
+                    final $name$i<String, String> identity = $name$i.identity();
+                    final String s = "test";
+                    assertThat(identity.apply(s)).isEqualTo(s);
+                }
+              """)}
+
+              ${(i == 0 && !checked).gen(xs"""
+                @$test
+                public void shouldGetValue()${checked.gen(" throws Throwable")} {
+                    final String s = "test";
+                    final ${name}0<String> supplier = () -> s;
+                    assertThat(supplier.get()).isEqualTo(s);
+                }
+              """)}
+
+              ${(i > 1).gen(xs"""
+                @$test
+                public void shouldPartiallyApply()${checked.gen(" throws Throwable")} {
+                    final $name$i<$generics> f = ($functionArgs) -> null;
+                    ${(1 to i - 1).gen(j => {
+                      val partialArgs = (1 to j).gen(k => "null")(", ")
+                      s"$assertThat(f.apply($partialArgs)).isNotNull();"
+                    })("\n")}
+                }
+              """)}
 
               ${(i > 0).gen(xs"""
                 @$test
@@ -1566,17 +1584,15 @@ def generateTestClasses(): Unit = {
               }
 
               ${(1 to i).gen(j => xs"""
-
-              @$test
-              public void shouldCompare${j}thArg() {
-                  final Tuple$i<$intGenerics> t0 = createIntTuple(${genArgsForComparing(i, 0)});
-                  final Tuple$i<$intGenerics> t$j = createIntTuple(${genArgsForComparing(i, j)});
-                  $assertThat(t0.compareTo(t$j)).isNegative();
-                  $assertThat(t$j.compareTo(t0)).isPositive();
-                  $assertThat(intTupleComparator.compare(t0, t$j)).isNegative();
-                  $assertThat(intTupleComparator.compare(t$j, t0)).isPositive();
-              }
-
+                @$test
+                public void shouldCompare${j}thArg() {
+                    final Tuple$i<$intGenerics> t0 = createIntTuple(${genArgsForComparing(i, 0)});
+                    final Tuple$i<$intGenerics> t$j = createIntTuple(${genArgsForComparing(i, j)});
+                    $assertThat(t0.compareTo(t$j)).isNegative();
+                    $assertThat(t$j.compareTo(t0)).isPositive();
+                    $assertThat(intTupleComparator.compare(t0, t$j)).isNegative();
+                    $assertThat(intTupleComparator.compare(t$j, t0)).isPositive();
+                }
               """)}
 
               @$test
@@ -1587,15 +1603,13 @@ def generateTestClasses(): Unit = {
                   $assertThat(actual).isEqualTo(tuple);
               }
 
-              ${(i > 1).gen(xs"""
-                @$test
-                public void shouldMapComponents() {
-                  final Tuple$i<$generics> tuple = createTuple();
-                  ${(1 to i).gen(j => xs"""final Function1<Object, Object> f$j = Function1.identity();""")("\n")}
-                  final Tuple$i<$generics> actual = tuple.map(${(1 to i).gen(j => s"f$j")(", ")});
-                  $assertThat(actual).isEqualTo(tuple);
-                }
-              """)}
+              @$test
+              public void shouldMapComponents() {
+                final Tuple$i<$generics> tuple = createTuple();
+                ${(1 to i).gen(j => xs"""final Function1<Object, Object> f$j = Function1.identity();""")("\n")}
+                final Tuple$i<$generics> actual = tuple.map(${(1 to i).gen(j => s"f$j")(", ")});
+                $assertThat(actual).isEqualTo(tuple);
+              }
 
               @$test
               public void shouldTransformTuple() {
@@ -1616,6 +1630,15 @@ def generateTestClasses(): Unit = {
                   final Tuple$i<$generics> tuple = createTuple();
                   final Object other = new Object();
                   $assertThat(tuple).isNotEqualTo(other);
+              }
+
+              @$test
+              public void shouldRecognizeNonEqualityPerComponent() {
+                  final Tuple$i<${(1 to i).gen(_ => "String")(", ")}> tuple = Tuple.of(${(1 to i).gen(j => "\"" + j + "\"")(", ")});
+                  ${(1 to i).gen(j => {
+                    val that = "Tuple.of(" + (1 to i).gen(k => if (j == k) "\"X\"" else "\"" + k + "\"")(", ") + ")"
+                    s"$assertThat(tuple.equals($that)).isFalse();"
+                  })("\n")}
               }
 
               @$test
