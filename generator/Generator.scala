@@ -454,38 +454,6 @@ def generateMainClasses(): Unit = {
                */
               R apply($paramsDecl)${checked.gen(" throws Throwable")};
 
-              ${(i > 0).gen(xs"""
-                /$javadoc
-                 * Checks if this function is applicable to the given objects,
-                 * i.e. each of the given objects is either null or the object type is assignable to the parameter type.
-                 * <p>
-                 * Please note that it is not checked if this function is defined for the given objects.
-                 ${(0 to i).gen(j => if (j == 0) "*" else s"* @param o$j object $j")("\n")}
-                 * @return true, if this function is applicable to the given objects, false otherwise.
-                 */
-                default boolean isApplicableTo(${(1 to i).gen(j => s"Object o$j")(", ")}) {
-                    final Class<?>[] paramTypes = getType().parameterTypes();
-                    return
-                            ${(1 to i).gen(j => xs"""
-                              (o$j == null || paramTypes[${j - 1}].isAssignableFrom(o$j.getClass()))
-                            """)(" &&\n")};
-                }
-
-                /$javadoc
-                 * Checks if this function is generally applicable to objects of the given types.
-                 ${(0 to i).gen(j => if (j == 0) "*" else s"* @param type$j type $j")("\n")}
-                 * @return true, if this function is applicable to objects of the given types, false otherwise.
-                 */
-                default boolean isApplicableToType${(i > 1).gen("s")}(${(1 to i).gen(j => s"Class<?> type$j")(", ")}) {
-                    ${(1 to i).gen(j => xs"""$Objects.requireNonNull(type$j, "type$j is null");""")("\n")}
-                    final Class<?>[] paramTypes = getType().parameterTypes();
-                    return
-                            ${(1 to i).gen(j => xs"""
-                              paramTypes[${j - 1}].isAssignableFrom(type$j)
-                            """)(" &&\n")};
-                }
-              """)}
-
               ${(1 to i - 1).gen(j => {
                 val partialApplicationArgs = (1 to j).gen(k => s"T$k t$k")(", ")
                 val resultFunctionGenerics = (j+1 to i).gen(k => s"T$k")(", ")
@@ -566,9 +534,11 @@ def generateMainClasses(): Unit = {
                               if (t1 == null) {
                                   return forNull.get();
                               } else {
+                                  final R result;
                                   synchronized (lock) {
-                                      return cache.computeIfAbsent(t1, $mappingFunction);
+                                      result = cache.computeIfAbsent(t1, $mappingFunction);
                                   }
+                                  return result;
                               }
                           };
                         """ else xs"""
@@ -576,9 +546,11 @@ def generateMainClasses(): Unit = {
                           final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.HashMap")}<>();
                           final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
                           return ($className$fullGenerics & $Memoized) ($params) -> {
+                              final R result;
                               synchronized (lock) {
-                                  return cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
+                                  result = cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
                               }
+                              return result;
                           };
                         """
                       }
@@ -1006,7 +978,7 @@ def generateTestClasses(): Unit = {
           public class $className {
 
               @$test
-              public void shouldLift() {
+              public void shouldCreateFromMethodReference() {
                   class Type {
                       Object methodReference($functionArgsDecl) {
                           return null;
@@ -1016,11 +988,16 @@ def generateTestClasses(): Unit = {
                   assertThat($name$i.of(type::methodReference)).isNotNull();
               }
 
+              @$test
+              public void shouldLiftPartialFunction() {
+                  assertThat($name$i.lift(($functionArgs) -> { while(true); })).isNotNull();
+              }
+
               ${(1 to i - 1).gen(j => {
                 val partialArgs = (1 to j).gen(k => "null")(", ")
                 xs"""
                   @$test
-                  public void shouldPartiallyApplyWith${j}Arguments()${checked.gen(" throws Throwable")} {
+                  public void shouldPartiallyApplyWith${j}Argument${(i > 1).gen("s")}()${checked.gen(" throws Throwable")} {
                       final $name$i<$generics> f = ($functionArgs) -> null;
                       $assertThat(f.apply($partialArgs)).isNotNull();
                   }
@@ -1028,23 +1005,33 @@ def generateTestClasses(): Unit = {
               })("\n\n")}
 
               ${(i > 0).gen(xs"""
-              @$test
-              public void shouldRecognizeApplicabilityOfNull() {
-                  final $name$i<$generics> f = ($functionArgs) -> null;
-                  $assertThat(f.isApplicableTo(${(1 to i).gen(j => "null")(", ")})).isTrue();
-              }
+                @$test
+                public void shouldRecognizeApplicabilityOfNonNull() {
+                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                    $assertThat(f.isApplicableTo(${(1 to i).gen(j => s"$j")(", ")})).isTrue();
+                }
 
-              @$test
-              public void shouldRecognizeApplicabilityOfNonNull() {
-                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                  $assertThat(f.isApplicableTo(${(1 to i).gen(j => s"$j")(", ")})).isTrue();
-              }
+                ${(2 to i).gen(j => xs"""
+                  @$test
+                  public void shouldRecognizeApplicabilityOfNull$j() {
+                      final $name$i<$generics> f = ($functionArgs) -> null;
+                      $assertThat(f.isApplicableTo(${(1 to i).gen(k => if (j == k) "null" else "new Object()")(", ")})).isTrue();
+                  }
+                """)("\n\n")}
 
-              @$test
-              public void shouldRecognizeApplicabilityToType${(i > 1).gen("s")}() {
-                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                  $assertThat(f.isApplicableToType${(i > 1).gen("s")}(${(1 to i).gen(j => "Integer.class")(", ")})).isTrue();
-              }
+                @$test
+                public void shouldRecognizeApplicabilityToTypes() {
+                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                    $assertThat(f.isApplicableToTypes(${(1 to i).gen(j => "Integer.class")(", ")})).isTrue();
+                }
+
+                ${(1 to i).gen(j => xs"""
+                  @$test
+                  public void shouldRecognizeNonApplicabilityToType$j() {
+                      final $name$i<${(1 to i + 1).gen(j => "Number")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
+                      $assertThat(f.isApplicableToTypes(${(1 to i).gen(k => if (j == k) "String.class" else "Integer.class")(", ")})).isFalse();
+                  }
+                """)("\n\n")}
               """)}
 
               @$test

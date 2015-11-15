@@ -5,6 +5,8 @@
  */
 package javaslang;
 
+import javaslang.collection.Array;
+import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.control.Try;
 import javaslang.λModule.ReflectionUtil;
@@ -14,6 +16,7 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * This is a general definition of a (checked/unchecked) function of unknown parameters and a return type R.
@@ -84,6 +87,57 @@ public interface λ<R> extends Serializable {
      * @return A new instance containing the type information
      */
     Type<R> getType();
+
+    /**
+     * Checks if this function is applicable to the given objects,
+     * i.e. each of the given objects is either null or the object type is assignable to the parameter type.
+     * <p>
+     * Please note that it is not checked if this function is defined for the given objects.
+     * <p>
+     * A function is applicable to no objects by definition.
+     *
+     * @param objects Objects, may be null
+     * @return true, if {@code 0 < objects.length <= arity()} and this function is applicable to the given objects, false otherwise.
+     * @throws NullPointerException if {@code objects} is null.
+     */
+    default boolean isApplicableTo(Object... objects) {
+        Objects.requireNonNull(objects, "objects is null");
+        if (objects.length == 0 || objects.length > arity()) {
+            return false;
+        }
+        final Class<?>[] paramTypes = getType().parameterTypes();
+        for (int i = 0; i < objects.length; i++) {
+            final Object o = objects[i];
+            if (o != null && !paramTypes[i].isAssignableFrom(o.getClass())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Checks if this function is generally applicable to objects of the given types.
+     * <p>
+     * A function is applicable to no types by definition.
+     *
+     * @param types Argument types
+     * @return true, if {@code 0 <= types.length <= arity()} and this function is applicable to objects of the given types, false otherwise.
+     * @throws NullPointerException if {@code types} or one of the elements of {@code types} is null.
+     */
+    default boolean isApplicableToTypes(Class<?>... types) {
+        Objects.requireNonNull(types, "types is null");
+        if (types.length == 0 || types.length > arity()) {
+            return false;
+        }
+        final Class<?>[] paramTypes = getType().parameterTypes();
+        for (int i = 0; i < types.length; i++) {
+            final Class<?> type = Objects.requireNonNull(types[i], "types[" + i + "] is null");
+            if (!paramTypes[i].isAssignableFrom(type)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * Represents the type of a function which consists of <em>parameter types</em> and a <em>return type</em>.

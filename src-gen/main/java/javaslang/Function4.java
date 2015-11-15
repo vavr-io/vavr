@@ -105,49 +105,6 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
     R apply(T1 t1, T2 t2, T3 t3, T4 t4);
 
     /**
-     * Checks if this function is applicable to the given objects,
-     * i.e. each of the given objects is either null or the object type is assignable to the parameter type.
-     * <p>
-     * Please note that it is not checked if this function is defined for the given objects.
-     *
-     * @param o1 object 1
-     * @param o2 object 2
-     * @param o3 object 3
-     * @param o4 object 4
-     * @return true, if this function is applicable to the given objects, false otherwise.
-     */
-    default boolean isApplicableTo(Object o1, Object o2, Object o3, Object o4) {
-        final Class<?>[] paramTypes = getType().parameterTypes();
-        return
-                (o1 == null || paramTypes[0].isAssignableFrom(o1.getClass())) &&
-                (o2 == null || paramTypes[1].isAssignableFrom(o2.getClass())) &&
-                (o3 == null || paramTypes[2].isAssignableFrom(o3.getClass())) &&
-                (o4 == null || paramTypes[3].isAssignableFrom(o4.getClass()));
-    }
-
-    /**
-     * Checks if this function is generally applicable to objects of the given types.
-     *
-     * @param type1 type 1
-     * @param type2 type 2
-     * @param type3 type 3
-     * @param type4 type 4
-     * @return true, if this function is applicable to objects of the given types, false otherwise.
-     */
-    default boolean isApplicableToTypes(Class<?> type1, Class<?> type2, Class<?> type3, Class<?> type4) {
-        Objects.requireNonNull(type1, "type1 is null");
-        Objects.requireNonNull(type2, "type2 is null");
-        Objects.requireNonNull(type3, "type3 is null");
-        Objects.requireNonNull(type4, "type4 is null");
-        final Class<?>[] paramTypes = getType().parameterTypes();
-        return
-                paramTypes[0].isAssignableFrom(type1) &&
-                paramTypes[1].isAssignableFrom(type2) &&
-                paramTypes[2].isAssignableFrom(type3) &&
-                paramTypes[3].isAssignableFrom(type4);
-    }
-
-    /**
      * Applies this function partially to one argument.
      *
      * @param t1 argument 1
@@ -212,9 +169,11 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
             final Map<Tuple4<T1, T2, T3, T4>, R> cache = new HashMap<>();
             final Function1<Tuple4<T1, T2, T3, T4>, R> tupled = tupled();
             return (Function4<T1, T2, T3, T4, R> & Memoized) (t1, t2, t3, t4) -> {
+                final R result;
                 synchronized (lock) {
-                    return cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4), tupled::apply);
+                    result = cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4), tupled::apply);
                 }
+                return result;
             };
         }
     }

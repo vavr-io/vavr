@@ -17,7 +17,7 @@ import org.junit.Test;
 public class Function6Test {
 
     @Test
-    public void shouldLift() {
+    public void shouldCreateFromMethodReference() {
         class Type {
             Object methodReference(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6) {
                 return null;
@@ -25,6 +25,11 @@ public class Function6Test {
         }
         final Type type = new Type();
         assertThat(Function6.of(type::methodReference)).isNotNull();
+    }
+
+    @Test
+    public void shouldLiftPartialFunction() {
+        assertThat(Function6.lift((o1, o2, o3, o4, o5, o6) -> { while(true); })).isNotNull();
     }
 
     @Test
@@ -58,21 +63,81 @@ public class Function6Test {
     }
 
     @Test
-    public void shouldRecognizeApplicabilityOfNull() {
-        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
-        assertThat(f.isApplicableTo(null, null, null, null, null, null)).isTrue();
-    }
-
-    @Test
     public void shouldRecognizeApplicabilityOfNonNull() {
         final Function6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6) -> null;
         assertThat(f.isApplicableTo(1, 2, 3, 4, 5, 6)).isTrue();
     }
 
     @Test
+    public void shouldRecognizeApplicabilityOfNull2() {
+        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
+        assertThat(f.isApplicableTo(new Object(), null, new Object(), new Object(), new Object(), new Object())).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeApplicabilityOfNull3() {
+        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
+        assertThat(f.isApplicableTo(new Object(), new Object(), null, new Object(), new Object(), new Object())).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeApplicabilityOfNull4() {
+        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
+        assertThat(f.isApplicableTo(new Object(), new Object(), new Object(), null, new Object(), new Object())).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeApplicabilityOfNull5() {
+        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
+        assertThat(f.isApplicableTo(new Object(), new Object(), new Object(), new Object(), null, new Object())).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeApplicabilityOfNull6() {
+        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
+        assertThat(f.isApplicableTo(new Object(), new Object(), new Object(), new Object(), new Object(), null)).isTrue();
+    }
+
+    @Test
     public void shouldRecognizeApplicabilityToTypes() {
         final Function6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6) -> null;
         assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class)).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType1() {
+        final Function6<Number, Number, Number, Number, Number, Number, Number> f = (i1, i2, i3, i4, i5, i6) -> null;
+        assertThat(f.isApplicableToTypes(String.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class)).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType2() {
+        final Function6<Number, Number, Number, Number, Number, Number, Number> f = (i1, i2, i3, i4, i5, i6) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class)).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType3() {
+        final Function6<Number, Number, Number, Number, Number, Number, Number> f = (i1, i2, i3, i4, i5, i6) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, String.class, Integer.class, Integer.class, Integer.class)).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType4() {
+        final Function6<Number, Number, Number, Number, Number, Number, Number> f = (i1, i2, i3, i4, i5, i6) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, String.class, Integer.class, Integer.class)).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType5() {
+        final Function6<Number, Number, Number, Number, Number, Number, Number> f = (i1, i2, i3, i4, i5, i6) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class, String.class, Integer.class)).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType6() {
+        final Function6<Number, Number, Number, Number, Number, Number, Number> f = (i1, i2, i3, i4, i5, i6) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, String.class)).isFalse();
     }
 
     @Test

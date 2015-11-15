@@ -17,7 +17,7 @@ import org.junit.Test;
 public class CheckedFunction0Test {
 
     @Test
-    public void shouldLift() {
+    public void shouldCreateFromMethodReference() {
         class Type {
             Object methodReference() {
                 return null;
@@ -25,6 +25,11 @@ public class CheckedFunction0Test {
         }
         final Type type = new Type();
         assertThat(CheckedFunction0.of(type::methodReference)).isNotNull();
+    }
+
+    @Test
+    public void shouldLiftPartialFunction() {
+        assertThat(CheckedFunction0.lift(() -> { while(true); })).isNotNull();
     }
 
     @Test

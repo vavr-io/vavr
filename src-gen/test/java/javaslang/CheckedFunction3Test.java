@@ -17,7 +17,7 @@ import org.junit.Test;
 public class CheckedFunction3Test {
 
     @Test
-    public void shouldLift() {
+    public void shouldCreateFromMethodReference() {
         class Type {
             Object methodReference(Object o1, Object o2, Object o3) {
                 return null;
@@ -25,6 +25,11 @@ public class CheckedFunction3Test {
         }
         final Type type = new Type();
         assertThat(CheckedFunction3.of(type::methodReference)).isNotNull();
+    }
+
+    @Test
+    public void shouldLiftPartialFunction() {
+        assertThat(CheckedFunction3.lift((o1, o2, o3) -> { while(true); })).isNotNull();
     }
 
     @Test
@@ -40,21 +45,45 @@ public class CheckedFunction3Test {
     }
 
     @Test
-    public void shouldRecognizeApplicabilityOfNull() {
-        final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
-        assertThat(f.isApplicableTo(null, null, null)).isTrue();
-    }
-
-    @Test
     public void shouldRecognizeApplicabilityOfNonNull() {
         final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
         assertThat(f.isApplicableTo(1, 2, 3)).isTrue();
     }
 
     @Test
+    public void shouldRecognizeApplicabilityOfNull2() {
+        final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
+        assertThat(f.isApplicableTo(new Object(), null, new Object())).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeApplicabilityOfNull3() {
+        final CheckedFunction3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
+        assertThat(f.isApplicableTo(new Object(), new Object(), null)).isTrue();
+    }
+
+    @Test
     public void shouldRecognizeApplicabilityToTypes() {
         final CheckedFunction3<Integer, Integer, Integer, Integer> f = (i1, i2, i3) -> null;
         assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class)).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType1() {
+        final CheckedFunction3<Number, Number, Number, Number> f = (i1, i2, i3) -> null;
+        assertThat(f.isApplicableToTypes(String.class, Integer.class, Integer.class)).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType2() {
+        final CheckedFunction3<Number, Number, Number, Number> f = (i1, i2, i3) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, String.class, Integer.class)).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType3() {
+        final CheckedFunction3<Number, Number, Number, Number> f = (i1, i2, i3) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, String.class)).isFalse();
     }
 
     @Test

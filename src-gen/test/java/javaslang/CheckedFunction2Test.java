@@ -17,7 +17,7 @@ import org.junit.Test;
 public class CheckedFunction2Test {
 
     @Test
-    public void shouldLift() {
+    public void shouldCreateFromMethodReference() {
         class Type {
             Object methodReference(Object o1, Object o2) {
                 return null;
@@ -28,15 +28,14 @@ public class CheckedFunction2Test {
     }
 
     @Test
-    public void shouldPartiallyApplyWith1Arguments() throws Throwable {
-        final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
-        assertThat(f.apply(null)).isNotNull();
+    public void shouldLiftPartialFunction() {
+        assertThat(CheckedFunction2.lift((o1, o2) -> { while(true); })).isNotNull();
     }
 
     @Test
-    public void shouldRecognizeApplicabilityOfNull() {
+    public void shouldPartiallyApplyWith1Arguments() throws Throwable {
         final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
-        assertThat(f.isApplicableTo(null, null)).isTrue();
+        assertThat(f.apply(null)).isNotNull();
     }
 
     @Test
@@ -46,9 +45,27 @@ public class CheckedFunction2Test {
     }
 
     @Test
+    public void shouldRecognizeApplicabilityOfNull2() {
+        final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
+        assertThat(f.isApplicableTo(new Object(), null)).isTrue();
+    }
+
+    @Test
     public void shouldRecognizeApplicabilityToTypes() {
         final CheckedFunction2<Integer, Integer, Integer> f = (i1, i2) -> null;
         assertThat(f.isApplicableToTypes(Integer.class, Integer.class)).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType1() {
+        final CheckedFunction2<Number, Number, Number> f = (i1, i2) -> null;
+        assertThat(f.isApplicableToTypes(String.class, Integer.class)).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType2() {
+        final CheckedFunction2<Number, Number, Number> f = (i1, i2) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, String.class)).isFalse();
     }
 
     @Test

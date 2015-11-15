@@ -17,7 +17,7 @@ import org.junit.Test;
 public class CheckedFunction7Test {
 
     @Test
-    public void shouldLift() {
+    public void shouldCreateFromMethodReference() {
         class Type {
             Object methodReference(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7) {
                 return null;
@@ -25,6 +25,11 @@ public class CheckedFunction7Test {
         }
         final Type type = new Type();
         assertThat(CheckedFunction7.of(type::methodReference)).isNotNull();
+    }
+
+    @Test
+    public void shouldLiftPartialFunction() {
+        assertThat(CheckedFunction7.lift((o1, o2, o3, o4, o5, o6, o7) -> { while(true); })).isNotNull();
     }
 
     @Test
@@ -64,21 +69,93 @@ public class CheckedFunction7Test {
     }
 
     @Test
-    public void shouldRecognizeApplicabilityOfNull() {
-        final CheckedFunction7<Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7) -> null;
-        assertThat(f.isApplicableTo(null, null, null, null, null, null, null)).isTrue();
-    }
-
-    @Test
     public void shouldRecognizeApplicabilityOfNonNull() {
         final CheckedFunction7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
         assertThat(f.isApplicableTo(1, 2, 3, 4, 5, 6, 7)).isTrue();
     }
 
     @Test
+    public void shouldRecognizeApplicabilityOfNull2() {
+        final CheckedFunction7<Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7) -> null;
+        assertThat(f.isApplicableTo(new Object(), null, new Object(), new Object(), new Object(), new Object(), new Object())).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeApplicabilityOfNull3() {
+        final CheckedFunction7<Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7) -> null;
+        assertThat(f.isApplicableTo(new Object(), new Object(), null, new Object(), new Object(), new Object(), new Object())).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeApplicabilityOfNull4() {
+        final CheckedFunction7<Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7) -> null;
+        assertThat(f.isApplicableTo(new Object(), new Object(), new Object(), null, new Object(), new Object(), new Object())).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeApplicabilityOfNull5() {
+        final CheckedFunction7<Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7) -> null;
+        assertThat(f.isApplicableTo(new Object(), new Object(), new Object(), new Object(), null, new Object(), new Object())).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeApplicabilityOfNull6() {
+        final CheckedFunction7<Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7) -> null;
+        assertThat(f.isApplicableTo(new Object(), new Object(), new Object(), new Object(), new Object(), null, new Object())).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeApplicabilityOfNull7() {
+        final CheckedFunction7<Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7) -> null;
+        assertThat(f.isApplicableTo(new Object(), new Object(), new Object(), new Object(), new Object(), new Object(), null)).isTrue();
+    }
+
+    @Test
     public void shouldRecognizeApplicabilityToTypes() {
         final CheckedFunction7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
         assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class)).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType1() {
+        final CheckedFunction7<Number, Number, Number, Number, Number, Number, Number, Number> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        assertThat(f.isApplicableToTypes(String.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class)).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType2() {
+        final CheckedFunction7<Number, Number, Number, Number, Number, Number, Number, Number> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class)).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType3() {
+        final CheckedFunction7<Number, Number, Number, Number, Number, Number, Number, Number> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, String.class, Integer.class, Integer.class, Integer.class, Integer.class)).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType4() {
+        final CheckedFunction7<Number, Number, Number, Number, Number, Number, Number, Number> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, String.class, Integer.class, Integer.class, Integer.class)).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType5() {
+        final CheckedFunction7<Number, Number, Number, Number, Number, Number, Number, Number> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class, String.class, Integer.class, Integer.class)).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType6() {
+        final CheckedFunction7<Number, Number, Number, Number, Number, Number, Number, Number> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, String.class, Integer.class)).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonApplicabilityToType7() {
+        final CheckedFunction7<Number, Number, Number, Number, Number, Number, Number, Number> f = (i1, i2, i3, i4, i5, i6, i7) -> null;
+        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class, String.class)).isFalse();
     }
 
     @Test
