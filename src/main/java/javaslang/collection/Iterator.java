@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.Value;
 import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
@@ -69,7 +70,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    @SuppressWarnings("varargs")
     @SafeVarargs
     static <T> Iterator<T> concat(java.lang.Iterable<? extends T>... iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
@@ -1106,6 +1106,18 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else {
             final Stream<Tuple2<? extends T1, ? extends T2>> source = Stream.ofAll(this.map(unzipper::apply));
             return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator());
+        }
+    }
+
+    @Override
+    default <T1, T2, T3> Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> unzip3(
+            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        if (!hasNext()) {
+            return Tuple.of(empty(), empty(), empty());
+        } else {
+            final Stream<Tuple3<? extends T1, ? extends T2, ? extends T3>> source = Stream.ofAll(this.map(unzipper::apply));
+            return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator(), source.map(t -> (T3) t._3).iterator());
         }
     }
 

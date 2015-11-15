@@ -5,21 +5,41 @@
  */
 package javaslang.collection;
 
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+
 import javaslang.Function1;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Empty;
-import javaslang.collection.StreamModule.*;
+import javaslang.collection.StreamModule.AppendSelf;
+import javaslang.collection.StreamModule.Combinations;
+import javaslang.collection.StreamModule.DropRight;
+import javaslang.collection.StreamModule.StreamFactory;
+import javaslang.collection.StreamModule.StreamIterator;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
-
-import java.io.*;
-import java.util.*;
-import java.util.function.*;
-import java.util.stream.Collector;
 
 /**
  * An immutable {@code Stream} is lazy sequence of elements which may be infinitely long.
@@ -217,8 +237,6 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param elements Zero or more elements.
      * @return A list containing the given elements in the same order.
      */
-
-    @SuppressWarnings("varargs")
     @SafeVarargs
     static <T> Stream<T> ofAll(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -1192,6 +1210,17 @@ public interface Stream<T> extends LinearSeq<T> {
         final Stream<T1> stream1 = stream.map(t -> t._1);
         final Stream<T2> stream2 = stream.map(t -> t._2);
         return Tuple.of(stream1, stream2);
+    }
+    
+    @Override
+    default <T1, T2, T3> Tuple3<Stream<T1>, Stream<T2>, Stream<T3>> unzip3(
+            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        final Stream<Tuple3<? extends T1, ? extends T2, ? extends T3>> stream = map(unzipper);
+        final Stream<T1> stream1 = stream.map(t -> t._1);
+        final Stream<T2> stream2 = stream.map(t -> t._2);
+		final Stream<T3> stream3 = stream.map(t -> t._3);
+        return Tuple.of(stream1, stream2, stream3);
     }
 
     @Override

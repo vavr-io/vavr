@@ -5,15 +5,16 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
-import javaslang.control.Option;
-
 import java.util.Comparator;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import javaslang.Tuple2;
+import javaslang.Tuple3;
+import javaslang.control.Option;
 
 /**
  * An immutable {@code Set} interface.
@@ -182,6 +183,9 @@ public interface Set<T> extends Traversable<T> {
 
     @Override
     <T1, T2> Tuple2<? extends Set<T1>, ? extends Set<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+    
+    @Override
+    <T1, T2, T3> Tuple3<? extends Set<T1>, ? extends Set<T2>, ? extends Set<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     @Override
     <U> Set<Tuple2<T, U>> zip(java.lang.Iterable<U> that);
