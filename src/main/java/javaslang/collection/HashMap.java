@@ -398,7 +398,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     public HashMap<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
         Objects.requireNonNull(newElement, "newElement is null");
-        return containsKey(currentElement._1) ? put(newElement) : this;
+        return containsKey(currentElement._1) ? remove(currentElement._1).put(newElement) : this;
     }
 
     @Override

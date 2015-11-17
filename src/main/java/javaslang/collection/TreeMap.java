@@ -494,7 +494,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     public TreeMap<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
         Objects.requireNonNull(newElement, "newElement is null");
-        return containsKey(currentElement._1) ? put(newElement) : this;
+        return containsKey(currentElement._1) ? remove(currentElement._1).put(newElement) : this;
     }
 
     @Override
