@@ -324,7 +324,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     // -- removeAll
 
     @Test
-    public void shouldRmoveAll() {
+    public void shouldRemoveAll() {
         assertThat(emptyMap().put(1, 'a').put(2, 'b').put(3, 'c').removeAll(List.ofAll(1, 3)))
                 .isEqualTo(emptyMap().put(2, 'b'));
     }
@@ -533,8 +533,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Override
     public void shouldPreserveSingletonInstanceOnDeserialization() {
-        IntMap<?> obj = deserialize(serialize(empty()));
-        final boolean actual = obj.original() == empty().original();
+        Map<?, ?> obj = deserialize(serialize(emptyMap()));
+        final boolean actual = obj == emptyMap();
         assertThat(actual).isTrue();
     }
 
