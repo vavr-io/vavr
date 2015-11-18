@@ -800,7 +800,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public String toString() {
-        return mkString(", ", "HashSet(", ")");
+        return mkString("HashSet(", ", ", ")");
     }
 
     private static <T> HashArrayMappedTrie<T, T> addAll(HashArrayMappedTrie<T, T> initial,
