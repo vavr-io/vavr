@@ -78,7 +78,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     /**
-     * Creates a Map of the given entries.
+     * Creates a HashMap of the given entries.
      *
      * @param entries Map entries
      * @param <K>     The key type
@@ -96,7 +96,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     /**
-     * Creates a Map of the given entries.
+     * Creates a HashMap of the given entries.
      *
      * @param entries Map entries
      * @param <K>     The key type

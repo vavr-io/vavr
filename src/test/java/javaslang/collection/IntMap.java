@@ -61,11 +61,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public String toString() {
-        return original.mkString(", ", "IntMap(", ")");
-    }
-
-    private Object readResolve() {
-        return original.isEmpty() ? EMPTY : this;
+        return original.mkString("IntMap(", ", ", ")");
     }
 
     @Override
