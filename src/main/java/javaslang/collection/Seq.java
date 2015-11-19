@@ -303,6 +303,39 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     }
 
     /**
+     * Finds index of first element satisfying some predicate.
+     *
+     * @param p
+     *            the predicate used to test elements.
+     * @return the index of the first element of this $coll that satisfies the
+     *         predicate `p`, or `-1`, if none exists.
+     */
+    default int indexWhere(Predicate<? super T> p) {
+        return indexWhere(p, 0);
+    }
+
+    /**
+     * Finds index of the first element satisfying some predicate after or at
+     * some start index.
+     *
+     * @param p
+     *            the predicate used to test elements.
+     * @param from
+     *            the start index
+     * @return the index `>= from` of the first element of this Seq that
+     *         satisfies the predicate `p`, or `-1`, if none exists.
+     */
+    default int indexWhere(Predicate<? super T> p, int from) {
+        int i = from;
+        Iterator<T> it = iterator().drop(from);
+        while(it.hasNext()) {
+            if(p.test(it.next())) return i;
+            else i++;
+        }
+        return -1;
+    }
+
+    /**
      * Inserts the given element at the specified index.
      *
      * @param index   an index
@@ -350,6 +383,36 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      */
     default int lastIndexOf(T element) {
         return lastIndexOf(element, Integer.MAX_VALUE);
+    }
+    
+    /**
+     * Finds index of last element satisfying some predicate.
+     *
+     * @param p the predicate used to test elements.
+     * @return the index of the last element of this Seq that satisfies the
+     *         predicate `p`, or `-1`, if none exists.
+     */
+    default int lastIndexWhere(Predicate<? super T> p){
+        return lastIndexWhere(p, length() - 1);
+    }
+
+    /**
+     * Finds index of last element satisfying some predicate before or at given
+     * end index.
+     *
+     * @param p the predicate used to test elements.
+     * @return the index `<= end` of the last element of this Seq that
+     *         satisfies the predicate `p`, or `-1`, if none exists.
+     */
+    default int lastIndexWhere(Predicate<? super T> p, int end) {
+        int i = length() - 1;
+        Iterator<T> it = reverseIterator();
+        while(it.hasNext()) {
+            T elem = it.next();
+            if(i > end || !p.test(elem)) i--;
+            else break;
+        }
+        return i;
     }
 
     /**
@@ -554,6 +617,16 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @return the reversed elements.
      */
     Seq<T> reverse();
+    
+    /**
+     * An iterator yielding elements in reversed order.
+     *
+     * Note: `xs.reverseIterator` is the same as `xs.reverse().iterator()` but might
+     * be more efficient.
+     *
+     * @return an iterator yielding the elements of this Seq in reversed order
+     */
+    Iterator<T> reverseIterator();
 
     /**
      * Returns a Seq that is a <em>slice</em> of this. The slice begins with the element at the specified
@@ -660,8 +733,38 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @param offset the index where the sequence is searched.
      * @return true if that is empty or that is prefix of this collection starting from the given offset, false otherwise.
      */
-    boolean startsWith(Iterable<? extends T> that, int offset);
+    default boolean startsWith(Iterable<? extends T> that, int offset) {
+        Objects.requireNonNull(that, "that is null");
+        if(offset < 0) return false;
+        Iterator<T> i = this.iterator().drop(offset);
+        java.util.Iterator<? extends T> j = that.iterator();
+        while(i.hasNext() && j.hasNext()) {
+            if(!Objects.equals(i.next(), j.next())) 
+                return false;
+        }
+        return !j.hasNext();
+    }
 
+    
+    /**
+     * Tests whether this sequence ends with the given sequence.
+     * <p>
+     * Note: If the both the receiver object this and the argument that are infinite sequences this method may not terminate.
+     *
+     * @param that   the sequence to test
+     * @return true if this sequence has that as a suffix, false otherwise..
+     */
+    default boolean endsWith(Seq<? extends T> that) {
+        Objects.requireNonNull(that, "that is null");
+        Iterator<T> i = this.iterator().drop(length() - that.length());
+        Iterator<? extends T> j = that.iterator();
+        while(i.hasNext() && j.hasNext()) {
+            if(!Objects.equals(i.next(), j.next())) 
+                return false;
+        }
+        return !j.hasNext();
+    }
+    
     /**
      * Returns a Seq that is a subsequence of this. The subsequence begins with the element at the specified
      * {@code beginIndex} and extends to the end of this Seq.

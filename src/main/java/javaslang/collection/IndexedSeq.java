@@ -106,7 +106,14 @@ public interface IndexedSeq<T> extends Seq<T> {
             return get(length() - 1);
         }
     }
-
+    
+    @Override
+    default int lastIndexWhere(Predicate<? super T> p, int end) {
+        int i = Math.min(end, length()-1);
+        while(i >= 0 && !p.test(this.get(i))) i--;
+        return i;
+    }
+    
     @Override
     <U> IndexedSeq<U> map(Function<? super T, ? extends U> mapper);
 
@@ -160,6 +167,26 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     IndexedSeq<T> reverse();
+    
+    @Override
+    default Iterator<T> reverseIterator() {
+        return new AbstractIterator<T>() {
+            private int i = length();            
+            
+            @Override
+            public boolean hasNext() {
+                return i > 0;
+            }
+            
+            @Override
+            public T next() {
+                if(i > 0)
+                    return IndexedSeq.this.get(--i);
+                else
+                    return Iterator.<T>empty().next();
+            }
+        };
+    }
 
     @Override
     IndexedSeq<T> slice(int beginIndex, int endIndex);
@@ -180,26 +207,53 @@ public interface IndexedSeq<T> extends Seq<T> {
     Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> span(Predicate<? super T> predicate);
 
     @Override
-    default boolean startsWith(java.lang.Iterable<? extends T> that, int offset) {
-        Objects.requireNonNull(that, "that is null");
-        final java.util.Iterator<? extends T> thatIter = that.iterator();
-        if (!thatIter.hasNext()) {
-            return true;
-        }
-        final int length = length();
-        if (offset < 0 || offset > length) {
-            return false;
-        }
-        int index = offset;
-        for (T t : that) {
-            if (index >= length || !Objects.equals(get(index), t)) {
-                return false;
+    default boolean startsWith(Iterable<? extends T> that, int offset) {
+        if(offset < 0) return false;
+        if(that instanceof IndexedSeq) {
+            IndexedSeq<? extends T> dhat = (IndexedSeq<? extends T>) that;
+            int i = offset;
+            int j = 0;
+            int thisLen = length();
+            int thatLen = dhat.length();
+            while(i < thisLen && j < thatLen && Objects.equals(this.get(i), dhat.get(j))) {
+                i++;
+                j++;
             }
-            index++;
+            return j == thatLen;
+        } else {
+            int i = offset;
+            int thisLen = length();
+            java.util.Iterator<? extends T> thatElems = that.iterator();
+            while(i < thisLen && thatElems.hasNext()) {
+                if(!Objects.equals(this.get(i), thatElems.next()))
+                    return false;
+                i++;
+            }
+            return !thatElems.hasNext();
         }
-        return true;
     }
-
+    
+    @Override
+    default boolean endsWith(Seq<? extends T> that) {
+        if(that instanceof IndexedSeq) {
+            int i = length() - 1;
+            int j = that.length() - 1;
+            if(j > i) 
+                return false;
+            else {
+                while(j >= 0) {
+                    if(!Objects.equals(this.get(i), that.get(j)))
+                        return false;
+                    i--;
+                    j--;
+                }
+                return true;
+            }
+        } else {
+            return Seq.super.endsWith(that);
+        }
+    }
+    
     @Override
     IndexedSeq<T> subSequence(int beginIndex);
 
