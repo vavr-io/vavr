@@ -58,11 +58,9 @@ public interface Option<T> extends Value<T> {
      *
      * @return return {@code Some} of supplier's value if condition is true, or {@code None} in other case
      */
-    static <T> Option<T> when(boolean condition, Supplier<T> supplier) {
-        if (!condition) {
-            return none();
-        }
-        return of(supplier.get());
+    static <T> Option<T> when(boolean condition, Supplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return condition ? of(supplier.get()) : none();
     }
 
     /**

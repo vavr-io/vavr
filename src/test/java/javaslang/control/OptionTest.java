@@ -58,6 +58,11 @@ public class OptionTest {
         assertThat(Option.none()).isEqualTo(Option.when(false, () -> { throw new RuntimeException(); }));
     }
 
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionOnNull() {
+        assertThat(Option.none()).isEqualTo(Option.when(false, null));
+    }
+
     // -- get
 
     @Test
