@@ -5,14 +5,14 @@
  */
 package javaslang.control;
 
-import javaslang.Value;
-import javaslang.collection.Iterator;
-
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import javaslang.Value;
+import javaslang.collection.Iterator;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -50,6 +50,17 @@ public interface Option<T> extends Value<T> {
      */
     static <T> None<T> none() {
         return None.instance();
+    }
+
+    /**
+     *
+     * Creates {@code Some} of suppliers value if condition is true, or {@code None} in other case
+     *
+     * @return return {@code Some} of supplier's value if condition is true, or {@code None} in other case
+     */
+    static <T> Option<T> when(boolean condition, Supplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return condition ? of(supplier.get()) : none();
     }
 
     /**
