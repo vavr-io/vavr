@@ -105,19 +105,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     }
 
     /**
-     * Returns a singleton {@code HashMap}, i.e. a {@code HashMap} of one element.
-     *
-     * @param key A singleton map key.
-     * @param value A singleton map value.
-     * @param <K>   The key type
-     * @param <V>   The value type
-     * @return A new Map containing the given entry
-     */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(K key, V value) {
-        return of((Comparator<? super K> & Serializable) K::compareTo, Tuple.of(key, value));
-    }
-
-    /**
      * Returns a singleton {@code TreeMap}, i.e. a {@code TreeMap} of one entry using a specific key comparator.
      *
      * @param <K>           The key type
@@ -130,6 +117,36 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
         Objects.requireNonNull(keyComparator, "keyComparator is null");
         Objects.requireNonNull(entry, "entry is null");
         return TreeMap.<K, V> empty(keyComparator).put(entry);
+    }
+
+    /**
+     * Returns a singleton {@code HashMap}, i.e. a {@code HashMap} of one element.
+     *
+     * @param key A singleton map key.
+     * @param value A singleton map value.
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @return A new Map containing the given entry
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(K key, V value) {
+        return of((Comparator<? super K> & Serializable) K::compareTo, key, value);
+    }
+
+    /**
+     * Returns a singleton {@code HashMap}, i.e. a {@code HashMap} of one element.
+     *
+     * @param key A singleton map key.
+     * @param value A singleton map value.
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @param keyComparator The comparator used to sort the entries by their key.
+     * @return A new Map containing the given entry
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K key, V value) {
+        Objects.requireNonNull(keyComparator, "keyComparator is null");
+        Objects.requireNonNull(key, "key is null");
+        Objects.requireNonNull(value, "value is null");
+        return TreeMap.<K, V>empty(keyComparator).put(key, value);
     }
 
     /**
@@ -379,7 +396,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public Comparator<K> keyComparator() {
         return ((EntryComparator<K, V>) entries.comparator()).keyComparator;
     }
@@ -407,7 +424,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     @Override
     public <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return (Seq<U>) entries.iterator().map(mapper).toStream();
+        return entries.iterator().map(mapper).toStream();
     }
 
     @Override

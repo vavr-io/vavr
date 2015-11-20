@@ -80,7 +80,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     public static <K, V> LinkedHashMap<K, V> of(Tuple2<? extends K, ? extends V> entry) {
         final HashMap<K, V> map = HashMap.of(entry);
         final Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>) entry);
-        return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
+        return new LinkedHashMap<>(list, map);
     }
 
     /**
@@ -95,7 +95,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     public static <K, V> LinkedHashMap<K, V> of(K key, V value) {
         final HashMap<K, V> map = HashMap.of(key, value);
         final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(key, value));
-        return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
+        return new LinkedHashMap<>(list, map);
     }
 
     /**
@@ -287,7 +287,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return (Seq<U>) list.flatMap(mapper).toStream();
+        return list.flatMap(mapper).toStream();
     }
 
     @SuppressWarnings("unchecked")
