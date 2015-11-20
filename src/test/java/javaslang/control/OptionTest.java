@@ -63,6 +63,21 @@ public class OptionTest {
         assertThat(Option.none()).isEqualTo(Option.when(false, null));
     }
 
+    @Test
+    public void shouldWrapEmptyOptional() {
+        assertThat(Option.none()).isEqualTo(Option.wrap(Optional.empty()));
+    }
+
+    @Test
+    public void shouldWrapSomeOptional() {
+        assertThat(Option.of(1)).isEqualTo(Option.wrap(Optional.of(1)));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionOnNullOptional() {
+        assertThat(Option.none()).isEqualTo(Option.wrap(null));
+    }
+
     // -- get
 
     @Test

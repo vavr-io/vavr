@@ -6,6 +6,7 @@
 package javaslang.control;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -62,6 +63,20 @@ public interface Option<T> extends Value<T> {
         Objects.requireNonNull(supplier, "supplier is null");
         return condition ? of(supplier.get()) : none();
     }
+
+    /**
+     *
+     * Wraps a Java Optional to a new Option
+     *
+     * @param optional a given optional to wrap in {@code Option}
+     * @param <T> type of the value
+     * @return {@code Some(optional.get())} if value is Java {@code Optional} is present, {@code None} otherwise
+     */
+    static <T> Option<T> wrap(Optional<T> optional) {
+        Objects.requireNonNull(optional, "optional is null");
+        return optional.isPresent() ? of(optional.get()) : none();
+    }
+
 
     /**
      * Returns true, if this is {@code None}, otherwise false, if this is {@code Some}.
