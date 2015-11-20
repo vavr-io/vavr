@@ -5,19 +5,25 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.control.None;
-import javaslang.control.Option;
-import javaslang.control.Some;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
+
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.control.None;
+import javaslang.control.Option;
+import javaslang.control.Some;
 
 import static javaslang.collection.Comparators.naturalComparator;
 
@@ -96,6 +102,19 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Tuple2<? extends K, ? extends V> entry) {
         return of((Comparator<? super K> & Serializable) K::compareTo, entry);
+    }
+
+    /**
+     * Returns a singleton {@code HashMap}, i.e. a {@code HashMap} of one element.
+     *
+     * @param key A singleton map key.
+     * @param value A singleton map value.
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @return A new Map containing the given entry
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(K key, V value) {
+        return of((Comparator<? super K> & Serializable) K::compareTo, Tuple.of(key, value));
     }
 
     /**
@@ -269,7 +288,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     @Override
     public <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return (Seq<U>) entries.iterator().flatMap(mapper).toStream();
+        return entries.iterator().flatMap(mapper).toStream();
     }
 
     @SuppressWarnings("unchecked")

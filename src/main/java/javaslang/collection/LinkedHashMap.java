@@ -5,18 +5,24 @@
  */
 package javaslang.collection;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.function.*;
-import java.util.stream.Collector;
 
 /**
  * An immutable {@code LinkedHashMap} implementation.
@@ -74,6 +80,21 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     public static <K, V> LinkedHashMap<K, V> of(Tuple2<? extends K, ? extends V> entry) {
         final HashMap<K, V> map = HashMap.of(entry);
         final Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>) entry);
+        return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Returns a singleton {@code HashMap}, i.e. a {@code HashMap} of one element.
+     *
+     * @param key A singleton map key.
+     * @param value A singleton map value.
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @return A new Map containing the given entry
+     */
+    public static <K, V> LinkedHashMap<K, V> of(K key, V value) {
+        final HashMap<K, V> map = HashMap.of(key, value);
+        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(key, value));
         return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
     }
 
