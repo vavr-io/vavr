@@ -627,7 +627,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
         if (n <= 0) {
             return this;
         }
-        return new Queue<>(front.dropRight(n), rear.drop(n - front.length()));
+        return new Queue<>(front.dropRight(n - rear.length()), rear.drop(n));
     }
 
     @Override
