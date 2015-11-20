@@ -72,7 +72,7 @@ public interface Option<T> extends Value<T> {
      * @param <T> type of the value
      * @return {@code Some(optional.get())} if value is Java {@code Optional} is present, {@code None} otherwise
      */
-    static <T> Option<T> wrap(Optional<T> optional) {
+    static <T> Option<T> ofOptional(Optional<? extends T> optional) {
         Objects.requireNonNull(optional, "optional is null");
         return optional.isPresent() ? of(optional.get()) : none();
     }

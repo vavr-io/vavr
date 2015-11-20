@@ -65,17 +65,17 @@ public class OptionTest {
 
     @Test
     public void shouldWrapEmptyOptional() {
-        assertThat(Option.none()).isEqualTo(Option.wrap(Optional.empty()));
+        assertThat(Option.none()).isEqualTo(Option.ofOptional(Optional.empty()));
     }
 
     @Test
     public void shouldWrapSomeOptional() {
-        assertThat(Option.of(1)).isEqualTo(Option.wrap(Optional.of(1)));
+        assertThat(Option.of(1)).isEqualTo(Option.ofOptional(Optional.of(1)));
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowExceptionOnNullOptional() {
-        assertThat(Option.none()).isEqualTo(Option.wrap(null));
+        assertThat(Option.none()).isEqualTo(Option.ofOptional(null));
     }
 
     // -- get
