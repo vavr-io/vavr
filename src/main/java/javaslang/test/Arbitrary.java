@@ -59,7 +59,7 @@ public interface Arbitrary<T> extends Value<T> {
      * </code>
      * </pre>
      *
-     * @param size A (not necessarily positive) size parameter which may be interpreted idividually and is constant for all arbitrary objects regarding one property check.
+     * @param size A (not necessarily positive) size parameter which may be interpreted individually and is constant for all arbitrary objects regarding one property check.
      * @return A generator for objects of type T.
      */
     Gen<T> apply(int size);

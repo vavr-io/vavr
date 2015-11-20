@@ -19,7 +19,7 @@ import java.util.Objects;
  * <ul>
  * <li>{@code Satisfied}, if all tests satisfied the given property</li>
  * <li>{@code Falsified}, if a counter-example could be discovered that falsified the given property</li>
- * <li>{@code Erroneous}, if an exception occured executing the property check</li>
+ * <li>{@code Erroneous}, if an exception occurred executing the property check</li>
  * </ul>
  *
  * Please note that a {@code Satisfied} property check may be {@code Exhausted}, if the property is an implication
