@@ -5,37 +5,21 @@
  */
 package javaslang.collection;
 
-import java.io.IOException;
-import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
-
-import javaslang.*;
+import javaslang.Function1;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Empty;
-import javaslang.collection.StreamModule.AppendSelf;
-import javaslang.collection.StreamModule.Combinations;
-import javaslang.collection.StreamModule.DropRight;
-import javaslang.collection.StreamModule.StreamFactory;
-import javaslang.collection.StreamModule.StreamIterator;
+import javaslang.collection.StreamModule.*;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
+
+import java.io.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 /**
  * An immutable {@code Stream} is lazy sequence of elements which may be infinitely long.
@@ -578,7 +562,12 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> append(T element) {
-        return isEmpty() ? Stream.of(element) : new Cons<>(head(), () -> tail().append(element));
+        if (isEmpty()) {
+            return Stream.of(element);
+        } else {
+            final Supplier<Stream<T>> tailSupplier = ((Cons<T>) this).tailSupplier();
+            return new Cons<>(head(), () -> tailSupplier.get().append(element));
+        }
     }
 
     @Override
@@ -1386,6 +1375,17 @@ public interface Stream<T> extends LinearSeq<T> {
             return tail;
         }
 
+        // releases the `this` instance when a lazy tail is needed
+        Supplier<Stream<T>> tailSupplier() {
+            if (isTailEvaluated()) {
+                return () -> tail;
+            } else {
+                synchronized (this) {
+                    return isTailEvaluated() ? () -> tail : tailSupplier;
+                }
+            }
+        }
+
         private boolean isTailEvaluated() {
             return tailSupplier == null;
         }
@@ -1600,10 +1600,10 @@ interface StreamModule {
 
     final class StreamIterator<T> extends AbstractIterator<T> {
 
-        private Lazy<Stream<T>> current;
+        private Supplier<Stream<T>> current;
 
         StreamIterator(Cons<T> stream) {
-            this.current = Lazy.of(() -> stream);
+            this.current = () -> stream;
         }
 
         @Override
@@ -1618,7 +1618,7 @@ interface StreamModule {
             }
             final Stream<T> stream = current.get();
             // DEV-NOTE: we make the stream even more lazy because the next head must not be evaluated on hasNext()
-            current = Lazy.of(stream::tail);
+            current = stream::tail;
             return stream.head();
         }
     }
