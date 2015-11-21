@@ -5,14 +5,14 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
-import javaslang.control.Option;
-
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import javaslang.Tuple2;
+import javaslang.control.Option;
 
 /**
  * Interface for immutable, linear sequences.
@@ -149,6 +149,11 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     LinearSeq<T> reverse();
+    
+    @Override
+    default Iterator<T> reverseIterator() {
+        return reverse().iterator();
+    }
 
     @Override
     LinearSeq<T> slice(int beginIndex, int endIndex);
@@ -169,30 +174,36 @@ public interface LinearSeq<T> extends Seq<T> {
     Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> span(Predicate<? super T> predicate);
 
     @Override
-    default boolean startsWith(Iterable<? extends T> that, int offset) {
-        Objects.requireNonNull(that, "that is null");
-        final java.util.Iterator<? extends T> thatIter = that.iterator();
-        if (!thatIter.hasNext()) {
-            return true;
-        }
-        final int length = length();
-        if (offset < 0 || offset >= length) {
-            return false;
-        }
-        LinearSeq<T> seq = this;
-        for (int i = offset; i > 0; i--) {
-            seq = seq.tail();
-        }
-        while (thatIter.hasNext() && !seq.isEmpty()) {
-            if (Objects.equals(thatIter.next(), seq.head())) {
-                seq = seq.tail();
-            } else {
-                return false;
+    default int indexWhere(Predicate<? super T> predicate, int from) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        int i = from;
+        LinearSeq<T> these = drop(from);
+        while(!these.isEmpty()) {
+            if(predicate.test(these.head())) {
+                return i;
             }
+            i++;
+            these = these.tail();
         }
-        return !thatIter.hasNext();
-    }
+        return -1;
+    };
 
+    @Override
+    default int lastIndexWhere(Predicate<? super T> predicate, int end) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        int i = 0;
+        LinearSeq<T> these = this;
+        int last = -1;
+        while(!these.isEmpty() && i <= end) {
+            if(predicate.test(these.head())){
+                last = i;
+            }
+            these = these.tail();
+            i++;
+        }
+        return last;
+    }
+    
     @Override
     LinearSeq<T> subSequence(int beginIndex);
 

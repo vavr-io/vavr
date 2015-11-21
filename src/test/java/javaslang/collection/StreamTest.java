@@ -369,7 +369,7 @@ public class StreamTest extends AbstractSeqTest {
     public void shouldNotProduceStackOverflow() {
         Stream.range(0, 1_000_000)
                 .map(String::valueOf)
-                .foldLeft(Stream.empty(), Stream::append)
+                .foldLeft(Stream.<String>empty(), Stream::append)
                 .mkString();
     }
 
