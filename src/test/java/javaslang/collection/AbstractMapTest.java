@@ -5,12 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.control.Some;
-import org.assertj.core.api.IterableAssert;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -19,6 +13,12 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.control.Some;
+import org.assertj.core.api.IterableAssert;
+import org.junit.Test;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
@@ -103,6 +103,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @SuppressWarnings("unchecked")
     abstract protected <K, V> Map<K, V> mapOf(Tuple2<? extends K, ? extends V>... entries);
 
+    abstract protected <K extends Comparable<? super K>, V> Map<K, V> of(K key, V value);
+
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return true;
@@ -179,7 +181,14 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         return ofAll(Iterator.ofAll(array));
     }
 
-    // - toString
+    // -- construction
+
+    @Test
+    public void shouldBeTheSame() {
+        assertThat(of(1, 2)).isEqualTo(emptyMap().put(1, 2));
+    }
+
+    // -- toString
 
     @Test
     public void shouldMakeString() {

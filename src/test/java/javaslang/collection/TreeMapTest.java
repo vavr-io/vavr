@@ -6,10 +6,10 @@
 package javaslang.collection;
 
 
-import javaslang.Tuple2;
-
 import java.util.ArrayList;
 import java.util.stream.Collector;
+
+import javaslang.Tuple2;
 
 import static javaslang.collection.Comparators.naturalComparator;
 
@@ -35,6 +35,11 @@ public class TreeMapTest extends AbstractMapTest {
     @Override
     protected final <K, V> Map<K, V> mapOf(Tuple2<? extends K, ? extends V>... entries) {
         return TreeMap.ofAll(naturalComparator(), entries);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> Map<K, V> of(K key, V value) {
+        return TreeMap.of(key, value);
     }
 
     // -- obsolete tests
