@@ -5,18 +5,24 @@
  */
 package javaslang.collection;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.function.*;
-import java.util.stream.Collector;
 
 /**
  * An immutable {@code LinkedHashMap} implementation.
@@ -28,12 +34,12 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final LinkedHashMap<?, ?> EMPTY = new LinkedHashMap<>(List.empty(), HashMap.empty());
+    private static final LinkedHashMap<?, ?> EMPTY = new LinkedHashMap<>(Queue.empty(), HashMap.empty());
 
-    private final List<Tuple2<K, V>> list;
+    private final Queue<Tuple2<K, V>> list;
     private final HashMap<K, V> map;
 
-    public LinkedHashMap(List<Tuple2<K, V>> list, HashMap<K, V> map) {
+    public LinkedHashMap(Queue<Tuple2<K, V>> list, HashMap<K, V> map) {
         this.list = list;
         this.map = map;
     }
@@ -73,8 +79,23 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> of(Tuple2<? extends K, ? extends V> entry) {
         final HashMap<K, V> map = HashMap.of(entry);
-        final List<Tuple2<K, V>> list = List.of((Tuple2<K, V>) entry);
-        return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
+        final Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>) entry);
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Returns a singleton {@code LinkedHashMap}, i.e. a {@code LinkedHashMap} of one element.
+     *
+     * @param key A singleton map key.
+     * @param value A singleton map value.
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @return A new Map containing the given entry
+     */
+    public static <K, V> LinkedHashMap<K, V> of(K key, V value) {
+        final HashMap<K, V> map = HashMap.of(key, value);
+        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(key, value));
+        return new LinkedHashMap<>(list, map);
     }
 
     /**
@@ -88,7 +109,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> ofAll(Tuple2<? extends K, ? extends V>... entries) {
         final HashMap<K, V> map = HashMap.ofAll(entries);
-        final List<Tuple2<K, V>> list = List.ofAll((Tuple2<K, V>[]) entries);
+        final Queue<Tuple2<K, V>> list = Queue.ofAll((Tuple2<K, V>[]) entries);
         return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
     }
 
@@ -107,7 +128,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
             return (LinkedHashMap<K, V>) entries;
         } else {
             HashMap<K, V> map = HashMap.empty();
-            List<Tuple2<K, V>> list = List.empty();
+            Queue<Tuple2<K, V>> list = Queue.empty();
             for (Tuple2<? extends K, ? extends V> entry : entries) {
                 map = map.put(entry);
                 list = list.append((Tuple2<K, V>) entry);
@@ -155,7 +176,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public LinkedHashMap<K, V> put(K key, V value) {
-        List<Tuple2<K, V>> newList = list;
+        Queue<Tuple2<K, V>> newList = list;
         HashMap<K, V> newMap = map;
         if(containsKey(key)) {
             newList = newList.filter(t -> !t._1.equals(key));
@@ -174,7 +195,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public LinkedHashMap<K, V> remove(K key) {
         if(containsKey(key)) {
-            final List<Tuple2<K, V>> newList = list.removeFirst(t -> t._1.equals(key));
+            final Queue<Tuple2<K, V>> newList = list.removeFirst(t -> t._1.equals(key));
             final HashMap<K, V> newMap = map.remove(key);
             return newList.isEmpty() ? empty() : new LinkedHashMap<>(newList, newMap);
         } else {
@@ -186,7 +207,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     public LinkedHashMap<K, V> removeAll(Iterable<? extends K> keys) {
         Objects.requireNonNull(keys, "keys is null");
         final HashSet<K> toRemove = HashSet.ofAll(keys);
-        final List<Tuple2<K, V>> newList = list.filter(t -> !toRemove.contains(t._1));
+        final Queue<Tuple2<K, V>> newList = list.filter(t -> !toRemove.contains(t._1));
         final HashMap<K, V> newMap = map.filter(t -> !toRemove.contains(t._1));
         return newList.isEmpty() ? empty() : new LinkedHashMap<>(newList, newMap);
     }
@@ -266,7 +287,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return (Seq<U>) list.flatMap(mapper).toStream();
+        return list.flatMap(mapper).toStream();
     }
 
     @SuppressWarnings("unchecked")

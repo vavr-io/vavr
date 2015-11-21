@@ -38,8 +38,10 @@
  * </tr>
  * </thead>
  * <tbody>
- * <tr><td>{@linkplain javaslang.collection.HashMap}</td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td></tr>
- * <tr><td>{@linkplain javaslang.collection.HashSet}</td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td></tr>
+ * <tr><td>{@linkplain javaslang.collection.HashMap}</td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>linear</small></td></tr>
+ * <tr><td>{@linkplain javaslang.collection.HashSet}</td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>linear</small></td></tr>
+ * <tr><td>{@linkplain javaslang.collection.LinkedHashMap}</td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>linear</small></td><td><small>linear</small></td></tr>
+ * <tr><td>{@linkplain javaslang.collection.LinkedHashSet}</td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>linear</small></td><td><small>linear</small></td></tr>
  * <tr><td><em>{@linkplain javaslang.collection.Tree}</em></td><td><small>log</small></td><td><small>log</small></td><td><small>log</small></td><td><small>log</small></td></tr>
  * <tr><td>{@linkplain javaslang.collection.TreeMap}</td><td><small>log</small></td><td><small>log</small></td><td><small>log</small></td><td><small>log</small></td></tr>
  * <tr><td>{@linkplain javaslang.collection.TreeSet}</td><td><small>log</small></td><td><small>log</small></td><td><small>log</small></td><td><small>log</small></td></tr>

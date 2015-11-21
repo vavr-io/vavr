@@ -5,20 +5,26 @@
  */
 package javaslang.collection;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.*;
-import java.util.stream.Collector;
 
 /**
  * An immutable {@code HashMap} implementation based on a
@@ -75,6 +81,19 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      */
     public static <K, V> HashMap<K, V> of(Tuple2<? extends K, ? extends V> entry) {
         return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(entry._1, entry._2));
+    }
+
+    /**
+     * Returns a singleton {@code HashMap}, i.e. a {@code HashMap} of one element.
+     *
+     * @param key A singleton map key.
+     * @param value A singleton map value.
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @return A new Map containing the given entry
+     */
+    public static <K, V> HashMap<K, V> of(K key, V value) {
+        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(key, value));
     }
 
     /**

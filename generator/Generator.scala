@@ -98,7 +98,7 @@ def generateMainClasses(): Unit = {
            *
            * @param position The position of the argument within the argument list of the property, starting with 1.
            * @param size     The size hint passed to the {@linkplain Arbitrary} which caused the error.
-           * @param cause    The error which occured when the {@linkplain Arbitrary} tried to obtain the generator {@linkplain Gen}.
+           * @param cause    The error which occurred when the {@linkplain Arbitrary} tried to obtain the generator {@linkplain Gen}.
            * @return a new Error instance.
            */
           private static Error arbitraryError(int position, int size, Throwable cause) {
@@ -110,7 +110,7 @@ def generateMainClasses(): Unit = {
            *
            * @param position The position of the argument within the argument list of the property, starting with 1.
            * @param size     The size hint of the arbitrary which called the generator {@linkplain Gen} which caused the error.
-           * @param cause    The error which occured when the {@linkplain Gen} tried to generate a random value.
+           * @param cause    The error which occurred when the {@linkplain Gen} tried to generate a random value.
            * @return a new Error instance.
            */
           private static Error genError(int position, int size, Throwable cause) {
@@ -120,7 +120,7 @@ def generateMainClasses(): Unit = {
           /**
            * Creates an Error caused by an exception when testing a Predicate.
            *
-           * @param cause The error which occured when applying the {@linkplain java.util.function.Predicate}.
+           * @param cause The error which occurred when applying the {@linkplain java.util.function.Predicate}.
            * @return a new Error instance.
            */
           private static Error predicateError(Throwable cause) {
