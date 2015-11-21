@@ -5,10 +5,15 @@
  */
 package javaslang.control;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
+
 import javaslang.Serializables;
 import org.junit.Test;
-
-import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,6 +41,41 @@ public class OptionTest {
     @Test
     public void shouldCreateNothing() {
         assertThat(Some.nothing()).isEqualTo(new Some<Void>(null));
+    }
+
+    @Test
+    public void shouldWrapIfTrue() {
+        assertThat(Option.of(null)).isEqualTo(Option.when(true, () -> null));
+    }
+
+    @Test
+    public void shouldNotWrapIfFalse() {
+        assertThat(Option.none()).isEqualTo(Option.when(false, () -> null));
+    }
+
+    @Test
+    public void shouldNotExecuteIfFalse() {
+        assertThat(Option.none()).isEqualTo(Option.when(false, () -> { throw new RuntimeException(); }));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionOnNull() {
+        assertThat(Option.none()).isEqualTo(Option.when(false, null));
+    }
+
+    @Test
+    public void shouldWrapEmptyOptional() {
+        assertThat(Option.none()).isEqualTo(Option.ofOptional(Optional.empty()));
+    }
+
+    @Test
+    public void shouldWrapSomeOptional() {
+        assertThat(Option.of(1)).isEqualTo(Option.ofOptional(Optional.of(1)));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionOnNullOptional() {
+        assertThat(Option.none()).isEqualTo(Option.ofOptional(null));
     }
 
     // -- get

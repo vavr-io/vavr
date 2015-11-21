@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Serializables;
 import javaslang.control.Success;
 import javaslang.control.Try;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
@@ -363,28 +364,38 @@ public class StreamTest extends AbstractSeqTest {
         return true;
     }
 
+    @Ignore
+    @Test
+    public void shouldNotProduceStackOverflow() {
+        Stream.range(0, 1_000_000)
+                .map(String::valueOf)
+                .foldLeft(Stream.empty(), Stream::append)
+                .mkString();
+    }
+
     @Test // See #327, #594
     public void shouldNotEvaluateHeadOfTailWhenCallingIteratorHasNext() {
 
-        final StringBuilder result1 = new StringBuilder();
-        final List<Integer> vals1 = List.ofAll(1, 2, 3, 4, 5, 6, 7, 8, 9);
-        flatTryWithJavaslangStream(vals1, i -> doStuff(i, result1));
+        final Integer[] vals = new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-        final StringBuilder result2 = new StringBuilder();
-        final Integer[] vals2 = new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-        flatTryWithJavaStream(vals2, i -> doStuff(i, result2));
+        final StringBuilder actual = new StringBuilder();
+        flatTryWithJavaslangStream(vals, i -> doStuff(i, actual));
 
-        assertThat(result1.toString()).isEqualTo(result2.toString());
+        final StringBuilder expected = new StringBuilder();
+        flatTryWithJavaStream(vals, i -> doStuff(i, expected));
+
+        assertThat(actual.toString()).isEqualTo(expected.toString());
     }
 
-    private <T> Try<Void> flatTryWithJavaslangStream(List<T> vals, Try.CheckedConsumer<T> func) {
-        return vals.toStream().map(v -> Try.run(() -> func.accept(v))).findFirst(Try::isFailure).orElseGet(
-                () -> new Success<>(null));
+    private Try<Void> flatTryWithJavaslangStream(Integer[] vals, Try.CheckedConsumer<Integer> func) {
+        return Stream.ofAll(vals)
+                .map(v -> Try.run(() -> func.accept(v)))
+                .findFirst(Try::isFailure)
+                .orElseGet(() -> new Success<>(null));
     }
 
-    private <T> Try<Void> flatTryWithJavaStream(Integer[] vals, Try.CheckedConsumer<Integer> func) {
-        return java.util.stream.Stream
-                .of(vals)
+    private Try<Void> flatTryWithJavaStream(Integer[] vals, Try.CheckedConsumer<Integer> func) {
+        return java.util.stream.Stream.of(vals)
                 .map(v -> Try.run(() -> func.accept(v)))
                 .filter(Try::isFailure)
                 .findFirst()
