@@ -174,6 +174,17 @@ public interface LinearSeq<T> extends Seq<T> {
     Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> span(Predicate<? super T> predicate);
 
     @Override
+    default int segmentLength(Predicate<? super T> predicate, int from) {
+        int i = 0;
+        LinearSeq<T> these = this.drop(from);
+        while(!these.isEmpty() && predicate.test(these.head())) {
+            i++;
+            these = these.tail();
+        }
+        return i;
+    }
+    
+    @Override
     default int indexWhere(Predicate<? super T> predicate, int from) {
         Objects.requireNonNull(predicate, "predicate is null");
         int i = from;
