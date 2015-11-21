@@ -860,6 +860,19 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      *  from such that every element of the segment satisfies the predicate p.
      */
     int segmentLength(Predicate<? super T> predicate, int from);
+    
+    /**
+     * Returns the length of the longest prefix whose elements all satisfy some predicate.
+     *
+     * Note: may not terminate for infinite-sized collections.
+     * 
+     * @param predicate the predicate used to test elements.
+     * @return the length of the longest prefix of this general sequence such that every 
+     *   element of the segment satisfies the predicate p.
+     */
+    default int prefixLength(Predicate<? super T> predicate) {
+        return segmentLength(predicate, 0);
+    }
 
     // -- Adjusted return types of Traversable methods
 
