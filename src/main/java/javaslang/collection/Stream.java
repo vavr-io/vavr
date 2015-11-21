@@ -1378,10 +1378,19 @@ public interface Stream<T> extends LinearSeq<T> {
         // releases the `this` instance when a lazy tail is needed
         Supplier<Stream<T>> tailSupplier() {
             if (isTailEvaluated()) {
-                return () -> tail;
+                // prevent lambda meta factory from capturing `this` when creating call-site
+                final Stream<T> localTail = tail;
+                return () -> localTail;
             } else {
                 synchronized (this) {
-                    return isTailEvaluated() ? () -> tail : tailSupplier;
+                    if (isTailEvaluated()) {
+                        // prevent lambda meta factory from capturing `this` when creating call-site
+                        final Stream<T> localTail = tail;
+                        return () -> localTail;
+                    } else {
+                        // no implicit `this` hidden here
+                        return tailSupplier;
+                    }
                 }
             }
         }
