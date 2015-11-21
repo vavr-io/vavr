@@ -287,7 +287,8 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return list.flatMap(mapper).toStream();
+        // don't remove cast, doesn't compile in Eclipse without it
+        return (Seq<U>) list.flatMap(mapper).toStream();
     }
 
     @SuppressWarnings("unchecked")

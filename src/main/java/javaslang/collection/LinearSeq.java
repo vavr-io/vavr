@@ -5,13 +5,14 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
-import javaslang.control.Option;
-
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import javaslang.Tuple2;
+import javaslang.control.Option;
 
 /**
  * Interface for immutable, linear sequences.
@@ -173,12 +174,14 @@ public interface LinearSeq<T> extends Seq<T> {
     Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> span(Predicate<? super T> predicate);
 
     @Override
-    default int indexWhere(Predicate<? super T> p, int from) {
+    default int indexWhere(Predicate<? super T> predicate, int from) {
+        Objects.requireNonNull(predicate, "predicate is null");
         int i = from;
         LinearSeq<T> these = drop(from);
         while(!these.isEmpty()) {
-            if(p.test(these.head())) 
+            if(predicate.test(these.head())) {
                 return i;
+            }
             i++;
             these = these.tail();
         }
@@ -186,13 +189,15 @@ public interface LinearSeq<T> extends Seq<T> {
     };
 
     @Override
-    default int lastIndexWhere(Predicate<? super T> p, int end) {
+    default int lastIndexWhere(Predicate<? super T> predicate, int end) {
+        Objects.requireNonNull(predicate, "predicate is null");
         int i = 0;
         LinearSeq<T> these = this;
         int last = -1;
         while(!these.isEmpty() && i <= end) {
-            if(p.test(these.head()))
+            if(predicate.test(these.head())){
                 last = i;
+            }
             these = these.tail();
             i++;
         }

@@ -108,9 +108,12 @@ public interface IndexedSeq<T> extends Seq<T> {
     }
     
     @Override
-    default int lastIndexWhere(Predicate<? super T> p, int end) {
+    default int lastIndexWhere(Predicate<? super T> predicate, int end) {
+        Objects.requireNonNull(predicate, "predicate is null");
         int i = Math.min(end, length()-1);
-        while(i >= 0 && !p.test(this.get(i))) i--;
+        while(i >= 0 && !predicate.test(this.get(i))) {
+            i--;
+        }
         return i;
     }
     
@@ -180,10 +183,12 @@ public interface IndexedSeq<T> extends Seq<T> {
             
             @Override
             public T next() {
-                if(i > 0)
+                if(i > 0){
                     return IndexedSeq.this.get(--i);
-                else
+                }
+                else{
                     return Iterator.<T>empty().next();
+                }
             }
         };
     }
@@ -208,6 +213,7 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     default boolean startsWith(Iterable<? extends T> that, int offset) {
+        Objects.requireNonNull(that, "that is null");
         if(offset < 0) return false;
         if(that instanceof IndexedSeq) {
             IndexedSeq<? extends T> dhat = (IndexedSeq<? extends T>) that;
@@ -225,8 +231,9 @@ public interface IndexedSeq<T> extends Seq<T> {
             int thisLen = length();
             java.util.Iterator<? extends T> thatElems = that.iterator();
             while(i < thisLen && thatElems.hasNext()) {
-                if(!Objects.equals(this.get(i), thatElems.next()))
+                if(!Objects.equals(this.get(i), thatElems.next())){
                     return false;
+                }
                 i++;
             }
             return !thatElems.hasNext();
@@ -235,6 +242,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     
     @Override
     default boolean endsWith(Seq<? extends T> that) {
+        Objects.requireNonNull(that, "that is null");
         if(that instanceof IndexedSeq) {
             int i = length() - 1;
             int j = that.length() - 1;
@@ -242,8 +250,9 @@ public interface IndexedSeq<T> extends Seq<T> {
                 return false;
             else {
                 while(j >= 0) {
-                    if(!Objects.equals(this.get(i), that.get(j)))
+                    if(!Objects.equals(this.get(i), that.get(j))){
                         return false;
+                    }
                     i--;
                     j--;
                 }

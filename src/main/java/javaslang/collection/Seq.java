@@ -318,19 +318,24 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * Finds index of the first element satisfying some predicate after or at
      * some start index.
      *
-     * @param p
+     * @param predicate
      *            the predicate used to test elements.
      * @param from
      *            the start index
      * @return the index `>= from` of the first element of this Seq that
      *         satisfies the predicate `p`, or `-1`, if none exists.
      */
-    default int indexWhere(Predicate<? super T> p, int from) {
+    default int indexWhere(Predicate<? super T> predicate, int from) {
+        Objects.requireNonNull(predicate, "predicate is null");
         int i = from;
         Iterator<T> it = iterator().drop(from);
         while(it.hasNext()) {
-            if(p.test(it.next())) return i;
-            else i++;
+            if(predicate.test(it.next())) {
+                return i;
+            }
+            else {
+                i++;
+            }
         }
         return -1;
     }
@@ -400,17 +405,22 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * Finds index of last element satisfying some predicate before or at given
      * end index.
      *
-     * @param p the predicate used to test elements.
+     * @param predicate the predicate used to test elements.
      * @return the index `<= end` of the last element of this Seq that
      *         satisfies the predicate `p`, or `-1`, if none exists.
      */
-    default int lastIndexWhere(Predicate<? super T> p, int end) {
+    default int lastIndexWhere(Predicate<? super T> predicate, int end) {
+        Objects.requireNonNull(predicate, "predicate is null");
         int i = length() - 1;
         Iterator<T> it = reverseIterator();
         while(it.hasNext()) {
             T elem = it.next();
-            if(i > end || !p.test(elem)) i--;
-            else break;
+            if(i > end || !predicate.test(elem)) {
+                i--;
+            }
+            else {
+                break;
+            }
         }
         return i;
     }
@@ -739,8 +749,9 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
         Iterator<T> i = this.iterator().drop(offset);
         java.util.Iterator<? extends T> j = that.iterator();
         while(i.hasNext() && j.hasNext()) {
-            if(!Objects.equals(i.next(), j.next())) 
+            if(!Objects.equals(i.next(), j.next())) {
                 return false;
+            }
         }
         return !j.hasNext();
     }
@@ -759,8 +770,9 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
         Iterator<T> i = this.iterator().drop(length() - that.length());
         Iterator<? extends T> j = that.iterator();
         while(i.hasNext() && j.hasNext()) {
-            if(!Objects.equals(i.next(), j.next())) 
+            if(!Objects.equals(i.next(), j.next())) {
                 return false;
+            }
         }
         return !j.hasNext();
     }

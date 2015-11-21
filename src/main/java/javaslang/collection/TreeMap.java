@@ -303,7 +303,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     @Override
     public <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return entries.iterator().flatMap(mapper).toStream();
+        // don't remove cast, doesn't compile in Eclipse without it
+        return (Seq<U>) entries.iterator().flatMap(mapper).toStream();
     }
 
     @SuppressWarnings("unchecked")
@@ -422,7 +423,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     @Override
     public <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return entries.iterator().map(mapper).toStream();
+        // don't remove cast, doesn't compile in Eclipse without it
+        return (Seq<U>) entries.iterator().map(mapper).toStream();
     }
 
     @Override
