@@ -175,6 +175,7 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     default int segmentLength(Predicate<? super T> predicate, int from) {
+        Objects.requireNonNull(predicate, "predicate is null");
         int i = 0;
         LinearSeq<T> these = this.drop(from);
         while(!these.isEmpty() && predicate.test(these.head())) {
