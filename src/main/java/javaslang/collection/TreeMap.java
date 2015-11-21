@@ -120,7 +120,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     }
 
     /**
-     * Returns a singleton {@code HashMap}, i.e. a {@code HashMap} of one element.
+     * Returns a singleton {@code TreeMap}, i.e. a {@code TreeMap} of one element.
      *
      * @param key A singleton map key.
      * @param value A singleton map value.
@@ -133,7 +133,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     }
 
     /**
-     * Returns a singleton {@code HashMap}, i.e. a {@code HashMap} of one element.
+     * Returns a singleton {@code TreeMap}, i.e. a {@code TreeMap} of one element.
      *
      * @param key A singleton map key.
      * @param value A singleton map value.

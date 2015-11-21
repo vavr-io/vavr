@@ -84,7 +84,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     /**
-     * Returns a singleton {@code HashMap}, i.e. a {@code HashMap} of one element.
+     * Returns a singleton {@code LinkedHashMap}, i.e. a {@code LinkedHashMap} of one element.
      *
      * @param key A singleton map key.
      * @param value A singleton map value.
