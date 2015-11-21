@@ -172,6 +172,25 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> reverse();
     
     @Override
+    default int segmentLength(Predicate<? super T> predicate, int from) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        int len = length();
+        int i = from;
+        while(i < len && predicate.test(this.get(i))) {
+            i++;
+        }
+        return i - from;
+    }
+    
+    @Override
+    default int indexWhere(Predicate<? super T> predicate, int from) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        int start = Math.max(from, 0);
+        int n = start + segmentLength(predicate.negate(), start);
+        return (n >= length()) ? -1 : n;
+    }
+    
+    @Override
     default Iterator<T> reverseIterator() {
         return new AbstractIterator<T>() {
             private int i = length();            

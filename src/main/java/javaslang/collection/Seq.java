@@ -848,6 +848,31 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
     Seq<T> update(int index, T element);
+    
+    /**
+     * Computes length of longest segment whose elements all satisfy some predicate.
+     * 
+     * Note: may not terminate for infinite-sized collections.
+     * 
+     * @param predicate the predicate used to test elements.
+     * @param from the index where the search starts.
+     * @return the length of the longest segment of this sequence starting from index 
+     *  from such that every element of the segment satisfies the predicate p.
+     */
+    int segmentLength(Predicate<? super T> predicate, int from);
+    
+    /**
+     * Returns the length of the longest prefix whose elements all satisfy some predicate.
+     *
+     * Note: may not terminate for infinite-sized collections.
+     * 
+     * @param predicate the predicate used to test elements.
+     * @return the length of the longest prefix of this general sequence such that every 
+     *   element of the segment satisfies the predicate p.
+     */
+    default int prefixLength(Predicate<? super T> predicate) {
+        return segmentLength(predicate, 0);
+    }
 
     // -- Adjusted return types of Traversable methods
 
@@ -949,4 +974,5 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     @Override
     Seq<Tuple2<T, Integer>> zipWithIndex();
+
 }
