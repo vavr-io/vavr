@@ -1062,17 +1062,17 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-        return scanLeft(zero, operation);
+        return Scanner.scan(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
     
     @Override
     default <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return iterator().scanLeft(zero, operation);
+        return Scanner.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
     
     @Override
     default <U> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return iterator().scanRight(zero, operation);
+        return Scanner.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
     }
     
     @Override

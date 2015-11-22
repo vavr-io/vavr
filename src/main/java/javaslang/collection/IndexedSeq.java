@@ -5,6 +5,10 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple2;
+import javaslang.Tuple3;
+import javaslang.control.Option;
+
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -12,10 +16,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.control.Option;
 
 /**
  * Interface for immutable, indexed sequences.
@@ -73,6 +73,29 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> dropWhile(Predicate<? super T> predicate);
 
     @Override
+    default boolean endsWith(Seq<? extends T> that) {
+        Objects.requireNonNull(that, "that is null");
+        if (that instanceof IndexedSeq) {
+            int i = length() - 1;
+            int j = that.length() - 1;
+            if (j > i) {
+                return false;
+            } else {
+                while (j >= 0) {
+                    if (!Objects.equals(this.get(i), that.get(j))) {
+                        return false;
+                    }
+                    i--;
+                    j--;
+                }
+                return true;
+            }
+        } else {
+            return Seq.super.endsWith(that);
+        }
+    }
+
+    @Override
     IndexedSeq<T> filter(Predicate<? super T> predicate);
 
     @Override
@@ -83,6 +106,14 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     <C> Map<C, ? extends IndexedSeq<T>> groupBy(Function<? super T, ? extends C> classifier);
+
+    @Override
+    default int indexWhere(Predicate<? super T> predicate, int from) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        int start = Math.max(from, 0);
+        int n = start + segmentLength(predicate.negate(), start);
+        return (n >= length()) ? -1 : n;
+    }
 
     @Override
     IndexedSeq<T> init();
@@ -107,17 +138,17 @@ public interface IndexedSeq<T> extends Seq<T> {
             return get(length() - 1);
         }
     }
-    
+
     @Override
     default int lastIndexWhere(Predicate<? super T> predicate, int end) {
         Objects.requireNonNull(predicate, "predicate is null");
-        int i = Math.min(end, length()-1);
-        while(i >= 0 && !predicate.test(this.get(i))) {
+        int i = Math.min(end, length() - 1);
+        while (i >= 0 && !predicate.test(this.get(i))) {
             i--;
         }
         return i;
     }
-    
+
     @Override
     <U> IndexedSeq<U> map(Function<? super T, ? extends U> mapper);
 
@@ -171,43 +202,23 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     IndexedSeq<T> reverse();
-    
-    @Override
-    default int segmentLength(Predicate<? super T> predicate, int from) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        int len = length();
-        int i = from;
-        while(i < len && predicate.test(this.get(i))) {
-            i++;
-        }
-        return i - from;
-    }
-    
-    @Override
-    default int indexWhere(Predicate<? super T> predicate, int from) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        int start = Math.max(from, 0);
-        int n = start + segmentLength(predicate.negate(), start);
-        return (n >= length()) ? -1 : n;
-    }
-    
+
     @Override
     default Iterator<T> reverseIterator() {
         return new AbstractIterator<T>() {
-            private int i = length();            
-            
+            private int i = length();
+
             @Override
             public boolean hasNext() {
                 return i > 0;
             }
-            
+
             @Override
             public T next() {
-                if(i > 0){
+                if (i > 0) {
                     return IndexedSeq.this.get(--i);
-                }
-                else{
-                    return Iterator.<T>empty().next();
+                } else {
+                    return Iterator.<T> empty().next();
                 }
             }
         };
@@ -215,13 +226,24 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     IndexedSeq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
-    
+
     @Override
     <U> IndexedSeq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
-    
+
     @Override
     <U> IndexedSeq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
-    
+
+    @Override
+    default int segmentLength(Predicate<? super T> predicate, int from) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        int len = length();
+        int i = from;
+        while (i < len && predicate.test(this.get(i))) {
+            i++;
+        }
+        return i - from;
+    }
+
     @Override
     IndexedSeq<T> slice(int beginIndex, int endIndex);
 
@@ -243,14 +265,14 @@ public interface IndexedSeq<T> extends Seq<T> {
     @Override
     default boolean startsWith(Iterable<? extends T> that, int offset) {
         Objects.requireNonNull(that, "that is null");
-        if(offset < 0) return false;
-        if(that instanceof IndexedSeq) {
+        if (offset < 0) return false;
+        if (that instanceof IndexedSeq) {
             IndexedSeq<? extends T> dhat = (IndexedSeq<? extends T>) that;
             int i = offset;
             int j = 0;
             int thisLen = length();
             int thatLen = dhat.length();
-            while(i < thisLen && j < thatLen && Objects.equals(this.get(i), dhat.get(j))) {
+            while (i < thisLen && j < thatLen && Objects.equals(this.get(i), dhat.get(j))) {
                 i++;
                 j++;
             }
@@ -259,8 +281,8 @@ public interface IndexedSeq<T> extends Seq<T> {
             int i = offset;
             int thisLen = length();
             java.util.Iterator<? extends T> thatElems = that.iterator();
-            while(i < thisLen && thatElems.hasNext()) {
-                if(!Objects.equals(this.get(i), thatElems.next())){
+            while (i < thisLen && thatElems.hasNext()) {
+                if (!Objects.equals(this.get(i), thatElems.next())) {
                     return false;
                 }
                 i++;
@@ -268,30 +290,7 @@ public interface IndexedSeq<T> extends Seq<T> {
             return !thatElems.hasNext();
         }
     }
-    
-    @Override
-    default boolean endsWith(Seq<? extends T> that) {
-        Objects.requireNonNull(that, "that is null");
-        if(that instanceof IndexedSeq) {
-            int i = length() - 1;
-            int j = that.length() - 1;
-            if(j > i) 
-                return false;
-            else {
-                while(j >= 0) {
-                    if(!Objects.equals(this.get(i), that.get(j))){
-                        return false;
-                    }
-                    i--;
-                    j--;
-                }
-                return true;
-            }
-        } else {
-            return Seq.super.endsWith(that);
-        }
-    }
-    
+
     @Override
     IndexedSeq<T> subSequence(int beginIndex);
 

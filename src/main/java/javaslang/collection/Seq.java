@@ -101,19 +101,19 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      *
      * @param <T>      Component type of the Seq.
      * @param elements An java.lang.Iterable of elements.
-     * @return A sequence containing the given elements in the same order or the 
-     *   given argument if it is already an instance of Seq.
+     * @return A sequence containing the given elements in the same order or the
+     * given argument if it is already an instance of Seq.
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
     static <T> Seq<T> ofAll(Iterable<? extends T> elements) {
-        if(elements instanceof Seq) {
+        if (elements instanceof Seq) {
             return (Seq<T>) elements;
         } else {
             return List.ofAll(elements);
         }
     }
-    
+
     /**
      * A {@code Seq} is a partial function which returns the element at the specified index by calling
      * {@linkplain #get(int)}.
@@ -235,6 +235,26 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     default boolean containsSlice(java.lang.Iterable<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
         return indexOfSlice(that) >= 0;
+    }
+
+    /**
+     * Tests whether this sequence ends with the given sequence.
+     * <p>
+     * Note: If the both the receiver object this and the argument that are infinite sequences this method may not terminate.
+     *
+     * @param that the sequence to test
+     * @return true if this sequence has that as a suffix, false otherwise..
+     */
+    default boolean endsWith(Seq<? extends T> that) {
+        Objects.requireNonNull(that, "that is null");
+        Iterator<T> i = this.iterator().drop(length() - that.length());
+        Iterator<? extends T> j = that.iterator();
+        while (i.hasNext() && j.hasNext()) {
+            if (!Objects.equals(i.next(), j.next())) {
+                return false;
+            }
+        }
+        return !j.hasNext();
     }
 
     /**
@@ -567,6 +587,19 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<? extends Seq<T>> permutations();
 
     /**
+     * Returns the length of the longest prefix whose elements all satisfy some predicate.
+     *
+     * Note: may not terminate for infinite-sized collections.
+     *
+     * @param predicate the predicate used to test elements.
+     * @return the length of the longest prefix of this general sequence such that every
+     * element of the segment satisfies the predicate p.
+     */
+    default int prefixLength(Predicate<? super T> predicate) {
+        return segmentLength(predicate, 0);
+    }
+
+    /**
      * Prepends an element to this.
      *
      * @param element An element
@@ -650,6 +683,18 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @return an iterator yielding the elements of this Seq in reversed order
      */
     Iterator<T> reverseIterator();
+
+    /**
+     * Computes length of longest segment whose elements all satisfy some predicate.
+     *
+     * Note: may not terminate for infinite-sized collections.
+     *
+     * @param predicate the predicate used to test elements.
+     * @param from      the index where the search starts.
+     * @return the length of the longest segment of this sequence starting from index
+     * from such that every element of the segment satisfies the predicate p.
+     */
+    int segmentLength(Predicate<? super T> predicate, int from);
 
     /**
      * Returns a Seq that is a <em>slice</em> of this. The slice begins with the element at the specified
@@ -769,27 +814,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
         return !j.hasNext();
     }
 
-
-    /**
-     * Tests whether this sequence ends with the given sequence.
-     * <p>
-     * Note: If the both the receiver object this and the argument that are infinite sequences this method may not terminate.
-     *
-     * @param that the sequence to test
-     * @return true if this sequence has that as a suffix, false otherwise..
-     */
-    default boolean endsWith(Seq<? extends T> that) {
-        Objects.requireNonNull(that, "that is null");
-        Iterator<T> i = this.iterator().drop(length() - that.length());
-        Iterator<? extends T> j = that.iterator();
-        while (i.hasNext() && j.hasNext()) {
-            if (!Objects.equals(i.next(), j.next())) {
-                return false;
-            }
-        }
-        return !j.hasNext();
-    }
-
     /**
      * Returns a Seq that is a subsequence of this. The subsequence begins with the element at the specified
      * {@code beginIndex} and extends to the end of this Seq.
@@ -862,42 +886,8 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      */
     Seq<T> update(int index, T element);
 
-    /**
-     * Computes length of longest segment whose elements all satisfy some predicate.
-     *
-     * Note: may not terminate for infinite-sized collections.
-     *
-     * @param predicate the predicate used to test elements.
-     * @param from      the index where the search starts.
-     * @return the length of the longest segment of this sequence starting from index
-     * from such that every element of the segment satisfies the predicate p.
-     */
-    int segmentLength(Predicate<? super T> predicate, int from);
-
-    /**
-     * Returns the length of the longest prefix whose elements all satisfy some predicate.
-     *
-     * Note: may not terminate for infinite-sized collections.
-     *
-     * @param predicate the predicate used to test elements.
-     * @return the length of the longest prefix of this general sequence such that every
-     * element of the segment satisfies the predicate p.
-     */
-    default int prefixLength(Predicate<? super T> predicate) {
-        return segmentLength(predicate, 0);
-    }
-
     // -- Adjusted return types of Traversable methods
 
-    @Override
-    Seq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
-    
-    @Override
-    <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
-    
-    @Override
-    <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
-    
     @Override
     Seq<T> clear();
 
@@ -960,6 +950,15 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     @Override
     Seq<T> retainAll(java.lang.Iterable<? extends T> elements);
+
+    @Override
+    Seq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
+
+    @Override
+    <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
+
+    @Override
+    <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
     Tuple2<? extends Seq<T>, ? extends Seq<T>> span(Predicate<? super T> predicate);
