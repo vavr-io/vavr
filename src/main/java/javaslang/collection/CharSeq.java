@@ -742,7 +742,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public Vector<Character> scan(Character zero,
             BiFunction<? super Character, ? super Character, ? extends Character> operation) {
-        return scan(zero, operation);
+        return scanLeft(zero, operation);
     }
     
     @Override
