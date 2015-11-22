@@ -1640,8 +1640,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         Objects.requireNonNull(operation, "operation is null");
         List<U> scanned = List.of(zero);
         U acc = zero;
-        for (T a : Seq.ofAll(this).reverse()) {
-            acc = operation.apply(a, acc);
+        Iterator<T> it = Seq.ofAll(this).reverseIterator();
+        while(it.hasNext()){
+            acc = operation.apply(it.next(), acc);
             scanned = scanned.prepend(acc);
         }
         List<U> builder = List.empty();
