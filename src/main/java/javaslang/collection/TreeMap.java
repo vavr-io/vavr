@@ -225,11 +225,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     }
 
     @Override
-    public boolean contains(Tuple2<K, V> element) {
-        return entries.contains(element);
-    }
-
-    @Override
     public TreeMap<K, V> distinct() {
         return this;
     }
