@@ -747,12 +747,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     
     @Override
     public <U> Vector<U> scanLeft(U zero, BiFunction<? super U, ? super Character, ? extends U> operation) {
-        return ScanImpl.scanLeft(zero, operation, this).toVector();
+        return iterator().scanLeft(zero, operation).toVector();
     }
     
     @Override
     public <U> Vector<U> scanRight(U zero, BiFunction<? super Character, ? super U, ? extends U> operation) {
-        return ScanImpl.scanRight(zero, operation, this).toVector();
+        return iterator().scanRight(zero, operation).toVector();
     }
     
     @Override

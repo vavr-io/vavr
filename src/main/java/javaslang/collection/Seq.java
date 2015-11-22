@@ -97,6 +97,14 @@ import javaslang.control.Option;
  */
 public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
+    static <T> Seq<T> ofAll(Traversable<T> traversable) {
+        if(traversable instanceof Seq) {
+            return (Seq<T>) traversable;
+        } else {
+            return List.ofAll(traversable);
+        }
+    }
+    
     /**
      * A {@code Seq} is a partial function which returns the element at the specified index by calling
      * {@linkplain #get(int)}.

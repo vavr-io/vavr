@@ -932,12 +932,12 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     
     @Override
     public <U> Queue<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return ScanImpl.scanLeft(zero, operation, this).toQueue();
+        return iterator().scanLeft(zero, operation).toQueue();
     }
     
     @Override
     public <U> Queue<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return ScanImpl.scanRight(zero, operation, this).toQueue();
+        return iterator().scanRight(zero, operation).toQueue();
     }
     
     @Override

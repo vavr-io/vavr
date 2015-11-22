@@ -220,12 +220,12 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     
     @Override
     public <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
-        return ScanImpl.scanLeft(zero, operation, this);
+        return iterator().scanLeft(zero, operation);
     }
     
     @Override
     public <U> List<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
-        return ScanImpl.scanRight(zero, operation, this);
+        return iterator().scanRight(zero, operation);
     }
 
     @Override

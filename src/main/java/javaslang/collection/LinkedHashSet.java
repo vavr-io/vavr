@@ -680,12 +680,12 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     
     @Override
     public <U> LinkedHashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return LinkedHashSet.ofAll(ScanImpl.scanLeft(zero, operation, this));
+        return LinkedHashSet.ofAll(iterator().scanLeft(zero, operation));
     }
     
     @Override
     public <U> LinkedHashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return LinkedHashSet.ofAll(ScanImpl.scanRight(zero, operation, this));
+        return LinkedHashSet.ofAll(iterator().scanRight(zero, operation));
     }
     
     @Override

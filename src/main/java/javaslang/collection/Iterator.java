@@ -1623,13 +1623,34 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
     
     @Override
-    default <U> Iterator<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return ScanImpl.scanLeft(zero, operation, this).iterator();
+    default <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+        Objects.requireNonNull(zero, "zero is null");
+        Objects.requireNonNull(operation, "operation is null");
+        List<U> builder = List.empty();
+        U acc = zero;
+        builder = builder.prepend(acc);
+        for (T a : this) {
+            acc = operation.apply(acc, a);
+            builder = builder.prepend(acc);
+        }
+        return builder.reverse();
     }
     
     @Override
-    default <U> Iterator<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return ScanImpl.scanRight(zero, operation, this).iterator();
+    default <U> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        Objects.requireNonNull(zero, "zero is null");
+        Objects.requireNonNull(operation, "operation is null");
+        List<U> scanned = List.of(zero);
+        U acc = zero;
+        for (T a : Seq.ofAll(this).reverse()) {
+            acc = operation.apply(a, acc);
+            scanned = scanned.prepend(acc);
+        }
+        List<U> builder = List.empty();
+        for (U elem : scanned) {
+            builder = builder.prepend(elem);
+        }
+        return builder.reverse();
     }
     
     @Override

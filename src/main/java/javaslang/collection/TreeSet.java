@@ -704,10 +704,10 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         Objects.requireNonNull(operation, "operation is null");
         Objects.requireNonNull(zero, "zero is null");
         if(zero instanceof Comparable) {
-            List<Comparable> l = (List<Comparable>) ScanImpl.scanLeft(zero, operation, this);            
+            List<Comparable> l = (List<Comparable>) iterator().scanLeft(zero, operation);            
             return (TreeSet<U>) TreeSet.ofAll(l);
         } else {
-            List<U> l = ScanImpl.scanLeft(zero, operation, this);
+            List<U> l = iterator().scanLeft(zero, operation);
             return HashSet.ofAll(l);
         }
     }
@@ -718,10 +718,10 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         Objects.requireNonNull(operation, "operation is null");
         Objects.requireNonNull(zero, "zero is null");
         if(zero instanceof Comparable) {
-            List<Comparable> l = (List<Comparable>) ScanImpl.scanRight(zero, operation, this);            
+            List<Comparable> l = (List<Comparable>) iterator().scanRight(zero, operation);            
             return (TreeSet<U>) TreeSet.ofAll(l);
         } else {
-            List<U> l = ScanImpl.scanRight(zero, operation, this);
+            List<U> l = iterator().scanRight(zero, operation);
             return HashSet.ofAll(l);
         }
     }

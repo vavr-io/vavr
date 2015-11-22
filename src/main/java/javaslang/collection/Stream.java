@@ -1034,12 +1034,12 @@ public interface Stream<T> extends LinearSeq<T> {
     
     @Override
     default <U> Stream<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return ScanImpl.scanLeft(zero, operation, this).toStream();
+        return iterator().scanLeft(zero, operation).toStream();
     }
     
     @Override
     default <U> Stream<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return ScanImpl.scanRight(zero, operation, this).toStream();
+        return iterator().scanRight(zero, operation).toStream();
     }
 
     @Override

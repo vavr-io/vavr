@@ -1002,12 +1002,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     
     @Override
     public <U> Array<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return ScanImpl.scanLeft(zero, operation, this).toArray();
+        return iterator().scanLeft(zero, operation).toArray();
     }
     
     @Override
     public <U> Array<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return ScanImpl.scanRight(zero, operation, this).toArray();
+        return iterator().scanRight(zero, operation).toArray();
     }
 
     

@@ -1067,12 +1067,12 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     
     @Override
     default <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return ScanImpl.scanLeft(zero, operation, this);
+        return iterator().scanLeft(zero, operation);
     }
     
     @Override
     default <U> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return ScanImpl.scanRight(zero, operation, this);
+        return iterator().scanRight(zero, operation);
     }
     
     @Override

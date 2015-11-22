@@ -88,6 +88,12 @@ public class TreeMapTest extends AbstractMapTest {
         Assert.assertEquals("z", result.head());
     }
     
+    @Test
+    public void test() {
+        TreeMap<String, Integer> tm = TreeMap.of(Tuple.of("one", 1));
+        System.out.println(tm.contains(Tuple.of("one", 0)));
+    }
+    
     // -- obsolete tests
 
     @Override

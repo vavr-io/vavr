@@ -216,12 +216,12 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     
     @Override
     public <U> Traversable<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return ScanImpl.scanLeft(zero, operation, this);
+        return iterator().scanLeft(zero, operation);
     }
     
     @Override
     public <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return ScanImpl.scanRight(zero, operation, this);
+        return iterator().scanRight(zero, operation);
     }
     
     @Override

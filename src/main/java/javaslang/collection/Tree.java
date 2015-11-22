@@ -465,12 +465,12 @@ public interface Tree<T> extends Traversable<T> {
     
     @Override
     default <U> Tree<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return ScanImpl.scanLeft(zero, operation, this).toTree();
+        return iterator().scanLeft(zero, operation).toTree();
     }
     
     @Override
     default <U> Tree<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return ScanImpl.scanRight(zero, operation, this).toTree();
+        return iterator().scanRight(zero, operation).toTree();
     }
     
     @SuppressWarnings("unchecked")

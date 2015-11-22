@@ -680,12 +680,12 @@ public final class HashSet<T> implements Set<T>, Serializable {
     
     @Override
     public <U> HashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return HashSet.ofAll(ScanImpl.scanLeft(zero, operation, this));
+        return HashSet.ofAll(iterator().scanLeft(zero, operation));
     }
     
     @Override
     public <U> HashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return HashSet.ofAll(ScanImpl.scanRight(zero, operation, this));
+        return HashSet.ofAll(iterator().scanRight(zero, operation));
     }
     
     @Override

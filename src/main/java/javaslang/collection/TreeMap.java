@@ -555,21 +555,18 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     public TreeMap<K, V> scan(Tuple2<K, V> zero,
             BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation value is null");
-        Objects.requireNonNull(zero, "zero is null");
-        Objects.requireNonNull(zero._1, "zero _1 is null");
-        Objects.requireNonNull(zero._2, "zero _2 is null");
-        List l = ScanImpl.scanLeft(zero, operation, this);            
-        return (TreeMap<K, V>) TreeMap.ofAll(l);
+        Traversable t = iterator().scan(zero, operation);            
+        return (TreeMap<K, V>) TreeMap.ofAll(t);
     }
     
     @Override
     public <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
-        return ScanImpl.scanLeft(zero, operation, this);
+        return iterator().scanLeft(zero, operation);
     }
     
     @Override
     public <U> List<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
-        return ScanImpl.scanRight(zero, operation, this);
+        return iterator().scanRight(zero, operation);
     }
     
     @Override
