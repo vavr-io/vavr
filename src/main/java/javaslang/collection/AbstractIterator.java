@@ -15,7 +15,7 @@ package javaslang.collection;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public abstract class AbstractIterator<T> implements Iterator<T> {
+abstract class AbstractIterator<T> implements Iterator<T> {
 
     @Override
     public String toString() {

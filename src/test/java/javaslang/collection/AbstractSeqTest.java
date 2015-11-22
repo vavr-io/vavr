@@ -7,8 +7,6 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
-
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -1181,6 +1179,22 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(ofAll(1, 2, 3).removeAt(5)).isEqualTo(ofAll(1, 2, 3));
     }
 
+    // -- scans
+
+    @Test
+    public void shouldScan() {
+        Seq<Integer> seq = this.<Integer>empty().append(1).append(2).append(3).append(4);
+        Seq<Integer> result = seq.scan(0, (s1, s2) -> s1 + s2);
+        assertThat(result).isEqualTo(ofAll(0, 1, 3, 6, 10));
+    }
+
+    @Test
+    public void shouldScanRight() {
+        Seq<Integer> seq = this.<Integer>empty().append(1).append(2).append(3).append(4);
+        Seq<Integer> result = seq.scanRight(0, (s1, s2) -> s1 + s2);
+        assertThat(result).isEqualTo(ofAll(10, 9, 7, 4, 0));
+    }
+
     // -- slice(beginIndex, endIndex)
 
     @Test
@@ -1519,39 +1533,4 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         final Seq<Tuple2<String, Integer>> expected = ofAll(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
         assertThat(actual).isEqualTo(expected);
     }
-
-    // -- scans
-    
-    @Test
-    public void shouldScan() {
-        Seq<Integer> seq = this.<Integer>empty().append(1).append(2).append(3).append(4);
-        Seq<Integer> result = seq.scan(0, (s1, s2) -> s1 + s2);
-        
-        Assert.assertEquals(0, result.head().intValue());
-        result = result.tail();
-        Assert.assertEquals(1, result.head().intValue());
-        result = result.tail();
-        Assert.assertEquals(3, result.head().intValue());
-        result = result.tail();
-        Assert.assertEquals(6, result.head().intValue());
-        result = result.tail();
-        Assert.assertEquals(10, result.head().intValue());
-    }
-    
-    @Test
-    public void shouldScanRight() {
-        Seq<Integer> seq = this.<Integer>empty().append(1).append(2).append(3).append(4);
-        Seq<Integer> result = seq.scanRight(0, (s1, s2) -> s1 + s2);
-        
-        Assert.assertEquals(10, result.head().intValue());
-        result = result.tail();
-        Assert.assertEquals(9, result.head().intValue());
-        result = result.tail();
-        Assert.assertEquals(7, result.head().intValue());
-        result = result.tail();
-        Assert.assertEquals(4, result.head().intValue());
-        result = result.tail();
-        Assert.assertEquals(0, result.head().intValue());
-    }
-    
 }

@@ -6,7 +6,6 @@
 package javaslang.test;
 
 import javaslang.Value;
-import javaslang.collection.AbstractIterator;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
@@ -241,7 +240,7 @@ public interface Arbitrary<T> extends Value<T> {
     static <T> Arbitrary<Stream<T>> stream(Arbitrary<T> arbitraryT) {
         return size -> {
             final Gen<T> genT = arbitraryT.apply(size);
-            return random -> Gen.choose(0, size).map(i -> Stream.ofAll(new AbstractIterator<T>() {
+            return random -> Gen.choose(0, size).map(i -> Stream.ofAll(new Iterator<T>() {
 
                 int count = i;
 

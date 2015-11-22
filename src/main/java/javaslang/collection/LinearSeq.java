@@ -5,15 +5,15 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple2;
+import javaslang.control.Option;
+
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import javaslang.Tuple2;
-import javaslang.control.Option;
 
 /**
  * Interface for immutable, linear sequences.
@@ -83,6 +83,23 @@ public interface LinearSeq<T> extends Seq<T> {
     <C> Map<C, ? extends LinearSeq<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
+    default int indexWhere(Predicate<? super T> predicate, int from) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        int i = from;
+        LinearSeq<T> these = drop(from);
+        while (!these.isEmpty()) {
+            if (predicate.test(these.head())) {
+                return i;
+            }
+            i++;
+            these = these.tail();
+        }
+        return -1;
+    }
+
+    ;
+
+    @Override
     LinearSeq<T> init();
 
     @Override
@@ -96,6 +113,22 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     LinearSeq<T> intersperse(T element);
+
+    @Override
+    default int lastIndexWhere(Predicate<? super T> predicate, int end) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        int i = 0;
+        LinearSeq<T> these = this;
+        int last = -1;
+        while (!these.isEmpty() && i <= end) {
+            if (predicate.test(these.head())) {
+                last = i;
+            }
+            these = these.tail();
+            i++;
+        }
+        return last;
+    }
 
     @Override
     <U> LinearSeq<U> map(Function<? super T, ? extends U> mapper);
@@ -150,10 +183,31 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     LinearSeq<T> reverse();
-    
+
     @Override
     default Iterator<T> reverseIterator() {
         return reverse().iterator();
+    }
+
+    @Override
+    LinearSeq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
+
+    @Override
+    <U> LinearSeq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
+
+    @Override
+    <U> LinearSeq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+
+    @Override
+    default int segmentLength(Predicate<? super T> predicate, int from) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        int i = 0;
+        LinearSeq<T> these = this.drop(from);
+        while (!these.isEmpty() && predicate.test(these.head())) {
+            i++;
+            these = these.tail();
+        }
+        return i;
     }
 
     @Override
@@ -174,58 +228,6 @@ public interface LinearSeq<T> extends Seq<T> {
     @Override
     Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> span(Predicate<? super T> predicate);
 
-    @Override
-    LinearSeq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
-    
-    @Override
-    <U> LinearSeq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
-    
-    @Override
-    <U> LinearSeq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
-    
-    @Override
-    default int segmentLength(Predicate<? super T> predicate, int from) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        int i = 0;
-        LinearSeq<T> these = this.drop(from);
-        while(!these.isEmpty() && predicate.test(these.head())) {
-            i++;
-            these = these.tail();
-        }
-        return i;
-    }
-    
-    @Override
-    default int indexWhere(Predicate<? super T> predicate, int from) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        int i = from;
-        LinearSeq<T> these = drop(from);
-        while(!these.isEmpty()) {
-            if(predicate.test(these.head())) {
-                return i;
-            }
-            i++;
-            these = these.tail();
-        }
-        return -1;
-    };
-
-    @Override
-    default int lastIndexWhere(Predicate<? super T> predicate, int end) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        int i = 0;
-        LinearSeq<T> these = this;
-        int last = -1;
-        while(!these.isEmpty() && i <= end) {
-            if(predicate.test(these.head())){
-                last = i;
-            }
-            these = these.tail();
-            i++;
-        }
-        return last;
-    }
-    
     @Override
     LinearSeq<T> subSequence(int beginIndex);
 

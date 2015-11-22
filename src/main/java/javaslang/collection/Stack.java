@@ -485,15 +485,6 @@ public interface Stack<T> extends LinearSeq<T> {
     // -- Adjusted return types of Seq methods
 
     @Override
-    Stack<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
-    
-    @Override
-    <U> Stack<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
-    
-    @Override
-    <U> Stack<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
-    
-    @Override
     Stack<T> append(T element);
 
     @Override
@@ -615,6 +606,15 @@ public interface Stack<T> extends LinearSeq<T> {
 
     @Override
     Stack<T> reverse();
+
+    @Override
+    Stack<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
+
+    @Override
+    <U> Stack<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
+
+    @Override
+    <U> Stack<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
     Stack<T> slice(int beginIndex, int endIndex);
