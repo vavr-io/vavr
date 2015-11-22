@@ -57,7 +57,11 @@ public interface Option<T> extends Value<T> {
      *
      * Creates {@code Some} of suppliers value if condition is true, or {@code None} in other case
      *
+     * @param <T> type of the optional value
+     * @param condition A boolean value
+     * @param supplier An optional value supplier, may supply {@code null}
      * @return return {@code Some} of supplier's value if condition is true, or {@code None} in other case
+     * @throws NullPointerException if the given {@code supplier} is null
      */
     static <T> Option<T> when(boolean condition, Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");

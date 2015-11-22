@@ -5,18 +5,14 @@
  */
 package javaslang.collection;
 
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
-
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
+
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.function.*;
 
 /**
  * Interface for immutable sequential data structures.
@@ -305,10 +301,9 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     /**
      * Finds index of first element satisfying some predicate.
      *
-     * @param p
-     *            the predicate used to test elements.
-     * @return the index of the first element of this $coll that satisfies the
-     *         predicate `p`, or `-1`, if none exists.
+     * @param p the predicate used to test elements.
+     * @return the index of the first element of this Seq that satisfies the given
+     * {@code predicate}, or {@code -1}, if none exists.
      */
     default int indexWhere(Predicate<? super T> p) {
         return indexWhere(p, 0);
@@ -318,22 +313,19 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * Finds index of the first element satisfying some predicate after or at
      * some start index.
      *
-     * @param predicate
-     *            the predicate used to test elements.
-     * @param from
-     *            the start index
-     * @return the index `>= from` of the first element of this Seq that
-     *         satisfies the predicate `p`, or `-1`, if none exists.
+     * @param predicate the predicate used to test elements.
+     * @param from      the start index
+     * @return the index {@code >= from} of the first element of this Seq that
+     * satisfies the given {@code predicate}, or {@code -1}, if none exists.
      */
     default int indexWhere(Predicate<? super T> predicate, int from) {
         Objects.requireNonNull(predicate, "predicate is null");
         int i = from;
         Iterator<T> it = iterator().drop(from);
-        while(it.hasNext()) {
-            if(predicate.test(it.next())) {
+        while (it.hasNext()) {
+            if (predicate.test(it.next())) {
                 return i;
-            }
-            else {
+            } else {
                 i++;
             }
         }
@@ -389,16 +381,16 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     default int lastIndexOf(T element) {
         return lastIndexOf(element, Integer.MAX_VALUE);
     }
-    
+
     /**
      * Finds index of last element satisfying some predicate.
      *
-     * @param p the predicate used to test elements.
-     * @return the index of the last element of this Seq that satisfies the
-     *         predicate `p`, or `-1`, if none exists.
+     * @param predicate the predicate used to test elements.
+     * @return the index of the last element of this Seq that satisfies the given {@code predicate}, or {@code -1},
+     * if none exists.
      */
-    default int lastIndexWhere(Predicate<? super T> p){
-        return lastIndexWhere(p, length() - 1);
+    default int lastIndexWhere(Predicate<? super T> predicate) {
+        return lastIndexWhere(predicate, length() - 1);
     }
 
     /**
@@ -406,19 +398,19 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * end index.
      *
      * @param predicate the predicate used to test elements.
-     * @return the index `<= end` of the last element of this Seq that
-     *         satisfies the predicate `p`, or `-1`, if none exists.
+     * @param end       the maximum index of the search
+     * @return the index {@code <= end} of the last element of this Seq that
+     * satisfies the given {@code predicate}, or {@code -1}, if none exists.
      */
     default int lastIndexWhere(Predicate<? super T> predicate, int end) {
         Objects.requireNonNull(predicate, "predicate is null");
         int i = length() - 1;
         Iterator<T> it = reverseIterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             T elem = it.next();
-            if(i > end || !predicate.test(elem)) {
+            if (i > end || !predicate.test(elem)) {
                 i--;
-            }
-            else {
+            } else {
                 break;
             }
         }
@@ -627,11 +619,11 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @return the reversed elements.
      */
     Seq<T> reverse();
-    
+
     /**
      * An iterator yielding elements in reversed order.
-     *
-     * Note: `xs.reverseIterator` is the same as `xs.reverse().iterator()` but might
+     * <p>
+     * Note: {@code xs.reverseIterator()} is the same as {@code xs.reverse().iterator()} but might
      * be more efficient.
      *
      * @return an iterator yielding the elements of this Seq in reversed order
@@ -745,38 +737,38 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      */
     default boolean startsWith(Iterable<? extends T> that, int offset) {
         Objects.requireNonNull(that, "that is null");
-        if(offset < 0) return false;
+        if (offset < 0) return false;
         Iterator<T> i = this.iterator().drop(offset);
         java.util.Iterator<? extends T> j = that.iterator();
-        while(i.hasNext() && j.hasNext()) {
-            if(!Objects.equals(i.next(), j.next())) {
+        while (i.hasNext() && j.hasNext()) {
+            if (!Objects.equals(i.next(), j.next())) {
                 return false;
             }
         }
         return !j.hasNext();
     }
 
-    
+
     /**
      * Tests whether this sequence ends with the given sequence.
      * <p>
      * Note: If the both the receiver object this and the argument that are infinite sequences this method may not terminate.
      *
-     * @param that   the sequence to test
+     * @param that the sequence to test
      * @return true if this sequence has that as a suffix, false otherwise..
      */
     default boolean endsWith(Seq<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
         Iterator<T> i = this.iterator().drop(length() - that.length());
         Iterator<? extends T> j = that.iterator();
-        while(i.hasNext() && j.hasNext()) {
-            if(!Objects.equals(i.next(), j.next())) {
+        while (i.hasNext() && j.hasNext()) {
+            if (!Objects.equals(i.next(), j.next())) {
                 return false;
             }
         }
         return !j.hasNext();
     }
-    
+
     /**
      * Returns a Seq that is a subsequence of this. The subsequence begins with the element at the specified
      * {@code beginIndex} and extends to the end of this Seq.
@@ -848,27 +840,27 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
     Seq<T> update(int index, T element);
-    
+
     /**
      * Computes length of longest segment whose elements all satisfy some predicate.
-     * 
+     *
      * Note: may not terminate for infinite-sized collections.
-     * 
+     *
      * @param predicate the predicate used to test elements.
-     * @param from the index where the search starts.
-     * @return the length of the longest segment of this sequence starting from index 
-     *  from such that every element of the segment satisfies the predicate p.
+     * @param from      the index where the search starts.
+     * @return the length of the longest segment of this sequence starting from index
+     * from such that every element of the segment satisfies the predicate p.
      */
     int segmentLength(Predicate<? super T> predicate, int from);
-    
+
     /**
      * Returns the length of the longest prefix whose elements all satisfy some predicate.
      *
      * Note: may not terminate for infinite-sized collections.
-     * 
+     *
      * @param predicate the predicate used to test elements.
-     * @return the length of the longest prefix of this general sequence such that every 
-     *   element of the segment satisfies the predicate p.
+     * @return the length of the longest prefix of this general sequence such that every
+     * element of the segment satisfies the predicate p.
      */
     default int prefixLength(Predicate<? super T> predicate) {
         return segmentLength(predicate, 0);
@@ -962,7 +954,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     @Override
     <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
-    
+
     @Override
     <T1, T2, T3> Tuple3<? extends Seq<T1>, ? extends Seq<T2>, ? extends Seq<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 

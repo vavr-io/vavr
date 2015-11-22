@@ -364,6 +364,18 @@ public class StreamTest extends AbstractSeqTest {
         return true;
     }
 
+    @Test
+    public void shouldEvaluateTailAtMostOnce() {
+        final int[] counter = { 0 };
+        final Stream<Integer> stream = Stream.gen(() -> counter[0]++);
+        // this test ensures that the `tail.append(100)` does not modify the tail elements
+        final Stream<Integer> tail = stream.tail().append(100);
+        final String expected = stream.drop(1).take(3).mkString(",");
+        final String actual= tail.take(3).mkString(",");
+        assertThat(expected).isEqualTo("1,2,3");
+        assertThat(actual).isEqualTo(expected);
+    }
+
     @Ignore
     @Test
     public void shouldNotProduceStackOverflow() {

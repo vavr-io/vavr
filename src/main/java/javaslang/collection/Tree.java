@@ -891,7 +891,7 @@ public interface Tree<T> extends Traversable<T> {
 }
 
 /**
- * Because the empty tree `Empty` cannot be a child of an existing tree, method implementations distinguish between the
+ * Because the empty tree {@code Empty} cannot be a child of an existing tree, method implementations distinguish between the
  * empty and non-empty case. Because the structure of trees is recursive, often we have commands in the form of module
  * classes with one static method.
  */

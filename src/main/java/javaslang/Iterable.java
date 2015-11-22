@@ -74,7 +74,7 @@ interface Iterable<T> extends java.lang.Iterable<T> {
 
     /**
      * A <em>smoothing</em> replacement for {@code equals}. It is similar to Scala's {@code ==} but better in the way
-     * that it is not limited to collection types, e.g. `Some(1) eq List(1)`, `None eq Failure(x)` etc.
+     * that it is not limited to collection types, e.g. {@code Some(1) eq List(1)}, {@code None eq Failure(x)} etc.
      * <p>
      * In a nutshell: eq checks <strong>congruence of structures</strong> and <strong>equality of contained values</strong>.
      * <p>
