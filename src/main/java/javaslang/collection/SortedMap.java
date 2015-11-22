@@ -151,6 +151,10 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> retainAll(java.lang.Iterable<? extends Tuple2<K, V>> elements);
 
     @Override
+    SortedMap<K, V> scan(Tuple2<K, V> zero,
+            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
+    
+    @Override
     Tuple2<? extends SortedMap<K, V>, ? extends SortedMap<K, V>> span(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override

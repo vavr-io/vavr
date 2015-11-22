@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -994,6 +995,22 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         return wrap(arr);
     }
 
+    @Override
+    public Array<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        return scanLeft(zero, operation);
+    }
+    
+    @Override
+    public <U> Array<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+        return iterator().scanLeft(zero, operation).toArray();
+    }
+    
+    @Override
+    public <U> Array<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        return iterator().scanRight(zero, operation).toArray();
+    }
+
+    
     @Override
     public Array<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {

@@ -9,6 +9,8 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.Value;
+import javaslang.collection.Iterator;
+import javaslang.collection.Vector;
 import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
 import javaslang.control.None;
@@ -1545,7 +1547,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
         }
     }
-
+    
     @Override
     default Iterator<T> replace(T currentElement, T newElement) {
         if (!hasNext()) {
@@ -1615,6 +1617,40 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         return hasNext() ? filter(HashSet.ofAll((java.lang.Iterable<T>) elements)::contains) : empty();
     }
 
+    @Override
+    default Traversable<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        return scanLeft(zero, operation);
+    }
+    
+    @Override
+    default <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        List<U> builder = List.empty();
+        U acc = zero;
+        builder = builder.prepend(acc);
+        for (T a : this) {
+            acc = operation.apply(acc, a);
+            builder = builder.prepend(acc);
+        }
+        return builder.reverse();
+    }
+    
+    @Override
+    default <U> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        List<U> scanned = List.of(zero);
+        U acc = zero;
+        for (T a : Seq.ofAll(this).reverse()) {
+            acc = operation.apply(a, acc);
+            scanned = scanned.prepend(acc);
+        }
+        List<U> builder = List.empty();
+        for (U elem : scanned) {
+            builder = builder.prepend(elem);
+        }
+        return builder.reverse();
+    }
+    
     @Override
     default Iterator<IndexedSeq<T>> sliding(int size, int step) {
         if (size <= 0 || step <= 0) {

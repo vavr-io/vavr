@@ -438,6 +438,22 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public HashMap<K, V> scan(Tuple2<K, V> zero,
+            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
+        return HashMap.ofAll(scanLeft(zero, operation));
+    }
+    
+    @Override
+    public <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
+        return iterator().scanLeft(zero, operation);
+    }
+    
+    @Override
+    public <U> List<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
+        return iterator().scanRight(zero, operation);
+    }
+    
+    @Override
     public int size() {
         return trie.size();
     }

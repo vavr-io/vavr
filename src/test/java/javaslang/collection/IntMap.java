@@ -210,6 +210,21 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
+    public Traversable<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        return scanLeft(zero, operation);
+    }
+    
+    @Override
+    public <U> Traversable<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+        return iterator().scanLeft(zero, operation);
+    }
+    
+    @Override
+    public <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        return iterator().scanRight(zero, operation);
+    }
+    
+    @Override
     public Tuple2<? extends IntMap<T>, ? extends IntMap<T>> span(Predicate<? super T> predicate) {
         return original.span(p -> predicate.test(p._2)).map(IntMap::of, IntMap::of);
     }

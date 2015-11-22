@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -173,6 +174,15 @@ public interface LinearSeq<T> extends Seq<T> {
     @Override
     Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> span(Predicate<? super T> predicate);
 
+    @Override
+    LinearSeq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
+    
+    @Override
+    <U> LinearSeq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
+    
+    @Override
+    <U> LinearSeq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+    
     @Override
     default int segmentLength(Predicate<? super T> predicate, int from) {
         Objects.requireNonNull(predicate, "predicate is null");

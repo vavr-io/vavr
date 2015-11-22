@@ -550,6 +550,25 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
         return new TreeMap<>(tree);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    public TreeMap<K, V> scan(Tuple2<K, V> zero,
+            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
+        Objects.requireNonNull(operation, "operation value is null");
+        Traversable t = iterator().scan(zero, operation);            
+        return (TreeMap<K, V>) TreeMap.ofAll(t);
+    }
+    
+    @Override
+    public <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
+        return iterator().scanLeft(zero, operation);
+    }
+    
+    @Override
+    public <U> List<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
+        return iterator().scanRight(zero, operation);
+    }
+    
     @Override
     public int size() {
         return entries.size();

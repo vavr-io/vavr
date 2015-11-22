@@ -10,6 +10,7 @@ import javaslang.control.Option;
 
 import java.util.Comparator;
 import java.util.NoSuchElementException;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -132,8 +133,17 @@ public interface SortedSet<T> extends Set<T> {
     SortedSet<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    SortedSet<T> retainAll(java.lang.Iterable<? extends T> elements);
+    SortedSet <T> retainAll(java.lang.Iterable<? extends T> elements);
 
+    @Override
+    SortedSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
+    
+    @Override
+    <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
+    
+    @Override
+    <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+    
     @Override
     Tuple2<? extends SortedSet<T>, ? extends SortedSet<T>> span(Predicate<? super T> predicate);
 

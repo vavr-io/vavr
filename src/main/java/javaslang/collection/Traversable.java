@@ -874,6 +874,50 @@ public interface Traversable<T> extends Value<T> {
     Traversable<T> retainAll(java.lang.Iterable<? extends T> elements);
 
     /**
+     * Computes a prefix scan of the elements of the collection.
+     * 
+     * Note: The neutral element z may be applied more than once.
+     * 
+     * @param zero neutral element for the operator op
+     * @param operation the associative operator for the scan
+     * @return a new traversable collection containing the prefix scan of the elements in this traversable collection
+     */
+    Traversable<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
+    
+    /**
+     * Produces a collection containing cumulative results of applying the
+     * operator going left to right.
+     * 
+     * Note: will not terminate for infinite-sized collections.
+     * 
+     * Note: might return different results for different runs, unless the
+     * underlying collection type is ordered.
+     * 
+     * @param <U> the type of the elements in the resulting collection
+     * @param zero the initial value
+     * @param operation the binary operator applied to the intermediate result and the element
+     * @return collection with intermediate results
+     */
+    <U> Traversable<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
+    
+    /**
+     * Produces a collection containing cumulative results of applying the
+     * operator going right to left. The head of the collection is the last
+     * cumulative result.
+     * 
+     * Note: will not terminate for infinite-sized collections.
+     * 
+     * Note: might return different results for different runs, unless the
+     * underlying collection type is ordered.
+     * 
+     * @param <U> the type of the elements in the resulting collection
+     * @param zero the initial value
+     * @param operation the binary operator applied to the intermediate result and the element
+     * @return collection with intermediate results
+     */
+    <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+    
+    /**
      * Returns a tuple where the first element is the longest prefix of elements that satisfy p and the second element is the remainder.
      *
      * @param predicate A predicate.

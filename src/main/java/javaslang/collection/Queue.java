@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -924,6 +925,21 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
         return isEmpty() ? this : toList().reverse().toQueue();
     }
 
+    @Override
+    public Queue<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        return scanLeft(zero, operation);
+    }
+    
+    @Override
+    public <U> Queue<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+        return iterator().scanLeft(zero, operation).toQueue();
+    }
+    
+    @Override
+    public <U> Queue<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        return iterator().scanRight(zero, operation).toQueue();
+    }
+    
     @Override
     public Queue<T> slice(int beginIndex, int endIndex) {
         return toList().slice(beginIndex, endIndex).toQueue();

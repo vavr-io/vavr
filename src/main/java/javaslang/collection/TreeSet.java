@@ -694,6 +694,37 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
+    public TreeSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        return (TreeSet<T>) scanLeft(zero, operation);
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        if(zero instanceof Comparable) {
+            List<Comparable> l = (List<Comparable>) iterator().scanLeft(zero, operation);            
+            return (TreeSet<U>) TreeSet.ofAll(l);
+        } else {
+            List<U> l = iterator().scanLeft(zero, operation);
+            return HashSet.ofAll(l);
+        }
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        if(zero instanceof Comparable) {
+            List<Comparable> l = (List<Comparable>) iterator().scanRight(zero, operation);            
+            return (TreeSet<U>) TreeSet.ofAll(l);
+        } else {
+            List<U> l = iterator().scanRight(zero, operation);
+            return HashSet.ofAll(l);
+        }
+    }
+    
+    @Override
     public Tuple2<TreeSet<T>, TreeSet<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return iterator().span(predicate).map(i1 -> TreeSet.ofAll(tree.comparator(), i1),
