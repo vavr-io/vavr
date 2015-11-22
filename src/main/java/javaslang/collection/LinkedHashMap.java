@@ -211,6 +211,22 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         final HashMap<K, V> newMap = map.filter(t -> !toRemove.contains(t._1));
         return newList.isEmpty() ? empty() : new LinkedHashMap<>(newList, newMap);
     }
+    
+    @Override
+    public LinkedHashMap<K, V> scan(Tuple2<K, V> zero,
+            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
+        return LinkedHashMap.ofAll(scanLeft(zero, operation));
+    }
+    
+    @Override
+    public <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
+        return ScanImpl.scanLeft(zero, operation, this);
+    }
+    
+    @Override
+    public <U> List<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
+        return ScanImpl.scanRight(zero, operation, this);
+    }
 
     @Override
     public int size() {

@@ -56,6 +56,10 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
 
     Map<K, V> removeAll(java.lang.Iterable<? extends K> keys);
 
+    @Override
+    Map<K,V> scan(Tuple2<K, V> zero,
+            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
+    
     int size();
 
     default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends T1, ? extends T2>> unzipper) {

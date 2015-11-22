@@ -674,6 +674,21 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public HashSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        return scanLeft(zero, operation);
+    }
+    
+    @Override
+    public <U> HashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+        return HashSet.ofAll(ScanImpl.scanLeft(zero, operation, this));
+    }
+    
+    @Override
+    public <U> HashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        return HashSet.ofAll(ScanImpl.scanRight(zero, operation, this));
+    }
+    
+    @Override
     public Tuple2<HashSet<T>, HashSet<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<T>, Iterator<T>> t = iterator().span(predicate);

@@ -674,6 +674,21 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public LinkedHashSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        return scanLeft(zero, operation);
+    }
+    
+    @Override
+    public <U> LinkedHashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+        return LinkedHashSet.ofAll(ScanImpl.scanLeft(zero, operation, this));
+    }
+    
+    @Override
+    public <U> LinkedHashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        return LinkedHashSet.ofAll(ScanImpl.scanRight(zero, operation, this));
+    }
+    
+    @Override
     public Tuple2<LinkedHashSet<T>, LinkedHashSet<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<T>, Iterator<T>> t = iterator().span(predicate);

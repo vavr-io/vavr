@@ -1026,6 +1026,21 @@ public interface Stream<T> extends LinearSeq<T> {
     default Stream<T> reverse() {
         return isEmpty() ? this : foldLeft(Stream.empty(), Stream::prepend);
     }
+    
+    @Override
+    default Stream<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        return scanLeft(zero, operation);
+    }
+    
+    @Override
+    default <U> Stream<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+        return ScanImpl.scanLeft(zero, operation, this).toStream();
+    }
+    
+    @Override
+    default <U> Stream<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        return ScanImpl.scanRight(zero, operation, this).toStream();
+    }
 
     @Override
     default Stream<T> slice(int beginIndex, int endIndex) {

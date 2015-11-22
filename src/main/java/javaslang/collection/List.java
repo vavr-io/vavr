@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -1059,6 +1060,21 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return isEmpty() ? this : foldLeft(empty(), List::prepend);
     }
 
+    @Override
+    default List<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        return scanLeft(zero, operation);
+    }
+    
+    @Override
+    default <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+        return ScanImpl.scanLeft(zero, operation, this);
+    }
+    
+    @Override
+    default <U> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        return ScanImpl.scanRight(zero, operation, this);
+    }
+    
     @Override
     default List<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {

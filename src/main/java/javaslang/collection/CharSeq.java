@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -737,7 +738,23 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     public CharSeq reverse() {
         return of(new StringBuilder(back).reverse().toString());
     }
-
+    
+    @Override
+    public Vector<Character> scan(Character zero,
+            BiFunction<? super Character, ? super Character, ? extends Character> operation) {
+        return scan(zero, operation);
+    }
+    
+    @Override
+    public <U> Vector<U> scanLeft(U zero, BiFunction<? super U, ? super Character, ? extends U> operation) {
+        return ScanImpl.scanLeft(zero, operation, this).toVector();
+    }
+    
+    @Override
+    public <U> Vector<U> scanRight(U zero, BiFunction<? super Character, ? super U, ? extends U> operation) {
+        return ScanImpl.scanRight(zero, operation, this).toVector();
+    }
+    
     @Override
     public CharSeq slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {

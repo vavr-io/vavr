@@ -8,6 +8,7 @@ package javaslang.collection;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -212,6 +213,15 @@ public interface IndexedSeq<T> extends Seq<T> {
         };
     }
 
+    @Override
+    IndexedSeq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
+    
+    @Override
+    <U> IndexedSeq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
+    
+    @Override
+    <U> IndexedSeq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+    
     @Override
     IndexedSeq<T> slice(int beginIndex, int endIndex);
 

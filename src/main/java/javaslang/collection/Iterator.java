@@ -9,6 +9,8 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.Value;
+import javaslang.collection.Iterator;
+import javaslang.collection.Vector;
 import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
 import javaslang.control.None;
@@ -1545,7 +1547,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
         }
     }
-
+    
     @Override
     default Iterator<T> replace(T currentElement, T newElement) {
         if (!hasNext()) {
@@ -1615,6 +1617,21 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         return hasNext() ? filter(HashSet.ofAll((java.lang.Iterable<T>) elements)::contains) : empty();
     }
 
+    @Override
+    default Traversable<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        return scanLeft(zero, operation);
+    }
+    
+    @Override
+    default <U> Iterator<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+        return ScanImpl.scanLeft(zero, operation, this).iterator();
+    }
+    
+    @Override
+    default <U> Iterator<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        return ScanImpl.scanRight(zero, operation, this).iterator();
+    }
+    
     @Override
     default Iterator<IndexedSeq<T>> sliding(int size, int step) {
         if (size <= 0 || step <= 0) {

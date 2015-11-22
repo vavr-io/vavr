@@ -877,6 +877,15 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     // -- Adjusted return types of Traversable methods
 
     @Override
+    Seq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
+    
+    @Override
+    <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
+    
+    @Override
+    <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+    
+    @Override
     Seq<T> clear();
 
     @Override

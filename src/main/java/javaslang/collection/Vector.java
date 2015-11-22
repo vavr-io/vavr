@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -990,6 +991,22 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         return trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 
+    @Override
+    public Vector<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        return scan(zero, operation);
+    }
+    
+    @Override
+    public <U> Vector<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+        return ScanImpl.scanLeft(zero, operation, this).toVector();
+    }
+    
+    @Override
+    public <U> Vector<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        return ScanImpl.scanRight(zero, operation, this).toVector();
+    }
+    
+    
     @Override
     public Vector<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {

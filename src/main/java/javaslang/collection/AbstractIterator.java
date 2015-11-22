@@ -21,4 +21,5 @@ public abstract class AbstractIterator<T> implements Iterator<T> {
     public String toString() {
         return (isEmpty() ? "" : "non-") + "empty iterator";
     }
+
 }

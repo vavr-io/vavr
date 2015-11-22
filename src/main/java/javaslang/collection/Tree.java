@@ -458,6 +458,21 @@ public interface Tree<T> extends Traversable<T> {
         return traverse().retainAll(elements);
     }
 
+    @Override
+    default Traversable<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        return scanLeft(zero, operation);
+    }
+    
+    @Override
+    default <U> Tree<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+        return ScanImpl.scanLeft(zero, operation, this).toTree();
+    }
+    
+    @Override
+    default <U> Tree<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        return ScanImpl.scanRight(zero, operation, this).toTree();
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     default Tuple2<Seq<T>, Seq<T>> span(Predicate<? super T> predicate) {
