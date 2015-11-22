@@ -993,7 +993,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Vector<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-        return scan(zero, operation);
+        return scanLeft(zero, operation);
     }
     
     @Override

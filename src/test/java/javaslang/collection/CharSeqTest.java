@@ -11,6 +11,7 @@ import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
 import org.assertj.core.api.*;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -2895,6 +2896,26 @@ public class CharSeqTest {
         assertThat(actual.length()).isEqualTo(2);
         assertThat(actual.get(0)).isEqualTo('1');
         assertThat(actual.get(1)).isEqualTo('2');
+    }
+
+    // -- scans
+    
+    @Test
+    public void shouldScan() {
+        CharSeq seq = CharSeq.empty().append('1');
+        Vector<Character> result = seq.scan('0', (c1, c2) -> new Character((char) (c1.charValue() + c2.charValue())));
+        Assert.assertEquals('0', result.head().charValue());
+        result = result.tail();
+        Assert.assertEquals('a', result.head().charValue());
+    }
+    
+    @Test
+    public void shouldScanRight() {
+        CharSeq seq = CharSeq.empty().append('1');
+        Vector<Character> result = seq.scanRight('0', (c1, c2) -> new Character((char) (c1.charValue() + c2.charValue())));
+        Assert.assertEquals('a', result.head().charValue());
+        result = result.tail();
+        Assert.assertEquals('0', result.head().charValue());
     }
 
 }

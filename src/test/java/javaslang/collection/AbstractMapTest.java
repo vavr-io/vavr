@@ -16,8 +16,10 @@ import java.util.stream.Collector;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.control.Option;
 import javaslang.control.Some;
 import org.assertj.core.api.IterableAssert;
+import org.junit.Assert;
 import org.junit.Test;
 
 import static javaslang.Serializables.deserialize;
@@ -553,4 +555,40 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final List<String> expected = List.ofAll('a', 'b', 'c').permutations().map(List::mkString);
         assertThat(actual).isIn(expected);
     }
+    
+    @Test
+    public void shouldScan() {
+        Map<Integer, String> map = this.<Integer, String>emptyMap()
+                .put(Tuple.of(1, "a"))
+                .put(Tuple.of(4, "b"));
+        Map<Integer,String> result = map.scan(Tuple.of(0, "x"), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
+        
+        Assert.assertTrue(result.containsKey(0));
+        Assert.assertTrue(result.containsKey(1));
+        Assert.assertTrue(result.containsKey(5));
+        
+        Assert.assertFalse(result.containsKey(2));
+        Assert.assertFalse(result.containsKey(3));
+        Assert.assertFalse(result.containsKey(4));
+    }
+    
+    @Test
+    public void shouldScanLeft() {
+        Map<Integer, String> map = this.<Integer, String>emptyMap()
+                .put(Tuple.of(1, "a"));
+        Traversable<Tuple2<Integer,String>> result = map.scanLeft(Tuple.of(0, "x"), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
+        Assert.assertTrue(result.contains(Tuple.of(0, "x")));
+        Assert.assertTrue(result.contains(Tuple.of(1, "xa")));        
+    }
+
+    @Test
+    public void shouldScanRight() {
+        Map<Integer, String> map = this.<Integer, String>emptyMap()
+                .put(Tuple.of(1, "a"));
+        Traversable<Tuple2<Integer,String>> result = map.scanRight(Tuple.of(0, "x"), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
+        Assert.assertTrue(result.contains(Tuple.of(0, "x")));
+        Assert.assertTrue(result.contains(Tuple.of(1, "ax")));
+    }
+
+
 }
