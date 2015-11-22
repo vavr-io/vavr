@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Empty;
 import javaslang.collection.StreamModule.*;
@@ -565,8 +562,9 @@ public interface Stream<T> extends LinearSeq<T> {
         if (isEmpty()) {
             return Stream.of(element);
         } else {
-            final Supplier<Stream<T>> tailSupplier = ((Cons<T>) this).tailSupplier();
-            return new Cons<>(head(), () -> tailSupplier.get().append(element));
+            // decoupling tail from `this`, see https://github.com/javaslang/javaslang/issues/824#issuecomment-158690009
+            final Lazy<Stream<T>> tail = ((Cons<T>) this).tail;
+            return new Cons<>(head(), () -> tail.get().append(element));
         }
     }
 
@@ -1333,18 +1331,18 @@ public interface Stream<T> extends LinearSeq<T> {
         private static final long serialVersionUID = 1L;
 
         private final T head;
-        private volatile Stream<T> tail = null;
-        private volatile Supplier<Stream<T>> tailSupplier;
+        private Lazy<Stream<T>> tail;
 
         /**
          * Creates a new {@code Stream} consisting of a head element and a lazy trailing {@code Stream}.
          *
          * @param head A head element
-         * @param tailSupplier A tail {@code Stream} supplier, {@linkplain Empty} denotes the end of the {@code Stream}
+         * @param tail A tail {@code Stream} supplier, {@linkplain Empty} denotes the end of the {@code Stream}
          */
-        public Cons(T head, Supplier<Stream<T>> tailSupplier) {
+        public Cons(T head, Supplier<Stream<T>> tail) {
+            Objects.requireNonNull(tail, "tail is null");
             this.head = head;
-            this.tailSupplier = Objects.requireNonNull(tailSupplier, "tailSupplier is null");
+            this.tail = Lazy.of(tail);
         }
 
         @Override
@@ -1364,39 +1362,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
         @Override
         public Stream<T> tail() {
-            if (!isTailEvaluated()) {
-                synchronized (this) {
-                    if (!isTailEvaluated()) {
-                        tail = tailSupplier.get();
-                        tailSupplier = null; // free mem
-                    }
-                }
-            }
-            return tail;
-        }
-
-        // releases the `this` instance when a lazy tail is needed
-        Supplier<Stream<T>> tailSupplier() {
-            if (isTailEvaluated()) {
-                // prevent lambda meta factory from capturing `this` when creating call-site
-                final Stream<T> localTail = tail;
-                return () -> localTail;
-            } else {
-                synchronized (this) {
-                    if (isTailEvaluated()) {
-                        // prevent lambda meta factory from capturing `this` when creating call-site
-                        final Stream<T> localTail = tail;
-                        return () -> localTail;
-                    } else {
-                        // no implicit `this` hidden here
-                        return tailSupplier;
-                    }
-                }
-            }
-        }
-
-        private boolean isTailEvaluated() {
-            return tailSupplier == null;
+            return tail.get();
         }
 
         @Override
@@ -1432,8 +1398,8 @@ public interface Stream<T> extends LinearSeq<T> {
             while (stream != null && !stream.isEmpty()) {
                 final Cons<T> cons = (Cons<T>) stream;
                 builder.append(cons.head);
-                if (cons.isTailEvaluated()) {
-                    stream = cons.tail();
+                if (cons.tail.isEvaluated()) {
+                    stream = cons.tail.get();
                     if (!stream.isEmpty()) {
                         builder.append(", ");
                     }
