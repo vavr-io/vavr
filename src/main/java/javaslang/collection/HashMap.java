@@ -142,11 +142,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public boolean contains(Tuple2<K, V> entry) {
-        return get(entry._1).map(v -> Objects.equals(v, entry._2)).orElse(false);
-    }
-
-    @Override
     public boolean containsKey(K key) {
         return trie.containsKey(key);
     }

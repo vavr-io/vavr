@@ -222,6 +222,18 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(emptyMap().put(1, 2).containsValue(1)).isFalse();
     }
 
+    @Test
+    public void shouldRecognizeNotContainedKeyValuePair() {
+        final TreeMap<String, Integer> testee = TreeMap.of(Tuple.of("one", 1));
+        assertThat(testee.contains(Tuple.of("one", 0))).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeContainedKeyValuePair() {
+        final TreeMap<String, Integer> testee = TreeMap.of(Tuple.of("one", 1));
+        assertThat(testee.contains(Tuple.of("one", 1))).isTrue();
+    }
+
     // -- flatten
 
     @Override
