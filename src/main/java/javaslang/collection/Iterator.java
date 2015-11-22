@@ -1624,7 +1624,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     
     @Override
     default <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        Objects.requireNonNull(zero, "zero is null");
         Objects.requireNonNull(operation, "operation is null");
         List<U> builder = List.empty();
         U acc = zero;
@@ -1638,7 +1637,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     
     @Override
     default <U> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        Objects.requireNonNull(zero, "zero is null");
         Objects.requireNonNull(operation, "operation is null");
         List<U> scanned = List.of(zero);
         U acc = zero;
