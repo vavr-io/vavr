@@ -97,11 +97,24 @@ import javaslang.control.Option;
  */
 public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
-    static <T> Seq<T> ofAll(Traversable<T> traversable) {
-        if(traversable instanceof Seq) {
-            return (Seq<T>) traversable;
+    /**
+     * Creates a Seq of the given elements.
+     * <p>
+     * The resulting sequence has the same iteration order as the given iterable of elements
+     * if the iteration order of the elements is stable.
+     *
+     * @param <T>      Component type of the Seq.
+     * @param elements An java.lang.Iterable of elements.
+     * @return A sequence containing the given elements in the same order or the 
+     *   given argument if it is already an instance of Seq.
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Seq<T> ofAll(Iterable<? extends T> elements) {
+        if(elements instanceof Seq) {
+            return (Seq<T>) elements;
         } else {
-            return List.ofAll(traversable);
+            return List.ofAll(elements);
         }
     }
     
