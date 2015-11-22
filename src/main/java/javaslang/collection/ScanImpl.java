@@ -1,18 +1,10 @@
 package javaslang.collection;
 
-import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
 class ScanImpl {
 
-    static Comparator<Object> TOTAL_ORDER = (o1, o2) -> {
-        if (o1==o2) return 0;
-        int i1 = System.identityHashCode(o1);
-        int i2 = System.identityHashCode(o2);
-        return (i1<i2) ? -1 : (i1==i2) ? 0 : 1;
-    };
-    
     static <A, B, X extends Traversable<A>> List<B> scanLeft(B zero, BiFunction<? super B, ? super A, ? extends B> operation, X thiz){
         Objects.requireNonNull(zero, "zero is null");
         Objects.requireNonNull(operation, "operation is null");

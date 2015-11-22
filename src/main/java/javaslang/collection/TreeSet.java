@@ -695,12 +695,12 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public TreeSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-        return scanLeft(zero, operation);
+        return (TreeSet<T>) scanLeft(zero, operation);
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public <U> TreeSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+    public <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         Objects.requireNonNull(zero, "zero is null");
         if(zero instanceof Comparable) {
@@ -708,13 +708,13 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
             return (TreeSet<U>) TreeSet.ofAll(l);
         } else {
             List<U> l = ScanImpl.scanLeft(zero, operation, this);
-            return TreeSet.ofAll(ScanImpl.TOTAL_ORDER, l);
+            return HashSet.ofAll(l);
         }
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public <U> TreeSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+    public <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         Objects.requireNonNull(zero, "zero is null");
         if(zero instanceof Comparable) {
@@ -722,7 +722,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
             return (TreeSet<U>) TreeSet.ofAll(l);
         } else {
             List<U> l = ScanImpl.scanRight(zero, operation, this);
-            return TreeSet.ofAll(ScanImpl.TOTAL_ORDER, l);
+            return HashSet.ofAll(l);
         }
     }
     

@@ -139,10 +139,10 @@ public interface SortedSet<T> extends Set<T> {
     SortedSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
     
     @Override
-    <U> SortedSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
+    <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
     
     @Override
-    <U> SortedSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+    <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
     
     @Override
     Tuple2<? extends SortedSet<T>, ? extends SortedSet<T>> span(Predicate<? super T> predicate);
