@@ -59,6 +59,12 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
     @Override
     Map<K,V> scan(Tuple2<K, V> zero,
             BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
+
+    @Override
+    <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation);
+
+    @Override
+    <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation);
     
     int size();
 
