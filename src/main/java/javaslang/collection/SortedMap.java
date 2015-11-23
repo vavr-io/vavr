@@ -83,19 +83,10 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
-
-    @Override
     <U, W> SortedMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper);
 
     @Override
-    <U> Seq<U> flatten();
-
-    @Override
     <C> Map<C, ? extends SortedMap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
-
-    @Override
-    Tuple2<K, V> head();
 
     @Override
     SortedMap<K, V> init();
@@ -174,8 +165,5 @@ public interface SortedMap<K, V> extends Map<K, V> {
 
     @Override
     SortedMap<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate);
-
-    @Override
-    Seq<V> values();
 
 }
