@@ -887,6 +887,38 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         }
     }
 
+    // -- removeAt(index)
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldRemoveIndxAtNil() {
+        assertThat(empty().removeAt(1)).isEmpty();
+    }
+
+    @Test
+    public void shouldRemoveIndxAtNonNil() {
+        assertThat(ofAll(1, 2, 3).removeAt(1)).isEqualTo(ofAll(1, 3));
+    }
+
+    @Test
+    public void shouldRemoveIndxAtBegin() {
+        assertThat(ofAll(1, 2, 3).removeAt(0)).isEqualTo(ofAll(2, 3));
+    }
+
+    @Test
+    public void shouldRemoveIndxAtEnd() {
+        assertThat(ofAll(1, 2, 3).removeAt(2)).isEqualTo(ofAll(1, 2));
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldRemoveIndxOutOfBoundsLeft() {
+        assertThat(ofAll(1, 2, 3).removeAt(-1)).isEqualTo(ofAll(1, 2, 3));
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void shouldRemoveIndxOutOfBoundsRight() {
+        assertThat(ofAll(1, 2, 3).removeAt(5)).isEqualTo(ofAll(1, 2, 3));
+    }
+
     // -- reverse
 
     @Test
@@ -934,6 +966,84 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldSetLastElement() {
         assertThat(ofAll(1, 2, 3).update(2, 4)).isEqualTo(ofAll(1, 2, 4));
+    }
+
+    // -- slice(beginIndex, endIndex)
+
+    @Test
+    public void shouldReturnNilWhenSliceFrom0To0OnNil() {
+        final Seq<Integer> actual = this.<Integer> empty().slice(0, 0);
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnNilWhenSliceFrom0To0OnNonNil() {
+        final Seq<Integer> actual = of(1).slice(0, 0);
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnSeqWithFirstElementWhenSliceFrom0To1OnNonNil() {
+        final Seq<Integer> actual = of(1).slice(0, 1);
+        assertThat(actual).isEqualTo(of(1));
+    }
+
+    @Test
+    public void shouldReturnNilWhenSliceFrom1To1OnNonNil() {
+        final Seq<Integer> actual = of(1).slice(1, 1);
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnSliceWhenIndicesAreWithinRange() {
+        final Seq<Integer> actual = ofAll(1, 2, 3).slice(1, 3);
+        assertThat(actual).isEqualTo(ofAll(2, 3));
+    }
+
+    @Test
+    public void shouldReturnNilOnSliceWhenIndicesBothAreUpperBound() {
+        final Seq<Integer> actual = ofAll(1, 2, 3).slice(3, 3);
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void shouldComputeSliceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
+        assertThat(ofAll(1, 2, 3).slice(1, 0)).isEmpty();
+    }
+
+    @Test
+    public void shouldComputeSliceOnNilWhenBeginIndexIsGreaterThanEndIndex() {
+        assertThat(empty().slice(1, 0)).isEmpty();
+    }
+
+    @Test
+    public void shouldComputeSliceOnNonNilWhenBeginIndexExceedsLowerBound() {
+        assertThat(ofAll(1, 2, 3).slice(-1, 2)).isEqualTo(ofAll(1, 2));
+    }
+
+    @Test
+    public void shouldComputeSliceOnNilWhenBeginIndexExceedsLowerBound() {
+        assertThat(empty().slice(-1, 2)).isEmpty();
+    }
+
+    @Test
+    public void shouldThrowWhenSlice2OnNil() {
+        assertThat(empty().slice(0, 1)).isEmpty();
+    }
+
+    @Test
+    public void shouldComputeSliceWhenEndIndexExceedsUpperBound() {
+        assertThat(ofAll(1, 2, 3).slice(1, 4)).isEqualTo(ofAll(2, 3));
+    }
+
+    @Test
+    public void shouldComputeSliceWhenBeginIndexIsGreaterThanEndIndex() {
+        assertThat(ofAll(1, 2, 3).slice(2, 1)).isEmpty();
+    }
+
+    @Test
+    public void shouldComputeSliceWhenBeginIndexAndEndIndexAreBothOutOfBounds() {
+        assertThat(ofAll(1, 2, 3).slice(-10, 10)).isEqualTo(ofAll(1, 2, 3));
     }
 
     // -- sort()
@@ -1145,132 +1255,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldStartsNonNilOfNonNilWithOffsetCalculate3() {
         assertThat(ofAll(1, 2, 3).startsWith(ofAll(2, 4), 1)).isFalse();
-    }
-
-    // -- removeAt(index)
-
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldRemoveIndxAtNil() {
-        assertThat(empty().removeAt(1)).isEmpty();
-    }
-
-    @Test
-    public void shouldRemoveIndxAtNonNil() {
-        assertThat(ofAll(1, 2, 3).removeAt(1)).isEqualTo(ofAll(1, 3));
-    }
-
-    @Test
-    public void shouldRemoveIndxAtBegin() {
-        assertThat(ofAll(1, 2, 3).removeAt(0)).isEqualTo(ofAll(2, 3));
-    }
-
-    @Test
-    public void shouldRemoveIndxAtEnd() {
-        assertThat(ofAll(1, 2, 3).removeAt(2)).isEqualTo(ofAll(1, 2));
-    }
-
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldRemoveIndxOutOfBoundsLeft() {
-        assertThat(ofAll(1, 2, 3).removeAt(-1)).isEqualTo(ofAll(1, 2, 3));
-    }
-
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldRemoveIndxOutOfBoundsRight() {
-        assertThat(ofAll(1, 2, 3).removeAt(5)).isEqualTo(ofAll(1, 2, 3));
-    }
-
-    // -- scans
-
-    @Test
-    public void shouldScan() {
-        Seq<Integer> seq = this.<Integer>empty().append(1).append(2).append(3).append(4);
-        Seq<Integer> result = seq.scan(0, (s1, s2) -> s1 + s2);
-        assertThat(result).isEqualTo(ofAll(0, 1, 3, 6, 10));
-    }
-
-    @Test
-    public void shouldScanRight() {
-        Seq<Integer> seq = this.<Integer>empty().append(1).append(2).append(3).append(4);
-        Seq<Integer> result = seq.scanRight(0, (s1, s2) -> s1 + s2);
-        assertThat(result).isEqualTo(ofAll(10, 9, 7, 4, 0));
-    }
-
-    // -- slice(beginIndex, endIndex)
-
-    @Test
-    public void shouldReturnNilWhenSliceFrom0To0OnNil() {
-        final Seq<Integer> actual = this.<Integer> empty().slice(0, 0);
-        assertThat(actual).isEmpty();
-    }
-
-    @Test
-    public void shouldReturnNilWhenSliceFrom0To0OnNonNil() {
-        final Seq<Integer> actual = of(1).slice(0, 0);
-        assertThat(actual).isEmpty();
-    }
-
-    @Test
-    public void shouldReturnSeqWithFirstElementWhenSliceFrom0To1OnNonNil() {
-        final Seq<Integer> actual = of(1).slice(0, 1);
-        assertThat(actual).isEqualTo(of(1));
-    }
-
-    @Test
-    public void shouldReturnNilWhenSliceFrom1To1OnNonNil() {
-        final Seq<Integer> actual = of(1).slice(1, 1);
-        assertThat(actual).isEmpty();
-    }
-
-    @Test
-    public void shouldReturnSliceWhenIndicesAreWithinRange() {
-        final Seq<Integer> actual = ofAll(1, 2, 3).slice(1, 3);
-        assertThat(actual).isEqualTo(ofAll(2, 3));
-    }
-
-    @Test
-    public void shouldReturnNilOnSliceWhenIndicesBothAreUpperBound() {
-        final Seq<Integer> actual = ofAll(1, 2, 3).slice(3, 3);
-        assertThat(actual).isEmpty();
-    }
-
-    @Test
-    public void shouldComputeSliceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
-        assertThat(ofAll(1, 2, 3).slice(1, 0)).isEmpty();
-    }
-
-    @Test
-    public void shouldComputeSliceOnNilWhenBeginIndexIsGreaterThanEndIndex() {
-        assertThat(empty().slice(1, 0)).isEmpty();
-    }
-
-    @Test
-    public void shouldComputeSliceOnNonNilWhenBeginIndexExceedsLowerBound() {
-        assertThat(ofAll(1, 2, 3).slice(-1, 2)).isEqualTo(ofAll(1, 2));
-    }
-
-    @Test
-    public void shouldComputeSliceOnNilWhenBeginIndexExceedsLowerBound() {
-        assertThat(empty().slice(-1, 2)).isEmpty();
-    }
-
-    @Test
-    public void shouldThrowWhenSlice2OnNil() {
-        assertThat(empty().slice(0, 1)).isEmpty();
-    }
-
-    @Test
-    public void shouldComputeSliceWhenEndIndexExceedsUpperBound() {
-        assertThat(ofAll(1, 2, 3).slice(1, 4)).isEqualTo(ofAll(2, 3));
-    }
-
-    @Test
-    public void shouldComputeSliceWhenBeginIndexIsGreaterThanEndIndex() {
-        assertThat(ofAll(1, 2, 3).slice(2, 1)).isEmpty();
-    }
-
-    @Test
-    public void shouldComputeSliceWhenBeginIndexAndEndIndexAreBothOutOfBounds() {
-        assertThat(ofAll(1, 2, 3).slice(-10, 10)).isEqualTo(ofAll(1, 2, 3));
     }
 
     // -- subSequence(beginIndex)
