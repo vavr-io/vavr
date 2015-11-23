@@ -5,34 +5,17 @@
  */
 package javaslang.collection;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
-
-import javaslang.Function1;
-import javaslang.Lazy;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.collection.ArrayModule.Combinations;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.HashSet;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 /**
  * Array is a Traversable wrapper for {@code Object[]} containing elements of type {@code T}.
@@ -614,7 +597,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     public <U> Array<U> flatten() {
         try {
             return ((Array<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
     }
@@ -999,18 +982,20 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     public Array<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
-    
+
     @Override
     public <U> Array<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return iterator().scanLeft(zero, operation).toArray();
-    }
-    
-    @Override
-    public <U> Array<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return iterator().scanRight(zero, operation).toArray();
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanLeft(this, zero, operation,
+                new java.util.ArrayList<>(), (c, u) -> { c.add(u); return c; }, list -> wrap(list.toArray()));
     }
 
-    
+    @Override
+    public <U> Array<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, list -> wrap(list.toJavaArray()));
+    }
+
     @Override
     public Array<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
@@ -1197,7 +1182,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
             return Tuple.of(wrap(xs), wrap(ys));
         }
     }
-    
+
     @Override
     public <T1, T2, T3> Tuple3<Array<T1>, Array<T2>, Array<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
@@ -1206,12 +1191,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         } else {
             final Object[] xs = new Object[back.length];
             final Object[] ys = new Object[back.length];
-			final Object[] zs = new Object[back.length];
+            final Object[] zs = new Object[back.length];
             for (int i = 0; i < back.length; i++) {
                 final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(get(i));
                 xs[i] = t._1;
                 ys[i] = t._2;
-				zs[i] = t._3;
+                zs[i] = t._3;
             }
             return Tuple.of(wrap(xs), wrap(ys), wrap(zs));
         }
@@ -1272,7 +1257,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     private static <T> Object[] create(java.lang.Iterable<T> elements) {
         if (elements instanceof java.util.List) {
-            final java.util.List<T> list = (List<T>) elements;
+            final java.util.List<T> list = (java.util.List<T>) elements;
             return list.toArray();
         } else {
             final java.util.Iterator<? extends T> it = elements.iterator();

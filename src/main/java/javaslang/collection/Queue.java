@@ -932,12 +932,16 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     
     @Override
     public <U> Queue<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return iterator().scanLeft(zero, operation).toQueue();
+        Objects.requireNonNull(operation, "operation is null");
+        // prepends to the rear-list in O(1)
+        return Traversables.scanLeft(this, zero, operation, Queue.empty(), Queue::append, Function.identity());
     }
     
     @Override
     public <U> Queue<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return iterator().scanRight(zero, operation).toQueue();
+        // add elements in reverse order in O(1) and creates a Queue instance in O(1)
+        final List<U> list = Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+        return Queue.ofAll(list);
     }
     
     @Override

@@ -1041,8 +1041,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scan(this, zero, operation, List.empty(), List::prepend, List::reverse);
+        return scanLeft(zero, operation);
     }
     
     @Override

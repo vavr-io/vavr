@@ -5,31 +5,16 @@
  */
 package javaslang.collection;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
-
-import javaslang.Function1;
-import javaslang.Lazy;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.collection.VectorModule.Combinations;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 /**
  * Vector is the default Seq implementation. It provides the best performance in between Array (with constant time element access)
@@ -995,18 +980,19 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     public Vector<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
-    
+
     @Override
     public <U> Vector<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return iterator().scanLeft(zero, operation).toVector();
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanLeft(this, zero, operation, Vector.empty(), Vector::append, Function.identity());
     }
-    
+
     @Override
     public <U> Vector<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return iterator().scanRight(zero, operation).toVector();
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanRight(this, zero, operation, Vector.empty(), Vector::prepend, Function.identity());
     }
-    
-    
+
     @Override
     public Vector<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
@@ -1208,18 +1194,18 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         }
         return Tuple.of(new Vector<>(xs), new Vector<>(ys));
     }
-    
+
     @Override
     public <T1, T2, T3> Tuple3<Vector<T1>, Vector<T2>, Vector<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         HashArrayMappedTrie<Integer, T1> xs = HashArrayMappedTrie.empty();
         HashArrayMappedTrie<Integer, T2> ys = HashArrayMappedTrie.empty();
-		HashArrayMappedTrie<Integer, T3> zs = HashArrayMappedTrie.empty();
+        HashArrayMappedTrie<Integer, T3> zs = HashArrayMappedTrie.empty();
         for (T element : this) {
             final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(element);
             xs = xs.put(xs.size(), t._1);
             ys = ys.put(ys.size(), t._2);
-			zs = zs.put(zs.size(), t._3);
+            zs = zs.put(zs.size(), t._3);
         }
         return Tuple.of(new Vector<>(xs), new Vector<>(ys), new Vector<>(zs));
     }

@@ -1024,20 +1024,24 @@ public interface Stream<T> extends LinearSeq<T> {
     default Stream<T> reverse() {
         return isEmpty() ? this : foldLeft(Stream.empty(), Stream::prepend);
     }
-    
+
     @Override
     default Stream<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
-    
+
     @Override
     default <U> Stream<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return iterator().scanLeft(zero, operation).toStream();
+        Objects.requireNonNull(operation, "operation is null");
+        // lazily streams the elements of an iterator
+        return Stream.ofAll(iterator().scanLeft(zero, operation));
     }
-    
+
     @Override
     default <U> Stream<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return iterator().scanRight(zero, operation).toStream();
+        Objects.requireNonNull(operation, "operation is null");
+        // lazily streams the elements of an iterator
+        return Stream.ofAll(iterator().scanRight(zero, operation));
     }
 
     @Override
@@ -1205,7 +1209,7 @@ public interface Stream<T> extends LinearSeq<T> {
         final Stream<T2> stream2 = stream.map(t -> t._2);
         return Tuple.of(stream1, stream2);
     }
-    
+
     @Override
     default <T1, T2, T3> Tuple3<Stream<T1>, Stream<T2>, Stream<T3>> unzip3(
             Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
@@ -1213,7 +1217,7 @@ public interface Stream<T> extends LinearSeq<T> {
         final Stream<Tuple3<? extends T1, ? extends T2, ? extends T3>> stream = map(unzipper);
         final Stream<T1> stream1 = stream.map(t -> t._1);
         final Stream<T2> stream2 = stream.map(t -> t._2);
-		final Stream<T3> stream3 = stream.map(t -> t._3);
+        final Stream<T3> stream3 = stream.map(t -> t._3);
         return Tuple.of(stream1, stream2, stream3);
     }
 

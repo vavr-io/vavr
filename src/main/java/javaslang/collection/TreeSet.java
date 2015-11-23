@@ -5,28 +5,22 @@
  */
 package javaslang.collection;
 
-import static javaslang.collection.Comparators.naturalComparator;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
-
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.*;
+import java.util.stream.Collector;
+
+import static javaslang.collection.Comparators.naturalComparator;
 
 /**
  * SortedSet implementation, backed by a Red/Black Tree.
@@ -694,36 +688,41 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public Set<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-        return scanLeft(zero, operation);
+    public TreeSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanLeft(this, zero, operation, TreeSet.empty(comparator()), TreeSet::add, Function.identity());
     }
-    
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        if(zero instanceof Comparable) {
-            List<Comparable> l = (List<Comparable>) iterator().scanLeft(zero, operation);            
-            return (TreeSet<U>) TreeSet.ofAll(l);
+        if (zero instanceof Comparable) {
+            final Comparator<U> comparator = naturalComparator();
+            return Traversables.scanLeft(this, zero, operation, TreeSet.empty(comparator), TreeSet::add, Function.identity());
         } else {
-            List<U> l = iterator().scanLeft(zero, operation);
-            return HashSet.ofAll(l);
+            return Traversables.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
+                c.add(u);
+                return c;
+            }, HashSet::ofAll);
         }
     }
-    
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        if(zero instanceof Comparable) {
-            List<Comparable> l = (List<Comparable>) iterator().scanRight(zero, operation);            
-            return (TreeSet<U>) TreeSet.ofAll(l);
+        if (zero instanceof Comparable) {
+            final Comparator<U> comparator = naturalComparator();
+            return Traversables.scanRight(this, zero, operation, TreeSet.empty(comparator), TreeSet::add, Function.identity());
         } else {
-            List<U> l = iterator().scanRight(zero, operation);
-            return HashSet.ofAll(l);
+            return Traversables.scanRight(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
+                c.add(u);
+                return c;
+            }, HashSet::ofAll);
         }
     }
-    
+
     @Override
     public Tuple2<TreeSet<T>, TreeSet<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
@@ -806,7 +805,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
             Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip3(unzipper).map(
-        		i1 -> TreeSet.ofAll(naturalComparator(), i1),
+                i1 -> TreeSet.ofAll(naturalComparator(), i1),
                 i2 -> TreeSet.ofAll(naturalComparator(), i2),
                 i3 -> TreeSet.ofAll(naturalComparator(), i3));
     }
