@@ -509,7 +509,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     public <U> LinkedHashSet<U> flatten() {
         try {
             return ((LinkedHashSet<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
     }
@@ -549,7 +549,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public LinkedHashSet<T> init() {
-        if(map.isEmpty()) {
+        if (map.isEmpty()) {
             throw new UnsupportedOperationException("tail of empty set");
         } else {
             return new LinkedHashSet<>(map.init());
@@ -558,7 +558,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public Option<LinkedHashSet<T>> initOption() {
-        if(map.isEmpty()) {
+        if (map.isEmpty()) {
             return None.instance();
         } else {
             return new Some<>(init());
@@ -677,17 +677,22 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     public LinkedHashSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
-    
+
     @Override
     public <U> LinkedHashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return LinkedHashSet.ofAll(iterator().scanLeft(zero, operation));
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
+            c.add(u);
+            return c;
+        }, LinkedHashSet::ofAll);
     }
-    
+
     @Override
     public <U> LinkedHashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return LinkedHashSet.ofAll(iterator().scanRight(zero, operation));
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanRight(this, zero, operation, LinkedHashSet.empty(), LinkedHashSet::add, Function.identity());
     }
-    
+
     @Override
     public Tuple2<LinkedHashSet<T>, LinkedHashSet<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
@@ -822,7 +827,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     private static <T> LinkedHashMap<T, T> addAll(LinkedHashMap<T, T> initial,
-                                                        Iterable<? extends T> additional) {
+                                                  Iterable<? extends T> additional) {
         LinkedHashMap<T, T> that = initial;
         for (T t : additional) {
             that = that.put(t, t);

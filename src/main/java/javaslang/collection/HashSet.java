@@ -5,24 +5,6 @@
  */
 package javaslang.collection;
 
-import java.io.IOException;
-import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
-
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
@@ -30,6 +12,14 @@ import javaslang.Tuple3;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 /**
  * An immutable {@code HashSet} implementation.
@@ -518,7 +508,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     public <U> HashSet<U> flatten() {
         try {
             return ((HashSet<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
     }
@@ -677,17 +667,22 @@ public final class HashSet<T> implements Set<T>, Serializable {
     public HashSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
-    
+
     @Override
     public <U> HashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return HashSet.ofAll(iterator().scanLeft(zero, operation));
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
+            c.add(u);
+            return c;
+        }, HashSet::ofAll);
     }
-    
+
     @Override
     public <U> HashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return HashSet.ofAll(iterator().scanRight(zero, operation));
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanRight(this, zero, operation, HashSet.empty(), HashSet::add, Function.identity());
     }
-    
+
     @Override
     public Tuple2<HashSet<T>, HashSet<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");

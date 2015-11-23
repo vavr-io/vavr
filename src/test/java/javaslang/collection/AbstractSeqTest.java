@@ -10,7 +10,6 @@ import javaslang.Tuple2;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.stream.Collector;
 
 /**
@@ -929,6 +928,23 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldReverseNonNil() {
         assertThat(ofAll(1, 2, 3).reverse()).isEqualTo(ofAll(3, 2, 1));
+    }
+
+    // -- reverseIterator
+
+    @Test
+    public void shouldCreateReverseIteratorOfEmpty() {
+        assertThat(Seq.ofAll(empty()).reverseIterator()).isEmpty();
+    }
+
+    @Test
+    public void shouldCreateReverseIteratorOfSingle() {
+        assertThat(Seq.ofAll(ofAll("a")).reverseIterator().toList()).isEqualTo(Iterator.of("a").toList());
+    }
+
+    @Test
+    public void shouldCreateReverseIteratorOfNonEmpty() {
+        assertThat(Seq.ofAll(ofAll("a", "b", "c")).reverseIterator().toList()).isEqualTo(Iterator.ofAll("c", "b", "a").toList());
     }
 
     // -- set

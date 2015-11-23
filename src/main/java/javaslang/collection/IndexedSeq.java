@@ -206,7 +206,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     @Override
     default Iterator<T> reverseIterator() {
         return new AbstractIterator<T>() {
-            private int i = length();
+            private int i = IndexedSeq.this.length();
 
             @Override
             public boolean hasNext() {
