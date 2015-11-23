@@ -694,8 +694,8 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public TreeSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-        return (TreeSet<T>) scanLeft(zero, operation);
+    public Set<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        return scanLeft(zero, operation);
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })

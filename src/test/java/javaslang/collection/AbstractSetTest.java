@@ -8,8 +8,7 @@ package javaslang.collection;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import java.util.Objects;
 
 public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
 
@@ -85,77 +84,4 @@ public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
     public void shouldReplaceFirstOccurrenceOfNonNilUsingCurrNewWhenMultipleOccurrencesExist() {
         // sets have only distinct elements
     }
-
-    @Test
-    public void shouldScan() {
-        Set<String> set = this.<String>empty()
-                .add("a");
-        Set<String> result = set.scan("x", (s1, s2) -> s1 + s2);
-        
-        Assert.assertTrue(result.contains("x"));
-        Assert.assertTrue(result.contains("xa"));
-    }
-    
-    @Test
-    public void shouldScanLeft() {
-        Set<String> set = this.<String>empty().add("a");
-        Set<String> result = set.scanLeft("x", (s1, s2) -> s1 + s2);
-        Assert.assertTrue(result.contains("x"));
-        Assert.assertTrue(result.contains("xa")); 
-    }
-
-    @Test
-    public void shouldScanRight() {
-        Set<String> set = this.<String>empty().add("a");
-        Set<String> result = set.scanRight("x", (s1, s2) -> s1 + s2);
-        Assert.assertTrue(result.contains("x"));
-        Assert.assertTrue(result.contains("ax"));
-    }
-
-    private static class Util{
-        private String field;
-        public Util(String field) {
-            this.field = field;
-        }
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((field == null) ? 0 : field.hashCode());
-            return result;
-        }
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            Util other = (Util) obj;
-            if (field == null) {
-                if (other.field != null)
-                    return false;
-            } else if (!field.equals(other.field))
-                return false;
-            return true;
-        }
-    }
-
-    @Test
-    public void shouldScanLeftWithNonComparable() {
-        Set<Util> set = this.<Util>empty().add(new Util("a"));
-        Set<Util> result = set.scanLeft(new Util("x"), (u1, u2) -> new Util(u1.field + u2.field));
-        Assert.assertTrue(result.contains(new Util("x")));
-        Assert.assertTrue(result.contains(new Util("xa")));
-    }
-
-    @Test
-    public void shouldScanRightWithNonComparable() {
-        Set<Util> set = this.<Util>empty().add(new Util("a"));
-        Set<Util> result = set.scanRight(new Util("x"), (u1, u2) -> new Util(u1.field + u2.field));
-        Assert.assertTrue(result.contains(new Util("x")));
-        Assert.assertTrue(result.contains(new Util("ax")));
-    }
-
 }

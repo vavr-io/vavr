@@ -1055,6 +1055,77 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(ofAll(1, 2, 3).retainAll(ofAll(4, 5))).isEqualTo(empty());
     }
 
+    // -- scan, scanLeft, scanRight
+
+    @Test
+    public void shouldScanInts() {
+        final Traversable<Integer> testee = ofAll(1, 2, 3, 4);
+        final Traversable<Integer> actual = testee.scan(0, (s1, s2) -> s1 + s2);
+        assertThat(actual).isEqualTo(ofAll(0, 1, 3, 6, 10));
+    }
+
+    @Test
+    public void shouldScanLeftInts() {
+        final Traversable<Integer> testee = ofAll(1, 2, 3, 4);
+        final Traversable<Integer> actual = testee.scanLeft(0, (s1, s2) -> s1 + s2);
+        assertThat(actual).isEqualTo(ofAll(0, 1, 3, 6, 10));
+    }
+
+    @Test
+    public void shouldScanRightInts() {
+        final Traversable<Integer> testee = ofAll(1, 2, 3, 4);
+        final Traversable<Integer> actual = testee.scanRight(0, (s1, s2) -> s1 + s2);
+        assertThat(actual).isEqualTo(ofAll(10, 9, 7, 4, 0));
+    }
+
+    @Test
+    public void shouldScanStrings() {
+        final Traversable<String> testee = of("a");
+        final Traversable<String> actual = testee.scan("x", (s1, s2) -> s1 + s2);
+        assertThat(actual).isEqualTo(ofAll("x", "xa"));
+    }
+
+    @Test
+    public void shouldScanLeftStrings() {
+        final Traversable<String> testee = of("a");
+        final Traversable<String> actual = testee.scanLeft("x", (s1, s2) -> s1 + s2);
+        assertThat(actual).isEqualTo(ofAll("x", "xa"));
+    }
+
+    @Test
+    public void shouldScanRightStrings() {
+        final Traversable<String> testee = of("a");
+        final Traversable<String> actual = testee.scanRight("x", (s1, s2) -> s1 + s2);
+        assertThat(actual).isEqualTo(ofAll("ax", "x"));
+    }
+
+    @Test
+    public void shouldScanWithNonComparable() {
+        final Traversable<NonComparable> testee = of(new NonComparable("a"));
+        final Traversable<NonComparable> actual = testee.scan(new NonComparable("x"), (u1, u2) -> new NonComparable(u1.value + u2.value));
+        final List<NonComparable> expected = List.ofAll("x", "xa").map(NonComparable::new);
+        assertThat(actual).containsAll(expected);
+        assertThat(actual.length()).isEqualTo(expected.length());
+    }
+
+    @Test
+    public void shouldScanLeftWithNonComparable() {
+        final Traversable<NonComparable> testee = of(new NonComparable("a"));
+        final Traversable<NonComparable> actual = testee.scanLeft(new NonComparable("x"), (u1, u2) -> new NonComparable(u1.value + u2.value));
+        final List<NonComparable> expected = List.ofAll("x", "xa").map(NonComparable::new);
+        assertThat(actual).containsAll(expected);
+        assertThat(actual.length()).isEqualTo(expected.length());
+    }
+
+    @Test
+    public void shouldScanRightWithNonComparable() {
+        final Traversable<NonComparable> testee = of(new NonComparable("a"));
+        final Traversable<NonComparable> actual = testee.scanRight(new NonComparable("x"), (u1, u2) -> new NonComparable(u1.value + u2.value));
+        final List<NonComparable> expected = List.ofAll("ax", "x").map(NonComparable::new);
+        assertThat(actual).containsAll(expected);
+        assertThat(actual.length()).isEqualTo(expected.length());
+    }
+
     // -- sliding(size)
 
     @Test(expected = IllegalArgumentException.class)
@@ -1637,5 +1708,39 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
                 throw new IOException();
             }
         });
+    }
+
+    /**
+     * Wraps a String in order to ensure that it is not Comparable.
+     */
+    static final class NonComparable {
+
+        final String value;
+
+        NonComparable(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(value);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
+            } else if (obj instanceof NonComparable) {
+                final NonComparable that = (NonComparable) obj;
+                return Objects.equals(this.value, that.value);
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
     }
 }

@@ -14,27 +14,27 @@ import java.util.function.Function;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-final class Scanner {
+final class Traversables {
 
-    private Scanner() {
+    private Traversables() {
     }
 
     static <T, R extends Traversable<T>> R scan(
             Iterable<? extends T> elements,
             T zero, BiFunction<? super T, ? super T, ? extends T> operation,
-            R result, BiFunction<R, T, R> resultAccumulator, Function<R, R> resultFinisher) {
-        return scanLeft(elements, zero, operation, result, resultAccumulator, resultFinisher);
+            R result, BiFunction<R, T, R> resultCombiner, Function<R, R> resultFinisher) {
+        return scanLeft(elements, zero, operation, result, resultCombiner, resultFinisher);
     }
 
     static <T, U, R extends Traversable<U>> R scanLeft(
             Iterable<? extends T> elements,
             U zero, BiFunction<? super U, ? super T, ? extends U> operation,
-            R result, BiFunction<R, U, R> resultAccumulator, Function<R, R> resultFinisher) {
+            R result, BiFunction<R, U, R> resultCombiner, Function<R, R> resultFinisher) {
         U acc = zero;
-        result = resultAccumulator.apply(result, acc);
+        result = resultCombiner.apply(result, acc);
         for (T a : elements) {
             acc = operation.apply(acc, a);
-            result = resultAccumulator.apply(result, acc);
+            result = resultCombiner.apply(result, acc);
         }
         return resultFinisher.apply(result);
     }
@@ -42,8 +42,8 @@ final class Scanner {
     static <T, U, R extends Traversable<U>> R scanRight(
             Iterable<? extends T> elements,
             U zero, BiFunction<? super T, ? super U, ? extends U> operation,
-            R result, BiFunction<R, U, R> resultAccumulator, Function<R, R> resultFinisher) {
+            R result, BiFunction<R, U, R> resultCombiner, Function<R, R> resultFinisher) {
         final Iterable<T> reversedElements = Seq.ofAll(elements).reverseIterator();
-        return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), result, resultAccumulator, resultFinisher);
+        return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), result, resultCombiner, resultFinisher);
     }
 }

@@ -136,7 +136,7 @@ public interface SortedSet<T> extends Set<T> {
     SortedSet <T> retainAll(java.lang.Iterable<? extends T> elements);
 
     @Override
-    SortedSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
+    Set<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
     
     @Override
     <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
