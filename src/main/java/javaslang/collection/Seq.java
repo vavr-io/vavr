@@ -107,6 +107,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      */
     @SuppressWarnings("unchecked")
     static <T> Seq<T> ofAll(Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Seq) {
             return (Seq<T>) elements;
         } else {
