@@ -1058,51 +1058,51 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     // -- scan, scanLeft, scanRight
 
     @Test
-    public void shouldScanInts() {
-        final Traversable<Integer> testee = ofAll(1, 2, 3, 4);
+    public void shouldScanEmpty() {
+        final Traversable<Integer> testee = empty();
         final Traversable<Integer> actual = testee.scan(0, (s1, s2) -> s1 + s2);
-        assertThat(actual).isEqualTo(ofAll(0, 1, 3, 6, 10));
+        assertThat(actual).isEqualTo(ofAll(0));
     }
 
     @Test
-    public void shouldScanLeftInts() {
-        final Traversable<Integer> testee = ofAll(1, 2, 3, 4);
+    public void shouldScanLeftEmpty() {
+        final Traversable<Integer> testee = empty();
         final Traversable<Integer> actual = testee.scanLeft(0, (s1, s2) -> s1 + s2);
-        assertThat(actual).isEqualTo(ofAll(0, 1, 3, 6, 10));
+        assertThat(actual).isEqualTo(ofAll(0));
     }
 
     @Test
-    public void shouldScanRightInts() {
-        final Traversable<Integer> testee = ofAll(1, 2, 3, 4);
+    public void shouldScanRightEmpty() {
+        final Traversable<Integer> testee = empty();
         final Traversable<Integer> actual = testee.scanRight(0, (s1, s2) -> s1 + s2);
-        assertThat(actual).isEqualTo(ofAll(10, 9, 7, 4, 0));
+        assertThat(actual).isEqualTo(ofAll(0));
     }
 
     @Test
-    public void shouldScanStrings() {
-        final Traversable<String> testee = of("a");
-        final Traversable<String> actual = testee.scan("x", (s1, s2) -> s1 + s2);
-        assertThat(actual).isEqualTo(ofAll("x", "xa"));
+    public void shouldScanNonEmpty() {
+        final Traversable<Integer> testee = ofAll(1, 2, 3);
+        final Traversable<Integer> actual = testee.scan(0, (acc, s) -> acc + s);
+        assertThat(actual).isEqualTo(ofAll(0, 1, 3, 6));
     }
 
     @Test
-    public void shouldScanLeftStrings() {
-        final Traversable<String> testee = of("a");
-        final Traversable<String> actual = testee.scanLeft("x", (s1, s2) -> s1 + s2);
-        assertThat(actual).isEqualTo(ofAll("x", "xa"));
+    public void shouldScanLeftNonEmpty() {
+        final Traversable<Integer> testee = ofAll(1, 2, 3);
+        final Traversable<String> actual = testee.scanLeft("x", (acc, i) -> acc + i);
+        assertThat(actual).isEqualTo(ofAll("x", "x1", "x12", "x123"));
     }
 
     @Test
-    public void shouldScanRightStrings() {
-        final Traversable<String> testee = of("a");
-        final Traversable<String> actual = testee.scanRight("x", (s1, s2) -> s1 + s2);
-        assertThat(actual).isEqualTo(ofAll("ax", "x"));
+    public void shouldScanRightNonEmpty() {
+        final Traversable<Integer> testee = ofAll(1, 2, 3);
+        final Traversable<String> actual = testee.scanRight("x", (i, acc) -> acc + i);
+        assertThat(actual).isEqualTo(ofAll("x321", "x32", "x3", "x"));
     }
 
     @Test
     public void shouldScanWithNonComparable() {
         final Traversable<NonComparable> testee = of(new NonComparable("a"));
-        final Traversable<NonComparable> actual = testee.scan(new NonComparable("x"), (u1, u2) -> new NonComparable(u1.value + u2.value));
+        final List<NonComparable> actual = List.ofAll(testee.scan(new NonComparable("x"), (u1, u2) -> new NonComparable(u1.value + u2.value)));
         final List<NonComparable> expected = List.ofAll("x", "xa").map(NonComparable::new);
         assertThat(actual).containsAll(expected);
         assertThat(actual.length()).isEqualTo(expected.length());
@@ -1111,7 +1111,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldScanLeftWithNonComparable() {
         final Traversable<NonComparable> testee = of(new NonComparable("a"));
-        final Traversable<NonComparable> actual = testee.scanLeft(new NonComparable("x"), (u1, u2) -> new NonComparable(u1.value + u2.value));
+        final List<NonComparable> actual = List.ofAll(testee.scanLeft(new NonComparable("x"), (u1, u2) -> new NonComparable(u1.value + u2.value)));
         final List<NonComparable> expected = List.ofAll("x", "xa").map(NonComparable::new);
         assertThat(actual).containsAll(expected);
         assertThat(actual.length()).isEqualTo(expected.length());
@@ -1120,7 +1120,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldScanRightWithNonComparable() {
         final Traversable<NonComparable> testee = of(new NonComparable("a"));
-        final Traversable<NonComparable> actual = testee.scanRight(new NonComparable("x"), (u1, u2) -> new NonComparable(u1.value + u2.value));
+        final List<NonComparable> actual = List.ofAll(testee.scanRight(new NonComparable("x"), (u1, u2) -> new NonComparable(u1.value + u2.value)));
         final List<NonComparable> expected = List.ofAll("ax", "x").map(NonComparable::new);
         assertThat(actual).containsAll(expected);
         assertThat(actual.length()).isEqualTo(expected.length());

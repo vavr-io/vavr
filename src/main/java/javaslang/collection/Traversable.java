@@ -414,15 +414,6 @@ public interface Traversable<T> extends Value<T> {
      * starting with a value {@code zero} of type B.
      * <p>
      * Example: {@code List.of("a", "b", "c").foldRight("", (x, xs) -> x + xs) = "abc"}
-     * <p>
-     * In order to prevent recursive calls, foldRight is implemented based on reverse and foldLeft. A recursive variant
-     * is based on foldMap, using the monoid of function composition (endo monoid).
-     * <pre>
-     * <code>
-     * foldRight = reverse().foldLeft(zero, (b, a) -&gt; f.apply(a, b));
-     * foldRight = foldMap(Algebra.Monoid.endoMonoid(), a -&gt; b -&gt; f.apply(a, b)).apply(zero);
-     * </code>
-     * </pre>
      *
      * @param zero Value to start the accumulation with.
      * @param f    The accumulator function.

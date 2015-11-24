@@ -507,7 +507,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Seq<V> values() {
-        return map(Tuple2::_2).toStream();
+        return map(Tuple2::_2);
     }
 
     @Override
