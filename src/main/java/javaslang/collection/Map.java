@@ -5,15 +5,20 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.control.Option;
-
-import java.util.*;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import javaslang.Tuple2;
+import javaslang.Tuple3;
+import javaslang.control.Option;
 
 /**
  * An immutable {@code Map} interface.
@@ -224,10 +229,10 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip(unzipper).map(Stream::ofAll, Stream::ofAll);
     }
-    
+
     @Override
     default <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(
-    		Function<? super Tuple2<K,V>, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+        Function<? super Tuple2<K,V>, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip3(unzipper).map(Stream::ofAll, Stream::ofAll, Stream::ofAll);
     }
@@ -247,6 +252,19 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
     @Override
     default Seq<Tuple2<Tuple2<K, V>, Integer>> zipWithIndex() {
         return Stream.ofAll(iterator().zipWithIndex());
+    }
+
+    /**
+     * Performs an action on key, value pair.
+     *
+     * @param action A {@code BiConsumer}
+     * @throws NullPointerException if {@code action} is null
+     */
+    default void forEach(BiConsumer<K, V> action) {
+        Objects.requireNonNull(action, "action is null");
+        for (Tuple2<K, V> t : this) {
+            action.accept(t._1, t._2);
+        }
     }
 
 }
