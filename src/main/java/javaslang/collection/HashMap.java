@@ -5,26 +5,20 @@
  */
 package javaslang.collection;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
-
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 /**
  * An immutable {@code HashMap} implementation based on a
@@ -86,7 +80,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     /**
      * Returns a singleton {@code HashMap}, i.e. a {@code HashMap} of one element.
      *
-     * @param key A singleton map key.
+     * @param key   A singleton map key.
      * @param value A singleton map value.
      * @param <K>   The key type
      * @param <V>   The value type
@@ -433,21 +427,23 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public HashMap<K, V> scan(Tuple2<K, V> zero,
-            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
-        return HashMap.ofAll(scanLeft(zero, operation));
+    public HashMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanLeft(this, zero, operation, HashMap.empty(), HashMap::put, Function.identity());
     }
-    
+
     @Override
     public <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
-        return iterator().scanLeft(zero, operation);
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
-    
+
     @Override
     public <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
-        return iterator().scanRight(zero, operation);
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
     }
-    
+
     @Override
     public int size() {
         return trie.size();

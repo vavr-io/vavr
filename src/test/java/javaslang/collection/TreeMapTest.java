@@ -6,17 +6,14 @@
 package javaslang.collection;
 
 
-import static javaslang.collection.Comparators.naturalComparator;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.stream.Collector;
 
-import org.junit.Assert;
-import org.junit.Test;
-
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.control.Option;
+import static javaslang.collection.Comparators.naturalComparator;
 
 public class TreeMapTest extends AbstractMapTest {
 
@@ -53,21 +50,21 @@ public class TreeMapTest extends AbstractMapTest {
         final TreeMap<String, Integer> result = tm.scan(Tuple.of("z", 0), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
         assertThat(result).isEqualTo(TreeMap.ofAll(Tuple.of("z", 0), Tuple.of("zone", 1), Tuple.of("zonetwo", 3)));
     }
-    
+
     @Test
     public void shouldScanLeft() {
         final TreeMap<String, Integer> tm = TreeMap.ofAll(Tuple.of("one", 1), Tuple.of("two", 2));
-        final List<Tuple2<String, Integer>> result = tm.scanLeft(Tuple.of("z", 0), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
-        assertThat(result).isEqualTo(TreeMap.ofAll(Tuple.of("z", 0), Tuple.of("zone", 1), Tuple.of("zonetwo", 3)));
+        final Seq<Tuple2<String, Integer>> result = tm.scanLeft(Tuple.of("z", 0), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
+        assertThat(result).isEqualTo(List.ofAll(Tuple.of("z", 0), Tuple.of("zone", 1), Tuple.of("zonetwo", 3)));
     }
 
     @Test
     public void shouldScanRight() {
         final TreeMap<String, Integer> tm = TreeMap.ofAll(Tuple.of("one", 1), Tuple.of("two", 2));
-        final List<String> result = tm.scanRight("z", (t1, acc) -> acc + CharSeq.of(t1._1).reverse());
+        final Seq<String> result = tm.scanRight("z", (t1, acc) -> acc + CharSeq.of(t1._1).reverse());
         assertThat(result).isEqualTo(List.ofAll("zowteno", "zowt", "z"));
     }
-    
+
     // -- obsolete tests
 
     @Override

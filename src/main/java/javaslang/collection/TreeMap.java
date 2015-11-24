@@ -5,25 +5,19 @@
  */
 package javaslang.collection;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
-
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 import static javaslang.collection.Comparators.naturalComparator;
 
@@ -122,7 +116,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     /**
      * Returns a singleton {@code TreeMap}, i.e. a {@code TreeMap} of one element.
      *
-     * @param key A singleton map key.
+     * @param key   A singleton map key.
      * @param value A singleton map value.
      * @param <K>   The key type
      * @param <V>   The value type
@@ -135,16 +129,16 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     /**
      * Returns a singleton {@code TreeMap}, i.e. a {@code TreeMap} of one element.
      *
-     * @param key A singleton map key.
-     * @param value A singleton map value.
-     * @param <K>   The key type
-     * @param <V>   The value type
+     * @param key           A singleton map key.
+     * @param value         A singleton map value.
+     * @param <K>           The key type
+     * @param <V>           The value type
      * @param keyComparator The comparator used to sort the entries by their key.
      * @return A new Map containing the given entry
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K key, V value) {
         Objects.requireNonNull(keyComparator, "keyComparator is null");
-        return TreeMap.<K, V>empty(keyComparator).put(key, value);
+        return TreeMap.<K, V> empty(keyComparator).put(key, value);
     }
 
     /**
@@ -545,25 +539,24 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
         return new TreeMap<>(tree);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public TreeMap<K, V> scan(Tuple2<K, V> zero,
-            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
-        Objects.requireNonNull(operation, "operation value is null");
-        Traversable t = iterator().scan(zero, operation);            
-        return (TreeMap<K, V>) TreeMap.ofAll(t);
+    public TreeMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanLeft(this, zero, operation, TreeMap.empty(keyComparator()), TreeMap::put, Function.identity());
     }
-    
+
     @Override
-    public <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
-        return iterator().scanLeft(zero, operation);
+    public <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
-    
+
     @Override
-    public <U> List<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
-        return iterator().scanRight(zero, operation);
+    public <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
     }
-    
+
     @Override
     public int size() {
         return entries.size();

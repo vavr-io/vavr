@@ -213,19 +213,21 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
     
     @Override
-    public LinkedHashMap<K, V> scan(Tuple2<K, V> zero,
-            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
-        return LinkedHashMap.ofAll(scanLeft(zero, operation));
+    public LinkedHashMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanLeft(this, zero, operation, LinkedHashMap.empty(), LinkedHashMap::put, Function.identity());
     }
     
     @Override
     public <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
-        return iterator().scanLeft(zero, operation);
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
     
     @Override
     public <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
-        return iterator().scanRight(zero, operation);
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
     }
 
     @Override
