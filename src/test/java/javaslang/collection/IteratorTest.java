@@ -14,6 +14,7 @@ import org.assertj.core.api.ObjectAssert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
@@ -148,6 +149,86 @@ public class IteratorTest extends AbstractTraversableTest {
     @Override
     protected int getPeekNonNilPerformingAnAction() {
         return 3;
+    }
+
+    // -- static ofAll()
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailOfEmptyArgList() {
+        ofAll().next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailOfEmptyIterable() {
+        ofAll(List.empty()).next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailOfEmptyBoolean() {
+        ofAll(new boolean[0]).next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailOfEmptyByte() {
+        ofAll(new byte[0]).next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailOfEmptyChar() {
+        ofAll(new char[0]).next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailOfEmptyDouble() {
+        ofAll(new double[0]).next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailOfEmptyFloat() {
+        ofAll(new float[0]).next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailOfEmptyInt() {
+        ofAll(new int[0]).next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailOfEmptyLong() {
+        ofAll(new long[0]).next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailOfEmptyShort() {
+        ofAll(new short[0]).next();
+    }
+
+    // -- static concat()
+
+    @Test
+    public void shouldConcatEmptyIterableIterable() {
+        Iterable<Iterable<Integer>> empty = List.empty();
+        assertThat(Iterator.concat(empty)).isSameAs(Iterator.empty());
+
+    }
+
+    @Test
+    public void shouldConcatNonEmptyIterableIterable() {
+        Iterable<Iterable<Integer>> itIt = List.ofAll(List.ofAll(1, 2), List.of(3));
+        assertThat(Iterator.concat(itIt)).isEqualTo(Iterator.ofAll(1, 2, 3));
+
+    }
+
+    @Test
+    public void shouldConcatEmptyArrayIterable() {
+        assertThat(Iterator.concat()).isSameAs(Iterator.empty());
+
+    }
+
+    @Test
+    public void shouldConcatNonEmptyArrayIterable() {
+        assertThat(Iterator.concat(List.ofAll(1, 2), List.of(3))).isEqualTo(Iterator.ofAll(1, 2, 3));
+
     }
 
     // -- static from(int)
