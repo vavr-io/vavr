@@ -328,7 +328,7 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
     default <U> Gen<U> flatten() {
         try {
             return ((Gen<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
     }

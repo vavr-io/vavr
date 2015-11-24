@@ -5,6 +5,12 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.control.Some;
+import org.assertj.core.api.IterableAssert;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -13,14 +19,6 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.control.Option;
-import javaslang.control.Some;
-import org.assertj.core.api.IterableAssert;
-import org.junit.Assert;
-import org.junit.Test;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;

@@ -5,24 +5,18 @@
  */
 package javaslang.collection;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
-
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 /**
  * An immutable {@code LinkedHashMap} implementation.
@@ -86,7 +80,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     /**
      * Returns a singleton {@code LinkedHashMap}, i.e. a {@code LinkedHashMap} of one element.
      *
-     * @param key A singleton map key.
+     * @param key   A singleton map key.
      * @param value A singleton map value.
      * @param <K>   The key type
      * @param <V>   The value type
@@ -150,7 +144,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <U, W> LinkedHashMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(LinkedHashMap.<U, W>empty(), (acc, entry) -> {
+        return foldLeft(LinkedHashMap.<U, W> empty(), (acc, entry) -> {
             for (Tuple2<? extends U, ? extends W> mappedEntry : mapper.apply(entry._1, entry._2)) {
                 acc = acc.put(mappedEntry);
             }
@@ -178,7 +172,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     public LinkedHashMap<K, V> put(K key, V value) {
         Queue<Tuple2<K, V>> newList = list;
         HashMap<K, V> newMap = map;
-        if(containsKey(key)) {
+        if (containsKey(key)) {
             newList = newList.filter(t -> !t._1.equals(key));
             newMap = newMap.remove(key);
         }
@@ -194,7 +188,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public LinkedHashMap<K, V> remove(K key) {
-        if(containsKey(key)) {
+        if (containsKey(key)) {
             final Queue<Tuple2<K, V>> newList = list.removeFirst(t -> t._1.equals(key));
             final HashMap<K, V> newMap = map.remove(key);
             return newList.isEmpty() ? empty() : new LinkedHashMap<>(newList, newMap);
@@ -211,19 +205,19 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         final HashMap<K, V> newMap = map.filter(t -> !toRemove.contains(t._1));
         return newList.isEmpty() ? empty() : new LinkedHashMap<>(newList, newMap);
     }
-    
+
     @Override
     public LinkedHashMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
         return Traversables.scanLeft(this, zero, operation, LinkedHashMap.empty(), LinkedHashMap::put, Function.identity());
     }
-    
+
     @Override
     public <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
-    
+
     @Override
     public <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
@@ -355,7 +349,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public LinkedHashMap<K, V> init() {
-        if(isEmpty()) {
+        if (isEmpty()) {
             throw new UnsupportedOperationException("init of empty LinkedHashMap");
         } else {
             return LinkedHashMap.ofAll(list.init());

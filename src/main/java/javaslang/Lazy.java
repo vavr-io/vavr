@@ -196,7 +196,7 @@ public final class Lazy<T> implements Supplier<T>, Value<T>, Serializable {
     public <U> Lazy<U> flatten() {
         try {
             return ((Lazy<? extends java.lang.Iterable<U>>) this).flatMap(Function.identity());
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
     }

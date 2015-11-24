@@ -983,17 +983,20 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         return scanLeft(zero, operation);
     }
 
-    @Override
+	@Override
     public <U> Array<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         return Traversables.scanLeft(this, zero, operation,
-                new java.util.ArrayList<>(), (c, u) -> { c.add(u); return c; }, list -> wrap(list.toArray()));
+                new java.util.ArrayList<>(), (c, u) -> {
+                    c.add(u);
+                    return c;
+                }, list -> Array.<U> wrap(list.toArray()));
     }
 
     @Override
     public <U> Array<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, list -> wrap(list.toJavaArray()));
+        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, list -> Array.<U> wrap(list.toJavaArray()));
     }
 
     @Override

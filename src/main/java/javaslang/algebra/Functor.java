@@ -12,14 +12,14 @@ import java.util.function.Function;
  *
  * All instances of the Functor interface should obey the two functor laws:
  * <ul>
- *     <li>{@code m.map(a -> a) ≡ m}</li>
- *     <li>{@code m.map(f.compose(g)) ≡ m.map(g).map(f)}</li>
+ * <li>{@code m.map(a -> a) ≡ m}</li>
+ * <li>{@code m.map(f.compose(g)) ≡ m.map(g).map(f)}</li>
  * </ul>
  * where "f, g ∈ Function".
  *
  * @param <T> component type of this functor
- * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
  * @author Daniel Dietrich
+ * @see <a href="http://www.haskellforall.com/2012/09/the-functor-design-pattern.html">The functor design pattern</a>
  * @since 1.1.0
  */
 public interface Functor<T> {
@@ -27,7 +27,7 @@ public interface Functor<T> {
     /**
      * Applies a function f to the components of this Functor.
      *
-     * @param <U> type of the component of the resulting Functor
+     * @param <U>    type of the component of the resulting Functor
      * @param mapper a Function which maps the component of this Functor
      * @return a new Functor
      * @throws NullPointerException if {@code f} is null

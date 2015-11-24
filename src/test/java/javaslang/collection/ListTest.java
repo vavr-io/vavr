@@ -181,7 +181,7 @@ public class ListTest extends AbstractSeqTest {
     public void shouldNotDeserializeListWithSizeLessThanOne() throws Throwable {
         try {
             /*
-			 * This implementation is stable regarding jvm impl changes ofAll object serialization. The index ofAll the number
+             * This implementation is stable regarding jvm impl changes ofAll object serialization. The index ofAll the number
 			 * ofAll List elements is gathered dynamically.
 			 */
             final byte[] listWithOneElement = Serializables.serialize(List.of(0));

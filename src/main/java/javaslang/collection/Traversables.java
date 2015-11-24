@@ -36,7 +36,7 @@ final class Traversables {
             Iterable<? extends T> elements,
             U zero, BiFunction<? super T, ? super U, ? extends U> operation,
             C cumulativeResult, BiFunction<C, U, C> combiner, Function<C, R> finisher) {
-        final Iterable<T> reversedElements = Seq.ofAll(elements).reverseIterator();
+        final Iterator<? extends T> reversedElements = Seq.ofAll(elements).reverseIterator();
         return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), cumulativeResult, combiner, finisher);
     }
 }

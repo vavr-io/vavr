@@ -48,7 +48,7 @@ public class Euler14Test {
     }
 
     private final static Function1<Long, Long> collatzRecursive = n -> {
-        if(n == 1) {
+        if (n == 1) {
             return 1L;
         } else {
             if (n % 2 == 0) {
