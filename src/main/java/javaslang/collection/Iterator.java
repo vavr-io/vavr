@@ -9,8 +9,6 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.Value;
-import javaslang.collection.Iterator;
-import javaslang.collection.Vector;
 import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
 import javaslang.control.None;
@@ -1547,7 +1545,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
         }
     }
-    
+
     @Override
     default Iterator<T> replace(T currentElement, T newElement) {
         if (!hasNext()) {
@@ -1621,37 +1619,52 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     default Traversable<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
-    
+
     @Override
-    default <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+    default <U> Iterator<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        List<U> builder = List.empty();
-        U acc = zero;
-        builder = builder.prepend(acc);
-        for (T a : this) {
-            acc = operation.apply(acc, a);
-            builder = builder.prepend(acc);
+        if (isEmpty()) {
+            return Iterator.of(zero);
+        } else {
+            final Iterator<T> that = this;
+            return new AbstractIterator<U>() {
+
+                boolean isFirst = true;
+                U acc = zero;
+
+                @Override
+                public boolean hasNext() {
+                    return isFirst || that.hasNext();
+                }
+
+                @Override
+                public U next() {
+                    if (!hasNext()) {
+                        EMPTY.next();
+                    }
+                    if (isFirst) {
+                        isFirst = false;
+                        return acc;
+                    } else {
+                        acc = operation.apply(acc, that.next());
+                        return acc;
+                    }
+                }
+            };
         }
-        return builder.reverse();
     }
-    
+
+    // not lazy!
     @Override
-    default <U> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+    default <U> Iterator<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        List<U> scanned = List.of(zero);
-        U acc = zero;
-        Iterator<T> it = Seq.ofAll(this).reverseIterator();
-        while(it.hasNext()){
-            acc = operation.apply(it.next(), acc);
-            scanned = scanned.prepend(acc);
+        if (isEmpty()) {
+            return Iterator.of(zero);
+        } else {
+            return Traversables.scanRight(this, zero, operation, Stream.empty(), Stream::prepend, Stream::iterator);
         }
-        List<U> builder = List.empty();
-        for (U elem : scanned) {
-            builder = builder.prepend(elem);
-        }
-        return builder.reverse();
     }
-    
+
     @Override
     default Iterator<IndexedSeq<T>> sliding(int size, int step) {
         if (size <= 0 || step <= 0) {

@@ -1037,11 +1037,11 @@ public interface Stream<T> extends LinearSeq<T> {
         return Stream.ofAll(iterator().scanLeft(zero, operation));
     }
 
+    // not lazy!
     @Override
     default <U> Stream<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        // lazily streams the elements of an iterator
-        return Stream.ofAll(iterator().scanRight(zero, operation));
+        return Traversables.scanRight(this, zero, operation, Stream.empty(), Stream::prepend, Function.identity());
     }
 
     @Override
