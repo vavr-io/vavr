@@ -25,10 +25,10 @@ public class RedBlackTreeTest {
         final Gen<Integer> ints = Arbitrary.integer().apply(size);
 
         final Gen<RedBlackTree<Integer>> gen = Gen.<RedBlackTree<Integer>> of(RedBlackTree.empty(), t ->
-                        Gen.<RedBlackTree<Integer>> frequency(
-                                Tuple.of(1, rnd -> t.delete(ints.apply(rnd))),
-                                Tuple.of(3, rnd -> t.insert(ints.apply(rnd)))
-                        ).apply(random)
+                Gen.<RedBlackTree<Integer>> frequency(
+                        Tuple.of(1, rnd -> t.delete(ints.apply(rnd))),
+                        Tuple.of(3, rnd -> t.insert(ints.apply(rnd)))
+                ).apply(random)
         );
 
         int count = Gen.choose(1, size).apply(random);

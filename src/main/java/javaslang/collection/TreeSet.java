@@ -693,7 +693,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return Traversables.scanLeft(this, zero, operation, TreeSet.empty(comparator()), TreeSet::add, Function.identity());
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
@@ -708,7 +707,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");

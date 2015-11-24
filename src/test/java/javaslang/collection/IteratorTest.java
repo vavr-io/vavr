@@ -230,7 +230,6 @@ public class IteratorTest extends AbstractTraversableTest {
     // -- groupBy
 
     @Override
-    @SuppressWarnings("unchecked")
     public void shouldNonNilGroupByIdentity() {
         // we can't compare iterators, should map it to sequences
         final Seq<?> actual = ofAll('a', 'b', 'c').groupBy(Function.identity()).map(e -> Tuple.of(e._1, List.ofAll(e._2)));
@@ -243,7 +242,6 @@ public class IteratorTest extends AbstractTraversableTest {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void shouldNonNilGroupByEqual() {
         // we can't compare iterators, should map it to sequences
         final Seq<?> actual = ofAll('a', 'b', 'c').groupBy(c -> 1).map(e -> Tuple.of(e._1, List.ofAll(e._2)));

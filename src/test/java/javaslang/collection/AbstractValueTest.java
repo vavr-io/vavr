@@ -235,9 +235,9 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         try {
             final String s = unsafe.get();
             throw new AssertionError("Expected ClassCastException but got " + s);
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             // ok!
-        } catch(Exception x) {
+        } catch (Exception x) {
             throw new AssertionError("Unexpected exception:" + x);
         }
     }

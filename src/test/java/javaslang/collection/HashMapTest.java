@@ -5,14 +5,10 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple2;
+
 import java.util.ArrayList;
 import java.util.stream.Collector;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-import javaslang.Tuple;
-import javaslang.Tuple2;
 
 public class HashMapTest extends AbstractMapTest {
 
@@ -28,7 +24,7 @@ public class HashMapTest extends AbstractMapTest {
 
     @Override
     protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
-        return HashMap.<Integer, T>collector();
+        return HashMap.<Integer, T> collector();
     }
 
     @SuppressWarnings("varargs")
@@ -39,7 +35,7 @@ public class HashMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <K  extends Comparable<? super K>, V> Map<K, V> of(K key, V value) {
+    protected <K extends Comparable<? super K>, V> Map<K, V> of(K key, V value) {
         return HashMap.of(key, value);
     }
 

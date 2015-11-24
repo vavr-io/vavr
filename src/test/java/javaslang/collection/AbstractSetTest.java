@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Objects;
 
 public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
 

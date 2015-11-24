@@ -779,7 +779,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldCallMaxFunctionOncePerElement() {
-        final int[] cnt = {0};
+        final int[] cnt = { 0 };
         assertThat(ofAll(1, 2, 3).maxBy(i -> {
             cnt[0]++;
             return i;
@@ -895,7 +895,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldCallMinFunctionOncePerElement() {
-        final int[] cnt = {0};
+        final int[] cnt = { 0 };
         assertThat(ofAll(1, 2, 3).minBy(i -> {
             cnt[0]++;
             return i;
@@ -1682,9 +1682,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
             try {
                 collector();
                 fail("Collections which are not traversable again should not define a Collector.");
-            } catch(UnsupportedOperationException x) {
+            } catch (UnsupportedOperationException x) {
                 // ok
-            } catch(Throwable x) {
+            } catch (Throwable x) {
                 fail("Unexpected exception", x);
             }
         }
