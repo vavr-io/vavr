@@ -459,18 +459,20 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Traversable<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+    default Seq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
     
     @Override
-    default <U> Tree<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return iterator().scanLeft(zero, operation).toTree();
+    default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
     
     @Override
-    default <U> Tree<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return iterator().scanRight(zero, operation).toTree();
+    default <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
     }
     
     @SuppressWarnings("unchecked")
