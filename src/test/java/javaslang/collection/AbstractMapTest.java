@@ -16,10 +16,8 @@ import java.util.stream.Collector;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.control.Option;
 import javaslang.control.Some;
 import org.assertj.core.api.IterableAssert;
-import org.junit.Assert;
 import org.junit.Test;
 
 import static javaslang.Serializables.deserialize;
@@ -302,6 +300,11 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnTuple2SetOfANonEmptyMap() {
         assertThat(emptyMap().put(1, "1").put(2, "2").toSet()).isEqualTo(HashSet.ofAll(Tuple.of(1, "1"), Tuple.of(2, "2")));
+    }
+
+    @Test
+    public void shouldReturnModifiedValuesMap() {
+        assertThat(HashMap.of(1, "1").put(2, "2").mapValues(Integer::parseInt)).isEqualTo(HashMap.of(1, 1).put(2, 2));
     }
 
     // -- merge
