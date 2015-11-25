@@ -313,6 +313,23 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         assertThat(actualInts).isEqualTo(expectedInts);
     }
 
+    // -- orElseTry
+
+    @Test
+    public void shouldReturnUnderlyingValueWhenCallingOrElseTryOnNonEmptyValue() {
+        assertThat(of(1).orElseTry(() -> 2)).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldReturnAlternateValueWhenCallingOrElseTryOnEmptyValue() {
+        assertThat(empty().orElseTry(() -> 2)).isEqualTo(2);
+    }
+
+    @Test(expected = Failure.NonFatal.class)
+    public void shouldThrowWhenCallingOrElseTryOnEmptyValueAndTryIsAFailure() {
+        empty().orElseTry(() -> { throw new Error(); });
+    }
+
     // -- peek
 
     @Test
