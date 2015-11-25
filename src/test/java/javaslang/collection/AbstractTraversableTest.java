@@ -1209,7 +1209,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     public void shouldSplitNil() {
         final java.util.List<Integer> actual = new java.util.ArrayList<>();
         this.<Integer> empty().spliterator().forEachRemaining(actual::add);
-        assertThat(actual).isEqualTo(Collections.emptyList());
+        assertThat(actual).isEmpty();
     }
 
     @Test

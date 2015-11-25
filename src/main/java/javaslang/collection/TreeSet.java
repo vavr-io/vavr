@@ -536,6 +536,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
+    public Iterator<TreeSet<T>> grouped(int size) {
+        return sliding(size, size);
+    }
+
+    @Override
     public boolean hasDefiniteSize() {
         return true;
     }
@@ -690,7 +695,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public TreeSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, TreeSet.empty(comparator()), TreeSet::add, Function.identity());
+        return Collections.scanLeft(this, zero, operation, TreeSet.empty(comparator()), TreeSet::add, Function.identity());
     }
 
     @Override
@@ -698,9 +703,9 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         Objects.requireNonNull(operation, "operation is null");
         if (zero instanceof Comparable) {
             final Comparator<U> comparator = naturalComparator();
-            return Traversables.scanLeft(this, zero, operation, TreeSet.empty(comparator), TreeSet::add, Function.identity());
+            return Collections.scanLeft(this, zero, operation, TreeSet.empty(comparator), TreeSet::add, Function.identity());
         } else {
-            return Traversables.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
+            return Collections.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
                 c.add(u);
                 return c;
             }, HashSet::ofAll);
@@ -712,13 +717,23 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         Objects.requireNonNull(operation, "operation is null");
         if (zero instanceof Comparable) {
             final Comparator<U> comparator = naturalComparator();
-            return Traversables.scanRight(this, zero, operation, TreeSet.empty(comparator), TreeSet::add, Function.identity());
+            return Collections.scanRight(this, zero, operation, TreeSet.empty(comparator), TreeSet::add, Function.identity());
         } else {
-            return Traversables.scanRight(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
+            return Collections.scanRight(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
                 c.add(u);
                 return c;
             }, HashSet::ofAll);
         }
+    }
+
+    @Override
+    public Iterator<TreeSet<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<TreeSet<T>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(seq -> TreeSet.ofAll(tree.comparator(), seq));
     }
 
     @Override

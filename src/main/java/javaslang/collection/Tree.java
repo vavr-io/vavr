@@ -166,6 +166,13 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     /**
+     * Returns the number of nodes (including root and leafs).
+     *
+     * @return The size of the tree.
+     */
+    int size();
+
+    /**
      * Traverses this tree in {@link Order#PRE_ORDER}.
      *
      * @return A sequence of the tree values in pre-order.
@@ -350,6 +357,11 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
+    default Iterator<Seq<T>> grouped(int size) {
+        return sliding(size, size);
+    }
+
+    @Override
     default boolean hasDefiniteSize() {
         return true;
     }
@@ -390,6 +402,11 @@ public interface Tree<T> extends Traversable<T> {
     @Override
     default Iterator<T> iterator() {
         return traverse().iterator();
+    }
+
+    @Override
+    default int length() {
+        return size();
     }
 
     @Override
@@ -446,13 +463,23 @@ public interface Tree<T> extends Traversable<T> {
     @Override
     default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
 
     @Override
     default <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+    }
+
+    @Override
+    default Iterator<Seq<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    default Iterator<Seq<T>> sliding(int size, int step) {
+        return iterator().sliding(size, step);
     }
 
     @SuppressWarnings("unchecked")
@@ -634,7 +661,7 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public int length() {
+        public int size() {
             return size.get();
         }
 
@@ -806,7 +833,7 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public int length() {
+        public int size() {
             return 0;
         }
 

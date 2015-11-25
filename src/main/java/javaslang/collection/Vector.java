@@ -442,23 +442,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<Tuple2<T, T>> crossProduct() {
-        return crossProduct(this);
-    }
-
-    @Override
-    public Vector<IndexedSeq<T>> crossProduct(int power) {
-        return toStream().crossProduct(power).toVector();
-    }
-
-    @Override
-    public <U> Vector<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
-        final Vector<U> other = Vector.ofAll(that);
-        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
-    }
-
-    @Override
     public Vector<Vector<T>> combinations() {
         return Vector.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
@@ -466,6 +449,23 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Vector<Vector<T>> combinations(int k) {
         return Combinations.apply(this, Math.max(k, 0));
+    }
+
+    @Override
+    public Vector<Tuple2<T, T>> crossProduct() {
+        return crossProduct(this);
+    }
+
+    @Override
+    public Vector<Vector<T>> crossProduct(int power) {
+        return Collections.crossProduct(this, power).map(Vector::ofAll).toVector();
+    }
+
+    @Override
+    public <U> Vector<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
+        Objects.requireNonNull(that, "that is null");
+        final Vector<U> other = Vector.ofAll(that);
+        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
     }
 
     @Override
@@ -600,6 +600,11 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     public <C> Map<C, Vector<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
         return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, Vector.ofAll(it)));
+    }
+
+    @Override
+    public Iterator<Vector<T>> grouped(int size) {
+        return sliding(size, size);
     }
 
     @Override
@@ -984,13 +989,13 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public <U> Vector<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, Vector.empty(), Vector::append, Function.identity());
+        return Collections.scanLeft(this, zero, operation, Vector.empty(), Vector::append, Function.identity());
     }
 
     @Override
     public <U> Vector<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, Vector.empty(), Vector::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, Vector.empty(), Vector::prepend, Function.identity());
     }
 
     @Override
@@ -1008,6 +1013,16 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             trie = trie.put(trie.size(), get(i));
         }
         return trie.isEmpty() ? empty() : new Vector<>(trie);
+    }
+
+    @Override
+    public Iterator<Vector<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<Vector<T>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(Vector::ofAll);
     }
 
     @Override

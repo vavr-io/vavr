@@ -1334,7 +1334,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return new AbstractIterator<U>() {
 
                 final Iterator<? extends T> inputs = that;
-                java.util.Iterator<? extends U> current = Collections.emptyIterator();
+                java.util.Iterator<? extends U> current = java.util.Collections.emptyIterator();
 
                 @Override
                 public boolean hasNext() {
@@ -1399,6 +1399,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             });
             return streams.map((c, ts) -> Tuple.of(c, ts.iterator()));
         }
+    }
+
+    @Override
+    default Iterator<Seq<T>> grouped(int size) {
+        return sliding(size, size);
     }
 
     @Override
@@ -1661,12 +1666,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (isEmpty()) {
             return Iterator.of(zero);
         } else {
-            return Traversables.scanRight(this, zero, operation, Stream.empty(), Stream::prepend, Stream::iterator);
+            return Collections.scanRight(this, zero, operation, Stream.empty(), Stream::prepend, Stream::iterator);
         }
     }
 
     @Override
-    default Iterator<IndexedSeq<T>> sliding(int size, int step) {
+    default Iterator<Seq<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    default Iterator<Seq<T>> sliding(int size, int step) {
         if (size <= 0 || step <= 0) {
             throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
         }
@@ -1674,7 +1684,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Stream<T> source = Stream.ofAll(this);
-            return new AbstractIterator<IndexedSeq<T>>() {
+            return new AbstractIterator<Seq<T>>() {
                 private Stream<T> that = source;
                 private IndexedSeq<T> next = null;
 

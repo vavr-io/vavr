@@ -127,6 +127,9 @@ public interface Set<T> extends Traversable<T> {
     <C> Map<C, ? extends Set<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
+    Iterator<? extends Set<T>> grouped(int size);
+
+    @Override
     Set<T> init();
 
     @Override
@@ -164,6 +167,12 @@ public interface Set<T> extends Traversable<T> {
 
     @Override
     <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+
+    @Override
+    Iterator<? extends Set<T>> sliding(int size);
+
+    @Override
+    Iterator<? extends Set<T>> sliding(int size, int step);
 
     @Override
     Tuple2<? extends Set<T>, ? extends Set<T>> span(Predicate<? super T> predicate);

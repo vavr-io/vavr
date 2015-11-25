@@ -40,19 +40,19 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> clear();
 
     @Override
-    IndexedSeq<Tuple2<T, T>> crossProduct();
-
-    @Override
-    IndexedSeq<IndexedSeq<T>> crossProduct(int power);
-
-    @Override
-    <U> IndexedSeq<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
-
-    @Override
     IndexedSeq<? extends IndexedSeq<T>> combinations();
 
     @Override
     IndexedSeq<? extends IndexedSeq<T>> combinations(int k);
+
+    @Override
+    IndexedSeq<Tuple2<T, T>> crossProduct();
+
+    @Override
+    IndexedSeq<? extends IndexedSeq<T>> crossProduct(int power);
+
+    @Override
+    <U> IndexedSeq<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
 
     @Override
     IndexedSeq<T> distinct();
@@ -114,6 +114,9 @@ public interface IndexedSeq<T> extends Seq<T> {
         int n = start + segmentLength(predicate.negate(), start);
         return (n >= length()) ? -1 : n;
     }
+
+    @Override
+    Iterator<? extends IndexedSeq<T>> grouped(int size);
 
     @Override
     IndexedSeq<T> init();
@@ -246,6 +249,12 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     IndexedSeq<T> slice(int beginIndex, int endIndex);
+
+    @Override
+    Iterator<? extends IndexedSeq<T>> sliding(int size);
+
+    @Override
+    Iterator<? extends IndexedSeq<T>> sliding(int size, int step);
 
     @Override
     IndexedSeq<T> sort();

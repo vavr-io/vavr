@@ -98,6 +98,9 @@ public interface SortedSet<T> extends Set<T> {
     <C> Map<C, ? extends SortedSet<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
+    Iterator<? extends SortedSet<T>> grouped(int size);
+
+    @Override
     SortedSet<T> init();
 
     @Override
@@ -145,6 +148,12 @@ public interface SortedSet<T> extends Set<T> {
     // DEV-NOTE: The return type is either Set or SortedSet, depending whether U is Comparable
     @Override
     <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+
+    @Override
+    Iterator<? extends SortedSet<T>> sliding(int size);
+
+    @Override
+    Iterator<? extends SortedSet<T>> sliding(int size, int step);
 
     @Override
     Tuple2<? extends SortedSet<T>, ? extends SortedSet<T>> span(Predicate<? super T> predicate);

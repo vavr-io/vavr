@@ -37,6 +37,15 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         this.back = back;
     }
 
+    /* package private */
+    static <T> Array<T> wrap(Object[] array) {
+        if (array.length == 0) {
+            return empty();
+        } else {
+            return new Array<>(array);
+        }
+    }
+
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.Array}.
@@ -194,15 +203,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     public static Array<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
         return Array.ofAll(Iterator.ofAll(array));
-    }
-
-    /* package */
-    static <T> Array<T> wrap(Object[] array) {
-        if (array.length == 0) {
-            return empty();
-        } else {
-            return new Array<>(array);
-        }
     }
 
     public static Array<Character> range(char from, char toExclusive) {
@@ -471,23 +471,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<Tuple2<T, T>> crossProduct() {
-        return crossProduct(this);
-    }
-
-    @Override
-    public Array<IndexedSeq<T>> crossProduct(int power) {
-        return toStream().crossProduct(power).toArray();
-    }
-
-    @Override
-    public <U> Array<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
-        final Array<U> other = unit(that);
-        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
-    }
-
-    @Override
     public Array<Array<T>> combinations() {
         return Array.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
@@ -495,6 +478,23 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Array<Array<T>> combinations(int k) {
         return Combinations.apply(this, Math.max(k, 0));
+    }
+
+    @Override
+    public Array<Tuple2<T, T>> crossProduct() {
+        return crossProduct(this);
+    }
+
+    @Override
+    public Array<Array<T>> crossProduct(int power) {
+        return Collections.crossProduct(this, power).map(Array::ofAll).toArray();
+    }
+
+    @Override
+    public <U> Array<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
+        Objects.requireNonNull(that, "that is null");
+        final Array<U> other = unit(that);
+        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
     }
 
     @SuppressWarnings("unchecked")
@@ -603,12 +603,17 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <C> Map<C, ? extends Array<T>> groupBy(Function<? super T, ? extends C> classifier) {
+    public <C> Map<C, Array<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return foldLeft(HashMap.empty(), (map, t) -> {
             final C key = classifier.apply(t);
             final Array<T> values = map.get(key).map(ts -> ts.append(t)).orElse(Array.of(t));
             return map.put(key, values);
         });
+    }
+
+    @Override
+    public Iterator<Array<T>> grouped(int size) {
+        return sliding(size, size);
     }
 
     @SuppressWarnings("unchecked")
@@ -646,7 +651,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Option<? extends Array<T>> initOption() {
+    public Option<Array<T>> initOption() {
         if (isEmpty()) {
             return None.instance();
         } else {
@@ -986,7 +991,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 	@Override
     public <U> Array<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation,
+        return Collections.scanLeft(this, zero, operation,
                 new java.util.ArrayList<>(), (c, u) -> {
                     c.add(u);
                     return c;
@@ -996,7 +1001,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     @Override
     public <U> Array<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, list -> Array.<U> wrap(list.toJavaArray()));
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, list -> Array.<U> wrap(list.toJavaArray()));
     }
 
     @Override
@@ -1012,6 +1017,16 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         final Object[] arr = new Object[length];
         System.arraycopy(back, index, arr, 0, length);
         return wrap(arr);
+    }
+
+    @Override
+    public Iterator<Array<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<Array<T>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(Array::ofAll);
     }
 
     @Override

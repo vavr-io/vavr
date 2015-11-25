@@ -128,6 +128,9 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
     <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
 
     @Override
+    Iterator<? extends Map<K, V>> grouped(int size);
+
+    @Override
     Map<K, V> init();
 
     @Override
@@ -137,7 +140,9 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
     Iterator<Tuple2<K, V>> iterator();
 
     @Override
-    int length();
+    default int length() {
+        return size();
+    }
 
     @Override
     <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper);
@@ -192,6 +197,12 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
 
     @Override
     <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation);
+
+    @Override
+    Iterator<? extends Map<K, V>> sliding(int size);
+
+    @Override
+    Iterator<? extends Map<K, V>> sliding(int size, int step);
 
     @Override
     Tuple2<? extends Map<K, V>, ? extends Map<K, V>> span(Predicate<? super Tuple2<K, V>> predicate);

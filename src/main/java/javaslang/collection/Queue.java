@@ -11,10 +11,10 @@ import javaslang.control.Option;
 import javaslang.control.Some;
 
 import java.io.Serializable;
+import java.lang.Iterable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
-import java.lang.Iterable;
 
 /**
  * An immutable {@code Queue} stores elements allowing a first-in-first-out (FIFO) retrieval.
@@ -554,22 +554,6 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<Tuple2<T, T>> crossProduct() {
-        return crossProduct(this);
-    }
-
-    @Override
-    public Queue<IndexedSeq<T>> crossProduct(int power) {
-        return toStream().crossProduct(power).toQueue();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Queue<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
-        return toList().crossProduct((java.lang.Iterable<U>) that).toQueue();
-    }
-
-    @Override
     public Queue<T> clear() {
         return Queue.empty();
     }
@@ -582,6 +566,22 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     @Override
     public Queue<Queue<T>> combinations(int k) {
         return toList().combinations(k).map(Queue::ofAll).toQueue();
+    }
+
+    @Override
+    public Queue<Tuple2<T, T>> crossProduct() {
+        return crossProduct(this);
+    }
+
+    @Override
+    public Queue<Queue<T>> crossProduct(int power) {
+        return Collections.crossProduct(this, power).map(Queue::ofAll).toQueue();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Queue<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
+        return toList().crossProduct((java.lang.Iterable<U>) that).toQueue();
     }
 
     @Override
@@ -674,6 +674,11 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     public <C> Map<C, Queue<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
         return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, Queue.ofAll(it)));
+    }
+
+    @Override
+    public Iterator<Queue<T>> grouped(int size) {
+        return sliding(size, size);
     }
 
     @Override
@@ -920,19 +925,29 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     public <U> Queue<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         // prepends to the rear-list in O(1)
-        return Traversables.scanLeft(this, zero, operation, Queue.empty(), Queue::append, Function.identity());
+        return Collections.scanLeft(this, zero, operation, Queue.empty(), Queue::append, Function.identity());
     }
 
     @Override
     public <U> Queue<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         // add elements in reverse order in O(1) and creates a Queue instance in O(1)
-        final List<U> list = Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+        final List<U> list = Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
         return Queue.ofAll(list);
     }
 
     @Override
     public Queue<T> slice(int beginIndex, int endIndex) {
         return toList().slice(beginIndex, endIndex).toQueue();
+    }
+
+    @Override
+    public Iterator<Queue<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<Queue<T>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(Queue::ofAll);
     }
 
     @Override

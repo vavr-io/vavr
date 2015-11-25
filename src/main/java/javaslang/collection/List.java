@@ -499,23 +499,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<Tuple2<T, T>> crossProduct() {
-        return crossProduct(this);
-    }
-
-    @Override
-    default List<IndexedSeq<T>> crossProduct(int power) {
-        return toStream().crossProduct(power).toList();
-    }
-
-    @Override
-    default <U> List<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
-        final List<U> other = unit(that);
-        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
-    }
-
-    @Override
     default List<T> clear() {
         return Nil.instance();
     }
@@ -528,6 +511,23 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default List<List<T>> combinations(int k) {
         return Combinations.apply(this, Math.max(k, 0));
+    }
+
+    @Override
+    default List<Tuple2<T, T>> crossProduct() {
+        return crossProduct(this);
+    }
+
+    @Override
+    default List<List<T>> crossProduct(int power) {
+        return Collections.crossProduct(this, power).map(List::ofAll).toList();
+    }
+
+    @Override
+    default <U> List<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
+        Objects.requireNonNull(that, "that is null");
+        final List<U> other = unit(that);
+        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
     }
 
     @Override
@@ -646,6 +646,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     default <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
         return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, List.ofAll(it)));
+    }
+
+    @Override
+    default Iterator<List<T>> grouped(int size) {
+        return sliding(size, size);
     }
 
     @Override
@@ -1047,13 +1052,13 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
 
     @Override
     default <U> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
     }
 
     @Override
@@ -1073,6 +1078,16 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             }
             return result.reverse();
         }
+    }
+
+    @Override
+    default Iterator<List<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    default Iterator<List<T>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(List::ofAll);
     }
 
     @Override

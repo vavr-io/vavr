@@ -491,15 +491,6 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> appendAll(java.lang.Iterable<? extends T> elements);
 
     @Override
-    Stack<Tuple2<T, T>> crossProduct();
-
-    @Override
-    Stack<IndexedSeq<T>> crossProduct(int power);
-
-    @Override
-    <U> Stack<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
-
-    @Override
     Stack<T> clear();
 
     @Override
@@ -507,6 +498,15 @@ public interface Stack<T> extends LinearSeq<T> {
 
     @Override
     Stack<? extends Stack<T>> combinations(int k);
+
+    @Override
+    Stack<Tuple2<T, T>> crossProduct();
+
+    @Override
+    Stack<? extends Stack<T>> crossProduct(int power);
+
+    @Override
+    <U> Stack<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
 
     @Override
     Stack<T> distinct();
@@ -537,6 +537,9 @@ public interface Stack<T> extends LinearSeq<T> {
 
     @Override
     <C> Map<C, ? extends Stack<T>> groupBy(Function<? super T, ? extends C> classifier);
+
+    @Override
+    Iterator<? extends Stack<T>> grouped(int size);
 
     @Override
     Stack<T> init();
@@ -618,6 +621,12 @@ public interface Stack<T> extends LinearSeq<T> {
 
     @Override
     Stack<T> slice(int beginIndex, int endIndex);
+
+    @Override
+    Iterator<? extends Stack<T>> sliding(int size);
+
+    @Override
+    Iterator<? extends Stack<T>> sliding(int size, int step);
 
     @Override
     Stack<T> sort();
