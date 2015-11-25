@@ -5,6 +5,13 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple2;
+import javaslang.Tuple3;
+import javaslang.Value;
+import javaslang.control.None;
+import javaslang.control.Option;
+import javaslang.control.Some;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Comparator;
@@ -14,13 +21,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.Value;
-import javaslang.control.None;
-import javaslang.control.Option;
-import javaslang.control.Some;
 
 /**
  * An interface for inherently recursive, multi-valued data structures. The order of elements is determined by
@@ -866,48 +866,48 @@ public interface Traversable<T> extends Value<T> {
 
     /**
      * Computes a prefix scan of the elements of the collection.
-     * 
+     *
      * Note: The neutral element z may be applied more than once.
-     * 
-     * @param zero neutral element for the operator op
+     *
+     * @param zero      neutral element for the operator op
      * @param operation the associative operator for the scan
      * @return a new traversable collection containing the prefix scan of the elements in this traversable collection
      */
     Traversable<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
-    
+
     /**
      * Produces a collection containing cumulative results of applying the
      * operator going left to right.
-     * 
+     *
      * Note: will not terminate for infinite-sized collections.
-     * 
+     *
      * Note: might return different results for different runs, unless the
      * underlying collection type is ordered.
-     * 
-     * @param <U> the type of the elements in the resulting collection
-     * @param zero the initial value
+     *
+     * @param <U>       the type of the elements in the resulting collection
+     * @param zero      the initial value
      * @param operation the binary operator applied to the intermediate result and the element
      * @return collection with intermediate results
      */
     <U> Traversable<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
-    
+
     /**
      * Produces a collection containing cumulative results of applying the
      * operator going right to left. The head of the collection is the last
      * cumulative result.
-     * 
+     *
      * Note: will not terminate for infinite-sized collections.
-     * 
+     *
      * Note: might return different results for different runs, unless the
      * underlying collection type is ordered.
-     * 
-     * @param <U> the type of the elements in the resulting collection
-     * @param zero the initial value
+     *
+     * @param <U>       the type of the elements in the resulting collection
+     * @param zero      the initial value
      * @param operation the binary operator applied to the intermediate result and the element
      * @return collection with intermediate results
      */
     <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
-    
+
     /**
      * Returns a tuple where the first element is the longest prefix of elements that satisfy p and the second element is the remainder.
      *
@@ -1038,9 +1038,10 @@ public interface Traversable<T> extends Value<T> {
      * @param <T3>     3rd element type of a triplet returned by unzipper
      * @return A triplet of set containing elements split by unzipper
      * @throws NullPointerException if {@code unzipper} is null
-     */    
+     */
     <T1, T2, T3> Tuple3<? extends Traversable<T1>, ? extends Traversable<T2>, ? extends Traversable<T3>> unzip3(
-    		Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
+            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
+
     /**
      * Returns a traversable formed from this traversable and another java.lang.Iterable collection by combining
      * corresponding elements in pairs. If one of the two iterables is longer than the other, its remaining elements
