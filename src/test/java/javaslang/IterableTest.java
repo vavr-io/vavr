@@ -5,14 +5,15 @@
  */
 package javaslang;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import javaslang.collection.List;
 import javaslang.collection.Queue;
 import javaslang.collection.Stream;
 import javaslang.control.None;
 import javaslang.control.Some;
 import org.junit.Test;
-
-import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +43,7 @@ public class IterableTest {
     @Test
     public void shouldEqNestedIterables() {
         // ((1, 2), ((3)))
-        final Iterable<?> i1 = List.ofAll(List.ofAll(1, 2), Arrays.asList(List.of(3)));
+        final Iterable<?> i1 = List.ofAll(List.ofAll(1, 2), Collections.singletonList(List.of(3)));
         final Iterable<?> i2 = Queue.ofAll(Stream.ofAll(1, 2), List.of(Lazy.of(() -> 3)));
         final Iterable<?> i3 = Queue.ofAll(Stream.ofAll(1, 2), List.of(List.ofAll()));
         assertThat(i1.eq(i2)).isTrue();

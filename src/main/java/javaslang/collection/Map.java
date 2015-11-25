@@ -10,10 +10,7 @@ import javaslang.Tuple3;
 import javaslang.control.Option;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * An immutable {@code Map} interface.
@@ -247,6 +244,19 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
     @Override
     default Seq<Tuple2<Tuple2<K, V>, Integer>> zipWithIndex() {
         return Stream.ofAll(iterator().zipWithIndex());
+    }
+
+    /**
+     * Performs an action on key, value pair.
+     *
+     * @param action A {@code BiConsumer}
+     * @throws NullPointerException if {@code action} is null
+     */
+    default void forEach(BiConsumer<K, V> action) {
+        Objects.requireNonNull(action, "action is null");
+        for (Tuple2<K, V> t : this) {
+            action.accept(t._1, t._2);
+        }
     }
 
 }
