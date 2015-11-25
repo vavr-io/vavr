@@ -156,7 +156,7 @@ public class LinkedHashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldKeepOrder() {
-        List<Integer> actual = LinkedHashSet.<Integer>empty().add(3).add(2).add(1).toList();
+        List<Integer> actual = LinkedHashSet.<Integer> empty().add(3).add(2).add(1).toList();
         assertThat(actual).isEqualTo(List.ofAll(3, 2, 1));
     }
 }

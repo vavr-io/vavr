@@ -329,7 +329,7 @@ public class StreamTest extends AbstractSeqTest {
     public void shouldNotDeserializeStreamWithSizeLessThanOne() throws Throwable {
         try {
             /*
-			 * This implementation is stable regarding jvm impl changes ofAll object serialization. The index ofAll the number
+             * This implementation is stable regarding jvm impl changes ofAll object serialization. The index ofAll the number
 			 * ofAll Stream elements is gathered dynamically.
 			 */
             final byte[] listWithOneElement = Serializables.serialize(Stream.of(0));
@@ -349,7 +349,7 @@ public class StreamTest extends AbstractSeqTest {
             if (index == -1) {
                 throw new IllegalStateException("Hack incomplete - index not found");
             }
-			/*
+            /*
 			 * Hack the serialized data and fake zero elements.
 			 */
             listWithOneElement[index] = 0;
@@ -371,7 +371,7 @@ public class StreamTest extends AbstractSeqTest {
         // this test ensures that the `tail.append(100)` does not modify the tail elements
         final Stream<Integer> tail = stream.tail().append(100);
         final String expected = stream.drop(1).take(3).mkString(",");
-        final String actual= tail.take(3).mkString(",");
+        final String actual = tail.take(3).mkString(",");
         assertThat(expected).isEqualTo("1,2,3");
         assertThat(actual).isEqualTo(expected);
     }
@@ -381,7 +381,7 @@ public class StreamTest extends AbstractSeqTest {
     public void shouldNotProduceStackOverflow() {
         Stream.range(0, 1_000_000)
                 .map(String::valueOf)
-                .foldLeft(Stream.<String>empty(), Stream::append)
+                .foldLeft(Stream.<String> empty(), Stream::append)
                 .mkString();
     }
 

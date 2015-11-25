@@ -80,7 +80,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     /**
      * Returns a singleton {@code LinkedHashMap}, i.e. a {@code LinkedHashMap} of one element.
      *
-     * @param key A singleton map key.
+     * @param key   A singleton map key.
      * @param value A singleton map value.
      * @param <K>   The key type
      * @param <V>   The value type
@@ -144,7 +144,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public <U, W> LinkedHashMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(LinkedHashMap.<U, W>empty(), (acc, entry) -> {
+        return foldLeft(LinkedHashMap.<U, W> empty(), (acc, entry) -> {
             for (Tuple2<? extends U, ? extends W> mappedEntry : mapper.apply(entry._1, entry._2)) {
                 acc = acc.put(mappedEntry);
             }
@@ -178,7 +178,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     public LinkedHashMap<K, V> put(K key, V value) {
         Queue<Tuple2<K, V>> newList = list;
         HashMap<K, V> newMap = map;
-        if(containsKey(key)) {
+        if (containsKey(key)) {
             newList = newList.filter(t -> !t._1.equals(key));
             newMap = newMap.remove(key);
         }
@@ -194,7 +194,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public LinkedHashMap<K, V> remove(K key) {
-        if(containsKey(key)) {
+        if (containsKey(key)) {
             final Queue<Tuple2<K, V>> newList = list.removeFirst(t -> t._1.equals(key));
             final HashMap<K, V> newMap = map.remove(key);
             return newList.isEmpty() ? empty() : new LinkedHashMap<>(newList, newMap);
@@ -355,7 +355,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public LinkedHashMap<K, V> init() {
-        if(isEmpty()) {
+        if (isEmpty()) {
             throw new UnsupportedOperationException("init of empty LinkedHashMap");
         } else {
             return LinkedHashMap.ofAll(list.init());

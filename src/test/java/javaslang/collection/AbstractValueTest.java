@@ -235,9 +235,9 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         try {
             final String s = unsafe.get();
             throw new AssertionError("Expected ClassCastException but got " + s);
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             // ok!
-        } catch(Exception x) {
+        } catch (Exception x) {
             throw new AssertionError("Unexpected exception:" + x);
         }
     }
@@ -311,6 +311,23 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         final Value<Integer> expectedInts = ofAll(0, 1, 2, 3, 4);
         final Value<Integer> actualInts = ofAll(0, 1, 2, 3, 4).map(ignored -> seq.getAndIncrement());
         assertThat(actualInts).isEqualTo(expectedInts);
+    }
+
+    // -- orElseTry
+
+    @Test
+    public void shouldReturnUnderlyingValueWhenCallingOrElseTryOnNonEmptyValue() {
+        assertThat(of(1).orElseTry(() -> 2)).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldReturnAlternateValueWhenCallingOrElseTryOnEmptyValue() {
+        assertThat(empty().orElseTry(() -> 2)).isEqualTo(2);
+    }
+
+    @Test(expected = Failure.NonFatal.class)
+    public void shouldThrowWhenCallingOrElseTryOnEmptyValueAndTryIsAFailure() {
+        empty().orElseTry(() -> { throw new Error(); });
     }
 
     // -- peek

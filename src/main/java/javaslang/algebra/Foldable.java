@@ -75,7 +75,7 @@ public interface Foldable<T> {
     /**
      * Folds this elements from the left, starting with {@code zero} and successively calling {@code combine}.
      *
-     * @param <U> the type of the folded value
+     * @param <U>     the type of the folded value
      * @param zero    A zero element to start with.
      * @param combine A function which combines elements.
      * @return a folded value
@@ -118,7 +118,7 @@ public interface Foldable<T> {
     /**
      * Folds this elements from the right, starting with {@code zero} and successively calling {@code combine}.
      *
-     * @param <U> the type of the folded value
+     * @param <U>     the type of the folded value
      * @param zero    A zero element to start with.
      * @param combine A function which combines elements.
      * @return a folded value

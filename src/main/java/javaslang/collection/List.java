@@ -1043,19 +1043,19 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     default List<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
-    
+
     @Override
     default <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
-    
+
     @Override
     default <U> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
     }
-    
+
     @Override
     default List<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
@@ -1266,16 +1266,16 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         Objects.requireNonNull(unzipper, "unzipper is null");
         List<T1> xs = Nil.instance();
         List<T2> ys = Nil.instance();
-		List<T3> zs = Nil.instance();
+        List<T3> zs = Nil.instance();
         for (T element : this) {
             final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(element);
             xs = xs.prepend(t._1);
             ys = ys.prepend(t._2);
-			zs = zs.prepend(t._3);
+            zs = zs.prepend(t._3);
         }
         return Tuple.of(xs.reverse(), ys.reverse(), zs.reverse());
     }
-    
+
     @Override
     default List<T> update(int index, T element) {
         if (isEmpty()) {

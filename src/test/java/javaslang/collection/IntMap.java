@@ -5,6 +5,11 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
+import javaslang.control.Option;
+
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
@@ -14,16 +19,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.control.Option;
-
 public class IntMap<T> implements Traversable<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private static final IntMap<?> EMPTY = IntMap.of(HashMap.empty());
 
     private final Map<Integer, T> original;
 
@@ -213,17 +211,17 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     public Traversable<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
-    
+
     @Override
     public <U> Traversable<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         return original.values().scanLeft(zero, operation);
     }
-    
+
     @Override
     public <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return original.values().scanRight(zero, operation);
     }
-    
+
     @Override
     public Tuple2<? extends IntMap<T>, ? extends IntMap<T>> span(Predicate<? super T> predicate) {
         return original.span(p -> predicate.test(p._2)).map(IntMap::of, IntMap::of);

@@ -5,8 +5,6 @@
  */
 package javaslang;
 
-import javaslang.collection.Array;
-import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.control.Try;
 import javaslang.λModule.ReflectionUtil;

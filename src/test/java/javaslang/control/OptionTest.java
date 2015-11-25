@@ -5,15 +5,10 @@
  */
 package javaslang.control;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
-
 import javaslang.Serializables;
 import org.junit.Test;
+
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,7 +50,9 @@ public class OptionTest {
 
     @Test
     public void shouldNotExecuteIfFalse() {
-        assertThat(Option.none()).isEqualTo(Option.when(false, () -> { throw new RuntimeException(); }));
+        assertThat(Option.none()).isEqualTo(Option.when(false, () -> {
+            throw new RuntimeException();
+        }));
     }
 
     @Test(expected = NullPointerException.class)

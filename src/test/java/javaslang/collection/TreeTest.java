@@ -5,8 +5,13 @@
  */
 package javaslang.collection;
 
-import static javaslang.Serializables.deserialize;
-import static javaslang.Serializables.serialize;
+import javaslang.*;
+import javaslang.collection.Tree.Node;
+import javaslang.control.Option;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.IterableAssert;
+import org.assertj.core.api.ObjectAssert;
+import org.junit.Test;
 
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
@@ -15,18 +20,10 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collector;
 
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.IterableAssert;
-import org.assertj.core.api.ObjectAssert;
-import org.junit.Test;
+import static javaslang.Serializables.deserialize;
+import static javaslang.Serializables.serialize;
 
-import javaslang.Serializables;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.Value;
-import javaslang.collection.Tree.Node;
-import javaslang.control.Option;
+import java.lang.Iterable;
 
 /**
  * Tests all methods defined in {@link javaslang.collection.Tree}.
@@ -537,7 +534,7 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     public void shouldUnzip3NonEmptyTree() {
         final Tree<Integer> testee = $(1, $(2), $(3));
-        final Tuple3<Tree<Integer>, Tree<Integer>, Tree<Integer>> actual = testee.unzip3(i -> Tuple.of(i, -i, -i-1));
+        final Tuple3<Tree<Integer>, Tree<Integer>, Tree<Integer>> actual = testee.unzip3(i -> Tuple.of(i, -i, -i - 1));
         final Tuple3<Tree<Integer>, Tree<Integer>, Tree<Integer>> expected = Tuple.of($(1, $(2), $(3)), $(-1, $(-2), $(-3)), $(-2, $(-3), $(-4)));
         assertThat(actual).isEqualTo(expected);
     }

@@ -5,15 +5,15 @@
  */
 package javaslang.control;
 
+import javaslang.Value;
+import javaslang.collection.Iterator;
+
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import javaslang.Value;
-import javaslang.collection.Iterator;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -54,12 +54,11 @@ public interface Option<T> extends Value<T> {
     }
 
     /**
-     *
      * Creates {@code Some} of suppliers value if condition is true, or {@code None} in other case
      *
-     * @param <T> type of the optional value
+     * @param <T>       type of the optional value
      * @param condition A boolean value
-     * @param supplier An optional value supplier, may supply {@code null}
+     * @param supplier  An optional value supplier, may supply {@code null}
      * @return return {@code Some} of supplier's value if condition is true, or {@code None} in other case
      * @throws NullPointerException if the given {@code supplier} is null
      */
@@ -69,11 +68,10 @@ public interface Option<T> extends Value<T> {
     }
 
     /**
-     *
      * Wraps a Java Optional to a new Option
      *
      * @param optional a given optional to wrap in {@code Option}
-     * @param <T> type of the value
+     * @param <T>      type of the value
      * @return {@code Some(optional.get())} if value is Java {@code Optional} is present, {@code None} otherwise
      */
     static <T> Option<T> ofOptional(Optional<? extends T> optional) {
@@ -206,7 +204,7 @@ public interface Option<T> extends Value<T> {
     default <U> Option<U> flatten() {
         try {
             return ((Option<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
     }

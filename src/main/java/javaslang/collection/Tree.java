@@ -5,28 +5,6 @@
  */
 package javaslang.collection;
 
-import static javaslang.collection.Tree.Order.PRE_ORDER;
-
-import java.io.IOException;
-import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
-
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
@@ -34,15 +12,17 @@ import javaslang.Tuple3;
 import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.Empty;
 import javaslang.collection.Tree.Node;
-import javaslang.collection.TreeModule.FlatMap;
-import javaslang.collection.TreeModule.Replace;
-import javaslang.collection.TreeModule.Traversal;
-import javaslang.collection.TreeModule.Unzip;
-import javaslang.collection.TreeModule.Zip;
-import javaslang.collection.TreeModule.ZipAll;
+import javaslang.collection.TreeModule.*;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
+
+import java.io.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.Collector;
+
+import static javaslang.collection.Tree.Order.PRE_ORDER;
 
 /**
  * A general Tree interface.
@@ -343,7 +323,7 @@ public interface Tree<T> extends Traversable<T> {
     default <U> Tree<U> flatten() {
         try {
             return ((Tree<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
     }
@@ -462,19 +442,19 @@ public interface Tree<T> extends Traversable<T> {
     default Seq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
-    
+
     @Override
     default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
-    
+
     @Override
     default <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     default Tuple2<Seq<T>, Seq<T>> span(Predicate<? super T> predicate) {
@@ -549,7 +529,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     default <T1, T2, T3> Tuple3<Tree<T1>, Tree<T2>, Tree<T3>> unzip3(
             Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
@@ -1014,17 +994,17 @@ interface TreeModule {
             final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
             return Tuple.of(node1, node2);
         }
-        
-		static <T, T1, T2, T3> Tuple3<Node<T1>, Node<T2>, Node<T3>> apply3(Node<T> node,
-				Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-			final Tuple3<? extends T1, ? extends T2, ? extends T3> value = unzipper.apply(node.getValue());
-			final List<Tuple3<Node<T1>, Node<T2>, Node<T3>>> children = node.getChildren()
-					.map(child -> Unzip.apply3(child, unzipper));
-			final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
-			final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
-			final Node<T3> node3 = new Node<>(value._3, children.map(t -> t._3));
-			return Tuple.of(node1, node2, node3);
-		}
+
+        static <T, T1, T2, T3> Tuple3<Node<T1>, Node<T2>, Node<T3>> apply3(Node<T> node,
+                                                                           Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+            final Tuple3<? extends T1, ? extends T2, ? extends T3> value = unzipper.apply(node.getValue());
+            final List<Tuple3<Node<T1>, Node<T2>, Node<T3>>> children = node.getChildren()
+                    .map(child -> Unzip.apply3(child, unzipper));
+            final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
+            final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
+            final Node<T3> node3 = new Node<>(value._3, children.map(t -> t._3));
+            return Tuple.of(node1, node2, node3);
+        }
 
     }
 

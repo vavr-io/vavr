@@ -227,7 +227,7 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldabl
     /**
      * Returns the underlying value if present, otherwise {@code other}.
      *
-     * @param supplier An alternative value.
+     * @param supplier An alternative value supplier.
      * @return A value of type {@code T}
      * @throws NullPointerException if supplier is null
      */
@@ -241,7 +241,7 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldabl
      *
      * @param <X>      a Throwable type
      * @param supplier An exception supplier.
-     * @return A value of type {@code T}
+     * @return A value of type {@code T}.
      * @throws NullPointerException if supplier is null
      * @throws X                    if no value is present
      */
@@ -252,6 +252,19 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldabl
         } else {
             return get();
         }
+    }
+
+    /**
+     * Returns the underlying value if present, otherwise returns the result of {@code Try.of(supplier).get()}.
+     *
+     * @param supplier An alternative value supplier.
+     * @return A value of type {@code T}.
+     * @throws NullPointerException if supplier is null
+     * @throws javaslang.control.Failure.NonFatal containing the original exception if this Value was empty and the Try failed.
+     */
+    default T orElseTry(Try.CheckedSupplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return isEmpty() ? Try.of(supplier).get() : get();
     }
 
     /**

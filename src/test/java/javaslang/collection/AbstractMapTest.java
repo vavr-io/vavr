@@ -574,4 +574,26 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final List<String> expected = List.ofAll('a', 'b', 'c').permutations().map(List::mkString);
         assertThat(actual).isIn(expected);
     }
+
+    // -- forEach
+
+    @Test
+    public void forEachByKeyValue() {
+        Map<Integer, Integer> map = of(1, 2).put(3, 4);
+        final int[] result = {0};
+        map.forEach((k, v) -> {
+            result[0] += k + v;
+        });
+        assertThat(result[0]).isEqualTo(10);
+    }
+
+    @Test
+    public void forEachByTuple() {
+        Map<Integer, Integer> map = of(1, 2).put(3, 4);
+        final int[] result = {0};
+        map.forEach(t -> {
+            result[0] += t._1 + t._2;
+        });
+        assertThat(result[0]).isEqualTo(10);
+    }
 }

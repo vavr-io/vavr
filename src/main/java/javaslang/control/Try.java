@@ -205,7 +205,7 @@ public interface Try<T> extends Value<T> {
     default <U> Try<U> flatten() {
         try {
             return ((Try<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
     }
@@ -413,7 +413,7 @@ public interface Try<T> extends Value<T> {
      * @return a new Try
      */
     @SuppressWarnings("unchecked")
-    default Try<T> recoverWith(Function<? super Throwable, ? extends Try< ? extends T>> f) {
+    default Try<T> recoverWith(Function<? super Throwable, ? extends Try<? extends T>> f) {
         if (isFailure()) {
             try {
                 return (Try<T>) f.apply(getCause());

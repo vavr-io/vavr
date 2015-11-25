@@ -399,7 +399,7 @@ public interface Match<R> extends Function<Object, R> {
         default <U> MatchMonad<U> flatten() {
             try {
                 return ((MatchMonad<? extends Iterable<U>>) this).flatMap(Function.identity());
-            } catch(ClassCastException x) {
+            } catch (ClassCastException x) {
                 throw new UnsupportedOperationException("flatten of non-iterable elements");
             }
         }

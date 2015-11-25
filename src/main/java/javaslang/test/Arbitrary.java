@@ -102,7 +102,7 @@ public interface Arbitrary<T> extends Value<T> {
     default <U> Arbitrary<U> flatten() {
         try {
             return ((Arbitrary<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch(ClassCastException x) {
+        } catch (ClassCastException x) {
             throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
     }
