@@ -528,6 +528,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public Iterator<HashSet<T>> grouped(int size) {
+        return sliding(size, size);
+    }
+
+    @Override
     public boolean hasDefiniteSize() {
         return true;
     }
@@ -671,7 +676,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public <U> HashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
+        return Collections.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
             c.add(u);
             return c;
         }, HashSet::ofAll);
@@ -680,7 +685,17 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public <U> HashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, HashSet.empty(), HashSet::add, Function.identity());
+        return Collections.scanRight(this, zero, operation, HashSet.empty(), HashSet::add, Function.identity());
+    }
+
+    @Override
+    public Iterator<HashSet<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<HashSet<T>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(HashSet::ofAll);
     }
 
     @Override

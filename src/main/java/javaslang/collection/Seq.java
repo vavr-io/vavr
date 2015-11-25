@@ -67,7 +67,6 @@ import java.util.function.*;
  * <li>{@link #crossProduct(java.lang.Iterable)}</li>
  * <li>{@link #combinations()}</li>
  * <li>{@link #combinations(int)}</li>
- * <li>{@link #grouped(int)}</li>
  * <li>{@link #intersperse(Object)}</li>
  * <li>{@link #padTo(int, Object)}</li>
  * <li>{@link #permutations()}</li>
@@ -146,55 +145,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> appendAll(java.lang.Iterable<? extends T> elements);
 
     /**
-     * Calculates the cross product (, i.e. square) of {@code this x this}.
-     * <p>
-     * Example:
-     * <pre>
-     * <code>
-     * // = List of Tuples (1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3), (3, 1), (3, 2), (3, 3)
-     * List.of(1, 2, 3).crossProduct();
-     * </code>
-     * </pre>
-     *
-     * @return a new Seq containing the square of {@code this}
-     */
-    Seq<Tuple2<T, T>> crossProduct();
-
-    /**
-     * Calculates the n-ary cartesian power (or <em>cross product</em> or simply <em>product</em>) of this.
-     * <p>
-     * Example:
-     * <pre>
-     * <code>
-     * // = ((A,A), (A,B), (A,C), ..., (B,A), (B,B), ..., (Z,Y), (Z,Z))
-     * CharSeq.rangeClosed('A', 'Z').crossProduct(2);
-     * </code>
-     * </pre>
-     *
-     * @param power the number of cartesian multiplications
-     * @return A new Seq representing the n-ary cartesian power of this
-     */
-    Seq<IndexedSeq<T>> crossProduct(int power);
-
-    /**
-     * Calculates the cross product {@code this x that}.
-     * <p>
-     * Example:
-     * <pre>
-     * <code>
-     * // = List of Tuples (1, 'a'), (1, 'b'), (2, 'a'), (2, 'b'), (3, 'a'), (3, 'b')
-     * List.of(1, 2, 3).crossProduct(List.of('a', 'b');
-     * </code>
-     * </pre>
-     *
-     * @param that Another iterable
-     * @param <U>  Component type
-     * @return a new Seq containing the cross product {@code this x that}
-     * @throws NullPointerException if that is null
-     */
-    <U> Seq<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
-
-    /**
      * Returns the union of all combinations from k = 0 to length().
      * <p>
      * Examples:
@@ -237,6 +187,55 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
         Objects.requireNonNull(that, "that is null");
         return indexOfSlice(that) >= 0;
     }
+
+    /**
+     * Calculates the cross product (, i.e. square) of {@code this x this}.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * // = List of Tuples (1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3), (3, 1), (3, 2), (3, 3)
+     * List.of(1, 2, 3).crossProduct();
+     * </code>
+     * </pre>
+     *
+     * @return a new Seq containing the square of {@code this}
+     */
+    Seq<Tuple2<T, T>> crossProduct();
+
+    /**
+     * Calculates the n-ary cartesian power (or <em>cross product</em> or simply <em>product</em>) of this.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * // = ((A,A), (A,B), (A,C), ..., (B,A), (B,B), ..., (Z,Y), (Z,Z))
+     * CharSeq.rangeClosed('A', 'Z').crossProduct(2);
+     * </code>
+     * </pre>
+     *
+     * @param power the number of cartesian multiplications
+     * @return A new Seq representing the n-ary cartesian power of this
+     */
+    Seq<? extends Seq<T>> crossProduct(int power);
+
+    /**
+     * Calculates the cross product {@code this x that}.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * // = List of Tuples (1, 'a'), (1, 'b'), (2, 'a'), (2, 'b'), (3, 'a'), (3, 'b')
+     * List.of(1, 2, 3).crossProduct(List.of('a', 'b');
+     * </code>
+     * </pre>
+     *
+     * @param that Another iterable
+     * @param <U>  Component type
+     * @return a new Seq containing the cross product {@code this x that}
+     * @throws NullPointerException if that is null
+     */
+    <U> Seq<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
 
     /**
      * Tests whether this sequence ends with the given sequence.
@@ -929,6 +928,9 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     <C> Map<C, ? extends Seq<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
+    Iterator<? extends Seq<T>> grouped(int size);
+
+    @Override
     Seq<T> init();
 
     @Override
@@ -960,6 +962,12 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
 
     @Override
     <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+
+    @Override
+    Iterator<? extends Seq<T>> sliding(int size);
+
+    @Override
+    Iterator<? extends Seq<T>> sliding(int size, int step);
 
     @Override
     Tuple2<? extends Seq<T>, ? extends Seq<T>> span(Predicate<? super T> predicate);

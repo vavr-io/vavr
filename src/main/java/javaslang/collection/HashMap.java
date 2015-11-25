@@ -255,6 +255,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public Iterator<HashMap<K, V>> grouped(int size) {
+        return sliding(size, size);
+    }
+
+    @Override
     public boolean hasDefiniteSize() {
         return true;
     }
@@ -309,11 +314,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public Set<K> keySet() {
         return HashSet.ofAll(iterator().map(Tuple2::_1));
-    }
-
-    @Override
-    public int length() {
-        return trie.size();
     }
 
     @SuppressWarnings("unchecked")
@@ -435,24 +435,34 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, HashMap.empty(), HashMap::put, Function.identity());
+        return Collections.scanLeft(this, zero, operation, HashMap.empty(), HashMap::put, Function.identity());
     }
 
     @Override
     public <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
 
     @Override
     public <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
     }
 
     @Override
     public int size() {
         return trie.size();
+    }
+
+    @Override
+    public Iterator<HashMap<K, V>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<HashMap<K, V>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(HashMap::ofAll);
     }
 
     @Override

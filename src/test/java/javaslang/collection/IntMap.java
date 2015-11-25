@@ -126,6 +126,11 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
+    public Iterator<IntMap<T>> grouped(int size) {
+        return sliding(size, size);
+    }
+
+    @Override
     public boolean hasDefiniteSize() {
         return original.hasDefiniteSize();
     }
@@ -220,6 +225,16 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     @Override
     public <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return original.values().scanRight(zero, operation);
+    }
+
+    @Override
+    public Iterator<IntMap<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<IntMap<T>> sliding(int size, int step) {
+        return original.sliding(size, step).map(IntMap::of);
     }
 
     @Override

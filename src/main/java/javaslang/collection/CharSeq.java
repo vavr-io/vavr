@@ -245,30 +245,30 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public Vector<Tuple2<Character, Character>> crossProduct() {
-        return crossProduct(this);
-    }
-
-    @Override
-    public Vector<IndexedSeq<Character>> crossProduct(int power) {
-        return toStream().crossProduct(power).toVector();
-    }
-
-    @Override
-    public <U> Vector<Tuple2<Character, U>> crossProduct(java.lang.Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
-        final Vector<U> other = Vector.ofAll(that);
-        return flatMap(a -> other.map(b -> Tuple.of(a, b)));
-    }
-
-    @Override
-    public Vector<CharSeq> combinations() {
+    public IndexedSeq<CharSeq> combinations() {
         return Vector.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
 
     @Override
-    public Vector<CharSeq> combinations(int k) {
+    public IndexedSeq<CharSeq> combinations(int k) {
         return Combinations.apply(this, Math.max(k, 0));
+    }
+
+    @Override
+    public IndexedSeq<Tuple2<Character, Character>> crossProduct() {
+        return crossProduct(this);
+    }
+
+    @Override
+    public IndexedSeq<CharSeq> crossProduct(int power) {
+        return Collections.crossProduct(this, power).map(CharSeq::ofAll).toVector();
+    }
+
+    @Override
+    public <U> IndexedSeq<Tuple2<Character, U>> crossProduct(java.lang.Iterable<? extends U> that) {
+        Objects.requireNonNull(that, "that is null");
+        final IndexedSeq<U> other = Vector.ofAll(that);
+        return flatMap(a -> other.map(b -> Tuple.of(a, b)));
     }
 
     @Override
@@ -336,12 +336,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <U> Vector<U> flatMap(Function<? super Character, ? extends java.lang.Iterable<? extends U>> mapper) {
+    public <U> IndexedSeq<U> flatMap(Function<? super Character, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Vector.empty();
         } else {
-            Vector<U> result = Vector.empty();
+            IndexedSeq<U> result = Vector.empty();
             for (int i = 0; i < length(); i++) {
                 for (U u : mapper.apply(get(i))) {
                     result = result.append(u);
@@ -390,6 +390,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     public <C> Map<C, CharSeq> groupBy(Function<? super Character, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
         return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, CharSeq.ofAll(it)));
+    }
+
+    @Override
+    public Iterator<CharSeq> grouped(int size) {
+        return sliding(size, size);
     }
 
     @Override
@@ -477,9 +482,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <U> Vector<U> map(Function<? super Character, ? extends U> mapper) {
+    public <U> IndexedSeq<U> map(Function<? super Character, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        Vector<U> result = Vector.empty();
+        IndexedSeq<U> result = Vector.empty();
         for (int i = 0; i < length(); i++) {
             result = result.append(mapper.apply(get(i)));
         }
@@ -558,14 +563,14 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public Vector<CharSeq> permutations() {
+    public IndexedSeq<CharSeq> permutations() {
         if (isEmpty()) {
             return Vector.empty();
         } else {
             if (length() == 1) {
                 return Vector.of(this);
             } else {
-                Vector<CharSeq> result = Vector.empty();
+                IndexedSeq<CharSeq> result = Vector.empty();
                 for (Character t : distinct()) {
                     for (CharSeq ts : remove(t).permutations()) {
                         result = result.append(CharSeq.of(t).appendAll(ts));
@@ -727,20 +732,20 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public Vector<Character> scan(Character zero, BiFunction<? super Character, ? super Character, ? extends Character> operation) {
+    public IndexedSeq<Character> scan(Character zero, BiFunction<? super Character, ? super Character, ? extends Character> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    public <U> Vector<U> scanLeft(U zero, BiFunction<? super U, ? super Character, ? extends U> operation) {
+    public <U> IndexedSeq<U> scanLeft(U zero, BiFunction<? super U, ? super Character, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, Vector.empty(), Vector::append, Function.identity());
+        return Collections.scanLeft(this, zero, operation, Vector.empty(), Vector::append, Function.identity());
     }
 
     @Override
-    public <U> Vector<U> scanRight(U zero, BiFunction<? super Character, ? super U, ? extends U> operation) {
+    public <U> IndexedSeq<U> scanRight(U zero, BiFunction<? super Character, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, Vector.empty(), Vector::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, Vector.empty(), Vector::prepend, Function.identity());
     }
 
     @Override
@@ -752,6 +757,16 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
             return this;
         }
         return CharSeq.of(back.substring(beginIndex, endIndex));
+    }
+
+    @Override
+    public Iterator<CharSeq> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<CharSeq> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(CharSeq::ofAll);
     }
 
     @Override
@@ -879,17 +894,17 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <U> Vector<U> unit(java.lang.Iterable<? extends U> iterable) {
+    public <U> IndexedSeq<U> unit(java.lang.Iterable<? extends U> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         return Vector.ofAll(iterable);
     }
 
     @Override
-    public <T1, T2> Tuple2<Vector<T1>, Vector<T2>> unzip(
+    public <T1, T2> Tuple2<IndexedSeq<T1>, IndexedSeq<T2>> unzip(
             Function<? super Character, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        Vector<T1> xs = Vector.empty();
-        Vector<T2> ys = Vector.empty();
+        IndexedSeq<T1> xs = Vector.empty();
+        IndexedSeq<T2> ys = Vector.empty();
         for (int i = 0; i < length(); i++) {
             final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(back.charAt(i));
             xs = xs.append(t._1);
@@ -899,12 +914,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <T1, T2, T3> Tuple3<Vector<T1>, Vector<T2>, Vector<T3>> unzip3(
+    public <T1, T2, T3> Tuple3<IndexedSeq<T1>, IndexedSeq<T2>, IndexedSeq<T3>> unzip3(
             Function<? super Character, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        Vector<T1> xs = Vector.empty();
-        Vector<T2> ys = Vector.empty();
-        Vector<T3> zs = Vector.empty();
+        IndexedSeq<T1> xs = Vector.empty();
+        IndexedSeq<T2> ys = Vector.empty();
+        IndexedSeq<T3> zs = Vector.empty();
         for (int i = 0; i < length(); i++) {
             final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(back.charAt(i));
             xs = xs.append(t._1);
@@ -926,9 +941,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <U> Vector<Tuple2<Character, U>> zip(java.lang.Iterable<U> that) {
+    public <U> IndexedSeq<Tuple2<Character, U>> zip(java.lang.Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
-        Vector<Tuple2<Character, U>> result = Vector.empty();
+        IndexedSeq<Tuple2<Character, U>> result = Vector.empty();
         Iterator<Character> list1 = iterator();
         java.util.Iterator<U> list2 = that.iterator();
         while (list1.hasNext() && list2.hasNext()) {
@@ -938,9 +953,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <U> Vector<Tuple2<Character, U>> zipAll(java.lang.Iterable<U> that, Character thisElem, U thatElem) {
+    public <U> IndexedSeq<Tuple2<Character, U>> zipAll(java.lang.Iterable<U> that, Character thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        Vector<Tuple2<Character, U>> result = Vector.empty();
+        IndexedSeq<Tuple2<Character, U>> result = Vector.empty();
         Iterator<Character> list1 = iterator();
         java.util.Iterator<U> list2 = that.iterator();
         while (list1.hasNext() || list2.hasNext()) {
@@ -952,8 +967,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public Vector<Tuple2<Character, Integer>> zipWithIndex() {
-        Vector<Tuple2<Character, Integer>> result = Vector.empty();
+    public IndexedSeq<Tuple2<Character, Integer>> zipWithIndex() {
+        IndexedSeq<Tuple2<Character, Integer>> result = Vector.empty();
         for (int i = 0; i < length(); i++) {
             result = result.append(Tuple.of(get(i), i));
         }
@@ -2354,7 +2369,7 @@ interface CharSeqModule {
 
     final class Combinations {
 
-        static Vector<CharSeq> apply(CharSeq elements, int k) {
+        static IndexedSeq<CharSeq> apply(CharSeq elements, int k) {
             if (k == 0) {
                 return Vector.of(CharSeq.empty());
             } else {

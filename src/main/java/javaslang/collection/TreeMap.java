@@ -330,6 +330,11 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     }
 
     @Override
+    public Iterator<TreeMap<K, V>> grouped(int size) {
+        return sliding(size, size);
+    }
+
+    @Override
     public boolean hasDefiniteSize() {
         return true;
     }
@@ -376,11 +381,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     @Override
     public Iterator<Tuple2<K, V>> iterator() {
         return entries.iterator();
-    }
-
-    @Override
-    public int length() {
-        return entries.size();
     }
 
     @SuppressWarnings("unchecked")
@@ -548,24 +548,34 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     @Override
     public TreeMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, TreeMap.empty(keyComparator()), TreeMap::put, Function.identity());
+        return Collections.scanLeft(this, zero, operation, TreeMap.empty(keyComparator()), TreeMap::put, Function.identity());
     }
 
     @Override
     public <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
 
     @Override
     public <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
     }
 
     @Override
     public int size() {
         return entries.size();
+    }
+
+    @Override
+    public Iterator<TreeMap<K, V>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<TreeMap<K, V>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(seq -> createTreeMap(entries.comparator(), seq));
     }
 
     @Override

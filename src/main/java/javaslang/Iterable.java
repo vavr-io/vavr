@@ -5,7 +5,6 @@
  */
 package javaslang;
 
-import javaslang.collection.IndexedSeq;
 import javaslang.collection.Iterator;
 
 import java.util.Objects;
@@ -30,10 +29,7 @@ import java.util.function.Predicate;
  * <li>{@link #exists(Predicate)}</li>
  * <li>{@link #forAll(Predicate)}</li>
  * <li>{@link #forEach(Consumer)}</li>
- * <li>{@link #grouped(int)}</li>
  * <li>{@link #iterator()}</li>
- * <li>{@link #sliding(int)}</li>
- * <li>{@link #sliding(int, int)}</li>
  * </ul>
  *
  * @param <T> Component type
@@ -162,74 +158,4 @@ interface Iterable<T> extends java.lang.Iterable<T> {
             action.accept(t);
         }
     }
-
-    /**
-     * Groups this {@code Iterable} into fixed size blocks.
-     * <p>
-     * Let length be the length of this Iterable. Then grouped is defined as follows:
-     * <ul>
-     * <li>If {@code this.isEmpty()}, the resulting {@code Iterator} is empty.</li>
-     * <li>If {@code size <= length}, the resulting {@code Iterator} will contain {@code length / size} blocks of size
-     * {@code size} and maybe a non-empty block of size {@code length % size}, if there are remaining elements.</li>
-     * <li>If {@code size > length}, the resulting {@code Iterator} will contain one block of size {@code length}.</li>
-     * </ul>
-     * Examples:
-     * <pre>
-     * <code>
-     * [].grouped(1) = []
-     * [].grouped(0) throws
-     * [].grouped(-1) throws
-     * [1,2,3,4].grouped(2) = [[1,2],[3,4]]
-     * [1,2,3,4,5].grouped(2) = [[1,2],[3,4],[5]]
-     * [1,2,3,4].grouped(5) = [[1,2,3,4]]
-     * </code>
-     * </pre>
-     *
-     * Please note that {@code grouped(int)} is a special case of {@linkplain #sliding(int, int)}, i.e.
-     * {@code grouped(size)} is the same as {@code sliding(size, size)}.
-     *
-     * @param size a positive block size
-     * @return A new Iterator of grouped blocks of the given size
-     * @throws IllegalArgumentException if {@code size} is negative or zero
-     */
-    default Iterator<IndexedSeq<T>> grouped(int size) {
-        return sliding(size, size);
-    }
-
-
-    /**
-     * Slides a window of a specific {@code size} and step size 1 over this {@code Iterable} by calling
-     * {@link #sliding(int, int)}.
-     *
-     * @param size a positive window size
-     * @return a new Iterator of windows of a specific size using step size 1
-     * @throws IllegalArgumentException if {@code size} is negative or zero
-     */
-    default Iterator<IndexedSeq<T>> sliding(int size) {
-        return sliding(size, 1);
-    }
-
-    /**
-     * Slides a window of a specific {@code size} and {@code step} size over this {@code Iterable}.
-     * <p>
-     * Examples:
-     * <pre>
-     * <code>
-     * [].sliding(1,1) = []
-     * [1,2,3,4,5].sliding(2,3) = [[1,2],[4,5]]
-     * [1,2,3,4,5].sliding(2,4) = [[1,2],[5]]
-     * [1,2,3,4,5].sliding(2,5) = [[1,2]]
-     * [1,2,3,4].sliding(5,3) = [[1,2,3,4],[4]]
-     * </code>
-     * </pre>
-     *
-     * @param size a positive window size
-     * @param step a positive step size
-     * @return a new Iterator of windows of a specific size using a specific step size
-     * @throws IllegalArgumentException if {@code size} or {@code step} are negative or zero
-     */
-    default Iterator<IndexedSeq<T>> sliding(int size, int step) {
-        return iterator().sliding(size, step);
-    }
-
 }
