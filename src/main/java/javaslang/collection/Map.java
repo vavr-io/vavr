@@ -39,6 +39,14 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
 
     <U, W> Map<U, W> map(BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper);
 
+    /**
+     * Performs an action on value.
+     *
+     * @param mapper A {@code Function}
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    <W> Map<K, W> mapValues(Function<V, ? extends W> mapper);
+
     Map<K, V> put(K key, V value);
 
     /**

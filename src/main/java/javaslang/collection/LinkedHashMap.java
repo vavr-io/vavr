@@ -169,6 +169,12 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public <W> LinkedHashMap<K, W> mapValues(Function<V, ? extends W> mapper)  {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return map((k, v) -> Tuple.of(k, mapper.apply(v)));
+    }
+
+    @Override
     public LinkedHashMap<K, V> put(K key, V value) {
         Queue<Tuple2<K, V>> newList = list;
         HashMap<K, V> newMap = map;

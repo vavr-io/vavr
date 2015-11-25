@@ -94,6 +94,10 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         return emptyMap();
     }
 
+    private Map<Integer, String> emptyIntString() {
+        return emptyMap();
+    }
+
     abstract protected String className();
 
     abstract protected <T1, T2> Map<T1, T2> emptyMap();
@@ -300,6 +304,11 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnTuple2SetOfANonEmptyMap() {
         assertThat(emptyMap().put(1, "1").put(2, "2").toSet()).isEqualTo(HashSet.ofAll(Tuple.of(1, "1"), Tuple.of(2, "2")));
+    }
+
+    @Test
+    public void shouldReturnModifiedValuesMap() {
+        assertThat(emptyIntString().put(1, "1").put(2, "2").mapValues(Integer::parseInt)).isEqualTo(emptyMap().put(1, 1).put(2, 2));
     }
 
     // -- merge
