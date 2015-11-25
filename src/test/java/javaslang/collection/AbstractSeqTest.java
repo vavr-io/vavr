@@ -233,7 +233,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @SuppressWarnings("varargs")
     @Test
     public void shouldCalculateCrossProductPower() {
-        Seq<IndexedSeq<?>> expected = ofAll(Vector.ofAll(1, 1), Vector.ofAll(1, 2), Vector.ofAll(2, 1), Vector.ofAll(2, 2));
+        Seq<Seq<?>> expected = ofAll(ofAll(1, 1), ofAll(1, 2), ofAll(2, 1), ofAll(2, 2));
         assertThat(ofAll(1, 2).crossProduct(2)).isEqualTo(expected);
     }
 
@@ -301,39 +301,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldGetLastElement() {
         assertThat(ofAll(1, 2, 3).get(2)).isEqualTo(3);
-    }
-
-    // -- grouped
-
-    @Test
-    public void shouldGroupedNil() {
-        assertThat(empty().grouped(1).isEmpty()).isTrue();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowWhenGroupedWithSizeZero() {
-        empty().grouped(0);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowWhenGroupedWithNegativeSize() {
-        empty().grouped(-1);
-    }
-
-    @Test
-    public void shouldGroupedTraversableWithEqualSizedBlocks() {
-        assertThat(ofAll(1, 2, 3, 4).grouped(2).toList()).isEqualTo(List.ofAll(Vector.ofAll(1, 2), Vector.ofAll(3, 4)));
-    }
-
-    @Test
-    public void shouldGroupedTraversableWithRemainder() {
-        assertThat(ofAll(1, 2, 3, 4, 5).grouped(2).toList())
-                .isEqualTo(List.ofAll(Vector.ofAll(1, 2), Vector.ofAll(3, 4), Vector.of(5)));
-    }
-
-    @Test
-    public void shouldGroupedWhenTraversableLengthIsSmallerThanBlockSize() {
-        assertThat(ofAll(1, 2, 3, 4).grouped(5).toList()).isEqualTo(List.of(Vector.ofAll(1, 2, 3, 4)));
     }
 
     // -- indexOf

@@ -49,10 +49,12 @@ import java.util.function.Predicate;
  *
  * Iteration:
  *
+ * <ul>
  * <li>{@link #grouped(int)}</li>
  * <li>{@link #iterator()}</li>
  * <li>{@link #sliding(int)}</li>
  * <li>{@link #sliding(int, int)}</li>
+ * </ul>
  *
  * Numeric operations:
  *
@@ -104,7 +106,6 @@ import java.util.function.Predicate;
  * <ul>
  * <li>{@link #existsUnique(Predicate)}</li>
  * <li>{@link #hasDefiniteSize()}</li>
- * <li>{@link #isSingletonType()}</li>
  * <li>{@link #isTraversableAgain()}</li>
  * </ul>
  *

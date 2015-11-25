@@ -1217,13 +1217,13 @@ public class CharSeqTest {
     @Test
     public void shouldSlideNonNilBySize1() {
         assertThat(CharSeq.ofAll('1', '2', '3').sliding(1).toList())
-                .isEqualTo(List.ofAll(Vector.of('1'), Vector.of('2'), Vector.of('3')));
+                .isEqualTo(List.ofAll(CharSeq.of('1'), CharSeq.of('2'), CharSeq.of('3')));
     }
 
     @Test // #201
     public void shouldSlideNonNilBySize2() {
         assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').sliding(2).toList())
-                .isEqualTo(List.ofAll(Vector.ofAll('1', '2'), Vector.ofAll('2', '3'), Vector.ofAll('3', '4'), Vector.ofAll('4', '5')));
+                .isEqualTo(List.ofAll(CharSeq.ofAll('1', '2'), CharSeq.ofAll('2', '3'), CharSeq.ofAll('3', '4'), CharSeq.ofAll('4', '5')));
     }
 
     // -- sliding(size, step)
@@ -1236,24 +1236,24 @@ public class CharSeqTest {
     @Test
     public void shouldSlide5ElementsBySize2AndStep3() {
         assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').sliding(2, 3).toList())
-                .isEqualTo(List.ofAll(Vector.ofAll('1', '2'), Vector.ofAll('4', '5')));
+                .isEqualTo(List.ofAll(CharSeq.ofAll('1', '2'), CharSeq.ofAll('4', '5')));
     }
 
     @Test
     public void shouldSlide5ElementsBySize2AndStep4() {
         assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').sliding(2, 4).toList())
-                .isEqualTo(List.ofAll(Vector.ofAll('1', '2'), Vector.of('5')));
+                .isEqualTo(List.ofAll(CharSeq.ofAll('1', '2'), CharSeq.of('5')));
     }
 
     @Test
     public void shouldSlide5ElementsBySize2AndStep5() {
-        assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').sliding(2, 5).toList()).isEqualTo(List.of(Vector.ofAll('1', '2')));
+        assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').sliding(2, 5).toList()).isEqualTo(List.of(CharSeq.ofAll('1', '2')));
     }
 
     @Test
     public void shouldSlide4ElementsBySize5AndStep3() {
         assertThat(CharSeq.ofAll('1', '2', '3', '4').sliding(5, 3).toList())
-                .isEqualTo(List.of(Vector.ofAll('1', '2', '3', '4')));
+                .isEqualTo(List.of(CharSeq.ofAll('1', '2', '3', '4')));
     }
 
     // -- span
@@ -1787,7 +1787,9 @@ public class CharSeqTest {
 
     @Test
     public void shouldCalculateCrossProductPower() {
-        assertThat(CharSeq.of("12").crossProduct(2)).isEqualTo(Vector.ofAll(Vector.ofAll('1', '1'), Vector.ofAll('1', '2'), Vector.ofAll('2', '1'), Vector.ofAll('2', '2')));
+        final IndexedSeq<CharSeq> actual = CharSeq.of("12").crossProduct(2);
+        final Vector<CharSeq> expected = Vector.ofAll(CharSeq.ofAll('1', '1'), CharSeq.ofAll('1', '2'), CharSeq.ofAll('2', '1'), CharSeq.ofAll('2', '2'));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- crossProduct(java.lang.Iterable)
@@ -1878,20 +1880,23 @@ public class CharSeqTest {
 
     @Test
     public void shouldGroupedTraversableWithEqualSizedBlocks() {
-        assertThat(CharSeq.ofAll('1', '2', '3', '4').grouped(2).toList())
-                .isEqualTo(List.ofAll(Vector.ofAll('1', '2'), Vector.ofAll('3', '4')));
+        final List<CharSeq> actual = CharSeq.ofAll('1', '2', '3', '4').grouped(2).toList();
+        final List<CharSeq> expected = List.ofAll(CharSeq.ofAll('1', '2'), CharSeq.ofAll('3', '4'));
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldGroupedTraversableWithRemainder() {
-        assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').grouped(2).toList())
-                .isEqualTo(List.ofAll(Vector.ofAll('1', '2'), Vector.ofAll('3', '4'), Vector.of('5')));
+        final List<CharSeq> actual = CharSeq.ofAll('1', '2', '3', '4', '5').grouped(2).toList();
+        final List<CharSeq> expected = List.ofAll(CharSeq.ofAll('1', '2'), CharSeq.ofAll('3', '4'), CharSeq.of('5'));
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldGroupedWhenTraversableLengthIsSmallerThanBlockSize() {
-        assertThat(CharSeq.ofAll('1', '2', '3', '4').grouped(5).toList())
-                .isEqualTo(List.of(Vector.ofAll('1', '2', '3', '4')));
+        final List<CharSeq> actual = CharSeq.ofAll('1', '2', '3', '4').grouped(5).toList();
+        final List<CharSeq> expected = List.of(CharSeq.ofAll('1', '2', '3', '4'));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- indexOf

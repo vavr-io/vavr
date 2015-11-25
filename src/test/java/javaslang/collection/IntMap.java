@@ -234,7 +234,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public Iterator<IntMap<T>> sliding(int size, int step) {
-        return original.sliding(size, size).map(IntMap::of);
+        return original.sliding(size, step).map(IntMap::of);
     }
 
     @Override

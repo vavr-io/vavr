@@ -75,6 +75,13 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toVector()}</li>
  * </ul>
  *
+ * Equality checks:
+ *
+ * <ul>
+ * <li>{@link #corresponds(java.lang.Iterable, BiPredicate)}</li>
+ * <li>{@link #eq(Object)}</li>
+ * </ul>
+ *
  * Filter-monadic operations:
  *
  * <ul>
