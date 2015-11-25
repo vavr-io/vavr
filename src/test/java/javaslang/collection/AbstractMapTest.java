@@ -5,6 +5,12 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.control.Some;
+import org.assertj.core.api.IterableAssert;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -13,12 +19,6 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.control.Some;
-import org.assertj.core.api.IterableAssert;
-import org.junit.Test;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
@@ -91,6 +91,10 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     }
 
     private Map<Integer, Integer> emptyIntInt() {
+        return emptyMap();
+    }
+
+    private Map<Integer, String> emptyIntString() {
         return emptyMap();
     }
 
@@ -304,7 +308,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldReturnModifiedValuesMap() {
-        assertThat(HashMap.of(1, "1").put(2, "2").mapValues(Integer::parseInt)).isEqualTo(HashMap.of(1, 1).put(2, 2));
+        assertThat(emptyIntString().put(1, "1").put(2, "2").mapValues(Integer::parseInt)).isEqualTo(emptyMap().put(1, 1).put(2, 2));
     }
 
     // -- merge

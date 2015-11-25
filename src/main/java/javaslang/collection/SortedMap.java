@@ -109,6 +109,9 @@ public interface SortedMap<K, V> extends Map<K, V> {
     <U, W> SortedMap<U, W> map(BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper);
 
     @Override
+    <W> SortedMap<K, W> mapValues(Function<V, ? extends W> mapper);
+
+    @Override
     SortedMap<K, V> merge(Map<? extends K, ? extends V> that);
 
     @Override

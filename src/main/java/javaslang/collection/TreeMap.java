@@ -401,6 +401,12 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     }
 
     @Override
+    public <W> TreeMap<K, W> mapValues(Function<V, ? extends W> mapper)  {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return map((k, v) -> Tuple.of(k, mapper.apply(v)));
+    }
+
+    @Override
     public <U, W> TreeMap<U, W> map(Comparator<? super U> keyComparator,
                                     BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");

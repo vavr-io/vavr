@@ -5,24 +5,18 @@
  */
 package javaslang.collection;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
-
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.None;
 import javaslang.control.Option;
 import javaslang.control.Some;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 /**
  * An immutable {@code LinkedHashMap} implementation.
@@ -175,6 +169,12 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public <W> LinkedHashMap<K, W> mapValues(Function<V, ? extends W> mapper)  {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return map((k, v) -> Tuple.of(k, mapper.apply(v)));
+    }
+
+    @Override
     public LinkedHashMap<K, V> put(K key, V value) {
         Queue<Tuple2<K, V>> newList = list;
         HashMap<K, V> newMap = map;
@@ -211,19 +211,19 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         final HashMap<K, V> newMap = map.filter(t -> !toRemove.contains(t._1));
         return newList.isEmpty() ? empty() : new LinkedHashMap<>(newList, newMap);
     }
-    
+
     @Override
     public LinkedHashMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
         return Traversables.scanLeft(this, zero, operation, LinkedHashMap.empty(), LinkedHashMap::put, Function.identity());
     }
-    
+
     @Override
     public <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
-    
+
     @Override
     public <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");

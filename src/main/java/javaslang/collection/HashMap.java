@@ -331,6 +331,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public <W> HashMap<K, W> mapValues(Function<V, ? extends W> mapper)  {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return map((k, v) -> Tuple.of(k, mapper.apply(v)));
+    }
+
+    @Override
     public HashMap<K, V> merge(Map<? extends K, ? extends V> that) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {

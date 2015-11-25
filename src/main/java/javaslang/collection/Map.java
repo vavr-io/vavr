@@ -5,20 +5,15 @@
  */
 package javaslang.collection;
 
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
+import javaslang.control.Option;
+
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.control.Option;
 /**
  * An immutable {@code Map} interface.
  *
@@ -52,10 +47,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
      * @param mapper A {@code Function}
      * @throws NullPointerException if {@code mapper} is null
      */
-    default <W> Map<K, W> mapValues(Function<V, ? extends W> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return map((k, v) -> Tuple.of(k, mapper.apply(v)));
-    }
+    <W> Map<K, W> mapValues(Function<V, ? extends W> mapper);
 
     Map<K, V> put(K key, V value);
 
