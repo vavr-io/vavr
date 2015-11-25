@@ -88,6 +88,7 @@ import java.util.function.Predicate;
  * <ul>
  * <li>{@link #drop(int)}</li>
  * <li>{@link #dropRight(int)}</li>
+ * <li>{@link #dropUntil(Predicate)}</li>
  * <li>{@link #dropWhile(Predicate)}</li>
  * <li>{@link #filter(Predicate)}</li>
  * <li>{@link #findFirst(Predicate)}</li>
@@ -316,6 +317,19 @@ public interface Traversable<T> extends Value<T> {
      * if this has less than n elements.
      */
     Traversable<T> dropRight(int n);
+
+    /**
+     * Drops elements until the predicate holds for the current element.
+     * <p>
+     * Note: This is essentially the same as {@code dropWhile(predicate.negate())}. It is intended to be used with
+     * method references, which cannot be negated directly.
+     *
+     * @param predicate A condition tested subsequently for this elements.
+     * @return a new instance consisting of all elements starting from the first one which does satisfy the given
+     * predicate.
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Traversable<T> dropUntil(Predicate<? super T> predicate);
 
     /**
      * Drops elements while the predicate holds for the current element.

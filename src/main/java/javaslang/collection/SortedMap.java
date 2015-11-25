@@ -77,6 +77,9 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> dropRight(int n);
 
     @Override
+    SortedMap<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
     SortedMap<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
@@ -112,7 +115,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
     <U, W> SortedMap<U, W> map(BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper);
 
     @Override
-    <W> SortedMap<K, W> mapValues(Function<V, ? extends W> mapper);
+    <W> SortedMap<K, W> mapValues(Function<? super V, ? extends W> mapper);
 
     @Override
     SortedMap<K, V> merge(Map<? extends K, ? extends V> that);

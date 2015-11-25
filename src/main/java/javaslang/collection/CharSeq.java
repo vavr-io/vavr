@@ -313,6 +313,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
+    public CharSeq dropUntil(Predicate<? super Character> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropWhile(predicate.negate());
+    }
+
+    @Override
     public CharSeq dropWhile(Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         int index = 0;

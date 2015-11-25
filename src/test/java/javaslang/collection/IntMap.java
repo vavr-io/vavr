@@ -95,6 +95,11 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
+    public IntMap<T> dropUntil(Predicate<? super T> predicate) {
+        return dropWhile(predicate.negate());
+    }
+
+    @Override
     public IntMap<T> dropWhile(Predicate<? super T> predicate) {
         return IntMap.of(original.dropWhile(p -> predicate.test(p._2)));
     }

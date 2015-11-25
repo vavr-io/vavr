@@ -40,12 +40,14 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
     <U, W> Map<U, W> map(BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper);
 
     /**
-     * Performs an action on value.
+     * Maps the values of this {@code Map} while preserving the corresponding keys.
      *
-     * @param mapper A {@code Function}
+     * @param <W> The new value type.
+     * @param mapper A {@code Function} that maps values of type {@code K} to values of type {@code W}.
+     * @return A new {@code Map}.
      * @throws NullPointerException if {@code mapper} is null
      */
-    <W> Map<K, W> mapValues(Function<V, ? extends W> mapper);
+    <W> Map<K, W> mapValues(Function<? super V, ? extends W> mapper);
 
     Map<K, V> put(K key, V value);
 
@@ -99,6 +101,9 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
 
     @Override
     Map<K, V> dropRight(int n);
+
+    @Override
+    Map<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
     Map<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate);

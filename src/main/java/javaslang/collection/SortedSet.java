@@ -83,6 +83,9 @@ public interface SortedSet<T> extends Set<T> {
     SortedSet<T> dropRight(int n);
 
     @Override
+    SortedSet<T> dropUntil(Predicate<? super T> predicate);
+
+    @Override
     SortedSet<T> dropWhile(Predicate<? super T> predicate);
 
     @Override

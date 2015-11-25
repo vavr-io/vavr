@@ -340,6 +340,34 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(ofAll(1, 2, 3).dropRight(4)).isEqualTo(empty());
     }
 
+
+    // -- dropUntil
+
+    @Test
+    public void shouldDropUntilNoneOnNil() {
+        assertThat(empty().dropUntil(ignored -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldDropUntilNoneIfPredicateIsTrue() {
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(ofAll(1, 2, 3).dropUntil(ignored -> true)).isEqualTo(ofAll(1, 2, 3));
+        } else {
+            Traversable<Integer> t = ofAll(1, 2, 3);
+            assertThat(t.dropUntil(ignored -> true)).isSameAs(t);
+        }
+    }
+
+    @Test
+    public void shouldDropUntilAllIfPredicateIsFalse() {
+        assertThat(ofAll(1, 2, 3).dropUntil(ignored -> false)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldDropUntilCorrect() {
+        assertThat(ofAll(1, 2, 3).dropUntil(i -> i >= 2)).isEqualTo(ofAll(2, 3));
+    }
+
     // -- dropWhile
 
     @Test
