@@ -112,6 +112,9 @@ public interface Set<T> extends Traversable<T> {
     Set<T> dropRight(int n);
 
     @Override
+    Set<T> dropUntil(Predicate<? super T> predicate);
+
+    @Override
     Set<T> dropWhile(Predicate<? super T> predicate);
 
     @Override

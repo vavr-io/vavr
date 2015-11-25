@@ -70,6 +70,9 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> dropRight(int n);
 
     @Override
+    IndexedSeq<T> dropUntil(Predicate<? super T> predicate);
+
+    @Override
     IndexedSeq<T> dropWhile(Predicate<? super T> predicate);
 
     @Override

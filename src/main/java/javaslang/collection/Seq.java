@@ -907,6 +907,9 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> dropRight(int n);
 
     @Override
+    Seq<T> dropUntil(Predicate<? super T> predicate);
+
+    @Override
     Seq<T> dropWhile(Predicate<? super T> predicate);
 
     @Override

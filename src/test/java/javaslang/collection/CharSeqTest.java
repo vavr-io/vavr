@@ -509,6 +509,28 @@ public class CharSeqTest {
         assertThat(CharSeq.ofAll('1', '2', '3').dropRight(4)).isEqualTo(empty());
     }
 
+    // -- dropUntil
+
+    @Test
+    public void shouldDropUntilNoneOnNil() {
+        assertThat(empty().dropUntil(ignored -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldDropUntilNoneIfPredicateIsTrue() {
+        assertThat(CharSeq.ofAll('1', '2', '3').dropUntil(ignored -> true)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
+    }
+
+    @Test
+    public void shouldDropUntilAllIfPredicateIsFalse() {
+        assertThat(CharSeq.ofAll('1', '2', '3').dropUntil(ignored -> false)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldDropUntilCorrect() {
+        assertThat(CharSeq.ofAll('1', '2', '3').dropUntil(i -> i >= '2')).isEqualTo(CharSeq.ofAll('2', '3'));
+    }
+
     // -- dropWhile
 
     @Test

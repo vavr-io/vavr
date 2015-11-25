@@ -169,7 +169,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public <W> LinkedHashMap<K, W> mapValues(Function<V, ? extends W> mapper)  {
+    public <W> LinkedHashMap<K, W> mapValues(Function<? super V, ? extends W> mapper)  {
         Objects.requireNonNull(mapper, "mapper is null");
         return map((k, v) -> Tuple.of(k, mapper.apply(v)));
     }
@@ -297,6 +297,12 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
             return empty();
         }
         return LinkedHashMap.ofAll(list.dropRight(n));
+    }
+
+    @Override
+    public LinkedHashMap<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropWhile(predicate.negate());
     }
 
     @Override

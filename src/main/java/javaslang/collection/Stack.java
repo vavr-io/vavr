@@ -524,6 +524,9 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> dropRight(int n);
 
     @Override
+    Stack<T> dropUntil(Predicate<? super T> predicate);
+
+    @Override
     Stack<T> dropWhile(Predicate<? super T> predicate);
 
     @Override

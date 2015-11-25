@@ -68,6 +68,9 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> dropRight(int n);
 
     @Override
+    LinearSeq<T> dropUntil(Predicate<? super T> predicate);
+
+    @Override
     LinearSeq<T> dropWhile(Predicate<? super T> predicate);
 
     @Override
