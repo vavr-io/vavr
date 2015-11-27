@@ -66,8 +66,6 @@ interface HashArrayMappedTrieModule {
         private static final int M2 = 0x33333333;
         private static final int M4 = 0x0f0f0f0f;
 
-        private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
-
         int bitCount(int x) {
             x = x - ((x >> 1) & M1);
             x = (x & M2) + ((x >> 2) & M2);
@@ -134,9 +132,7 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        public int hashCode() {
-            return hashCode.get();
-        }
+        public abstract int hashCode();
 
         @Override
         public String toString() {
@@ -172,6 +168,11 @@ interface HashArrayMappedTrieModule {
         @Override
         AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
             return value.isEmpty() ? this : new LeafNode<>(Objects.hashCode(key), key, value.get());
+        }
+
+        @Override
+        public int hashCode() {
+            return 0;
         }
 
         @Override
@@ -253,6 +254,11 @@ interface HashArrayMappedTrieModule {
             } else {
                 return value.isEmpty() ? this : mergeLeaves(shift, new LeafNode<>(key.hashCode(), key, value.get()));
             }
+        }
+
+        @Override
+        public int hashCode() {
+            return entries.hashCode();
         }
 
         private AbstractNode<K, V> mergeLeaves(int shift, LeafNode<K, V> other) {
@@ -357,6 +363,11 @@ interface HashArrayMappedTrieModule {
             }
         }
 
+        @Override
+        public int hashCode() {
+            return subNodes.hashCode();
+        }
+
         private ArrayNode<K, V> expand(int frag, AbstractNode<K, V> child, int mask, List<AbstractNode<K, V>> subNodes) {
             int bit = mask;
             int count = 0;
@@ -409,6 +420,7 @@ interface HashArrayMappedTrieModule {
 
         private static final long serialVersionUID = 1L;
 
+        private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
         private final Object[] subNodes;
         private final int count;
         private final int size;
@@ -444,6 +456,11 @@ interface HashArrayMappedTrieModule {
             } else {
                 return new ArrayNode<>(count, size - child.size() + newChild.size(), update(subNodes, frag, newChild));
             }
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode.get();
         }
 
         private static Object[] update(Object[] arr, int index, Object newElement) {
