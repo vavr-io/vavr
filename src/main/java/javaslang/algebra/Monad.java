@@ -80,6 +80,29 @@ public interface Monad<T> extends Functor<T> {
 
     /**
      * FlatMaps this value to a new value with different component type.
+     * <p>
+     * FlatMap is the sequence operation for functions and behaves like the imperative {@code ;}.
+     * <p>
+     * If the previous results are needed, flatMap cascades:
+     * <pre>
+     * <code>
+     * m1().flatMap(result1 -&gt;
+     *      m2(result1).flatMap(result2 -&gt;
+     *          m3(result1, result2).flatMap(result3 -&gt;
+     *              ...
+     *          )
+     *      )
+     * );
+     * </code>
+     * </pre>
+     * If only the last result is needed, flatMap may be used sequentially:
+     * <pre>
+     * <code>
+     * m1().flatMap(this::m2)
+     *     .flatMap(this::m3)
+     *     .flatMap(...);
+     * </code>
+     * </pre>
      *
      * @param mapper A mapper
      * @param <U>    Component type of the mapped {@code Monad}
