@@ -271,18 +271,9 @@ public interface Try<T> extends Value<T> {
      * @param mapper A mapper
      * @return a new Try
      */
-    @SuppressWarnings("unchecked")
     @Override
     default <U> Try<U> map(Function<? super T, ? extends U> mapper) {
-        if (isFailure()) {
-            return (Failure<U>) this;
-        } else {
-            try {
-                return new Success<>(mapper.apply(get()));
-            } catch (Throwable t) {
-                return new Failure<>(t);
-            }
-        }
+        return mapTry(mapper::apply);
     }
 
     /**
@@ -420,7 +411,6 @@ public interface Try<T> extends Value<T> {
             } catch (Throwable t) {
                 return new Failure<>(t);
             }
-
         } else {
             return this;
         }
