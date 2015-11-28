@@ -76,8 +76,13 @@ public class LazyTest {
     // -- isEmpty()
 
     @Test
-    public void shouldNotBeEmpty() {
-        assertThat(Lazy.of(() -> null).isEmpty()).isEqualTo(false);
+    public void shouldEnsureThatNonEmptyLazyIsNotEmpty() {
+        assertThat(Lazy.of(() -> null).isEmpty()).isFalse();
+    }
+
+    @Test
+    public void shouldEnsureThatEmptyLazyIsEmpty() {
+        assertThat(Lazy.empty().isEmpty()).isTrue();
     }
 
     // -- isEvaluated()
@@ -100,14 +105,11 @@ public class LazyTest {
 
     // -- filter
 
-    @Test(expected = NoSuchElementException.class)
-    public void shouldThrowFilterEmptyLazy() {
-        Lazy.empty().filter(ignored -> true).get();
-    }
-
     @Test
-    public void shouldFilterNonEmptyLazy() {
-        assertThat(Lazy.of(() -> 1).filter(i -> true)).isEqualTo(new Some<>(1));
+    public void shouldThrowFilterEmptyLazy() {
+        final Lazy<Integer> testee = Lazy.empty();
+        final Lazy<Integer> actual = testee.filter(i -> true);
+        assertThat(actual == testee).isTrue();
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -116,8 +118,10 @@ public class LazyTest {
     }
 
     @Test
-    public void shouldNonEmptyFilterNonEmptyLazy() {
-        assertThat(Lazy.of(() -> 1).filter(i -> true)).isEqualTo(new Some<>(1));
+    public void shouldFilterNonEmptyLazy() {
+        final Lazy<Integer> testee = Lazy.of(() -> 1);
+        final Lazy<Integer> actual = testee.filter(i -> true);
+        assertThat(actual == testee).isTrue();
     }
 
     // -- flatten()
@@ -158,16 +162,19 @@ public class LazyTest {
 
     // -- peek
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldPeekEmpty() {
-        Lazy.empty().peek(t -> {
-        });
+        final Lazy<?> testee = Lazy.empty();
+        final Lazy<?> actual = testee.peek(t -> {});
+        assertThat(actual == testee).isTrue();
     }
 
     @Test
     public void shouldPeekSingleValuePerformingAnAction() {
         final int[] effect = { 0 };
-        assertThat(Lazy.of(() -> 1).peek(i -> effect[0] = i)).isEqualTo(Lazy.of(() -> 1));
+        final Lazy<Integer> testee = Lazy.of(() -> 1);
+        final Lazy<Integer> actual = testee.peek(i -> effect[0] = i);
+        assertThat(actual == testee).isTrue();
         assertThat(effect[0]).isEqualTo(1);
     }
 
