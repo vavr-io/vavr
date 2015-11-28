@@ -57,6 +57,28 @@ public interface Try<T> extends Value<T> {
     }
 
     /**
+     * Creates a {@link Success} that contains the given {@code value}. Shortcut for {@code new Success<>(value)}.
+     *
+     * @param value A value.
+     * @param <T> Type of the given {@code value}.
+     * @return A new {@code Success}.
+     */
+    static <T> Try<T> success(T value) {
+        return new Success<>(value);
+    }
+
+    /**
+     * Creates a {@link Failure} that contains the given {@code exception}. Shortcut for {@code new Failure<>(exception)}.
+     *
+     * @param exception An exception.
+     * @param <T> Component type of the {@code Try}.
+     * @return A new {@code Failure}.
+     */
+    static <T> Try<T> failure(Throwable exception) {
+        return new Failure<>(exception);
+    }
+
+    /**
      * Runs the given checked consumer if this is a {@code Success},
      * passing the result of the current expression to it.
      * If this expression is a {@code Failure} then it'll return a new
