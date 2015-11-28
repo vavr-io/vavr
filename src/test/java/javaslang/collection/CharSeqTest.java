@@ -659,18 +659,6 @@ public class CharSeqTest {
         assertThat(CharSeq.ofAll('1', '2', '3').flatMapChars(c -> c == '1' ? "*" : "-")).isEqualTo(CharSeq.of("*--"));
     }
 
-    // -- flatten()
-
-    @Test
-    public void shouldFlattenEmptyTraversable() {
-        assertThat(empty().flatten()).isEqualTo(Vector.empty());
-    }
-
-    @Test
-    public void shouldFlattenTraversableOfPlainElements() {
-        assertThat(CharSeq.ofAll('1', '2', '3').flatten()).isEqualTo(Vector.ofAll('1', '2', '3'));
-    }
-
     // -- fold
 
     @Test

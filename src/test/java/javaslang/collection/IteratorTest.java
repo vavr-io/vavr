@@ -272,16 +272,6 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(Iterator.gen(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
     }
 
-    // -- flatten
-
-    @Override
-    @Test(expected = ClassCastException.class)
-    public void shouldDetectNonIterableElementsOnFlatten() {
-        final Iterator<?> unsafe = ofAll(new Object(), new Object()).flatten();
-        // Iterator is lazy and defers the UnsupportOperationException until elements are accessed
-        unsafe.next();
-    }
-
     // ++++++ OBJECT ++++++
 
     // -- equals

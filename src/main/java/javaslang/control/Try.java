@@ -200,16 +200,6 @@ public interface Try<T> extends Value<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Try<U> flatten() {
-        try {
-            return ((Try<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     /**
      * Gets the result of this Try if this is a Success or throws if this is a Failure.
      *

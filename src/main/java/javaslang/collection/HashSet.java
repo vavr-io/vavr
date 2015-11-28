@@ -509,16 +509,6 @@ public final class HashSet<T> implements Set<T>, Serializable {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> HashSet<U> flatten() {
-        try {
-            return ((HashSet<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         return foldLeft(zero, (u, t) -> f.apply(t, u));

@@ -757,16 +757,6 @@ public interface Future<T> extends Value<T> {
         return promise.future();
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Future<U> flatten() {
-        try {
-            return ((Future<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     /**
      * Performs the given {@code action} asynchronously hence this Future result becomes available.
      * The {@code action} is not performed, if the result is a failure.

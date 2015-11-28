@@ -226,18 +226,6 @@ public class EitherTest {
         assertThat(actual).isFalse();
     }
 
-    // flatten(Function)
-
-    @Test
-    public void shouldFlattenLeftWithFunctionUsingLeftProjection() {
-        assertThat(new Left<>(new Some<>(1)).left().flatten().toEither()).isEqualTo(new Left<>(1));
-    }
-
-    @Test
-    public void shouldFlattenRightWithFunctionUsingLeftProjection() {
-        assertThat(new Right<Option<Integer>, String>("1").left().flatten().toEither()).isEqualTo(new Right<>("1"));
-    }
-
     // flatMap
 
     @Test
@@ -599,18 +587,6 @@ public class EitherTest {
     public void shouldFilterNoneOnRightProjectionOfLeftIfPredicateNotMatches() {
         final boolean actual = new Left<String, Integer>("1").right().filter(i -> false).toOption().isDefined();
         assertThat(actual).isFalse();
-    }
-
-    // flatten(Function)
-
-    @Test
-    public void shouldFlattenRightWithFunctionUsingRightProjection() {
-        assertThat(new Right<String, Option<Integer>>(new Some<>(1)).right().flatten().toEither()).isEqualTo(new Right<>(1));
-    }
-
-    @Test
-    public void shouldFlattenLeftWithFunctionUsingRightProjection() {
-        assertThat(new Left<String, Option<Integer>>("1").right().flatten().toEither()).isEqualTo(new Left<>("1"));
     }
 
     // flatMap

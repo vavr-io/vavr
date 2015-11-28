@@ -22,23 +22,6 @@ public class TryTest {
     private static final String OK = "ok";
     private static final String FAILURE = "failure";
 
-    // -- flatten()
-
-    @Test
-    public void shouldFlattenSuccessOfSuccess() {
-        assertThat(new Success<>(new Success<>(1)).flatten()).isEqualTo(new Success<>(1));
-    }
-
-    @Test
-    public void shouldFlattenSuccessOfFailure() {
-        assertThat(new Success<>(failure()).flatten()).isEqualTo(failure());
-    }
-
-    @Test
-    public void shouldFlattenFailure() {
-        assertThat(failure().flatten()).isEqualTo(failure());
-    }
-
     // -- exists
 
     @Test

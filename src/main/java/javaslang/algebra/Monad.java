@@ -52,33 +52,6 @@ public interface Monad<T> extends Functor<T> {
     Monad<T> filter(Predicate<? super T> predicate);
 
     /**
-     * Flattens this {@code Monad} by one level.
-     * <p>
-     * Example:
-     *
-     * <pre><code>List(Some(1), Some(2), None).flatten() = List(1, 2)</code></pre>
-     *
-     * <strong>Caution:</strong> Effectively {@code flatMap(Function.identity())} is called. That requires this
-     * elements to be of type {@code java.lang.Iterable<U>}. More specifically this type {@code FilterMonadic<T>}
-     * has to be of type {@code FilterMonadic<? extends java.lang.Iterable<U>>} for some given {@code U}.
-     * We (currently) can't express this constraint with Java's type system. If this type does not fulfill the
-     * requirement at runtime, a {@code ClassCastException} is thrown.
-     * <p>
-     * <strong>It is unsafe to use {@code flatten()}.</strong> Especially this compiles but throws at runtime:
-     *
-     * <pre><code>// Compiles. Throws at runtime because elements are not Iterable!
-     * List&lt;String&gt; list = List(1, 2, 3).flatten();</code></pre>
-     *
-     * <strong>Also beware of the following exceptional cases:</strong>
-     * {@link javaslang.collection.CharSeq#flatten()} and {@link javaslang.collection.Map#flatten()}.
-     *
-     * @param <U> the nested component type
-     * @return A flattened version of this {@code Monad}.
-     * @throws UnsupportedOperationException if this elements are not of type {@code ? extends java.lang.Iterable<? extends T>}.
-     */
-    <U> Monad<U> flatten();
-
-    /**
      * FlatMaps this value to a new value with different component type.
      * <p>
      * FlatMap is the sequence operation for functions and behaves like the imperative {@code ;}.

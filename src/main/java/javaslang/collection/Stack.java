@@ -536,9 +536,6 @@ public interface Stack<T> extends LinearSeq<T> {
     <U> Stack<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    <U> Stack<U> flatten();
-
-    @Override
     <C> Map<C, ? extends Stack<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override

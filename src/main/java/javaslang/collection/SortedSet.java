@@ -95,9 +95,6 @@ public interface SortedSet<T> extends Set<T> {
     <U> SortedSet<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    <U> SortedSet<U> flatten();
-
-    @Override
     <C> Map<C, ? extends SortedSet<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override

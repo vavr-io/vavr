@@ -124,18 +124,6 @@ public class LazyTest {
         assertThat(actual == testee).isTrue();
     }
 
-    // -- flatten()
-
-    @Test(expected = NoSuchElementException.class)
-    public void shouldFlattenEmptyLazy() {
-        Lazy.empty().flatten().get();
-    }
-
-    @Test
-    public void shouldFlattenLazyOfLazy() {
-        assertThat(Lazy.of(() -> Lazy.of(() -> 1)).flatten()).isEqualTo(Lazy.of(() -> 1));
-    }
-
     // -- flatMap
 
     @Test(expected = NoSuchElementException.class)

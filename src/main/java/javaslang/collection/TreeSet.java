@@ -518,16 +518,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return flatMap(naturalComparator(), mapper);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> TreeSet<U> flatten() {
-        try {
-            return ((TreeSet<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");

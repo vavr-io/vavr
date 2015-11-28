@@ -238,27 +238,6 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(testee.contains(Tuple.of("one", 1))).isTrue();
     }
 
-    // -- flatten
-
-    @Override
-    @Test
-    public void shouldFlattenEmptyTraversable() {
-        assertThat(emptyMap().flatten()).isEqualTo(emptyMap());
-    }
-
-    @Override
-    @Test
-    public void shouldFlattenTraversableOfTraversables() {
-        Seq<Integer> actual = emptyMap().put(0, new Some<>(1)).put(1, new Some<>(2)).put(2, new Some<>(3)).flatten();
-        assertThat(actual).isEqualTo(Stream.ofAll(1, 2, 3));
-    }
-
-    @Test
-    public void shouldFlattenMapOfMaps() {
-        Seq<Integer> actual = emptyMap().put(0, emptyMap().put(0, 1)).put(1, emptyMap().put(1, 2).put(2, 3)).flatten();
-        assertThat(actual).isEqualTo(Stream.ofAll(Tuple.of(0, 1), Tuple.of(1, 2), Tuple.of(2, 3)));
-    }
-
     // -- flatMap
 
     @SuppressWarnings("unchecked")

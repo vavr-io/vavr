@@ -115,11 +115,6 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public <U> Seq<U> flatten() {
-        return original.flatten();
-    }
-
-    @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return original.foldRight(zero, (e, u) -> f.apply(e._2, u));

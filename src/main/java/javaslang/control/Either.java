@@ -287,12 +287,6 @@ public interface Either<L, R> {
             }
         }
 
-        @SuppressWarnings("unchecked")
-        @Override
-        public <U> LeftProjection<U, R> flatten() {
-            return ((LeftProjection<? extends Iterable<U>, R>) this).flatMap(Function.identity());
-        }
-
         /**
          * Maps the left value if the projected Either is a Left.
          *
@@ -503,12 +497,6 @@ public interface Either<L, R> {
             } else {
                 return (RightProjection<L, U>) this;
             }
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public <U> RightProjection<L, U> flatten() {
-            return ((RightProjection<L, ? extends Iterable<U>>) this).flatMap(Function.identity());
         }
 
         /**

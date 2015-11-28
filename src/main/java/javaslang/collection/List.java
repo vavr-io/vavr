@@ -608,16 +608,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> List<U> flatten() {
-        try {
-            return ((List<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     @Override
     default void forEach(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");

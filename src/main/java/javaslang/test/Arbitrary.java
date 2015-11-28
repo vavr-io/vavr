@@ -97,16 +97,6 @@ public interface Arbitrary<T> extends Value<T> {
         };
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Arbitrary<U> flatten() {
-        try {
-            return ((Arbitrary<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     /**
      * Maps arbitrary objects T to arbitrary object U.
      *

@@ -368,30 +368,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         }
     }
 
-    /**
-     * Elements of a {@code CharSeq} are flattened to identical characters.
-     * <p>
-     * <strong>Caution:</strong> Behaves different than most other {@code Value.flatten()} implementations.
-     * <p>
-     * Example:
-     *
-     * <pre><code>// = IndexedSeq('a', 'b', 'c')
-     * CharSeq.of("abc").flatten();</code></pre>
-     *
-     * @param <U> the component type of the result, needs to be {@code Character}
-     * @return an indexed sequence of characters
-     * @throws UnsupportedOperationException if {@code U} is not {@code Character}. Note: We can't return {@code IndexedSeq<Character>} directly.
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> IndexedSeq<U> flatten() {
-        try {
-            return (IndexedSeq<U>) Vector.ofAll(this);
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     @Override
     public <C> Map<C, CharSeq> groupBy(Function<? super Character, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");

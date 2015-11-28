@@ -260,14 +260,6 @@ public class GenTest {
         Gen.of(1).filter(ignored -> false).apply(RANDOM);
     }
 
-    // -- flatten(Function)
-
-    @Test
-    public void shouldFlatteningGenOfIntegerUsingFunction() {
-        final Gen<Gen<Integer>> testee = random -> Gen.of(1);
-        assertThat(testee.flatten().apply(new Random())).isNotNull();
-    }
-
     // -- exists
 
     @Test
