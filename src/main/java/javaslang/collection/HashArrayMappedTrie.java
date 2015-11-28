@@ -279,7 +279,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         Option<V> lookup(int shift, K key) {
-            if (key.equals(this.key)) {
+            if (Objects.equals(key, this.key)) {
                 return Option.of(value);
             } else {
                 return None.instance();
@@ -288,7 +288,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         AbstractNode<K, V> modify(int shift, K key, V value, Action action) {
-            if (key.equals(this.key)) {
+            if (Objects.equals(key, this.key)) {
                 return (action == REMOVE) ? EmptyNode.instance() : new LeafSingleton<>(hash, key, value);
             } else {
                 return (action == REMOVE) ? this : mergeLeaves(shift, this, new LeafSingleton<>(key.hashCode(), key, value));
@@ -313,7 +313,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         AbstractNode<K, V> removeElement(K key) {
-            return key.equals(this.key) ? EmptyNode.instance() : this;
+            return Objects.equals(key, this.key) ? EmptyNode.instance() : this;
         }
 
         @Override
@@ -363,7 +363,7 @@ interface HashArrayMappedTrieModule {
             if (hash != key.hashCode()) {
                 return None.instance();
             }
-            return iterator().findFirst(t -> t._1.equals(key)).map(t -> t._2);
+            return iterator().findFirst(t -> Objects.equals(t._1, key)).map(t -> t._2);
         }
 
         @Override
@@ -386,7 +386,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         AbstractNode<K, V> removeElement(K k) {
-            if(k.equals(this.key)) {
+            if(Objects.equals(k, this.key)) {
                 return tail;
             } else {
                 // recurrent calls is OK but can be improved
