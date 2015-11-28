@@ -6,7 +6,6 @@
 package javaslang;
 
 import javaslang.collection.List;
-import javaslang.control.Some;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -82,7 +81,7 @@ public class LazyTest {
 
     @Test
     public void shouldEnsureThatEmptyLazyIsEmpty() {
-        assertThat(Lazy.empty().isEmpty()).isTrue();
+        assertThat(Lazy.undefined().isEmpty()).isTrue();
     }
 
     // -- isEvaluated()
@@ -100,14 +99,14 @@ public class LazyTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowGetEmpty() {
-        Lazy.empty().get();
+        Lazy.undefined().get();
     }
 
     // -- filter
 
     @Test
     public void shouldThrowFilterEmptyLazy() {
-        final Lazy<Integer> testee = Lazy.empty();
+        final Lazy<Integer> testee = Lazy.undefined();
         final Lazy<Integer> actual = testee.filter(i -> true);
         assertThat(actual == testee).isTrue();
     }
@@ -128,7 +127,7 @@ public class LazyTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldFlatMapEmptyLazy() {
-        Lazy.empty().flatMap(List::of).get();
+        Lazy.undefined().flatMap(List::of).get();
     }
 
     @Test
@@ -140,7 +139,7 @@ public class LazyTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldMapEmpty() {
-        Lazy.empty().map(Function.identity()).get();
+        Lazy.undefined().map(Function.identity()).get();
     }
 
     @Test
@@ -152,7 +151,7 @@ public class LazyTest {
 
     @Test
     public void shouldPeekEmpty() {
-        final Lazy<?> testee = Lazy.empty();
+        final Lazy<?> testee = Lazy.undefined();
         final Lazy<?> actual = testee.peek(t -> {});
         assertThat(actual == testee).isTrue();
     }

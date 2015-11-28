@@ -400,7 +400,7 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldabl
         if (this instanceof Lazy) {
             return (Lazy<T>) this;
         } else {
-            return isEmpty() ? Lazy.empty() : Lazy.of(this::get);
+            return isEmpty() ? Lazy.undefined() : Lazy.of(this::get);
         }
     }
 
