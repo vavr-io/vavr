@@ -24,10 +24,11 @@ public class FutureTest extends AbstractValueTest {
     @Override
     protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
+            @SuppressWarnings("unchecked")
             @Override
             public IterableAssert<T> isEqualTo(Object expected) {
                 if (actual instanceof Future && expected instanceof Future) {
-                    assertThat(((Future) actual).getValue()).isEqualTo(((Future) expected).getValue());
+                    Assertions.assertThat(((Future<T>) actual).getValue()).isEqualTo(((Future<T>) expected).getValue());
                     return this;
                 } else {
                     return super.isEqualTo(expected);
@@ -46,9 +47,9 @@ public class FutureTest extends AbstractValueTest {
         return Future.of(TrivialExecutorService.instance(), () -> element);
     }
 
-    @SafeVarargs
+    @SuppressWarnings("unchecked")
     @Override
-    protected final <T> Seq<T> ofAll(T... elements) {
+    protected <T> Seq<T> ofAll(T... elements) {
         return List.ofAll(elements);
     }
 
