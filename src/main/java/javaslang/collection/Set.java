@@ -124,9 +124,6 @@ public interface Set<T> extends Traversable<T> {
     <U> Set<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    <U> Set<U> flatten();
-
-    @Override
     <C> Map<C, ? extends Set<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override

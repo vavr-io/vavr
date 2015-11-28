@@ -131,16 +131,6 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Lazy<U> flatten() {
-        try {
-            return ((Lazy<? extends java.lang.Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     @Override
     default <U> Lazy<U> map(Function<? super T, ? extends U> mapper) {
         return Lazy.of(() -> mapper.apply(get()));

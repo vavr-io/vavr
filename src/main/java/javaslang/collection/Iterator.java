@@ -1362,25 +1362,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         }
     }
 
-    /**
-     * Flattens this {@code Value} by one level.
-     * See {@link Value#flatten()}.
-     * <p>
-     * <strong>Caution:</strong> Because {@code Iterator} is lazy, there is no way to detect non-iterable elements on
-     * {@code flatten()}. A possible {@code ClassCastException} is therefore deferred until elemnts are accessed with
-     * {@link #next()}.
-     *
-     * @param <U> the nested component type
-     * @return An Iterator of flattened elements.
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Iterator<U> flatten() {
-        // It does not make sense here to catch ClassCastException as it is done
-        // in all other flatten() impls because Iterable is lazy.
-        return ((Iterator<? extends Iterable<U>>) this).flatMap(Function.identity());
-    }
-
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");

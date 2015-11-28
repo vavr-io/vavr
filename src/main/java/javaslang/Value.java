@@ -87,7 +87,6 @@ import java.util.stream.StreamSupport;
  * <ul>
  * <li>{@link #filter(Predicate)}</li>
  * <li>{@link #flatMap(Function)}</li>
- * <li>{@link #flatten()}</li>
  * <li>{@link #map(Function)}</li>
  * </ul>
  *
@@ -319,9 +318,6 @@ public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldabl
 
     @Override
     Value<T> filter(Predicate<? super T> predicate);
-
-    @Override
-    <U> Value<U> flatten();
 
     @Override
     <U> Value<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);

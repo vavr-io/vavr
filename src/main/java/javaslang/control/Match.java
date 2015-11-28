@@ -394,16 +394,6 @@ public interface Match<R> extends Function<Object, R> {
         @Override
         <U> MatchMonad<U> flatMap(Function<? super R, ? extends java.lang.Iterable<? extends U>> mapper);
 
-        @SuppressWarnings("unchecked")
-        @Override
-        default <U> MatchMonad<U> flatten() {
-            try {
-                return ((MatchMonad<? extends Iterable<U>>) this).flatMap(Function.identity());
-            } catch (ClassCastException x) {
-                throw new UnsupportedOperationException("flatten of non-iterable elements");
-            }
-        }
-
         /**
          * A match is a singleton type.
          *

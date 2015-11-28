@@ -510,16 +510,6 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> LinkedHashSet<U> flatten() {
-        try {
-            return ((LinkedHashSet<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");

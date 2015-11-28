@@ -201,40 +201,6 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
         }
     }
 
-    // -- flatten()
-
-    @Test
-    public void shouldFlattenEmptyTraversable() {
-        assertThat(empty().flatten()).isEqualTo(empty());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldFlattenTraversableOfTraversables() {
-        assertThat(ofAll(of(1), ofAll(2, 3)).flatten()).isEqualTo(ofAll(1, 2, 3));
-    }
-
-    @Test(expected = UnsupportedOperationException.class)
-    public void shouldDetectNonIterableElementsOnFlatten() {
-        ofAll(new Object(), new Object()).flatten();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldNotDetectWrongReturnTypeOnFlattenButWhenReadingFlattenedElements() {
-        // this is wrong but it compiles and even executes at runtime because ofAll type erasure
-        final Value<String> unsafe = ofAll(of(1), of(2)).flatten();
-        // but when we get an element our con trick is blowing...
-        try {
-            final String s = unsafe.get();
-            throw new AssertionError("Expected ClassCastException but got " + s);
-        } catch (ClassCastException x) {
-            // ok!
-        } catch (Exception x) {
-            throw new AssertionError("Unexpected exception:" + x);
-        }
-    }
-
     // -- flatMap
 
     @Test

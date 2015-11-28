@@ -51,14 +51,6 @@ public class ArbitraryTest {
         assertThat(evenInts.apply(10).apply(new Random())).isNotNull();
     }
 
-    // -- flatten()
-
-    @Test
-    public void shouldFlatteningArbitraryIntegerUsingFunction() {
-        final Arbitrary<Arbitrary<Integer>> testee = size -> random -> Arbitrary.integer();
-        assertThat(testee.flatten().apply(1).apply(new Random())).isNotNull();
-    }
-
     // -- exists
 
     @Test

@@ -566,16 +566,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Vector<U> flatten() {
-        try {
-            return ((Vector<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     @Override
     public T get(int index) {
         if (index < 0 || index >= length()) {

@@ -117,7 +117,6 @@ import java.util.function.Predicate;
  * <li>{@link #distinctBy(Comparator)}</li>
  * <li>{@link #distinctBy(Function)}</li>
  * <li>{@link #flatMap(Function)}</li>
- * <li>{@link #flatten()}</li>
  * <li>{@link #map(Function)}</li>
  * <li>{@link #replace(Object, Object)}</li>
  * <li>{@link #replaceAll(Object, Object)}</li>
@@ -406,9 +405,6 @@ public interface Traversable<T> extends Value<T> {
 
     @Override
     <U> Traversable<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
-
-    @Override
-    <U> Traversable<U> flatten();
 
     /**
      * Accumulates the elements of this Traversable by successively calling the given function {@code f} from the left,

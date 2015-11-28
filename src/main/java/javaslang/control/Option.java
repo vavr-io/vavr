@@ -199,16 +199,6 @@ public interface Option<T> extends Value<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Option<U> flatten() {
-        try {
-            return ((Option<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     /**
      * Maps the value and wraps it in a new {@code Some} if this is a {@code Some}, returns {@code None}.
      *

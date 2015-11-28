@@ -302,16 +302,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
         return (Seq<U>) entries.iterator().flatMap(mapper).toStream();
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Seq<U> flatten() {
-        try {
-            return ((TreeMap<?, ? extends Iterable<U>>) this).flatMap(entry -> entry._2);
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable map values");
-        }
-    }
-
     @Override
     public <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");

@@ -919,9 +919,6 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     <U> Seq<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    <U> Seq<U> flatten();
-
-    @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return reverse().foldLeft(zero, (xs, x) -> f.apply(x, xs));

@@ -394,26 +394,6 @@ public class TreeTest extends AbstractTraversableTest {
         assertThat(actualInts).isEqualTo(expectedInts);
     }
 
-    // -- flatten
-
-    @Test
-    public void shouldFlattenEmptyTree() {
-        assertThat(Tree.empty().flatten()).isEmpty();
-    }
-
-    @Test
-    @Override
-    public void shouldFlattenTraversableOfTraversables() {
-
-        // ((1) (2) (3))
-        final Tree<?> testee = $($(1), $($(2)), $($(3)));
-        final Tree<?> actual = testee.flatten();
-
-        // (1 2 3)
-        final Tree<?> expected = $(1, $(2), $(3));
-        assertThat(actual).isEqualTo(expected);
-    }
-
     // -- iterator
 
     @Override

@@ -331,16 +331,6 @@ public interface Tree<T> extends Traversable<T> {
         return isEmpty() ? Empty.instance() : FlatMap.apply((Node<T>) this, mapper);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Tree<U> flatten() {
-        try {
-            return ((Tree<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
