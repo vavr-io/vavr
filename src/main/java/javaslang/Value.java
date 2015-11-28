@@ -49,45 +49,11 @@ import java.util.stream.StreamSupport;
  * <li>{@link #orElseThrow(Supplier)}</li>
  * </ul>
  *
- * Conversions:
- *
- * <ul>
- * <li>{@link #toArray()}</li>
- * <li>{@link #toCharSeq()}</li>
- * <li>{@link #toJavaArray()}</li>
- * <li>{@link #toJavaArray(Class)}</li>
- * <li>{@link #toJavaList()}</li>
- * <li>{@link #toJavaMap(Function)}</li>
- * <li>{@link #toJavaOptional()}</li>
- * <li>{@link #toJavaSet()}</li>
- * <li>{@link #toJavaStream()}</li>
- * <li>{@link #toLazy()}</li>
- * <li>{@link #toList()}</li>
- * <li>{@link #toMap(Function)}</li>
- * <li>{@link #toOption()}</li>
- * <li>{@link #toQueue()}</li>
- * <li>{@link #toSet()}</li>
- * <li>{@link #toStack()}</li>
- * <li>{@link #toStream()}</li>
- * <li>{@link #toTree()}</li>
- * <li>{@link #toTry()}</li>
- * <li>{@link #toTry(Supplier)}</li>
- * <li>{@link #toVector()}</li>
- * </ul>
- *
  * Equality checks:
  *
  * <ul>
  * <li>{@link #corresponds(java.lang.Iterable, BiPredicate)}</li>
  * <li>{@link #eq(Object)}</li>
- * </ul>
- *
- * Filter-monadic operations:
- *
- * <ul>
- * <li>{@link #filter(Predicate)}</li>
- * <li>{@link #flatMap(Function)}</li>
- * <li>{@link #map(Function)}</li>
  * </ul>
  *
  * Side-effects:
