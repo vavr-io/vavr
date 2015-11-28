@@ -49,7 +49,7 @@ public interface Option<T> extends Value<T> {
      * @param <T> component type
      * @return the single instance of {@code None}
      */
-    static <T> None<T> none() {
+    static <T> Option<T> none() {
         return None.instance();
     }
 
