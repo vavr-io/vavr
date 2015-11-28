@@ -28,7 +28,7 @@ public class FutureTest extends AbstractValueTest {
             @Override
             public IterableAssert<T> isEqualTo(Object expected) {
                 if (actual instanceof Future && expected instanceof Future) {
-                    Assertions.assertThat(((Future<T>) actual).getValue()).isEqualTo(((Future<T>) expected).getValue());
+                    assertThat(((Future<T>) actual).getValue()).isEqualTo(((Future<T>) expected).getValue());
                     return this;
                 } else {
                     return super.isEqualTo(expected);
