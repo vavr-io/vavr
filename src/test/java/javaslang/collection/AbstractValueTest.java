@@ -21,38 +21,31 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class AbstractValueTest extends AbstractIterableTest {
 
     protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
-        return new IterableAssert<T>(actual) {
-        };
+        return new IterableAssert<T>(actual) {};
     }
 
     protected <T> ObjectAssert<T> assertThat(T actual) {
-        return new ObjectAssert<T>(actual) {
-        };
+        return new ObjectAssert<T>(actual) {};
     }
 
     protected BooleanAssert assertThat(Boolean actual) {
-        return new BooleanAssert(actual) {
-        };
+        return new BooleanAssert(actual) {};
     }
 
     protected DoubleAssert assertThat(Double actual) {
-        return new DoubleAssert(actual) {
-        };
+        return new DoubleAssert(actual) {};
     }
 
     protected IntegerAssert assertThat(Integer actual) {
-        return new IntegerAssert(actual) {
-        };
+        return new IntegerAssert(actual) {};
     }
 
     protected LongAssert assertThat(Long actual) {
-        return new LongAssert(actual) {
-        };
+        return new LongAssert(actual) {};
     }
 
     protected StringAssert assertThat(String actual) {
-        return new StringAssert(actual) {
-        };
+        return new StringAssert(actual) {};
     }
 
     @Override
@@ -334,14 +327,12 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldPeekNil() {
-        assertThat(empty().peek(t -> {
-        })).isEqualTo(empty());
+        assertThat(empty().peek(t -> {})).isEqualTo(empty());
     }
 
     @Test
     public void shouldPeekNonNilPerformingNoAction() {
-        assertThat(of(1).peek(t -> {
-        })).isEqualTo(of(1));
+        assertThat(of(1).peek(t -> {})).isEqualTo(of(1));
     }
 
     @Test
@@ -365,8 +356,10 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
     @Test
     public void shouldConvertToCharSeq() {
         Value<Character> v = ofAll('a', 'b', 'c');
-        assertThat(Match.of(v).whenTypeIn(Iterator.class).then(Iterator.of("ignore").toString()).orElse(v.toString()))
-                .isEqualTo(v.toCharSeq().toString());
+        assertThat(Match.of(v)
+                .whenTypeIn(Iterator.class).then(Iterator.of("ignore").toString())
+                .orElse(v.toString())
+        ).isEqualTo(v.toCharSeq().toString());
     }
 
     @Test

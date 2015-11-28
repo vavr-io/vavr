@@ -5,22 +5,37 @@
  */
 package javaslang.concurrent;
 
+import javaslang.collection.AbstractValueTest;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 import javaslang.collection.Stream;
 import javaslang.control.*;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
 import java.util.concurrent.CancellationException;
 
 import static javaslang.concurrent.Concurrent.waitUntil;
 import static javaslang.concurrent.Concurrent.zZz;
-import static org.assertj.core.api.Assertions.assertThat;
 
-public class FutureTest {
+public class FutureTest extends AbstractValueTest {
 
-    /* TODO: extends AbstractValueTest {
+    @Override
+    protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
+        return new IterableAssert<T>(actual) {
+            @SuppressWarnings("unchecked")
+            @Override
+            public IterableAssert<T> isEqualTo(Object expected) {
+                if (actual instanceof Future && expected instanceof Future) {
+                    assertThat(((Future<T>) actual).getValue()).isEqualTo(((Future<T>) expected).getValue());
+                    return this;
+                } else {
+                    return super.isEqualTo(expected);
+                }
+            }
+        };
+    }
 
     @Override
     protected <T> Future<T> empty() {
@@ -28,10 +43,11 @@ public class FutureTest {
     }
 
     @Override
-    protected <T> Future<T> ofAll(T element) {
-        return Future.ofAll(TrivialExecutorService.instance(), () -> element);
+    protected <T> Future<T> of(T element) {
+        return Future.of(TrivialExecutorService.instance(), () -> element);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected <T> Seq<T> ofAll(T... elements) {
         return List.ofAll(elements);
@@ -46,7 +62,6 @@ public class FutureTest {
     protected int getPeekNonNilPerformingAnAction() {
         return 1;
     }
-    */
 
     // -- static failed()
 
@@ -389,17 +404,17 @@ public class FutureTest {
     // -- (helpers)
 
     // checks the invariant for cancelled state
-    static void assertCancelled(Future<?> future) {
+    void assertCancelled(Future<?> future) {
         assertFailed(future, CancellationException.class);
     }
 
-    static void assertFailed(Future<?> future, Class<? extends Throwable> exception) {
+    void assertFailed(Future<?> future, Class<? extends Throwable> exception) {
         assertThat(future.isCompleted()).isTrue();
         assertThat(future.getValue().get().failed().get()).isExactlyInstanceOf(exception);
     }
 
     // checks the invariant for cancelled state
-    static <T> void assertCompleted(Future<?> future, T value) {
+    <T> void assertCompleted(Future<?> future, T value) {
         assertThat(future.isCompleted()).isTrue();
         assertThat(future.getValue()).isEqualTo(new Some<>(new Success<>(value)));
     }
