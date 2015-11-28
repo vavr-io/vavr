@@ -43,18 +43,6 @@ import java.util.function.Supplier;
 public interface Lazy<T> extends Supplier<T>, Value<T> {
 
     /**
-     * Returns the singleton {@code undefined} lazy value.
-     * <p>
-     * The undefined lazy value is by definition emtpy and throws a {@code NoSuchElementException} on {@code get()}.
-     *
-     * @param <T> Component type
-     * @return The undefined lazy value.
-     */
-    static <T> Lazy<T> empty() {
-        return Undefined.instance();
-    }
-
-    /**
      * Creates a {@code Lazy} that requests its value from a given {@code Supplier}. The supplier is asked only once,
      * the value is memoized.
      *
@@ -70,6 +58,18 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
         } else {
             return new Defined<>(supplier);
         }
+    }
+
+    /**
+     * Returns the singleton {@code undefined} lazy value.
+     * <p>
+     * The undefined lazy value is by definition empty and throws a {@code NoSuchElementException} on {@code get()}.
+     *
+     * @param <T> Component type
+     * @return The undefined lazy value.
+     */
+    static <T> Lazy<T> undefined() {
+        return Undefined.instance();
     }
 
     /**
