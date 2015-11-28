@@ -12,7 +12,11 @@ package javaslang.algebra;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import javaslang.*;
+import javaslang.collection.*;
+import javaslang.control.Option;
+import javaslang.control.Try;
 
 /**
  * Defines a Monad by generalizing the flatMap function.
@@ -42,7 +46,7 @@ import javaslang.*;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public interface Monad<T> extends Functor<T>, Iterable<T> {
+public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
 
     /**
      * Lifts a {@code Function} to a higher {@code Function1} that operates on Monads.
@@ -67,8 +71,8 @@ public interface Monad<T> extends Functor<T>, Iterable<T> {
      */
     static <T1, T2, R> Function2<Monad<T1>, Monad<T2>, Monad<R>> lift(BiFunction<? super T1, ? super T2, ? extends R> f) {
         return (mT1, mT2) ->
-                 mT1.flatMap(t1 ->
-                 mT2.map(t2 -> f.apply(t1, t2)));
+                mT1.flatMap(t1 ->
+                mT2.map(t2 -> f.apply(t1, t2)));
     }
 
     /**
@@ -83,9 +87,9 @@ public interface Monad<T> extends Functor<T>, Iterable<T> {
      */
     static <T1, T2, T3, R> Function3<Monad<T1>, Monad<T2>, Monad<T3>, Monad<R>> lift(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
         return (mT1, mT2, mT3) ->
-                 mT1.flatMap(t1 ->
-                 mT2.flatMap(t2 ->
-                 mT3.map(t3 -> f.apply(t1, t2, t3))));
+                mT1.flatMap(t1 ->
+                mT2.flatMap(t2 ->
+                mT3.map(t3 -> f.apply(t1, t2, t3))));
     }
 
     /**
@@ -101,10 +105,10 @@ public interface Monad<T> extends Functor<T>, Iterable<T> {
      */
     static <T1, T2, T3, T4, R> Function4<Monad<T1>, Monad<T2>, Monad<T3>, Monad<T4>, Monad<R>> lift(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
         return (mT1, mT2, mT3, mT4) ->
-                 mT1.flatMap(t1 ->
-                 mT2.flatMap(t2 ->
-                 mT3.flatMap(t3 ->
-                 mT4.map(t4 -> f.apply(t1, t2, t3, t4)))));
+                mT1.flatMap(t1 ->
+                mT2.flatMap(t2 ->
+                mT3.flatMap(t3 ->
+                mT4.map(t4 -> f.apply(t1, t2, t3, t4)))));
     }
 
     /**
@@ -121,11 +125,11 @@ public interface Monad<T> extends Functor<T>, Iterable<T> {
      */
     static <T1, T2, T3, T4, T5, R> Function5<Monad<T1>, Monad<T2>, Monad<T3>, Monad<T4>, Monad<T5>, Monad<R>> lift(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
         return (mT1, mT2, mT3, mT4, mT5) ->
-                 mT1.flatMap(t1 ->
-                 mT2.flatMap(t2 ->
-                 mT3.flatMap(t3 ->
-                 mT4.flatMap(t4 ->
-                 mT5.map(t5 -> f.apply(t1, t2, t3, t4, t5))))));
+                mT1.flatMap(t1 ->
+                mT2.flatMap(t2 ->
+                mT3.flatMap(t3 ->
+                mT4.flatMap(t4 ->
+                mT5.map(t5 -> f.apply(t1, t2, t3, t4, t5))))));
     }
 
     /**
@@ -143,12 +147,12 @@ public interface Monad<T> extends Functor<T>, Iterable<T> {
      */
     static <T1, T2, T3, T4, T5, T6, R> Function6<Monad<T1>, Monad<T2>, Monad<T3>, Monad<T4>, Monad<T5>, Monad<T6>, Monad<R>> lift(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
         return (mT1, mT2, mT3, mT4, mT5, mT6) ->
-                 mT1.flatMap(t1 ->
-                 mT2.flatMap(t2 ->
-                 mT3.flatMap(t3 ->
-                 mT4.flatMap(t4 ->
-                 mT5.flatMap(t5 ->
-                 mT6.map(t6 -> f.apply(t1, t2, t3, t4, t5, t6)))))));
+                mT1.flatMap(t1 ->
+                mT2.flatMap(t2 ->
+                mT3.flatMap(t3 ->
+                mT4.flatMap(t4 ->
+                mT5.flatMap(t5 ->
+                mT6.map(t6 -> f.apply(t1, t2, t3, t4, t5, t6)))))));
     }
 
     /**
@@ -167,13 +171,13 @@ public interface Monad<T> extends Functor<T>, Iterable<T> {
      */
     static <T1, T2, T3, T4, T5, T6, T7, R> Function7<Monad<T1>, Monad<T2>, Monad<T3>, Monad<T4>, Monad<T5>, Monad<T6>, Monad<T7>, Monad<R>> lift(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
         return (mT1, mT2, mT3, mT4, mT5, mT6, mT7) ->
-                 mT1.flatMap(t1 ->
-                 mT2.flatMap(t2 ->
-                 mT3.flatMap(t3 ->
-                 mT4.flatMap(t4 ->
-                 mT5.flatMap(t5 ->
-                 mT6.flatMap(t6 ->
-                 mT7.map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7))))))));
+                mT1.flatMap(t1 ->
+                mT2.flatMap(t2 ->
+                mT3.flatMap(t3 ->
+                mT4.flatMap(t4 ->
+                mT5.flatMap(t5 ->
+                mT6.flatMap(t6 ->
+                mT7.map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7))))))));
     }
 
     /**
@@ -193,14 +197,14 @@ public interface Monad<T> extends Functor<T>, Iterable<T> {
      */
     static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<Monad<T1>, Monad<T2>, Monad<T3>, Monad<T4>, Monad<T5>, Monad<T6>, Monad<T7>, Monad<T8>, Monad<R>> lift(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
         return (mT1, mT2, mT3, mT4, mT5, mT6, mT7, mT8) ->
-                 mT1.flatMap(t1 ->
-                 mT2.flatMap(t2 ->
-                 mT3.flatMap(t3 ->
-                 mT4.flatMap(t4 ->
-                 mT5.flatMap(t5 ->
-                 mT6.flatMap(t6 ->
-                 mT7.flatMap(t7 ->
-                 mT8.map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8)))))))));
+                mT1.flatMap(t1 ->
+                mT2.flatMap(t2 ->
+                mT3.flatMap(t3 ->
+                mT4.flatMap(t4 ->
+                mT5.flatMap(t5 ->
+                mT6.flatMap(t6 ->
+                mT7.flatMap(t7 ->
+                mT8.map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8)))))))));
     }
 
     /**
@@ -265,5 +269,178 @@ public interface Monad<T> extends Functor<T>, Iterable<T> {
      */
     @Override
     <U> Monad<U> map(Function<? super T, ? extends U> mapper);
+
+}
+
+/**
+ * Conversion methods.
+ *
+ * @param <T> Component type.
+ */
+interface Convertible<T> {
+
+    /**
+     * Converts this value to a {@link Array}.
+     *
+     * @return A new {@link Array}.
+     */
+    Array<T> toArray();
+
+    /**
+     * Converts this value to a {@link CharSeq}.
+     *
+     * @return A new {@link CharSeq}.
+     */
+    CharSeq toCharSeq();
+
+    /**
+     * Converts this value to an untyped Java array.
+     *
+     * @return A new Java array.
+     */
+    default Object[] toJavaArray() {
+        return toJavaList().toArray();
+    }
+
+    /**
+     * Converts this value to a typed Java array.
+     *
+     * @param componentType Component type of the array
+     * @return A new Java array.
+     * @throws NullPointerException if componentType is null
+     */
+    T[] toJavaArray(Class<T> componentType);
+
+    /**
+     * Converts this value to an {@link java.util.List}.
+     *
+     * @return A new {@link java.util.ArrayList}.
+     */
+    java.util.List<T> toJavaList();
+
+    /**
+     * Converts this value to a {@link java.util.Map}.
+     *
+     * @param f   A function that maps an element to a key/value pair represented by Tuple2
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new {@link java.util.HashMap}.
+     */
+    <K, V> java.util.Map<K, V> toJavaMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f);
+
+    /**
+     * Converts this value to an {@link java.util.Optional}.
+     *
+     * @return A new {@link java.util.Optional}.
+     */
+    java.util.Optional<T> toJavaOptional();
+
+    /**
+     * Converts this value to a {@link java.util.Set}.
+     *
+     * @return A new {@link java.util.HashSet}.
+     */
+    java.util.Set<T> toJavaSet();
+
+    /**
+     * Converts this value to a {@link java.util.stream.Stream}.
+     *
+     * @return A new {@link java.util.stream.Stream}.
+     */
+    java.util.stream.Stream<T> toJavaStream();
+
+    /**
+     * Converts this value to a {@link Lazy}.
+     *
+     * @return A new {@link Lazy}.
+     */
+    Lazy<T> toLazy();
+
+    /**
+     * Converts this value to a {@link List}.
+     *
+     * @return A new {@link List}.
+     */
+    List<T> toList();
+
+    /**
+     * Converts this value to a {@link Map}.
+     *
+     * @param mapper A function that maps an element to a key/value pair represented by Tuple2
+     * @param <K>    The key type
+     * @param <V>    The value type
+     * @return A new {@link HashMap}.
+     */
+    <K, V> Map<K, V> toMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> mapper);
+
+    /**
+     * Converts this value to an {@link Option}.
+     *
+     * @return A new {@link Option}.
+     */
+    Option<T> toOption();
+
+    /**
+     * Converts this value to a {@link Queue}.
+     *
+     * @return A new {@link Queue}.
+     */
+    Queue<T> toQueue();
+
+    /**
+     * Converts this value to a {@link Set}.
+     *
+     * @return A new {@link HashSet}.
+     */
+    Set<T> toSet();
+
+    /**
+     * Converts this value to a {@link Stack}.
+     *
+     * @return A new {@link List}, which is a {@link Stack}.
+     */
+    Stack<T> toStack();
+
+    /**
+     * Converts this value to a {@link Stream}.
+     *
+     * @return A new {@link Stream}.
+     */
+    Stream<T> toStream();
+
+    /**
+     * Converts this value to a {@link Try}.
+     * <p>
+     * If this value is undefined, i.e. empty, then a new {@code Failure(NoSuchElementException)} is returned,
+     * otherwise a new {@code Success(value)} is returned.
+     *
+     * @return A new {@link Try}.
+     */
+    Try<T> toTry();
+
+    /**
+     * Converts this value to a {@link Try}.
+     * <p>
+     * If this value is undefined, i.e. empty, then a new {@code Failure(ifEmpty.get())} is returned,
+     * otherwise a new {@code Success(value)} is returned.
+     *
+     * @param ifEmpty an exception supplier
+     * @return A new {@link Try}.
+     */
+    Try<T> toTry(Supplier<? extends Throwable> ifEmpty);
+
+    /**
+     * Converts this value to a {@link Tree}.
+     *
+     * @return A new {@link Tree}.
+     */
+    Tree<T> toTree();
+
+    /**
+     * Converts this value to a {@link Vector}.
+     *
+     * @return A new {@link Vector}.
+     */
+    Vector<T> toVector();
 
 }

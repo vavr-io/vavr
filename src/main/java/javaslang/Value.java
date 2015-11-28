@@ -49,45 +49,11 @@ import java.util.stream.StreamSupport;
  * <li>{@link #orElseThrow(Supplier)}</li>
  * </ul>
  *
- * Conversions:
- *
- * <ul>
- * <li>{@link #toArray()}</li>
- * <li>{@link #toCharSeq()}</li>
- * <li>{@link #toJavaArray()}</li>
- * <li>{@link #toJavaArray(Class)}</li>
- * <li>{@link #toJavaList()}</li>
- * <li>{@link #toJavaMap(Function)}</li>
- * <li>{@link #toJavaOptional()}</li>
- * <li>{@link #toJavaSet()}</li>
- * <li>{@link #toJavaStream()}</li>
- * <li>{@link #toLazy()}</li>
- * <li>{@link #toList()}</li>
- * <li>{@link #toMap(Function)}</li>
- * <li>{@link #toOption()}</li>
- * <li>{@link #toQueue()}</li>
- * <li>{@link #toSet()}</li>
- * <li>{@link #toStack()}</li>
- * <li>{@link #toStream()}</li>
- * <li>{@link #toTree()}</li>
- * <li>{@link #toTry()}</li>
- * <li>{@link #toTry(Supplier)}</li>
- * <li>{@link #toVector()}</li>
- * </ul>
- *
  * Equality checks:
  *
  * <ul>
  * <li>{@link #corresponds(java.lang.Iterable, BiPredicate)}</li>
  * <li>{@link #eq(Object)}</li>
- * </ul>
- *
- * Filter-monadic operations:
- *
- * <ul>
- * <li>{@link #filter(Predicate)}</li>
- * <li>{@link #flatMap(Function)}</li>
- * <li>{@link #map(Function)}</li>
  * </ul>
  *
  * Side-effects:
@@ -110,7 +76,7 @@ import java.util.stream.StreamSupport;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Value<T> extends javaslang.Iterable<T>, Convertible<T>, Foldable<T>, Monad<T>, Printable {
+public interface Value<T> extends javaslang.Iterable<T>, Foldable<T>, Monad<T>, Printable {
 
     /**
      * Gets the first value of the given Iterable if exists, otherwise throws.
@@ -533,179 +499,6 @@ interface ValueModule {
         }
         return empty;
     }
-}
-
-/**
- * Conversion methods.
- *
- * @param <T> Component type.
- */
-interface Convertible<T> {
-
-    /**
-     * Converts this value to a {@link Array}.
-     *
-     * @return A new {@link Array}.
-     */
-    Array<T> toArray();
-
-    /**
-     * Converts this value to a {@link CharSeq}.
-     *
-     * @return A new {@link CharSeq}.
-     */
-    CharSeq toCharSeq();
-
-    /**
-     * Converts this value to an untyped Java array.
-     *
-     * @return A new Java array.
-     */
-    default Object[] toJavaArray() {
-        return toJavaList().toArray();
-    }
-
-    /**
-     * Converts this value to a typed Java array.
-     *
-     * @param componentType Component type of the array
-     * @return A new Java array.
-     * @throws NullPointerException if componentType is null
-     */
-    T[] toJavaArray(Class<T> componentType);
-
-    /**
-     * Converts this value to an {@link java.util.List}.
-     *
-     * @return A new {@link java.util.ArrayList}.
-     */
-    java.util.List<T> toJavaList();
-
-    /**
-     * Converts this value to a {@link java.util.Map}.
-     *
-     * @param f   A function that maps an element to a key/value pair represented by Tuple2
-     * @param <K> The key type
-     * @param <V> The value type
-     * @return A new {@link java.util.HashMap}.
-     */
-    <K, V> java.util.Map<K, V> toJavaMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f);
-
-    /**
-     * Converts this value to an {@link java.util.Optional}.
-     *
-     * @return A new {@link java.util.Optional}.
-     */
-    Optional<T> toJavaOptional();
-
-    /**
-     * Converts this value to a {@link java.util.Set}.
-     *
-     * @return A new {@link java.util.HashSet}.
-     */
-    java.util.Set<T> toJavaSet();
-
-    /**
-     * Converts this value to a {@link java.util.stream.Stream}.
-     *
-     * @return A new {@link java.util.stream.Stream}.
-     */
-    java.util.stream.Stream<T> toJavaStream();
-
-    /**
-     * Converts this value to a {@link Lazy}.
-     *
-     * @return A new {@link Lazy}.
-     */
-    Lazy<T> toLazy();
-
-    /**
-     * Converts this value to a {@link List}.
-     *
-     * @return A new {@link List}.
-     */
-    List<T> toList();
-
-    /**
-     * Converts this value to a {@link Map}.
-     *
-     * @param mapper A function that maps an element to a key/value pair represented by Tuple2
-     * @param <K>    The key type
-     * @param <V>    The value type
-     * @return A new {@link HashMap}.
-     */
-    <K, V> Map<K, V> toMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> mapper);
-
-    /**
-     * Converts this value to an {@link Option}.
-     *
-     * @return A new {@link Option}.
-     */
-    Option<T> toOption();
-
-    /**
-     * Converts this value to a {@link Queue}.
-     *
-     * @return A new {@link Queue}.
-     */
-    Queue<T> toQueue();
-
-    /**
-     * Converts this value to a {@link Set}.
-     *
-     * @return A new {@link HashSet}.
-     */
-    Set<T> toSet();
-
-    /**
-     * Converts this value to a {@link Stack}.
-     *
-     * @return A new {@link List}, which is a {@link Stack}.
-     */
-    Stack<T> toStack();
-
-    /**
-     * Converts this value to a {@link Stream}.
-     *
-     * @return A new {@link Stream}.
-     */
-    Stream<T> toStream();
-
-    /**
-     * Converts this value to a {@link Try}.
-     * <p>
-     * If this value is undefined, i.e. empty, then a new {@code Failure(NoSuchElementException)} is returned,
-     * otherwise a new {@code Success(value)} is returned.
-     *
-     * @return A new {@link Try}.
-     */
-    Try<T> toTry();
-
-    /**
-     * Converts this value to a {@link Try}.
-     * <p>
-     * If this value is undefined, i.e. empty, then a new {@code Failure(ifEmpty.get())} is returned,
-     * otherwise a new {@code Success(value)} is returned.
-     *
-     * @param ifEmpty an exception supplier
-     * @return A new {@link Try}.
-     */
-    Try<T> toTry(Supplier<? extends Throwable> ifEmpty);
-
-    /**
-     * Converts this value to a {@link Tree}.
-     *
-     * @return A new {@link Tree}.
-     */
-    Tree<T> toTree();
-
-    /**
-     * Converts this value to a {@link Vector}.
-     *
-     * @return A new {@link Vector}.
-     */
-    Vector<T> toVector();
-
 }
 
 /**
