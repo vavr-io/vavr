@@ -57,7 +57,7 @@ def generateMainClasses(): Unit = {
       val SetType = im.getType("javaslang.collection.Set")
       val StackType = im.getType("javaslang.collection.Stack")
       val StreamType = im.getType("javaslang.collection.Stream")
-      val SupplierType = im.getType("java.util.function.Supplier");
+      val SupplierType = im.getType("java.util.function.Supplier")
       val TreeType = im.getType("javaslang.collection.Tree")
       val TryType = im.getType("javaslang.control.Try")
       val VectorType = im.getType("javaslang.collection.Vector")
@@ -114,11 +114,15 @@ def generateMainClasses(): Unit = {
                  * @return a new Function$i that lifts the given function f in a layer that operates on monads.
                  */
                 static <$genericsT, R> Function$i<$genericsM, Monad<R>> lift($function<$genericsF, ? extends R> f) {
-                    return ${if (i == 1) "mT -> mT.map(f::apply)" else
-                      xs""" (${(1 to i).gen(j => s"mT$j")(", ")}) ->
-                                   ${(1 to i - 1).gen(j => s"mT$j.flatMap(t$j ->")("\n")}
-                                   mT$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")})${")" * i}
-                      """};
+                    ${if (i == 1) {
+                      "return mT -> mT.map(f::apply);"
+                    } else {
+                      xs"""
+                        return (${(1 to i).gen(j => s"mT$j")(", ")}) ->
+                                ${(1 to i - 1).gen(j => s"mT$j.flatMap(t$j ->")("\n")}
+                                mT$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")})${")" * i};
+                      """
+                    }}
                 }
               """
             })("\n\n")}

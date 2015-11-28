@@ -71,8 +71,8 @@ public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
      */
     static <T1, T2, R> Function2<Monad<T1>, Monad<T2>, Monad<R>> lift(BiFunction<? super T1, ? super T2, ? extends R> f) {
         return (mT1, mT2) ->
-                       mT1.flatMap(t1 ->
-                       mT2.map(t2 -> f.apply(t1, t2)));
+                mT1.flatMap(t1 ->
+                mT2.map(t2 -> f.apply(t1, t2)));
     }
 
     /**
@@ -87,9 +87,9 @@ public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
      */
     static <T1, T2, T3, R> Function3<Monad<T1>, Monad<T2>, Monad<T3>, Monad<R>> lift(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
         return (mT1, mT2, mT3) ->
-                       mT1.flatMap(t1 ->
-                       mT2.flatMap(t2 ->
-                       mT3.map(t3 -> f.apply(t1, t2, t3))));
+                mT1.flatMap(t1 ->
+                mT2.flatMap(t2 ->
+                mT3.map(t3 -> f.apply(t1, t2, t3))));
     }
 
     /**
@@ -105,10 +105,10 @@ public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
      */
     static <T1, T2, T3, T4, R> Function4<Monad<T1>, Monad<T2>, Monad<T3>, Monad<T4>, Monad<R>> lift(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
         return (mT1, mT2, mT3, mT4) ->
-                       mT1.flatMap(t1 ->
-                       mT2.flatMap(t2 ->
-                       mT3.flatMap(t3 ->
-                       mT4.map(t4 -> f.apply(t1, t2, t3, t4)))));
+                mT1.flatMap(t1 ->
+                mT2.flatMap(t2 ->
+                mT3.flatMap(t3 ->
+                mT4.map(t4 -> f.apply(t1, t2, t3, t4)))));
     }
 
     /**
@@ -125,11 +125,11 @@ public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
      */
     static <T1, T2, T3, T4, T5, R> Function5<Monad<T1>, Monad<T2>, Monad<T3>, Monad<T4>, Monad<T5>, Monad<R>> lift(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
         return (mT1, mT2, mT3, mT4, mT5) ->
-                       mT1.flatMap(t1 ->
-                       mT2.flatMap(t2 ->
-                       mT3.flatMap(t3 ->
-                       mT4.flatMap(t4 ->
-                       mT5.map(t5 -> f.apply(t1, t2, t3, t4, t5))))));
+                mT1.flatMap(t1 ->
+                mT2.flatMap(t2 ->
+                mT3.flatMap(t3 ->
+                mT4.flatMap(t4 ->
+                mT5.map(t5 -> f.apply(t1, t2, t3, t4, t5))))));
     }
 
     /**
@@ -147,12 +147,12 @@ public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
      */
     static <T1, T2, T3, T4, T5, T6, R> Function6<Monad<T1>, Monad<T2>, Monad<T3>, Monad<T4>, Monad<T5>, Monad<T6>, Monad<R>> lift(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
         return (mT1, mT2, mT3, mT4, mT5, mT6) ->
-                       mT1.flatMap(t1 ->
-                       mT2.flatMap(t2 ->
-                       mT3.flatMap(t3 ->
-                       mT4.flatMap(t4 ->
-                       mT5.flatMap(t5 ->
-                       mT6.map(t6 -> f.apply(t1, t2, t3, t4, t5, t6)))))));
+                mT1.flatMap(t1 ->
+                mT2.flatMap(t2 ->
+                mT3.flatMap(t3 ->
+                mT4.flatMap(t4 ->
+                mT5.flatMap(t5 ->
+                mT6.map(t6 -> f.apply(t1, t2, t3, t4, t5, t6)))))));
     }
 
     /**
@@ -171,13 +171,13 @@ public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
      */
     static <T1, T2, T3, T4, T5, T6, T7, R> Function7<Monad<T1>, Monad<T2>, Monad<T3>, Monad<T4>, Monad<T5>, Monad<T6>, Monad<T7>, Monad<R>> lift(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
         return (mT1, mT2, mT3, mT4, mT5, mT6, mT7) ->
-                       mT1.flatMap(t1 ->
-                       mT2.flatMap(t2 ->
-                       mT3.flatMap(t3 ->
-                       mT4.flatMap(t4 ->
-                       mT5.flatMap(t5 ->
-                       mT6.flatMap(t6 ->
-                       mT7.map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7))))))));
+                mT1.flatMap(t1 ->
+                mT2.flatMap(t2 ->
+                mT3.flatMap(t3 ->
+                mT4.flatMap(t4 ->
+                mT5.flatMap(t5 ->
+                mT6.flatMap(t6 ->
+                mT7.map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7))))))));
     }
 
     /**
@@ -197,14 +197,14 @@ public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
      */
     static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<Monad<T1>, Monad<T2>, Monad<T3>, Monad<T4>, Monad<T5>, Monad<T6>, Monad<T7>, Monad<T8>, Monad<R>> lift(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
         return (mT1, mT2, mT3, mT4, mT5, mT6, mT7, mT8) ->
-                       mT1.flatMap(t1 ->
-                       mT2.flatMap(t2 ->
-                       mT3.flatMap(t3 ->
-                       mT4.flatMap(t4 ->
-                       mT5.flatMap(t5 ->
-                       mT6.flatMap(t6 ->
-                       mT7.flatMap(t7 ->
-                       mT8.map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8)))))))));
+                mT1.flatMap(t1 ->
+                mT2.flatMap(t2 ->
+                mT3.flatMap(t3 ->
+                mT4.flatMap(t4 ->
+                mT5.flatMap(t5 ->
+                mT6.flatMap(t6 ->
+                mT7.flatMap(t7 ->
+                mT8.map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8)))))))));
     }
 
     /**
