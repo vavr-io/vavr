@@ -66,7 +66,7 @@ interface HashArrayMappedTrieModule {
         private static final int M2 = 0x33333333;
         private static final int M4 = 0x0f0f0f0f;
 
-        int bitCount(int x) {
+        static int bitCount(int x) {
             x = x - ((x >> 1) & M1);
             x = (x & M2) + ((x >> 2) & M2);
             x = (x + (x >> 4)) & M4;
@@ -75,15 +75,15 @@ interface HashArrayMappedTrieModule {
             return x & 0x7f;
         }
 
-        int hashFragment(int shift, int hash) {
+        static int hashFragment(int shift, int hash) {
             return (hash >>> shift) & (BUCKET_SIZE - 1);
         }
 
-        int toBitmap(int hash) {
+        static int toBitmap(int hash) {
             return 1 << hash;
         }
 
-        int fromBitmap(int bitmap, int bit) {
+        static int fromBitmap(int bitmap, int bit) {
             return bitCount(bitmap & (bit - 1));
         }
 
@@ -167,7 +167,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
-            return value.isEmpty() ? this : new LeafNode<>(Objects.hashCode(key), key, value.get());
+            return value.isEmpty() ? this : new LeafSingleton<>(Objects.hashCode(key), key, value.get());
         }
 
         @Override
@@ -212,69 +212,28 @@ interface HashArrayMappedTrieModule {
      * @param <K> Key type
      * @param <V> Value type
      */
-    final class LeafNode<K, V> extends AbstractNode<K, V> implements Serializable {
+    abstract class LeafNode<K, V> extends AbstractNode<K, V> {
 
-        private static final long serialVersionUID = 1L;
+        abstract AbstractNode<K, V> removeElement(K key);
+        abstract int hash();
+        abstract K key();
+        abstract V value();
 
-        private final int hash;
-        private final int size;
-        private final List<Tuple2<K, V>> entries;
-
-        LeafNode(int hash, K key, V value) {
-            this(hash, 1, List.of(Tuple.of(key, value)));
-        }
-
-        private LeafNode(int hash, int size, List<Tuple2<K, V>> entries) {
-            this.hash = hash;
-            this.size = size;
-            this.entries = entries;
-        }
-
-        private AbstractNode<K, V> update(K key, Option<V> value) {
-            List<Tuple2<K, V>> filtered = entries.removeFirst(t -> t._1.equals(key));
-            if (value.isEmpty()) {
-                return filtered.isEmpty() ? EmptyNode.instance() : new LeafNode<>(hash, filtered.length(), filtered);
-            } else {
-                return new LeafNode<>(hash, filtered.length() + 1, filtered.prepend(Tuple.of(key, value.get())));
-            }
-        }
-
-        @Override
-        Option<V> lookup(int shift, K key) {
-            if (hash != key.hashCode()) {
-                return None.instance();
-            }
-            return entries.findFirst(t -> t._1.equals(key)).map(t -> t._2);
-        }
-
-        @Override
-        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
-            if (key.hashCode() == hash) {
-                return update(key, value);
-            } else {
-                return value.isEmpty() ? this : mergeLeaves(shift, new LeafNode<>(key.hashCode(), key, value.get()));
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            return entries.hashCode();
-        }
-
-        private AbstractNode<K, V> mergeLeaves(int shift, LeafNode<K, V> other) {
-            final int h1 = this.hash;
-            final int h2 = other.hash;
+        static <K, V> AbstractNode<K, V> mergeLeaves(int shift, LeafNode<K, V> leaf1, LeafSingleton<K, V> leaf2) {
+            final int h1 = leaf1.hash();
+            final int h2 = leaf2.hash();
             if (h1 == h2) {
-                return new LeafNode<>(h1, size + other.size, other.entries.foldLeft(entries, List::prepend));
+                return new LeafList<>(h1, leaf2.key(), leaf2.value(), leaf1);
             }
             final int subH1 = hashFragment(shift, h1);
             final int subH2 = hashFragment(shift, h2);
             final int newBitmap = toBitmap(subH1) | toBitmap(subH2);
             if (subH1 == subH2) {
-                AbstractNode<K, V> newLeaves = mergeLeaves(shift + SIZE, other);
+                AbstractNode<K, V> newLeaves = mergeLeaves(shift + SIZE, leaf1, leaf2);
                 return new IndexedNode<>(newBitmap, newLeaves.size(), List.of(newLeaves));
             } else {
-                return new IndexedNode<>(newBitmap, size + other.size, subH1 < subH2 ? List.ofAll(this, other) : List.ofAll(other, this));
+                return new IndexedNode<>(newBitmap, leaf1.size() + leaf2.size(),
+                        subH1 < subH2 ? List.ofAll(leaf1, leaf2) : List.ofAll(leaf2, leaf1));
             }
         }
 
@@ -287,6 +246,152 @@ interface HashArrayMappedTrieModule {
         public boolean isEmpty() {
             return false;
         }
+    }
+
+    /**
+     * Representation of a HAMT leaf node with single element.
+     *
+     * @param <K> Key type
+     * @param <V> Value type
+     */
+    final class LeafSingleton<K, V> extends LeafNode<K, V> implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final int hash;
+        private final K key;
+        private final V value;
+        private final Lazy<Integer> hashCode;
+
+        LeafSingleton(int hash, K key, V value) {
+            this.hash = hash;
+            this.key = key;
+            this.value = value;
+            this.hashCode = Lazy.of(() -> Objects.hash(key, value));
+        }
+
+        @Override
+        Option<V> lookup(int shift, K key) {
+            if (key.equals(this.key)) {
+                return Option.of(value);
+            } else {
+                return None.instance();
+            }
+        }
+
+        @Override
+        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
+            if (key.equals(this.key)) {
+                return value.isEmpty() ? EmptyNode.instance() : new LeafSingleton<>(hash, key, value.get());
+            } else {
+                return value.isEmpty() ? this : mergeLeaves(shift, this, new LeafSingleton<>(key.hashCode(), key, value.get()));
+            }
+        }
+
+        @Override
+        public int size() {
+            return 1;
+        }
+
+        @Override
+        public Iterator<Tuple2<K, V>> iterator() {
+            Tuple2<K, V> tuple = Tuple.of(key, value);
+            return Iterator.of(tuple);
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode.get();
+        }
+
+        @Override
+        AbstractNode<K, V> removeElement(K key) {
+            return key.equals(this.key) ? EmptyNode.instance() : this;
+        }
+
+        @Override
+        int hash() {
+            return hash;
+        }
+
+        @Override
+        K key() {
+            return key;
+        }
+
+        @Override
+        V value() {
+            return value;
+        }
+    }
+
+    /**
+     * Representation of a HAMT leaf node with more than one element.
+     *
+     * @param <K> Key type
+     * @param <V> Value type
+     */
+    final class LeafList<K, V> extends LeafNode<K, V> implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final int hash;
+        private final K key;
+        private final V value;
+        private final int size;
+        private final LeafNode<K, V> tail;
+        private final Lazy<Integer> hashCode;
+
+        LeafList(int hash, K key, V value, LeafNode<K, V> tail) {
+            this.hash = hash;
+            this.key = key;
+            this.value = value;
+            this.size = 1 + tail.size();
+            this.tail = tail;
+            this.hashCode = Lazy.of(() -> Objects.hash(key, value, tail));
+        }
+
+        @Override
+        Option<V> lookup(int shift, K key) {
+            if (hash != key.hashCode()) {
+                return None.instance();
+            }
+            return iterator().findFirst(t -> t._1.equals(key)).map(t -> t._2);
+        }
+
+        @Override
+        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
+            if (key.hashCode() == hash) {
+                AbstractNode<K, V> filtered = removeElement(key);
+                if(value.isEmpty()) {
+                    return filtered;
+                } else {
+                    if (filtered.isEmpty()) {
+                        return new LeafSingleton<>(hash, key, value.get());
+                    } else {
+                        return new LeafList<>(hash, key, value.get(), (LeafNode<K, V>) filtered);
+                    }
+                }
+            } else {
+                return value.isEmpty() ? this : mergeLeaves(shift, this, new LeafSingleton<>(key.hashCode(), key, value.get()));
+            }
+        }
+
+        @Override
+        AbstractNode<K, V> removeElement(K k) {
+            if(k.equals(this.key)) {
+                return tail;
+            } else {
+                // recurrent calls is OK but can be improved
+                AbstractNode<K, V> newTail = tail.removeElement(k);
+                return newTail.isEmpty() ? new LeafSingleton<>(hash, key, value) : new LeafList<>(hash, key, value, (LeafNode<K, V>) newTail);
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode.get();
+        }
 
         @Override
         public int size() {
@@ -295,7 +400,43 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            return entries.iterator();
+            return new AbstractIterator<Tuple2<K,V>>() {
+                LeafNode<K, V> node = LeafList.this;
+
+                @Override
+                public boolean hasNext() {
+                    return node != null;
+                }
+
+                @Override
+                public Tuple2<K, V> next() {
+                    if (!hasNext()) {
+                        EMPTY.next();
+                    }
+                    Tuple2<K,V> tuple = Tuple.of(node.key(), node.value());
+                    if(node instanceof LeafSingleton) {
+                        node = null;
+                    } else {
+                        node = ((LeafList<K, V>) node).tail;
+                    }
+                    return tuple;
+                }
+            };
+        }
+
+        @Override
+        int hash() {
+            return hash;
+        }
+
+        @Override
+        K key() {
+            return key;
+        }
+
+        @Override
+        V value() {
+            return value;
         }
     }
 
