@@ -32,8 +32,144 @@ def generateMainClasses(): Unit = {
   val javadoc = "**"
 
   genFunctions()
+  genMonad()
   genPropertyChecks()
   genTuples()
+
+  /**
+    * Generator of javaslang.algebra.Monad
+    */
+  def genMonad() : Unit = {
+
+    genJavaslangFile("javaslang.algebra", "Monad")(genMonad)
+
+    def genMonad(im: ImportManager, packageName: String, className: String): String = xs"""
+      /**
+       * Defines a Monad by generalizing the flatMap function.
+       * <p>
+       * A {@code Monad} is a {@link Functor} with a {@code flatMap} method that satisfies the Monad laws, also known
+       * as the three control laws:
+       * <p>
+       * Let
+       * <ul>
+       * <li>{@code A}, {@code B}, {@code C} be types</li>
+       * <li>{@code unit: A -> Monad<A>} a constructor</li>
+       * <li>{@code f: A -> Monad<B>}, {@code g: B -> Monad<C>} functions</li>
+       * <li>{@code a} be an object of type {@code A}</li>
+       * <li>{@code m} be an object of type {@code Monad<A>}</li>
+       * </ul>
+       * Then all instances of the {@code Monad} interface should obey the three control laws:
+       * <ul>
+       * <li><strong>Left identity:</strong> {@code unit(a).flatMap(f) ≡ f a}</li>
+       * <li><strong>Right identity:</strong> {@code m.flatMap(unit) ≡ m}</li>
+       * <li><strong>Associativity:</strong> {@code m.flatMap(f).flatMap(g) ≡ m.flatMap(x -> f.apply(x).flatMap(g))}</li>
+       * </ul>
+       *
+       * To read further about monads in Java please refer to
+       * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
+       *
+       * @param <T> component type of this monad
+       * @author Daniel Dietrich
+       * @since 1.1.0
+       */
+      public interface Monad<T> extends Functor<T>, Iterable<T> {
+
+          ${(1 to N).gen(i => {
+
+            val genericsF = if (i == 1) "? super T"        else (1 to i).gen(j => s"? super T$j")(", ")
+            val genericsT = if (i == 1) "T"                else (1 to i).gen(j => s"T$j")(", ")
+            val genericsM = if (i == 1) "? super Monad<T>" else (1 to i).gen(j => s"Monad<T$j>")(", ")
+            val function = i match {
+              case 1 => im.getType("java.util.function.Function")
+              case 2 => im.getType("java.util.function.BiFunction")
+              case _ => im.getType(s"javaslang.Function$i")
+            }
+
+            xs"""
+              /$javadoc
+               * Lifts a {@code $function} to a higher {@code Function$i} that operates on Monads.
+               *
+               ${(1 to i).gen(j => s"* @param <${if (i == 1) "T" else s"T$j"}> ${j.ordinal} argument type of f")("\n")}
+               * @param <R> result type of f
+               * @param f a $function
+               * @return a new Function$i that lifts the given function f in a layer that operates on monads.
+               */
+              static <$genericsT, R> Function$i<$genericsM, Monad<R>> lift($function<$genericsF, ? extends R> f) {
+                  return ${if (i == 1) "mT -> mT.map(f::apply)" else
+                  xs""" (${(1 to i).gen(j => s"mT$j")(", ")}) ->
+                           ${(1 to i - 1).gen(j => s"mT$j.flatMap(t$j ->")("\n")}
+                           mT$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")})${")" * i}
+                  """};
+              }
+            """
+          })("\n\n")}
+
+          /**
+           * Filters this {@code Monad} by testing a predicate.
+           * <p>
+           * The semantics may vary from class to class, e.g. for single-valued type (like Option) and multi-values types
+           * (like Traversable). The commonality is, that filtered.isEmpty() will return true, if no element satisfied
+           * the given predicate.
+           * <p>
+           * Also, an implementation may throw {@code NoSuchElementException}, if no element makes it through the filter
+           * and this state cannot be reflected. E.g. this is the case for {@link javaslang.control.Either.LeftProjection} and
+           * {@link javaslang.control.Either.RightProjection}.
+           *
+           * @param predicate A predicate
+           * @return a new Monad instance
+           * @throws NullPointerException if {@code predicate} is null
+           */
+          Monad<T> filter(${im.getType("java.util.function.Predicate")}<? super T> predicate);
+
+          /**
+           * FlatMaps this value to a new value with different component type.
+           * <p>
+           * FlatMap is the sequence operation for functions and behaves like the imperative {@code ;}.
+           * <p>
+           * If the previous results are needed, flatMap cascades:
+           * <pre>
+           * <code>
+           * m1().flatMap(result1 -&gt;
+           *      m2(result1).flatMap(result2 -&gt;
+           *          m3(result1, result2).flatMap(result3 -&gt;
+           *              ...
+           *          )
+           *      )
+           * );
+           * </code>
+           * </pre>
+           * If only the last result is needed, flatMap may be used sequentially:
+           * <pre>
+           * <code>
+           * m1().flatMap(this::m2)
+           *     .flatMap(this::m3)
+           *     .flatMap(...);
+           * </code>
+           * </pre>
+           *
+           * @param mapper A mapper
+           * @param <U>    Component type of the mapped {@code Monad}
+           * @return a mapped {@code Monad}
+           * @throws NullPointerException if {@code mapper} is null
+           */
+          <U> Monad<U> flatMap(${im.getType("java.util.function.Function")}<? super T, ? extends Iterable<? extends U>> mapper);
+
+          // -- adjusting return types of super interface methods
+
+          /**
+           * Maps this value to a new value with different component type.
+           *
+           * @param mapper A mapper
+           * @param <U>    Component type of the mapped {@code Monad}
+           * @return a mapped {@code Monad}
+           * @throws NullPointerException if {@code mapper} is null
+           */
+          @Override
+          <U> Monad<U> map(${im.getType("java.util.function.Function")}<? super T, ? extends U> mapper);
+
+      }
+    """
+  }
 
   /**
    * Generator of javaslang.test.Property
