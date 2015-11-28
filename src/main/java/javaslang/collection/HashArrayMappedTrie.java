@@ -11,11 +11,13 @@ import javaslang.Tuple2;
 import javaslang.collection.HashArrayMappedTrieModule.EmptyNode;
 import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
+
+import static javaslang.collection.HashArrayMappedTrieModule.Action.PUT;
+import static javaslang.collection.HashArrayMappedTrieModule.Action.REMOVE;
 
 /**
  * An immutable <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
@@ -48,6 +50,10 @@ interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, V>> {
 }
 
 interface HashArrayMappedTrieModule {
+
+    enum Action {
+        PUT, REMOVE
+    }
 
     /**
      * An abstract base class for nodes of a HAMT.
@@ -91,7 +97,7 @@ interface HashArrayMappedTrieModule {
 
         abstract Option<V> lookup(int shift, K key);
 
-        abstract AbstractNode<K, V> modify(int shift, K key, Option<V> value);
+        abstract AbstractNode<K, V> modify(int shift, K key, V value, Action action);
 
         @Override
         public Option<V> get(K key) {
@@ -105,12 +111,12 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public HashArrayMappedTrie<K, V> put(K key, V value) {
-            return modify(0, key, new Some<>(value));
+            return modify(0, key, value, PUT);
         }
 
         @Override
         public HashArrayMappedTrie<K, V> remove(K key) {
-            return modify(0, key, None.instance());
+            return modify(0, key, null, REMOVE);
         }
 
         @Override
@@ -166,8 +172,8 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
-            return value.isEmpty() ? this : new LeafSingleton<>(Objects.hashCode(key), key, value.get());
+        AbstractNode<K, V> modify(int shift, K key, V value, Action action) {
+            return (action == REMOVE) ? this : new LeafSingleton<>(Objects.hashCode(key), key, value);
         }
 
         @Override
@@ -214,10 +220,11 @@ interface HashArrayMappedTrieModule {
      */
     abstract class LeafNode<K, V> extends AbstractNode<K, V> {
 
-        abstract AbstractNode<K, V> removeElement(K key);
-        abstract int hash();
         abstract K key();
         abstract V value();
+        abstract int hash();
+
+        abstract AbstractNode<K, V> removeElement(K key);
 
         static <K, V> AbstractNode<K, V> mergeLeaves(int shift, LeafNode<K, V> leaf1, LeafSingleton<K, V> leaf2) {
             final int h1 = leaf1.hash();
@@ -280,11 +287,11 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
+        AbstractNode<K, V> modify(int shift, K key, V value, Action action) {
             if (key.equals(this.key)) {
-                return value.isEmpty() ? EmptyNode.instance() : new LeafSingleton<>(hash, key, value.get());
+                return (action == REMOVE) ? EmptyNode.instance() : new LeafSingleton<>(hash, key, value);
             } else {
-                return value.isEmpty() ? this : mergeLeaves(shift, this, new LeafSingleton<>(key.hashCode(), key, value.get()));
+                return (action == REMOVE) ? this : mergeLeaves(shift, this, new LeafSingleton<>(key.hashCode(), key, value));
             }
         }
 
@@ -360,20 +367,20 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
+        AbstractNode<K, V> modify(int shift, K key, V value, Action action) {
             if (key.hashCode() == hash) {
                 AbstractNode<K, V> filtered = removeElement(key);
-                if(value.isEmpty()) {
+                if(action == REMOVE) {
                     return filtered;
                 } else {
                     if (filtered.isEmpty()) {
-                        return new LeafSingleton<>(hash, key, value.get());
+                        return new LeafSingleton<>(hash, key, value);
                     } else {
-                        return new LeafList<>(hash, key, value.get(), (LeafNode<K, V>) filtered);
+                        return new LeafList<>(hash, key, value, (LeafNode<K, V>) filtered);
                     }
                 }
             } else {
-                return value.isEmpty() ? this : mergeLeaves(shift, this, new LeafSingleton<>(key.hashCode(), key, value.get()));
+                return (action == REMOVE) ? this : mergeLeaves(shift, this, new LeafSingleton<>(key.hashCode(), key, value));
             }
         }
 
@@ -469,15 +476,15 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
+        AbstractNode<K, V> modify(int shift, K key, V value, Action action) {
             final int frag = hashFragment(shift, key.hashCode());
             final int bit = toBitmap(frag);
             final int index = fromBitmap(bitmap, bit);
             final int mask = bitmap;
             final boolean exists = (mask & bit) != 0;
             final AbstractNode<K, V> atIndx = exists ? subNodes.get(index) : null;
-            AbstractNode<K, V> child = exists ? atIndx.modify(shift + SIZE, key, value)
-                    : EmptyNode.<K, V> instance().modify(shift + SIZE, key, value);
+            AbstractNode<K, V> child = exists ? atIndx.modify(shift + SIZE, key, value, action)
+                    : EmptyNode.<K, V> instance().modify(shift + SIZE, key, value, action);
             boolean removed = exists && child.isEmpty();
             boolean added = !exists && !child.isEmpty();
             int newBitmap = removed ? mask & ~bit : added ? mask | bit : mask;
@@ -582,10 +589,10 @@ interface HashArrayMappedTrieModule {
 
         @SuppressWarnings("unchecked")
         @Override
-        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
+        AbstractNode<K, V> modify(int shift, K key, V value, Action action) {
             int frag = hashFragment(shift, key.hashCode());
             AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
-            AbstractNode<K, V> newChild = child.modify(shift + SIZE, key, value);
+            AbstractNode<K, V> newChild = child.modify(shift + SIZE, key, value, action);
             if (child.isEmpty() && !newChild.isEmpty()) {
                 return new ArrayNode<>(count + 1, size + newChild.size(), update(subNodes, frag, newChild));
             } else if (!child.isEmpty() && newChild.isEmpty()) {
