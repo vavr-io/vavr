@@ -33,7 +33,7 @@ import java.util.function.Supplier;
 public interface Option<T> extends Value<T> {
 
     /**
-     * Creates a new Option of a given value.
+     * Creates a new {@code Option} of a given value.
      *
      * @param value A value
      * @param <T>   type of the value
@@ -41,6 +41,25 @@ public interface Option<T> extends Value<T> {
      */
     static <T> Option<T> of(T value) {
         return (value == null) ? None.instance() : new Some<>(value);
+    }
+
+    /**
+     * Creates a new {@code Some} of a given value.
+     * <p>
+     * The only difference to {@link Option#of(Object)} is, when called with argument {@code null}.
+     * <pre>
+     * <code>
+     * Option.of(null);   // = None
+     * Option.some(null); // = Some(null)
+     * </code>
+     * </pre>
+     *
+     * @param value A value
+     * @param <T>   type of the value
+     * @return {@code Some(value)}
+     */
+    static <T> Option<T> some(T value) {
+        return new Some<>(value);
     }
 
     /**
