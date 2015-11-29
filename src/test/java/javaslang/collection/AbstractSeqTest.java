@@ -111,6 +111,13 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     }
 
     @Test
+    public void shouldAppendNullElementToNil() {
+        final Seq<Integer> actual = this.<Integer> empty().append(null);
+        final Seq<Integer> expected = of(null);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldAppendElementToNonNil() {
         final Seq<Integer> actual = ofAll(1, 2).append(3);
         final Seq<Integer> expected = ofAll(1, 2, 3);

@@ -169,7 +169,7 @@ public class VectorTest extends AbstractSeqTest {
 
     @Test
     public void shouldStringifyNonNil() {
-        assertThat(ofAll(1, 2, 3).toString()).isEqualTo("Vector(1, 2, 3)");
+        assertThat(ofAll(null, 1, 2, 3).toString()).isEqualTo("Vector(null, 1, 2, 3)");
     }
 
     // -- Cons test

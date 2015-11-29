@@ -11,6 +11,7 @@ import javaslang.Tuple2;
 import javaslang.collection.HashArrayMappedTrieModule.EmptyNode;
 import javaslang.control.None;
 import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -280,7 +281,7 @@ interface HashArrayMappedTrieModule {
         @Override
         Option<V> lookup(int shift, K key) {
             if (Objects.equals(key, this.key)) {
-                return Option.of(value);
+                return new Some<>(value);
             } else {
                 return None.instance();
             }
