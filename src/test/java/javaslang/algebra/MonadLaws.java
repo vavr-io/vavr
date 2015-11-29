@@ -13,7 +13,7 @@ import javaslang.test.Property;
 import java.util.function.Function;
 
 @SuppressWarnings("Convert2MethodRef")
-public interface MonadLaws<M extends Monad<?> & Iterable<?>> extends FunctorLaws {
+public interface MonadLaws extends FunctorLaws {
 
     void shouldSatisfyMonadLeftIdentity();
 
@@ -29,7 +29,7 @@ public interface MonadLaws<M extends Monad<?> & Iterable<?>> extends FunctorLaws
         return Property.def("monad.left_identity")
                 .forAll(ts, fs)
                 .suchThat((t, f) -> {
-                    final Iterable<U> term1 = (Iterable<U>) unit.apply(t).flatMap((T tt) -> f.apply(tt));
+                    final Iterable<U> term1 = unit.apply(t).flatMap((T tt) -> f.apply(tt));
                     final Iterable<U> term2 = f.apply(t);
                     //check  structural equality
                     return Iterator.ofAll(term1).eq(term2);
@@ -44,7 +44,7 @@ public interface MonadLaws<M extends Monad<?> & Iterable<?>> extends FunctorLaws
         return Property.def("monad.right_identity")
                 .forAll(ms)
                 .suchThat(m -> {
-                    final Monad<T> term = m.flatMap((T t) -> (Iterable<T>) unit.apply(t));
+                    final Monad<T> term = m.flatMap((T t) -> unit.apply(t));
                     return term.equals(m);
                 })
                 .check();
@@ -59,7 +59,7 @@ public interface MonadLaws<M extends Monad<?> & Iterable<?>> extends FunctorLaws
                 .forAll(ms, fs, gs)
                 .suchThat((m, f, g) -> {
                     final Monad<V> term1 = m.flatMap((T t) -> f.apply(t)).flatMap((U u) -> g.apply(u));
-                    final Monad<V> term2 = m.flatMap((T t) -> (Iterable<V>) ((Monad<U>) f.apply(t)).flatMap((U u) -> g.apply(u)));
+                    final Monad<V> term2 = m.flatMap((T t) -> ((Monad<U>) f.apply(t)).flatMap((U u) -> g.apply(u)));
                     return term1.equals(term2);
                 })
                 .check();
