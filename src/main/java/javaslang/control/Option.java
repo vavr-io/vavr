@@ -159,6 +159,16 @@ public interface Option<T> extends Value<T> {
     }
 
     /**
+     * Applies one of given functions depending on whether this object is None or Some
+     *
+     * @param visitNone A function which is applied when this object is None
+     * @param visitSome A function which is applied when this object is Some
+     * @param <U>        The new value type
+     * @return an object of type U returned by visitNone or visitSome
+     */
+    <U> U accept(Supplier<U> visitNone, Function<? super T, ? extends U> visitSome);
+
+    /**
      * Returns {@code Some(value)} if this is a {@code Some} and the value satisfies the given predicate.
      * Otherwise {@code None} is returned.
      *

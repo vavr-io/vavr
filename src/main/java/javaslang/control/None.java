@@ -7,6 +7,8 @@ package javaslang.control;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * None is a singleton representation of the undefined {@link javaslang.control.Option}. The instance is obtained by
@@ -49,6 +51,11 @@ public final class None<T> implements Option<T>, Serializable {
     @Override
     public T get() {
         throw new NoSuchElementException("No value present");
+    }
+
+    @Override
+    public <U> U accept(Supplier<U> visitNone, Function<? super T, ? extends U> visitSome) {
+        return visitNone.get();
     }
 
     @Override

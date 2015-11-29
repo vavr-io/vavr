@@ -123,6 +123,18 @@ public class OptionTest {
         Option.none().orElseThrow(() -> new RuntimeException("none"));
     }
 
+    // -- accept
+
+    @Test
+    public void shouldApplyFirstFunctionWhenValueIsNotPresent() {
+        assertThat(Option.none().accept(() -> "none", v -> "some")).isEqualTo("none");
+    }
+
+    @Test
+    public void shouldApplySecondFunctionWhenValueIsNotPresent() {
+        assertThat(Option.of(1).accept(() -> "none", v -> "some")).isEqualTo("some");
+    }
+
     // -- toJavaOptional
 
     @Test
