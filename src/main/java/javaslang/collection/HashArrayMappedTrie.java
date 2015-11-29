@@ -11,6 +11,7 @@ import javaslang.Tuple2;
 import javaslang.collection.HashArrayMappedTrieModule.EmptyNode;
 import javaslang.control.None;
 import javaslang.control.Option;
+import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -280,7 +281,7 @@ interface HashArrayMappedTrieModule {
         @Override
         Option<V> lookup(int shift, K key) {
             if (Objects.equals(key, this.key)) {
-                return Option.of(value);
+                return new Some<>(value);
             } else {
                 return None.instance();
             }
@@ -469,7 +470,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         Option<V> lookup(int shift, K key) {
-            int h = key.hashCode();
+            int h = Objects.hashCode(key);
             int frag = hashFragment(shift, h);
             int bit = toBitmap(frag);
             return ((bitmap & bit) != 0) ? subNodes.get(fromBitmap(bitmap, bit)).lookup(shift + SIZE, key) : None.instance();
@@ -477,7 +478,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         AbstractNode<K, V> modify(int shift, K key, V value, Action action) {
-            final int frag = hashFragment(shift, key.hashCode());
+            final int frag = hashFragment(shift, Objects.hashCode(key));
             final int bit = toBitmap(frag);
             final int index = fromBitmap(bitmap, bit);
             final int mask = bitmap;
