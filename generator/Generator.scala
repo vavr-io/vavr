@@ -988,14 +988,13 @@ def generateMainClasses(): Unit = {
       val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
       val params = (1 to i).gen(j => s"_$j")(", ")
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
-      val resultType = s"Tuple$i<${(1 to i).gen(j => s"U$j")(", ")}>"
       val resultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j")(", ")}>"
       val flatMapResultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
       val comparableGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j extends Comparable<? super U$j>")(", ")}>"
       val untyped = if (i == 0) "" else s"<${(1 to i).gen(j => "?")(", ")}>"
-      val Function = im.getType("java.util.function.Function")
       val functionType = i match {
-        case 1 => Function
+        case 0 => im.getType("java.util.function.Supplier")
+        case 1 => im.getType("java.util.function.Function")
         case 2 => im.getType("java.util.function.BiFunction")
         case _ => s"Function$i"
       }
@@ -1124,7 +1123,7 @@ def generateMainClasses(): Unit = {
             """)}
 
             ${(i > 0).gen(xs"""
-              public $resultGenerics $className$resultGenerics map(${(1 to i).gen(j => s"$Function<? super T$j, ? extends U$j> f$j")(", ")}) {
+              public $resultGenerics $className$resultGenerics map(${(1 to i).gen(j => s"${im.getType("java.util.function.Function")}<? super T$j, ? extends U$j> f$j")(", ")}) {
                   return ${im.getType("javaslang.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(_$j)")(", ")});
               }
             """)}
@@ -1132,13 +1131,14 @@ def generateMainClasses(): Unit = {
             /**
              * Transforms this tuple to an arbitrary object (which may be also a tuple of same or different arity).
              *
-             * @param f Transformation which takes this tuple and return a new tuple of type U
+             * @param f Transformation which creates a new object of type U based on this tuple's contents.
              * @param <U> New type
              * @return An object of type U
+             * @throws NullPointerException if {@code f} is null
              */
-            public <U> U transform($Function<? super $className$generics, U> f) {
+            public <U> U transform($functionType<$paramTypes${(i > 0).gen(", ")}? extends U> f) {
                 $Objects.requireNonNull(f, "f is null");
-                return f.apply(this);
+                return ${if (i == 0) "f.get()" else s"f.apply($params)"};
             }
 
             @Override
@@ -1947,7 +1947,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldTransformTuple() {
                   final Tuple$i<$generics> tuple = createTuple();
-                  final Tuple0 actual = tuple.transform(t -> Tuple0.instance());
+                  final Tuple0 actual = tuple.transform((${(1 to i).gen(j => s"t$j")(", ")}) -> Tuple0.instance());
                   assertThat(actual).isEqualTo(Tuple0.instance());
               }
 

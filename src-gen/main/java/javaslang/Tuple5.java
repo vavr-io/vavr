@@ -206,13 +206,14 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
     /**
      * Transforms this tuple to an arbitrary object (which may be also a tuple of same or different arity).
      *
-     * @param f Transformation which takes this tuple and return a new tuple of type U
+     * @param f Transformation which creates a new object of type U based on this tuple's contents.
      * @param <U> New type
      * @return An object of type U
+     * @throws NullPointerException if {@code f} is null
      */
-    public <U> U transform(Function<? super Tuple5<T1, T2, T3, T4, T5>, U> f) {
+    public <U> U transform(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
-        return f.apply(this);
+        return f.apply(_1, _2, _3, _4, _5);
     }
 
     @Override

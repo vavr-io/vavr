@@ -72,7 +72,7 @@ public class TupleTest {
 
     @Test
     public void shouldTransformTuple0() {
-        assertThat(Tuple0.instance().transform(t -> 1) == 1).isTrue();
+        assertThat(Tuple0.instance().transform(() -> 1) == 1).isTrue();
     }
 
     @Test
