@@ -94,7 +94,9 @@ interface HashArrayMappedTrieModule {
             return bitCount(bitmap & (bit - 1));
         }
 
-        abstract boolean isLeaf();
+        boolean isLeaf() {
+            return false;
+        }
 
         abstract Option<V> lookup(int shift, K key);
 
@@ -292,7 +294,7 @@ interface HashArrayMappedTrieModule {
             if (Objects.equals(key, this.key)) {
                 return (action == REMOVE) ? EmptyNode.instance() : new LeafSingleton<>(hash, key, value);
             } else {
-                return (action == REMOVE) ? this : mergeLeaves(shift, this, new LeafSingleton<>(key.hashCode(), key, value));
+                return (action == REMOVE) ? this : mergeLeaves(shift, this, new LeafSingleton<>(Objects.hashCode(key), key, value));
             }
         }
 
@@ -361,7 +363,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         Option<V> lookup(int shift, K key) {
-            if (hash != key.hashCode()) {
+            if (hash != Objects.hashCode(key)) {
                 return None.instance();
             }
             return iterator().findFirst(t -> Objects.equals(t._1, key)).map(t -> t._2);
@@ -539,11 +541,6 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        boolean isLeaf() {
-            return false;
-        }
-
-        @Override
         public boolean isEmpty() {
             return false;
         }
@@ -632,11 +629,6 @@ interface HashArrayMappedTrieModule {
                 }
             }
             return new IndexedNode<>(bitmap, size, arr);
-        }
-
-        @Override
-        boolean isLeaf() {
-            return false;
         }
 
         @Override
