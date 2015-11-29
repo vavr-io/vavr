@@ -80,6 +80,15 @@ public class HashArrayMappedTrieTest {
         cmp.test();
     }
 
+    @Test
+    public void shouldLookupNullInZeroKey() {
+        HashArrayMappedTrie<Integer, Integer> trie = HashArrayMappedTrie.empty();
+        trie = trie.put(0, 1);    // key.hashCode = 0
+        trie = trie.put(null, 2); // key.hashCode = 0
+        assertThat(trie.get(0).get()).isEqualTo(1);
+        assertThat(trie.get(null).get()).isEqualTo(2);
+    }
+
     // -- equals
 
     @Test
