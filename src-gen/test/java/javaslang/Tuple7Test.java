@@ -139,7 +139,7 @@ public class Tuple7Test {
     @Test
     public void shouldTransformTuple() {
         final Tuple7<Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
-        final Tuple0 actual = tuple.transform(t -> Tuple0.instance());
+        final Tuple0 actual = tuple.transform((t1, t2, t3, t4, t5, t6, t7) -> Tuple0.instance());
         assertThat(actual).isEqualTo(Tuple0.instance());
     }
 
