@@ -18,6 +18,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
+import static java.lang.System.lineSeparator;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 import static org.assertj.core.api.Assertions.fail;
@@ -1360,7 +1361,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
         final PrintStream out = new PrintStream(baos);
         ofAll(1, 2, 3).out(out);
-        assertThat(baos.toString()).isEqualTo(ofAll(1, 2, 3).mkString("", "\n", "\n"));
+        assertThat(baos.toString()).isEqualTo(ofAll(1, 2, 3).mkString("", lineSeparator(), lineSeparator()));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -1377,7 +1378,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         final StringWriter sw = new StringWriter();
         final PrintWriter out = new PrintWriter(sw);
         ofAll(1, 2, 3).out(out);
-        assertThat(sw.toString()).isEqualTo(ofAll(1, 2, 3).mkString("", "\n", "\n"));
+        assertThat(sw.toString()).isEqualTo(ofAll(1, 2, 3).mkString("", lineSeparator(), lineSeparator()));
     }
 
     @Test(expected = IllegalStateException.class)
