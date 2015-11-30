@@ -94,6 +94,13 @@ public class Tuple2Test {
     }
 
     @Test
+    public void shouldTransformTupleWithBiFunction() {
+        final Tuple2<Object, Object> tuple = createTuple();
+        final Tuple0 actual = tuple.transform((fst, snd) -> Tuple0.instance());
+        assertThat(actual).isEqualTo(Tuple0.instance());
+    }
+
+    @Test
     public void shouldRecognizeEquality() {
         final Tuple2<Object, Object> tuple1 = createTuple();
         final Tuple2<Object, Object> tuple2 = createTuple();

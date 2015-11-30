@@ -136,6 +136,18 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
         return f.apply(_1, _2);
     }
 
+    /**
+     * Transforms this tuple to an arbitrary object (which may be also a tuple of same or different arity).
+     *
+     * @param f Transformation which takes elements of this tuple and return an object of type U
+     * @param <U> New type
+     * @return An object of type U
+     */
+    public <U> U transform(BiFunction<? super T1, ? super T2, U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(_1, _2);
+    }
+
     @Override
     public Seq<?> toSeq() {
         return List.ofAll(_1, _2);
