@@ -7,6 +7,8 @@ package javaslang.control;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Some represents a defined {@link javaslang.control.Option}. It contains a value which may be null. However, to
@@ -49,6 +51,11 @@ public final class Some<T> implements Option<T>, Serializable {
     @Override
     public T get() {
         return value;
+    }
+
+    @Override
+    public <U> U accept(Supplier<U> visitNone, Function<? super T, ? extends U> visitSome) {
+        return visitSome.apply(value);
     }
 
     @Override
