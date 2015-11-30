@@ -340,6 +340,15 @@ public abstract class AbstractTraversableRangeTest extends AbstractTraversableTe
     }
 
     @Test
+    public void shouldCreateRangeByWithBigStep() {
+        // step * (from - toExclusive) < 0 because of overflow
+        // int
+        assertThat(rangeBy(3_721, 2_000_000, 3_721)).isNotEmpty();
+        // long
+        assertThat(rangeBy(3_221_000L, 200_000_000_000L, 154_221_000L)).isNotEmpty();
+    }
+
+    @Test
     public void shouldCreateRangeByWhereFromEqualsTo() {
 
         // char

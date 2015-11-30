@@ -555,7 +555,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Integer> rangeBy(int from, int toExclusive, int step) {
         if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
+        } else if (from == toExclusive || Integer.signum(step) * Integer.signum(from - toExclusive) > 0) {
             return Iterator.empty();
         } else {
             final int one = (from < toExclusive) ? 1 : -1;
@@ -606,7 +606,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Long> rangeBy(long from, long toExclusive, long step) {
         if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
+        } else if (from == toExclusive || Long.signum(step) * Long.signum(from - toExclusive) > 0) {
             return Iterator.empty();
         } else {
             final int one = (from < toExclusive) ? 1 : -1;
@@ -746,7 +746,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
             return Iterator.of(from);
-        } else if (step * (from - toInclusive) > 0) {
+        } else if (Integer.signum(step) * Integer.signum(from - toInclusive) > 0) {
             return Iterator.empty();
         } else {
             return new AbstractIterator<Integer>() {
@@ -821,7 +821,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
             return Iterator.of(from);
-        } else if (step * (from - toInclusive) > 0L) {
+        } else if (Long.signum(step) * Long.signum(from - toInclusive) > 0L) {
             return Iterator.empty();
         } else {
             return new AbstractIterator<Long>() {
