@@ -28,6 +28,7 @@ public class Euler10Test {
 
     public long sumPrimes(long max) {
         return PrimeNumbers.primes()
+                .map(Long::valueOf)
                 .takeWhile(t -> t < max)
                 .reduce((p1, p2) -> p1 + p2);
     }

@@ -5,9 +5,9 @@
  */
 package javaslang.collection.euler;
 
+import javaslang.collection.Array;
 import org.junit.Test;
 
-import static javaslang.collection.euler.PrimeNumbers.prime;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler07Test {
@@ -31,4 +31,11 @@ public class Euler07Test {
         assertThat(prime(6)).isEqualTo(13);
         assertThat(prime(10_001)).isEqualTo(104_743);
     }
+
+    static Array<Integer> primes = Array.ofAll(PrimeNumbers.primes().take(10_001));
+
+    static long prime(int index) {
+        return primes.get(index - 1);
+    }
+
 }
