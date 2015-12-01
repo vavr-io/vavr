@@ -33,7 +33,7 @@ public class QueueTest extends AbstractSeqTest {
     @SafeVarargs
     @Override
     protected final <T> Queue<T> of(T... elements) {
-        return Queue.ofAll(elements);
+        return Queue.of(elements);
     }
 
     @Override

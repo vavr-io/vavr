@@ -141,7 +141,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    static <T> List<T> ofAll(T... elements) {
+    static <T> List<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> result = Nil.<T> instance();
         for (int i = elements.length - 1; i >= 0; i--) {

@@ -341,7 +341,7 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldConvertToList() {
-        assertThat(of(1, 2, 3).toList()).isEqualTo(List.ofAll(1, 2, 3));
+        assertThat(of(1, 2, 3).toList()).isEqualTo(List.of(1, 2, 3));
     }
 
     @Test
@@ -357,22 +357,22 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldConvertToQueue() {
-        assertThat(of(1, 2, 3).toQueue()).isEqualTo(Queue.ofAll(1, 2, 3));
+        assertThat(of(1, 2, 3).toQueue()).isEqualTo(Queue.of(1, 2, 3));
     }
 
     @Test
     public void shouldConvertToSet() {
-        assertThat(of(1, 2, 3).toSet()).isEqualTo(HashSet.ofAll(1, 2, 3));
+        assertThat(of(1, 2, 3).toSet()).isEqualTo(HashSet.of(1, 2, 3));
     }
 
     @Test
     public void shouldConvertToStack() {
-        assertThat(of(1, 2, 3).toStack()).isEqualTo(Stack.ofAll(1, 2, 3));
+        assertThat(of(1, 2, 3).toStack()).isEqualTo(Stack.of(1, 2, 3));
     }
 
     @Test
     public void shouldConvertToStream() {
-        assertThat(of(1, 2, 3).toStream()).isEqualTo(Stream.ofAll(1, 2, 3));
+        assertThat(of(1, 2, 3).toStream()).isEqualTo(Stream.of(1, 2, 3));
     }
 
     @Test
@@ -401,7 +401,7 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test
     public void shouldConvertToVector() {
-        assertThat(of(1, 2, 3).toVector()).isEqualTo(Vector.ofAll(1, 2, 3));
+        assertThat(of(1, 2, 3).toVector()).isEqualTo(Vector.of(1, 2, 3));
     }
 
     @Test

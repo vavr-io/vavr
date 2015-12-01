@@ -120,9 +120,9 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Queue<T> ofAll(T... elements) {
+    public static <T> Queue<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Queue.ofAll(List.ofAll(elements));
+        return Queue.ofAll(List.of(elements));
     }
 
     /**

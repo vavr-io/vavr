@@ -44,11 +44,11 @@ public class TreeSetTest extends AbstractSortedSetTest {
             }
         }
         if (allLongs) {
-            return TreeSet.ofAll(toLongComparator(), Iterator.ofAll(elements));
+            return TreeSet.ofAll(toLongComparator(), Iterator.of(elements));
         } else if (allNumbers) {
-            return TreeSet.ofAll(toDoubleComparator(), Iterator.ofAll(elements));
+            return TreeSet.ofAll(toDoubleComparator(), Iterator.of(elements));
         } else {
-            return TreeSet.ofAll(toStringComparator(), Iterator.ofAll(elements));
+            return TreeSet.ofAll(toStringComparator(), Iterator.of(elements));
         }
     }
 
@@ -111,8 +111,8 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Test
     public void shouldKeepComparator() {
-        List<?> list = TreeSet.empty(inverseIntComparator()).addAll(TreeSet.ofAll(1, 2, 3)).toList();
-        assertThat(list).isEqualTo(List.ofAll(3, 2, 1));
+        List<?> list = TreeSet.empty(inverseIntComparator()).addAll(TreeSet.of(1, 2, 3)).toList();
+        assertThat(list).isEqualTo(List.of(3, 2, 1));
     }
 
     // -- helpers

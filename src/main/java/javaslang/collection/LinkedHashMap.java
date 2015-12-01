@@ -103,7 +103,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> ofAll(Tuple2<? extends K, ? extends V>... entries) {
         final HashMap<K, V> map = HashMap.ofAll(entries);
-        final Queue<Tuple2<K, V>> list = Queue.ofAll((Tuple2<K, V>[]) entries);
+        final Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>[]) entries);
         return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
     }
 

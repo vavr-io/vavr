@@ -626,7 +626,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldFlatMapNonEmptyTraversable() {
-        assertThat(CharSeq.ofAll('1', '2', '3').flatMap(CharSeq::of)).isEqualTo(Vector.ofAll('1', '2', '3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').flatMap(CharSeq::of)).isEqualTo(Vector.of('1', '2', '3'));
     }
 
     @Test
@@ -639,15 +639,15 @@ public class CharSeqTest {
             } else {
                 return CharSeq.of('6');
             }
-        })).isEqualTo(Vector.ofAll('1', '2', '3', '4', '5', '6'));
+        })).isEqualTo(Vector.of('1', '2', '3', '4', '5', '6'));
     }
 
     @Test
     public void shouldFlatMapElementsToSequentialValuesInTheRightOrder() {
         final AtomicInteger seq = new AtomicInteger('0');
         final IndexedSeq<Character> actualInts = CharSeq.ofAll('0', '1', '2').flatMap(
-                ignored -> Vector.ofAll((char) seq.getAndIncrement(), (char) seq.getAndIncrement()));
-        final IndexedSeq<Character> expectedInts = Vector.ofAll('0', '1', '2', '3', '4', '5');
+                ignored -> Vector.of((char) seq.getAndIncrement(), (char) seq.getAndIncrement()));
+        final IndexedSeq<Character> expectedInts = Vector.of('0', '1', '2', '3', '4', '5');
         assertThat(actualInts).isEqualTo(expectedInts);
     }
 
@@ -907,13 +907,13 @@ public class CharSeqTest {
 
     @Test
     public void shouldMapNonNil() {
-        assertThat(CharSeq.ofAll('1', '2', '3').map(i -> (char) (i + 1))).isEqualTo(Vector.ofAll('2', '3', '4'));
+        assertThat(CharSeq.ofAll('1', '2', '3').map(i -> (char) (i + 1))).isEqualTo(Vector.of('2', '3', '4'));
     }
 
     @Test
     public void shouldMapElementsToSequentialValuesInTheRightOrder() {
         final AtomicInteger seq = new AtomicInteger('0');
-        final Vector<Character> expectedInts = Vector.ofAll('0', '1', '2', '3', '4');
+        final Vector<Character> expectedInts = Vector.of('0', '1', '2', '3', '4');
         final Vector<Character> actualInts = expectedInts.map(ignored -> (char) seq.getAndIncrement());
         assertThat(actualInts).isEqualTo(expectedInts);
     }
@@ -967,7 +967,7 @@ public class CharSeqTest {
     @Test
     public void shouldComputePermutationsOfNonEmpty() {
         assertThat(CharSeq.of("123").permutations())
-                .isEqualTo(Vector.ofAll(CharSeq.of("123"), CharSeq.of("132"), CharSeq.of("213"), CharSeq.of("231"), CharSeq.of("312"), CharSeq.of("321")));
+                .isEqualTo(Vector.of(CharSeq.of("123"), CharSeq.of("132"), CharSeq.of("213"), CharSeq.of("231"), CharSeq.of("312"), CharSeq.of("321")));
     }
 
     // -- max
@@ -1227,13 +1227,13 @@ public class CharSeqTest {
     @Test
     public void shouldSlideNonNilBySize1() {
         assertThat(CharSeq.ofAll('1', '2', '3').sliding(1).toList())
-                .isEqualTo(List.ofAll(CharSeq.of('1'), CharSeq.of('2'), CharSeq.of('3')));
+                .isEqualTo(List.of(CharSeq.of('1'), CharSeq.of('2'), CharSeq.of('3')));
     }
 
     @Test // #201
     public void shouldSlideNonNilBySize2() {
         assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').sliding(2).toList())
-                .isEqualTo(List.ofAll(CharSeq.ofAll('1', '2'), CharSeq.ofAll('2', '3'), CharSeq.ofAll('3', '4'), CharSeq.ofAll('4', '5')));
+                .isEqualTo(List.of(CharSeq.ofAll('1', '2'), CharSeq.ofAll('2', '3'), CharSeq.ofAll('3', '4'), CharSeq.ofAll('4', '5')));
     }
 
     // -- sliding(size, step)
@@ -1246,13 +1246,13 @@ public class CharSeqTest {
     @Test
     public void shouldSlide5ElementsBySize2AndStep3() {
         assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').sliding(2, 3).toList())
-                .isEqualTo(List.ofAll(CharSeq.ofAll('1', '2'), CharSeq.ofAll('4', '5')));
+                .isEqualTo(List.of(CharSeq.ofAll('1', '2'), CharSeq.ofAll('4', '5')));
     }
 
     @Test
     public void shouldSlide5ElementsBySize2AndStep4() {
         assertThat(CharSeq.ofAll('1', '2', '3', '4', '5').sliding(2, 4).toList())
-                .isEqualTo(List.ofAll(CharSeq.ofAll('1', '2'), CharSeq.of('5')));
+                .isEqualTo(List.of(CharSeq.ofAll('1', '2'), CharSeq.of('5')));
     }
 
     @Test
@@ -1736,7 +1736,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldComputeCombinationsOfNonEmptyList() {
-        assertThat(CharSeq.of("123").combinations()).isEqualTo(Vector.ofAll(empty(), CharSeq.of("1"), CharSeq.of("2"), CharSeq.of("3"), CharSeq.of("12"), CharSeq.of("13"), CharSeq.of("23"), CharSeq.of("123")));
+        assertThat(CharSeq.of("123").combinations()).isEqualTo(Vector.of(empty(), CharSeq.of("1"), CharSeq.of("2"), CharSeq.of("3"), CharSeq.of("12"), CharSeq.of("13"), CharSeq.of("23"), CharSeq.of("123")));
     }
 
     // -- combinations(k)
@@ -1748,7 +1748,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldComputeKCombinationsOfNonEmptyList() {
-        assertThat(CharSeq.of("123").combinations(2)).isEqualTo(Vector.ofAll(CharSeq.of("12"), CharSeq.of("13"), CharSeq.of("23")));
+        assertThat(CharSeq.of("123").combinations(2)).isEqualTo(Vector.of(CharSeq.of("12"), CharSeq.of("13"), CharSeq.of("23")));
     }
 
     @Test
@@ -1787,7 +1787,7 @@ public class CharSeqTest {
     @Test
     public void shouldCalculateCrossProductOfNonNil() {
         final IndexedSeq<Tuple2<Character, Character>> actual = CharSeq.ofAll('1', '2', '3').crossProduct();
-        final Vector<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', '1'), Tuple.of('1', '2'),
+        final Vector<Tuple2<Character, Character>> expected = Vector.of(Tuple.of('1', '1'), Tuple.of('1', '2'),
                 Tuple.of('1', '3'), Tuple.of('2', '1'), Tuple.of('2', '2'), Tuple.of('2', '3'), Tuple.of('3', '1'),
                 Tuple.of('3', '2'), Tuple.of('3', '3'));
         assertThat(actual).isEqualTo(expected);
@@ -1798,7 +1798,7 @@ public class CharSeqTest {
     @Test
     public void shouldCalculateCrossProductPower() {
         final IndexedSeq<CharSeq> actual = CharSeq.of("12").crossProduct(2);
-        final Vector<CharSeq> expected = Vector.ofAll(CharSeq.ofAll('1', '1'), CharSeq.ofAll('1', '2'), CharSeq.ofAll('2', '1'), CharSeq.ofAll('2', '2'));
+        final Vector<CharSeq> expected = Vector.of(CharSeq.ofAll('1', '1'), CharSeq.ofAll('1', '2'), CharSeq.ofAll('2', '1'), CharSeq.ofAll('2', '2'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1829,7 +1829,7 @@ public class CharSeqTest {
         final IndexedSeq<Tuple2<Character, Character>> actual = CharSeq
                 .ofAll('1', '2', '3')
                 .crossProduct(CharSeq.ofAll('a', 'b'));
-        final IndexedSeq<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', 'a'), Tuple.of('1', 'b'),
+        final IndexedSeq<Tuple2<Character, Character>> expected = Vector.of(Tuple.of('1', 'a'), Tuple.of('1', 'b'),
                 Tuple.of('2', 'a'), Tuple.of('2', 'b'), Tuple.of('3', 'a'), Tuple.of('3', 'b'));
         assertThat(actual).isEqualTo(expected);
     }
@@ -1891,14 +1891,14 @@ public class CharSeqTest {
     @Test
     public void shouldGroupedTraversableWithEqualSizedBlocks() {
         final List<CharSeq> actual = CharSeq.ofAll('1', '2', '3', '4').grouped(2).toList();
-        final List<CharSeq> expected = List.ofAll(CharSeq.ofAll('1', '2'), CharSeq.ofAll('3', '4'));
+        final List<CharSeq> expected = List.of(CharSeq.ofAll('1', '2'), CharSeq.ofAll('3', '4'));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldGroupedTraversableWithRemainder() {
         final List<CharSeq> actual = CharSeq.ofAll('1', '2', '3', '4', '5').grouped(2).toList();
-        final List<CharSeq> expected = List.ofAll(CharSeq.ofAll('1', '2'), CharSeq.ofAll('3', '4'), CharSeq.of('5'));
+        final List<CharSeq> expected = List.of(CharSeq.ofAll('1', '2'), CharSeq.ofAll('3', '4'), CharSeq.of('5'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -2600,21 +2600,21 @@ public class CharSeqTest {
     public void shouldScan() {
         final CharSeq seq = CharSeq.of('1');
         final IndexedSeq<Character> result = seq.scan('0', (c1, c2) -> (char) (c1 + c2));
-        assertThat(result).isEqualTo(Vector.ofAll('0', 'a'));
+        assertThat(result).isEqualTo(Vector.of('0', 'a'));
     }
 
     @Test
     public void shouldScanLeft() {
         final CharSeq seq = CharSeq.of('1');
         final IndexedSeq<Character> result = seq.scanLeft('0', (c1, c2) -> (char) (c1 + c2));
-        assertThat(result).isEqualTo(Vector.ofAll('0', 'a'));
+        assertThat(result).isEqualTo(Vector.of('0', 'a'));
     }
 
     @Test
     public void shouldScanRight() {
         final CharSeq seq = CharSeq.of('1');
         final IndexedSeq<Character> result = seq.scanRight('0', (c1, c2) -> (char) (c1 + c2));
-        assertThat(result).isEqualTo(Vector.ofAll('a', '0'));
+        assertThat(result).isEqualTo(Vector.of('a', '0'));
     }
 
     // -- subSequence(beginIndex)
@@ -2742,7 +2742,7 @@ public class CharSeqTest {
     @Test
     public void shouldUnzipNonNil() {
         final Tuple actual = CharSeq.ofAll('0', '1').unzip(i -> Tuple.of(i, i == '0' ? 'a' : 'b'));
-        final Tuple expected = Tuple.of(Vector.ofAll('0', '1'), Vector.ofAll('a', 'b'));
+        final Tuple expected = Tuple.of(Vector.of('0', '1'), Vector.of('a', 'b'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -2754,7 +2754,7 @@ public class CharSeqTest {
     @Test
     public void shouldUnzip3NonNil() {
         final Tuple actual = CharSeq.ofAll('0', '1').unzip3(i -> Tuple.of(i, i == '0' ? 'a' : 'b', i == '0' ? 'b' : 'a'));
-        final Tuple expected = Tuple.of(Vector.ofAll('0', '1'), Vector.ofAll('a', 'b'), Vector.ofAll('b', 'a'));
+        final Tuple expected = Tuple.of(Vector.of('0', '1'), Vector.of('a', 'b'), Vector.of('b', 'a'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -2781,21 +2781,21 @@ public class CharSeqTest {
     @Test
     public void shouldZipNonNilsIfThisIsSmaller() {
         final IndexedSeq<Tuple2<Character, Character>> actual = CharSeq.ofAll('1', '2').zip(CharSeq.ofAll('a', 'b', 'c'));
-        final IndexedSeq<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', 'a'), Tuple.of('2', 'b'));
+        final IndexedSeq<Tuple2<Character, Character>> expected = Vector.of(Tuple.of('1', 'a'), Tuple.of('2', 'b'));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipNonNilsIfThatIsSmaller() {
         final IndexedSeq<Tuple2<Character, Character>> actual = CharSeq.ofAll('1', '2', '3').zip(CharSeq.ofAll('a', 'b'));
-        final IndexedSeq<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', 'a'), Tuple.of('2', 'b'));
+        final IndexedSeq<Tuple2<Character, Character>> expected = Vector.of(Tuple.of('1', 'a'), Tuple.of('2', 'b'));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipNonNilsOfSameSize() {
         final IndexedSeq<Tuple2<Character, Character>> actual = CharSeq.ofAll('1', '2', '3').zip(CharSeq.ofAll('a', 'b', 'c'));
-        final IndexedSeq<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', 'a'), Tuple.of('2', 'b'), Tuple.of('3', 'c'));
+        final IndexedSeq<Tuple2<Character, Character>> expected = Vector.of(Tuple.of('1', 'a'), Tuple.of('2', 'b'), Tuple.of('3', 'c'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -2829,21 +2829,21 @@ public class CharSeqTest {
     @Test
     public void shouldZipAllNonNilsIfThisIsSmaller() {
         final IndexedSeq<Tuple2<Character, Character>> actual = CharSeq.ofAll('1', '2').zipAll(CharSeq.ofAll('a', 'b', 'c'), '9', 'z');
-        final IndexedSeq<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', 'a'), Tuple.of('2', 'b'), Tuple.of('9', 'c'));
+        final IndexedSeq<Tuple2<Character, Character>> expected = Vector.of(Tuple.of('1', 'a'), Tuple.of('2', 'b'), Tuple.of('9', 'c'));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsIfThatIsSmaller() {
         final IndexedSeq<Tuple2<Character, Character>> actual = CharSeq.ofAll('1', '2', '3').zipAll(CharSeq.ofAll('a', 'b'), '9', 'z');
-        final IndexedSeq<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', 'a'), Tuple.of('2', 'b'), Tuple.of('3', 'z'));
+        final IndexedSeq<Tuple2<Character, Character>> expected = Vector.of(Tuple.of('1', 'a'), Tuple.of('2', 'b'), Tuple.of('3', 'z'));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsOfSameSize() {
         final IndexedSeq<Tuple2<Character, Character>> actual = CharSeq.ofAll('1', '2', '3').zipAll(CharSeq.ofAll('a', 'b', 'c'), '9', 'z');
-        final IndexedSeq<Tuple2<Character, Character>> expected = Vector.ofAll(Tuple.of('1', 'a'), Tuple.of('2', 'b'), Tuple.of('3', 'c'));
+        final IndexedSeq<Tuple2<Character, Character>> expected = Vector.of(Tuple.of('1', 'a'), Tuple.of('2', 'b'), Tuple.of('3', 'c'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -2862,7 +2862,7 @@ public class CharSeqTest {
     @Test
     public void shouldZipNonNilWithIndex() {
         final IndexedSeq<Tuple2<Character, Integer>> actual = CharSeq.of("abc").zipWithIndex();
-        final IndexedSeq<Tuple2<Character, Integer>> expected = Vector.ofAll(Tuple.of('a', 0), Tuple.of('b', 1), Tuple.of('c', 2));
+        final IndexedSeq<Tuple2<Character, Integer>> expected = Vector.of(Tuple.of('a', 0), Tuple.of('b', 1), Tuple.of('c', 2));
         assertThat(actual).isEqualTo(expected);
     }
 

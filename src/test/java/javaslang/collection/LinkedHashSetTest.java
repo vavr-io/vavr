@@ -26,7 +26,7 @@ public class LinkedHashSetTest extends AbstractSetTest {
     @SafeVarargs
     @Override
     protected final <T> LinkedHashSet<T> of(T... elements) {
-        return LinkedHashSet.ofAll(elements);
+        return LinkedHashSet.of(elements);
     }
 
     @Override
@@ -157,6 +157,6 @@ public class LinkedHashSetTest extends AbstractSetTest {
     @Test
     public void shouldKeepOrder() {
         List<Integer> actual = LinkedHashSet.<Integer> empty().add(3).add(2).add(1).toList();
-        assertThat(actual).isEqualTo(List.ofAll(3, 2, 1));
+        assertThat(actual).isEqualTo(List.of(3, 2, 1));
     }
 }

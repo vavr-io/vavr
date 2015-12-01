@@ -50,7 +50,7 @@ public class FutureTest extends AbstractValueTest {
     @SuppressWarnings("unchecked")
     @Override
     protected <T> Seq<T> of(T... elements) {
-        return List.ofAll(elements);
+        return List.of(elements);
     }
 
     @Override
@@ -175,16 +175,16 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shoudCompleteWithSeqOfValueIfSequenceOfFuturesContainsNoError() {
         final Future<Seq<Integer>> sequence = Future.sequence(
-                List.ofAll(Future.of(zZz(1)), Future.of(zZz(2)))
+                List.of(Future.of(zZz(1)), Future.of(zZz(2)))
         );
         waitUntil(sequence::isCompleted);
-        assertThat(sequence.getValue().get()).isEqualTo(new Success<>(Stream.ofAll(1, 2)));
+        assertThat(sequence.getValue().get()).isEqualTo(new Success<>(Stream.of(1, 2)));
     }
 
     @Test
     public void shoudCompleteWithErrorIfSequenceOfFuturesContainsOneError() {
         final Future<Seq<Integer>> sequence = Future.sequence(
-                List.ofAll(Future.of(zZz(13)), Future.of(zZz(new Error())))
+                List.of(Future.of(zZz(13)), Future.of(zZz(new Error())))
         );
         waitUntil(sequence::isCompleted);
         assertFailed(sequence, Error.class);

@@ -74,7 +74,7 @@ public class Euler11Test {
     }
 
     private static int maxProduct() {
-        return List.ofAll(Tuple.of(0, 1), Tuple.of(1, 1), Tuple.of(1, 0), Tuple.of(1, -1))
+        return List.of(Tuple.of(0, 1), Tuple.of(1, 1), Tuple.of(1, 0), Tuple.of(1, -1))
                 .map(d -> maxProduct(d._1, d._2)).max().get();
     }
 

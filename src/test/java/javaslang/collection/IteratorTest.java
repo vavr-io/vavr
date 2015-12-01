@@ -93,7 +93,7 @@ public class IteratorTest extends AbstractTraversableTest {
     @SafeVarargs
     @Override
     protected final <T> Iterator<T> of(T... elements) {
-        return Iterator.ofAll(elements);
+        return Iterator.of(elements);
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -214,8 +214,8 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldConcatNonEmptyIterableIterable() {
-        Iterable<Iterable<Integer>> itIt = List.ofAll(List.ofAll(1, 2), List.of(3));
-        assertThat(Iterator.concat(itIt)).isEqualTo(Iterator.ofAll(1, 2, 3));
+        Iterable<Iterable<Integer>> itIt = List.of(List.of(1, 2), List.of(3));
+        assertThat(Iterator.concat(itIt)).isEqualTo(Iterator.of(1, 2, 3));
 
     }
 
@@ -227,7 +227,7 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldConcatNonEmptyArrayIterable() {
-        assertThat(Iterator.concat(List.ofAll(1, 2), List.of(3))).isEqualTo(Iterator.ofAll(1, 2, 3));
+        assertThat(Iterator.concat(List.of(1, 2), List.of(3))).isEqualTo(Iterator.of(1, 2, 3));
 
     }
 
@@ -235,27 +235,27 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldGenerateIntStream() {
-        assertThat(Iterator.from(-1).take(3)).isEqualTo(Iterator.ofAll(-1, 0, 1));
+        assertThat(Iterator.from(-1).take(3)).isEqualTo(Iterator.of(-1, 0, 1));
     }
 
     @Test
     public void shouldGenerateTerminatingIntStream() {
         //noinspection NumericOverflow
         assertThat(Iterator.from(Integer.MAX_VALUE).take(2))
-                .isEqualTo(Iterator.ofAll(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
+                .isEqualTo(Iterator.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
     }
 
     // -- static from(long)
 
     @Test
     public void shouldGenerateLongStream() {
-        assertThat(Iterator.from(-1L).take(3)).isEqualTo(Iterator.ofAll(-1L, 0L, 1L));
+        assertThat(Iterator.from(-1L).take(3)).isEqualTo(Iterator.of(-1L, 0L, 1L));
     }
 
     @Test
     public void shouldGenerateTerminatingLongStream() {
         //noinspection NumericOverflow
-        assertThat(Iterator.from(Long.MAX_VALUE).take(2)).isEqualTo(Iterator.ofAll(Long.MAX_VALUE, Long.MAX_VALUE + 1));
+        assertThat(Iterator.from(Long.MAX_VALUE).take(2)).isEqualTo(Iterator.of(Long.MAX_VALUE, Long.MAX_VALUE + 1));
     }
 
     // -- static gen(Supplier)

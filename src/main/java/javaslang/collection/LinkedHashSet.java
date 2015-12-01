@@ -84,7 +84,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    public static <T> LinkedHashSet<T> ofAll(T... elements) {
+    public static <T> LinkedHashSet<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         LinkedHashMap<T, T> map = LinkedHashMap.empty();
         for (T element : elements) {

@@ -245,7 +245,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldFlatMapUsingBiFunction() {
         final Map<Integer, Integer> testee = mapOf(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33));
         final Map<String, String> actual = testee
-                .flatMap((k, v) -> List.ofAll(Tuple.of(String.valueOf(k), String.valueOf(v)),
+                .flatMap((k, v) -> List.of(Tuple.of(String.valueOf(k), String.valueOf(v)),
                         Tuple.of(String.valueOf(k * 10), String.valueOf(v * 10))));
         final Map<String, String> expected = mapOf(Tuple.of("1", "11"), Tuple.of("10", "110"), Tuple.of("2", "22"),
                 Tuple.of("20", "220"), Tuple.of("3", "33"), Tuple.of("30", "330"));
@@ -258,7 +258,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnsKeySet() {
         final javaslang.collection.Set<Integer> actual = mapOf(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33)).keySet();
-        assertThat(actual).isEqualTo(HashSet.ofAll(1, 2, 3));
+        assertThat(actual).isEqualTo(HashSet.of(1, 2, 3));
     }
 
     // -- map
@@ -270,7 +270,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldMapNonEmpty() {
-        final javaslang.collection.Seq<Integer> expected = Vector.ofAll(1, 2);
+        final javaslang.collection.Seq<Integer> expected = Vector.of(1, 2);
         final javaslang.collection.Seq<Integer> actual = emptyInt().put(1, "1").put(2, "2").map(Tuple2::_1);
         assertThat(actual).isEqualTo(expected);
     }
@@ -282,7 +282,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldReturnTuple2SetOfANonEmptyMap() {
-        assertThat(emptyMap().put(1, "1").put(2, "2").toSet()).isEqualTo(HashSet.ofAll(Tuple.of(1, "1"), Tuple.of(2, "2")));
+        assertThat(emptyMap().put(1, "1").put(2, "2").toSet()).isEqualTo(HashSet.of(Tuple.of(1, "1"), Tuple.of(2, "2")));
     }
 
     @Test
@@ -334,7 +334,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldRemoveAll() {
-        assertThat(emptyMap().put(1, 'a').put(2, 'b').put(3, 'c').removeAll(List.ofAll(1, 3)))
+        assertThat(emptyMap().put(1, 'a').put(2, 'b').put(3, 'c').removeAll(List.of(1, 3)))
                 .isEqualTo(emptyMap().put(2, 'b'));
     }
 
@@ -351,7 +351,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldUnzipNonNil() {
         Map<Integer, Integer> map = emptyIntInt().put(0, 0).put(1, 1);
         final Tuple actual = map.unzip(entry -> Tuple.of(entry._1, entry._2 + 1));
-        final Tuple expected = Tuple.of(Stream.ofAll(0, 1), Stream.ofAll(1, 2));
+        final Tuple expected = Tuple.of(Stream.of(0, 1), Stream.of(1, 2));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -366,7 +366,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldUnzip3NonNil() {
         Map<Integer, Integer> map = emptyIntInt().put(0, 0).put(1, 1);
         final Tuple actual = map.unzip3(entry -> Tuple.of(entry._1, entry._2 + 1, entry._2 + 5));
-        final Tuple expected = Tuple.of(Stream.ofAll(0, 1), Stream.ofAll(1, 2), Stream.ofAll(5, 6));
+        final Tuple expected = Tuple.of(Stream.of(0, 1), Stream.of(1, 2), Stream.of(5, 6));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -395,8 +395,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Seq<Tuple2<Tuple2<Integer, Integer>, Integer>> actual = emptyIntInt()
                 .put(0, 0)
                 .put(1, 1)
-                .zip(List.ofAll(5, 6, 7));
-        assertThat(actual).isEqualTo(Stream.ofAll(Tuple.of(Tuple.of(0, 0), 5), Tuple.of(Tuple.of(1, 1), 6)));
+                .zip(List.of(5, 6, 7));
+        assertThat(actual).isEqualTo(Stream.of(Tuple.of(Tuple.of(0, 0), 5), Tuple.of(Tuple.of(1, 1), 6)));
     }
 
     @Test
@@ -405,8 +405,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 .put(0, 0)
                 .put(1, 1)
                 .put(2, 2)
-                .zip(List.ofAll(5, 6));
-        assertThat(actual).isEqualTo(Stream.ofAll(Tuple.of(Tuple.of(0, 0), 5), Tuple.of(Tuple.of(1, 1), 6)));
+                .zip(List.of(5, 6));
+        assertThat(actual).isEqualTo(Stream.of(Tuple.of(Tuple.of(0, 0), 5), Tuple.of(Tuple.of(1, 1), 6)));
     }
 
     @Test
@@ -415,9 +415,9 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 .put(0, 0)
                 .put(1, 1)
                 .put(2, 2)
-                .zip(List.ofAll(5, 6, 7));
+                .zip(List.of(5, 6, 7));
         assertThat(actual).isEqualTo(
-                Stream.ofAll(Tuple.of(Tuple.of(0, 0), 5), Tuple.of(Tuple.of(1, 1), 6), Tuple.of(Tuple.of(2, 2), 7)));
+                Stream.of(Tuple.of(Tuple.of(0, 0), 5), Tuple.of(Tuple.of(1, 1), 6), Tuple.of(Tuple.of(2, 2), 7)));
     }
 
     @Test(expected = NullPointerException.class)
@@ -440,7 +440,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 .put(2, 2)
                 .zipWithIndex();
         assertThat(actual).isEqualTo(
-                Stream.ofAll(Tuple.of(Tuple.of(0, 0), 0), Tuple.of(Tuple.of(1, 1), 1), Tuple.of(Tuple.of(2, 2), 2)));
+                Stream.of(Tuple.of(Tuple.of(0, 0), 0), Tuple.of(Tuple.of(1, 1), 1), Tuple.of(Tuple.of(2, 2), 2)));
     }
 
     // -- zipAll
@@ -469,7 +469,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 .put(1, 1)
                 .put(2, 2)
                 .zipAll(of("a", "b", "c"), Tuple.of(9, 10), "z");
-        final Seq<Tuple2<Tuple2<Object, Object>, String>> expected = Stream.ofAll(Tuple.of(Tuple.of(1, 1), "a"),
+        final Seq<Tuple2<Tuple2<Object, Object>, String>> expected = Stream.of(Tuple.of(Tuple.of(1, 1), "a"),
                 Tuple.of(Tuple.of(2, 2), "b"), Tuple.of(Tuple.of(9, 10), "c"));
         assertThat(actual).isEqualTo(expected);
     }
@@ -480,7 +480,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 .put(1, 1)
                 .put(2, 2)
                 .zipAll(of("a", "b", "c", "d"), Tuple.of(9, 10), "z");
-        final Seq<Tuple2<Tuple2<Object, Object>, String>> expected = Stream.ofAll(Tuple.of(Tuple.of(1, 1), "a"),
+        final Seq<Tuple2<Tuple2<Object, Object>, String>> expected = Stream.of(Tuple.of(Tuple.of(1, 1), "a"),
                 Tuple.of(Tuple.of(2, 2), "b"), Tuple.of(Tuple.of(9, 10), "c"), Tuple.of(Tuple.of(9, 10), "d"));
         assertThat(actual).isEqualTo(expected);
     }
@@ -492,7 +492,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 .put(2, 2)
                 .put(3, 3)
                 .zipAll(this.of("a", "b"), Tuple.of(9, 10), "z");
-        final Seq<Tuple2<Tuple2<Object, Object>, String>> expected = Stream.ofAll(Tuple.of(Tuple.of(1, 1), "a"),
+        final Seq<Tuple2<Tuple2<Object, Object>, String>> expected = Stream.of(Tuple.of(Tuple.of(1, 1), "a"),
                 Tuple.of(Tuple.of(2, 2), "b"), Tuple.of(Tuple.of(3, 3), "z"));
         assertThat(actual).isEqualTo(expected);
     }
@@ -505,7 +505,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 .put(3, 3)
                 .put(4, 4)
                 .zipAll(of("a", "b"), Tuple.of(9, 10), "z");
-        final Seq<Tuple2<Tuple2<Object, Object>, String>> expected = Stream.ofAll(Tuple.of(Tuple.of(1, 1), "a"),
+        final Seq<Tuple2<Tuple2<Object, Object>, String>> expected = Stream.of(Tuple.of(Tuple.of(1, 1), "a"),
                 Tuple.of(Tuple.of(2, 2), "b"), Tuple.of(Tuple.of(3, 3), "z"), Tuple.of(Tuple.of(4, 4), "z"));
         assertThat(actual).isEqualTo(expected);
     }
@@ -517,7 +517,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 .put(2, 2)
                 .put(3, 3)
                 .zipAll(of("a", "b", "c"), Tuple.of(9, 10), "z");
-        final Seq<Tuple2<Tuple2<Object, Object>, String>> expected = Stream.ofAll(Tuple.of(Tuple.of(1, 1), "a"),
+        final Seq<Tuple2<Tuple2<Object, Object>, String>> expected = Stream.of(Tuple.of(Tuple.of(1, 1), "a"),
                 Tuple.of(Tuple.of(2, 2), "b"), Tuple.of(Tuple.of(3, 3), "c"));
         assertThat(actual).isEqualTo(expected);
     }
@@ -550,7 +550,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Override
     public void shouldFoldRightNonNil() {
         final String actual = of('a', 'b', 'c').foldRight("", (x, xs) -> x + xs);
-        final List<String> expected = List.ofAll('a', 'b', 'c').permutations().map(List::mkString);
+        final List<String> expected = List.of('a', 'b', 'c').permutations().map(List::mkString);
         assertThat(actual).isIn(expected);
     }
 

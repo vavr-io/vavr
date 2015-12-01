@@ -152,7 +152,7 @@ public interface λ<R> extends Serializable {
         private final Class<?>[] parameterTypes;
 
         private transient final Lazy<Integer> hashCode = Lazy.of(
-                () -> List.ofAll(parameterTypes()).map(c -> c.getName().hashCode()).fold(1, (acc, i) -> acc * 31 + i) * 31
+                () -> List.of(parameterTypes()).map(c -> c.getName().hashCode()).fold(1, (acc, i) -> acc * 31 + i) * 31
                         + returnType().getName().hashCode());
 
         /**
@@ -196,7 +196,7 @@ public interface λ<R> extends Serializable {
 
         @Override
         public String toString() {
-            return List.ofAll(parameterTypes).map(Class::getName).mkString("(", ", ", ")") + " -> " + returnType.getName();
+            return List.of(parameterTypes).map(Class::getName).mkString("(", ", ", ")") + " -> " + returnType.getName();
         }
     }
 }

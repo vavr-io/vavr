@@ -81,7 +81,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldCreateInstanceOfElements() {
         final List<Integer> actual = of(1, 2).toList();
-        assertThat(actual).isEqualTo(List.ofAll(1, 2));
+        assertThat(actual).isEqualTo(List.of(1, 2));
     }
 
     // -- static of(Iterable)
@@ -90,7 +90,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     public void shouldCreateListOfIterable() {
         final java.util.List<Integer> arrayList = Arrays.asList(1, 2);
         final List<Integer> actual = ofAll(arrayList).toList();
-        assertThat(actual).isEqualTo(List.ofAll(1, 2));
+        assertThat(actual).isEqualTo(List.of(1, 2));
     }
 
     // -- static of(<primitive array>)
@@ -563,21 +563,21 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldGroupedTraversableWithEqualSizedBlocks() {
         final List<Traversable<Integer>> actual = of(1, 2, 3, 4).grouped(2).toList().map(Vector::ofAll);
-        final List<Traversable<Integer>> expected = List.ofAll(Vector.ofAll(1, 2), Vector.ofAll(3, 4));
+        final List<Traversable<Integer>> expected = List.of(Vector.of(1, 2), Vector.of(3, 4));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldGroupedTraversableWithRemainder() {
         final List<Traversable<Integer>> actual = of(1, 2, 3, 4, 5).grouped(2).toList().map(Vector::ofAll);
-        final List<Traversable<Integer>> expected = List.ofAll(Vector.ofAll(1, 2), Vector.ofAll(3, 4), Vector.of(5));
+        final List<Traversable<Integer>> expected = List.of(Vector.of(1, 2), Vector.of(3, 4), Vector.of(5));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldGroupedWhenTraversableLengthIsSmallerThanBlockSize() {
         final List<Traversable<Integer>> actual = of(1, 2, 3, 4).grouped(5).toList().map(Vector::ofAll);
-        final List<Traversable<Integer>> expected = List.of(Vector.ofAll(1, 2, 3, 4));
+        final List<Traversable<Integer>> expected = List.of(Vector.of(1, 2, 3, 4));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1171,7 +1171,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     public void shouldScanWithNonComparable() {
         final Traversable<NonComparable> testee = of(new NonComparable("a"));
         final List<NonComparable> actual = List.ofAll(testee.scan(new NonComparable("x"), (u1, u2) -> new NonComparable(u1.value + u2.value)));
-        final List<NonComparable> expected = List.ofAll("x", "xa").map(NonComparable::new);
+        final List<NonComparable> expected = List.of("x", "xa").map(NonComparable::new);
         assertThat(actual).containsAll(expected);
         assertThat(actual.length()).isEqualTo(expected.length());
     }
@@ -1180,7 +1180,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     public void shouldScanLeftWithNonComparable() {
         final Traversable<NonComparable> testee = of(new NonComparable("a"));
         final List<NonComparable> actual = List.ofAll(testee.scanLeft(new NonComparable("x"), (u1, u2) -> new NonComparable(u1.value + u2.value)));
-        final List<NonComparable> expected = List.ofAll("x", "xa").map(NonComparable::new);
+        final List<NonComparable> expected = List.of("x", "xa").map(NonComparable::new);
         assertThat(actual).containsAll(expected);
         assertThat(actual.length()).isEqualTo(expected.length());
     }
@@ -1189,7 +1189,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     public void shouldScanRightWithNonComparable() {
         final Traversable<NonComparable> testee = of(new NonComparable("a"));
         final List<NonComparable> actual = List.ofAll(testee.scanRight(new NonComparable("x"), (u1, u2) -> new NonComparable(u1.value + u2.value)));
-        final List<NonComparable> expected = List.ofAll("ax", "x").map(NonComparable::new);
+        final List<NonComparable> expected = List.of("ax", "x").map(NonComparable::new);
         assertThat(actual).containsAll(expected);
         assertThat(actual.length()).isEqualTo(expected.length());
     }
@@ -1224,14 +1224,14 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldSlideNonNilBySize1() {
         final List<Traversable<Integer>> actual = of(1, 2, 3).sliding(1).toList().map(Vector::ofAll);
-        final List<Traversable<Integer>> expected = List.ofAll(Vector.of(1), Vector.of(2), Vector.of(3));
+        final List<Traversable<Integer>> expected = List.of(Vector.of(1), Vector.of(2), Vector.of(3));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test // #201
     public void shouldSlideNonNilBySize2() {
         final List<Traversable<Integer>> actual = of(1, 2, 3, 4, 5).sliding(2).toList().map(Vector::ofAll);
-        final List<Traversable<Integer>> expected = List.ofAll(Vector.ofAll(1, 2), Vector.ofAll(2, 3), Vector.ofAll(3, 4), Vector.ofAll(4, 5));
+        final List<Traversable<Integer>> expected = List.of(Vector.of(1, 2), Vector.of(2, 3), Vector.of(3, 4), Vector.of(4, 5));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1245,28 +1245,28 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldSlide5ElementsBySize2AndStep3() {
         final List<Traversable<Integer>> actual = of(1, 2, 3, 4, 5).sliding(2, 3).toList().map(Vector::ofAll);
-        final List<Traversable<Integer>> expected = List.ofAll(Vector.ofAll(1, 2), Vector.ofAll(4, 5));
+        final List<Traversable<Integer>> expected = List.of(Vector.of(1, 2), Vector.of(4, 5));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldSlide5ElementsBySize2AndStep4() {
         final List<Traversable<Integer>> actual = of(1, 2, 3, 4, 5).sliding(2, 4).toList().map(Vector::ofAll);
-        final List<Traversable<Integer>> expected = List.ofAll(Vector.ofAll(1, 2), Vector.of(5));
+        final List<Traversable<Integer>> expected = List.of(Vector.of(1, 2), Vector.of(5));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldSlide5ElementsBySize2AndStep5() {
         final List<Traversable<Integer>> actual = of(1, 2, 3, 4, 5).sliding(2, 5).toList().map(Vector::ofAll);
-        final List<Traversable<Integer>> expected = List.of(Vector.ofAll(1, 2));
+        final List<Traversable<Integer>> expected = List.of(Vector.of(1, 2));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldSlide4ElementsBySize5AndStep3() {
         final List<Traversable<Integer>> actual = of(1, 2, 3, 4).sliding(5, 3).toList().map(Vector::ofAll);
-        final List<Traversable<Integer>> expected = List.of(Vector.ofAll(1, 2, 3, 4));
+        final List<Traversable<Integer>> expected = List.of(Vector.of(1, 2, 3, 4));
         assertThat(actual).isEqualTo(expected);
     }
 

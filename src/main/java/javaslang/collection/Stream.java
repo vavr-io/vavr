@@ -215,7 +215,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A list containing the given elements in the same order.
      */
     @SafeVarargs
-    static <T> Stream<T> ofAll(T... elements) {
+    static <T> Stream<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(new Iterator<T>() {
             int i = 0;

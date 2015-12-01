@@ -20,7 +20,7 @@ public final class Utils {
     }
 
     public static Stream<Integer> fibonacci() {
-        return Stream.ofAll(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2));
+        return Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2));
     }
 
     public static BigInteger factorial(int n) {

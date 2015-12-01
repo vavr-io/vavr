@@ -167,7 +167,7 @@ public class GenTest {
 
     @Test
     public void shouldGenerateElementsAccordingToFrequencyGivenAnIterable() {
-        final Gen<Integer> gen = Gen.frequency(List.ofAll(Tuple.of(0, Gen.of(-1)), Tuple.of(1, Gen.of(1))));
+        final Gen<Integer> gen = Gen.frequency(List.of(Tuple.of(0, Gen.of(-1)), Tuple.of(1, Gen.of(1))));
         assertForAll(() -> gen.apply(RANDOM), i -> i != -1);
     }
 
@@ -205,7 +205,7 @@ public class GenTest {
 
     @Test
     public void shouldReturnOneOfGivenIterable() {
-        final Gen<Integer> gen = Gen.oneOf(List.ofAll(Gen.of(1), Gen.of(2)));
+        final Gen<Integer> gen = Gen.oneOf(List.of(Gen.of(1), Gen.of(2)));
         assertForAll(() -> gen.apply(RANDOM), i -> i == 1 || i == 2);
     }
 
