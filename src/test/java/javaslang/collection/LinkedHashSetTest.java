@@ -25,7 +25,7 @@ public class LinkedHashSetTest extends AbstractSetTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <T> LinkedHashSet<T> ofAll(T... elements) {
+    protected final <T> LinkedHashSet<T> of(T... elements) {
         return LinkedHashSet.ofAll(elements);
     }
 

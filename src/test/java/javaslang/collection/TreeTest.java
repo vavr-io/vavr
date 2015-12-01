@@ -113,7 +113,7 @@ public class TreeTest extends AbstractTraversableTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <T> Tree<T> ofAll(T... elements) {
+    protected final <T> Tree<T> of(T... elements) {
         return Tree.ofAll(List.ofAll(elements));
     }
 
@@ -344,7 +344,7 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     @Override
     public void shouldDropNoneIfCountIsNegative() {
-        assertThat(ofAll(1, 2, 3).drop(-1)).isEqualTo(ofAll(1, 2, 3));
+        assertThat(of(1, 2, 3).drop(-1)).isEqualTo(of(1, 2, 3));
     }
 
     // -- dropRight
@@ -352,7 +352,7 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     @Override
     public void shouldDropRightNoneIfCountIsNegative() {
-        assertThat(ofAll(1, 2, 3).dropRight(-1)).isEqualTo(ofAll(1, 2, 3));
+        assertThat(of(1, 2, 3).dropRight(-1)).isEqualTo(of(1, 2, 3));
     }
 
     // -- flatMap
@@ -373,11 +373,11 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     @Override
     public void shouldFlatMapTraversableByExpandingElements() {
-        assertThat(ofAll(1, 2, 3).flatMap(i -> {
+        assertThat(of(1, 2, 3).flatMap(i -> {
             if (i == 1) {
-                return ofAll(1, 2, 3);
+                return of(1, 2, 3);
             } else if (i == 2) {
-                return ofAll(4, 5);
+                return of(4, 5);
             } else {
                 return of(6);
             }
@@ -389,7 +389,7 @@ public class TreeTest extends AbstractTraversableTest {
     public void shouldFlatMapElementsToSequentialValuesInTheRightOrder() {
         final AtomicInteger seq = new AtomicInteger(0);
         final Value<Integer> actualInts = $(0, $(1), $(2))
-                .flatMap(ignored -> ofAll(seq.getAndIncrement(), seq.getAndIncrement()));
+                .flatMap(ignored -> of(seq.getAndIncrement(), seq.getAndIncrement()));
         final Value<Integer> expectedInts = $(0, $(1), $(2, $(3)), $(4, $(5)));
         assertThat(actualInts).isEqualTo(expectedInts);
     }

@@ -36,7 +36,7 @@ import java.util.stream.Collector;
  * Stream.empty()                  // = Stream.of() = Nil.instance()
  * Stream.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
  * Stream.of(Object...)            // e.g. Stream.of(1, 2, 3)
- * Stream.ofAll(java.lang.Iterable)          // e.g. Stream.of(List.of(1, 2, 3)) = 1, 2, 3
+ * Stream.ofAll(java.lang.Iterable)          // e.g. Stream.ofAll(List.of(1, 2, 3)) = 1, 2, 3
  * Stream.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(new int[] {1, 2, 3}) = 1, 2, 3
  *
  * // int sequences
@@ -59,15 +59,14 @@ import java.util.stream.Collector;
  * Stream&lt;Integer&gt;       s2 = Stream.of(1, 2, 3);
  *                       // = Stream.of(new Integer[] {1, 2, 3});
  *
- * Stream&lt;int[]&gt;         s3 = Stream.of(new int[] {1, 2, 3});
- * Stream&lt;List&lt;Integer&gt;&gt; s4 = Stream.of(List.of(1, 2, 3));
+ * Stream&lt;int[]&gt;         s3 = Stream.ofAll(new int[] {1, 2, 3});
+ * Stream&lt;List&lt;Integer&gt;&gt; s4 = Stream.ofAll(List.of(1, 2, 3));
  *
  * Stream&lt;Integer&gt;       s5 = Stream.ofAll(new int[] {1, 2, 3});
  * Stream&lt;Integer&gt;       s6 = Stream.ofAll(List.of(1, 2, 3));
  *
  * // cuckoo's egg
  * Stream&lt;Integer[]&gt;     s7 = Stream.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
- *                       //!= Stream.&lt;Integer[]&gt; of(1, 2, 3);
  * </code>
  * </pre>
  *

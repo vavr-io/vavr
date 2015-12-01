@@ -16,7 +16,7 @@ public class Euler09Test {
     /**
      * <strong>Problem 9: Special Pythagorean triplet</strong>
      * <p>
-     * A Pythagorean triplet is a set ofAll three natural numbers, a < b < c, for which,
+     * A Pythagorean triplet is a set of three natural numbers, a < b < c, for which,
      * a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup>
      * <p>
      * For example, 3<sup>2</sup> + 4<sup>2</sup> = 9 + 16 = 25 = 5<sup>2</sup>.

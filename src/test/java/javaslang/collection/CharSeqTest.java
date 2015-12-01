@@ -2729,7 +2729,7 @@ public class CharSeqTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubSequenceWhenEndIndexExceedsUpperBound() {
-        CharSeq.ofAll('1', '2', '3').subSequence(1, 4).mkString(); // force computation ofAll last element, e.g. because Stream is lazy
+        CharSeq.ofAll('1', '2', '3').subSequence(1, 4).mkString(); // force computation of last element, e.g. because Stream is lazy
     }
 
     // -- unzip
@@ -2900,7 +2900,7 @@ public class CharSeqTest {
         assertThat(actual.length()).isEqualTo(0);
     }
 
-    // -- static javaslang.String.ofAll()
+    // -- static javaslang.String.of()
 
     @Test
     public void shouldWrapOtherCharSeq() {

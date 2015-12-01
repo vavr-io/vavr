@@ -92,8 +92,13 @@ public class IteratorTest extends AbstractTraversableTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <T> Iterator<T> ofAll(T... elements) {
+    protected final <T> Iterator<T> of(T... elements) {
         return Iterator.ofAll(elements);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailOfEmptyArgList() {
+        of().next();
     }
 
     @Override
@@ -152,11 +157,6 @@ public class IteratorTest extends AbstractTraversableTest {
     }
 
     // -- static ofAll()
-
-    @Test(expected = NoSuchElementException.class)
-    public void shouldFailOfEmptyArgList() {
-        ofAll().next();
-    }
 
     @Test(expected = NoSuchElementException.class)
     public void shouldFailOfEmptyIterable() {
@@ -282,7 +282,7 @@ public class IteratorTest extends AbstractTraversableTest {
         // a equals impl would enforce evaluation which is not wanted
     }
 
-    // TODO: equals ofAll same object and different objects ofAll same shape
+    // TODO: equals of same object and different objects of same shape
 
     // -- hashCode
 
@@ -303,7 +303,7 @@ public class IteratorTest extends AbstractTraversableTest {
     @Override
     public void shouldNonNilGroupByIdentity() {
         // we can't compare iterators, should map it to sequences
-        final Seq<?> actual = ofAll('a', 'b', 'c').groupBy(Function.identity()).map(e -> Tuple.of(e._1, List.ofAll(e._2)));
+        final Seq<?> actual = of('a', 'b', 'c').groupBy(Function.identity()).map(e -> Tuple.of(e._1, List.ofAll(e._2)));
         final Seq<?> expected = HashMap.empty()
                 .put('a', List.ofAll(of('a')))
                 .put('b', List.ofAll(of('b')))
@@ -315,8 +315,8 @@ public class IteratorTest extends AbstractTraversableTest {
     @Override
     public void shouldNonNilGroupByEqual() {
         // we can't compare iterators, should map it to sequences
-        final Seq<?> actual = ofAll('a', 'b', 'c').groupBy(c -> 1).map(e -> Tuple.of(e._1, List.ofAll(e._2)));
-        final Seq<?> expected = HashMap.empty().put(1, List.ofAll(ofAll('a', 'b', 'c'))).toList();
+        final Seq<?> actual = of('a', 'b', 'c').groupBy(c -> 1).map(e -> Tuple.of(e._1, List.ofAll(e._2)));
+        final Seq<?> expected = HashMap.empty().put(1, List.ofAll(of('a', 'b', 'c'))).toList();
         assertThat(actual).isEqualTo(expected);
     }
 
