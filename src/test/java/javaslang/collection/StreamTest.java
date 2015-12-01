@@ -37,7 +37,7 @@ public class StreamTest extends AbstractSeqTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <T> Stream<T> ofAll(T... elements) {
+    protected final <T> Stream<T> of(T... elements) {
         return Stream.ofAll(elements);
     }
 
@@ -295,7 +295,7 @@ public class StreamTest extends AbstractSeqTest {
 
     @Test
     public void shouldRecognizeInfiniteDoesContainSlice() {
-        final boolean actual = Stream.gen(1, i -> i + 1).containsSlice(ofAll(12, 13, 14));
+        final boolean actual = Stream.gen(1, i -> i + 1).containsSlice(of(12, 13, 14));
         assertThat(actual).isTrue();
     }
 
@@ -308,12 +308,12 @@ public class StreamTest extends AbstractSeqTest {
 
     @Test
     public void shouldStringifyNonNil() {
-        assertThat(ofAll(1, 2, 3).toString()).isEqualTo("Stream(1, ?)");
+        assertThat(of(1, 2, 3).toString()).isEqualTo("Stream(1, ?)");
     }
 
     @Test
     public void shouldStringifyNonNilEvaluatingFirstTail() {
-        final Stream<Integer> stream = this.ofAll(1, 2, 3);
+        final Stream<Integer> stream = this.of(1, 2, 3);
         stream.tail(); // evaluates second head element
         assertThat(stream.toString()).isEqualTo("Stream(1, 2, ?)");
     }
@@ -329,9 +329,9 @@ public class StreamTest extends AbstractSeqTest {
     public void shouldNotDeserializeStreamWithSizeLessThanOne() throws Throwable {
         try {
             /*
-             * This implementation is stable regarding jvm impl changes ofAll object serialization. The index ofAll the number
-			 * ofAll Stream elements is gathered dynamically.
-			 */
+             * This implementation is stable regarding jvm impl changes of object serialization. The index of the number
+             * of Stream elements is gathered dynamically.
+             */
             final byte[] listWithOneElement = Serializables.serialize(Stream.of(0));
             final byte[] listWithTwoElements = Serializables.serialize(Stream.ofAll(0, 0));
             int index = -1;
@@ -340,7 +340,7 @@ public class StreamTest extends AbstractSeqTest {
                 final byte b2 = listWithTwoElements[i];
                 if (b1 != b2) {
                     if (b1 != 1 || b2 != 2) {
-                        throw new IllegalStateException("Difference does not indicate number ofAll elements.");
+                        throw new IllegalStateException("Difference does not indicate number of elements.");
                     } else {
                         index = i;
                     }

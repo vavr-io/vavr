@@ -17,14 +17,14 @@ public class Euler29Test {
     /**
      * <strong>Problem 29: Distinct powers</strong>
      * <p>
-     * Consider all integer combinations ofAll ab for 2 ≤ a ≤ 5 and 2 ≤ b ≤ 5:
+     * Consider all integer combinations of ab for 2 ≤ a ≤ 5 and 2 ≤ b ≤ 5:
      * <ul>
      * <li>2<sup>2</sup>=4, 2<sup>3</sup>=8, 2<sup>4</sup>=16, 2<sup>5</sup>=32</li>
      * <li>3<sup>2</sup>=9, 3<sup>3</sup>=27, 3<sup>4</sup>=81, 3<sup>5</sup>=243</li>
      * <li>4<sup>2</sup>=16, 4<sup>3</sup>=64, 4<sup>4</sup>=256, 4<sup>5</sup>=1024</li>
      * <li>5<sup>2</sup>=25, 5<sup>3</sup>=125, 5<sup>4</sup>=625, 5<sup>5</sup>=3125</li>
      * </ul>
-     * If they are then placed in numerical order, with any repeats removed, we get the following sequence ofAll 15 distinct terms:
+     * If they are then placed in numerical order, with any repeats removed, we get the following sequence of 15 distinct terms:
      * <p>
      * 4, 8, 9, 16, 25, 27, 32, 64, 81, 125, 243, 256, 625, 1024, 3125
      * <p>

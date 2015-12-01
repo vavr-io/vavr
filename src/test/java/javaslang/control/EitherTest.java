@@ -269,7 +269,7 @@ public class EitherTest {
         assertThat(new Left<>(1).left().forAll(i -> i == 2)).isFalse();
     }
 
-    @Test// a property holds for all elements ofAll no elements
+    @Test// a property holds for all elements of no elements
     public void shouldNotHoldPropertyForAllOfLeftProjectionOfRight() {
         assertThat(new Left<>(1).right().forAll(e -> true)).isTrue();
     }
@@ -632,7 +632,7 @@ public class EitherTest {
         assertThat(new Right<>(1).right().forAll(i -> i == 2)).isFalse();
     }
 
-    @Test // a property holds for all elements ofAll no elements
+    @Test // a property holds for all elements of no elements
     public void shouldNotHoldPropertyForAllOfRightProjectionOfLeft() {
         assertThat(new Right<>(1).left().forAll(e -> true)).isTrue();
     }

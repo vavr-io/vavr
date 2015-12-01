@@ -259,7 +259,7 @@ public class OptionTest {
         assertThat(new Some<>(1).forAll(i -> i == 2)).isFalse();
     }
 
-    @Test // a property holds for all elements ofAll no elements
+    @Test // a property holds for all elements of no elements
     public void shouldNotHoldPropertyForAllOfNone() {
         assertThat(None.instance().forAll(e -> true)).isTrue();
     }

@@ -30,7 +30,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @SuppressWarnings("unchecked")
     @Override
-    abstract protected <T> Seq<T> ofAll(T... elements);
+    abstract protected <T> Seq<T> of(T... elements);
 
     @Override
     abstract protected <T> Seq<T> ofAll(java.lang.Iterable<? extends T> elements);
@@ -113,14 +113,14 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldAppendNullElementToNil() {
         final Seq<Integer> actual = this.<Integer> empty().append(null);
-        final Seq<Integer> expected = of(null);
+        final Seq<Integer> expected = this.of((Integer) null);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldAppendElementToNonNil() {
-        final Seq<Integer> actual = ofAll(1, 2).append(3);
-        final Seq<Integer> expected = ofAll(1, 2, 3);
+        final Seq<Integer> actual = of(1, 2).append(3);
+        final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -140,22 +140,22 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldAppendAllNonNilToNil() {
-        final Seq<Integer> actual = this.<Integer> empty().appendAll(ofAll(1, 2, 3));
-        final Seq<Integer> expected = ofAll(1, 2, 3);
+        final Seq<Integer> actual = this.<Integer> empty().appendAll(of(1, 2, 3));
+        final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldAppendAllNilToNonNil() {
-        final Seq<Integer> actual = ofAll(1, 2, 3).appendAll(empty());
-        final Seq<Integer> expected = ofAll(1, 2, 3);
+        final Seq<Integer> actual = of(1, 2, 3).appendAll(empty());
+        final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldAppendAllNonNilToNonNil() {
-        final Seq<Integer> actual = ofAll(1, 2, 3).appendAll(ofAll(4, 5, 6));
-        final Seq<Integer> expected = ofAll(1, 2, 3, 4, 5, 6);
+        final Seq<Integer> actual = of(1, 2, 3).appendAll(of(4, 5, 6));
+        final Seq<Integer> expected = of(1, 2, 3, 4, 5, 6);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -163,7 +163,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldUseSeqAsPartialFunction() {
-        assertThat(ofAll(1, 2, 3).apply(1)).isEqualTo(2);
+        assertThat(of(1, 2, 3).apply(1)).isEqualTo(2);
     }
 
     // -- combinations
@@ -176,8 +176,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldComputeCombinationsOfNonEmptyList() {
-        assertThat(ofAll(1, 2, 3).combinations())
-                .isEqualTo(ofAll(empty(), of(1), of(2), of(3), ofAll(1, 2), ofAll(1, 3), ofAll(2, 3), ofAll(1, 2, 3)));
+        assertThat(of(1, 2, 3).combinations())
+                .isEqualTo(of(empty(), of(1), of(2), of(3), of(1, 2), of(1, 3), of(2, 3), of(1, 2, 3)));
     }
 
     // -- combinations(k)
@@ -190,7 +190,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldComputeKCombinationsOfNonEmptyList() {
-        assertThat(ofAll(1, 2, 3).combinations(2)).isEqualTo(ofAll(ofAll(1, 2), ofAll(1, 3), ofAll(2, 3)));
+        assertThat(of(1, 2, 3).combinations(2)).isEqualTo(of(of(1, 2), of(1, 3), of(2, 3)));
     }
 
     @Test
@@ -202,19 +202,19 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldRecognizeNilNotContainsSlice() {
-        final boolean actual = empty().containsSlice(ofAll(1, 2, 3));
+        final boolean actual = empty().containsSlice(of(1, 2, 3));
         assertThat(actual).isFalse();
     }
 
     @Test
     public void shouldRecognizeNonNilDoesContainSlice() {
-        final boolean actual = ofAll(1, 2, 3, 4, 5).containsSlice(ofAll(2, 3));
+        final boolean actual = of(1, 2, 3, 4, 5).containsSlice(of(2, 3));
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldRecognizeNonNilDoesNotContainSlice() {
-        final boolean actual = ofAll(1, 2, 3, 4, 5).containsSlice(ofAll(2, 1, 4));
+        final boolean actual = of(1, 2, 3, 4, 5).containsSlice(of(2, 1, 4));
         assertThat(actual).isFalse();
     }
 
@@ -229,8 +229,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldCalculateCrossProductOfNonNil() {
-        final Traversable<Tuple2<Integer, Integer>> actual = ofAll(1, 2, 3).crossProduct();
-        final Traversable<Tuple2<Integer, Integer>> expected = ofAll(Tuple.of(1, 1), Tuple.of(1, 2), Tuple.of(1, 3),
+        final Traversable<Tuple2<Integer, Integer>> actual = of(1, 2, 3).crossProduct();
+        final Traversable<Tuple2<Integer, Integer>> expected = of(Tuple.of(1, 1), Tuple.of(1, 2), Tuple.of(1, 3),
                 Tuple.of(2, 1), Tuple.of(2, 2), Tuple.of(2, 3), Tuple.of(3, 1), Tuple.of(3, 2), Tuple.of(3, 3));
         assertThat(actual).isEqualTo(expected);
     }
@@ -240,8 +240,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @SuppressWarnings("varargs")
     @Test
     public void shouldCalculateCrossProductPower() {
-        Seq<Seq<?>> expected = ofAll(ofAll(1, 1), ofAll(1, 2), ofAll(2, 1), ofAll(2, 2));
-        assertThat(ofAll(1, 2).crossProduct(2)).isEqualTo(expected);
+        Seq<Seq<?>> expected = of(of(1, 1), of(1, 2), of(2, 1), of(2, 2));
+        assertThat(of(1, 2).crossProduct(2)).isEqualTo(expected);
     }
 
     // -- crossProduct(Iterable)
@@ -254,21 +254,21 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldCalculateCrossProductOfNilAndNonNil() {
-        final Traversable<Tuple2<Object, Object>> actual = empty().crossProduct(ofAll(1, 2, 3));
+        final Traversable<Tuple2<Object, Object>> actual = empty().crossProduct(of(1, 2, 3));
         assertThat(actual).isEmpty();
     }
 
     @Test
     public void shouldCalculateCrossProductOfNonNilAndNil() {
-        final Traversable<Tuple2<Integer, Integer>> actual = ofAll(1, 2, 3).crossProduct(empty());
+        final Traversable<Tuple2<Integer, Integer>> actual = of(1, 2, 3).crossProduct(empty());
         assertThat(actual).isEmpty();
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldCalculateCrossProductOfNonNilAndNonNil() {
-        final Traversable<Tuple2<Integer, Character>> actual = ofAll(1, 2, 3).crossProduct(ofAll('a', 'b'));
-        final Traversable<Tuple2<Integer, Character>> expected = ofAll(Tuple.of(1, 'a'), Tuple.of(1, 'b'),
+        final Traversable<Tuple2<Integer, Character>> actual = of(1, 2, 3).crossProduct(of('a', 'b'));
+        final Traversable<Tuple2<Integer, Character>> expected = of(Tuple.of(1, 'a'), Tuple.of(1, 'b'),
                 Tuple.of(2, 'a'), Tuple.of(2, 'b'), Tuple.of(3, 'a'), Tuple.of(3, 'b'));
         assertThat(actual).isEqualTo(expected);
     }
@@ -302,12 +302,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldGetFirstElement() {
-        assertThat(ofAll(1, 2, 3).get(0)).isEqualTo(1);
+        assertThat(of(1, 2, 3).get(0)).isEqualTo(1);
     }
 
     @Test
     public void shouldGetLastElement() {
-        assertThat(ofAll(1, 2, 3).get(2)).isEqualTo(3);
+        assertThat(of(1, 2, 3).get(2)).isEqualTo(3);
     }
 
     // -- indexOf
@@ -319,49 +319,49 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldNotFindIndexOfElementWhenStartIsGreater() {
-        assertThat(ofAll(1, 2, 3, 4).indexOf(2, 2)).isEqualTo(-1);
+        assertThat(of(1, 2, 3, 4).indexOf(2, 2)).isEqualTo(-1);
     }
 
     @Test
     public void shouldFindIndexOfFirstElement() {
-        assertThat(ofAll(1, 2, 3).indexOf(1)).isEqualTo(0);
+        assertThat(of(1, 2, 3).indexOf(1)).isEqualTo(0);
     }
 
     @Test
     public void shouldFindIndexOfInnerElement() {
-        assertThat(ofAll(1, 2, 3).indexOf(2)).isEqualTo(1);
+        assertThat(of(1, 2, 3).indexOf(2)).isEqualTo(1);
     }
 
     @Test
     public void shouldFindIndexOfLastElement() {
-        assertThat(ofAll(1, 2, 3).indexOf(3)).isEqualTo(2);
+        assertThat(of(1, 2, 3).indexOf(3)).isEqualTo(2);
     }
 
     // -- indexOfSlice
 
     @Test
     public void shouldNotFindIndexOfSliceWhenSeqIsEmpty() {
-        assertThat(empty().indexOfSlice(ofAll(2, 3))).isEqualTo(-1);
+        assertThat(empty().indexOfSlice(of(2, 3))).isEqualTo(-1);
     }
 
     @Test
     public void shouldNotFindIndexOfSliceWhenStartIsGreater() {
-        assertThat(ofAll(1, 2, 3, 4).indexOfSlice(ofAll(2, 3), 2)).isEqualTo(-1);
+        assertThat(of(1, 2, 3, 4).indexOfSlice(of(2, 3), 2)).isEqualTo(-1);
     }
 
     @Test
     public void shouldFindIndexOfFirstSlice() {
-        assertThat(ofAll(1, 2, 3, 4).indexOfSlice(ofAll(1, 2))).isEqualTo(0);
+        assertThat(of(1, 2, 3, 4).indexOfSlice(of(1, 2))).isEqualTo(0);
     }
 
     @Test
     public void shouldFindIndexOfInnerSlice() {
-        assertThat(ofAll(1, 2, 3, 4).indexOfSlice(ofAll(2, 3))).isEqualTo(1);
+        assertThat(of(1, 2, 3, 4).indexOfSlice(of(2, 3))).isEqualTo(1);
     }
 
     @Test
     public void shouldFindIndexOfLastSlice() {
-        assertThat(ofAll(1, 2, 3).indexOfSlice(ofAll(2, 3))).isEqualTo(1);
+        assertThat(of(1, 2, 3).indexOfSlice(of(2, 3))).isEqualTo(1);
     }
 
     // -- lastIndexOf
@@ -373,44 +373,44 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldNotFindLastIndexOfElementWhenEndIdLess() {
-        assertThat(ofAll(1, 2, 3, 4).lastIndexOf(3, 1)).isEqualTo(-1);
+        assertThat(of(1, 2, 3, 4).lastIndexOf(3, 1)).isEqualTo(-1);
     }
 
     @Test
     public void shouldFindLastIndexOfElement() {
-        assertThat(ofAll(1, 2, 3, 1, 2, 3).lastIndexOf(1)).isEqualTo(3);
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOf(1)).isEqualTo(3);
     }
 
     @Test
     public void shouldFindLastIndexOfElementWithEnd() {
-        assertThat(ofAll(1, 2, 3, 1, 2, 3).lastIndexOf(1, 1)).isEqualTo(0);
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOf(1, 1)).isEqualTo(0);
     }
 
     // -- lastIndexOfSlice
 
     @Test
     public void shouldNotFindLastIndexOfSliceWhenSeqIsEmpty() {
-        assertThat(empty().lastIndexOfSlice(ofAll(2, 3))).isEqualTo(-1);
+        assertThat(empty().lastIndexOfSlice(of(2, 3))).isEqualTo(-1);
     }
 
     @Test
     public void shouldNotFindLastIndexOfSliceWhenEndIdLess() {
-        assertThat(ofAll(1, 2, 3, 4, 5).lastIndexOfSlice(ofAll(3, 4), 1)).isEqualTo(-1);
+        assertThat(of(1, 2, 3, 4, 5).lastIndexOfSlice(of(3, 4), 1)).isEqualTo(-1);
     }
 
     @Test
     public void shouldFindLastIndexOfSlice() {
-        assertThat(ofAll(1, 2, 3, 1, 2).lastIndexOfSlice(empty())).isEqualTo(5);
-        assertThat(ofAll(1, 2, 3, 1, 2).lastIndexOfSlice(of(2))).isEqualTo(4);
-        assertThat(ofAll(1, 2, 3, 1, 2, 3, 4).lastIndexOfSlice(ofAll(2, 3))).isEqualTo(4);
+        assertThat(of(1, 2, 3, 1, 2).lastIndexOfSlice(empty())).isEqualTo(5);
+        assertThat(of(1, 2, 3, 1, 2).lastIndexOfSlice(of(2))).isEqualTo(4);
+        assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSlice(of(2, 3))).isEqualTo(4);
     }
 
     @Test
     public void shouldFindLastIndexOfSliceWithEnd() {
-        assertThat(ofAll(1, 2, 3, 1, 2, 3).lastIndexOfSlice(empty(), 2)).isEqualTo(2);
-        assertThat(ofAll(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(2), 2)).isEqualTo(1);
-        assertThat(ofAll(1, 2, 3, 1, 2, 3).lastIndexOfSlice(ofAll(2, 3), 2)).isEqualTo(1);
-        assertThat(ofAll(1, 2, 3, 1, 2, 3, 4).lastIndexOfSlice(ofAll(2, 3), 2)).isEqualTo(1);
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(empty(), 2)).isEqualTo(2);
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(2), 2)).isEqualTo(1);
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(2, 3), 2)).isEqualTo(1);
+        assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSlice(of(2, 3), 2)).isEqualTo(1);
     }
 
     // -- insert
@@ -425,21 +425,21 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldInsertInFrontOfElement() {
         final Seq<Integer> actual = of(4).insert(0, 1);
-        final Seq<Integer> expected = ofAll(1, 4);
+        final Seq<Integer> expected = of(1, 4);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertBehindOfElement() {
         final Seq<Integer> actual = of(4).insert(1, 1);
-        final Seq<Integer> expected = ofAll(4, 1);
+        final Seq<Integer> expected = of(4, 1);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertIntoSeq() {
-        final Seq<Integer> actual = ofAll(1, 2, 3).insert(2, 4);
-        final Seq<Integer> expected = ofAll(1, 2, 4, 3);
+        final Seq<Integer> actual = of(1, 2, 3).insert(2, 4);
+        final Seq<Integer> expected = of(1, 2, 4, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -462,29 +462,29 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldInserAlltIntoNil() {
-        final Seq<Integer> actual = this.<Integer> empty().insertAll(0, ofAll(1, 2, 3));
-        final Seq<Integer> expected = ofAll(1, 2, 3);
+        final Seq<Integer> actual = this.<Integer> empty().insertAll(0, of(1, 2, 3));
+        final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertAllInFrontOfElement() {
-        final Seq<Integer> actual = of(4).insertAll(0, ofAll(1, 2, 3));
-        final Seq<Integer> expected = ofAll(1, 2, 3, 4);
+        final Seq<Integer> actual = of(4).insertAll(0, of(1, 2, 3));
+        final Seq<Integer> expected = of(1, 2, 3, 4);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertAllBehindOfElement() {
-        final Seq<Integer> actual = of(4).insertAll(1, ofAll(1, 2, 3));
-        final Seq<Integer> expected = ofAll(4, 1, 2, 3);
+        final Seq<Integer> actual = of(4).insertAll(1, of(1, 2, 3));
+        final Seq<Integer> expected = of(4, 1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldInsertAllIntoSeq() {
-        final Seq<Integer> actual = ofAll(1, 2, 3).insertAll(2, ofAll(4, 5));
-        final Seq<Integer> expected = ofAll(1, 2, 4, 5, 3);
+        final Seq<Integer> actual = of(1, 2, 3).insertAll(2, of(4, 5));
+        final Seq<Integer> expected = of(1, 2, 4, 5, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -522,7 +522,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldIntersperseMultipleElements() {
-        assertThat(ofAll('a', 'b').intersperse(',')).isEqualTo(ofAll('a', ',', 'b'));
+        assertThat(of('a', 'b').intersperse(',')).isEqualTo(of('a', ',', 'b'));
     }
 
     // -- iterator(int)
@@ -534,13 +534,13 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldIterateFirstElementOfNonNilStartingAtIndex() {
-        assertThat(ofAll(1, 2, 3).iterator(1).next()).isEqualTo(2);
+        assertThat(of(1, 2, 3).iterator(1).next()).isEqualTo(2);
     }
 
     @Test
     public void shouldFullyIterateNonNilStartingAtIndex() {
         int actual = -1;
-        for (Iterator<Integer> iter = ofAll(1, 2, 3).iterator(1); iter.hasNext(); ) {
+        for (Iterator<Integer> iter = of(1, 2, 3).iterator(1); iter.hasNext(); ) {
             actual = iter.next();
         }
         assertThat(actual).isEqualTo(3);
@@ -555,7 +555,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldPadEmptyToNonEmpty() {
-        assertThat(empty().padTo(2, 1)).isEqualTo(ofAll(1, 1));
+        assertThat(empty().padTo(2, 1)).isEqualTo(of(1, 1));
     }
 
     @Test
@@ -566,9 +566,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldPadNonEmpty() {
-        assertThat(of(1).padTo(2, 1)).isEqualTo(ofAll(1, 1));
-        assertThat(of(1).padTo(2, 2)).isEqualTo(ofAll(1, 2));
-        assertThat(of(1).padTo(3, 2)).isEqualTo(ofAll(1, 2, 2));
+        assertThat(of(1).padTo(2, 1)).isEqualTo(of(1, 1));
+        assertThat(of(1).padTo(2, 2)).isEqualTo(of(1, 2));
+        assertThat(of(1).padTo(3, 2)).isEqualTo(of(1, 2, 2));
     }
 
     // -- patch
@@ -584,7 +584,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldPatchEmptyByNonEmpty() {
-        Seq<Character> s = ofAll('1', '2', '3');
+        Seq<Character> s = of('1', '2', '3');
         assertThat(empty().patch(0, s, 0)).isEqualTo(s);
         assertThat(empty().patch(-1, s, -1)).isEqualTo(s);
         assertThat(empty().patch(-1, s, 1)).isEqualTo(s);
@@ -594,45 +594,45 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldPatchNonEmptyByEmpty() {
-        Seq<Character> s = ofAll('1', '2', '3');
-        assertThat(s.patch(-1, empty(), -1)).isEqualTo(ofAll('1', '2', '3'));
-        assertThat(s.patch(-1, empty(), 0)).isEqualTo(ofAll('1', '2', '3'));
-        assertThat(s.patch(-1, empty(), 1)).isEqualTo(ofAll('2', '3'));
+        Seq<Character> s = of('1', '2', '3');
+        assertThat(s.patch(-1, empty(), -1)).isEqualTo(of('1', '2', '3'));
+        assertThat(s.patch(-1, empty(), 0)).isEqualTo(of('1', '2', '3'));
+        assertThat(s.patch(-1, empty(), 1)).isEqualTo(of('2', '3'));
         assertThat(s.patch(-1, empty(), 3)).isEmpty();
-        assertThat(s.patch(0, empty(), -1)).isEqualTo(ofAll('1', '2', '3'));
-        assertThat(s.patch(0, empty(), 0)).isEqualTo(ofAll('1', '2', '3'));
-        assertThat(s.patch(0, empty(), 1)).isEqualTo(ofAll('2', '3'));
+        assertThat(s.patch(0, empty(), -1)).isEqualTo(of('1', '2', '3'));
+        assertThat(s.patch(0, empty(), 0)).isEqualTo(of('1', '2', '3'));
+        assertThat(s.patch(0, empty(), 1)).isEqualTo(of('2', '3'));
         assertThat(s.patch(0, empty(), 3)).isEmpty();
-        assertThat(s.patch(1, empty(), -1)).isEqualTo(ofAll('1', '2', '3'));
-        assertThat(s.patch(1, empty(), 0)).isEqualTo(ofAll('1', '2', '3'));
-        assertThat(s.patch(1, empty(), 1)).isEqualTo(ofAll('1', '3'));
+        assertThat(s.patch(1, empty(), -1)).isEqualTo(of('1', '2', '3'));
+        assertThat(s.patch(1, empty(), 0)).isEqualTo(of('1', '2', '3'));
+        assertThat(s.patch(1, empty(), 1)).isEqualTo(of('1', '3'));
         assertThat(s.patch(1, empty(), 3)).isEqualTo(of('1'));
-        assertThat(s.patch(4, empty(), -1)).isEqualTo(ofAll('1', '2', '3'));
-        assertThat(s.patch(4, empty(), 0)).isEqualTo(ofAll('1', '2', '3'));
-        assertThat(s.patch(4, empty(), 1)).isEqualTo(ofAll('1', '2', '3'));
-        assertThat(s.patch(4, empty(), 3)).isEqualTo(ofAll('1', '2', '3'));
+        assertThat(s.patch(4, empty(), -1)).isEqualTo(of('1', '2', '3'));
+        assertThat(s.patch(4, empty(), 0)).isEqualTo(of('1', '2', '3'));
+        assertThat(s.patch(4, empty(), 1)).isEqualTo(of('1', '2', '3'));
+        assertThat(s.patch(4, empty(), 3)).isEqualTo(of('1', '2', '3'));
     }
 
     @Test
     public void shouldPatchNonEmptyByNonEmpty() {
-        Seq<Character> s = ofAll('1', '2', '3');
-        Seq<Character> d = ofAll('4', '5', '6');
-        assertThat(s.patch(-1, d, -1)).isEqualTo(ofAll('4', '5', '6', '1', '2', '3'));
-        assertThat(s.patch(-1, d, 0)).isEqualTo(ofAll('4', '5', '6', '1', '2', '3'));
-        assertThat(s.patch(-1, d, 1)).isEqualTo(ofAll('4', '5', '6', '2', '3'));
-        assertThat(s.patch(-1, d, 3)).isEqualTo(ofAll('4', '5', '6'));
-        assertThat(s.patch(0, d, -1)).isEqualTo(ofAll('4', '5', '6', '1', '2', '3'));
-        assertThat(s.patch(0, d, 0)).isEqualTo(ofAll('4', '5', '6', '1', '2', '3'));
-        assertThat(s.patch(0, d, 1)).isEqualTo(ofAll('4', '5', '6', '2', '3'));
-        assertThat(s.patch(0, d, 3)).isEqualTo(ofAll('4', '5', '6'));
-        assertThat(s.patch(1, d, -1)).isEqualTo(ofAll('1', '4', '5', '6', '2', '3'));
-        assertThat(s.patch(1, d, 0)).isEqualTo(ofAll('1', '4', '5', '6', '2', '3'));
-        assertThat(s.patch(1, d, 1)).isEqualTo(ofAll('1', '4', '5', '6', '3'));
-        assertThat(s.patch(1, d, 3)).isEqualTo(ofAll('1', '4', '5', '6'));
-        assertThat(s.patch(4, d, -1)).isEqualTo(ofAll('1', '2', '3', '4', '5', '6'));
-        assertThat(s.patch(4, d, 0)).isEqualTo(ofAll('1', '2', '3', '4', '5', '6'));
-        assertThat(s.patch(4, d, 1)).isEqualTo(ofAll('1', '2', '3', '4', '5', '6'));
-        assertThat(s.patch(4, d, 3)).isEqualTo(ofAll('1', '2', '3', '4', '5', '6'));
+        Seq<Character> s = of('1', '2', '3');
+        Seq<Character> d = of('4', '5', '6');
+        assertThat(s.patch(-1, d, -1)).isEqualTo(of('4', '5', '6', '1', '2', '3'));
+        assertThat(s.patch(-1, d, 0)).isEqualTo(of('4', '5', '6', '1', '2', '3'));
+        assertThat(s.patch(-1, d, 1)).isEqualTo(of('4', '5', '6', '2', '3'));
+        assertThat(s.patch(-1, d, 3)).isEqualTo(of('4', '5', '6'));
+        assertThat(s.patch(0, d, -1)).isEqualTo(of('4', '5', '6', '1', '2', '3'));
+        assertThat(s.patch(0, d, 0)).isEqualTo(of('4', '5', '6', '1', '2', '3'));
+        assertThat(s.patch(0, d, 1)).isEqualTo(of('4', '5', '6', '2', '3'));
+        assertThat(s.patch(0, d, 3)).isEqualTo(of('4', '5', '6'));
+        assertThat(s.patch(1, d, -1)).isEqualTo(of('1', '4', '5', '6', '2', '3'));
+        assertThat(s.patch(1, d, 0)).isEqualTo(of('1', '4', '5', '6', '2', '3'));
+        assertThat(s.patch(1, d, 1)).isEqualTo(of('1', '4', '5', '6', '3'));
+        assertThat(s.patch(1, d, 3)).isEqualTo(of('1', '4', '5', '6'));
+        assertThat(s.patch(4, d, -1)).isEqualTo(of('1', '2', '3', '4', '5', '6'));
+        assertThat(s.patch(4, d, 0)).isEqualTo(of('1', '2', '3', '4', '5', '6'));
+        assertThat(s.patch(4, d, 1)).isEqualTo(of('1', '2', '3', '4', '5', '6'));
+        assertThat(s.patch(4, d, 3)).isEqualTo(of('1', '2', '3', '4', '5', '6'));
     }
 
     // -- permutations
@@ -645,8 +645,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldComputePermutationsOfNonEmptyList() {
-        assertThat(ofAll(1, 2, 3).permutations())
-                .isEqualTo(ofAll(ofAll(ofAll(1, 2, 3), ofAll(1, 3, 2), ofAll(2, 1, 3), ofAll(2, 3, 1), ofAll(3, 1, 2), ofAll(3, 2, 1))));
+        assertThat(of(1, 2, 3).permutations())
+                .isEqualTo(ofAll(of(of(1, 2, 3), of(1, 3, 2), of(2, 1, 3), of(2, 3, 1), of(3, 1, 2), of(3, 2, 1))));
     }
 
     // -- prepend
@@ -660,8 +660,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldPrependElementToNonNil() {
-        final Seq<Integer> actual = ofAll(2, 3).prepend(1);
-        final Seq<Integer> expected = ofAll(1, 2, 3);
+        final Seq<Integer> actual = of(2, 3).prepend(1);
+        final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -681,22 +681,22 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldPrependAllNilToNonNil() {
-        final Seq<Integer> actual = ofAll(1, 2, 3).prependAll(empty());
-        final Seq<Integer> expected = ofAll(1, 2, 3);
+        final Seq<Integer> actual = of(1, 2, 3).prependAll(empty());
+        final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldPrependAllNonNilToNil() {
-        final Seq<Integer> actual = this.<Integer> empty().prependAll(ofAll(1, 2, 3));
-        final Seq<Integer> expected = ofAll(1, 2, 3);
+        final Seq<Integer> actual = this.<Integer> empty().prependAll(of(1, 2, 3));
+        final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldPrependAllNonNilToNonNil() {
-        final Seq<Integer> actual = ofAll(4, 5, 6).prependAll(ofAll(1, 2, 3));
-        final Seq<Integer> expected = ofAll(1, 2, 3, 4, 5, 6);
+        final Seq<Integer> actual = of(4, 5, 6).prependAll(of(1, 2, 3));
+        final Seq<Integer> expected = of(1, 2, 3, 4, 5, 6);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -709,22 +709,22 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldRemoveFirstElement() {
-        assertThat(ofAll(1, 2, 3).remove(1)).isEqualTo(ofAll(2, 3));
+        assertThat(of(1, 2, 3).remove(1)).isEqualTo(of(2, 3));
     }
 
     @Test
     public void shouldRemoveLastElement() {
-        assertThat(ofAll(1, 2, 3).remove(3)).isEqualTo(ofAll(1, 2));
+        assertThat(of(1, 2, 3).remove(3)).isEqualTo(of(1, 2));
     }
 
     @Test
     public void shouldRemoveInnerElement() {
-        assertThat(ofAll(1, 2, 3).remove(2)).isEqualTo(ofAll(1, 3));
+        assertThat(of(1, 2, 3).remove(2)).isEqualTo(of(1, 3));
     }
 
     @Test
     public void shouldRemoveNonExistingElement() {
-        final Seq<Integer> t = ofAll(1, 2, 3);
+        final Seq<Integer> t = of(1, 2, 3);
         if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(t.remove(4)).isEqualTo(t);
         } else {
@@ -741,32 +741,32 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldRemoveFirstElementByPredicateBegin() {
-        assertThat(ofAll(1, 2, 3).removeFirst(v -> v == 1)).isEqualTo(ofAll(2, 3));
+        assertThat(of(1, 2, 3).removeFirst(v -> v == 1)).isEqualTo(of(2, 3));
     }
 
     @Test
     public void shouldRemoveFirstElementByPredicateBeginM() {
-        assertThat(ofAll(1, 2, 1, 3).removeFirst(v -> v == 1)).isEqualTo(ofAll(2, 1, 3));
+        assertThat(of(1, 2, 1, 3).removeFirst(v -> v == 1)).isEqualTo(of(2, 1, 3));
     }
 
     @Test
     public void shouldRemoveFirstElementByPredicateEnd() {
-        assertThat(ofAll(1, 2, 3).removeFirst(v -> v == 3)).isEqualTo(ofAll(1, 2));
+        assertThat(of(1, 2, 3).removeFirst(v -> v == 3)).isEqualTo(of(1, 2));
     }
 
     @Test
     public void shouldRemoveFirstElementByPredicateInner() {
-        assertThat(ofAll(1, 2, 3, 4, 5).removeFirst(v -> v == 3)).isEqualTo(ofAll(1, 2, 4, 5));
+        assertThat(of(1, 2, 3, 4, 5).removeFirst(v -> v == 3)).isEqualTo(of(1, 2, 4, 5));
     }
 
     @Test
     public void shouldRemoveFirstElementByPredicateInnerM() {
-        assertThat(ofAll(1, 2, 3, 2, 5).removeFirst(v -> v == 2)).isEqualTo(ofAll(1, 3, 2, 5));
+        assertThat(of(1, 2, 3, 2, 5).removeFirst(v -> v == 2)).isEqualTo(of(1, 3, 2, 5));
     }
 
     @Test
     public void shouldRemoveFirstElementByPredicateNonExisting() {
-        final Seq<Integer> t = ofAll(1, 2, 3);
+        final Seq<Integer> t = of(1, 2, 3);
         if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(t.removeFirst(v -> v == 4)).isEqualTo(t);
         } else {
@@ -783,32 +783,32 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldRemoveLastElementByPredicateBegin() {
-        assertThat(ofAll(1, 2, 3).removeLast(v -> v == 1)).isEqualTo(ofAll(2, 3));
+        assertThat(of(1, 2, 3).removeLast(v -> v == 1)).isEqualTo(of(2, 3));
     }
 
     @Test
     public void shouldRemoveLastElementByPredicateEnd() {
-        assertThat(ofAll(1, 2, 3).removeLast(v -> v == 3)).isEqualTo(ofAll(1, 2));
+        assertThat(of(1, 2, 3).removeLast(v -> v == 3)).isEqualTo(of(1, 2));
     }
 
     @Test
     public void shouldRemoveLastElementByPredicateEndM() {
-        assertThat(ofAll(1, 3, 2, 3).removeLast(v -> v == 3)).isEqualTo(ofAll(1, 3, 2));
+        assertThat(of(1, 3, 2, 3).removeLast(v -> v == 3)).isEqualTo(of(1, 3, 2));
     }
 
     @Test
     public void shouldRemoveLastElementByPredicateInner() {
-        assertThat(ofAll(1, 2, 3, 4, 5).removeLast(v -> v == 3)).isEqualTo(ofAll(1, 2, 4, 5));
+        assertThat(of(1, 2, 3, 4, 5).removeLast(v -> v == 3)).isEqualTo(of(1, 2, 4, 5));
     }
 
     @Test
     public void shouldRemoveLastElementByPredicateInnerM() {
-        assertThat(ofAll(1, 2, 3, 2, 5).removeLast(v -> v == 2)).isEqualTo(ofAll(1, 2, 3, 5));
+        assertThat(of(1, 2, 3, 2, 5).removeLast(v -> v == 2)).isEqualTo(of(1, 2, 3, 5));
     }
 
     @Test
     public void shouldRemoveLastElementByPredicateNonExisting() {
-        final Seq<Integer> t = ofAll(1, 2, 3);
+        final Seq<Integer> t = of(1, 2, 3);
         if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(t.removeLast(v -> v == 4)).isEqualTo(t);
         } else {
@@ -820,21 +820,21 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldRemoveAllElementsFromNil() {
-        assertThat(empty().removeAll(ofAll(1, 2, 3))).isEmpty();
+        assertThat(empty().removeAll(of(1, 2, 3))).isEmpty();
     }
 
     @Test
     public void shouldRemoveAllExistingElementsFromNonNil() {
-        assertThat(ofAll(1, 2, 3, 1, 2, 3).removeAll(ofAll(1, 2))).isEqualTo(ofAll(3, 3));
+        assertThat(of(1, 2, 3, 1, 2, 3).removeAll(of(1, 2))).isEqualTo(of(3, 3));
     }
 
     @Test
     public void shouldNotRemoveAllNonExistingElementsFromNonNil() {
-        final Seq<Integer> t = ofAll(1, 2, 3);
+        final Seq<Integer> t = of(1, 2, 3);
         if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.removeAll(ofAll(4, 5))).isEqualTo(t);
+            assertThat(t.removeAll(of(4, 5))).isEqualTo(t);
         } else {
-            assertThat(t.removeAll(ofAll(4, 5))).isSameAs(t);
+            assertThat(t.removeAll(of(4, 5))).isSameAs(t);
         }
     }
 
@@ -847,12 +847,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldRemoveAllExistingObjectsFromNonNil() {
-        assertThat(ofAll(1, 2, 3, 1, 2, 3).removeAll(1)).isEqualTo(ofAll(2, 3, 2, 3));
+        assertThat(of(1, 2, 3, 1, 2, 3).removeAll(1)).isEqualTo(of(2, 3, 2, 3));
     }
 
     @Test
     public void shouldNotRemoveAllNonObjectsElementsFromNonNil() {
-        final Seq<Integer> t = ofAll(1, 2, 3);
+        final Seq<Integer> t = of(1, 2, 3);
         if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(t.removeAll(4)).isEqualTo(t);
         } else {
@@ -869,27 +869,27 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldRemoveIndxAtNonNil() {
-        assertThat(ofAll(1, 2, 3).removeAt(1)).isEqualTo(ofAll(1, 3));
+        assertThat(of(1, 2, 3).removeAt(1)).isEqualTo(of(1, 3));
     }
 
     @Test
     public void shouldRemoveIndxAtBegin() {
-        assertThat(ofAll(1, 2, 3).removeAt(0)).isEqualTo(ofAll(2, 3));
+        assertThat(of(1, 2, 3).removeAt(0)).isEqualTo(of(2, 3));
     }
 
     @Test
     public void shouldRemoveIndxAtEnd() {
-        assertThat(ofAll(1, 2, 3).removeAt(2)).isEqualTo(ofAll(1, 2));
+        assertThat(of(1, 2, 3).removeAt(2)).isEqualTo(of(1, 2));
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldRemoveIndxOutOfBoundsLeft() {
-        assertThat(ofAll(1, 2, 3).removeAt(-1)).isEqualTo(ofAll(1, 2, 3));
+        assertThat(of(1, 2, 3).removeAt(-1)).isEqualTo(of(1, 2, 3));
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldRemoveIndxOutOfBoundsRight() {
-        assertThat(ofAll(1, 2, 3).removeAt(5)).isEqualTo(ofAll(1, 2, 3));
+        assertThat(of(1, 2, 3).removeAt(5)).isEqualTo(of(1, 2, 3));
     }
 
     // -- reverse
@@ -901,7 +901,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldReverseNonNil() {
-        assertThat(ofAll(1, 2, 3).reverse()).isEqualTo(ofAll(3, 2, 1));
+        assertThat(of(1, 2, 3).reverse()).isEqualTo(of(3, 2, 1));
     }
 
     // -- reverseIterator
@@ -913,12 +913,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldCreateReverseIteratorOfSingle() {
-        assertThat(Seq.ofAll(ofAll("a")).reverseIterator().toList()).isEqualTo(Iterator.of("a").toList());
+        assertThat(Seq.ofAll(this.of("a")).reverseIterator().toList()).isEqualTo(Iterator.of("a").toList());
     }
 
     @Test
     public void shouldCreateReverseIteratorOfNonEmpty() {
-        assertThat(Seq.ofAll(ofAll("a", "b", "c")).reverseIterator().toList()).isEqualTo(Iterator.ofAll("c", "b", "a").toList());
+        assertThat(Seq.ofAll(of("a", "b", "c")).reverseIterator().toList()).isEqualTo(Iterator.ofAll("c", "b", "a").toList());
     }
 
     // -- set
@@ -950,12 +950,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSetFirstElement() {
-        assertThat(ofAll(1, 2, 3).update(0, 4)).isEqualTo(ofAll(4, 2, 3));
+        assertThat(of(1, 2, 3).update(0, 4)).isEqualTo(of(4, 2, 3));
     }
 
     @Test
     public void shouldSetLastElement() {
-        assertThat(ofAll(1, 2, 3).update(2, 4)).isEqualTo(ofAll(1, 2, 4));
+        assertThat(of(1, 2, 3).update(2, 4)).isEqualTo(of(1, 2, 4));
     }
 
     // -- slice(beginIndex, endIndex)
@@ -986,19 +986,19 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldReturnSliceWhenIndicesAreWithinRange() {
-        final Seq<Integer> actual = ofAll(1, 2, 3).slice(1, 3);
-        assertThat(actual).isEqualTo(ofAll(2, 3));
+        final Seq<Integer> actual = of(1, 2, 3).slice(1, 3);
+        assertThat(actual).isEqualTo(of(2, 3));
     }
 
     @Test
     public void shouldReturnNilOnSliceWhenIndicesBothAreUpperBound() {
-        final Seq<Integer> actual = ofAll(1, 2, 3).slice(3, 3);
+        final Seq<Integer> actual = of(1, 2, 3).slice(3, 3);
         assertThat(actual).isEmpty();
     }
 
     @Test
     public void shouldComputeSliceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
-        assertThat(ofAll(1, 2, 3).slice(1, 0)).isEmpty();
+        assertThat(of(1, 2, 3).slice(1, 0)).isEmpty();
     }
 
     @Test
@@ -1008,7 +1008,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldComputeSliceOnNonNilWhenBeginIndexExceedsLowerBound() {
-        assertThat(ofAll(1, 2, 3).slice(-1, 2)).isEqualTo(ofAll(1, 2));
+        assertThat(of(1, 2, 3).slice(-1, 2)).isEqualTo(of(1, 2));
     }
 
     @Test
@@ -1023,17 +1023,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldComputeSliceWhenEndIndexExceedsUpperBound() {
-        assertThat(ofAll(1, 2, 3).slice(1, 4)).isEqualTo(ofAll(2, 3));
+        assertThat(of(1, 2, 3).slice(1, 4)).isEqualTo(of(2, 3));
     }
 
     @Test
     public void shouldComputeSliceWhenBeginIndexIsGreaterThanEndIndex() {
-        assertThat(ofAll(1, 2, 3).slice(2, 1)).isEmpty();
+        assertThat(of(1, 2, 3).slice(2, 1)).isEmpty();
     }
 
     @Test
     public void shouldComputeSliceWhenBeginIndexAndEndIndexAreBothOutOfBounds() {
-        assertThat(ofAll(1, 2, 3).slice(-10, 10)).isEqualTo(ofAll(1, 2, 3));
+        assertThat(of(1, 2, 3).slice(-10, 10)).isEqualTo(of(1, 2, 3));
     }
 
     // -- sort()
@@ -1045,7 +1045,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSortNonNil() {
-        assertThat(ofAll(3, 4, 1, 2).sort()).isEqualTo(ofAll(1, 2, 3, 4));
+        assertThat(of(3, 4, 1, 2).sort()).isEqualTo(of(1, 2, 3, 4));
     }
 
     // -- sort(Comparator)
@@ -1057,7 +1057,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSortNonNilUsingComparator() {
-        assertThat(ofAll(3, 4, 1, 2).sort((i, j) -> j - i)).isEqualTo(ofAll(4, 3, 2, 1));
+        assertThat(of(3, 4, 1, 2).sort((i, j) -> j - i)).isEqualTo(of(4, 3, 2, 1));
     }
 
     // -- sortBy(Function)
@@ -1069,9 +1069,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSortByNonNilUsingFunction() {
-        final Seq<String> testee = ofAll("aaa", "b", "cc");
+        final Seq<String> testee = of("aaa", "b", "cc");
         final Seq<String> actual = testee.sortBy(String::length);
-        final Seq<String> expected = ofAll("b", "cc", "aaa");
+        final Seq<String> expected = of("b", "cc", "aaa");
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1084,9 +1084,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSortByNonNilUsingComparatorAndFunction() {
-        final Seq<String> testee = ofAll("aaa", "b", "cc");
+        final Seq<String> testee = of("aaa", "b", "cc");
         final Seq<String> actual = testee.sortBy((i1, i2) -> i2 - i1, String::length);
-        final Seq<String> expected = ofAll("aaa", "cc", "b");
+        final Seq<String> expected = of("aaa", "cc", "b");
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1099,23 +1099,23 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSplitAtNonNil() {
-        assertThat(ofAll(1, 2, 3).splitAt(1)).isEqualTo(Tuple.of(of(1), ofAll(2, 3)));
+        assertThat(of(1, 2, 3).splitAt(1)).isEqualTo(Tuple.of(of(1), of(2, 3)));
     }
 
     @Test
     public void shouldSplitAtBegin() {
-        assertThat(ofAll(1, 2, 3).splitAt(0)).isEqualTo(Tuple.of(empty(), ofAll(1, 2, 3)));
+        assertThat(of(1, 2, 3).splitAt(0)).isEqualTo(Tuple.of(empty(), of(1, 2, 3)));
     }
 
     @Test
     public void shouldSplitAtEnd() {
-        assertThat(ofAll(1, 2, 3).splitAt(3)).isEqualTo(Tuple.of(ofAll(1, 2, 3), empty()));
+        assertThat(of(1, 2, 3).splitAt(3)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
     }
 
     @Test
     public void shouldSplitAtOutOfBounds() {
-        assertThat(ofAll(1, 2, 3).splitAt(5)).isEqualTo(Tuple.of(ofAll(1, 2, 3), empty()));
-        assertThat(ofAll(1, 2, 3).splitAt(-1)).isEqualTo(Tuple.of(empty(), ofAll(1, 2, 3)));
+        assertThat(of(1, 2, 3).splitAt(5)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
+        assertThat(of(1, 2, 3).splitAt(-1)).isEqualTo(Tuple.of(empty(), of(1, 2, 3)));
     }
 
     // -- splitAt(predicate)
@@ -1127,22 +1127,22 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSplitPredicateAtNonNil() {
-        assertThat(ofAll(1, 2, 3).splitAt(e -> e == 2)).isEqualTo(Tuple.of(of(1), ofAll(2, 3)));
+        assertThat(of(1, 2, 3).splitAt(e -> e == 2)).isEqualTo(Tuple.of(of(1), of(2, 3)));
     }
 
     @Test
     public void shouldSplitAtPredicateBegin() {
-        assertThat(ofAll(1, 2, 3).splitAt(e -> e == 1)).isEqualTo(Tuple.of(empty(), ofAll(1, 2, 3)));
+        assertThat(of(1, 2, 3).splitAt(e -> e == 1)).isEqualTo(Tuple.of(empty(), of(1, 2, 3)));
     }
 
     @Test
     public void shouldSplitAtPredicateEnd() {
-        assertThat(ofAll(1, 2, 3).splitAt(e -> e == 3)).isEqualTo(Tuple.of(ofAll(1, 2), of(3)));
+        assertThat(of(1, 2, 3).splitAt(e -> e == 3)).isEqualTo(Tuple.of(of(1, 2), of(3)));
     }
 
     @Test
     public void shouldSplitAtPredicateNotFound() {
-        assertThat(ofAll(1, 2, 3).splitAt(e -> e == 5)).isEqualTo(Tuple.of(ofAll(1, 2, 3), empty()));
+        assertThat(of(1, 2, 3).splitAt(e -> e == 5)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
     }
 
     // -- splitAtInclusive(predicate)
@@ -1154,22 +1154,22 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSplitInclusivePredicateAtNonNil() {
-        assertThat(ofAll(1, 2, 3).splitAtInclusive(e -> e == 2)).isEqualTo(Tuple.of(ofAll(1, 2), of(3)));
+        assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 2)).isEqualTo(Tuple.of(of(1, 2), of(3)));
     }
 
     @Test
     public void shouldSplitAtInclusivePredicateBegin() {
-        assertThat(ofAll(1, 2, 3).splitAtInclusive(e -> e == 1)).isEqualTo(Tuple.of(of(1), ofAll(2, 3)));
+        assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 1)).isEqualTo(Tuple.of(of(1), of(2, 3)));
     }
 
     @Test
     public void shouldSplitAtInclusivePredicateEnd() {
-        assertThat(ofAll(1, 2, 3).splitAtInclusive(e -> e == 3)).isEqualTo(Tuple.of(ofAll(1, 2, 3), empty()));
+        assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 3)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
     }
 
     @Test
     public void shouldSplitAtInclusivePredicateNotFound() {
-        assertThat(ofAll(1, 2, 3).splitAtInclusive(e -> e == 5)).isEqualTo(Tuple.of(ofAll(1, 2, 3), empty()));
+        assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 5)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
     }
 
     // -- startsWith
@@ -1196,55 +1196,55 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldStartsNonNilOfNilCalculate() {
-        assertThat(ofAll(1, 2, 3).startsWith(empty())).isTrue();
+        assertThat(of(1, 2, 3).startsWith(empty())).isTrue();
     }
 
     @Test
     public void shouldStartsNonNilOfNonNilCalculate() {
-        assertThat(ofAll(1, 2, 3).startsWith(ofAll(1, 2))).isTrue();
-        assertThat(ofAll(1, 2, 3).startsWith(ofAll(1, 2, 3))).isTrue();
-        assertThat(ofAll(1, 2, 3).startsWith(ofAll(1, 2, 3, 4))).isFalse();
-        assertThat(ofAll(1, 2, 3).startsWith(ofAll(1, 3))).isFalse();
+        assertThat(of(1, 2, 3).startsWith(of(1, 2))).isTrue();
+        assertThat(of(1, 2, 3).startsWith(of(1, 2, 3))).isTrue();
+        assertThat(of(1, 2, 3).startsWith(of(1, 2, 3, 4))).isFalse();
+        assertThat(of(1, 2, 3).startsWith(of(1, 3))).isFalse();
     }
 
     @Test
     public void shouldStartsNonNilOfNilWithOffsetCalculate() {
-        assertThat(ofAll(1, 2, 3).startsWith(empty(), 1)).isTrue();
+        assertThat(of(1, 2, 3).startsWith(empty(), 1)).isTrue();
     }
 
     @Test
     public void shouldNotStartsNonNilOfNonNilWithNegativeOffsetCalculate() {
-        assertThat(ofAll(1, 2, 3).startsWith(of(1), -1)).isFalse();
+        assertThat(of(1, 2, 3).startsWith(of(1), -1)).isFalse();
     }
 
     @Test
     public void shouldNotStartsNonNilOfNonNilWithOffsetEqualLengthCalculate() {
-        assertThat(ofAll(1, 2, 3).startsWith(of(3), 3)).isFalse();
+        assertThat(of(1, 2, 3).startsWith(of(3), 3)).isFalse();
     }
 
     @Test
     public void shouldNotStartsNonNilOfNonNilWithOffsetEndCalculate() {
-        assertThat(ofAll(1, 2, 3).startsWith(of(3), 2)).isTrue();
+        assertThat(of(1, 2, 3).startsWith(of(3), 2)).isTrue();
     }
 
     @Test
     public void shouldStartsNonNilOfNonNilWithOffsetAtStartCalculate() {
-        assertThat(ofAll(1, 2, 3).startsWith(of(1), 0)).isTrue();
+        assertThat(of(1, 2, 3).startsWith(of(1), 0)).isTrue();
     }
 
     @Test
     public void shouldStartsNonNilOfNonNilWithOffsetCalculate1() {
-        assertThat(ofAll(1, 2, 3).startsWith(ofAll(2, 3), 1)).isTrue();
+        assertThat(of(1, 2, 3).startsWith(of(2, 3), 1)).isTrue();
     }
 
     @Test
     public void shouldStartsNonNilOfNonNilWithOffsetCalculate2() {
-        assertThat(ofAll(1, 2, 3).startsWith(ofAll(2, 3, 4), 1)).isFalse();
+        assertThat(of(1, 2, 3).startsWith(of(2, 3, 4), 1)).isFalse();
     }
 
     @Test
     public void shouldStartsNonNilOfNonNilWithOffsetCalculate3() {
-        assertThat(ofAll(1, 2, 3).startsWith(ofAll(2, 4), 1)).isFalse();
+        assertThat(of(1, 2, 3).startsWith(of(2, 4), 1)).isFalse();
     }
 
     // -- subSequence(beginIndex)
@@ -1269,13 +1269,13 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldReturnSubSequenceWhenIndexIsWithinRange() {
-        final Seq<Integer> actual = ofAll(1, 2, 3).subSequence(1);
-        assertThat(actual).isEqualTo(ofAll(2, 3));
+        final Seq<Integer> actual = of(1, 2, 3).subSequence(1);
+        assertThat(actual).isEqualTo(of(2, 3));
     }
 
     @Test
     public void shouldReturnNilWhenSubSequenceBeginningWithSize() {
-        final Seq<Integer> actual = ofAll(1, 2, 3).subSequence(3);
+        final Seq<Integer> actual = of(1, 2, 3).subSequence(3);
         assertThat(actual).isEmpty();
     }
 
@@ -1286,12 +1286,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSubSequenceWithOutOfLowerBound() {
-        ofAll(1, 2, 3).subSequence(-1);
+        of(1, 2, 3).subSequence(-1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSubSequenceWithOutOfUpperBound() {
-        ofAll(1, 2, 3).subSequence(4);
+        of(1, 2, 3).subSequence(4);
     }
 
     // -- subSequence(beginIndex, endIndex)
@@ -1322,19 +1322,19 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldReturnSubSequenceWhenIndicesAreWithinRange() {
-        final Seq<Integer> actual = ofAll(1, 2, 3).subSequence(1, 3);
-        assertThat(actual).isEqualTo(ofAll(2, 3));
+        final Seq<Integer> actual = of(1, 2, 3).subSequence(1, 3);
+        assertThat(actual).isEqualTo(of(2, 3));
     }
 
     @Test
     public void shouldReturnNilWhenOnSubSequenceIndicesBothAreUpperBound() {
-        final Seq<Integer> actual = ofAll(1, 2, 3).subSequence(3, 3);
+        final Seq<Integer> actual = of(1, 2, 3).subSequence(3, 3);
         assertThat(actual).isEmpty();
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubSequenceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
-        ofAll(1, 2, 3).subSequence(1, 0);
+        of(1, 2, 3).subSequence(1, 0);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -1344,7 +1344,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubSequenceOnNonNilWhenBeginIndexExceedsLowerBound() {
-        ofAll(1, 2, 3).subSequence(-1, 2);
+        of(1, 2, 3).subSequence(-1, 2);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -1359,12 +1359,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubSequenceWhenEndIndexExceedsUpperBound() {
-        ofAll(1, 2, 3).subSequence(1, 4).mkString(); // force computation ofAll last element, e.g. because Stream is lazy
+        of(1, 2, 3).subSequence(1, 4).mkString(); // force computation of last element, e.g. because Stream is lazy
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubSequenceWhenBeginIndexIsGreaterThanEndIndex() {
-        ofAll(1, 2, 3).subSequence(2, 1).mkString(); // force computation ofAll last element, e.g. because Stream is lazy
+        of(1, 2, 3).subSequence(2, 1).mkString(); // force computation of last element, e.g. because Stream is lazy
     }
 
     // -- unzip
@@ -1376,8 +1376,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldUnzipNonNil() {
-        final Tuple actual = ofAll(0, 1).unzip(i -> Tuple.of(i, (char) ((short) 'a' + i)));
-        final Tuple expected = Tuple.of(ofAll(0, 1), this.<Character> ofAll('a', 'b'));
+        final Tuple actual = of(0, 1).unzip(i -> Tuple.of(i, (char) ((short) 'a' + i)));
+        final Tuple expected = Tuple.of(of(0, 1), this.<Character> of('a', 'b'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1388,8 +1388,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldUnzip3NonNil() {
-        final Tuple actual = ofAll(0, 1).unzip3(i -> Tuple.of(i, (char) ((short) 'a' + i), (char) ((short) 'a' + i + 1)));
-        final Tuple expected = Tuple.of(ofAll(0, 1), this.<Character> ofAll('a', 'b'), this.<Character> ofAll('b', 'c'));
+        final Tuple actual = of(0, 1).unzip3(i -> Tuple.of(i, (char) ((short) 'a' + i), (char) ((short) 'a' + i + 1)));
+        final Tuple expected = Tuple.of(of(0, 1), this.<Character> of('a', 'b'), this.<Character> of('b', 'c'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1415,25 +1415,25 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldZipNonNilsIfThisIsSmaller() {
-        final Seq<Tuple2<Integer, String>> actual = ofAll(1, 2).zip(ofAll("a", "b", "c"));
+        final Seq<Tuple2<Integer, String>> actual = of(1, 2).zip(of("a", "b", "c"));
         @SuppressWarnings("unchecked")
-        final Seq<Tuple2<Integer, String>> expected = ofAll(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        final Seq<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipNonNilsIfThatIsSmaller() {
-        final Seq<Tuple2<Integer, String>> actual = ofAll(1, 2, 3).zip(ofAll("a", "b"));
+        final Seq<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b"));
         @SuppressWarnings("unchecked")
-        final Seq<Tuple2<Integer, String>> expected = ofAll(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        final Seq<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipNonNilsOfSameSize() {
-        final Seq<Tuple2<Integer, String>> actual = ofAll(1, 2, 3).zip(ofAll("a", "b", "c"));
+        final Seq<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b", "c"));
         @SuppressWarnings("unchecked")
-        final Seq<Tuple2<Integer, String>> expected = ofAll(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        final Seq<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1466,25 +1466,25 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldZipAllNonNilsIfThisIsSmaller() {
-        final Seq<Tuple2<Integer, String>> actual = ofAll(1, 2).zipAll(ofAll("a", "b", "c"), 9, "z");
+        final Seq<Tuple2<Integer, String>> actual = of(1, 2).zipAll(of("a", "b", "c"), 9, "z");
         @SuppressWarnings("unchecked")
-        final Seq<Tuple2<Integer, String>> expected = ofAll(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
+        final Seq<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsIfThatIsSmaller() {
-        final Seq<Tuple2<Integer, String>> actual = ofAll(1, 2, 3).zipAll(ofAll("a", "b"), 9, "z");
+        final Seq<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b"), 9, "z");
         @SuppressWarnings("unchecked")
-        final Seq<Tuple2<Integer, String>> expected = ofAll(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
+        final Seq<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldZipAllNonNilsOfSameSize() {
-        final Seq<Tuple2<Integer, String>> actual = ofAll(1, 2, 3).zipAll(ofAll("a", "b", "c"), 9, "z");
+        final Seq<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b", "c"), 9, "z");
         @SuppressWarnings("unchecked")
-        final Seq<Tuple2<Integer, String>> expected = ofAll(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        final Seq<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1502,9 +1502,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldZipNonNilWithIndex() {
-        final Seq<Tuple2<String, Integer>> actual = ofAll("a", "b", "c").zipWithIndex();
+        final Seq<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex();
         @SuppressWarnings("unchecked")
-        final Seq<Tuple2<String, Integer>> expected = ofAll(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
+        final Seq<Tuple2<String, Integer>> expected = of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
         assertThat(actual).isEqualTo(expected);
     }
 }

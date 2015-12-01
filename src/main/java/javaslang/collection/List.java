@@ -32,11 +32,11 @@ import java.util.stream.Collector;
  * <pre>
  * <code>
  * // factory methods
- * List.empty()                  // = List.of() = Nil.instance()
- * List.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
- * List.of(Object...)            // e.g. List.of(1, 2, 3)
+ * List.empty()                        // = List.of() = Nil.instance()
+ * List.of(x)                          // = new Cons&lt;&gt;(x, Nil.instance())
+ * List.of(Object...)                  // e.g. List.of(1, 2, 3)
  * List.ofAll(java.lang.Iterable)      // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
- * List.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(new int[] {1, 2, 3}) = 1, 2, 3
+ * List.ofAll(&lt;primitive array&gt;) // e.g. List.of(new int[] {1, 2, 3}) = 1, 2, 3
  *
  * // int sequences
  * List.range(0, 3)              // = 0, 1, 2
@@ -55,15 +55,14 @@ import java.util.stream.Collector;
  * List&lt;Integer&gt;       s2 = List.of(1, 2, 3);
  *                     // = List.of(new Integer[] {1, 2, 3});
  *
- * List&lt;int[]&gt;         s3 = List.of(new int[] {1, 2, 3});
- * List&lt;List&lt;Integer&gt;&gt; s4 = List.of(List.of(1, 2, 3));
+ * List&lt;int[]&gt;         s3 = List.ofAll(new int[] {1, 2, 3});
+ * List&lt;List&lt;Integer&gt;&gt; s4 = List.ofAll(List.of(1, 2, 3));
  *
  * List&lt;Integer&gt;       s5 = List.ofAll(new int[] {1, 2, 3});
  * List&lt;Integer&gt;       s6 = List.ofAll(List.of(1, 2, 3));
  *
  * // cuckoo's egg
  * List&lt;Integer[]&gt;     s7 = List.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
- *                     //!= List.&lt;Integer[]&gt; of(1, 2, 3);
  * </code>
  * </pre>
  *

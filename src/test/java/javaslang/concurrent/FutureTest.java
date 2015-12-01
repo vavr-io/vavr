@@ -49,7 +49,7 @@ public class FutureTest extends AbstractValueTest {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <T> Seq<T> ofAll(T... elements) {
+    protected <T> Seq<T> of(T... elements) {
         return List.ofAll(elements);
     }
 
@@ -147,7 +147,7 @@ public class FutureTest extends AbstractValueTest {
 
     // TODO
 
-    // -- static ofAll()
+    // -- static of()
 
     @Test
     public void shouldCreateAndCompleteAFutureUsingTrivialExecutorService() {
@@ -317,7 +317,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldRegisterCallbackBeforeFutureCompletes() {
 
-        // instead ofAll delaying we wait/notify
+        // instead of delaying we wait/notify
         final Object lock = new Object();
         final int[] actual = new int[] { -1 };
         final boolean[] futureWaiting = new boolean[] { false };
@@ -374,7 +374,7 @@ public class FutureTest extends AbstractValueTest {
 
     // TODO: filter, flatten, flatMap, get, isEmpty, iterator, map, peek
 
-    // TODO: also test what happens an exception occurs within one ofAll these method calls and compare it with Scala
+    // TODO: also test what happens an exception occurs within one of these method calls and compare it with Scala
 
     // -- map()
 

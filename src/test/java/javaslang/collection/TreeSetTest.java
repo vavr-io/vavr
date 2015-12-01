@@ -32,7 +32,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <T> TreeSet<T> ofAll(T... elements) {
+    protected final <T> TreeSet<T> of(T... elements) {
         boolean allLongs = true;
         boolean allNumbers = true;
         for (T element : elements) {

@@ -307,7 +307,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldObeyInvariant2() {
-        Property.def("Every path from the root to an empty node contains the same number ofAll black nodes")
+        Property.def("Every path from the root to an empty node contains the same number of black nodes")
                 .forAll(TREES)
                 .suchThat(RedBlackTreeTest::invariant2)
                 .check()
@@ -343,7 +343,7 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldNotExceedMaximumDepth() {
-        Property.def("n := size(tree) => depth(node) <= 2 * floor(log2(n + 1)), for all nodes ofAll tree")
+        Property.def("n := size(tree) => depth(node) <= 2 * floor(log2(n + 1)), for all nodes of tree")
                 .forAll(TREES)
                 .suchThat(RedBlackTreeTest::doesNotExceedMaximumDepth)
                 .check()
