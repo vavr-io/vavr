@@ -35,7 +35,7 @@ public class ListTest extends AbstractSeqTest {
     @SafeVarargs
     @Override
     protected final <T> List<T> of(T... elements) {
-        return List.ofAll(elements);
+        return List.of(elements);
     }
 
     @Override
@@ -185,7 +185,7 @@ public class ListTest extends AbstractSeqTest {
              * of List elements is gathered dynamically.
              */
             final byte[] listWithOneElement = Serializables.serialize(List.of(0));
-            final byte[] listWithTwoElements = Serializables.serialize(List.ofAll(0, 0));
+            final byte[] listWithTwoElements = Serializables.serialize(List.of(0, 0));
             int index = -1;
             for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
                 final byte b1 = listWithOneElement[i];

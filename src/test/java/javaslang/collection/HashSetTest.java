@@ -96,7 +96,7 @@ public class HashSetTest extends AbstractSetTest {
     @SafeVarargs
     @Override
     protected final <T> HashSet<T> of(T... elements) {
-        return HashSet.ofAll(elements);
+        return HashSet.of(elements);
     }
 
     @Override
@@ -277,28 +277,28 @@ public class HashSetTest extends AbstractSetTest {
     @Override
     public void shouldFoldRightNonNil() {
         final String actual = of('a', 'b', 'c').foldRight("", (x, xs) -> x + xs);
-        final List<String> expected = List.ofAll('a', 'b', 'c').permutations().map(List::mkString);
+        final List<String> expected = List.of('a', 'b', 'c').permutations().map(List::mkString);
         assertThat(actual).isIn(expected);
     }
 
     @Override
     public void shouldReduceRightNonNil() {
         final String actual = of("a", "b", "c").reduceRight((x, xs) -> x + xs);
-        final List<String> expected = List.ofAll("a", "b", "c").permutations().map(List::mkString);
+        final List<String> expected = List.of("a", "b", "c").permutations().map(List::mkString);
         assertThat(actual).isIn(expected);
     }
 
     @Override
     public void shouldMkStringWithDelimiterNonNil() {
         final String actual = of('a', 'b', 'c').mkString(",");
-        final List<String> expected = List.ofAll('a', 'b', 'c').permutations().map(l -> l.mkString(","));
+        final List<String> expected = List.of('a', 'b', 'c').permutations().map(l -> l.mkString(","));
         assertThat(actual).isIn(expected);
     }
 
     @Override
     public void shouldMkStringWithDelimiterAndPrefixAndSuffixNonNil() {
         final String actual = of('a', 'b', 'c').mkString("[", ",", "]");
-        final List<String> expected = List.ofAll('a', 'b', 'c').permutations().map(l -> l.mkString("[", ",", "]"));
+        final List<String> expected = List.of('a', 'b', 'c').permutations().map(l -> l.mkString("[", ",", "]"));
         assertThat(actual).isIn(expected);
     }
 
@@ -315,7 +315,7 @@ public class HashSetTest extends AbstractSetTest {
     @Override
     public void shouldFindLastOfNonNil() {
         final int actual = of(1, 2, 3, 4).findLast(i -> i % 2 == 0).get();
-        assertThat(actual).isIn(List.ofAll(1, 2, 3, 4));
+        assertThat(actual).isIn(List.of(1, 2, 3, 4));
     }
 
     @Override

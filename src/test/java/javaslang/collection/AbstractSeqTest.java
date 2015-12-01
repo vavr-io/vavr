@@ -918,7 +918,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldCreateReverseIteratorOfNonEmpty() {
-        assertThat(Seq.ofAll(of("a", "b", "c")).reverseIterator().toList()).isEqualTo(Iterator.ofAll("c", "b", "a").toList());
+        assertThat(Seq.ofAll(of("a", "b", "c")).reverseIterator().toList()).isEqualTo(Iterator.of("c", "b", "a").toList());
     }
 
     // -- set

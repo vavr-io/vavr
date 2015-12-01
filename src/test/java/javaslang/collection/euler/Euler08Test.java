@@ -60,7 +60,7 @@ public class Euler08Test {
     }
 
     private static List<Integer> digits(String num) {
-        return List.ofAll(num.split("")).map(s -> Character.digit(s.charAt(0), 10));
+        return List.of(num.split("")).map(s -> Character.digit(s.charAt(0), 10));
     }
 
     private static final String _1000_DIGITS_NUMBER =

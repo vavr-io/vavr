@@ -31,7 +31,7 @@ public class StackTest extends AbstractSeqTest {
     @SafeVarargs
     @Override
     protected final <T> Stack<T> of(T... elements) {
-        return Stack.ofAll(elements);
+        return Stack.of(elements);
     }
 
     @Override

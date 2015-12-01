@@ -8,7 +8,6 @@ package javaslang.collection;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
-import javaslang.Value;
 import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
 import javaslang.control.None;
@@ -77,7 +76,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (iterables.length == 0) {
             return empty();
         } else {
-            return new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
+            return new ConcatIterator<>(Stream.of(iterables).map(Iterator::ofAll).iterator());
         }
     }
 
@@ -144,7 +143,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return A new Iterator
      */
     @SafeVarargs
-    static <T> Iterator<T> ofAll(T... elements) {
+    static <T> Iterator<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return new AbstractIterator<T>() {
 

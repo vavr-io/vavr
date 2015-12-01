@@ -64,7 +64,7 @@ public class Euler55Test {
     }
 
     private static String next(String s) {
-        return List.ofAll(s, Utils.reverse(s))
+        return List.of(s, Utils.reverse(s))
                 .map(BigInteger::new)
                 .reduce(BigInteger::add)
                 .toString();

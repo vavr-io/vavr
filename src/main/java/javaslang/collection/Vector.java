@@ -92,7 +92,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    public static <T> Vector<T> ofAll(T... elements) {
+    public static <T> Vector<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<Integer, T> result = HashArrayMappedTrie.empty();
         for (T element : elements) {

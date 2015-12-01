@@ -243,7 +243,7 @@ interface HashArrayMappedTrieModule {
                 return new IndexedNode<>(newBitmap, newLeaves.size(), List.of(newLeaves));
             } else {
                 return new IndexedNode<>(newBitmap, leaf1.size() + leaf2.size(),
-                        subH1 < subH2 ? List.ofAll(leaf1, leaf2) : List.ofAll(leaf2, leaf1));
+                        subH1 < subH2 ? List.of(leaf1, leaf2) : List.of(leaf2, leaf1));
             }
         }
 

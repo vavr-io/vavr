@@ -201,7 +201,7 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
         if (generators.length == 0) {
             throw new IllegalArgumentException("generators is empty");
         }
-        final Iterable<Tuple2<Integer, Gen<T>>> iterable = Stream.ofAll(generators);
+        final Iterable<Tuple2<Integer, Gen<T>>> iterable = Stream.of(generators);
         return frequency(iterable);
     }
 

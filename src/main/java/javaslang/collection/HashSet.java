@@ -87,7 +87,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    public static <T> HashSet<T> ofAll(T... elements) {
+    public static <T> HashSet<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<T, T> tree = HashArrayMappedTrie.empty();
         for (T element : elements) {
