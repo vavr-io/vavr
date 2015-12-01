@@ -12,13 +12,13 @@ import javaslang.control.Option;
 
 public class Sieve {
 
-    final static List<Function2<Integer, Integer, Option<Integer>>> rules = List.ofAll(
+    final static List<Function2<Integer, Integer, Option<Integer>>> rules = List.of(
             (x, y) -> Option.of((4 * x * x) + (y * y)).filter(n -> n % 12 == 1 || n % 12 == 5),
             (x, y) -> Option.of((3 * x * x) + (y * y)).filter(n -> n % 12 == 7),
             (x, y) -> Option.of((3 * x * x) - (y * y)).filter(n -> x > y && n % 12 == 11)
     );
 
-    final static List<Function3<Set<Integer>, Integer, Integer, Set<Integer>>> steps = List.ofAll(
+    final static List<Function3<Set<Integer>, Integer, Integer, Set<Integer>>> steps = List.of(
             (sieve, limit, root) -> Stream.rangeClosed(1, root).crossProduct()
                     .foldLeft(sieve, (xs, xy) ->
                             rules.foldLeft(xs, (ss, r) -> r.apply(xy._1, xy._2)
