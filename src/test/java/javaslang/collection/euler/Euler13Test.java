@@ -18,7 +18,7 @@ public class Euler13Test {
     /**
      * <strong>Problem 13: Large sum</strong>
      * <p>
-     * Work out the first ten digits ofAll the sum ofAll the following one-hundred 50-digit numbers.
+     * Work out the first ten digits of the sum of the following one-hundred 50-digit numbers.
      * <p>
      * See also <a href="https://projecteuler.net/problem=13">projecteuler.net problem 13</a>.
      */

@@ -22,7 +22,7 @@ public class GenTest {
     // equally distributed random number generator
     static final Random RANDOM = new Random();
 
-    // number ofAll tries to assert a property
+    // number of tries to assert a property
     static final int TRIES = 1000;
 
     // -- random number generator (rng)

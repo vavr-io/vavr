@@ -15,22 +15,22 @@ public class Euler06Test {
     /**
      * <strong>Problem 6: Sum square difference</strong>
      * <p>
-     * The sum ofAll the squares ofAll the first ten natural numbers is,
+     * The sum of the squares of the first ten natural numbers is,
      * <p>
      * 1² + 2² + ... + 10² = 385
      * <p>
-     * The square ofAll the sum ofAll the first ten natural
+     * The square of the sum of the first ten natural
      * numbers is,
      * <p>
      * (1 + 2 + ... + 10)² = 55² = 3025
      * <p>
-     * Hence the difference between the sum ofAll the
-     * squares ofAll the first ten natural numbers and the square ofAll the sum is
+     * Hence the difference between the sum of the
+     * squares of the first ten natural numbers and the square of the sum is
      * <p>
      * 3025 − 385 = 2640.
      * <p>
-     * Find the difference between the sum ofAll the squares ofAll the first one hundred
-     * natural numbers and the square ofAll the sum.
+     * Find the difference between the sum of the squares of the first one hundred
+     * natural numbers and the square of the sum.
      * <p>
      * See also <a href="https://projecteuler.net/problem=6">projecteuler.net problem 6</a>.
      */

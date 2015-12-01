@@ -40,7 +40,7 @@ public class TreeMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> Map<K, V> of(K key, V value) {
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value) {
         return TreeMap.of(key, value);
     }
 

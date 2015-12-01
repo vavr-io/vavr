@@ -88,7 +88,7 @@ interface Iterable<T> extends java.lang.Iterable<T> {
      * <pre><code>
      * o == this                       : true
      * o instanceof javaslang.Iterable : iterable elements are eq, non-iterable elements equals, for all (o1, o2) in (this, o)
-     * o instanceof java.lang.Iterable : this eq Iterator.ofAll((java.lang.Iterable&lt;?&gt;) o);
+     * o instanceof java.lang.Iterable : this eq Iterator.of((java.lang.Iterable&lt;?&gt;) o);
      * otherwise                       : false
      * </code></pre>
      *
