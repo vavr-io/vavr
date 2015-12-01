@@ -20,8 +20,10 @@ public interface MonadLaws extends FunctorLaws {
     void shouldSatisfyMonadRightIdentity();
 
     void shouldSatisfyMonadAssociativity();
+    
+    // needed to make left-identity work again for single-valued monads
+    <U> Iterable<U> select(Iterable<U> iterable);
 
-    @SuppressWarnings("unchecked")
     // unit(a).flatMap(f) ≡ f.apply(a)
     default <T, U> CheckResult checkMonadLeftIdentity(Function<? super T, ? extends Monad<T>> unit,
                                                       Arbitrary<T> ts,
@@ -30,14 +32,13 @@ public interface MonadLaws extends FunctorLaws {
                 .forAll(ts, fs)
                 .suchThat((t, f) -> {
                     final Iterable<U> term1 = unit.apply(t).flatMap((T tt) -> f.apply(tt));
-                    final Iterable<U> term2 = f.apply(t);
+                    final Iterable<U> term2 = select(f.apply(t));
                     //check  structural equality
                     return Iterator.ofAll(term1).eq(term2);
                 })
                 .check();
     }
 
-    @SuppressWarnings("unchecked")
     // m.flatMap(unit) ≡ m
     default <T> CheckResult checkMonadRightIdentity(Function<? super T, ? extends Monad<T>> unit,
                                                     Arbitrary<? extends Monad<T>> ms) {
@@ -50,7 +51,6 @@ public interface MonadLaws extends FunctorLaws {
                 .check();
     }
 
-    @SuppressWarnings("unchecked")
     // m.flatMap(f).flatMap(g) ≡ m.flatMap(x -> f.apply(x).flatMap(g))
     default <T, U, V> CheckResult checkMonadAssociativity(Arbitrary<? extends Monad<T>> ms,
                                                           Arbitrary<Function<? super T, ? extends Iterable<U>>> fs,
