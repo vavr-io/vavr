@@ -371,7 +371,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         AbstractNode<K, V> modify(int shift, K key, V value, Action action) {
-            if (key.hashCode() == hash) {
+            if (Objects.hashCode(key) == hash) {
                 AbstractNode<K, V> filtered = removeElement(key);
                 if(action == REMOVE) {
                     return filtered;
@@ -383,7 +383,7 @@ interface HashArrayMappedTrieModule {
                     }
                 }
             } else {
-                return (action == REMOVE) ? this : mergeLeaves(shift, this, new LeafSingleton<>(key.hashCode(), key, value));
+                return (action == REMOVE) ? this : mergeLeaves(shift, this, new LeafSingleton<>(Objects.hashCode(key), key, value));
             }
         }
 
@@ -580,7 +580,7 @@ interface HashArrayMappedTrieModule {
         @SuppressWarnings("unchecked")
         @Override
         Option<V> lookup(int shift, K key) {
-            int frag = hashFragment(shift, key.hashCode());
+            int frag = hashFragment(shift, Objects.hashCode(key));
             AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
             return child.lookup(shift + SIZE, key);
         }
@@ -588,7 +588,7 @@ interface HashArrayMappedTrieModule {
         @SuppressWarnings("unchecked")
         @Override
         AbstractNode<K, V> modify(int shift, K key, V value, Action action) {
-            int frag = hashFragment(shift, key.hashCode());
+            int frag = hashFragment(shift, Objects.hashCode(key));
             AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
             AbstractNode<K, V> newChild = child.modify(shift + SIZE, key, value, action);
             if (child.isEmpty() && !newChild.isEmpty()) {

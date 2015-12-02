@@ -83,10 +83,13 @@ public class HashArrayMappedTrieTest {
     @Test
     public void shouldLookupNullInZeroKey() {
         HashArrayMappedTrie<Integer, Integer> trie = HashArrayMappedTrie.empty();
-        trie = trie.put(0, 1);    // key.hashCode = 0
-        trie = trie.put(null, 2); // key.hashCode = 0
-        assertThat(trie.get(0).get()).isEqualTo(1);
-        assertThat(trie.get(null).get()).isEqualTo(2);
+        // should contain all node types
+        for (int i = 0; i < 5000; i++) {
+            trie = trie.put(i, i);
+        }
+        trie = trie.put(null, 2);
+        assertThat(trie.get(0).get()).isEqualTo(0);     // key.hashCode = 0
+        assertThat(trie.get(null).get()).isEqualTo(2);  // key.hashCode = 0
     }
 
     // -- equals
