@@ -21,7 +21,6 @@
  * {@linkplain javaslang.control.Some} value or {@linkplain javaslang.control.None}.
  * In contrast to Optional, Option supports null values, i.e. it is possible to call {@code new Some(null)}.
  * However, {@code Option.of(null)} results in None.
- * See also <a href="http://blog.rocketscience.io/your-codebase-looks-like-this/">3 ways to deal with null</a>.
  * <p>
  * <strong>Try</strong>
  * <p>
