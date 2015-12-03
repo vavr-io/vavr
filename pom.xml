@@ -23,9 +23,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:git@github.com:rocketscience-projects/javaslang.git</connection>
-        <developerConnection>scm:git:git@github.com:rocketscience-projects/javaslang.git</developerConnection>
-        <url>git@github.com:rocketscience-projects/javaslang.git</url>
+        <connection>scm:git:git@github.com:javaslang/javaslang.git</connection>
+        <developerConnection>scm:git:git@github.com:javaslang/javaslang.git</developerConnection>
+        <url>git@github.com:javaslang/javaslang.git</url>
         <tag>HEAD</tag>
     </scm>
     <developers>
