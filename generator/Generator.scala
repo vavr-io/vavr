@@ -47,13 +47,16 @@ def generateMainClasses(): Unit = {
 
       val ArrayType = im.getType("javaslang.collection.Array")
       val CharSeqType = im.getType("javaslang.collection.CharSeq")
+      val EitherType = im.getType("javaslang.control.Either")
       val HashMapType = im.getType("javaslang.collection.HashMap")
       val HashSetType = im.getType("javaslang.collection.HashSet")
       val LazyType = im.getType("javaslang.Lazy")
+      val LeftType = im.getType("javaslang.control.Left")
       val ListType = im.getType("javaslang.collection.List")
       val MapType = im.getType("javaslang.collection.Map")
       val OptionType = im.getType("javaslang.control.Option")
       val QueueType = im.getType("javaslang.collection.Queue")
+      val RightType = im.getType("javaslang.control.Right")
       val SetType = im.getType("javaslang.collection.Set")
       val StackType = im.getType("javaslang.collection.Stack")
       val StreamType = im.getType("javaslang.collection.Stream")
@@ -277,6 +280,17 @@ def generateMainClasses(): Unit = {
             $LazyType<T> toLazy();
 
             /**
+             * Converts this value to a {@link $EitherType}.
+             *
+             * @param <R> right type
+             * @param right A supplier of a right value
+             * @return A new {@link $RightType} containing the result of {@code right} if this is empty, otherwise
+             *         a new {@link $LeftType} containing this value.
+             * @throws NullPointerException if {@code right} is null
+             */
+            <R> $EitherType<T, R> toLeft($SupplierType<? extends R> right);
+
+            /**
              * Converts this value to a {@link $ListType}.
              *
              * @return A new {@link $ListType}.
@@ -306,6 +320,17 @@ def generateMainClasses(): Unit = {
              * @return A new {@link $QueueType}.
              */
             $QueueType<T> toQueue();
+
+            /**
+             * Converts this value to a {@link $EitherType}.
+             *
+             * @param <L> left type
+             * @param left A supplier of a left value
+             * @return A new {@link $LeftType} containing the result of {@code left} if this is empty, otherwise
+             *         a new {@link $RightType} containing this value.
+             * @throws NullPointerException if {@code left} is null
+             */
+            <L> $EitherType<L, T> toRight($SupplierType<? extends L> left);
 
             /**
              * Converts this value to a {@link $SetType}.

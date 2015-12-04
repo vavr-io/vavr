@@ -371,6 +371,12 @@ public interface Value<T> extends javaslang.Iterable<T>, Foldable<T>, Monad<T>, 
     }
 
     @Override
+    default <R> Either<T, R> toLeft(Supplier<? extends R> right) {
+        Objects.requireNonNull(right, "right is null");
+        return isEmpty() ? new Right<>(right.get()) : new Left<>(get());
+    }
+
+    @Override
     default List<T> toList() {
         return ValueModule.toSeq(this, List.empty());
     }
@@ -399,6 +405,12 @@ public interface Value<T> extends javaslang.Iterable<T>, Foldable<T>, Monad<T>, 
     @Override
     default Queue<T> toQueue() {
         return ValueModule.toSeq(this, Queue.empty());
+    }
+
+    @Override
+    default <L> Either<L, T> toRight(Supplier<? extends L> left) {
+        Objects.requireNonNull(left, "left is null");
+        return isEmpty() ? new Left<>(left.get()) : new Right<>(get());
     }
 
     @Override
