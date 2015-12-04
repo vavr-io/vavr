@@ -15,7 +15,10 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javaslang.*;
 import javaslang.collection.*;
+import javaslang.control.Either;
+import javaslang.control.Left;
 import javaslang.control.Option;
+import javaslang.control.Right;
 import javaslang.control.Try;
 
 /**
@@ -357,6 +360,17 @@ interface Convertible<T> {
     Lazy<T> toLazy();
 
     /**
+     * Converts this value to a {@link Either}.
+     *
+     * @param <R> right type
+     * @param right A supplier of a right value
+     * @return A new {@link Right} containing the result of {@code right} if this is empty, otherwise
+     *         a new {@link Left} containing this value.
+     * @throws NullPointerException if {@code right} is null
+     */
+    <R> Either<T, R> toLeft(Supplier<? extends R> right);
+
+    /**
      * Converts this value to a {@link List}.
      *
      * @return A new {@link List}.
@@ -386,6 +400,17 @@ interface Convertible<T> {
      * @return A new {@link Queue}.
      */
     Queue<T> toQueue();
+
+    /**
+     * Converts this value to a {@link Either}.
+     *
+     * @param <L> left type
+     * @param left A supplier of a left value
+     * @return A new {@link Left} containing the result of {@code left} if this is empty, otherwise
+     *         a new {@link Right} containing this value.
+     * @throws NullPointerException if {@code left} is null
+     */
+    <L> Either<L, T> toRight(Supplier<? extends L> left);
 
     /**
      * Converts this value to a {@link Set}.
