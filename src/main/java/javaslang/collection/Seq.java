@@ -494,6 +494,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      */
     default int lastIndexOfSlice(java.lang.Iterable<? extends T> that, int end) {
         Objects.requireNonNull(that, "that is null");
+        // TODO rewrite this without recurrence
         class Util {
             int lastIndexOfSlice(Seq<T> t, Seq<T> slice, int end) {
                 if (end < 0) {
@@ -511,7 +512,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
                     return -1;
                 }
                 if (r._2 <= end) {
-                    int idx = lastIndexOfSlice(r._1.tail(), slice, end - r._2);
+                    int idx = lastIndexOfSlice(r._1.tail(), slice, end - r._2 - 1);
                     return idx >= 0 ? idx + 1 + r._2 : r._2;
                 } else {
                     return -1;
