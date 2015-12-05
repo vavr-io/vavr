@@ -198,6 +198,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public HashMap<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropWhile(predicate.negate());
+    }
+
+    @Override
     public HashMap<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return HashMap.ofAll(iterator().dropWhile(predicate));
@@ -232,16 +238,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         return iterator().flatMap(mapper).toStream();
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Seq<U> flatten() {
-        try {
-            return ((HashMap<?, ? extends Iterable<U>>) this).flatMap(entry -> entry._2);
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable map values");
-        }
-    }
-
     @Override
     public <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
@@ -264,6 +260,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
                     .orElse(HashMap.of(entry));
             return map.put(key, values);
         });
+    }
+
+    @Override
+    public Iterator<HashMap<K, V>> grouped(int size) {
+        return sliding(size, size);
     }
 
     @Override
@@ -335,14 +336,13 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public <U, W> HashMap<U, W> map(
-            BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper) {
+    public <U, W> HashMap<U, W> map(BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(HashMap.empty(), (acc, entry) -> acc.put(entry.flatMap((BiFunction<K, V, Tuple2<? extends U, ? extends W>>) mapper::apply)));
     }
 
     @Override
-    public <W> HashMap<K, W> mapValues(Function<V, ? extends W> mapper)  {
+    public <W> HashMap<K, W> mapValues(Function<? super V, ? extends W> mapper)  {
         Objects.requireNonNull(mapper, "mapper is null");
         return map((k, v) -> Tuple.of(k, mapper.apply(v)));
     }
@@ -456,24 +456,34 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, HashMap.empty(), HashMap::put, Function.identity());
+        return Collections.scanLeft(this, zero, operation, HashMap.empty(), HashMap::put, Function.identity());
     }
 
     @Override
     public <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
 
     @Override
     public <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
     }
 
     @Override
     public int size() {
         return trie.size();
+    }
+
+    @Override
+    public Iterator<HashMap<K, V>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<HashMap<K, V>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(HashMap::ofAll);
     }
 
     @Override

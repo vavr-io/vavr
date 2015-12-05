@@ -76,7 +76,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     /**
      * Creates a LinkedHashSet of the given elements.
      *
-     * <pre><code>LinkedHashSet.ofAll(1, 2, 3, 4)</code></pre>
+     * <pre><code>LinkedHashSet.of(1, 2, 3, 4)</code></pre>
      *
      * @param <T>      Component type of the LinkedHashSet.
      * @param elements Zero or more elements.
@@ -84,7 +84,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    public static <T> LinkedHashSet<T> ofAll(T... elements) {
+    public static <T> LinkedHashSet<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         LinkedHashMap<T, T> map = LinkedHashMap.empty();
         for (T element : elements) {
@@ -479,6 +479,12 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public LinkedHashSet<T> dropUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropWhile(predicate.negate());
+    }
+
+    @Override
     public LinkedHashSet<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final LinkedHashSet<T> dropped = LinkedHashSet.ofAll(iterator().dropWhile(predicate));
@@ -504,16 +510,6 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> LinkedHashSet<U> flatten() {
-        try {
-            return ((LinkedHashSet<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
@@ -527,6 +523,11 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
             final LinkedHashSet<T> values = map.get(key).map(ts -> ts.add(t)).orElse(LinkedHashSet.of(t));
             return map.put(key, values);
         });
+    }
+
+    @Override
+    public Iterator<LinkedHashSet<T>> grouped(int size) {
+        return sliding(size, size);
     }
 
     @Override
@@ -681,7 +682,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     @Override
     public <U> LinkedHashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
+        return Collections.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
             c.add(u);
             return c;
         }, LinkedHashSet::ofAll);
@@ -690,7 +691,17 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     @Override
     public <U> LinkedHashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, LinkedHashSet.empty(), LinkedHashSet::add, Function.identity());
+        return Collections.scanRight(this, zero, operation, LinkedHashSet.empty(), LinkedHashSet::add, Function.identity());
+    }
+
+    @Override
+    public Iterator<LinkedHashSet<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<LinkedHashSet<T>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(LinkedHashSet::ofAll);
     }
 
     @Override

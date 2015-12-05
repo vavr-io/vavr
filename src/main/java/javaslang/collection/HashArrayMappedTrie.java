@@ -17,6 +17,9 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 
+import static javaslang.collection.HashArrayMappedTrieModule.Action.PUT;
+import static javaslang.collection.HashArrayMappedTrieModule.Action.REMOVE;
+
 /**
  * An immutable <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
  *
@@ -49,6 +52,10 @@ interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, V>> {
 
 interface HashArrayMappedTrieModule {
 
+    enum Action {
+        PUT, REMOVE
+    }
+
     /**
      * An abstract base class for nodes of a HAMT.
      *
@@ -66,9 +73,7 @@ interface HashArrayMappedTrieModule {
         private static final int M2 = 0x33333333;
         private static final int M4 = 0x0f0f0f0f;
 
-        private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
-
-        int bitCount(int x) {
+        static int bitCount(int x) {
             x = x - ((x >> 1) & M1);
             x = (x & M2) + ((x >> 2) & M2);
             x = (x + (x >> 4)) & M4;
@@ -77,23 +82,25 @@ interface HashArrayMappedTrieModule {
             return x & 0x7f;
         }
 
-        int hashFragment(int shift, int hash) {
+        static int hashFragment(int shift, int hash) {
             return (hash >>> shift) & (BUCKET_SIZE - 1);
         }
 
-        int toBitmap(int hash) {
+        static int toBitmap(int hash) {
             return 1 << hash;
         }
 
-        int fromBitmap(int bitmap, int bit) {
+        static int fromBitmap(int bitmap, int bit) {
             return bitCount(bitmap & (bit - 1));
         }
 
-        abstract boolean isLeaf();
+        boolean isLeaf() {
+            return false;
+        }
 
         abstract Option<V> lookup(int shift, K key);
 
-        abstract AbstractNode<K, V> modify(int shift, K key, Option<V> value);
+        abstract AbstractNode<K, V> modify(int shift, K key, V value, Action action);
 
         @Override
         public Option<V> get(K key) {
@@ -107,12 +114,12 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public HashArrayMappedTrie<K, V> put(K key, V value) {
-            return modify(0, key, new Some<>(value));
+            return modify(0, key, value, PUT);
         }
 
         @Override
         public HashArrayMappedTrie<K, V> remove(K key) {
-            return modify(0, key, None.instance());
+            return modify(0, key, null, REMOVE);
         }
 
         @Override
@@ -134,9 +141,7 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        public int hashCode() {
-            return hashCode.get();
-        }
+        public abstract int hashCode();
 
         @Override
         public String toString() {
@@ -170,8 +175,13 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
-            return value.isEmpty() ? this : new LeafNode<>(Objects.hashCode(key), key, value.get());
+        AbstractNode<K, V> modify(int shift, K key, V value, Action action) {
+            return (action == REMOVE) ? this : new LeafSingleton<>(Objects.hashCode(key), key, value);
+        }
+
+        @Override
+        public int hashCode() {
+            return 0;
         }
 
         @Override
@@ -211,64 +221,29 @@ interface HashArrayMappedTrieModule {
      * @param <K> Key type
      * @param <V> Value type
      */
-    final class LeafNode<K, V> extends AbstractNode<K, V> implements Serializable {
+    abstract class LeafNode<K, V> extends AbstractNode<K, V> {
 
-        private static final long serialVersionUID = 1L;
+        abstract K key();
+        abstract V value();
+        abstract int hash();
 
-        private final int hash;
-        private final int size;
-        private final List<Tuple2<K, V>> entries;
+        abstract AbstractNode<K, V> removeElement(K key);
 
-        LeafNode(int hash, K key, V value) {
-            this(hash, 1, List.of(Tuple.of(key, value)));
-        }
-
-        private LeafNode(int hash, int size, List<Tuple2<K, V>> entries) {
-            this.hash = hash;
-            this.size = size;
-            this.entries = entries;
-        }
-
-        private AbstractNode<K, V> update(K key, Option<V> value) {
-            List<Tuple2<K, V>> filtered = entries.removeFirst(t -> t._1.equals(key));
-            if (value.isEmpty()) {
-                return filtered.isEmpty() ? EmptyNode.instance() : new LeafNode<>(hash, filtered.length(), filtered);
-            } else {
-                return new LeafNode<>(hash, filtered.length() + 1, filtered.prepend(Tuple.of(key, value.get())));
-            }
-        }
-
-        @Override
-        Option<V> lookup(int shift, K key) {
-            if (hash != key.hashCode()) {
-                return None.instance();
-            }
-            return entries.findFirst(t -> t._1.equals(key)).map(t -> t._2);
-        }
-
-        @Override
-        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
-            if (key.hashCode() == hash) {
-                return update(key, value);
-            } else {
-                return value.isEmpty() ? this : mergeLeaves(shift, new LeafNode<>(key.hashCode(), key, value.get()));
-            }
-        }
-
-        private AbstractNode<K, V> mergeLeaves(int shift, LeafNode<K, V> other) {
-            final int h1 = this.hash;
-            final int h2 = other.hash;
+        static <K, V> AbstractNode<K, V> mergeLeaves(int shift, LeafNode<K, V> leaf1, LeafSingleton<K, V> leaf2) {
+            final int h1 = leaf1.hash();
+            final int h2 = leaf2.hash();
             if (h1 == h2) {
-                return new LeafNode<>(h1, size + other.size, other.entries.foldLeft(entries, List::prepend));
+                return new LeafList<>(h1, leaf2.key(), leaf2.value(), leaf1);
             }
             final int subH1 = hashFragment(shift, h1);
             final int subH2 = hashFragment(shift, h2);
             final int newBitmap = toBitmap(subH1) | toBitmap(subH2);
             if (subH1 == subH2) {
-                AbstractNode<K, V> newLeaves = mergeLeaves(shift + SIZE, other);
+                AbstractNode<K, V> newLeaves = mergeLeaves(shift + SIZE, leaf1, leaf2);
                 return new IndexedNode<>(newBitmap, newLeaves.size(), List.of(newLeaves));
             } else {
-                return new IndexedNode<>(newBitmap, size + other.size, subH1 < subH2 ? List.ofAll(this, other) : List.ofAll(other, this));
+                return new IndexedNode<>(newBitmap, leaf1.size() + leaf2.size(),
+                        subH1 < subH2 ? List.of(leaf1, leaf2) : List.of(leaf2, leaf1));
             }
         }
 
@@ -281,6 +256,152 @@ interface HashArrayMappedTrieModule {
         public boolean isEmpty() {
             return false;
         }
+    }
+
+    /**
+     * Representation of a HAMT leaf node with single element.
+     *
+     * @param <K> Key type
+     * @param <V> Value type
+     */
+    final class LeafSingleton<K, V> extends LeafNode<K, V> implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final int hash;
+        private final K key;
+        private final V value;
+        private final Lazy<Integer> hashCode;
+
+        LeafSingleton(int hash, K key, V value) {
+            this.hash = hash;
+            this.key = key;
+            this.value = value;
+            this.hashCode = Lazy.of(() -> Objects.hash(key, value));
+        }
+
+        @Override
+        Option<V> lookup(int shift, K key) {
+            if (Objects.equals(key, this.key)) {
+                return new Some<>(value);
+            } else {
+                return None.instance();
+            }
+        }
+
+        @Override
+        AbstractNode<K, V> modify(int shift, K key, V value, Action action) {
+            if (Objects.equals(key, this.key)) {
+                return (action == REMOVE) ? EmptyNode.instance() : new LeafSingleton<>(hash, key, value);
+            } else {
+                return (action == REMOVE) ? this : mergeLeaves(shift, this, new LeafSingleton<>(Objects.hashCode(key), key, value));
+            }
+        }
+
+        @Override
+        public int size() {
+            return 1;
+        }
+
+        @Override
+        public Iterator<Tuple2<K, V>> iterator() {
+            Tuple2<K, V> tuple = Tuple.of(key, value);
+            return Iterator.of(tuple);
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode.get();
+        }
+
+        @Override
+        AbstractNode<K, V> removeElement(K key) {
+            return Objects.equals(key, this.key) ? EmptyNode.instance() : this;
+        }
+
+        @Override
+        int hash() {
+            return hash;
+        }
+
+        @Override
+        K key() {
+            return key;
+        }
+
+        @Override
+        V value() {
+            return value;
+        }
+    }
+
+    /**
+     * Representation of a HAMT leaf node with more than one element.
+     *
+     * @param <K> Key type
+     * @param <V> Value type
+     */
+    final class LeafList<K, V> extends LeafNode<K, V> implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final int hash;
+        private final K key;
+        private final V value;
+        private final int size;
+        private final LeafNode<K, V> tail;
+        private final Lazy<Integer> hashCode;
+
+        LeafList(int hash, K key, V value, LeafNode<K, V> tail) {
+            this.hash = hash;
+            this.key = key;
+            this.value = value;
+            this.size = 1 + tail.size();
+            this.tail = tail;
+            this.hashCode = Lazy.of(() -> Objects.hash(key, value, tail));
+        }
+
+        @Override
+        Option<V> lookup(int shift, K key) {
+            if (hash != Objects.hashCode(key)) {
+                return None.instance();
+            }
+            return iterator().findFirst(t -> Objects.equals(t._1, key)).map(t -> t._2);
+        }
+
+        @Override
+        AbstractNode<K, V> modify(int shift, K key, V value, Action action) {
+            if (Objects.hashCode(key) == hash) {
+                AbstractNode<K, V> filtered = removeElement(key);
+                if(action == REMOVE) {
+                    return filtered;
+                } else {
+                    if (filtered.isEmpty()) {
+                        return new LeafSingleton<>(hash, key, value);
+                    } else {
+                        return new LeafList<>(hash, key, value, (LeafNode<K, V>) filtered);
+                    }
+                }
+            } else {
+                return (action == REMOVE) ? this : mergeLeaves(shift, this, new LeafSingleton<>(Objects.hashCode(key), key, value));
+            }
+        }
+
+        @Override
+        AbstractNode<K, V> removeElement(K k) {
+            if(Objects.equals(k, this.key)) {
+                return tail;
+            } else {
+                // recurrent calls is OK but can be improved
+                AbstractNode<K, V> newTail = tail.removeElement(k);
+                return newTail.isEmpty() ? new LeafSingleton<>(hash, key, value) : new LeafList<>(hash, key, value, (LeafNode<K, V>) newTail);
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode.get();
+        }
 
         @Override
         public int size() {
@@ -289,7 +410,43 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            return entries.iterator();
+            return new AbstractIterator<Tuple2<K,V>>() {
+                LeafNode<K, V> node = LeafList.this;
+
+                @Override
+                public boolean hasNext() {
+                    return node != null;
+                }
+
+                @Override
+                public Tuple2<K, V> next() {
+                    if (!hasNext()) {
+                        EMPTY.next();
+                    }
+                    Tuple2<K,V> tuple = Tuple.of(node.key(), node.value());
+                    if(node instanceof LeafSingleton) {
+                        node = null;
+                    } else {
+                        node = ((LeafList<K, V>) node).tail;
+                    }
+                    return tuple;
+                }
+            };
+        }
+
+        @Override
+        int hash() {
+            return hash;
+        }
+
+        @Override
+        K key() {
+            return key;
+        }
+
+        @Override
+        V value() {
+            return value;
         }
     }
 
@@ -315,22 +472,22 @@ interface HashArrayMappedTrieModule {
 
         @Override
         Option<V> lookup(int shift, K key) {
-            int h = key.hashCode();
+            int h = Objects.hashCode(key);
             int frag = hashFragment(shift, h);
             int bit = toBitmap(frag);
             return ((bitmap & bit) != 0) ? subNodes.get(fromBitmap(bitmap, bit)).lookup(shift + SIZE, key) : None.instance();
         }
 
         @Override
-        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
-            final int frag = hashFragment(shift, key.hashCode());
+        AbstractNode<K, V> modify(int shift, K key, V value, Action action) {
+            final int frag = hashFragment(shift, Objects.hashCode(key));
             final int bit = toBitmap(frag);
             final int index = fromBitmap(bitmap, bit);
             final int mask = bitmap;
             final boolean exists = (mask & bit) != 0;
             final AbstractNode<K, V> atIndx = exists ? subNodes.get(index) : null;
-            AbstractNode<K, V> child = exists ? atIndx.modify(shift + SIZE, key, value)
-                    : EmptyNode.<K, V> instance().modify(shift + SIZE, key, value);
+            AbstractNode<K, V> child = exists ? atIndx.modify(shift + SIZE, key, value, action)
+                    : EmptyNode.<K, V> instance().modify(shift + SIZE, key, value, action);
             boolean removed = exists && child.isEmpty();
             boolean added = !exists && !child.isEmpty();
             int newBitmap = removed ? mask & ~bit : added ? mask | bit : mask;
@@ -357,6 +514,11 @@ interface HashArrayMappedTrieModule {
             }
         }
 
+        @Override
+        public int hashCode() {
+            return subNodes.hashCode();
+        }
+
         private ArrayNode<K, V> expand(int frag, AbstractNode<K, V> child, int mask, List<AbstractNode<K, V>> subNodes) {
             int bit = mask;
             int count = 0;
@@ -376,11 +538,6 @@ interface HashArrayMappedTrieModule {
                 bit = bit >>> 1;
             }
             return new ArrayNode<>(count, size + child.size(), arr);
-        }
-
-        @Override
-        boolean isLeaf() {
-            return false;
         }
 
         @Override
@@ -409,6 +566,7 @@ interface HashArrayMappedTrieModule {
 
         private static final long serialVersionUID = 1L;
 
+        private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
         private final Object[] subNodes;
         private final int count;
         private final int size;
@@ -422,17 +580,17 @@ interface HashArrayMappedTrieModule {
         @SuppressWarnings("unchecked")
         @Override
         Option<V> lookup(int shift, K key) {
-            int frag = hashFragment(shift, key.hashCode());
+            int frag = hashFragment(shift, Objects.hashCode(key));
             AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
             return child.lookup(shift + SIZE, key);
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        AbstractNode<K, V> modify(int shift, K key, Option<V> value) {
-            int frag = hashFragment(shift, key.hashCode());
+        AbstractNode<K, V> modify(int shift, K key, V value, Action action) {
+            int frag = hashFragment(shift, Objects.hashCode(key));
             AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
-            AbstractNode<K, V> newChild = child.modify(shift + SIZE, key, value);
+            AbstractNode<K, V> newChild = child.modify(shift + SIZE, key, value, action);
             if (child.isEmpty() && !newChild.isEmpty()) {
                 return new ArrayNode<>(count + 1, size + newChild.size(), update(subNodes, frag, newChild));
             } else if (!child.isEmpty() && newChild.isEmpty()) {
@@ -444,6 +602,11 @@ interface HashArrayMappedTrieModule {
             } else {
                 return new ArrayNode<>(count, size - child.size() + newChild.size(), update(subNodes, frag, newChild));
             }
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode.get();
         }
 
         private static Object[] update(Object[] arr, int index, Object newElement) {
@@ -466,11 +629,6 @@ interface HashArrayMappedTrieModule {
                 }
             }
             return new IndexedNode<>(bitmap, size, arr);
-        }
-
-        @Override
-        boolean isLeaf() {
-            return false;
         }
 
         @Override

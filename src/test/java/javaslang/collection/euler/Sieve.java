@@ -5,70 +5,50 @@
  */
 package javaslang.collection.euler;
 
-import javaslang.collection.Stream;
+import javaslang.Function2;
+import javaslang.Function3;
+import javaslang.collection.*;
+import javaslang.control.Option;
 
-public enum Sieve {
+public class Sieve {
 
-    INSTANCE(2_000_000);
+    final static List<Function2<Integer, Integer, Option<Integer>>> rules = List.of(
+            (x, y) -> Option.of((4 * x * x) + (y * y)).filter(n -> n % 12 == 1 || n % 12 == 5),
+            (x, y) -> Option.of((3 * x * x) + (y * y)).filter(n -> n % 12 == 7),
+            (x, y) -> Option.of((3 * x * x) - (y * y)).filter(n -> x > y && n % 12 == 11)
+    );
 
-    private final long[] primes;
+    final static List<Function3<Set<Integer>, Integer, Integer, Set<Integer>>> steps = List.of(
+            (sieve, limit, root) -> Stream.rangeClosed(1, root).crossProduct()
+                    .foldLeft(sieve, (xs, xy) ->
+                            rules.foldLeft(xs, (ss, r) -> r.apply(xy._1, xy._2)
+                                    .filter(p -> p < limit)
+                                    .map(p -> ss.contains(p) ? ss.remove(p) : ss.add(p))
+                                    .orElse(ss)
+                            )
+                    ),
+            (sieve, limit, root) -> Stream.rangeClosed(5, root)
+                    .foldLeft(sieve, (xs, r) -> xs.contains(r)
+                            ? Stream.rangeBy(r * r, limit, r * r).foldLeft(xs, Set::remove)
+                            : xs
+                    )
+    );
 
-    Sieve(int limit) {
-        primes = calculatePrimes(limit);
+    final static Function2<Integer, Set<Integer>, Set<Integer>> fillSieve = (limit, empty) ->
+            steps.foldLeft(empty.add(2).add(3), (s, step) ->
+                    step.apply(s, limit, (int) Math.ceil(Math.sqrt(limit)))
+            );
+
+    final static int BENCH_LIMIT = 2_000_000;
+
+    public static void main(String[] args) {
+        long t = System.currentTimeMillis();
+        fillSieve.apply(BENCH_LIMIT, HashSet.empty());
+        System.out.println("HashSet: " + (System.currentTimeMillis() - t) + "ms");
+
+        t = System.currentTimeMillis();
+        fillSieve.apply(BENCH_LIMIT, TreeSet.empty());
+        System.out.println("TreeSet: " + (System.currentTimeMillis() - t) + "ms");
     }
 
-    public long[] array() {
-        return primes;
-    }
-
-    public Stream<Long> stream() {
-        return Stream.ofAll(primes);
-    }
-
-    private static long[] calculatePrimes(int limit) {
-
-        // init sieve
-        final boolean[] sieve = new boolean[limit];
-        for (int z = 0; z < limit; z++) {
-            sieve[z] = false;
-        }
-        final int root = (int) Math.ceil(Math.sqrt(limit));
-        for (int x = 1; x <= root; x++) {
-            for (int y = 1; y <= root; y++) {
-                int n = (4 * x * x) + (y * y);
-                if (n <= limit && (n % 12 == 1 || n % 12 == 5)) {
-                    sieve[n] ^= true;
-                }
-                n = (3 * x * x) + (y * y);
-                if (n <= limit && n % 12 == 7) {
-                    sieve[n] ^= true;
-                }
-                n = (3 * x * x) - (y * y);
-                if (x > y && n <= limit && n % 12 == 11) {
-                    sieve[n] ^= true;
-                }
-            }
-        }
-        for (int r = 5; r <= root; r++) {
-            if (sieve[r]) {
-                int step = r * r;
-                for (int i = step; i < limit; i += step) {
-                    sieve[i] = false;
-                }
-            }
-        }
-
-        // calculate primes
-        final long[] primes = new long[limit];
-        primes[0] = 2;
-        primes[1] = 3;
-        int index = 2;
-        for (int p = 5; p < limit; p++) {
-            if (sieve[p]) {
-                primes[index++] = p;
-            }
-        }
-
-        return primes;
-    }
 }

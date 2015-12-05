@@ -14,9 +14,9 @@ import java.util.function.Function;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-final class Traversables {
+final class Collections {
 
-    private Traversables() {
+    private Collections() {
     }
 
     static <T, U, C extends Iterable<U>, R extends Traversable<U>> R scanLeft(
@@ -38,5 +38,15 @@ final class Traversables {
             C cumulativeResult, BiFunction<C, U, C> combiner, Function<C, R> finisher) {
         final Iterator<? extends T> reversedElements = Seq.ofAll(elements).reverseIterator();
         return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), cumulativeResult, combiner, finisher);
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T> Iterator<Seq<T>> crossProduct(Seq<? extends T> seq, int power) {
+        if (power < 0) {
+            throw new IllegalArgumentException("negative power");
+        }
+        return Iterator
+                .range(1, power)
+                .foldLeft((Iterator<Seq<T>>) seq.sliding(1), (product, ignored) -> product.flatMap(tuple -> seq.map(tuple::append)));
     }
 }

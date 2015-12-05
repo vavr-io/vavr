@@ -6,7 +6,6 @@
 package javaslang;
 
 import javaslang.collection.List;
-import javaslang.control.Some;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -17,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LazyTest {
 
-    // -- ofAll(Supplier)
+    // -- of(Supplier)
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowOnNullSupplier() {
@@ -34,7 +33,7 @@ public class LazyTest {
         }
     }
 
-    // -- ofAll(Supplier, Class) -- Proxy
+    // -- of(Supplier, Class) -- Proxy
 
     @Test
     public void shouldCreateLazyProxy() {
@@ -76,8 +75,13 @@ public class LazyTest {
     // -- isEmpty()
 
     @Test
-    public void shouldNotBeEmpty() {
-        assertThat(Lazy.of(() -> null).isEmpty()).isEqualTo(false);
+    public void shouldEnsureThatNonEmptyLazyIsNotEmpty() {
+        assertThat(Lazy.of(() -> null).isEmpty()).isFalse();
+    }
+
+    @Test
+    public void shouldEnsureThatEmptyLazyIsEmpty() {
+        assertThat(Lazy.undefined().isEmpty()).isTrue();
     }
 
     // -- isEvaluated()
@@ -95,19 +99,16 @@ public class LazyTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowGetEmpty() {
-        Lazy.empty().get();
+        Lazy.undefined().get();
     }
 
     // -- filter
 
-    @Test(expected = NoSuchElementException.class)
-    public void shouldThrowFilterEmptyLazy() {
-        Lazy.empty().filter(ignored -> true).get();
-    }
-
     @Test
-    public void shouldFilterNonEmptyLazy() {
-        assertThat(Lazy.of(() -> 1).filter(i -> true)).isEqualTo(new Some<>(1));
+    public void shouldThrowFilterEmptyLazy() {
+        final Lazy<Integer> testee = Lazy.undefined();
+        final Lazy<Integer> actual = testee.filter(i -> true);
+        assertThat(actual == testee).isTrue();
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -116,27 +117,17 @@ public class LazyTest {
     }
 
     @Test
-    public void shouldNonEmptyFilterNonEmptyLazy() {
-        assertThat(Lazy.of(() -> 1).filter(i -> true)).isEqualTo(new Some<>(1));
-    }
-
-    // -- flatten()
-
-    @Test(expected = NoSuchElementException.class)
-    public void shouldFlattenEmptyLazy() {
-        Lazy.empty().flatten().get();
-    }
-
-    @Test
-    public void shouldFlattenLazyOfLazy() {
-        assertThat(Lazy.of(() -> Lazy.of(() -> 1)).flatten()).isEqualTo(Lazy.of(() -> 1));
+    public void shouldFilterNonEmptyLazy() {
+        final Lazy<Integer> testee = Lazy.of(() -> 1);
+        final Lazy<Integer> actual = testee.filter(i -> true);
+        assertThat(actual == testee).isTrue();
     }
 
     // -- flatMap
 
     @Test(expected = NoSuchElementException.class)
     public void shouldFlatMapEmptyLazy() {
-        Lazy.empty().flatMap(List::of).get();
+        Lazy.undefined().flatMap(List::of).get();
     }
 
     @Test
@@ -148,7 +139,7 @@ public class LazyTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldMapEmpty() {
-        Lazy.empty().map(Function.identity()).get();
+        Lazy.undefined().map(Function.identity()).get();
     }
 
     @Test
@@ -158,16 +149,19 @@ public class LazyTest {
 
     // -- peek
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldPeekEmpty() {
-        Lazy.empty().peek(t -> {
-        });
+        final Lazy<?> testee = Lazy.undefined();
+        final Lazy<?> actual = testee.peek(t -> {});
+        assertThat(actual == testee).isTrue();
     }
 
     @Test
     public void shouldPeekSingleValuePerformingAnAction() {
         final int[] effect = { 0 };
-        assertThat(Lazy.of(() -> 1).peek(i -> effect[0] = i)).isEqualTo(Lazy.of(() -> 1));
+        final Lazy<Integer> testee = Lazy.of(() -> 1);
+        final Lazy<Integer> actual = testee.peek(i -> effect[0] = i);
+        assertThat(actual == testee).isTrue();
         assertThat(effect[0]).isEqualTo(1);
     }
 

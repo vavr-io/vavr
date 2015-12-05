@@ -116,7 +116,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> ofAll(Tuple2<? extends K, ? extends V>... entries) {
         final HashMap<K, V> map = HashMap.ofAll(entries);
-        final Queue<Tuple2<K, V>> list = Queue.ofAll((Tuple2<K, V>[]) entries);
+        final Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>[]) entries);
         return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
     }
 
@@ -182,7 +182,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public <W> LinkedHashMap<K, W> mapValues(Function<V, ? extends W> mapper)  {
+    public <W> LinkedHashMap<K, W> mapValues(Function<? super V, ? extends W> mapper)  {
         Objects.requireNonNull(mapper, "mapper is null");
         return map((k, v) -> Tuple.of(k, mapper.apply(v)));
     }
@@ -238,24 +238,34 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public LinkedHashMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, LinkedHashMap.empty(), LinkedHashMap::put, Function.identity());
+        return Collections.scanLeft(this, zero, operation, LinkedHashMap.empty(), LinkedHashMap::put, Function.identity());
     }
 
     @Override
     public <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
 
     @Override
     public <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
     }
 
     @Override
     public int size() {
         return map.size();
+    }
+
+    @Override
+    public Iterator<LinkedHashMap<K, V>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<LinkedHashMap<K, V>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(LinkedHashMap::ofAll);
     }
 
     @Override
@@ -313,6 +323,12 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public LinkedHashMap<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropWhile(predicate.negate());
+    }
+
+    @Override
     public LinkedHashMap<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return LinkedHashMap.ofAll(list.dropWhile(predicate));
@@ -332,16 +348,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         return (Seq<U>) list.flatMap(mapper).toStream();
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Seq<U> flatten() {
-        try {
-            return ((LinkedHashMap<?, ? extends Iterable<U>>) this).flatMap(entry -> entry._2);
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable map values");
-        }
-    }
-
     @Override
     public <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
@@ -359,6 +365,11 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
                     .orElse(LinkedHashMap.of(entry));
             return map.put(key, values);
         });
+    }
+
+    @Override
+    public Iterator<LinkedHashMap<K, V>> grouped(int size) {
+        return sliding(size, size);
     }
 
     @Override
@@ -407,11 +418,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public Iterator<Tuple2<K, V>> iterator() {
         return list.iterator();
-    }
-
-    @Override
-    public int length() {
-        return map.length();
     }
 
     @Override

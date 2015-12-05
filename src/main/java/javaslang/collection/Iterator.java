@@ -8,7 +8,6 @@ package javaslang.collection;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
-import javaslang.Value;
 import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
 import javaslang.control.None;
@@ -77,7 +76,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (iterables.length == 0) {
             return empty();
         } else {
-            return new ConcatIterator<>(Stream.ofAll(iterables).map(Iterator::ofAll).iterator());
+            return new ConcatIterator<>(Stream.of(iterables).map(Iterator::ofAll).iterator());
         }
     }
 
@@ -144,7 +143,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return A new Iterator
      */
     @SafeVarargs
-    static <T> Iterator<T> ofAll(T... elements) {
+    static <T> Iterator<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return new AbstractIterator<T>() {
 
@@ -555,7 +554,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Integer> rangeBy(int from, int toExclusive, int step) {
         if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
+        } else if (from == toExclusive || Integer.signum(step) * Integer.signum(from - toExclusive) > 0) {
             return Iterator.empty();
         } else {
             final int one = (from < toExclusive) ? 1 : -1;
@@ -606,7 +605,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Long> rangeBy(long from, long toExclusive, long step) {
         if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toExclusive || step * (from - toExclusive) > 0) {
+        } else if (from == toExclusive || Long.signum(step) * Long.signum(from - toExclusive) > 0) {
             return Iterator.empty();
         } else {
             final int one = (from < toExclusive) ? 1 : -1;
@@ -746,7 +745,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
             return Iterator.of(from);
-        } else if (step * (from - toInclusive) > 0) {
+        } else if (Integer.signum(step) * Integer.signum(from - toInclusive) > 0) {
             return Iterator.empty();
         } else {
             return new AbstractIterator<Integer>() {
@@ -821,7 +820,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
             return Iterator.of(from);
-        } else if (step * (from - toInclusive) > 0L) {
+        } else if (Long.signum(step) * Long.signum(from - toInclusive) > 0L) {
             return Iterator.empty();
         } else {
             return new AbstractIterator<Long>() {
@@ -1229,6 +1228,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
+    default Iterator<T> dropUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropWhile(predicate.negate());
+    }
+
+    @Override
     default Iterator<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (!hasNext()) {
@@ -1334,7 +1339,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return new AbstractIterator<U>() {
 
                 final Iterator<? extends T> inputs = that;
-                java.util.Iterator<? extends U> current = Collections.emptyIterator();
+                java.util.Iterator<? extends U> current = java.util.Collections.emptyIterator();
 
                 @Override
                 public boolean hasNext() {
@@ -1354,25 +1359,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
             };
         }
-    }
-
-    /**
-     * Flattens this {@code Value} by one level.
-     * See {@link Value#flatten()}.
-     * <p>
-     * <strong>Caution:</strong> Because {@code Iterator} is lazy, there is no way to detect non-iterable elements on
-     * {@code flatten()}. A possible {@code ClassCastException} is therefore deferred until elemnts are accessed with
-     * {@link #next()}.
-     *
-     * @param <U> the nested component type
-     * @return An Iterator of flattened elements.
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Iterator<U> flatten() {
-        // It does not make sense here to catch ClassCastException as it is done
-        // in all other flatten() impls because Iterable is lazy.
-        return ((Iterator<? extends Iterable<U>>) this).flatMap(Function.identity());
     }
 
     @Override
@@ -1399,6 +1385,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             });
             return streams.map((c, ts) -> Tuple.of(c, ts.iterator()));
         }
+    }
+
+    @Override
+    default Iterator<Seq<T>> grouped(int size) {
+        return sliding(size, size);
     }
 
     @Override
@@ -1661,12 +1652,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (isEmpty()) {
             return Iterator.of(zero);
         } else {
-            return Traversables.scanRight(this, zero, operation, Stream.empty(), Stream::prepend, Stream::iterator);
+            return Collections.scanRight(this, zero, operation, Stream.empty(), Stream::prepend, Stream::iterator);
         }
     }
 
     @Override
-    default Iterator<IndexedSeq<T>> sliding(int size, int step) {
+    default Iterator<Seq<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    default Iterator<Seq<T>> sliding(int size, int step) {
         if (size <= 0 || step <= 0) {
             throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
         }
@@ -1674,7 +1670,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Stream<T> source = Stream.ofAll(this);
-            return new AbstractIterator<IndexedSeq<T>>() {
+            return new AbstractIterator<Seq<T>>() {
                 private Stream<T> that = source;
                 private IndexedSeq<T> next = null;
 

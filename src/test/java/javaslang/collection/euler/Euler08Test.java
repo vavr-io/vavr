@@ -5,8 +5,8 @@
  */
 package javaslang.collection.euler;
 
-import javaslang.collection.IndexedSeq;
 import javaslang.collection.List;
+import javaslang.collection.Seq;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +42,7 @@ public class Euler08Test {
      * </code>
      * </pre>
      * Find the thirteen adjacent digits in the 1000-digit number that have the greatest product.
-     * What is the value ofAll this product?
+     * What is the value of this product?
      * <p>
      * See also <a href="https://projecteuler.net/problem=8">projecteuler.net problem 8</a>.
      */
@@ -55,12 +55,12 @@ public class Euler08Test {
     private static long largestProductOfConsecutives(int sizeOfConsecutive, String num) {
         return digits(num)
                 .sliding(sizeOfConsecutive)
-                .map(IndexedSeq::product)
+                .map(Seq::product)
                 .max().get().longValue();
     }
 
     private static List<Integer> digits(String num) {
-        return List.ofAll(num.split("")).map(s -> Character.digit(s.charAt(0), 10));
+        return List.of(num.split("")).map(s -> Character.digit(s.charAt(0), 10));
     }
 
     private static final String _1000_DIGITS_NUMBER =

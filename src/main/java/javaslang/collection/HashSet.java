@@ -79,7 +79,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     /**
      * Creates a HashSet of the given elements.
      *
-     * <pre><code>HashSet.ofAll(1, 2, 3, 4)</code></pre>
+     * <pre><code>HashSet.of(1, 2, 3, 4)</code></pre>
      *
      * @param <T>      Component type of the HashSet.
      * @param elements Zero or more elements.
@@ -87,7 +87,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    public static <T> HashSet<T> ofAll(T... elements) {
+    public static <T> HashSet<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<T, T> tree = HashArrayMappedTrie.empty();
         for (T element : elements) {
@@ -478,6 +478,12 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public HashSet<T> dropUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropWhile(predicate.negate());
+    }
+
+    @Override
     public HashSet<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final HashSet<T> dropped = HashSet.ofAll(iterator().dropWhile(predicate));
@@ -503,16 +509,6 @@ public final class HashSet<T> implements Set<T>, Serializable {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> HashSet<U> flatten() {
-        try {
-            return ((HashSet<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         return foldLeft(zero, (u, t) -> f.apply(t, u));
@@ -525,6 +521,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
             final HashSet<T> values = map.get(key).map(ts -> ts.add(t)).orElse(HashSet.of(t));
             return map.put(key, values);
         });
+    }
+
+    @Override
+    public Iterator<HashSet<T>> grouped(int size) {
+        return sliding(size, size);
     }
 
     @Override
@@ -671,7 +672,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public <U> HashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
+        return Collections.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
             c.add(u);
             return c;
         }, HashSet::ofAll);
@@ -680,7 +681,17 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public <U> HashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, HashSet.empty(), HashSet::add, Function.identity());
+        return Collections.scanRight(this, zero, operation, HashSet.empty(), HashSet::add, Function.identity());
+    }
+
+    @Override
+    public Iterator<HashSet<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<HashSet<T>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(HashSet::ofAll);
     }
 
     @Override

@@ -13,15 +13,17 @@ import javaslang.test.Property;
 import java.util.function.Function;
 
 @SuppressWarnings("Convert2MethodRef")
-public interface MonadLaws<M extends Monad<?> & Iterable<?>> extends FunctorLaws {
+public interface MonadLaws extends FunctorLaws {
 
     void shouldSatisfyMonadLeftIdentity();
 
     void shouldSatisfyMonadRightIdentity();
 
     void shouldSatisfyMonadAssociativity();
+    
+    // needed to make left-identity work again for single-valued monads
+    <U> Iterable<U> select(Iterable<U> iterable);
 
-    @SuppressWarnings("unchecked")
     // unit(a).flatMap(f) ≡ f.apply(a)
     default <T, U> CheckResult checkMonadLeftIdentity(Function<? super T, ? extends Monad<T>> unit,
                                                       Arbitrary<T> ts,
@@ -29,28 +31,26 @@ public interface MonadLaws<M extends Monad<?> & Iterable<?>> extends FunctorLaws
         return Property.def("monad.left_identity")
                 .forAll(ts, fs)
                 .suchThat((t, f) -> {
-                    final Iterable<U> term1 = (Iterable<U>) unit.apply(t).flatMap((T tt) -> f.apply(tt));
-                    final Iterable<U> term2 = f.apply(t);
+                    final Iterable<U> term1 = unit.apply(t).flatMap((T tt) -> f.apply(tt));
+                    final Iterable<U> term2 = select(f.apply(t));
                     //check  structural equality
                     return Iterator.ofAll(term1).eq(term2);
                 })
                 .check();
     }
 
-    @SuppressWarnings("unchecked")
     // m.flatMap(unit) ≡ m
     default <T> CheckResult checkMonadRightIdentity(Function<? super T, ? extends Monad<T>> unit,
                                                     Arbitrary<? extends Monad<T>> ms) {
         return Property.def("monad.right_identity")
                 .forAll(ms)
                 .suchThat(m -> {
-                    final Monad<T> term = m.flatMap((T t) -> (Iterable<T>) unit.apply(t));
+                    final Monad<T> term = m.flatMap((T t) -> unit.apply(t));
                     return term.equals(m);
                 })
                 .check();
     }
 
-    @SuppressWarnings("unchecked")
     // m.flatMap(f).flatMap(g) ≡ m.flatMap(x -> f.apply(x).flatMap(g))
     default <T, U, V> CheckResult checkMonadAssociativity(Arbitrary<? extends Monad<T>> ms,
                                                           Arbitrary<Function<? super T, ? extends Iterable<U>>> fs,
@@ -59,7 +59,7 @@ public interface MonadLaws<M extends Monad<?> & Iterable<?>> extends FunctorLaws
                 .forAll(ms, fs, gs)
                 .suchThat((m, f, g) -> {
                     final Monad<V> term1 = m.flatMap((T t) -> f.apply(t)).flatMap((U u) -> g.apply(u));
-                    final Monad<V> term2 = m.flatMap((T t) -> (Iterable<V>) ((Monad<U>) f.apply(t)).flatMap((U u) -> g.apply(u)));
+                    final Monad<V> term2 = m.flatMap((T t) -> ((Monad<U>) f.apply(t)).flatMap((U u) -> g.apply(u)));
                     return term1.equals(term2);
                 })
                 .check();

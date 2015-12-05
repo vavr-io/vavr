@@ -21,16 +21,23 @@ public class HashArrayMappedTrieTest {
     @Test
     public void testGetExistingKey() {
         Map<Integer, Integer> hamt = HashMap.empty();
-        hamt = hamt.put(1, 2).put(4, 5);
+        hamt = hamt.put(1, 2).put(4, 5).put(null, 7);
+        assertThat(hamt.containsKey(1)).isTrue();
         assertThat(hamt.get(1)).isEqualTo(new Some<>(2));
+        assertThat(hamt.containsKey(4)).isTrue();
         assertThat(hamt.get(4)).isEqualTo(new Some<>(5));
+        assertThat(hamt.containsKey(null)).isTrue();
+        assertThat(hamt.get(null)).isEqualTo(new Some<>(7));
     }
 
     @Test
     public void testGetUnknownKey() {
         Map<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.put(1, 2).put(4, 5);
+        assertThat(hamt.containsKey(2)).isFalse();
         assertThat(hamt.get(2)).isEqualTo(None.instance());
+        assertThat(hamt.containsKey(null)).isFalse();
+        assertThat(hamt.get(null)).isEqualTo(None.instance());
     }
 
     @Test
@@ -71,6 +78,18 @@ public class HashArrayMappedTrieTest {
             cmp.remove(key);
         }
         cmp.test();
+    }
+
+    @Test
+    public void shouldLookupNullInZeroKey() {
+        HashArrayMappedTrie<Integer, Integer> trie = HashArrayMappedTrie.empty();
+        // should contain all node types
+        for (int i = 0; i < 5000; i++) {
+            trie = trie.put(i, i);
+        }
+        trie = trie.put(null, 2);
+        assertThat(trie.get(0).get()).isEqualTo(0);     // key.hashCode = 0
+        assertThat(trie.get(null).get()).isEqualTo(2);  // key.hashCode = 0
     }
 
     // -- equals
@@ -136,6 +155,18 @@ public class HashArrayMappedTrieTest {
     @Test
     public void shouldCalculateDifferentHashCodesForDifferentHAMT() {
         assertThat(of(1, 2).hashCode() != of(2, 3).hashCode()).isTrue();
+    }
+
+    @Test
+    public void shouldCalculateBigHashCode() {
+        HashArrayMappedTrie<Integer, Integer> h1 = HashArrayMappedTrie.empty();
+        HashArrayMappedTrie<Integer, Integer> h2 = HashArrayMappedTrie.empty();
+        int count = 1234;
+        for (int i = 0; i <= count; i++) {
+            h1 = h1.put(i, i);
+            h2 = h2.put(count - i, count - i);
+        }
+        assertThat(h1.hashCode() == h2.hashCode()).isTrue();
     }
 
     // - toString

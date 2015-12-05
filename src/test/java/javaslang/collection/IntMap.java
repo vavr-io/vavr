@@ -95,6 +95,11 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
+    public IntMap<T> dropUntil(Predicate<? super T> predicate) {
+        return dropWhile(predicate.negate());
+    }
+
+    @Override
     public IntMap<T> dropWhile(Predicate<? super T> predicate) {
         return IntMap.of(original.dropWhile(p -> predicate.test(p._2)));
     }
@@ -110,11 +115,6 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public <U> Seq<U> flatten() {
-        return original.flatten();
-    }
-
-    @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return original.foldRight(zero, (e, u) -> f.apply(e._2, u));
@@ -123,6 +123,11 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     @Override
     public <C> Map<C, ? extends IntMap<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return original.groupBy(e -> classifier.apply(e._2)).map((k, v) -> Tuple.of(k, IntMap.of(v)));
+    }
+
+    @Override
+    public Iterator<IntMap<T>> grouped(int size) {
+        return sliding(size, size);
     }
 
     @Override
@@ -220,6 +225,16 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     @Override
     public <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return original.values().scanRight(zero, operation);
+    }
+
+    @Override
+    public Iterator<IntMap<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<IntMap<T>> sliding(int size, int step) {
+        return original.sliding(size, step).map(IntMap::of);
     }
 
     @Override

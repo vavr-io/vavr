@@ -38,19 +38,19 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> clear();
 
     @Override
-    LinearSeq<Tuple2<T, T>> crossProduct();
-
-    @Override
-    LinearSeq<IndexedSeq<T>> crossProduct(int power);
-
-    @Override
-    <U> LinearSeq<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
-
-    @Override
     LinearSeq<? extends LinearSeq<T>> combinations();
 
     @Override
     LinearSeq<? extends LinearSeq<T>> combinations(int k);
+
+    @Override
+    LinearSeq<Tuple2<T, T>> crossProduct();
+
+    @Override
+    LinearSeq<? extends LinearSeq<T>> crossProduct(int power);
+
+    @Override
+    <U> LinearSeq<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
 
     @Override
     LinearSeq<T> distinct();
@@ -68,6 +68,9 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> dropRight(int n);
 
     @Override
+    LinearSeq<T> dropUntil(Predicate<? super T> predicate);
+
+    @Override
     LinearSeq<T> dropWhile(Predicate<? super T> predicate);
 
     @Override
@@ -77,10 +80,10 @@ public interface LinearSeq<T> extends Seq<T> {
     <U> LinearSeq<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    <U> LinearSeq<U> flatten();
+    <C> Map<C, ? extends LinearSeq<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
-    <C> Map<C, ? extends LinearSeq<T>> groupBy(Function<? super T, ? extends C> classifier);
+    Iterator<? extends LinearSeq<T>> grouped(int size);
 
     @Override
     default int indexWhere(Predicate<? super T> predicate, int from) {
@@ -212,6 +215,12 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     LinearSeq<T> slice(int beginIndex, int endIndex);
+
+    @Override
+    Iterator<? extends LinearSeq<T>> sliding(int size);
+
+    @Override
+    Iterator<? extends LinearSeq<T>> sliding(int size, int step);
 
     @Override
     LinearSeq<T> sort();

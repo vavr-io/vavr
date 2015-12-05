@@ -194,23 +194,6 @@ public class OptionTest {
         assertThat(Option.<Integer> none().filter(i -> i == 1)).isEqualTo(Option.none());
     }
 
-    // -- flatten()
-
-    @Test
-    public void shouldFlattenSomeOfSome() {
-        assertThat(new Some<>(new Some<>(1)).flatten()).isEqualTo(new Some<>(1));
-    }
-
-    @Test
-    public void shouldFlattenSomeOfNone() {
-        assertThat(new Some<>(None.instance()).flatten()).isEqualTo(None.instance());
-    }
-
-    @Test
-    public void shouldFlattenNone() {
-        assertThat(None.instance().flatten()).isEqualTo(None.instance());
-    }
-
     // -- map
 
     @Test
@@ -276,7 +259,7 @@ public class OptionTest {
         assertThat(new Some<>(1).forAll(i -> i == 2)).isFalse();
     }
 
-    @Test // a property holds for all elements ofAll no elements
+    @Test // a property holds for all elements of no elements
     public void shouldNotHoldPropertyForAllOfNone() {
         assertThat(None.instance().forAll(e -> true)).isTrue();
     }

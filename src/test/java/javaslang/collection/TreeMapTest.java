@@ -41,7 +41,7 @@ public class TreeMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> Map<K, V> of(K key, V value) {
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value) {
         return TreeMap.of(key, value);
     }
 
@@ -56,14 +56,14 @@ public class TreeMapTest extends AbstractMapTest {
     public void shouldScanLeft() {
         final TreeMap<String, Integer> tm = TreeMap.ofAll(Tuple.of("one", 1), Tuple.of("two", 2));
         final Seq<Tuple2<String, Integer>> result = tm.scanLeft(Tuple.of("z", 0), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
-        assertThat(result).isEqualTo(List.ofAll(Tuple.of("z", 0), Tuple.of("zone", 1), Tuple.of("zonetwo", 3)));
+        assertThat(result).isEqualTo(List.of(Tuple.of("z", 0), Tuple.of("zone", 1), Tuple.of("zonetwo", 3)));
     }
 
     @Test
     public void shouldScanRight() {
         final TreeMap<String, Integer> tm = TreeMap.ofAll(Tuple.of("one", 1), Tuple.of("two", 2));
         final Seq<String> result = tm.scanRight("z", (t1, acc) -> acc + CharSeq.of(t1._1).reverse());
-        assertThat(result).isEqualTo(List.ofAll("zowteno", "zowt", "z"));
+        assertThat(result).isEqualTo(List.of("zowteno", "zowt", "z"));
     }
 
     @Test

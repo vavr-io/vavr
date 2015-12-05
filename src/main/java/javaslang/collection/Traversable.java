@@ -47,11 +47,13 @@ import java.util.function.Predicate;
  * <li>{@link #tailOption()}</li>
  * </ul>
  *
- * Filtering:
+ * Iteration:
  *
  * <ul>
- * <li>{@link #filter(Predicate)}</li>
- * <li>{@link #retainAll(java.lang.Iterable)}</li>
+ * <li>{@link #grouped(int)}</li>
+ * <li>{@link #iterator()}</li>
+ * <li>{@link #sliding(int)}</li>
+ * <li>{@link #sliding(int, int)}</li>
  * </ul>
  *
  * Numeric operations:
@@ -86,11 +88,17 @@ import java.util.function.Predicate;
  * <ul>
  * <li>{@link #drop(int)}</li>
  * <li>{@link #dropRight(int)}</li>
+ * <li>{@link #dropUntil(Predicate)}</li>
  * <li>{@link #dropWhile(Predicate)}</li>
+ * <li>{@link #filter(Predicate)}</li>
  * <li>{@link #findFirst(Predicate)}</li>
  * <li>{@link #findLast(Predicate)}</li>
+ * <li>{@link #groupBy(Function)}</li>
+ * <li>{@link #partition(Predicate)}</li>
+ * <li>{@link #retainAll(java.lang.Iterable)}</li>
  * <li>{@link #take(int)}</li>
  * <li>{@link #takeRight(int)}</li>
+ * <li>{@link #takeUntil(Predicate)}</li>
  * <li>{@link #takeWhile(Predicate)}</li>
  * </ul>
  *
@@ -109,13 +117,18 @@ import java.util.function.Predicate;
  * <li>{@link #distinctBy(Comparator)}</li>
  * <li>{@link #distinctBy(Function)}</li>
  * <li>{@link #flatMap(Function)}</li>
- * <li>{@link #flatten()}</li>
- * <li>{@link #groupBy(Function)}</li>
  * <li>{@link #map(Function)}</li>
- * <li>{@link #partition(Predicate)}</li>
  * <li>{@link #replace(Object, Object)}</li>
  * <li>{@link #replaceAll(Object, Object)}</li>
+ * <li>{@link #scan(Object, BiFunction)}</li>
+ * <li>{@link #scanLeft(Object, BiFunction)}</li>
+ * <li>{@link #scanRight(Object, BiFunction)}</li>
  * <li>{@link #span(Predicate)}</li>
+ * <li>{@link #unzip(Function)}</li>
+ * <li>{@link #unzip3(Function)}</li>
+ * <li>{@link #zip(Iterable)}</li>
+ * <li>{@link #zipAll(Iterable, Object, Object)}</li>
+ * <li>{@link #zipWithIndex()}</li>
  * </ul>
  *
  * @param <T> Component type
@@ -305,6 +318,19 @@ public interface Traversable<T> extends Value<T> {
     Traversable<T> dropRight(int n);
 
     /**
+     * Drops elements until the predicate holds for the current element.
+     * <p>
+     * Note: This is essentially the same as {@code dropWhile(predicate.negate())}. It is intended to be used with
+     * method references, which cannot be negated directly.
+     *
+     * @param predicate A condition tested subsequently for this elements.
+     * @return a new instance consisting of all elements starting from the first one which does satisfy the given
+     * predicate.
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Traversable<T> dropUntil(Predicate<? super T> predicate);
+
+    /**
      * Drops elements while the predicate holds for the current element.
      *
      * @param predicate A condition tested subsequently for this elements starting with the first.
@@ -380,9 +406,6 @@ public interface Traversable<T> extends Value<T> {
     @Override
     <U> Traversable<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
-    @Override
-    <U> Traversable<U> flatten();
-
     /**
      * Accumulates the elements of this Traversable by successively calling the given function {@code f} from the left,
      * starting with a value {@code zero} of type B.
@@ -437,6 +460,37 @@ public interface Traversable<T> extends Value<T> {
      * @return A Map containing the grouped elements
      */
     <C> Map<C, ? extends Traversable<T>> groupBy(Function<? super T, ? extends C> classifier);
+
+    /**
+     * Groups this {@code Traversable} into fixed size blocks.
+     * <p>
+     * Let length be the length of this Iterable. Then grouped is defined as follows:
+     * <ul>
+     * <li>If {@code this.isEmpty()}, the resulting {@code Iterator} is empty.</li>
+     * <li>If {@code size <= length}, the resulting {@code Iterator} will contain {@code length / size} blocks of size
+     * {@code size} and maybe a non-empty block of size {@code length % size}, if there are remaining elements.</li>
+     * <li>If {@code size > length}, the resulting {@code Iterator} will contain one block of size {@code length}.</li>
+     * </ul>
+     * Examples:
+     * <pre>
+     * <code>
+     * [].grouped(1) = []
+     * [].grouped(0) throws
+     * [].grouped(-1) throws
+     * [1,2,3,4].grouped(2) = [[1,2],[3,4]]
+     * [1,2,3,4,5].grouped(2) = [[1,2],[3,4],[5]]
+     * [1,2,3,4].grouped(5) = [[1,2,3,4]]
+     * </code>
+     * </pre>
+     *
+     * Please note that {@code grouped(int)} is a special case of {@linkplain #sliding(int, int)}, i.e.
+     * {@code grouped(size)} is the same as {@code sliding(size, size)}.
+     *
+     * @param size a positive block size
+     * @return A new Iterator of grouped blocks of the given size
+     * @throws IllegalArgumentException if {@code size} is negative or zero
+     */
+    Iterator<? extends Traversable<T>> grouped(int size);
 
     /**
      * Checks if this Traversable is known to have a finite size.
@@ -909,7 +963,39 @@ public interface Traversable<T> extends Value<T> {
     <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     /**
-     * Returns a tuple where the first element is the longest prefix of elements that satisfy p and the second element is the remainder.
+     * Slides a window of a specific {@code size} and step size 1 over this {@code Traversable} by calling
+     * {@link #sliding(int, int)}.
+     *
+     * @param size a positive window size
+     * @return a new Iterator of windows of a specific size using step size 1
+     * @throws IllegalArgumentException if {@code size} is negative or zero
+     */
+    Iterator<? extends Traversable<T>> sliding(int size);
+
+    /**
+     * Slides a window of a specific {@code size} and {@code step} size over this {@code Traversable}.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * [].sliding(1,1) = []
+     * [1,2,3,4,5].sliding(2,3) = [[1,2],[4,5]]
+     * [1,2,3,4,5].sliding(2,4) = [[1,2],[5]]
+     * [1,2,3,4,5].sliding(2,5) = [[1,2]]
+     * [1,2,3,4].sliding(5,3) = [[1,2,3,4],[4]]
+     * </code>
+     * </pre>
+     *
+     * @param size a positive window size
+     * @param step a positive step size
+     * @return a new Iterator of windows of a specific size using a specific step size
+     * @throws IllegalArgumentException if {@code size} or {@code step} are negative or zero
+     */
+    Iterator<? extends Traversable<T>> sliding(int size, int step);
+
+    /**
+     * Returns a tuple where the first element is the longest prefix of elements that satisfy the given
+     * {@code predicate} and the second element is the remainder.
      *
      * @param predicate A predicate.
      * @return a Tuple containing the longest prefix of elements that satisfy p and the remainder.

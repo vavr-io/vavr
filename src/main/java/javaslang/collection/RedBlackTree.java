@@ -59,13 +59,13 @@ interface RedBlackTree<T> extends java.lang.Iterable<T> {
 
     @SuppressWarnings("varargs")
     @SafeVarargs
-    static <T extends Comparable<? super T>> RedBlackTree<T> ofAll(T... values) {
+    static <T extends Comparable<? super T>> RedBlackTree<T> of(T... values) {
         Objects.requireNonNull(values, "values is null");
-        return ofAll((Comparator<? super T> & Serializable) T::compareTo, values);
+        return of((Comparator<? super T> & Serializable) T::compareTo, values);
     }
 
     @SafeVarargs
-    static <T> RedBlackTree<T> ofAll(Comparator<? super T> comparator, T... values) {
+    static <T> RedBlackTree<T> of(Comparator<? super T> comparator, T... values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
         RedBlackTree<T> tree = empty(comparator);

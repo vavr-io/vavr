@@ -34,8 +34,8 @@ public class ListTest extends AbstractSeqTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <T> List<T> ofAll(T... elements) {
-        return List.ofAll(elements);
+    protected final <T> List<T> of(T... elements) {
+        return List.of(elements);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class ListTest extends AbstractSeqTest {
 
     @Test
     public void shouldStringifyNonNil() {
-        assertThat(ofAll(1, 2, 3).toString()).isEqualTo("List(1, 2, 3)");
+        assertThat(of(1, 2, 3).toString()).isEqualTo("List(1, 2, 3)");
     }
 
     // -- Cons test
@@ -181,18 +181,18 @@ public class ListTest extends AbstractSeqTest {
     public void shouldNotDeserializeListWithSizeLessThanOne() throws Throwable {
         try {
             /*
-             * This implementation is stable regarding jvm impl changes ofAll object serialization. The index ofAll the number
-			 * ofAll List elements is gathered dynamically.
-			 */
+             * This implementation is stable regarding jvm impl changes of object serialization. The index of the number
+             * of List elements is gathered dynamically.
+             */
             final byte[] listWithOneElement = Serializables.serialize(List.of(0));
-            final byte[] listWithTwoElements = Serializables.serialize(List.ofAll(0, 0));
+            final byte[] listWithTwoElements = Serializables.serialize(List.of(0, 0));
             int index = -1;
             for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
                 final byte b1 = listWithOneElement[i];
                 final byte b2 = listWithTwoElements[i];
                 if (b1 != b2) {
                     if (b1 != 1 || b2 != 2) {
-                        throw new IllegalStateException("Difference does not indicate number ofAll elements.");
+                        throw new IllegalStateException("Difference does not indicate number of elements.");
                     } else {
                         index = i;
                     }

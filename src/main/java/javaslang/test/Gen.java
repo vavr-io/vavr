@@ -201,7 +201,7 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
         if (generators.length == 0) {
             throw new IllegalArgumentException("generators is empty");
         }
-        final Iterable<Tuple2<Integer, Gen<T>>> iterable = Stream.ofAll(generators);
+        final Iterable<Tuple2<Integer, Gen<T>>> iterable = Stream.of(generators);
         return frequency(iterable);
     }
 
@@ -321,16 +321,6 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
                 return Value.get(iterable);
             }
         };
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Gen<U> flatten() {
-        try {
-            return ((Gen<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
     }
 
     /**

@@ -32,8 +32,366 @@ def generateMainClasses(): Unit = {
   val javadoc = "**"
 
   genFunctions()
+  genMonad()
   genPropertyChecks()
   genTuples()
+
+  /**
+    * Generator of javaslang.algebra.Monad
+    */
+  def genMonad() : Unit = {
+
+    genJavaslangFile("javaslang.algebra", "Monad")(genMonad)
+
+    def genMonad(im: ImportManager, packageName: String, className: String): String = {
+
+      val ArrayType = im.getType("javaslang.collection.Array")
+      val CharSeqType = im.getType("javaslang.collection.CharSeq")
+      val EitherType = im.getType("javaslang.control.Either")
+      val HashMapType = im.getType("javaslang.collection.HashMap")
+      val HashSetType = im.getType("javaslang.collection.HashSet")
+      val LazyType = im.getType("javaslang.Lazy")
+      val LeftType = im.getType("javaslang.control.Left")
+      val ListType = im.getType("javaslang.collection.List")
+      val MapType = im.getType("javaslang.collection.Map")
+      val OptionType = im.getType("javaslang.control.Option")
+      val QueueType = im.getType("javaslang.collection.Queue")
+      val RightType = im.getType("javaslang.control.Right")
+      val SetType = im.getType("javaslang.collection.Set")
+      val StackType = im.getType("javaslang.collection.Stack")
+      val StreamType = im.getType("javaslang.collection.Stream")
+      val SupplierType = im.getType("java.util.function.Supplier")
+      val TreeType = im.getType("javaslang.collection.Tree")
+      val TryType = im.getType("javaslang.control.Try")
+      val VectorType = im.getType("javaslang.collection.Vector")
+
+      xs"""
+        /**
+         * Defines a Monad by generalizing the flatMap function.
+         * <p>
+         * A {@code Monad} is a {@link Functor} with a {@code flatMap} method that satisfies the Monad laws, also known
+         * as the three control laws:
+         * <p>
+         * Let
+         * <ul>
+         * <li>{@code A}, {@code B}, {@code C} be types</li>
+         * <li>{@code unit: A -> Monad<A>} a constructor</li>
+         * <li>{@code f: A -> Monad<B>}, {@code g: B -> Monad<C>} functions</li>
+         * <li>{@code a} be an object of type {@code A}</li>
+         * <li>{@code m} be an object of type {@code Monad<A>}</li>
+         * </ul>
+         * Then all instances of the {@code Monad} interface should obey the three control laws:
+         * <ul>
+         * <li><strong>Left identity:</strong> {@code unit(a).flatMap(f) ≡ f a}</li>
+         * <li><strong>Right identity:</strong> {@code m.flatMap(unit) ≡ m}</li>
+         * <li><strong>Associativity:</strong> {@code m.flatMap(f).flatMap(g) ≡ m.flatMap(x -> f.apply(x).flatMap(g))}</li>
+         * </ul>
+         *
+         * To read further about monads in Java please refer to
+         * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
+         *
+         * @param <T> component type of this monad
+         * @author Daniel Dietrich
+         * @since 1.1.0
+         */
+        public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
+
+            ${(1 to N).gen(i => {
+
+              val genericsF = if (i == 1) "? super T" else (1 to i).gen(j => s"? super T$j")(", ")
+              val genericsT = if (i == 1) "T" else (1 to i).gen(j => s"T$j")(", ")
+              val genericsM = if (i == 1) "? super Monad<T>" else (1 to i).gen(j => s"Monad<T$j>")(", ")
+              val function = i match {
+                case 1 => im.getType("java.util.function.Function")
+                case 2 => im.getType("java.util.function.BiFunction")
+                case _ => im.getType(s"javaslang.Function$i")
+              }
+
+              xs"""
+                /$javadoc
+                 * Lifts a {@code $function} to a higher {@code Function$i} that operates on Monads.
+                 *
+                 ${(1 to i).gen(j => s"* @param <${if (i == 1) "T" else s"T$j"}> ${j.ordinal} argument type of f")("\n")}
+                 * @param <R> result type of f
+                 * @param f a $function
+                 * @return a new Function$i that lifts the given function f in a layer that operates on monads.
+                 */
+                static <$genericsT, R> Function$i<$genericsM, Monad<R>> lift($function<$genericsF, ? extends R> f) {
+                    ${if (i == 1) {
+                      "return mT -> mT.map(f::apply);"
+                    } else {
+                      xs"""
+                        return (${(1 to i).gen(j => s"mT$j")(", ")}) ->
+                                ${(1 to i - 1).gen(j => s"mT$j.flatMap(t$j ->")("\n")}
+                                mT$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")})${")" * i};
+                      """
+                    }}
+                }
+              """
+            })("\n\n")}
+
+            /**
+             * Filters this {@code Monad} by testing a predicate.
+             * <p>
+             * The semantics may vary from class to class, e.g. for single-valued type (like Option) and multi-values types
+             * (like Traversable). The commonality is, that filtered.isEmpty() will return true, if no element satisfied
+             * the given predicate.
+             * <p>
+             * Also, an implementation may throw {@code NoSuchElementException}, if no element makes it through the filter
+             * and this state cannot be reflected. E.g. this is the case for {@link javaslang.control.Either.LeftProjection} and
+             * {@link javaslang.control.Either.RightProjection}.
+             *
+             * @param predicate A predicate
+             * @return a new Monad instance
+             * @throws NullPointerException if {@code predicate} is null
+             */
+            Monad<T> filter(${im.getType("java.util.function.Predicate")}<? super T> predicate);
+
+            /**
+             * FlatMaps this value to a new value with different component type.
+             * <p>
+             * FlatMap is the sequence operation for functions and behaves like the imperative {@code ;}.
+             * <p>
+             * If the previous results are needed, flatMap cascades:
+             * <pre>
+             * <code>
+             * m1().flatMap(result1 -&gt;
+             *      m2(result1).flatMap(result2 -&gt;
+             *          m3(result1, result2).flatMap(result3 -&gt;
+             *              ...
+             *          )
+             *      )
+             * );
+             * </code>
+             * </pre>
+             * If only the last result is needed, flatMap may be used sequentially:
+             * <pre>
+             * <code>
+             * m1().flatMap(this::m2)
+             *     .flatMap(this::m3)
+             *     .flatMap(...);
+             * </code>
+             * </pre>
+             *
+             * @param mapper A mapper
+             * @param <U>    Component type of the mapped {@code Monad}
+             * @return a mapped {@code Monad}
+             * @throws NullPointerException if {@code mapper} is null
+             */
+            <U> Monad<U> flatMap(${im.getType("java.util.function.Function")}<? super T, ? extends Iterable<? extends U>> mapper);
+
+            // -- adjusting return types of super interface methods
+
+            /**
+             * Maps this value to a new value with different component type.
+             *
+             * @param mapper A mapper
+             * @param <U>    Component type of the mapped {@code Monad}
+             * @return a mapped {@code Monad}
+             * @throws NullPointerException if {@code mapper} is null
+             */
+            @Override
+            <U> Monad<U> map(${im.getType("java.util.function.Function")}<? super T, ? extends U> mapper);
+
+        }
+
+        /**
+         * Conversion methods.
+         *
+         * @param <T> Component type.
+         */
+        interface Convertible<T> {
+
+            /**
+             * Converts this value to a {@link $ArrayType}.
+             *
+             * @return A new {@link $ArrayType}.
+             */
+            $ArrayType<T> toArray();
+
+            /**
+             * Converts this value to a {@link $CharSeqType}.
+             *
+             * @return A new {@link $CharSeqType}.
+             */
+            $CharSeqType toCharSeq();
+
+            /**
+             * Converts this value to an untyped Java array.
+             *
+             * @return A new Java array.
+             */
+            default Object[] toJavaArray() {
+                return toJavaList().toArray();
+            }
+
+            /**
+             * Converts this value to a typed Java array.
+             *
+             * @param componentType Component type of the array
+             * @return A new Java array.
+             * @throws NullPointerException if componentType is null
+             */
+            T[] toJavaArray(Class<T> componentType);
+
+            /**
+             * Converts this value to an {@link java.util.List}.
+             *
+             * @return A new {@link java.util.ArrayList}.
+             */
+            java.util.List<T> toJavaList();
+
+            /**
+             * Converts this value to a {@link java.util.Map}.
+             *
+             * @param f   A function that maps an element to a key/value pair represented by Tuple2
+             * @param <K> The key type
+             * @param <V> The value type
+             * @return A new {@link java.util.HashMap}.
+             */
+            <K, V> java.util.Map<K, V> toJavaMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f);
+
+            /**
+             * Converts this value to an {@link java.util.Optional}.
+             *
+             * @return A new {@link java.util.Optional}.
+             */
+            java.util.Optional<T> toJavaOptional();
+
+            /**
+             * Converts this value to a {@link java.util.Set}.
+             *
+             * @return A new {@link java.util.HashSet}.
+             */
+            java.util.Set<T> toJavaSet();
+
+            /**
+             * Converts this value to a {@link java.util.stream.Stream}.
+             *
+             * @return A new {@link java.util.stream.Stream}.
+             */
+            java.util.stream.Stream<T> toJavaStream();
+
+            /**
+             * Converts this value to a {@link $LazyType}.
+             *
+             * @return A new {@link $LazyType}.
+             */
+            $LazyType<T> toLazy();
+
+            /**
+             * Converts this value to a {@link $EitherType}.
+             *
+             * @param <R> right type
+             * @param right A supplier of a right value
+             * @return A new {@link $RightType} containing the result of {@code right} if this is empty, otherwise
+             *         a new {@link $LeftType} containing this value.
+             * @throws NullPointerException if {@code right} is null
+             */
+            <R> $EitherType<T, R> toLeft($SupplierType<? extends R> right);
+
+            /**
+             * Converts this value to a {@link $ListType}.
+             *
+             * @return A new {@link $ListType}.
+             */
+            $ListType<T> toList();
+
+            /**
+             * Converts this value to a {@link $MapType}.
+             *
+             * @param mapper A function that maps an element to a key/value pair represented by Tuple2
+             * @param <K>    The key type
+             * @param <V>    The value type
+             * @return A new {@link $HashMapType}.
+             */
+            <K, V> $MapType<K, V> toMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> mapper);
+
+            /**
+             * Converts this value to an {@link $OptionType}.
+             *
+             * @return A new {@link Option}.
+             */
+            $OptionType<T> toOption();
+
+            /**
+             * Converts this value to a {@link $QueueType}.
+             *
+             * @return A new {@link $QueueType}.
+             */
+            $QueueType<T> toQueue();
+
+            /**
+             * Converts this value to a {@link $EitherType}.
+             *
+             * @param <L> left type
+             * @param left A supplier of a left value
+             * @return A new {@link $LeftType} containing the result of {@code left} if this is empty, otherwise
+             *         a new {@link $RightType} containing this value.
+             * @throws NullPointerException if {@code left} is null
+             */
+            <L> $EitherType<L, T> toRight($SupplierType<? extends L> left);
+
+            /**
+             * Converts this value to a {@link $SetType}.
+             *
+             * @return A new {@link $HashSetType}.
+             */
+            $SetType<T> toSet();
+
+            /**
+             * Converts this value to a {@link $StackType}.
+             *
+             * @return A new {@link $ListType}, which is a {@link $StackType}.
+             */
+            $StackType<T> toStack();
+
+            /**
+             * Converts this value to a {@link $StreamType}.
+             *
+             * @return A new {@link $StreamType}.
+             */
+            $StreamType<T> toStream();
+
+            /**
+             * Converts this value to a {@link $TryType}.
+             * <p>
+             * If this value is undefined, i.e. empty, then a new {@code Failure(NoSuchElementException)} is returned,
+             * otherwise a new {@code Success(value)} is returned.
+             *
+             * @return A new {@link $TryType}.
+             */
+            $TryType<T> toTry();
+
+            /**
+             * Converts this value to a {@link $TryType}.
+             * <p>
+             * If this value is undefined, i.e. empty, then a new {@code Failure(ifEmpty.get())} is returned,
+             * otherwise a new {@code Success(value)} is returned.
+             *
+             * @param ifEmpty an exception supplier
+             * @return A new {@link $TryType}.
+             */
+            $TryType<T> toTry($SupplierType<? extends Throwable> ifEmpty);
+
+            /**
+             * Converts this value to a {@link $TreeType}.
+             *
+             * @return A new {@link $TreeType}.
+             */
+            $TreeType<T> toTree();
+
+            /**
+             * Converts this value to a {@link $VectorType}.
+             *
+             * @return A new {@link $VectorType}.
+             */
+            $VectorType<T> toVector();
+
+        }
+      """
+    }
+  }
 
   /**
    * Generator of javaslang.test.Property
@@ -655,14 +1013,13 @@ def generateMainClasses(): Unit = {
       val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
       val params = (1 to i).gen(j => s"_$j")(", ")
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
-      val resultType = s"Tuple$i<${(1 to i).gen(j => s"U$j")(", ")}>"
       val resultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j")(", ")}>"
       val flatMapResultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
       val comparableGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j extends Comparable<? super U$j>")(", ")}>"
       val untyped = if (i == 0) "" else s"<${(1 to i).gen(j => "?")(", ")}>"
-      val Function = im.getType("java.util.function.Function")
       val functionType = i match {
-        case 1 => Function
+        case 0 => im.getType("java.util.function.Supplier")
+        case 1 => im.getType("java.util.function.Function")
         case 2 => im.getType("java.util.function.BiFunction")
         case _ => s"Function$i"
       }
@@ -791,7 +1148,7 @@ def generateMainClasses(): Unit = {
             """)}
 
             ${(i > 0).gen(xs"""
-              public $resultGenerics $className$resultGenerics map(${(1 to i).gen(j => s"$Function<? super T$j, ? extends U$j> f$j")(", ")}) {
+              public $resultGenerics $className$resultGenerics map(${(1 to i).gen(j => s"${im.getType("java.util.function.Function")}<? super T$j, ? extends U$j> f$j")(", ")}) {
                   return ${im.getType("javaslang.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(_$j)")(", ")});
               }
             """)}
@@ -799,23 +1156,22 @@ def generateMainClasses(): Unit = {
             /**
              * Transforms this tuple to an arbitrary object (which may be also a tuple of same or different arity).
              *
-             * @param f Transformation which takes this tuple and return a new tuple of type U
+             * @param f Transformation which creates a new object of type U based on this tuple's contents.
              * @param <U> New type
              * @return An object of type U
+             * @throws NullPointerException if {@code f} is null
              */
-            public <U> U transform($Function<? super $className$generics, U> f) {
+            public <U> U transform($functionType<$paramTypes${(i > 0).gen(", ")}? extends U> f) {
                 $Objects.requireNonNull(f, "f is null");
-                return f.apply(this);
+                return ${if (i == 0) "f.get()" else s"f.apply($params)"};
             }
 
             @Override
             public $Seq<?> toSeq() {
                 ${if (i == 0) xs"""
                   return $List.empty();
-                """ else if (i == 1) xs"""
-                  return $List.of($params);
                 """ else xs"""
-                  return $List.ofAll($params);
+                  return $List.of($params);
                 """}
             }
 
@@ -1573,7 +1929,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldConvertToSeq() {
                   final $seq<?> actual = createIntTuple(${genArgsForComparing(i, 1)}).toSeq();
-                  $assertThat(actual).isEqualTo($list.${if (i == 1) "of" else "ofAll"}(${genArgsForComparing(i, 1)}));
+                  $assertThat(actual).isEqualTo($list.of(${genArgsForComparing(i, 1)}));
               }
 
               @$test
@@ -1614,7 +1970,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldTransformTuple() {
                   final Tuple$i<$generics> tuple = createTuple();
-                  final Tuple0 actual = tuple.transform(t -> Tuple0.instance());
+                  final Tuple0 actual = tuple.transform((${(1 to i).gen(j => s"t$j")(", ")}) -> Tuple0.instance());
                   assertThat(actual).isEqualTo(Tuple0.instance());
               }
 

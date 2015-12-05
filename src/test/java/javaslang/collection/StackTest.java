@@ -30,8 +30,8 @@ public class StackTest extends AbstractSeqTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <T> Stack<T> ofAll(T... elements) {
-        return Stack.ofAll(elements);
+    protected final <T> Stack<T> of(T... elements) {
+        return Stack.of(elements);
     }
 
     @Override

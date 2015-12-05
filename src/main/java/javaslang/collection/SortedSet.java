@@ -83,6 +83,9 @@ public interface SortedSet<T> extends Set<T> {
     SortedSet<T> dropRight(int n);
 
     @Override
+    SortedSet<T> dropUntil(Predicate<? super T> predicate);
+
+    @Override
     SortedSet<T> dropWhile(Predicate<? super T> predicate);
 
     @Override
@@ -92,10 +95,10 @@ public interface SortedSet<T> extends Set<T> {
     <U> SortedSet<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    <U> SortedSet<U> flatten();
+    <C> Map<C, ? extends SortedSet<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
-    <C> Map<C, ? extends SortedSet<T>> groupBy(Function<? super T, ? extends C> classifier);
+    Iterator<? extends SortedSet<T>> grouped(int size);
 
     @Override
     SortedSet<T> init();
@@ -145,6 +148,12 @@ public interface SortedSet<T> extends Set<T> {
     // DEV-NOTE: The return type is either Set or SortedSet, depending whether U is Comparable
     @Override
     <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+
+    @Override
+    Iterator<? extends SortedSet<T>> sliding(int size);
+
+    @Override
+    Iterator<? extends SortedSet<T>> sliding(int size, int step);
 
     @Override
     Tuple2<? extends SortedSet<T>, ? extends SortedSet<T>> span(Predicate<? super T> predicate);

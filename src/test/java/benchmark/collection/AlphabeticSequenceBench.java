@@ -14,7 +14,7 @@ public class AlphabeticSequenceBench {
     private static final int COUNT = 4;
     private static final int WARMUP = 2;
 
-    private static final Seq<Character> ALPHABET = CharSeq.rangeClosed('A', 'Z').toStream();
+    private static final Stream<Character> ALPHABET = CharSeq.rangeClosed('A', 'Z').toStream();
 
     public static void main(String[] args) {
         benchAlphabeticSequenceUsingCartesianPower();
@@ -33,7 +33,7 @@ public class AlphabeticSequenceBench {
         return Stream
                 .from(1)
                 .flatMap(ALPHABET::crossProduct)
-                .map(IndexedSeq::mkString)
+                .map(Seq::mkString)
                 .takeWhile(s -> s.length() <= n)
                 .toList();
     }
@@ -43,7 +43,7 @@ public class AlphabeticSequenceBench {
                 .sliding(1)
                 .toStream()
                 .appendSelf(stream -> stream.flatMap(product -> ALPHABET.map(product::append)))
-                .map(IndexedSeq::mkString)
+                .map(Seq::mkString)
                 .takeWhile(s -> s.length() <= n)
                 .toList();
     }

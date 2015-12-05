@@ -44,7 +44,7 @@ public class HashMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> Map<K, V> of(K key, V value) {
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value) {
         return HashMap.of(key, value);
     }
 

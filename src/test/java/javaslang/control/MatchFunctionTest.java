@@ -147,7 +147,7 @@ public class MatchFunctionTest {
         assertThat(Match.otherwise(ignored -> true).apply(null)).isTrue();
     }
 
-    // DOES CALL Match.otherwise(R value) instead ofAll Match.otherwise(Function)
+    // DOES CALL Match.otherwise(R value) instead of Match.otherwise(Function)
     //    @Test(expected = NullPointerException.class)
     //    public void shouldThrowWhenMatchDefaultCaseAndFunctionIsNull() {
     //        final Function<?, ?> f = null;
@@ -438,7 +438,7 @@ public class MatchFunctionTest {
         assertThat(actual).isTrue();
     }
 
-    // should declare common result type ofAll multiple cases
+    // should declare common result type of multiple cases
 
     @Test
     public void shouldMatchTypedResultByValue() {

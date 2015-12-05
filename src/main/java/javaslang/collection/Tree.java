@@ -84,7 +84,7 @@ public interface Tree<T> extends Traversable<T> {
     @SafeVarargs
     static <T> Node<T> of(T value, Node<T>... children) {
         Objects.requireNonNull(children, "children is null");
-        return new Node<>(value, List.ofAll(children));
+        return new Node<>(value, List.of(children));
     }
 
     /**
@@ -164,6 +164,13 @@ public interface Tree<T> extends Traversable<T> {
     default Iterator<T> iterator(Order order) {
         return traverse(order).iterator();
     }
+
+    /**
+     * Returns the number of nodes (including root and leafs).
+     *
+     * @return The size of the tree.
+     */
+    int size();
 
     /**
      * Traverses this tree in {@link Order#PRE_ORDER}.
@@ -293,6 +300,12 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
+    default Seq<T> dropUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropWhile(predicate.negate());
+    }
+
+    @Override
     default Seq<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
@@ -318,16 +331,6 @@ public interface Tree<T> extends Traversable<T> {
         return isEmpty() ? Empty.instance() : FlatMap.apply((Node<T>) this, mapper);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Tree<U> flatten() {
-        try {
-            return ((Tree<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
@@ -347,6 +350,11 @@ public interface Tree<T> extends Traversable<T> {
         } else {
             return (Map<C, Seq<T>>) traverse().groupBy(classifier);
         }
+    }
+
+    @Override
+    default Iterator<Seq<T>> grouped(int size) {
+        return sliding(size, size);
     }
 
     @Override
@@ -390,6 +398,11 @@ public interface Tree<T> extends Traversable<T> {
     @Override
     default Iterator<T> iterator() {
         return traverse().iterator();
+    }
+
+    @Override
+    default int length() {
+        return size();
     }
 
     @Override
@@ -446,13 +459,23 @@ public interface Tree<T> extends Traversable<T> {
     @Override
     default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
 
     @Override
     default <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+    }
+
+    @Override
+    default Iterator<Seq<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    default Iterator<Seq<T>> sliding(int size, int step) {
+        return iterator().sliding(size, step);
     }
 
     @SuppressWarnings("unchecked")
@@ -634,7 +657,7 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public int length() {
+        public int size() {
             return size.get();
         }
 
@@ -806,7 +829,7 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public int length() {
+        public int size() {
             return 0;
         }
 

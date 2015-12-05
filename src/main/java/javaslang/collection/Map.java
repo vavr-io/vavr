@@ -40,12 +40,14 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
     <U, W> Map<U, W> map(BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper);
 
     /**
-     * Performs an action on value.
+     * Maps the values of this {@code Map} while preserving the corresponding keys.
      *
-     * @param mapper A {@code Function}
+     * @param <W> The new value type.
+     * @param mapper A {@code Function} that maps values of type {@code K} to values of type {@code W}.
+     * @return A new {@code Map}.
      * @throws NullPointerException if {@code mapper} is null
      */
-    <W> Map<K, W> mapValues(Function<V, ? extends W> mapper);
+    <W> Map<K, W> mapValues(Function<? super V, ? extends W> mapper);
 
     Map<K, V> put(K key, V value);
 
@@ -109,6 +111,9 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
     Map<K, V> dropRight(int n);
 
     @Override
+    Map<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
     Map<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
@@ -117,28 +122,11 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
     @Override
     <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
 
-    /**
-     * Entries of a {@code Map} are flattened to the elements of their {@code Iterable} values.
-     * <p>
-     * <strong>Caution:</strong> Behaves different than most other {@code Value.flatten()} implementations.
-     * <p>
-     * Example:
-     *
-     * <pre><code>// = Seq(1, 2)
-     * HashMap.empty()
-     *     .put(0, Option.of(1))
-     *     .put(1, Option.of(2))
-     *     .flatten();</code></pre>
-     *
-     * @param <U> the component type of the resulting sequence
-     * @return an indexed sequence of elements of type U
-     * @throws UnsupportedOperationException if the value of a map entry {@code (key, value)} is not {@code Iterable}.
-     */
-    @Override
-    <U> Seq<U> flatten();
-
     @Override
     <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
+
+    @Override
+    Iterator<? extends Map<K, V>> grouped(int size);
 
     @Override
     Map<K, V> init();
@@ -150,7 +138,9 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
     Iterator<Tuple2<K, V>> iterator();
 
     @Override
-    int length();
+    default int length() {
+        return size();
+    }
 
     @Override
     <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper);
@@ -205,6 +195,12 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
 
     @Override
     <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation);
+
+    @Override
+    Iterator<? extends Map<K, V>> sliding(int size);
+
+    @Override
+    Iterator<? extends Map<K, V>> sliding(int size, int step);
 
     @Override
     Tuple2<? extends Map<K, V>, ? extends Map<K, V>> span(Predicate<? super Tuple2<K, V>> predicate);

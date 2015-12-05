@@ -32,11 +32,11 @@ import java.util.stream.Collector;
  * <pre>
  * <code>
  * // factory methods
- * List.empty()                  // = List.of() = Nil.instance()
- * List.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
- * List.of(Object...)            // e.g. List.of(1, 2, 3)
+ * List.empty()                        // = List.of() = Nil.instance()
+ * List.of(x)                          // = new Cons&lt;&gt;(x, Nil.instance())
+ * List.of(Object...)                  // e.g. List.of(1, 2, 3)
  * List.ofAll(java.lang.Iterable)      // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
- * List.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(new int[] {1, 2, 3}) = 1, 2, 3
+ * List.ofAll(&lt;primitive array&gt;) // e.g. List.of(new int[] {1, 2, 3}) = 1, 2, 3
  *
  * // int sequences
  * List.range(0, 3)              // = 0, 1, 2
@@ -55,15 +55,14 @@ import java.util.stream.Collector;
  * List&lt;Integer&gt;       s2 = List.of(1, 2, 3);
  *                     // = List.of(new Integer[] {1, 2, 3});
  *
- * List&lt;int[]&gt;         s3 = List.of(new int[] {1, 2, 3});
- * List&lt;List&lt;Integer&gt;&gt; s4 = List.of(List.of(1, 2, 3));
+ * List&lt;int[]&gt;         s3 = List.ofAll(new int[] {1, 2, 3});
+ * List&lt;List&lt;Integer&gt;&gt; s4 = List.ofAll(List.of(1, 2, 3));
  *
  * List&lt;Integer&gt;       s5 = List.ofAll(new int[] {1, 2, 3});
  * List&lt;Integer&gt;       s6 = List.ofAll(List.of(1, 2, 3));
  *
  * // cuckoo's egg
  * List&lt;Integer[]&gt;     s7 = List.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
- *                     //!= List.&lt;Integer[]&gt; of(1, 2, 3);
  * </code>
  * </pre>
  *
@@ -142,7 +141,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    static <T> List<T> ofAll(T... elements) {
+    static <T> List<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> result = Nil.<T> instance();
         for (int i = elements.length - 1; i >= 0; i--) {
@@ -499,23 +498,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<Tuple2<T, T>> crossProduct() {
-        return crossProduct(this);
-    }
-
-    @Override
-    default List<IndexedSeq<T>> crossProduct(int power) {
-        return toStream().crossProduct(power).toList();
-    }
-
-    @Override
-    default <U> List<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
-        final List<U> other = unit(that);
-        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
-    }
-
-    @Override
     default List<T> clear() {
         return Nil.instance();
     }
@@ -528,6 +510,23 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default List<List<T>> combinations(int k) {
         return Combinations.apply(this, Math.max(k, 0));
+    }
+
+    @Override
+    default List<Tuple2<T, T>> crossProduct() {
+        return crossProduct(this);
+    }
+
+    @Override
+    default List<List<T>> crossProduct(int power) {
+        return Collections.crossProduct(this, power).map(List::ofAll).toList();
+    }
+
+    @Override
+    default <U> List<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
+        Objects.requireNonNull(that, "that is null");
+        final List<U> other = unit(that);
+        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
     }
 
     @Override
@@ -570,6 +569,12 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default List<T> dropUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropWhile(predicate.negate());
+    }
+
+    @Override
     default List<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         List<T> list = this;
@@ -599,16 +604,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
                 }
             }
             return list.reverse();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> List<U> flatten() {
-        try {
-            return ((List<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
         }
     }
 
@@ -646,6 +641,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     default <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
         return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, List.ofAll(it)));
+    }
+
+    @Override
+    default Iterator<List<T>> grouped(int size) {
+        return sliding(size, size);
     }
 
     @Override
@@ -1047,13 +1047,13 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
 
     @Override
     default <U> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
     }
 
     @Override
@@ -1073,6 +1073,16 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             }
             return result.reverse();
         }
+    }
+
+    @Override
+    default Iterator<List<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    default Iterator<List<T>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(List::ofAll);
     }
 
     @Override

@@ -267,6 +267,12 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     }
 
     @Override
+    public TreeMap<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropWhile(predicate.negate());
+    }
+
+    @Override
     public TreeMap<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return createTreeMap(entries.comparator(), iterator().dropWhile(predicate));
@@ -309,16 +315,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
         return (Seq<U>) entries.iterator().flatMap(mapper).toStream();
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Seq<U> flatten() {
-        try {
-            return ((TreeMap<?, ? extends Iterable<U>>) this).flatMap(entry -> entry._2);
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable map values");
-        }
-    }
-
     @Override
     public <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
@@ -340,6 +336,11 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
                     createTreeMap(entries.comparator(), Iterator.of(entry)));
             return map.put(key, values);
         });
+    }
+
+    @Override
+    public Iterator<TreeMap<K, V>> grouped(int size) {
+        return sliding(size, size);
     }
 
     @Override
@@ -391,11 +392,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
         return entries.iterator();
     }
 
-    @Override
-    public int length() {
-        return entries.size();
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public Comparator<K> keyComparator() {
@@ -414,7 +410,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     }
 
     @Override
-    public <W> TreeMap<K, W> mapValues(Function<V, ? extends W> mapper)  {
+    public <W> TreeMap<K, W> mapValues(Function<? super V, ? extends W> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return map((k, v) -> Tuple.of(k, mapper.apply(v)));
     }
@@ -571,24 +567,34 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     @Override
     public TreeMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, TreeMap.empty(keyComparator()), TreeMap::put, Function.identity());
+        return Collections.scanLeft(this, zero, operation, TreeMap.empty(keyComparator()), TreeMap::put, Function.identity());
     }
 
     @Override
     public <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
     }
 
     @Override
     public <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
     }
 
     @Override
     public int size() {
         return entries.size();
+    }
+
+    @Override
+    public Iterator<TreeMap<K, V>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<TreeMap<K, V>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(seq -> createTreeMap(entries.comparator(), seq));
     }
 
     @Override

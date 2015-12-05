@@ -40,7 +40,7 @@ import static javaslang.concurrent.Future.DEFAULT_EXECUTOR_SERVICE;
  * <h3>One-shot API</h3>
  * <p>
  * The main purpose of a {@code Promise} is to complete its underlying {@code Future}. When only a single {@code Thread}
- * will eventually complete the {@code Promise}, we use on of these methods. Calls will throw if the {@code Promise} is already
+ * will eventually complete the {@code Promise}, we use one of these methods. Calls will throw if the {@code Promise} is already
  * completed.
  * <ul>
  * <li>{@link #complete(Try)}</li>

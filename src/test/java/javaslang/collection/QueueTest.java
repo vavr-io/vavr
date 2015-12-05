@@ -32,8 +32,8 @@ public class QueueTest extends AbstractSeqTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <T> Queue<T> ofAll(T... elements) {
-        return Queue.ofAll(elements);
+    protected final <T> Queue<T> of(T... elements) {
+        return Queue.of(elements);
     }
 
     @Override

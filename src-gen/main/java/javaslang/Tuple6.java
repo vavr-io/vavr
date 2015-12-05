@@ -233,18 +233,19 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
     /**
      * Transforms this tuple to an arbitrary object (which may be also a tuple of same or different arity).
      *
-     * @param f Transformation which takes this tuple and return a new tuple of type U
+     * @param f Transformation which creates a new object of type U based on this tuple's contents.
      * @param <U> New type
      * @return An object of type U
+     * @throws NullPointerException if {@code f} is null
      */
-    public <U> U transform(Function<? super Tuple6<T1, T2, T3, T4, T5, T6>, U> f) {
+    public <U> U transform(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
-        return f.apply(this);
+        return f.apply(_1, _2, _3, _4, _5, _6);
     }
 
     @Override
     public Seq<?> toSeq() {
-        return List.ofAll(_1, _2, _3, _4, _5, _6);
+        return List.of(_1, _2, _3, _4, _5, _6);
     }
 
     // -- Object

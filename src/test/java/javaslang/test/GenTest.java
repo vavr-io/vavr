@@ -22,7 +22,7 @@ public class GenTest {
     // equally distributed random number generator
     static final Random RANDOM = new Random();
 
-    // number ofAll tries to assert a property
+    // number of tries to assert a property
     static final int TRIES = 1000;
 
     // -- random number generator (rng)
@@ -167,7 +167,7 @@ public class GenTest {
 
     @Test
     public void shouldGenerateElementsAccordingToFrequencyGivenAnIterable() {
-        final Gen<Integer> gen = Gen.frequency(List.ofAll(Tuple.of(0, Gen.of(-1)), Tuple.of(1, Gen.of(1))));
+        final Gen<Integer> gen = Gen.frequency(List.of(Tuple.of(0, Gen.of(-1)), Tuple.of(1, Gen.of(1))));
         assertForAll(() -> gen.apply(RANDOM), i -> i != -1);
     }
 
@@ -205,7 +205,7 @@ public class GenTest {
 
     @Test
     public void shouldReturnOneOfGivenIterable() {
-        final Gen<Integer> gen = Gen.oneOf(List.ofAll(Gen.of(1), Gen.of(2)));
+        final Gen<Integer> gen = Gen.oneOf(List.of(Gen.of(1), Gen.of(2)));
         assertForAll(() -> gen.apply(RANDOM), i -> i == 1 || i == 2);
     }
 
@@ -258,14 +258,6 @@ public class GenTest {
     @Test(expected = IllegalStateException.class)
     public void shouldDetectEmptyFilter() {
         Gen.of(1).filter(ignored -> false).apply(RANDOM);
-    }
-
-    // -- flatten(Function)
-
-    @Test
-    public void shouldFlatteningGenOfIntegerUsingFunction() {
-        final Gen<Gen<Integer>> testee = random -> Gen.of(1);
-        assertThat(testee.flatten().apply(new Random())).isNotNull();
     }
 
     // -- exists

@@ -57,6 +57,28 @@ public interface Try<T> extends Value<T> {
     }
 
     /**
+     * Creates a {@link Success} that contains the given {@code value}. Shortcut for {@code new Success<>(value)}.
+     *
+     * @param value A value.
+     * @param <T> Type of the given {@code value}.
+     * @return A new {@code Success}.
+     */
+    static <T> Try<T> success(T value) {
+        return new Success<>(value);
+    }
+
+    /**
+     * Creates a {@link Failure} that contains the given {@code exception}. Shortcut for {@code new Failure<>(exception)}.
+     *
+     * @param exception An exception.
+     * @param <T> Component type of the {@code Try}.
+     * @return A new {@code Failure}.
+     */
+    static <T> Try<T> failure(Throwable exception) {
+        return new Failure<>(exception);
+    }
+
+    /**
      * Runs the given checked consumer if this is a {@code Success},
      * passing the result of the current expression to it.
      * If this expression is a {@code Failure} then it'll return a new
@@ -200,16 +222,6 @@ public interface Try<T> extends Value<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Try<U> flatten() {
-        try {
-            return ((Try<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
-    }
-
     /**
      * Gets the result of this Try if this is a Success or throws if this is a Failure.
      *
@@ -271,18 +283,9 @@ public interface Try<T> extends Value<T> {
      * @param mapper A mapper
      * @return a new Try
      */
-    @SuppressWarnings("unchecked")
     @Override
     default <U> Try<U> map(Function<? super T, ? extends U> mapper) {
-        if (isFailure()) {
-            return (Failure<U>) this;
-        } else {
-            try {
-                return new Success<>(mapper.apply(get()));
-            } catch (Throwable t) {
-                return new Failure<>(t);
-            }
-        }
+        return mapTry(mapper::apply);
     }
 
     /**
@@ -420,7 +423,6 @@ public interface Try<T> extends Value<T> {
             } catch (Throwable t) {
                 return new Failure<>(t);
             }
-
         } else {
             return this;
         }

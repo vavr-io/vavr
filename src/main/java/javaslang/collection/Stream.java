@@ -36,7 +36,7 @@ import java.util.stream.Collector;
  * Stream.empty()                  // = Stream.of() = Nil.instance()
  * Stream.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
  * Stream.of(Object...)            // e.g. Stream.of(1, 2, 3)
- * Stream.ofAll(java.lang.Iterable)          // e.g. Stream.of(List.of(1, 2, 3)) = 1, 2, 3
+ * Stream.ofAll(java.lang.Iterable)          // e.g. Stream.ofAll(List.of(1, 2, 3)) = 1, 2, 3
  * Stream.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(new int[] {1, 2, 3}) = 1, 2, 3
  *
  * // int sequences
@@ -59,15 +59,14 @@ import java.util.stream.Collector;
  * Stream&lt;Integer&gt;       s2 = Stream.of(1, 2, 3);
  *                       // = Stream.of(new Integer[] {1, 2, 3});
  *
- * Stream&lt;int[]&gt;         s3 = Stream.of(new int[] {1, 2, 3});
- * Stream&lt;List&lt;Integer&gt;&gt; s4 = Stream.of(List.of(1, 2, 3));
+ * Stream&lt;int[]&gt;         s3 = Stream.ofAll(new int[] {1, 2, 3});
+ * Stream&lt;List&lt;Integer&gt;&gt; s4 = Stream.ofAll(List.of(1, 2, 3));
  *
  * Stream&lt;Integer&gt;       s5 = Stream.ofAll(new int[] {1, 2, 3});
  * Stream&lt;Integer&gt;       s6 = Stream.ofAll(List.of(1, 2, 3));
  *
  * // cuckoo's egg
  * Stream&lt;Integer[]&gt;     s7 = Stream.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
- *                       //!= Stream.&lt;Integer[]&gt; of(1, 2, 3);
  * </code>
  * </pre>
  *
@@ -216,7 +215,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A list containing the given elements in the same order.
      */
     @SafeVarargs
-    static <T> Stream<T> ofAll(T... elements) {
+    static <T> Stream<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(new Iterator<T>() {
             int i = 0;
@@ -601,27 +600,6 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<Tuple2<T, T>> crossProduct() {
-        return crossProduct(this);
-    }
-
-    @Override
-    default Stream<IndexedSeq<T>> crossProduct(int power) {
-        if (power < 0) {
-            throw new IllegalArgumentException("negative power");
-        }
-        return Iterator.range(1, power).foldLeft(sliding(1).toStream(),
-                (product, ignored) -> product.flatMap(tuple -> map(tuple::append)));
-    }
-
-    @Override
-    default <U> Stream<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
-        final Stream<U> other = Stream.ofAll(that);
-        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
-    }
-
-    @Override
     default Stream<T> clear() {
         return Empty.instance();
     }
@@ -634,6 +612,23 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default Stream<Stream<T>> combinations(int k) {
         return Combinations.apply(this, Math.max(k, 0));
+    }
+
+    @Override
+    default Stream<Tuple2<T, T>> crossProduct() {
+        return crossProduct(this);
+    }
+
+    @Override
+    default Stream<Stream<T>> crossProduct(int power) {
+        return Collections.crossProduct(this, power).map(Stream::ofAll).toStream();
+    }
+
+    @Override
+    default <U> Stream<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
+        Objects.requireNonNull(that, "that is null");
+        final Stream<U> other = Stream.ofAll(that);
+        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
     }
 
     @Override
@@ -673,6 +668,12 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    default Stream<T> dropUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropWhile(predicate.negate());
+    }
+
+    @Override
     default Stream<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         Stream<T> stream = this;
@@ -699,7 +700,7 @@ public interface Stream<T> extends LinearSeq<T> {
         return isEmpty() ? Empty.instance() : Stream.ofAll(new Iterator<U>() {
 
             final Iterator<? extends T> inputs = Stream.this.iterator();
-            java.util.Iterator<? extends U> current = Collections.emptyIterator();
+            java.util.Iterator<? extends U> current = java.util.Collections.emptyIterator();
 
             @Override
             public boolean hasNext() {
@@ -715,16 +716,6 @@ public interface Stream<T> extends LinearSeq<T> {
                 return current.next();
             }
         });
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Stream<U> flatten() {
-        try {
-            return ((Stream<? extends Iterable<U>>) this).flatMap(Function.identity());
-        } catch (ClassCastException x) {
-            throw new UnsupportedOperationException("flatten of non-iterable elements");
-        }
     }
 
     @Override
@@ -749,6 +740,11 @@ public interface Stream<T> extends LinearSeq<T> {
     default <C> Map<C, Stream<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
         return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, Stream.ofAll(it)));
+    }
+
+    @Override
+    default Iterator<Stream<T>> grouped(int size) {
+        return sliding(size, size);
     }
 
     @Override
@@ -1041,7 +1037,7 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default <U> Stream<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Traversables.scanRight(this, zero, operation, Stream.empty(), Stream::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, Stream.empty(), Stream::prepend, Function.identity());
     }
 
     @Override
@@ -1056,6 +1052,16 @@ public interface Stream<T> extends LinearSeq<T> {
                 return tail().slice(lowerBound - 1, endIndex - 1);
             }
         }
+    }
+
+    @Override
+    default Iterator<Stream<T>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    default Iterator<Stream<T>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(Stream::ofAll);
     }
 
     @Override

@@ -226,18 +226,6 @@ public class EitherTest {
         assertThat(actual).isFalse();
     }
 
-    // flatten(Function)
-
-    @Test
-    public void shouldFlattenLeftWithFunctionUsingLeftProjection() {
-        assertThat(new Left<>(new Some<>(1)).left().flatten().toEither()).isEqualTo(new Left<>(1));
-    }
-
-    @Test
-    public void shouldFlattenRightWithFunctionUsingLeftProjection() {
-        assertThat(new Right<Option<Integer>, String>("1").left().flatten().toEither()).isEqualTo(new Right<>("1"));
-    }
-
     // flatMap
 
     @Test
@@ -281,7 +269,7 @@ public class EitherTest {
         assertThat(new Left<>(1).left().forAll(i -> i == 2)).isFalse();
     }
 
-    @Test// a property holds for all elements ofAll no elements
+    @Test// a property holds for all elements of no elements
     public void shouldNotHoldPropertyForAllOfLeftProjectionOfRight() {
         assertThat(new Left<>(1).right().forAll(e -> true)).isTrue();
     }
@@ -601,18 +589,6 @@ public class EitherTest {
         assertThat(actual).isFalse();
     }
 
-    // flatten(Function)
-
-    @Test
-    public void shouldFlattenRightWithFunctionUsingRightProjection() {
-        assertThat(new Right<String, Option<Integer>>(new Some<>(1)).right().flatten().toEither()).isEqualTo(new Right<>(1));
-    }
-
-    @Test
-    public void shouldFlattenLeftWithFunctionUsingRightProjection() {
-        assertThat(new Left<String, Option<Integer>>("1").right().flatten().toEither()).isEqualTo(new Left<>("1"));
-    }
-
     // flatMap
 
     @Test
@@ -656,7 +632,7 @@ public class EitherTest {
         assertThat(new Right<>(1).right().forAll(i -> i == 2)).isFalse();
     }
 
-    @Test // a property holds for all elements ofAll no elements
+    @Test // a property holds for all elements of no elements
     public void shouldNotHoldPropertyForAllOfRightProjectionOfLeft() {
         assertThat(new Right<>(1).left().forAll(e -> true)).isTrue();
     }

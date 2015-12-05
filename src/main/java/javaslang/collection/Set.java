@@ -112,6 +112,9 @@ public interface Set<T> extends Traversable<T> {
     Set<T> dropRight(int n);
 
     @Override
+    Set<T> dropUntil(Predicate<? super T> predicate);
+
+    @Override
     Set<T> dropWhile(Predicate<? super T> predicate);
 
     @Override
@@ -121,10 +124,10 @@ public interface Set<T> extends Traversable<T> {
     <U> Set<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
 
     @Override
-    <U> Set<U> flatten();
+    <C> Map<C, ? extends Set<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
-    <C> Map<C, ? extends Set<T>> groupBy(Function<? super T, ? extends C> classifier);
+    Iterator<? extends Set<T>> grouped(int size);
 
     @Override
     Set<T> init();
@@ -164,6 +167,12 @@ public interface Set<T> extends Traversable<T> {
 
     @Override
     <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+
+    @Override
+    Iterator<? extends Set<T>> sliding(int size);
+
+    @Override
+    Iterator<? extends Set<T>> sliding(int size, int step);
 
     @Override
     Tuple2<? extends Set<T>, ? extends Set<T>> span(Predicate<? super T> predicate);
