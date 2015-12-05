@@ -97,6 +97,6 @@ public class LinkedHashMapTest extends AbstractMapTest {
         java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
         source.put(1, 2);
         source.put(3, 4);
-        assertThat(LinkedHashMap.of(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
+        assertThat(LinkedHashMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
     }
 }

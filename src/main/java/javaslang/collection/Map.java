@@ -59,14 +59,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
      */
     Map<K, V> put(Tuple2<? extends K, ? extends V> entry);
 
-    /**
-     * Convenience method for {@code put(map)}.
-     *
-     * @param map java.util.Map
-     * @return A new Map containing all elements of the source map.
-     */
-    Map<K, V> put(java.util.Map<? extends K, ? extends V> map);
-
     Map<K, V> remove(K key);
 
     Map<K, V> removeAll(java.lang.Iterable<? extends K> keys);

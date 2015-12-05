@@ -71,7 +71,7 @@ public class TreeMapTest extends AbstractMapTest {
         java.util.Map<Integer, Integer> source = new HashMap<>();
         source.put(1, 2);
         source.put(3, 4);
-        assertThat(TreeMap.of(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
+        assertThat(TreeMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
     }
 
     // -- obsolete tests

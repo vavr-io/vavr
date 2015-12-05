@@ -107,8 +107,13 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
      * @return A new Map containing the given map
      */
     @SuppressWarnings("unchecked")
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(java.util.Map<? extends K, ? extends V> map) {
-        return ((TreeMap<K, V>) empty()).put(map);
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
+        Objects.requireNonNull(map, "map is null");
+        RedBlackTree<Tuple2<K, V>> result = RedBlackTree.empty();
+        for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
+            result = result.insert(Tuple.of(entry.getKey(), entry.getValue()));
+        }
+        return new TreeMap<>(result);
     }
 
     /**
@@ -500,16 +505,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     public TreeMap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
         Objects.requireNonNull(entry, "entry is null");
         return new TreeMap<>(entries.insert((Tuple2<K, V>) entry));
-    }
-
-    @Override
-    public TreeMap<K, V> put(java.util.Map<? extends K, ? extends V> map) {
-        Objects.requireNonNull(map, "map is null");
-        RedBlackTree<Tuple2<K, V>> result = RedBlackTree.empty(entries.comparator());
-        for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
-            result = result.insert(Tuple.of(entry.getKey(), entry.getValue()));
-        }
-        return new TreeMap<>(result);
     }
 
     @Override

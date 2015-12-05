@@ -86,8 +86,13 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given map
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> LinkedHashMap<K, V> of(java.util.Map<? extends K, ? extends V> map) {
-        return ((LinkedHashMap<K, V>) empty()).put(map);
+    public static <K, V> LinkedHashMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
+        Objects.requireNonNull(map, "map is null");
+        LinkedHashMap<K, V> result = LinkedHashMap.empty();
+        for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
+            result = result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
     }
 
     /**
@@ -203,16 +208,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public LinkedHashMap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
         return put(entry._1, entry._2);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> put(java.util.Map<? extends K, ? extends V> map) {
-        Objects.requireNonNull(map, "map is null");
-        LinkedHashMap<K, V> result = LinkedHashMap.empty();
-        for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
-            result = result.put(entry.getKey(), entry.getValue());
-        }
-        return result;
     }
 
     @Override

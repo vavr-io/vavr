@@ -40,7 +40,7 @@ public class HashMapTest extends AbstractMapTest {
         java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
         source.put(1, 2);
         source.put(3, 4);
-        assertThat(HashMap.of(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
+        assertThat(HashMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
     }
 
     @Override

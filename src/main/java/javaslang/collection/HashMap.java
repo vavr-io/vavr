@@ -86,8 +86,13 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given map
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> HashMap<K, V> of(java.util.Map<? extends K, ? extends V> map) {
-        return ((HashMap<K, V>) empty()).put(map);
+    public static <K, V> HashMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
+        Objects.requireNonNull(map, "map is null");
+        HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
+        for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
+            tree = tree.put(entry.getKey(), entry.getValue());
+        }
+        return tree.isEmpty() ? empty() : new HashMap<>(tree);
     }
 
     /**
@@ -402,16 +407,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
         return put(entry._1, entry._2);
-    }
-
-    @Override
-    public HashMap<K, V> put(java.util.Map<? extends K, ? extends V> map) {
-        Objects.requireNonNull(map, "map is null");
-        HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
-        for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
-            tree = tree.put(entry.getKey(), entry.getValue());
-        }
-        return tree.isEmpty() ? empty() : new HashMap<>(tree);
     }
 
     @Override
