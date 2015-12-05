@@ -19,7 +19,7 @@ interface Concurrent {
 
     // Max wait time for results = WAIT_MILLIS * WAIT_COUNT (however, most probably it will take only WAIT_MILLIS * 1)
     long WAIT_MILLIS = 50;
-    int WAIT_COUNT = 100;
+    int WAIT_COUNT = 500;
 
     // Max sleep time to delay computation
     int SLEEP_MAX_MILLIS = 150;
