@@ -4,7 +4,7 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.stream.Collector;
 
 public class LinkedHashMapTest extends AbstractMapTest {
@@ -90,5 +90,13 @@ public class LinkedHashMapTest extends AbstractMapTest {
                 Tuple.of(7, "cdx"),
                 Tuple.of(4, "dx"),
                 Tuple.of(0, "x")));
+    }
+
+    @Test
+    public void shouldWrapMap() {
+        java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
+        source.put(1, 2);
+        source.put(3, 4);
+        assertThat(LinkedHashMap.of(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
     }
 }

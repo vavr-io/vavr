@@ -11,8 +11,8 @@ import javaslang.control.Some;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -90,7 +90,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         return emptyMap();
     }
 
-    private Map<Integer, Integer> emptyIntInt() {
+    protected Map<Integer, Integer> emptyIntInt() {
         return emptyMap();
     }
 
@@ -349,6 +349,14 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldPutTuple() {
         assertThat(emptyIntInt().put(Tuple.of(1, 2))).isEqualTo(emptyIntInt().put(1, 2));
+    }
+
+    @Test
+    public void shouldPutMap() {
+        java.util.Map<Integer, Integer> source = new HashMap<>();
+        source.put(1, 2);
+        source.put(3, 4);
+        assertThat(emptyIntInt().put(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
     }
 
     // -- removeAll

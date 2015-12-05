@@ -78,6 +78,19 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     /**
+     * Returns a {@code LinkedHashMap}, from a source java.util.Map.
+     *
+     * @param map A map entry.
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @return A new Map containing the given map
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> LinkedHashMap<K, V> of(java.util.Map<? extends K, ? extends V> map) {
+        return ((LinkedHashMap<K, V>) empty()).put(map);
+    }
+
+    /**
      * Returns a singleton {@code LinkedHashMap}, i.e. a {@code LinkedHashMap} of one element.
      *
      * @param key   A singleton map key.
@@ -190,6 +203,16 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public LinkedHashMap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
         return put(entry._1, entry._2);
+    }
+
+    @Override
+    public LinkedHashMap<K, V> put(java.util.Map<? extends K, ? extends V> map) {
+        Objects.requireNonNull(map, "map is null");
+        LinkedHashMap<K, V> result = LinkedHashMap.empty();
+        for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
+            result = result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
     }
 
     @Override
