@@ -367,7 +367,8 @@ interface IndexedSeqModule {
             }
             int p = 0;
             int result = -1;
-            while (t.length() >= p + slice.length()) {
+            final int maxPtr = t.length() - slice.length();
+            while (p <= maxPtr) {
                 int r = findSlice(t, p, slice);
                 if (r < 0) {
                     return result;
@@ -386,7 +387,8 @@ interface IndexedSeqModule {
             if (t.isEmpty()) {
                 return slice.isEmpty() ? 0 : -1;
             }
-            while (t.length() >= p + slice.length()) {
+            final int maxPtr = t.length() - slice.length();
+            while (p <= maxPtr) {
                 if(checkPrefix(t, p, slice)) {
                     return p;
                 }
