@@ -369,7 +369,7 @@ interface IndexedSeqModule {
             int result = -1;
             final int maxPtr = t.length() - slice.length();
             while (p <= maxPtr) {
-                int r = findSlice(t, p, slice);
+                int r = findSlice(t, p, maxPtr, slice);
                 if (r < 0) {
                     return result;
                 }
@@ -383,11 +383,7 @@ interface IndexedSeqModule {
             return result;
         }
 
-        private static <T> int findSlice(IndexedSeq<T> t, int p, IndexedSeq<T> slice) {
-            if (t.isEmpty()) {
-                return slice.isEmpty() ? 0 : -1;
-            }
-            final int maxPtr = t.length() - slice.length();
+        private static <T> int findSlice(IndexedSeq<T> t, int p, int maxPtr, IndexedSeq<T> slice) {
             while (p <= maxPtr) {
                 if(t.startsWith(slice, p)) {
                     return p;
