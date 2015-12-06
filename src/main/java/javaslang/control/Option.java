@@ -178,6 +178,30 @@ public interface Option<T> extends Value<T> {
     }
 
     /**
+     *
+     * Returns {@code true} if this is a {@code Some} and the value equals the given value.
+     * Otherwise {@code false} is returned.
+     *
+     * @param value A value to check if it equals to Option's content
+     * @return true or false as specified
+     */
+    default boolean isSome(T value) {
+        return isMatch(o -> Objects.equals(o, value));
+    }
+
+    /**
+     *
+     * Returns {@code true} if this is a {@code Some} and the value satisfies the given predicate.
+     * Otherwise {@code false} is returned.
+     *
+     * @param predicate A predicate which is used to test an optional value
+     * @return true or false as specified
+     */
+    default boolean isMatch(Predicate<T> predicate) {
+        return filter(predicate).isDefined();
+    }
+
+    /**
      * Returns {@code Some(value)} if this is a {@code Some} and the value satisfies the given predicate.
      * Otherwise {@code None} is returned.
      *
