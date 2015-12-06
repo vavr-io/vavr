@@ -90,7 +90,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         return emptyMap();
     }
 
-    private Map<Integer, Integer> emptyIntInt() {
+    protected Map<Integer, Integer> emptyIntInt() {
         return emptyMap();
     }
 

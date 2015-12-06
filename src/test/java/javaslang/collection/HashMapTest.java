@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Tuple2;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.stream.Collector;
@@ -32,6 +33,14 @@ public class HashMapTest extends AbstractMapTest {
     @Override
     protected final <K, V> Map<K, V> mapOf(Tuple2<? extends K, ? extends V>... entries) {
         return HashMap.ofAll(entries);
+    }
+
+    @Test
+    public void shouldWrapMap() {
+        java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
+        source.put(1, 2);
+        source.put(3, 4);
+        assertThat(HashMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
     }
 
     @Override
