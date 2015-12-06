@@ -99,6 +99,24 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     }
 
     /**
+     * Returns a {@code TreeMap}, from a source java.util.Map.
+     *
+     * @param map A map entry.
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @return A new Map containing the given map
+     */
+    @SuppressWarnings("unchecked")
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
+        Objects.requireNonNull(map, "map is null");
+        RedBlackTree<Tuple2<K, V>> result = RedBlackTree.empty();
+        for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
+            result = result.insert(Tuple.of(entry.getKey(), entry.getValue()));
+        }
+        return new TreeMap<>(result);
+    }
+
+    /**
      * Returns a singleton {@code TreeMap}, i.e. a {@code TreeMap} of one entry using a specific key comparator.
      *
      * @param <K>           The key type

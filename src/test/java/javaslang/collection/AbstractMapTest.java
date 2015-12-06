@@ -90,7 +90,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         return emptyMap();
     }
 
-    private Map<Integer, Integer> emptyIntInt() {
+    protected Map<Integer, Integer> emptyIntInt() {
         return emptyMap();
     }
 
@@ -288,6 +288,11 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnModifiedValuesMap() {
         assertThat(emptyIntString().put(1, "1").put(2, "2").mapValues(Integer::parseInt)).isEqualTo(emptyMap().put(1, 1).put(2, 2));
+    }
+
+    @Test
+    public void shouldReturnListWithMappedValues() {
+        assertThat(emptyIntInt().put(1, 1).put(2, 2).traverse((a, b) -> a + b)).isEqualTo(List.of(2, 4));
     }
 
     // -- merge

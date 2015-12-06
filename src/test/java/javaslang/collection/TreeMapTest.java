@@ -10,7 +10,8 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.*;
+import java.util.HashMap;
 import java.util.stream.Collector;
 
 import static javaslang.collection.Comparators.naturalComparator;
@@ -63,6 +64,14 @@ public class TreeMapTest extends AbstractMapTest {
         final TreeMap<String, Integer> tm = TreeMap.ofAll(Tuple.of("one", 1), Tuple.of("two", 2));
         final Seq<String> result = tm.scanRight("z", (t1, acc) -> acc + CharSeq.of(t1._1).reverse());
         assertThat(result).isEqualTo(List.of("zowteno", "zowt", "z"));
+    }
+
+    @Test
+    public void shouldWrapMap() {
+        java.util.Map<Integer, Integer> source = new HashMap<>();
+        source.put(1, 2);
+        source.put(3, 4);
+        assertThat(TreeMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
     }
 
     // -- obsolete tests
