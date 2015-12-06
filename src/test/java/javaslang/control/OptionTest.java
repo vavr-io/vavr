@@ -177,6 +177,30 @@ public class OptionTest {
         assertThat(actual[0]).isEqualTo(-1);
     }
 
+    // -- isSome
+
+    @Test
+    public void shouldReturnTrueOnIsSomeIfPresent() {
+        assertThat(Option.of(1).isSome(1)).isEqualTo(true);
+    }
+
+    @Test
+    public void shouldReturnFalseOnIsSomeIfNone() {
+        assertThat(Option.of(1).isSome(2)).isEqualTo(false);
+    }
+
+    // -- isMatch
+    
+    @Test
+    public void shouldReturnFalseOnIsMatchIfNotSatisfyPredicate() {
+        assertThat(Option.of(1).isMatch(i -> i % 2 == 0)).isEqualTo(false);
+    }
+
+    @Test
+    public void shouldReturnTrueOnIsMatchIfSatisfyPredicate() {
+        assertThat(Option.of(2).isMatch(i -> i % 2 == 0)).isEqualTo(true);
+    }
+
     // -- filter
 
     @Test
