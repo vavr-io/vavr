@@ -19,6 +19,7 @@ import javaslang.control.Try.CheckedSupplier;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
@@ -49,9 +50,9 @@ import java.util.function.Predicate;
 public interface Future<T> extends Value<T> {
 
     /**
-     * The default executor service is {@link ForkJoinPool#commonPool()}.
+     * The default executor service is {@link Executors#newCachedThreadPool()}.
      */
-    ExecutorService DEFAULT_EXECUTOR_SERVICE = ForkJoinPool.commonPool();
+    ExecutorService DEFAULT_EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
     /**
      * Creates a failed {@code Future} with the given {@code exception}, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
