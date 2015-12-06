@@ -24,14 +24,14 @@ public class PromiseTest {
     @Test
     public void shouldMediateProducerConsumerViaPromise() {
 
-        class Context {
+        final String product = "Coffee";
 
-            boolean hasDoneSomethingWithResult = false;
+        class Context {
 
             String produceSomething() {
                 zZz();
-                System.out.println("Making coffee");
-                return "Coffee";
+                System.out.println("Making " + product);
+                return product;
             }
 
             void continueDoingSomethingUnrelated() {
@@ -41,34 +41,25 @@ public class PromiseTest {
             void startDoingSomething() {
                 System.out.println("Something else");
             }
-
-            void doSomethingWithResult(String result) {
-                zZz();
-                System.out.println("Consuming " + result);
-                hasDoneSomethingWithResult = true;
-            }
-
-            boolean hasDoneSomethingWithResult() {
-                return hasDoneSomethingWithResult;
-            }
         }
 
         final Context ctx = new Context();
-        final Promise<String> promise = Promise.make();
-        final Future<String> future = promise.future();
+        final Promise<String> producerResult = Promise.make();
+        final Promise<String> consumerResult = Promise.make();
 
         // producer
         Future.run(() -> {
-            promise.success(ctx.produceSomething());
+            producerResult.success(ctx.produceSomething());
             ctx.continueDoingSomethingUnrelated();
         });
 
         // consumer
         Future.run(() -> {
             ctx.startDoingSomething();
-            future.onSuccess(ctx::doSomethingWithResult);
+            consumerResult.completeWith(producerResult.future());
         });
 
-        waitUntil(ctx::hasDoneSomethingWithResult);
+        final String actual = consumerResult.future().get();
+        assertThat(actual).isEqualTo(product);
     }
 }

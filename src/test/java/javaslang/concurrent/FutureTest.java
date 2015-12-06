@@ -139,7 +139,7 @@ public class FutureTest extends AbstractValueTest {
     public void shouldGetFirstCompletedOfSucceedingFuturesUsingForkJoinPool() {
         final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.of(zZz(i))).take(3);
         final Future<?> testee = Future.firstCompletedOf(futures);
-        waitUntil(testee::isCompleted);
+        testee.await();
         assertThat(testee.getValue().get().isSuccess()).isTrue();
     }
 
