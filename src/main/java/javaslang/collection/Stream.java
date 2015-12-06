@@ -631,6 +631,23 @@ public interface Stream<T> extends LinearSeq<T> {
         return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
     }
 
+    /**
+     * Repeat the elements of this Stream infinitely.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * // = 1, 2, 3, 1, 2, 3, 1, 2, 3, ...
+     * Stream.of(1, 2, 3).cycle();
+     * </code>
+     * </pre>
+     *
+     * @return A new Stream containing this elements cycled.
+     */
+    default Stream<T> cycle() {
+        return appendSelf(Function.identity());
+    }
+
     @Override
     default Stream<T> distinct() {
         return distinctBy(Function.identity());
