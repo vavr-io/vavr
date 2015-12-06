@@ -492,57 +492,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * the elements of sequence that, or -1 of no such slice exists.
      * @throws NullPointerException if {@code that} is null.
      */
-    default int lastIndexOfSlice(java.lang.Iterable<? extends T> that, int end) {
-        Objects.requireNonNull(that, "that is null");
-        // TODO rewrite this without recurrence
-        class Util {
-            int lastIndexOfSlice(Seq<T> t, Seq<T> slice, int end) {
-                if (end < 0) {
-                    return -1;
-                }
-                if (t.isEmpty()) {
-                    return slice.isEmpty() ? 0 : -1;
-                }
-                if (slice.isEmpty()) {
-                    int len = t.length();
-                    return len < end ? len : end;
-                }
-                Tuple2<Seq<T>, Integer> r = findSlice(t, slice);
-                if (r == null) {
-                    return -1;
-                }
-                if (r._2 <= end) {
-                    int idx = lastIndexOfSlice(r._1.tail(), slice, end - r._2 - 1);
-                    return idx >= 0 ? idx + 1 + r._2 : r._2;
-                } else {
-                    return -1;
-                }
-
-            }
-
-            private Tuple2<Seq<T>, Integer> findSlice(Seq<T> t, Seq<T> slice) {
-                if (t.isEmpty()) {
-                    return slice.isEmpty() ? Tuple.of(t, 0) : null;
-                }
-                if (checkPrefix(t, slice)) {
-                    return Tuple.of(t, 0);
-                }
-                Tuple2<Seq<T>, Integer> idx = findSlice(t.tail(), slice);
-                return idx != null ? Tuple.of(idx._1, idx._2 + 1) : null;
-            }
-
-            private boolean checkPrefix(Traversable<T> t, Traversable<T> prefix) {
-                if (prefix.isEmpty()) {
-                    return true;
-                } else {
-                    return !t.isEmpty() && java.util.Objects.equals(t.head(), prefix.head())
-                            && checkPrefix(t.tail(), prefix.tail());
-                }
-            }
-        }
-
-        return new Util().lastIndexOfSlice(this, unit(that), end);
-    }
+    int lastIndexOfSlice(java.lang.Iterable<? extends T> that, int end);
 
     /**
      * A copy of this sequence with an element appended until a given target length is reached.
