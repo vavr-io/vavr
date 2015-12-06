@@ -389,30 +389,12 @@ interface IndexedSeqModule {
             }
             final int maxPtr = t.length() - slice.length();
             while (p <= maxPtr) {
-                if(checkPrefix(t, p, slice)) {
+                if(t.startsWith(slice, p)) {
                     return p;
                 }
                 p++;
             }
             return -1;
-        }
-
-        private static <T> boolean checkPrefix(IndexedSeq<T> t, int p, IndexedSeq<T> prefix) {
-            if (prefix.isEmpty()) {
-                return true;
-            } else {
-                final int pLength = prefix.length();
-                final int tLength = t.length();
-                if(tLength < pLength) {
-                    return false;
-                }
-                for (int i = 0; i < pLength; i++) {
-                    if(!java.util.Objects.equals(t.get(i + p), prefix.get(i))) {
-                        return false;
-                    }
-                }
-                return true;
-            }
         }
     }
 }

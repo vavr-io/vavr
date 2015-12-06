@@ -324,22 +324,13 @@ interface LinearSeqModule {
             }
             int p = 0;
             while (t.length() >= slice.length()) {
-                if(checkPrefix(t, slice)) {
+                if(t.startsWith(slice)) {
                     return Tuple.of(t, p);
                 }
                 p++;
                 t = t.tail();
             }
             return null;
-        }
-
-        private static <T> boolean checkPrefix(LinearSeq<T> t, LinearSeq<T> prefix) {
-            if (prefix.isEmpty()) {
-                return true;
-            } else {
-                return !t.isEmpty() && java.util.Objects.equals(t.head(), prefix.head())
-                        && checkPrefix(t.tail(), prefix.tail());
-            }
         }
     }
 
