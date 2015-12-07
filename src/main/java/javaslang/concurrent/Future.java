@@ -505,6 +505,8 @@ public interface Future<T> extends Value<T> {
 
     /**
      * Cancels the Future. A running thread is interrupted.
+     * <p>
+     * If the Future was successfully cancelled, the result is a {@code Failure(CancellationException)}.
      *
      * @return {@code false}, if this {@code Future} is already completed or could not be cancelled, otherwise {@code true}.
      */
@@ -514,6 +516,8 @@ public interface Future<T> extends Value<T> {
 
     /**
      * Cancels the Future. A pending Future may be interrupted, depending on the underlying ExecutionService.
+     * <p>
+     * If the Future was successfully cancelled, the result is a {@code Failure(CancellationException)}.
      *
      * @param mayInterruptIfRunning {@code true} if a running thread should be interrupted, otherwise a running thread
      *                              is allowed to complete its computation.
@@ -774,8 +778,10 @@ public interface Future<T> extends Value<T> {
      * Returns the value of the future. Waits for the result if necessary.
      *
      * @return The value of this future.
-     * @throws IllegalStateException if the computation unexpectedly failed or was interrupted
+     * @throws NoSuchElementException if the computation unexpectedly failed or was interrupted.
      */
+    // DEV-NOTE: A NoSuchElementException is thrown instead of the exception of the underlying Failure in order to
+    //           be conform to Value#get
     @Override
     default T get() {
         // is empty will block until result is available
