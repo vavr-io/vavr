@@ -14,10 +14,13 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.CancellationException;
 
+import static javaslang.concurrent.Concurrent.waitForever;
 import static javaslang.concurrent.Concurrent.waitUntil;
 import static javaslang.concurrent.Concurrent.zZz;
+import static org.assertj.core.api.Assertions.fail;
 
 public class FutureTest extends AbstractValueTest {
 
@@ -287,9 +290,18 @@ public class FutureTest extends AbstractValueTest {
                 Try.run(() -> Thread.sleep(100));
             }
         });
-        future.onComplete(r -> Assertions.fail("future should lock forever"));
+        future.onComplete(r -> fail("future should lock forever"));
         future.cancel();
         assertCancelled(future);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowOnGetAfterCancellation() {
+        final Future<?> future = Future.of(Concurrent::waitForever);
+        final boolean isCancelled = future.cancel();
+        assertThat(isCancelled).isTrue();
+        future.get();
+        fail("Future was expected to throw on get() after cancellation!");
     }
 
     // -- executorService()

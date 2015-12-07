@@ -61,4 +61,10 @@ interface Concurrent {
             throw exception;
         };
     }
+
+    static Void waitForever() {
+        while(true) {
+            Try.run(() -> Thread.sleep(WAIT_MILLIS));
+        }
+    }
 }
