@@ -88,7 +88,7 @@ def generateMainClasses(): Unit = {
          * </ul>
          *
          * <strong>The left identity `unit(a).flatMap(f) ≡ f.apply(a)` can't be satisfied for single-valued monads.</strong>
-         *
+         * <p>
          * Example:
          *
          * <pre>
@@ -111,6 +111,10 @@ def generateMainClasses(): Unit = {
          * <li>takes all elements (if any is present), if the underlying monad is multi-valued</li>
          * </ul>
          *
+         * The {@code select} functioned mentioned is not explicitly defined. Monad implementations are responsible for
+         * implementing the correct behavior of {@code flatMap}. For single-valued types {@link javaslang.Value#get(Iterable)}
+         * may be used.
+         * <p>
          * To read further about monads in Java please refer to
          * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
          *
