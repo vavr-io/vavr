@@ -839,8 +839,8 @@ public interface Traversable<T> extends Value<T> {
      *
      * @param op A BiFunction of type T
      * @return the reduced value.
-     * @throws UnsupportedOperationException if this is empty
-     * @throws NullPointerException          if {@code op} is null
+     * @throws NoSuchElementException if this is empty
+     * @throws NullPointerException   if {@code op} is null
      */
     @Override
     default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
@@ -854,7 +854,6 @@ public interface Traversable<T> extends Value<T> {
      *
      * @param op A BiFunction of type T
      * @return Some of reduced value or None.
-     * @throws UnsupportedOperationException if this is empty
      * @throws NullPointerException          if {@code op} is null
      */
     @Override
@@ -886,7 +885,6 @@ public interface Traversable<T> extends Value<T> {
      *
      * @param op A BiFunction of type T
      * @return Some of reduced value or None.
-     * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
     @Override
@@ -922,7 +920,6 @@ public interface Traversable<T> extends Value<T> {
      *
      * @param op An operation of type T
      * @return Some of reduced value or None.
-     * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
     @Override

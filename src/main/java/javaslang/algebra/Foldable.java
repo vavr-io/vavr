@@ -135,8 +135,8 @@ public interface Foldable<T> {
      *
      * @param op A BiFunction of type T
      * @return the reduced value.
-     * @throws UnsupportedOperationException if this is empty
-     * @throws NullPointerException          if {@code op} is null
+     * @throws NoSuchElementException if this is empty
+     * @throws NullPointerException   if {@code op} is null
      */
     T reduce(BiFunction<? super T, ? super T, ? extends T> op);
 
@@ -146,8 +146,7 @@ public interface Foldable<T> {
      *
      * @param op A BiFunction of type T
      * @return Some of reduced value or None.
-     * @throws UnsupportedOperationException if this is empty
-     * @throws NullPointerException          if {@code op} is null
+     * @throws NullPointerException if {@code op} is null
      */
     Option<T> reduceOption(BiFunction<? super T, ? super T, ? extends T> op);
 
@@ -166,7 +165,6 @@ public interface Foldable<T> {
      *
      * @param op A BiFunction of type T
      * @return Some of reduced value or None.
-     * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
     Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op);
@@ -186,7 +184,6 @@ public interface Foldable<T> {
      *
      * @param op An operation of type T
      * @return Some of reduced value or None.
-     * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
     Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op);
