@@ -94,7 +94,7 @@ def generateMainClasses(): Unit = {
          * <pre>
          * <code>
          * // = Try(1)
-         * Try.success(20).flatMap(i -> List.of(1, 2, 3));
+         * Try.success(20).flatMap(i -&gt; List.of(1, 2, 3));
          * </code>
          * </pre>
          *
