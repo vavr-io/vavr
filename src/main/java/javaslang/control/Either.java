@@ -281,7 +281,12 @@ public interface Either<L, R> {
         public <U> LeftProjection<U, R> flatMap(Function<? super L, ? extends java.lang.Iterable<? extends U>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft()) {
-                return new Left<U, R>(Value.get(mapper.apply(asLeft()))).left();
+                final Iterable<? extends U> mapped = mapper.apply(asLeft());
+                if (mapped instanceof LeftProjection) {
+                    return (LeftProjection<U, R>) mapped;
+                } else {
+                    return new Left<U, R>(Value.get(mapped)).left();
+                }
             } else {
                 return (LeftProjection<U, R>) this;
             }
@@ -493,7 +498,12 @@ public interface Either<L, R> {
         public <U> RightProjection<L, U> flatMap(Function<? super R, ? extends java.lang.Iterable<? extends U>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight()) {
-                return new Right<L, U>(Value.get(mapper.apply(asRight()))).right();
+                final Iterable<? extends U> mapped = mapper.apply(asRight());
+                if (mapped instanceof RightProjection) {
+                    return (RightProjection<L, U>) mapped;
+                } else {
+                    return new Right<L, U>(Value.get(mapped)).right();
+                }
             } else {
                 return (RightProjection<L, U>) this;
             }
