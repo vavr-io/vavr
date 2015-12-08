@@ -218,6 +218,32 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
+     * Creates a {@code Future} with the given java.util.concurrent.Future, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}
+     * @param future
+     * @param <T>
+     * @return A new {@code Future} wrapping the result of the Java future
+     * @throws NullPointerException if future is null
+     */
+    static <T> Future<T> fromJavaFuture(java.util.concurrent.Future<T> future) {
+        Objects.requireNonNull(future, "future is null");
+        return Future.of(DEFAULT_EXECUTOR_SERVICE, future::get);
+    }
+
+    /**
+     * Creates a {@code Future} with the given java.util.concurrent.Future, backed by given {@link ExecutorService}
+     * @param executorService
+     * @param future
+     * @param <T>
+     * @return A new {@code Future} wrapping the result of the Java future
+     * @throws NullPointerException if executorService or future is null
+     */
+    static <T> Future<T> fromJavaFuture(ExecutorService executorService, java.util.concurrent.Future<T> future) {
+        Objects.requireNonNull(executorService, "executorService is null");
+        Objects.requireNonNull(future, "future is null");
+        return Future.of(executorService, future::get);
+    }
+
+    /**
      * Creates a {@code Future} from a {@link Try}, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
      *
      * @param result The result.
