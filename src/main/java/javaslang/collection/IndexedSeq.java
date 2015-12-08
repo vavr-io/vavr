@@ -143,6 +143,11 @@ public interface IndexedSeq<T> extends Seq<T> {
     }
 
     @Override
+    default int lastIndexOfSlice(java.lang.Iterable<? extends T> that, int end) {
+        return IndexedSeqModule.LastIndexOfSlice.lastIndexOfSlice(this, unit(that), end);
+    }
+
+    @Override
     default int lastIndexWhere(Predicate<? super T> predicate, int end) {
         Objects.requireNonNull(predicate, "predicate is null");
         int i = Math.min(end, length() - 1);
@@ -345,4 +350,47 @@ public interface IndexedSeq<T> extends Seq<T> {
     @Override
     IndexedSeq<Tuple2<T, Integer>> zipWithIndex();
 
+}
+
+interface IndexedSeqModule {
+    class LastIndexOfSlice {
+        static <T> int lastIndexOfSlice(IndexedSeq<T> t, IndexedSeq<T> slice, int end) {
+            if (end < 0) {
+                return -1;
+            }
+            if (t.isEmpty()) {
+                return slice.isEmpty() ? 0 : -1;
+            }
+            if (slice.isEmpty()) {
+                int len = t.length();
+                return len < end ? len : end;
+            }
+            int p = 0;
+            int result = -1;
+            final int maxPtr = t.length() - slice.length();
+            while (p <= maxPtr) {
+                int r = findSlice(t, p, maxPtr, slice);
+                if (r < 0) {
+                    return result;
+                }
+                if (r <= end) {
+                    result = r;
+                    p = r + 1;
+                } else {
+                    return result;
+                }
+            }
+            return result;
+        }
+
+        private static <T> int findSlice(IndexedSeq<T> t, int p, int maxPtr, IndexedSeq<T> slice) {
+            while (p <= maxPtr) {
+                if(t.startsWith(slice, p)) {
+                    return p;
+                }
+                p++;
+            }
+            return -1;
+        }
+    }
 }

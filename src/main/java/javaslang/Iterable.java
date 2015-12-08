@@ -26,6 +26,7 @@ import java.util.function.Predicate;
  * java.lang.Iterable extensions:
  *
  * <ul>
+ * <li>{@link #contains(Object)}</li>
  * <li>{@link #exists(Predicate)}</li>
  * <li>{@link #forAll(Predicate)}</li>
  * <li>{@link #forEach(Consumer)}</li>
@@ -45,6 +46,16 @@ interface Iterable<T> extends java.lang.Iterable<T> {
      */
     @Override
     Iterator<T> iterator();
+
+    /**
+     * Shortcut for {@code exists(e -> Objects.equals(e, element))}, tests if the given {@code element} is contained.
+     *
+     * @param element An Object of type A, may be null.
+     * @return true, if element is contained, false otherwise.
+     */
+    default boolean contains(T element) {
+        return exists(e -> Objects.equals(e, element));
+    }
 
     /**
      * Tests whether every element of this iterable relates to the corresponding element of another iterable by

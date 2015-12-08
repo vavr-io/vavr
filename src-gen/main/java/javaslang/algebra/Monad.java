@@ -42,6 +42,34 @@ import javaslang.control.Try;
  * <li><strong>Associativity:</strong> {@code m.flatMap(f).flatMap(g) ≡ m.flatMap(x -> f.apply(x).flatMap(g))}</li>
  * </ul>
  *
+ * <strong>The left identity `unit(a).flatMap(f) ≡ f.apply(a)` can't be satisfied for single-valued monads.</strong>
+ * <p>
+ * Example:
+ *
+ * <pre>
+ * <code>
+ * // = Try(1)
+ * Try.success(20).flatMap(i -&gt; List.of(1, 2, 3));
+ * </code>
+ * </pre>
+ *
+ * Therefore we need to adapt the left identity law:
+ *
+ * <pre>
+ * <code>unit(a).flatMap(f) ≡ select(f.apply(a))</code>
+ * </pre>
+ *
+ * where select
+ *
+ * <ul>
+ * <li>takes the first element (if present), if the underlying monad is single-value</li>
+ * <li>takes all elements (if any is present), if the underlying monad is multi-valued</li>
+ * </ul>
+ *
+ * The {@code select} functioned mentioned is not explicitly defined. Monad implementations are responsible for
+ * implementing the correct behavior of {@code flatMap}. For single-valued types {@link javaslang.Value#get(Iterable)}
+ * may be used.
+ * <p>
  * To read further about monads in Java please refer to
  * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
  *

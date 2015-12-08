@@ -19,6 +19,7 @@ import javaslang.control.Try.CheckedSupplier;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
@@ -49,9 +50,9 @@ import java.util.function.Predicate;
 public interface Future<T> extends Value<T> {
 
     /**
-     * The default executor service is {@link ForkJoinPool#commonPool()}.
+     * The default executor service is {@link Executors#newCachedThreadPool()}.
      */
-    ExecutorService DEFAULT_EXECUTOR_SERVICE = ForkJoinPool.commonPool();
+    ExecutorService DEFAULT_EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
     /**
      * Creates a failed {@code Future} with the given {@code exception}, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
@@ -530,6 +531,8 @@ public interface Future<T> extends Value<T> {
 
     /**
      * Cancels the Future. A running thread is interrupted.
+     * <p>
+     * If the Future was successfully cancelled, the result is a {@code Failure(CancellationException)}.
      *
      * @return {@code false}, if this {@code Future} is already completed or could not be cancelled, otherwise {@code true}.
      */
@@ -539,6 +542,8 @@ public interface Future<T> extends Value<T> {
 
     /**
      * Cancels the Future. A pending Future may be interrupted, depending on the underlying ExecutionService.
+     * <p>
+     * If the Future was successfully cancelled, the result is a {@code Failure(CancellationException)}.
      *
      * @param mayInterruptIfRunning {@code true} if a running thread should be interrupted, otherwise a running thread
      *                              is allowed to complete its computation.
@@ -799,8 +804,10 @@ public interface Future<T> extends Value<T> {
      * Returns the value of the future. Waits for the result if necessary.
      *
      * @return The value of this future.
-     * @throws IllegalStateException if the computation unexpectedly failed or was interrupted
+     * @throws NoSuchElementException if the computation unexpectedly failed or was interrupted.
      */
+    // DEV-NOTE: A NoSuchElementException is thrown instead of the exception of the underlying Failure in order to
+    //           be conform to Value#get
     @Override
     default T get() {
         // is empty will block until result is available

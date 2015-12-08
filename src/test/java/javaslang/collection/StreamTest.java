@@ -258,7 +258,7 @@ public class StreamTest extends AbstractSeqTest {
                 Stream.of(1, 3, 2), Stream.of(2, 1, 3), Stream.of(2, 3, 1), Stream.of(3, 1, 2), Stream.of(3, 2, 1))));
     }
 
-    // -- addSelf
+    // -- appendSelf
 
     @Test
     public void shouldRecurrentlyCalculateFibonacci() {
@@ -297,6 +297,18 @@ public class StreamTest extends AbstractSeqTest {
     public void shouldRecognizeInfiniteDoesContainSlice() {
         final boolean actual = Stream.gen(1, i -> i + 1).containsSlice(of(12, 13, 14));
         assertThat(actual).isTrue();
+    }
+
+    // -- cycle
+
+    @Test
+    public void shouldCycleEmptyStream() {
+        assertThat(empty().cycle()).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldCycleNonEmptyStream() {
+        assertThat(of(1, 2, 3).cycle().take(9)).isEqualTo(of(1, 2, 3, 1, 2, 3, 1, 2, 3));
     }
 
     // -- toString
@@ -350,7 +362,7 @@ public class StreamTest extends AbstractSeqTest {
                 throw new IllegalStateException("Hack incomplete - index not found");
             }
             /*
-			 * Hack the serialized data and fake zero elements.
+             * Hack the serialized data and fake zero elements.
 			 */
             listWithOneElement[index] = 0;
             Serializables.deserialize(listWithOneElement);

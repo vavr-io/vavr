@@ -245,16 +245,6 @@ public interface Traversable<T> extends Value<T> {
     Traversable<T> clear();
 
     /**
-     * Tests if this Traversable contains a given value.
-     *
-     * @param element An Object of type A, may be null.
-     * @return true, if element is in this Traversable, false otherwise.
-     */
-    default boolean contains(T element) {
-        return findFirst(e -> java.util.Objects.equals(e, element)).isDefined();
-    }
-
-    /**
      * Tests if this Traversable contains all given elements.
      * <p>
      * The result is equivalent to

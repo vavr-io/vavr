@@ -56,6 +56,16 @@ import java.util.stream.StreamSupport;
  * <li>{@link #eq(Object)}</li>
  * </ul>
  *
+ * Iterable extensions:
+ *
+ * <ul>
+ * <li>{@link #contains(Object)}</li>
+ * <li>{@link #exists(Predicate)}</li>
+ * <li>{@link #forAll(Predicate)}</li>
+ * <li>{@link #forEach(Consumer)}</li>
+ * <li>{@link #iterator()}</li>
+ * </ul>
+ *
  * Side-effects:
  *
  * <ul>

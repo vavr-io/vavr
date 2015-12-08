@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
@@ -116,6 +117,11 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     LinearSeq<T> intersperse(T element);
+
+    @Override
+    default int lastIndexOfSlice(java.lang.Iterable<? extends T> that, int end) {
+        return LinearSeqModule.LastIndexOfSlice.lastIndexOfSlice(this, unit(that), end);
+    }
 
     @Override
     default int lastIndexWhere(Predicate<? super T> predicate, int end) {
@@ -278,5 +284,54 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     LinearSeq<Tuple2<T, Integer>> zipWithIndex();
+
+}
+
+interface LinearSeqModule {
+    class LastIndexOfSlice {
+        static <T> int lastIndexOfSlice(LinearSeq<T> t, LinearSeq<T> slice, int end) {
+            if (end < 0) {
+                return -1;
+            }
+            if (t.isEmpty()) {
+                return slice.isEmpty() ? 0 : -1;
+            }
+            if (slice.isEmpty()) {
+                int len = t.length();
+                return len < end ? len : end;
+            }
+            int p = 0;
+            int result = -1;
+            while (t.length() >= slice.length()) {
+                Tuple2<LinearSeq<T>, Integer> r = findSlice(t, slice);
+                if (r == null) {
+                    return result;
+                }
+                if (p + r._2 <= end) {
+                    result = p + r._2;
+                    p += r._2 + 1;
+                    t = r._1.tail();
+                } else {
+                    return result;
+                }
+            }
+            return result;
+        }
+
+        private static <T> Tuple2<LinearSeq<T>, Integer> findSlice(LinearSeq<T> t, LinearSeq<T> slice) {
+            if (t.isEmpty()) {
+                return slice.isEmpty() ? Tuple.of(t, 0) : null;
+            }
+            int p = 0;
+            while (t.length() >= slice.length()) {
+                if(t.startsWith(slice)) {
+                    return Tuple.of(t, p);
+                }
+                p++;
+                t = t.tail();
+            }
+            return null;
+        }
+    }
 
 }

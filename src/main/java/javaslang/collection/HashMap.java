@@ -78,6 +78,24 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     /**
+     * Returns a {@code HashMap}, from a source java.util.Map.
+     *
+     * @param map A map entry.
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @return A new Map containing the given map
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> HashMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
+        Objects.requireNonNull(map, "map is null");
+        HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
+        for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
+            tree = tree.put(entry.getKey(), entry.getValue());
+        }
+        return tree.isEmpty() ? empty() : new HashMap<>(tree);
+    }
+
+    /**
      * Returns a singleton {@code HashMap}, i.e. a {@code HashMap} of one element.
      *
      * @param key   A singleton map key.
@@ -219,11 +237,10 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         });
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends java.lang.Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return (Seq<U>) iterator().flatMap(mapper).toStream();
+        return iterator().flatMap(mapper).toStream();
     }
 
     @Override
@@ -312,11 +329,15 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         return HashSet.ofAll(iterator().map(Tuple2::_1));
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
+    public int length() {
+        return trie.size();
+    }
+
     @Override
     public <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return (Seq<U>) iterator().map(mapper).toStream();
+        return iterator().map(mapper).toStream();
     }
 
     @Override
