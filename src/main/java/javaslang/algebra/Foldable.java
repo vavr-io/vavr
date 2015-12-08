@@ -5,6 +5,7 @@
  */
 package javaslang.algebra;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -125,5 +126,36 @@ public interface Foldable<T> {
      * @throws NullPointerException if {@code combine} is null
      */
     <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> combine);
+
+    /**
+     * Accumulates the elements of this Foldable by successively calling the given operation {@code op}.
+     * The order of element iteration is undetermined.
+     *
+     * @param op A BiFunction of type T
+     * @return the reduced value.
+     * @throws UnsupportedOperationException if this is empty
+     * @throws NullPointerException          if {@code op} is null
+     */
+    T reduce(BiFunction<? super T, ? super T, ? extends T> op);
+
+    /**
+     * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the left.
+     *
+     * @param op A BiFunction of type T
+     * @return the reduced value.
+     * @throws NoSuchElementException if this is empty
+     * @throws NullPointerException   if {@code op} is null
+     */
+    T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op);
+
+    /**
+     * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the right.
+     *
+     * @param op An operation of type T
+     * @return the reduced value.
+     * @throws NoSuchElementException if this is empty
+     * @throws NullPointerException   if {@code op} is null
+     */
+    T reduceRight(BiFunction<? super T, ? super T, ? extends T> op);
 
 }

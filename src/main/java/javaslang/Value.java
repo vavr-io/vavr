@@ -313,6 +313,22 @@ public interface Value<T> extends javaslang.Iterable<T>, Foldable<T>, Monad<T>, 
     @Override
     <U> Value<U> map(Function<? super T, ? extends U> mapper);
 
+    @Override
+    default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
+        return reduceLeft(op);
+    }
+
+    @Override
+    default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
+        return get();
+    }
+
+    @Override
+    default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
+        return reduce(op);
+    }
+
     // -- Convertible implementation
 
     @Override

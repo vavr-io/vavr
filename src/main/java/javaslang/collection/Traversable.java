@@ -842,6 +842,7 @@ public interface Traversable<T> extends Value<T> {
      * @throws UnsupportedOperationException if this is empty
      * @throws NullPointerException          if {@code op} is null
      */
+    @Override
     default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         return reduceLeft(op);
@@ -855,6 +856,7 @@ public interface Traversable<T> extends Value<T> {
      * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
+    @Override
     default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
@@ -872,6 +874,7 @@ public interface Traversable<T> extends Value<T> {
      * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
+    @Override
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
