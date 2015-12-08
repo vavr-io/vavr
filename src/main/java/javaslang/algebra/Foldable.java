@@ -5,6 +5,8 @@
  */
 package javaslang.algebra;
 
+import javaslang.control.Option;
+
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -139,6 +141,17 @@ public interface Foldable<T> {
     T reduce(BiFunction<? super T, ? super T, ? extends T> op);
 
     /**
+     * Accumulates the elements of this Foldable by successively calling the given operation {@code op}.
+     * The order of element iteration is undetermined.
+     *
+     * @param op A BiFunction of type T
+     * @return Some of reduced value or None.
+     * @throws UnsupportedOperationException if this is empty
+     * @throws NullPointerException          if {@code op} is null
+     */
+    Option<T> reduceOption(BiFunction<? super T, ? super T, ? extends T> op);
+
+    /**
      * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the left.
      *
      * @param op A BiFunction of type T
@@ -149,6 +162,16 @@ public interface Foldable<T> {
     T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op);
 
     /**
+     * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the left.
+     *
+     * @param op A BiFunction of type T
+     * @return Some of reduced value or None.
+     * @throws NoSuchElementException if this is empty
+     * @throws NullPointerException   if {@code op} is null
+     */
+    Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op);
+
+    /**
      * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the right.
      *
      * @param op An operation of type T
@@ -157,5 +180,15 @@ public interface Foldable<T> {
      * @throws NullPointerException   if {@code op} is null
      */
     T reduceRight(BiFunction<? super T, ? super T, ? extends T> op);
+
+    /**
+     * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the right.
+     *
+     * @param op An operation of type T
+     * @return Some of reduced value or None.
+     * @throws NoSuchElementException if this is empty
+     * @throws NullPointerException   if {@code op} is null
+     */
+    Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op);
 
 }

@@ -1527,6 +1527,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
+    default Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
+        if (isEmpty()) {
+            return None.instance();
+        } else {
+            Stream<T> stream = Stream.ofAll(this);
+            return new Some<>(stream.tail().foldLeft(stream.head(), op::apply));
+        }
+    }
+
+    @Override
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
@@ -1534,6 +1545,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else {
             Stream<T> reversed = Stream.ofAll(this).reverse();
             return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
+        }
+    }
+
+    @Override
+    default Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
+        if (isEmpty()) {
+            return None.instance();
+        } else {
+            Stream<T> reversed = Stream.ofAll(this).reverse();
+            return new Some<>(reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs)));
         }
     }
 
