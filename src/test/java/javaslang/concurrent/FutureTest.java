@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
 
 import static javaslang.concurrent.Concurrent.waitForever;
 import static javaslang.concurrent.Concurrent.waitUntil;
@@ -83,6 +84,26 @@ public class FutureTest extends AbstractValueTest {
             throw new Error();
         });
         assertFailed(future, Error.class);
+    }
+
+    // -- static fromJavaFuture()
+
+    @Test
+    public void shouldCreateFutureFromJavaFuture() {
+        // Create slow-resolving Java future to show that the wrapping doesn't block
+        java.util.concurrent.Future<Integer> jFuture = generateJavaFuture(1, 3000);
+        final Future<Integer> future = Future.fromJavaFuture(jFuture);
+        waitUntil(future::isCompleted);
+        assertCompleted(future, 1);
+    }
+
+    @Test
+    public void shouldCreateFutureFromJavaFutureUsingTrivialExecutorService() {
+        // Create slow-resolving Java future to show that the wrapping doesn't block
+        java.util.concurrent.Future<String> jFuture = generateJavaFuture("Result", 3000);
+        final Future<String> future = Future.fromJavaFuture(TrivialExecutorService.instance(), jFuture);
+        waitUntil(future::isCompleted);
+        assertCompleted(future, "Result");
     }
 
     // -- static find()
@@ -429,5 +450,17 @@ public class FutureTest extends AbstractValueTest {
     <T> void assertCompleted(Future<?> future, T value) {
         assertThat(future.isCompleted()).isTrue();
         assertThat(future.getValue()).isEqualTo(new Some<>(new Success<>(value)));
+    }
+
+    <T> java.util.concurrent.Future<T> generateJavaFuture(T value, int waitPeriod) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(waitPeriod);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            return value;
+        });
     }
 }
