@@ -5,6 +5,8 @@
  */
 package javaslang.control;
 
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.Either.LeftProjection;
 import javaslang.control.Either.RightProjection;
 import org.junit.Test;
@@ -238,6 +240,15 @@ public class EitherTest {
     public void shouldFlatMapOnLeftProjectionOfRight() {
         final Either<Integer, String> actual = new Right<Integer, String>("1").left().flatMap(i -> new Left<Integer, String>(i + 1).left()).toEither();
         assertThat(actual).isEqualTo(new Right<>("1"));
+    }
+
+    @Test
+    public void shouldFlatMapLeftProjectionOfRightOnLeftProjectionOfLeft() {
+        final Either<String, String> good = new Left<>("good");
+        final Either<String, String> bad = new Right<>("bad");
+        final LeftProjection<Tuple2<String, String>, String> actual = good.left().flatMap(g -> bad.left().map(b -> Tuple.of(g, b)));
+        assertThat(actual.toEither()).isEqualTo(new Right<>("bad"));
+
     }
 
     // -- exists
@@ -601,6 +612,14 @@ public class EitherTest {
     public void shouldFlatMapOnRightProjectionOfLeft() {
         final Either<String, Integer> actual = new Left<String, Integer>("1").right().flatMap(i -> new Right<String, Integer>(i + 1).right()).toEither();
         assertThat(actual).isEqualTo(new Left<>("1"));
+    }
+
+    @Test
+    public void shouldFlatMapRightProjectionOfLeftOnRightProjectionOfRight() {
+        final Either<String, String> good = new Right<>("good");
+        final Either<String, String> bad = new Left<>("bad");
+        final RightProjection<String, Tuple2<String, String>> actual = good.right().flatMap(g -> bad.right().map(b -> Tuple.of(g, b)));
+        assertThat(actual.toEither()).isEqualTo(new Left<>("bad"));
     }
 
     // -- exists
