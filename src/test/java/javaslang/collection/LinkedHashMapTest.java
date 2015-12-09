@@ -31,6 +31,12 @@ public class LinkedHashMapTest extends AbstractMapTest {
         return LinkedHashMap.ofAll(entries);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    protected <K, V> Map<K, V> mapOfPairs(Object... pairs) {
+        return LinkedHashMap.of(pairs);
+    }
+
     @Override
     protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value) {
         return LinkedHashMap.of(key, value);
