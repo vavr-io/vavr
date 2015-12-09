@@ -834,20 +834,6 @@ public interface Traversable<T> extends Value<T> {
     }
 
     /**
-     * Accumulates the elements of this Traversable by successively calling the given operation {@code op}.
-     * The order of element iteration is undetermined.
-     *
-     * @param op A BiFunction of type T
-     * @return the reduced value.
-     * @throws UnsupportedOperationException if this is empty
-     * @throws NullPointerException          if {@code op} is null
-     */
-    default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        return reduceLeft(op);
-    }
-
-    /**
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the left.
      *
      * @param op A BiFunction of type T
@@ -855,12 +841,30 @@ public interface Traversable<T> extends Value<T> {
      * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
+    @Override
     default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
             throw new NoSuchElementException("reduceLeft on Nil");
         } else {
             return tail().foldLeft(head(), op);
+        }
+    }
+
+    /**
+     * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the left.
+     *
+     * @param op A BiFunction of type T
+     * @return Some of reduced value or None.
+     * @throws NullPointerException   if {@code op} is null
+     */
+    @Override
+    default Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
+        if (isEmpty()) {
+            return Option.none();
+        } else {
+            return Option.of(tail().foldLeft(head(), op));
         }
     }
 
@@ -872,12 +876,30 @@ public interface Traversable<T> extends Value<T> {
      * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
+    @Override
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
             throw new NoSuchElementException("reduceRight on empty");
         } else {
             return iterator().reduceRight(op);
+        }
+    }
+
+    /**
+     * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the right.
+     *
+     * @param op An operation of type T
+     * @return Some of reduced value or None.
+     * @throws NullPointerException   if {@code op} is null
+     */
+    @Override
+    default Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
+        if (isEmpty()) {
+            return Option.none();
+        } else {
+            return Option.of(iterator().reduceRight(op));
         }
     }
 

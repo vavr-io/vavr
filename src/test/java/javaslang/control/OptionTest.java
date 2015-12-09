@@ -87,6 +87,108 @@ public class OptionTest {
         Option.none().get();
     }
 
+    // -- reduce
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowWhenReduceNil() {
+        None.instance().reduce((a, b) -> a);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenReduceNullOperator() {
+        None.instance().reduce(null);
+    }
+
+    @Test
+    public void shouldReduceNonNil() {
+        assertThat(Option.of(1).reduce((a, b) -> a + b)).isEqualTo(1);
+    }
+
+    // -- reduceOption
+
+    @Test
+    public void shouldThrowWhenReduceOptionNil() {
+        assertThat(None.instance().reduceOption((a, b) -> a)).isSameAs(Option.none());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenReduceOptionNullOperator() {
+        None.instance().reduceOption(null);
+    }
+
+    @Test
+    public void shouldReduceOptionNonNil() {
+        assertThat(Option.of(1).reduceOption((a, b) -> a + b)).isEqualTo(Option.of(1));
+    }
+
+    // -- reduceLeft
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowWhenReduceLeftNil() {
+        None.instance().reduceLeft((a, b) -> a);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenReduceLeftNullOperator() {
+        None.instance().reduceLeft(null);
+    }
+
+    @Test
+    public void shouldReduceLeftNonNil() {
+        assertThat(Option.of(1).reduceLeft((xs, x) -> xs + x)).isEqualTo(1);
+    }
+
+    // -- reduceLeftOption
+
+    @Test
+    public void shouldReduceLeftOptionNil() {
+        assertThat(None.instance().reduceLeftOption((a, b) -> a)).isSameAs(Option.none());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenReduceLeftOptionNullOperator() {
+        None.instance().reduceLeftOption(null);
+    }
+
+    @Test
+    public void shouldReduceLeftOptionNonNil() {
+        assertThat(Option.of(1).reduceLeftOption((xs, x) -> xs + x)).isEqualTo(Option.of(1));
+    }
+
+    // -- reduceRight
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowWhenReduceRightNil() {
+        None.instance().reduceRight((a, b) -> a);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenReduceRightNullOperator() {
+        None.instance().reduceRight(null);
+    }
+
+    @Test
+    public void shouldReduceRightNonNil() {
+        assertThat(Option.of(1).reduceRight((x, xs) -> x + xs)).isEqualTo(1);
+    }
+
+    // -- reduceRightOption
+
+    @Test
+    public void shouldThrowWhenReduceRightOptionNil() {
+        assertThat(None.instance().reduceRightOption((a, b) -> a)).isSameAs(Option.none());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenReduceRightOptionNullOperator() {
+        None.instance().reduceRightOption(null);
+    }
+
+    @Test
+    public void shouldReduceRightOptionNonNil() {
+        assertThat(Option.of(1).reduceRightOption((x, xs) -> x + xs)).isEqualTo(Option.of(1));
+    }
+
     // -- orElse
 
     @Test

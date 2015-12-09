@@ -1023,6 +1023,23 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).product()).isEqualTo(0.0);
     }
 
+    // -- reduceOption
+
+    @Test
+    public void shouldThrowWhenReduceOptionNil() {
+        assertThat(this.<String> empty().reduceOption((a, b) -> a + b)).isSameAs(Option.none());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenReduceOptionNullOperator() {
+        this.<String> empty().reduceOption(null);
+    }
+
+    @Test
+    public void shouldReduceOptionNonNil() {
+        assertThat(of(1, 2, 3).reduceOption((a, b) -> a + b)).isEqualTo(Option.of(6));
+    }
+
     // -- reduce
 
     @Test(expected = NoSuchElementException.class)
@@ -1040,6 +1057,23 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 2, 3).reduce((a, b) -> a + b)).isEqualTo(6);
     }
 
+    // -- reduceLeftOption
+
+    @Test
+    public void shouldThrowWhenReduceLeftOptionNil() {
+        assertThat(this.<String> empty().reduceLeftOption((a, b) -> a + b)).isSameAs(Option.none());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenReduceLeftOptionNullOperator() {
+        this.<String> empty().reduceLeftOption(null);
+    }
+
+    @Test
+    public void shouldReduceLeftOptionNonNil() {
+        assertThat(of("a", "b", "c").reduceLeftOption((xs, x) -> xs + x)).isEqualTo(Option.of("abc"));
+    }
+
     // -- reduceLeft
 
     @Test(expected = NoSuchElementException.class)
@@ -1055,6 +1089,23 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldReduceLeftNonNil() {
         assertThat(of("a", "b", "c").reduceLeft((xs, x) -> xs + x)).isEqualTo("abc");
+    }
+
+    // -- reduceRightOption
+
+    @Test
+    public void shouldThrowWhenReduceRightOptionNil() {
+        assertThat(this.<String> empty().reduceRightOption((a, b) -> a + b)).isSameAs(Option.none());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenReduceRightOptionNullOperator() {
+        this.<String> empty().reduceRightOption(null);
+    }
+
+    @Test
+    public void shouldReduceRightOptionNonNil() {
+        assertThat(of("a", "b", "c").reduceRightOption((x, xs) -> x + xs)).isEqualTo(Option.of("abc"));
     }
 
     // -- reduceRight
