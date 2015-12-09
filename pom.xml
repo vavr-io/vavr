@@ -170,7 +170,6 @@
                      </goals>
                   </execution>
                </executions>
-               <extensions>true</extensions>               
            </plugin>
         </plugins>
         <pluginManagement>
