@@ -345,6 +345,19 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
         };
     }
 
+    /**
+     * Transforms this {@code Gen}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    default <U> U transform(Function<? super Gen<? super T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     @Override
     default T get() {
         return apply(Checkable.RNG.get());

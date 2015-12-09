@@ -1020,6 +1020,19 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         }
     }
 
+    /**
+     * Transforms this {@code Iterator}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    default <U> U transform(Function<? super Iterator<? super T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     @Override
     default <U> Iterator<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
