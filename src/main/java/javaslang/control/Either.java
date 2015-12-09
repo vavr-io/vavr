@@ -324,6 +324,19 @@ public interface Either<L, R> {
             return this;
         }
 
+        /**
+         * Transforms this {@code LeftProjection}.
+         *
+         * @param f   A transformation
+         * @param <U> Type of transformation result
+         * @return An instance of type {@code U}
+         * @throws NullPointerException if {@code f} is null
+         */
+        public <U> U transform(Function<? super LeftProjection<? super L, ? super R>, ? extends U> f) {
+            Objects.requireNonNull(f, "f is null");
+            return f.apply(this);
+        }
+
         @Override
         public Iterator<L> iterator() {
             if (either.isLeft()) {
@@ -539,6 +552,19 @@ public interface Either<L, R> {
                 action.accept(asRight());
             }
             return this;
+        }
+
+        /**
+         * Transforms this {@code RightProjection}.
+         *
+         * @param f   A transformation
+         * @param <U> Type of transformation result
+         * @return An instance of type {@code U}
+         * @throws NullPointerException if {@code f} is null
+         */
+        public <U> U transform(Function<? super RightProjection<? super L, ? super R>, ? extends U> f) {
+            Objects.requireNonNull(f, "f is null");
+            return f.apply(this);
         }
 
         @Override

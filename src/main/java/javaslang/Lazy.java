@@ -131,19 +131,6 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
         }
     }
 
-    @Override
-    default <U> Lazy<U> map(Function<? super T, ? extends U> mapper) {
-        return Lazy.of(() -> mapper.apply(get()));
-    }
-
-    @Override
-    default Lazy<T> peek(Consumer<? super T> action) {
-        if (!isEmpty()) {
-            action.accept(get());
-        }
-        return this;
-    }
-
     /**
      * Evaluates this lazy value and caches it, when called the first time.
      * On subsequent calls, returns the cached value.
@@ -172,6 +159,32 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
     @Override
     default boolean isSingletonType() {
         return true;
+    }
+
+    @Override
+    default <U> Lazy<U> map(Function<? super T, ? extends U> mapper) {
+        return Lazy.of(() -> mapper.apply(get()));
+    }
+
+    @Override
+    default Lazy<T> peek(Consumer<? super T> action) {
+        if (!isEmpty()) {
+            action.accept(get());
+        }
+        return this;
+    }
+
+    /**
+     * Transforms this {@code Lazy}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    default <U> U transform(Function<? super Lazy<? super T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
     }
 
     /**

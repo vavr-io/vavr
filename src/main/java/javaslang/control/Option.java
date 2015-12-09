@@ -250,6 +250,19 @@ public interface Option<T> extends Value<T> {
         return this;
     }
 
+    /**
+     * Transforms this {@code Option}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    default <U> U transform(Function<? super Option<? super T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     @Override
     default Iterator<T> iterator() {
         return isEmpty() ? Iterator.empty() : Iterator.of(get());

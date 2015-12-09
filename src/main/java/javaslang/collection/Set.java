@@ -10,6 +10,7 @@ import javaslang.Tuple3;
 import javaslang.control.Option;
 
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.BiFunction;
@@ -77,6 +78,19 @@ public interface Set<T> extends Traversable<T> {
      * @return A new set consisting of the elements of this set, without the given {@code elements}.
      */
     Set<T> removeAll(java.lang.Iterable<? extends T> elements);
+
+    /**
+     * Transforms this {@code Set}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    default <U> U transform(Function<? super Set<? super T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
 
     /**
      * Adds all of the elements of {@code that} set to this set, if not already present.

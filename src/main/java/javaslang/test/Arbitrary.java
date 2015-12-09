@@ -117,6 +117,19 @@ public interface Arbitrary<T> extends Value<T> {
         return size -> apply(size).peek(action);
     }
 
+    /**
+     * Transforms this {@code Arbitrary}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    default <U> U transform(Function<? super Arbitrary<? super T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     @Override
     default T get() {
         return apply(Checkable.DEFAULT_SIZE).get();

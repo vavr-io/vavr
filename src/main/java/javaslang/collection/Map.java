@@ -65,6 +65,19 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
 
     int size();
 
+    /**
+     * Transforms this {@code Map}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    default <U> U transform(Function<? super Map<? super K, ? super V>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     default <U> Seq<U> traverse(BiFunction<K, V, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(List.empty(), (acc, entry) -> acc.append(mapper.apply(entry._1, entry._2)));

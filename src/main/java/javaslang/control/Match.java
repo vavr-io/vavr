@@ -410,6 +410,19 @@ public interface Match<R> extends Function<Object, R> {
         @Override
         MatchMonad<R> peek(Consumer<? super R> action);
 
+        /**
+         * Transforms this {@code MatchMonad}.
+         *
+         * @param f   A transformation
+         * @param <U> Type of transformation result
+         * @return An instance of type {@code U}
+         * @throws NullPointerException if {@code f} is null
+         */
+        default <U> U transform(Function<? super MatchMonad<? super R>, ? extends U> f) {
+            Objects.requireNonNull(f, "f is null");
+            return f.apply(this);
+        }
+
         final class Of<T> {
 
             private final T value;

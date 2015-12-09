@@ -11,6 +11,7 @@ import javaslang.collection.Iterator;
 import javaslang.control.Failure.NonFatal;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -60,7 +61,7 @@ public interface Try<T> extends Value<T> {
      * Creates a {@link Success} that contains the given {@code value}. Shortcut for {@code new Success<>(value)}.
      *
      * @param value A value.
-     * @param <T> Type of the given {@code value}.
+     * @param <T>   Type of the given {@code value}.
      * @return A new {@code Success}.
      */
     static <T> Try<T> success(T value) {
@@ -71,7 +72,7 @@ public interface Try<T> extends Value<T> {
      * Creates a {@link Failure} that contains the given {@code exception}. Shortcut for {@code new Failure<>(exception)}.
      *
      * @param exception An exception.
-     * @param <T> Component type of the {@code Try}.
+     * @param <T>       Component type of the {@code Try}.
      * @return A new {@code Failure}.
      */
     static <T> Try<T> failure(Throwable exception) {
@@ -434,6 +435,19 @@ public interface Try<T> extends Value<T> {
         } else {
             return new Right<>(get());
         }
+    }
+
+    /**
+     * Transforms this {@code Try}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    default <U> U transform(Function<? super Try<? super T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
     }
 
     @Override

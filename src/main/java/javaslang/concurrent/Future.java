@@ -728,6 +728,19 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
+     * Transforms this {@code Future}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    default <U> U transform(Function<? super Future<? super T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
+    /**
      * Returns a tuple of this and that Future result.
      * <p>
      * If this Future failed the result contains this failure. Otherwise the result contains that failure or
