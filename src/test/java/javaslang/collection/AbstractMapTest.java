@@ -107,6 +107,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @SuppressWarnings("unchecked")
     abstract protected <K, V> Map<K, V> mapOf(Tuple2<? extends K, ? extends V>... entries);
 
+    abstract protected <K, V> Map<K, V> mapOfPairs(Object... pairs);
+
     abstract protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value);
 
     @Override
@@ -190,6 +192,17 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldBeTheSame() {
         assertThat(mapOf(1, 2)).isEqualTo(emptyMap().put(1, 2));
+    }
+
+    @Test
+    public void shouldConstructFromPairs() {
+        Map<String, Integer> map = mapOfPairs("1", 1, "2", 2, "3", 3);
+        assertThat(map).isEqualTo(emptyMap().put("1", 1).put("2", 2).put("3", 3));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailConstructFromOddPairsLen() {
+        mapOfPairs("1", 1, "2", 2, 3);
     }
 
     // -- toString

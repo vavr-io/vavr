@@ -40,6 +40,12 @@ public class TreeMapTest extends AbstractMapTest {
         return TreeMap.ofAll(naturalComparator(), entries);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    protected <K, V> Map<K, V> mapOfPairs(Object... pairs) {
+        return TreeMap.of(pairs);
+    }
+
     @Override
     protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value) {
         return TreeMap.of(key, value);
