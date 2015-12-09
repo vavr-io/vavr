@@ -834,35 +834,6 @@ public interface Traversable<T> extends Value<T> {
     }
 
     /**
-     * Accumulates the elements of this Traversable by successively calling the given operation {@code op}.
-     * The order of element iteration is undetermined.
-     *
-     * @param op A BiFunction of type T
-     * @return the reduced value.
-     * @throws NoSuchElementException if this is empty
-     * @throws NullPointerException   if {@code op} is null
-     */
-    @Override
-    default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        return reduceLeft(op);
-    }
-
-    /**
-     * Accumulates the elements of this Traversable by successively calling the given operation {@code op}.
-     * The order of element iteration is undetermined.
-     *
-     * @param op A BiFunction of type T
-     * @return Some of reduced value or None.
-     * @throws NullPointerException          if {@code op} is null
-     */
-    @Override
-    default Option<T> reduceOption(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        return reduceLeftOption(op);
-    }
-
-    /**
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the left.
      *
      * @param op A BiFunction of type T

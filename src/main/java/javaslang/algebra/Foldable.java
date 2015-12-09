@@ -138,7 +138,10 @@ public interface Foldable<T> {
      * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
-    T reduce(BiFunction<? super T, ? super T, ? extends T> op);
+    default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
+        return reduceLeft(op);
+    }
 
     /**
      * Accumulates the elements of this Foldable by successively calling the given operation {@code op}.
@@ -148,7 +151,10 @@ public interface Foldable<T> {
      * @return Some of reduced value or None.
      * @throws NullPointerException if {@code op} is null
      */
-    Option<T> reduceOption(BiFunction<? super T, ? super T, ? extends T> op);
+    default Option<T> reduceOption(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
+        return reduceLeftOption(op);
+    }
 
     /**
      * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the left.
