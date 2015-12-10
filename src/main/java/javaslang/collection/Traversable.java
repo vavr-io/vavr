@@ -24,9 +24,9 @@ import java.util.function.Predicate;
 
 /**
  * An interface for inherently recursive, multi-valued data structures. The order of elements is determined by
- * {@link java.lang.Iterable#iterator()}, which may vary each time it is called.
+ * {@link Iterable#iterator()}, which may vary each time it is called.
  * <p>
- * Implementations of {@code Traversable} should calculate the {@code hashCode} via {@link #hash(java.lang.Iterable)}.
+ * Implementations of {@code Traversable} should calculate the {@code hashCode} via {@link #hash(Iterable)}.
  *
  * <p>
  * Basic operations:
@@ -34,7 +34,7 @@ import java.util.function.Predicate;
  * <ul>
  * <li>{@link #clear()}</li>
  * <li>{@link #contains(Object)}</li>
- * <li>{@link #containsAll(java.lang.Iterable)}</li>
+ * <li>{@link #containsAll(Iterable)}</li>
  * <li>{@link #head()}</li>
  * <li>{@link #headOption()}</li>
  * <li>{@link #init()}</li>
@@ -95,7 +95,7 @@ import java.util.function.Predicate;
  * <li>{@link #findLast(Predicate)}</li>
  * <li>{@link #groupBy(Function)}</li>
  * <li>{@link #partition(Predicate)}</li>
- * <li>{@link #retainAll(java.lang.Iterable)}</li>
+ * <li>{@link #retainAll(Iterable)}</li>
  * <li>{@link #take(int)}</li>
  * <li>{@link #takeRight(int)}</li>
  * <li>{@link #takeUntil(Predicate)}</li>
@@ -174,11 +174,11 @@ public interface Traversable<T> extends Value<T> {
      * </pre>
      *
      * @param <T>     Component type
-     * @param objects An java.lang.Iterable
-     * @return The hashCode of the given java.lang.Iterable
+     * @param objects An Iterable
+     * @return The hashCode of the given Iterable
      * @throws NullPointerException if objects is null
      */
-    static <T> int hash(java.lang.Iterable<? extends T> objects) {
+    static <T> int hash(Iterable<? extends T> objects) {
         int hashCode = 1;
         for (Object o : objects) {
             hashCode = 31 * hashCode + Objects.hashCode(o);
@@ -255,7 +255,7 @@ public interface Traversable<T> extends Value<T> {
      * @return true, if this List contains all given elements, false otherwise.
      * @throws NullPointerException if {@code elements} is null
      */
-    default boolean containsAll(java.lang.Iterable<? extends T> elements) {
+    default boolean containsAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return List.ofAll(elements).distinct().findFirst(e -> !this.contains(e)).isEmpty();
     }
@@ -394,7 +394,7 @@ public interface Traversable<T> extends Value<T> {
     }
 
     @Override
-    <U> Traversable<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     /**
      * Accumulates the elements of this Traversable by successively calling the given function {@code f} from the left,
@@ -856,7 +856,7 @@ public interface Traversable<T> extends Value<T> {
      *
      * @param op A BiFunction of type T
      * @return Some of reduced value or None.
-     * @throws NullPointerException   if {@code op} is null
+     * @throws NullPointerException if {@code op} is null
      */
     @Override
     default Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op) {
@@ -891,7 +891,7 @@ public interface Traversable<T> extends Value<T> {
      *
      * @param op An operation of type T
      * @return Some of reduced value or None.
-     * @throws NullPointerException   if {@code op} is null
+     * @throws NullPointerException if {@code op} is null
      */
     @Override
     default Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op) {
@@ -928,7 +928,7 @@ public interface Traversable<T> extends Value<T> {
      * @return a Traversable containing all occurrences of the given elements.
      * @throws NullPointerException if {@code elements} is null
      */
-    Traversable<T> retainAll(java.lang.Iterable<? extends T> elements);
+    Traversable<T> retainAll(Iterable<? extends T> elements);
 
     /**
      * Computes a prefix scan of the elements of the collection.
@@ -1141,7 +1141,7 @@ public interface Traversable<T> extends Value<T> {
             Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     /**
-     * Returns a traversable formed from this traversable and another java.lang.Iterable collection by combining
+     * Returns a traversable formed from this traversable and another Iterable collection by combining
      * corresponding elements in pairs. If one of the two iterables is longer than the other, its remaining elements
      * are ignored.
      * <p>
@@ -1149,14 +1149,14 @@ public interface Traversable<T> extends Value<T> {
      * iterable.
      *
      * @param <U>  The type of the second half of the returned pairs.
-     * @param that The java.lang.Iterable providing the second half of each result pair.
+     * @param that The Iterable providing the second half of each result pair.
      * @return a new traversable containing pairs consisting of corresponding elements of this traversable and {@code that} iterable.
      * @throws NullPointerException if {@code that} is null
      */
-    <U> Traversable<Tuple2<T, U>> zip(java.lang.Iterable<U> that);
+    <U> Traversable<Tuple2<T, U>> zip(Iterable<U> that);
 
     /**
-     * Returns a traversable formed from this traversable and another java.lang.Iterable by combining corresponding elements in
+     * Returns a traversable formed from this traversable and another Iterable by combining corresponding elements in
      * pairs. If one of the two collections is shorter than the other, placeholder elements are used to extend the
      * shorter collection to the length of the longer.
      * <p>
@@ -1171,13 +1171,13 @@ public interface Traversable<T> extends Value<T> {
      * If that is shorter than this Traversable, thatElem values are used to fill the result.
      *
      * @param <U>      The type of the second half of the returned pairs.
-     * @param that     The java.lang.Iterable providing the second half of each result pair.
+     * @param that     The Iterable providing the second half of each result pair.
      * @param thisElem The element to be used to fill up the result if this traversable is shorter than that.
      * @param thatElem The element to be used to fill up the result if that is shorter than this traversable.
      * @return A new traversable containing pairs consisting of corresponding elements of this traversable and that.
      * @throws NullPointerException if {@code that} is null
      */
-    <U> Traversable<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem);
+    <U> Traversable<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     /**
      * Zips this traversable with its indices.

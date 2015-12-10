@@ -311,7 +311,7 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Gen<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+    default <U> Gen<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return random -> {
             final Iterable<? extends U> iterable = mapper.apply(apply(random));

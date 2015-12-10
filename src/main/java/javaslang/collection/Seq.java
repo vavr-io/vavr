@@ -20,7 +20,7 @@ import java.util.function.*;
  * Creation:
  *
  * <ul>
- * <li>{@link #unit(java.lang.Iterable)}</li>
+ * <li>{@link #unit(Iterable)}</li>
  * </ul>
  *
  * Filtering:
@@ -28,7 +28,7 @@ import java.util.function.*;
  * <ul>
  * <li>{@link #remove(Object)}</li>
  * <li>{@link #removeAll(Object)}</li>
- * <li>{@link #removeAll(java.lang.Iterable)}</li>
+ * <li>{@link #removeAll(Iterable)}</li>
  * <li>{@link #removeAt(int)}</li>
  * <li>{@link #removeFirst(Predicate)}</li>
  * <li>{@link #removeLast(Predicate)}</li>
@@ -38,11 +38,11 @@ import java.util.function.*;
  *
  * <ul>
  * <li>{@link #append(Object)}</li>
- * <li>{@link #appendAll(java.lang.Iterable)}</li>
+ * <li>{@link #appendAll(Iterable)}</li>
  * <li>{@link #insert(int, Object)}</li>
- * <li>{@link #insertAll(int, java.lang.Iterable)}</li>
+ * <li>{@link #insertAll(int, Iterable)}</li>
  * <li>{@link #prepend(Object)}</li>
- * <li>{@link #prependAll(java.lang.Iterable)}</li>
+ * <li>{@link #prependAll(Iterable)}</li>
  * <li>{@link #update(int, Object)}</li>
  * </ul>
  *
@@ -64,7 +64,7 @@ import java.util.function.*;
  * <ul>
  * <li>{@link #crossProduct()}</li>
  * <li>{@link #crossProduct(int)}</li>
- * <li>{@link #crossProduct(java.lang.Iterable)}</li>
+ * <li>{@link #crossProduct(Iterable)}</li>
  * <li>{@link #combinations()}</li>
  * <li>{@link #combinations(int)}</li>
  * <li>{@link #intersperse(Object)}</li>
@@ -75,8 +75,8 @@ import java.util.function.*;
  * <li>{@link #sort(Comparator)}</li>
  * <li>{@link #splitAt(int)}</li>
  * <li>{@link #unzip(Function)}</li>
- * <li>{@link #zip(java.lang.Iterable)}</li>
- * <li>{@link #zipAll(java.lang.Iterable, Object, Object)}</li>
+ * <li>{@link #zip(Iterable)}</li>
+ * <li>{@link #zipAll(Iterable, Object, Object)}</li>
  * <li>{@link #zipWithIndex()}</li>
  * </ul>
  *
@@ -99,7 +99,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * if the iteration order of the elements is stable.
      *
      * @param <T>      Component type of the Seq.
-     * @param elements An java.lang.Iterable of elements.
+     * @param elements An Iterable of elements.
      * @return A sequence containing the given elements in the same order or the
      * given argument if it is already an instance of Seq.
      * @throws NullPointerException if {@code elements} is null
@@ -138,11 +138,11 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     /**
      * Appends all given elements to this.
      *
-     * @param elements An java.lang.Iterable of elements
+     * @param elements An Iterable of elements
      * @return A new Seq containing the given elements appended to this elements
      * @throws NullPointerException if {@code elements} is null
      */
-    Seq<T> appendAll(java.lang.Iterable<? extends T> elements);
+    Seq<T> appendAll(Iterable<? extends T> elements);
 
     /**
      * Returns the union of all combinations from k = 0 to length().
@@ -183,7 +183,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @return true if this sequence contains a slice with the same elements as that, otherwise false.
      * @throws NullPointerException if {@code that} is null.
      */
-    default boolean containsSlice(java.lang.Iterable<? extends T> that) {
+    default boolean containsSlice(Iterable<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
         return indexOfSlice(that) >= 0;
     }
@@ -235,7 +235,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @return a new Seq containing the cross product {@code this x that}
      * @throws NullPointerException if that is null
      */
-    <U> Seq<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
+    <U> Seq<Tuple2<T, U>> crossProduct(Iterable<? extends U> that);
 
     /**
      * Tests whether this sequence ends with the given sequence.
@@ -296,7 +296,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * the elements of sequence that, or -1 of no such slice exists.
      * @throws NullPointerException if {@code that} is null.
      */
-    default int indexOfSlice(java.lang.Iterable<? extends T> that) {
+    default int indexOfSlice(Iterable<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
         return indexOfSlice(that, 0);
     }
@@ -312,7 +312,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * the elements of sequence that, or -1 of no such slice exists.
      * @throws NullPointerException if {@code that} is null.
      */
-    default int indexOfSlice(java.lang.Iterable<? extends T> that, int from) {
+    default int indexOfSlice(Iterable<? extends T> that, int from) {
         Objects.requireNonNull(that, "that is null");
         class Util {
             int indexOfSlice(Seq<T> t, Seq<T> slice, int from) {
@@ -387,11 +387,11 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * Inserts the given elements at the specified index.
      *
      * @param index    an index
-     * @param elements An java.lang.Iterable of elements
+     * @param elements An Iterable of elements
      * @return a new Seq, where the given elements are inserted into this at the given index
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
-    Seq<T> insertAll(int index, java.lang.Iterable<? extends T> elements);
+    Seq<T> insertAll(int index, Iterable<? extends T> elements);
 
     /**
      * Inserts an element between all elements of this Traversable.
@@ -478,7 +478,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * of sequence that, or -1 of no such slice exists.
      * @throws NullPointerException if {@code that} is null.
      */
-    default int lastIndexOfSlice(java.lang.Iterable<? extends T> that) {
+    default int lastIndexOfSlice(Iterable<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
         return lastIndexOfSlice(that, Integer.MAX_VALUE);
     }
@@ -492,7 +492,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * the elements of sequence that, or -1 of no such slice exists.
      * @throws NullPointerException if {@code that} is null.
      */
-    int lastIndexOfSlice(java.lang.Iterable<? extends T> that, int end);
+    int lastIndexOfSlice(Iterable<? extends T> that, int end);
 
     /**
      * A copy of this sequence with an element appended until a given target length is reached.
@@ -512,7 +512,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @param replaced the number of elements to drop in the original list
      * @return a new sequence.
      */
-    Seq<T> patch(int from, java.lang.Iterable<? extends T> that, int replaced);
+    Seq<T> patch(int from, Iterable<? extends T> that, int replaced);
 
     /**
      * Computes all unique permutations.
@@ -561,10 +561,10 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     /**
      * Prepends all given elements to this.
      *
-     * @param elements An java.lang.Iterable of elements
+     * @param elements An Iterable of elements
      * @return A new Seq containing the given elements prepended to this elements
      */
-    Seq<T> prependAll(java.lang.Iterable<? extends T> elements);
+    Seq<T> prependAll(Iterable<? extends T> elements);
 
     /**
      * Removes the first occurrence of the given element.
@@ -589,7 +589,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @return a Seq containing all elements of this but none of the given elements.
      * @throws NullPointerException if {@code elements} is null
      */
-    Seq<T> removeAll(java.lang.Iterable<? extends T> elements);
+    Seq<T> removeAll(Iterable<? extends T> elements);
 
     /**
      * Removes the element at the specified position in this sequence. Shifts any subsequent elements to the left
@@ -739,7 +739,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @param that the sequence to test
      * @return true if that is empty or that is prefix of this collection, false otherwise.
      */
-    default boolean startsWith(java.lang.Iterable<? extends T> that) {
+    default boolean startsWith(Iterable<? extends T> that) {
         return startsWith(that, 0);
     }
 
@@ -832,13 +832,13 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     }
 
     /**
-     * Creates an instance of this type of an {@code java.lang.Iterable}.
+     * Creates an instance of this type of an {@code Iterable}.
      *
      * @param <U>      Component type
-     * @param iterable an {@code java.lang.Iterable}
+     * @param iterable an {@code Iterable}
      * @return A new instance of this collection containing the elements of the given {@code iterable}.
      */
-    <U> Seq<U> unit(java.lang.Iterable<? extends U> iterable);
+    <U> Seq<U> unit(Iterable<? extends U> iterable);
 
     /**
      * Updates the given element at the specified index.
@@ -880,7 +880,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> filter(Predicate<? super T> predicate);
 
     @Override
-    <U> Seq<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> Seq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
@@ -916,7 +916,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     Seq<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    Seq<T> retainAll(java.lang.Iterable<? extends T> elements);
+    Seq<T> retainAll(Iterable<? extends T> elements);
 
     @Override
     Seq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
@@ -961,10 +961,10 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
     <T1, T2, T3> Tuple3<? extends Seq<T1>, ? extends Seq<T2>, ? extends Seq<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     @Override
-    <U> Seq<Tuple2<T, U>> zip(java.lang.Iterable<U> that);
+    <U> Seq<Tuple2<T, U>> zip(Iterable<U> that);
 
     @Override
-    <U> Seq<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem);
+    <U> Seq<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     @Override
     Seq<Tuple2<T, Integer>> zipWithIndex();

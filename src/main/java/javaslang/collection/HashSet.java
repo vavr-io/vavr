@@ -104,7 +104,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet containing the given entries
      */
     @SuppressWarnings("unchecked")
-    public static <T> HashSet<T> ofAll(java.lang.Iterable<? extends T> elements) {
+    public static <T> HashSet<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof HashSet) {
             return (HashSet<T>) elements;
@@ -416,7 +416,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> addAll(java.lang.Iterable<? extends T> elements) {
+    public HashSet<T> addAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final HashArrayMappedTrie<T, T> that = addAll(tree, elements);
         if (that.size() == tree.size()) {
@@ -498,7 +498,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> HashSet<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+    public <U> HashSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -628,7 +628,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> removeAll(java.lang.Iterable<? extends T> elements) {
+    public HashSet<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<T, T> trie = tree;
         for (T element : elements) {
@@ -652,7 +652,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> retainAll(java.lang.Iterable<? extends T> elements) {
+    public HashSet<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final HashArrayMappedTrie<T, T> kept = addAll(HashArrayMappedTrie.empty(), elements);
         HashArrayMappedTrie<T, T> that = HashArrayMappedTrie.empty();
@@ -783,13 +783,13 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> HashSet<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
+    public <U> HashSet<Tuple2<T, U>> zip(Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         return HashSet.ofAll(iterator().zip(that));
     }
 
     @Override
-    public <U> HashSet<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
+    public <U> HashSet<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return HashSet.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }

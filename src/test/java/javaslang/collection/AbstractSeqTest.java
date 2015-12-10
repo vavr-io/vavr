@@ -33,7 +33,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     abstract protected <T> Seq<T> of(T... elements);
 
     @Override
-    abstract protected <T> Seq<T> ofAll(java.lang.Iterable<? extends T> elements);
+    abstract protected <T> Seq<T> ofAll(Iterable<? extends T> elements);
 
     @Override
     abstract protected Seq<Boolean> ofAll(boolean[] array);

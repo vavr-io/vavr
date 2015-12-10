@@ -113,7 +113,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return A string containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    public static CharSeq ofAll(java.lang.Iterable<? extends Character> elements) {
+    public static CharSeq ofAll(Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final StringBuilder sb = new StringBuilder();
         for (Character character : elements) {
@@ -230,7 +230,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq appendAll(java.lang.Iterable<? extends Character> elements) {
+    public CharSeq appendAll(Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final StringBuilder sb = new StringBuilder(back);
         for (char element : elements) {
@@ -265,7 +265,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <U> IndexedSeq<Tuple2<Character, U>> crossProduct(java.lang.Iterable<? extends U> that) {
+    public <U> IndexedSeq<Tuple2<Character, U>> crossProduct(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final IndexedSeq<U> other = Vector.ofAll(that);
         return flatMap(a -> other.map(b -> Tuple.of(a, b)));
@@ -342,7 +342,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <U> IndexedSeq<U> flatMap(Function<? super Character, ? extends java.lang.Iterable<? extends U>> mapper) {
+    public <U> IndexedSeq<U> flatMap(Function<? super Character, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Vector.empty();
@@ -414,7 +414,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq insertAll(int index, java.lang.Iterable<? extends Character> elements) {
+    public CharSeq insertAll(int index, Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
@@ -487,7 +487,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq patch(int from, java.lang.Iterable<? extends Character> that, int replaced) {
+    public CharSeq patch(int from, Iterable<? extends Character> that, int replaced) {
         from = from < 0 ? 0 : from > length() ? length() : from;
         replaced = replaced < 0 ? 0 : replaced;
         final StringBuilder sb = new StringBuilder(back.substring(0, from));
@@ -569,7 +569,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq prependAll(java.lang.Iterable<? extends Character> elements) {
+    public CharSeq prependAll(Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final StringBuilder sb = new StringBuilder();
         for (Character element : elements) {
@@ -643,7 +643,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq removeAll(java.lang.Iterable<? extends Character> elements) {
+    public CharSeq removeAll(Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final java.util.Set<Character> distinct = new HashSet<>();
         for (Character element : elements) {
@@ -692,7 +692,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq retainAll(java.lang.Iterable<? extends Character> elements) {
+    public CharSeq retainAll(Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final java.util.Set<Character> kept = new HashSet<>();
         for (Character element : elements) {
@@ -878,7 +878,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <U> IndexedSeq<U> unit(java.lang.Iterable<? extends U> iterable) {
+    public <U> IndexedSeq<U> unit(Iterable<? extends U> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         return Vector.ofAll(iterable);
     }
@@ -925,7 +925,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <U> IndexedSeq<Tuple2<Character, U>> zip(java.lang.Iterable<U> that) {
+    public <U> IndexedSeq<Tuple2<Character, U>> zip(Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         IndexedSeq<Tuple2<Character, U>> result = Vector.empty();
         Iterator<Character> list1 = iterator();
@@ -937,7 +937,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <U> IndexedSeq<Tuple2<Character, U>> zipAll(java.lang.Iterable<U> that, Character thisElem, U thatElem) {
+    public <U> IndexedSeq<Tuple2<Character, U>> zipAll(Iterable<U> that, Character thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         IndexedSeq<Tuple2<Character, U>> result = Vector.empty();
         Iterator<Character> list1 = iterator();

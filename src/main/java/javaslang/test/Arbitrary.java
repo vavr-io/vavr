@@ -83,7 +83,7 @@ public interface Arbitrary<T> extends Value<T> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return size -> {
             final Gen<T> gen = apply(size);
             return random -> {

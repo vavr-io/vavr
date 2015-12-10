@@ -30,7 +30,7 @@ import java.util.stream.StreamSupport;
  * Static methods:
  *
  * <ul>
- * <li>{@link #get(java.lang.Iterable)}</li>
+ * <li>{@link #get(Iterable)}</li>
  * </ul>
  *
  * Basic operations:
@@ -52,7 +52,7 @@ import java.util.stream.StreamSupport;
  * Equality checks:
  *
  * <ul>
- * <li>{@link #corresponds(java.lang.Iterable, BiPredicate)}</li>
+ * <li>{@link #corresponds(Iterable, BiPredicate)}</li>
  * <li>{@link #eq(Object)}</li>
  * </ul>
  *
@@ -86,18 +86,18 @@ import java.util.stream.StreamSupport;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Value<T> extends javaslang.Iterable<T>, Foldable<T>, Monad<T>, Printable {
+public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>, ValueModule.Printable {
 
     /**
      * Gets the first value of the given Iterable if exists, otherwise throws.
      *
-     * @param iterable An java.lang.Iterable
+     * @param iterable An Iterable
      * @param <T>      Component type
      * @return An object of type T
      * @throws java.util.NoSuchElementException if the given iterable is empty
      */
     @SuppressWarnings("unchecked")
-    static <T> T get(java.lang.Iterable<? extends T> iterable) {
+    static <T> T get(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         if (iterable instanceof Value) {
             return ((Value<T>) iterable).get();
@@ -241,7 +241,7 @@ public interface Value<T> extends javaslang.Iterable<T>, Foldable<T>, Monad<T>, 
      *
      * @param supplier An alternative value supplier.
      * @return A value of type {@code T}.
-     * @throws NullPointerException if supplier is null
+     * @throws NullPointerException               if supplier is null
      * @throws javaslang.control.Failure.NonFatal containing the original exception if this Value was empty and the Try failed.
      */
     default T orElseTry(Try.CheckedSupplier<? extends T> supplier) {
@@ -296,7 +296,7 @@ public interface Value<T> extends javaslang.Iterable<T>, Foldable<T>, Monad<T>, 
     Value<T> filter(Predicate<? super T> predicate);
 
     @Override
-    <U> Value<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> Value<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     // DEV-NOTE: default implementations for singleton types, needs to be overridden by multi valued types
     @Override
@@ -545,49 +545,186 @@ interface ValueModule {
         }
         return empty;
     }
-}
-
-/**
- * Print operations.
- */
-interface Printable {
 
     /**
-     * Sends the string representations of this value to the {@link PrintStream}.
-     * If this value consists of multiple elements, each element is displayed in a new line.
-     *
-     * @param out The PrintStream to write to
-     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stream.
+     * A rich extension of {@code java.lang.Iterable}.
      */
-    void out(PrintStream out);
+    interface Iterable<T> extends java.lang.Iterable<T> {
 
-    /**
-     * Sends the string representations of this value to the {@link PrintWriter}.
-     * If this value consists of multiple elements, each element is displayed in a new line.
-     *
-     * @param writer The PrintWriter to write to
-     * @throws IllegalStateException if {@code PrintWriter.checkError()} is true after writing to writer.
-     */
-    void out(PrintWriter writer);
+        /**
+         * Returns a rich {@code javaslang.collection.Iterator}.
+         *
+         * @return A new Iterator
+         */
+        @Override
+        Iterator<T> iterator();
 
-    /**
-     * Sends the string representations of this value to the standard error stream {@linkplain System#err}.
-     * If this value consists of multiple elements, each element is displayed in a new line.
-     *
-     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
-     */
-    default void stderr() {
-        out(System.err);
+        /**
+         * Shortcut for {@code exists(e -> Objects.equals(e, element))}, tests if the given {@code element} is contained.
+         *
+         * @param element An Object of type A, may be null.
+         * @return true, if element is contained, false otherwise.
+         */
+        default boolean contains(T element) {
+            return exists(e -> Objects.equals(e, element));
+        }
+
+        /**
+         * Tests whether every element of this iterable relates to the corresponding element of another iterable by
+         * satisfying a test predicate.
+         *
+         * @param <U>       Component type of that iterable
+         * @param that      the other iterable
+         * @param predicate the test predicate, which relates elements from both iterables
+         * @return {@code true} if both iterables have the same length and {@code predicate(x, y)}
+         * is {@code true} for all corresponding elements {@code x} of this iterable and {@code y} of {@code that},
+         * otherwise {@code false}.
+         */
+        default <U> boolean corresponds(java.lang.Iterable<U> that, BiPredicate<? super T, ? super U> predicate) {
+            final java.util.Iterator<T> it1 = iterator();
+            final java.util.Iterator<U> it2 = that.iterator();
+            while (it1.hasNext() && it2.hasNext()) {
+                if (!predicate.test(it1.next(), it2.next())) {
+                    return false;
+                }
+            }
+            return !it1.hasNext() && !it2.hasNext();
+        }
+
+        /**
+         * A <em>smoothing</em> replacement for {@code equals}. It is similar to Scala's {@code ==} but better in the way
+         * that it is not limited to collection types, e.g. {@code Some(1) eq List(1)}, {@code None eq Failure(x)} etc.
+         * <p>
+         * In a nutshell: eq checks <strong>congruence of structures</strong> and <strong>equality of contained values</strong>.
+         * <p>
+         * Example:
+         *
+         * <pre><code>
+         * // ((1, 2), ((3))) =&gt; structure: (()(())) values: 1, 2, 3
+         * final Value&lt;?&gt; i1 = List.of(List.of(1, 2), Arrays.asList(List.of(3)));
+         * final Value&lt;?&gt; i2 = Queue.of(Stream.of(1, 2), List.of(Lazy.of(() -&gt; 3)));
+         * assertThat(i1.eq(i2)).isTrue();
+         * </code></pre>
+         *
+         * Semantics:
+         *
+         * <pre><code>
+         * o == this                         : true
+         * o instanceof ValueModule.Iterable : iterable elements are eq, non-iterable elements equals, for all (o1, o2) in (this, o)
+         * o instanceof java.lang.Iterable   : this eq Iterator.of((java.lang.Iterable&lt;?&gt;) o);
+         * otherwise                         : false
+         * </code></pre>
+         *
+         * @param o An object
+         * @return true, if this equals o according to the rules defined above, otherwise false.
+         */
+        default boolean eq(Object o) {
+            if (o == this) {
+                return true;
+            } else if (o instanceof ValueModule.Iterable) {
+                final ValueModule.Iterable<?> that = (ValueModule.Iterable<?>) o;
+                return this.iterator().corresponds(that.iterator(), (o1, o2) -> {
+                    if (o1 instanceof ValueModule.Iterable) {
+                        return ((ValueModule.Iterable<?>) o1).eq(o2);
+                    } else if (o2 instanceof ValueModule.Iterable) {
+                        return ((ValueModule.Iterable<?>) o2).eq(o1);
+                    } else {
+                        return Objects.equals(o1, o2);
+                    }
+                });
+            } else if (o instanceof java.lang.Iterable) {
+                final ValueModule.Iterable<?> that = Iterator.ofAll((java.lang.Iterable<?>) o);
+                return this.eq(that);
+            } else {
+                return false;
+            }
+        }
+
+        /**
+         * Checks, if an element exists such that the predicate holds.
+         *
+         * @param predicate A Predicate
+         * @return true, if predicate holds for one or more elements, false otherwise
+         * @throws NullPointerException if {@code predicate} is null
+         */
+        default boolean exists(Predicate<? super T> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            for (T t : this) {
+                if (predicate.test(t)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /**
+         * Checks, if the given predicate holds for all elements.
+         *
+         * @param predicate A Predicate
+         * @return true, if the predicate holds for all elements, false otherwise
+         * @throws NullPointerException if {@code predicate} is null
+         */
+        default boolean forAll(Predicate<? super T> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            return !exists(predicate.negate());
+        }
+
+        /**
+         * Performs an action on each element.
+         *
+         * @param action A {@code Consumer}
+         * @throws NullPointerException if {@code action} is null
+         */
+        default void forEach(Consumer<? super T> action) {
+            Objects.requireNonNull(action, "action is null");
+            for (T t : this) {
+                action.accept(t);
+            }
+        }
     }
 
     /**
-     * Sends the string representations of this value to the standard output stream {@linkplain System#out}.
-     * If this value consists of multiple elements, each element is displayed in a new line.
-     *
-     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
+     * Print operations.
      */
-    default void stdout() {
-        out(System.out);
-    }
+    interface Printable {
 
+        /**
+         * Sends the string representations of this value to the {@link PrintStream}.
+         * If this value consists of multiple elements, each element is displayed in a new line.
+         *
+         * @param out The PrintStream to write to
+         * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stream.
+         */
+        void out(PrintStream out);
+
+        /**
+         * Sends the string representations of this value to the {@link PrintWriter}.
+         * If this value consists of multiple elements, each element is displayed in a new line.
+         *
+         * @param writer The PrintWriter to write to
+         * @throws IllegalStateException if {@code PrintWriter.checkError()} is true after writing to writer.
+         */
+        void out(PrintWriter writer);
+
+        /**
+         * Sends the string representations of this value to the standard error stream {@linkplain System#err}.
+         * If this value consists of multiple elements, each element is displayed in a new line.
+         *
+         * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
+         */
+        default void stderr() {
+            out(System.err);
+        }
+
+        /**
+         * Sends the string representations of this value to the standard output stream {@linkplain System#out}.
+         * If this value consists of multiple elements, each element is displayed in a new line.
+         *
+         * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
+         */
+        default void stdout() {
+            out(System.out);
+        }
+
+    }
 }

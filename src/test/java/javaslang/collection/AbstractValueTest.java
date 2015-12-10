@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.AbstractIterableTest;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Value;
@@ -18,43 +17,47 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class AbstractValueTest extends AbstractIterableTest {
+public abstract class AbstractValueTest {
 
     protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
-        return new IterableAssert<T>(actual) {};
+        return new IterableAssert<T>(actual) {
+        };
     }
 
     protected <T> ObjectAssert<T> assertThat(T actual) {
-        return new ObjectAssert<T>(actual) {};
+        return new ObjectAssert<T>(actual) {
+        };
     }
 
     protected BooleanAssert assertThat(Boolean actual) {
-        return new BooleanAssert(actual) {};
+        return new BooleanAssert(actual) {
+        };
     }
 
     protected DoubleAssert assertThat(Double actual) {
-        return new DoubleAssert(actual) {};
+        return new DoubleAssert(actual) {
+        };
     }
 
     protected IntegerAssert assertThat(Integer actual) {
-        return new IntegerAssert(actual) {};
+        return new IntegerAssert(actual) {
+        };
     }
 
     protected LongAssert assertThat(Long actual) {
-        return new LongAssert(actual) {};
+        return new LongAssert(actual) {
+        };
     }
 
     protected StringAssert assertThat(String actual) {
-        return new StringAssert(actual) {};
+        return new StringAssert(actual) {
+        };
     }
 
-    @Override
     abstract protected <T> Value<T> empty();
 
-    @Override
     abstract protected <T> Value<T> of(T element);
 
-    @Override
     @SuppressWarnings("unchecked")
     abstract protected <T> Value<T> of(T... elements);
 
@@ -286,7 +289,9 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
 
     @Test(expected = Failure.NonFatal.class)
     public void shouldThrowWhenCallingOrElseTryOnEmptyValueAndTryIsAFailure() {
-        empty().orElseTry(() -> { throw new Error(); });
+        empty().orElseTry(() -> {
+            throw new Error();
+        });
     }
 
     // -- peek
@@ -471,4 +476,36 @@ public abstract class AbstractValueTest extends AbstractIterableTest {
     public void shouldBeAwareOfPropertyThatNotHoldsForAll() {
         assertThat(of(2, 3).forAll(i -> i % 2 == 0)).isFalse();
     }
+
+    // ### ValueModule.Iterable ###
+
+    // -- corresponds
+
+    @Test
+    public void shouldntCorrespondsNilNil() {
+        assertThat(empty().corresponds(empty(), (o1, o2) -> true)).isTrue();
+    }
+
+    @Test
+    public void shouldntCorrespondsNilNonNil() {
+        assertThat(empty().corresponds(of(1), (o1, i2) -> true)).isFalse();
+    }
+
+    @Test
+    public void shouldntCorrespondsNonNilNil() {
+        assertThat(of(1).corresponds(empty(), (i1, o2) -> true)).isFalse();
+    }
+
+    @Test
+    public void shouldntCorrespondsDifferentLengths() {
+        assertThat(of(1, 2, 3).corresponds(of(1, 2), (i1, i2) -> true)).isFalse();
+        assertThat(of(1, 2).corresponds(of(1, 2, 3), (i1, i2) -> true)).isFalse();
+    }
+
+    @Test
+    public void shouldCorresponds() {
+        assertThat(of(1, 2, 3).corresponds(of(3, 4, 5), (i1, i2) -> i1 == i2 - 2)).isTrue();
+        assertThat(of(1, 2, 3).corresponds(of(1, 2, 3), (i1, i2) -> i1 == i2 + 1)).isFalse();
+    }
+
 }

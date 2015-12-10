@@ -31,7 +31,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
 
     boolean containsValue(V value);
 
-    <U, W> Map<U, W> flatMap(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper);
+    <U, W> Map<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper);
 
     Option<V> get(K key);
 
@@ -42,7 +42,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
     /**
      * Maps the values of this {@code Map} while preserving the corresponding keys.
      *
-     * @param <W> The new value type.
+     * @param <W>    The new value type.
      * @param mapper A {@code Function} that maps values of type {@code K} to values of type {@code W}.
      * @return A new {@code Map}.
      * @throws NullPointerException if {@code mapper} is null
@@ -61,7 +61,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
 
     Map<K, V> remove(K key);
 
-    Map<K, V> removeAll(java.lang.Iterable<? extends K> keys);
+    Map<K, V> removeAll(Iterable<? extends K> keys);
 
     int size();
 
@@ -130,7 +130,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
     Map<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper);
 
     @Override
     <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
@@ -194,7 +194,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
     Map<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
 
     @Override
-    Map<K, V> retainAll(java.lang.Iterable<? extends Tuple2<K, V>> elements);
+    Map<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements);
 
     @Override
     Map<K, V> scan(Tuple2<K, V> zero,
@@ -252,13 +252,13 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
     }
 
     @Override
-    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zip(java.lang.Iterable<U> that) {
+    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zip(Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         return Stream.ofAll(iterator().zip(that));
     }
 
     @Override
-    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zipAll(java.lang.Iterable<U> that, Tuple2<K, V> thisElem, U thatElem) {
+    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zipAll(Iterable<U> that, Tuple2<K, V> thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return Stream.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }

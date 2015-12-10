@@ -36,7 +36,7 @@ import java.util.stream.Collector;
  * Stream.empty()                  // = Stream.of() = Nil.instance()
  * Stream.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
  * Stream.of(Object...)            // e.g. Stream.of(1, 2, 3)
- * Stream.ofAll(java.lang.Iterable)          // e.g. Stream.ofAll(List.of(1, 2, 3)) = 1, 2, 3
+ * Stream.ofAll(Iterable)          // e.g. Stream.ofAll(List.of(1, 2, 3)) = 1, 2, 3
  * Stream.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(new int[] {1, 2, 3}) = 1, 2, 3
  *
  * // int sequences
@@ -236,11 +236,11 @@ public interface Stream<T> extends LinearSeq<T> {
      * Creates a Stream of the given elements.
      *
      * @param <T>      Component type of the Stream.
-     * @param elements An java.lang.Iterable of elements.
+     * @param elements An Iterable of elements.
      * @return A list containing the given elements in the same order.
      */
     @SuppressWarnings("unchecked")
-    static <T> Stream<T> ofAll(java.lang.Iterable<? extends T> elements) {
+    static <T> Stream<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Stream) {
             return (Stream<T>) elements;
@@ -568,7 +568,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> appendAll(java.lang.Iterable<? extends T> elements) {
+    default Stream<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return isEmpty() ? Stream.ofAll(elements) : new Cons<>(head(), () -> tail().appendAll(elements));
     }
@@ -625,7 +625,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default <U> Stream<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
+    default <U> Stream<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final Stream<U> other = Stream.ofAll(that);
         return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
@@ -712,7 +712,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default <U> Stream<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+    default <U> Stream<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Empty.instance() : Stream.ofAll(new Iterator<U>() {
 
@@ -819,12 +819,12 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default Stream<T> insertAll(int index, java.lang.Iterable<? extends T> elements) {
+    default Stream<T> insertAll(int index, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
         } else if (index == 0) {
-            return isEmpty() ? Stream.ofAll(elements) : Stream.ofAll((java.lang.Iterable<T>) elements).appendAll(this);
+            return isEmpty() ? Stream.ofAll(elements) : Stream.ofAll((Iterable<T>) elements).appendAll(this);
         } else if (isEmpty()) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on Nil");
         } else {
@@ -887,7 +887,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> patch(int from, java.lang.Iterable<? extends T> that, int replaced) {
+    default Stream<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = from < 0 ? 0 : from;
         replaced = replaced < 0 ? 0 : replaced;
         Stream<T> result = take(from).appendAll(that);
@@ -939,9 +939,9 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default Stream<T> prependAll(java.lang.Iterable<? extends T> elements) {
+    default Stream<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.ofAll((java.lang.Iterable<T>) elements).appendAll(this);
+        return Stream.ofAll((Iterable<T>) elements).appendAll(this);
     }
 
     @Override
@@ -990,9 +990,9 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default Stream<T> removeAll(java.lang.Iterable<? extends T> elements) {
+    default Stream<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final Stream<T> distinct = Stream.ofAll((java.lang.Iterable<T>) elements).distinct();
+        final Stream<T> distinct = Stream.ofAll((Iterable<T>) elements).distinct();
         return filter(e -> !distinct.contains(e));
     }
 
@@ -1023,12 +1023,12 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default Stream<T> retainAll(java.lang.Iterable<? extends T> elements) {
+    default Stream<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty()) {
             return this;
         } else {
-            final Stream<T> retained = Stream.ofAll((java.lang.Iterable<T>) elements).distinct();
+            final Stream<T> retained = Stream.ofAll((Iterable<T>) elements).distinct();
             return filter(retained::contains);
         }
     }
@@ -1219,7 +1219,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default <U> Stream<U> unit(java.lang.Iterable<? extends U> iterable) {
+    default <U> Stream<U> unit(Iterable<? extends U> iterable) {
         return Stream.ofAll(iterable);
     }
 
@@ -1268,13 +1268,13 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default <U> Stream<Tuple2<T, U>> zip(java.lang.Iterable<U> iterable) {
+    default <U> Stream<Tuple2<T, U>> zip(Iterable<U> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         return Stream.ofAll(iterator().zip(iterable));
     }
 
     @Override
-    default <U> Stream<Tuple2<T, U>> zipAll(java.lang.Iterable<U> iterable, T thisElem, U thatElem) {
+    default <U> Stream<Tuple2<T, U>> zipAll(Iterable<U> iterable, T thisElem, U thatElem) {
         Objects.requireNonNull(iterable, "iterable is null");
         return Stream.ofAll(iterator().zipAll(iterable, thisElem, thatElem));
     }

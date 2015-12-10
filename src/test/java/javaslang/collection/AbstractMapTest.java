@@ -26,12 +26,12 @@ import static javaslang.Serializables.serialize;
 public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Override
-    protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
+    protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
             @Override
             public IterableAssert<T> isEqualTo(Object obj) {
                 @SuppressWarnings("unchecked")
-                java.lang.Iterable<T> expected = (java.lang.Iterable<T>) obj;
+                Iterable<T> expected = (Iterable<T>) obj;
                 java.util.Map<T, Integer> actualMap = countMap(actual);
                 java.util.Map<T, Integer> expectedMap = countMap(expected);
                 assertThat(actualMap.size()).isEqualTo(expectedMap.size());
@@ -39,7 +39,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 return this;
             }
 
-            private java.util.Map<T, Integer> countMap(java.lang.Iterable<? extends T> it) {
+            private java.util.Map<T, Integer> countMap(Iterable<? extends T> it) {
                 java.util.HashMap<T, Integer> cnt = new java.util.HashMap<>();
                 it.forEach(i -> cnt.merge(i, 1, (v1, v2) -> v1 + v2));
                 return cnt;
@@ -577,7 +577,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void forEachByKeyValue() {
         Map<Integer, Integer> map = mapOf(1, 2).put(3, 4);
-        final int[] result = {0};
+        final int[] result = { 0 };
         map.forEach((k, v) -> {
             result[0] += k + v;
         });
@@ -587,7 +587,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void forEachByTuple() {
         Map<Integer, Integer> map = mapOf(1, 2).put(3, 4);
-        final int[] result = {0};
+        final int[] result = { 0 };
         map.forEach(t -> {
             result[0] += t._1 + t._2;
         });

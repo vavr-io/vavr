@@ -107,7 +107,7 @@ public interface Tree<T> extends Traversable<T> {
      * if the iteration order of the elements is stable.
      *
      * @param <T>      Component type of the List.
-     * @param iterable An java.lang.Iterable of elements.
+     * @param iterable An Iterable of elements.
      * @return A list containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */

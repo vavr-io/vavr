@@ -10,7 +10,6 @@ import javaslang.collection.List;
 import javaslang.collection.Seq;
 import javaslang.collection.Stream;
 import javaslang.control.*;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
@@ -18,7 +17,6 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 
-import static javaslang.concurrent.Concurrent.waitForever;
 import static javaslang.concurrent.Concurrent.waitUntil;
 import static javaslang.concurrent.Concurrent.zZz;
 import static org.assertj.core.api.Assertions.fail;
@@ -26,7 +24,7 @@ import static org.assertj.core.api.Assertions.fail;
 public class FutureTest extends AbstractValueTest {
 
     @Override
-    protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
+    protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
             @SuppressWarnings("unchecked")
             @Override

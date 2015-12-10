@@ -272,13 +272,13 @@ public interface Either<L, R> {
         /**
          * FlatMaps the left value if the projected Either is a Left.
          *
-         * @param mapper A mapper which takes a left value and returns a java.lang.Iterable
+         * @param mapper A mapper which takes a left value and returns a Iterable
          * @param <U>    The new type of a Left value
          * @return A new LeftProjection
          */
         @SuppressWarnings("unchecked")
         @Override
-        public <U> LeftProjection<U, R> flatMap(Function<? super L, ? extends java.lang.Iterable<? extends U>> mapper) {
+        public <U> LeftProjection<U, R> flatMap(Function<? super L, ? extends Iterable<? extends U>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft()) {
                 final Iterable<? extends U> mapped = mapper.apply(asLeft());
@@ -502,13 +502,13 @@ public interface Either<L, R> {
         /**
          * FlatMaps the right value if the projected Either is a Right.
          *
-         * @param mapper A mapper which takes a right value and returns a java.lang.Iterable
+         * @param mapper A mapper which takes a right value and returns a Iterable
          * @param <U>    The new type of a Right value
          * @return A new RightProjection
          */
         @SuppressWarnings("unchecked")
         @Override
-        public <U> RightProjection<L, U> flatMap(Function<? super R, ? extends java.lang.Iterable<? extends U>> mapper) {
+        public <U> RightProjection<L, U> flatMap(Function<? super R, ? extends Iterable<? extends U>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight()) {
                 final Iterable<? extends U> mapped = mapper.apply(asRight());

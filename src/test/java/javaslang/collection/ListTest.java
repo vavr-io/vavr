@@ -39,7 +39,7 @@ public class ListTest extends AbstractSeqTest {
     }
 
     @Override
-    protected <T> List<T> ofAll(java.lang.Iterable<? extends T> elements) {
+    protected <T> List<T> ofAll(Iterable<? extends T> elements) {
         return List.ofAll(elements);
     }
 
@@ -201,7 +201,7 @@ public class ListTest extends AbstractSeqTest {
             if (index == -1) {
                 throw new IllegalStateException("Hack incomplete - index not found");
             }
-			/*
+            /*
 			 * Hack the serialized data and fake zero elements.
 			 */
             listWithOneElement[index] = 0;

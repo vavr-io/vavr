@@ -43,9 +43,9 @@ public class IterableTest {
     @Test
     public void shouldEqNestedIterables() {
         // ((1, 2), ((3)))
-        final Iterable<?> i1 = List.of(List.of(1, 2), Collections.singletonList(List.of(3)));
-        final Iterable<?> i2 = Queue.of(Stream.of(1, 2), List.of(Lazy.of(() -> 3)));
-        final Iterable<?> i3 = Queue.of(Stream.of(1, 2), List.of(List.of()));
+        final Value<?> i1 = List.of(List.of(1, 2), Collections.singletonList(List.of(3)));
+        final Value<?> i2 = Queue.of(Stream.of(1, 2), List.of(Lazy.of(() -> 3)));
+        final Value<?> i3 = Queue.of(Stream.of(1, 2), List.of(List.of()));
         assertThat(i1.eq(i2)).isTrue();
         assertThat(i1.eq(i3)).isFalse();
     }

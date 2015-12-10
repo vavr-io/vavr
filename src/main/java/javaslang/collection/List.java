@@ -35,7 +35,7 @@ import java.util.stream.Collector;
  * List.empty()                        // = List.of() = Nil.instance()
  * List.of(x)                          // = new Cons&lt;&gt;(x, Nil.instance())
  * List.of(Object...)                  // e.g. List.of(1, 2, 3)
- * List.ofAll(java.lang.Iterable)      // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
+ * List.ofAll(Iterable)      // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
  * List.ofAll(&lt;primitive array&gt;) // e.g. List.of(new int[] {1, 2, 3}) = 1, 2, 3
  *
  * // int sequences
@@ -157,12 +157,12 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * if the iteration order of the elements is stable.
      *
      * @param <T>      Component type of the List.
-     * @param elements An java.lang.Iterable of elements.
+     * @param elements An Iterable of elements.
      * @return A list containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
-    static <T> List<T> ofAll(java.lang.Iterable<? extends T> elements) {
+    static <T> List<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof List) {
             return (List<T>) elements;
@@ -492,7 +492,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> appendAll(java.lang.Iterable<? extends T> elements) {
+    default List<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return foldRight(List.ofAll(elements), (x, xs) -> xs.prepend(x));
     }
@@ -523,7 +523,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
+    default <U> List<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final List<U> other = unit(that);
         return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
@@ -592,7 +592,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+    default <U> List<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -707,7 +707,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> insertAll(int index, java.lang.Iterable<? extends T> elements) {
+    default List<T> insertAll(int index, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
@@ -770,7 +770,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> patch(int from, java.lang.Iterable<? extends T> that, int replaced) {
+    default List<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = from < 0 ? 0 : from;
         replaced = replaced < 0 ? 0 : replaced;
         List<T> result = take(from).appendAll(that);
@@ -858,7 +858,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> prependAll(java.lang.Iterable<? extends T> elements) {
+    default List<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return isEmpty() ? List.ofAll(elements) : List.ofAll(elements).reverse().foldLeft(this, List::prepend);
     }
@@ -880,7 +880,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> pushAll(java.lang.Iterable<T> elements) {
+    default List<T> pushAll(Iterable<T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> result = Nil.<T> instance();
         for (T element : elements) {
@@ -973,7 +973,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default List<T> removeAll(java.lang.Iterable<? extends T> elements) {
+    default List<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         // TODO(Eclipse bug): remove cast + SuppressWarnings
         List<T> removed = (List<T>) (Object) List.ofAll(elements).distinct();
@@ -1021,7 +1021,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default List<T> retainAll(java.lang.Iterable<? extends T> elements) {
+    default List<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         // TODO(Eclipse bug): remove cast + SuppressWarnings
         final List<T> kept = (List<T>) (Object) List.ofAll(elements).distinct();
@@ -1252,7 +1252,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<U> unit(java.lang.Iterable<? extends U> iterable) {
+    default <U> List<U> unit(Iterable<? extends U> iterable) {
         return List.ofAll(iterable);
     }
 
@@ -1314,13 +1314,13 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
+    default <U> List<Tuple2<T, U>> zip(Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         return List.ofAll(iterator().zip(that));
     }
 
     @Override
-    default <U> List<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
+    default <U> List<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return List.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
