@@ -483,7 +483,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         for (int i = 0; i < limit; i++) {
             sb.append(element);
         }
-        return new CharSeq(sb.toString());
+        return sb.length() == 0 ? EMPTY : new CharSeq(sb.toString());
     }
 
     @Override
@@ -498,7 +498,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         if (from < length()) {
             sb.append(back.substring(from));
         }
-        return new CharSeq(sb.toString());
+        return sb.length() == 0 ? EMPTY : new CharSeq(sb.toString());
     }
 
     public CharSeq mapChars(CharUnaryOperator mapper) {
@@ -672,7 +672,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
                 sb.append(c);
             }
         }
-        return found ? (sb.length() == 0 ? EMPTY : of(sb.toString())) : this;
+        return found ? of(sb.toString()) : this;
     }
 
     @Override
@@ -688,7 +688,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
                 sb.append(c);
             }
         }
-        return found ? (sb.length() == 0 ? EMPTY : of(sb.toString())) : this;
+        return found ? of(sb.toString()) : this;
     }
 
     @Override
@@ -732,13 +732,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public CharSeq slice(int beginIndex, int endIndex) {
-        if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
+        final int from = beginIndex < 0 ? 0 : beginIndex;
+        final int to = endIndex > length() ? length() : endIndex;
+        if (from >= to) {
             return EMPTY;
         }
-        if (beginIndex <= 0 && endIndex >= length()) {
+        if (from <= 0 && to >= length()) {
             return this;
         }
-        return CharSeq.of(back.substring(beginIndex, endIndex));
+        return CharSeq.of(back.substring(from, to));
     }
 
     @Override
@@ -858,7 +860,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public CharSeq takeUntil(Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return takeWhile(predicate);
+        return takeWhile(predicate.negate());
     }
 
     @Override
