@@ -117,11 +117,11 @@ public class CharSeqTest {
 
     @Test
     public void shouldPatchEmptyByEmpty() {
-        assertThat(empty().patch(0, empty(), 0)).isEqualTo(empty());
-        assertThat(empty().patch(-1, empty(), -1)).isEqualTo(empty());
-        assertThat(empty().patch(-1, empty(), 1)).isEqualTo(empty());
-        assertThat(empty().patch(1, empty(), -1)).isEqualTo(empty());
-        assertThat(empty().patch(1, empty(), 1)).isEqualTo(empty());
+        assertThat(empty().patch(0, empty(), 0)).isSameAs(empty());
+        assertThat(empty().patch(-1, empty(), -1)).isSameAs(empty());
+        assertThat(empty().patch(-1, empty(), 1)).isSameAs(empty());
+        assertThat(empty().patch(1, empty(), -1)).isSameAs(empty());
+        assertThat(empty().patch(1, empty(), 1)).isSameAs(empty());
     }
 
     @Test
@@ -140,11 +140,11 @@ public class CharSeqTest {
         assertThat(s.patch(-1, empty(), -1)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
         assertThat(s.patch(-1, empty(), 0)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
         assertThat(s.patch(-1, empty(), 1)).isEqualTo(CharSeq.ofAll('2', '3'));
-        assertThat(s.patch(-1, empty(), 3)).isEqualTo(empty());
+        assertThat(s.patch(-1, empty(), 3)).isSameAs(empty());
         assertThat(s.patch(0, empty(), -1)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
         assertThat(s.patch(0, empty(), 0)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
         assertThat(s.patch(0, empty(), 1)).isEqualTo(CharSeq.ofAll('2', '3'));
-        assertThat(s.patch(0, empty(), 3)).isEqualTo(empty());
+        assertThat(s.patch(0, empty(), 3)).isSameAs(empty());
         assertThat(s.patch(1, empty(), -1)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
         assertThat(s.patch(1, empty(), 0)).isEqualTo(CharSeq.ofAll('1', '2', '3'));
         assertThat(s.patch(1, empty(), 1)).isEqualTo(CharSeq.ofAll('1', '3'));
@@ -182,7 +182,7 @@ public class CharSeqTest {
     @Test
     public void shouldPeekNil() {
         assertThat(empty().peek(t -> {
-        })).isEqualTo(empty());
+        })).isSameAs(empty());
     }
 
     @Test
@@ -375,12 +375,12 @@ public class CharSeqTest {
     @Test
 
     public void shouldClearNil() {
-        assertThat(empty().clear()).isEqualTo(empty());
+        assertThat(empty().clear()).isSameAs(empty());
     }
 
     @Test
     public void shouldClearNonNil() {
-        assertThat(CharSeq.ofAll('1', '2', '3').clear()).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').clear()).isSameAs(empty());
     }
 
     // -- contains
@@ -427,7 +427,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldComputeDistinctOfEmptyTraversable() {
-        assertThat(empty().distinct()).isEqualTo(empty());
+        assertThat(empty().distinct()).isSameAs(empty());
     }
 
     @Test
@@ -440,7 +440,7 @@ public class CharSeqTest {
     @Test
     public void shouldComputeDistinctByOfEmptyTraversableUsingComparator() {
         final Comparator<Character> comparator = (i1, i2) -> i1 - i2;
-        assertThat(CharSeq.empty().distinctBy(comparator)).isEqualTo(empty());
+        assertThat(CharSeq.empty().distinctBy(comparator)).isSameAs(empty());
     }
 
     @Test
@@ -454,7 +454,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldComputeDistinctByOfEmptyTraversableUsingKeyExtractor() {
-        assertThat(empty().distinctBy(Function.identity())).isEqualTo(empty());
+        assertThat(empty().distinctBy(Function.identity())).isSameAs(empty());
     }
 
     @Test
@@ -467,7 +467,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldDropNoneOnNil() {
-        assertThat(empty().drop(1)).isEqualTo(empty());
+        assertThat(empty().drop(1)).isSameAs(empty());
     }
 
     @Test
@@ -483,14 +483,14 @@ public class CharSeqTest {
 
     @Test
     public void shouldDropAllIfCountExceedsSize() {
-        assertThat(CharSeq.ofAll('1', '2', '3').drop('4')).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').drop('4')).isSameAs(empty());
     }
 
     // -- dropRight
 
     @Test
     public void shouldDropRightNoneOnNil() {
-        assertThat(empty().dropRight(1)).isEqualTo(empty());
+        assertThat(empty().dropRight(1)).isSameAs(empty());
     }
 
     @Test
@@ -506,14 +506,14 @@ public class CharSeqTest {
 
     @Test
     public void shouldDropRightAllIfCountExceedsSize() {
-        assertThat(CharSeq.ofAll('1', '2', '3').dropRight(4)).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').dropRight(4)).isSameAs(empty());
     }
 
     // -- dropUntil
 
     @Test
     public void shouldDropUntilNoneOnNil() {
-        assertThat(empty().dropUntil(ignored -> true)).isEqualTo(empty());
+        assertThat(empty().dropUntil(ignored -> true)).isSameAs(empty());
     }
 
     @Test
@@ -523,7 +523,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldDropUntilAllIfPredicateIsFalse() {
-        assertThat(CharSeq.ofAll('1', '2', '3').dropUntil(ignored -> false)).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').dropUntil(ignored -> false)).isSameAs(empty());
     }
 
     @Test
@@ -535,7 +535,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldDropWhileNoneOnNil() {
-        assertThat(empty().dropWhile(ignored -> true)).isEqualTo(empty());
+        assertThat(empty().dropWhile(ignored -> true)).isSameAs(empty());
     }
 
     @Test
@@ -546,7 +546,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldDropWhileAllIfPredicateIsTrue() {
-        assertThat(CharSeq.ofAll('1', '2', '3').dropWhile(ignored -> true)).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').dropWhile(ignored -> true)).isSameAs(empty());
     }
 
     @Test
@@ -575,7 +575,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldFilterEmptyTraversable() {
-        assertThat(empty().filter(ignored -> true)).isEqualTo(empty());
+        assertThat(empty().filter(ignored -> true)).isSameAs(empty());
     }
 
     @Test
@@ -1159,7 +1159,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReplaceElementOfNilUsingCurrNew() {
-        assertThat(empty().replace('1', '2')).isEqualTo(empty());
+        assertThat(empty().replace('1', '2')).isSameAs(empty());
     }
 
     @Test
@@ -1171,7 +1171,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReplaceAllElementsOfNilUsingCurrNew() {
-        assertThat(empty().replaceAll('1', '2')).isEqualTo(empty());
+        assertThat(empty().replaceAll('1', '2')).isSameAs(empty());
     }
 
     @Test
@@ -1183,7 +1183,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldRetainAllElementsFromNil() {
-        assertThat(empty().retainAll(CharSeq.ofAll('1', '2', '3'))).isEqualTo(empty());
+        assertThat(empty().retainAll(CharSeq.ofAll('1', '2', '3'))).isSameAs(empty());
     }
 
     @Test
@@ -1194,7 +1194,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldNotRetainAllNonExistingElementsFromNonNil() {
-        assertThat(CharSeq.ofAll('1', '2', '3').retainAll(CharSeq.ofAll('4', '5'))).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').retainAll(CharSeq.ofAll('4', '5'))).isSameAs(empty());
     }
 
     // -- sliding(size)
@@ -1275,8 +1275,13 @@ public class CharSeqTest {
 
     @Test
     public void shouldSpanNonNil() {
-        assertThat(CharSeq.ofAll('0', '1', '2', '3').span(i -> i == '0' || i == '1'))
+        CharSeq cs = CharSeq.ofAll('0', '1', '2', '3');
+        assertThat(cs.span(i -> i == '0' || i == '1'))
                 .isEqualTo(Tuple.of(CharSeq.ofAll('0', '1'), CharSeq.ofAll('2', '3')));
+        assertThat(cs.span(i -> false))
+                .isEqualTo(Tuple.of(empty(), cs));
+        assertThat(cs.span(i -> true))
+                .isEqualTo(Tuple.of(cs, empty()));
     }
 
     // -- spliterator
@@ -1414,12 +1419,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldTakeNoneOnNil() {
-        assertThat(empty().take(1)).isEqualTo(empty());
+        assertThat(empty().take(1)).isSameAs(empty());
     }
 
     @Test
     public void shouldTakeNoneIfCountIsNegative() {
-        assertThat(CharSeq.ofAll('1', '2', '3').take(-1)).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').take(-1)).isSameAs(empty());
     }
 
     @Test
@@ -1441,12 +1446,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldTakeRightNoneOnNil() {
-        assertThat(empty().takeRight(1)).isEqualTo(empty());
+        assertThat(empty().takeRight(1)).isSameAs(empty());
     }
 
     @Test
     public void shouldTakeRightNoneIfCountIsNegative() {
-        assertThat(CharSeq.ofAll('1', '2', '3').takeRight(-1)).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').takeRight(-1)).isSameAs(empty());
     }
 
     @Test
@@ -1464,27 +1469,46 @@ public class CharSeqTest {
 
     @Test
     public void shouldTakeWhileNoneOnNil() {
-        assertThat(empty().takeWhile(x -> true)).isEqualTo(empty());
+        assertThat(empty().takeWhile(x -> true)).isSameAs(empty());
     }
 
     @Test
     public void shouldTakeWhileAllOnFalseCondition() {
-        assertThat(CharSeq.ofAll('1', '2', '3').takeWhile(x -> false)).isEqualTo(empty());
+        assertThat(CharSeq.ofAll('1', '2', '3').takeWhile(x -> false)).isSameAs(empty());
     }
 
     @Test
     public void shouldTakeWhileAllOnTrueCondition() {
         final CharSeq t = CharSeq.ofAll('1', '2', '3');
-        if (isThisLazyCollection()) {
-            assertThat(t.takeWhile(x -> true)).isEqualTo(t);
-        } else {
-            assertThat(t.takeWhile(x -> true)).isSameAs(t);
-        }
+        assertThat(t.takeWhile(x -> true)).isSameAs(t);
     }
 
     @Test
     public void shouldTakeWhileAsExpected() {
         assertThat(CharSeq.ofAll('2', '4', '5', '6').takeWhile(x -> x % 2 == 0)).isEqualTo(CharSeq.ofAll('2', '4'));
+    }
+
+    // -- takeUntil
+
+    @Test
+    public void shouldTakeUntilNoneOnNil() {
+        assertThat(empty().takeUntil(x -> true)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldTakeUntilAllOnFalseCondition() {
+        final CharSeq t = CharSeq.ofAll('1', '2', '3');
+        assertThat(t.takeUntil(x -> false)).isSameAs(t);
+    }
+
+    @Test
+    public void shouldTakeUntilAllOnTrueCondition() {
+        assertThat(CharSeq.ofAll('1', '2', '3').takeUntil(x -> true)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldTakeUntilAsExpected() {
+        assertThat(CharSeq.ofAll('2', '4', '5', '6').takeUntil(x -> x % 2 != 0)).isEqualTo(CharSeq.ofAll('2', '4'));
     }
 
     // -- tail
@@ -1602,7 +1626,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldRecognizeEqualityOfNils() {
-        assertThat(empty()).isEqualTo(empty());
+        assertThat(empty()).isSameAs(empty());
     }
 
     @Test
@@ -2112,7 +2136,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldIntersperseNil() {
-        assertThat(empty().intersperse(',')).isEqualTo(empty());
+        assertThat(empty().intersperse(',')).isSameAs(empty());
     }
 
     @Test
@@ -2201,7 +2225,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldRemoveElementFromNil() {
-        assertThat(empty().remove(null)).isEqualTo(empty());
+        assertThat(empty().remove(null)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldRemoveElementFromSingleton() {
+        assertThat(CharSeq.of('1').remove('1')).isSameAs(empty());
     }
 
     @Test
@@ -2237,7 +2266,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldRemoveFirstElementByPredicateFromNil() {
-        assertThat(empty().removeFirst(v -> true)).isEqualTo(empty());
+        assertThat(empty().removeFirst(v -> true)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldRemoveFirstElementByPredicateFromSingleton() {
+        assertThat(CharSeq.of('1').removeFirst(v -> v == '1')).isSameAs(empty());
     }
 
     @Test
@@ -2270,18 +2304,19 @@ public class CharSeqTest {
     @Test
     public void shouldRemoveFirstElementByPredicateNonExisting() {
         final CharSeq t = CharSeq.ofAll('1', '2', '3');
-        if (isThisLazyCollection()) {
-            assertThat(t.removeFirst(v -> v == 4)).isEqualTo(t);
-        } else {
-            assertThat(t.removeFirst(v -> v == 4)).isSameAs(t);
-        }
+        assertThat(t.removeFirst(v -> v == 4)).isSameAs(t);
     }
 
     // -- removeLast(Predicate)
 
     @Test
     public void shouldRemoveLastElementByPredicateFromNil() {
-        assertThat(empty().removeLast(v -> true)).isEqualTo(empty());
+        assertThat(empty().removeLast(v -> true)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldRemoveLastElementByPredicateFromSingleton() {
+        assertThat(CharSeq.of('1').removeLast(v -> v == '1')).isSameAs(empty());
     }
 
     @Test
@@ -2321,7 +2356,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldRemoveAllElementsFromNil() {
-        assertThat(empty().removeAll(CharSeq.ofAll('1', '2', '3'))).isEqualTo(empty());
+        assertThat(empty().removeAll(CharSeq.ofAll('1', '2', '3'))).isSameAs(empty());
     }
 
     @Test
@@ -2344,7 +2379,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldRemoveAllObjectsFromNil() {
-        assertThat(empty().removeAll('1')).isEqualTo(empty());
+        assertThat(empty().removeAll('1')).isSameAs(empty());
     }
 
     @Test
@@ -2366,7 +2401,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReverseNil() {
-        assertThat(empty().reverse()).isEqualTo(empty());
+        assertThat(empty().reverse()).isSameAs(empty());
     }
 
     @Test
@@ -2415,19 +2450,23 @@ public class CharSeqTest {
 
     @Test
     public void shouldSlice() {
-        assertThat(CharSeq.empty().slice(0, 0)).isEqualTo(CharSeq.empty());
-        assertThat(CharSeq.of("123").slice(0, 0)).isEqualTo(CharSeq.empty());
-        assertThat(CharSeq.of("123").slice(1, 0)).isEqualTo(CharSeq.empty());
-        assertThat(CharSeq.of("123").slice(4, 5)).isEqualTo(CharSeq.empty());
+        assertThat(CharSeq.empty().slice(0, 0)).isSameAs(empty());
+        assertThat(CharSeq.of("123").slice(0, 0)).isSameAs(empty());
+        assertThat(CharSeq.of("123").slice(1, 0)).isSameAs(empty());
+        assertThat(CharSeq.of("123").slice(4, 5)).isSameAs(empty());
         assertThat(CharSeq.of("123").slice(0, 3)).isEqualTo(CharSeq.of("123"));
+        assertThat(CharSeq.of("123").slice(-1, 2)).isEqualTo(CharSeq.of("12"));
+        assertThat(CharSeq.of("123").slice(0, 2)).isEqualTo(CharSeq.of("12"));
+        assertThat(CharSeq.of("123").slice(1, 2)).isEqualTo(CharSeq.of("2"));
         assertThat(CharSeq.of("123").slice(1, 3)).isEqualTo(CharSeq.of("23"));
+        assertThat(CharSeq.of("123").slice(1, 4)).isEqualTo(CharSeq.of("23"));
     }
 
     // -- sort()
 
     @Test
     public void shouldSortNil() {
-        assertThat(empty().sort()).isEqualTo(empty());
+        assertThat(empty().sort()).isSameAs(empty());
     }
 
     @Test
@@ -2439,7 +2478,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldSortNilUsingComparator() {
-        assertThat(empty().sort((i, j) -> j - i)).isEqualTo(empty());
+        assertThat(empty().sort((i, j) -> j - i)).isSameAs(empty());
     }
 
     @Test
@@ -2553,7 +2592,12 @@ public class CharSeqTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldRemoveIndxAtNil() {
-        assertThat(empty().removeAt(1)).isEqualTo(empty());
+        empty().removeAt(1);
+    }
+
+    @Test
+    public void shouldRemoveIndxAtSingleton() {
+        assertThat(CharSeq.of('1').removeAt(0)).isSameAs(empty());
     }
 
     @Test
@@ -2622,7 +2666,7 @@ public class CharSeqTest {
     @Test
     public void shouldReturnNilWhenSubSequenceFrom0OnNil() {
         final CharSeq actual = empty().subSequence(0);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isSameAs(empty());
     }
 
     @Test
@@ -2634,7 +2678,7 @@ public class CharSeqTest {
     @Test
     public void shouldReturnNilWhenSubSequenceFrom1OnSeqOf1() {
         final CharSeq actual = CharSeq.of('1').subSequence(1);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isSameAs(empty());
     }
 
     @Test
@@ -2646,7 +2690,7 @@ public class CharSeqTest {
     @Test
     public void shouldReturnNilWhenSubSequenceBeginningWithSize() {
         final CharSeq actual = CharSeq.ofAll('1', '2', '3').subSequence(3);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isSameAs(empty());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -2669,13 +2713,13 @@ public class CharSeqTest {
     @Test
     public void shouldReturnNilWhenSubSequenceFrom0To0OnNil() {
         final CharSeq actual = empty().subSequence(0, 0);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isSameAs(empty());
     }
 
     @Test
     public void shouldReturnNilWhenSubSequenceFrom0To0OnNonNil() {
         final CharSeq actual = CharSeq.of('1').subSequence(0, 0);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isSameAs(empty());
     }
 
     @Test
@@ -2687,7 +2731,7 @@ public class CharSeqTest {
     @Test
     public void shouldReturnNilWhenSubSequenceFrom1To1OnNonNil() {
         final CharSeq actual = CharSeq.of('1').subSequence(1, 1);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isSameAs(empty());
     }
 
     @Test
@@ -2699,7 +2743,7 @@ public class CharSeqTest {
     @Test
     public void shouldReturnNilWhenIndicesBothAreUpperBound() {
         final CharSeq actual = CharSeq.ofAll('1', '2', '3').subSequence(3, 3);
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isSameAs(empty());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -2871,7 +2915,7 @@ public class CharSeqTest {
     @Test
     public void shouldStreamAndCollectNil() {
         final Seq<?> actual = java.util.stream.Stream.<Character> empty().collect(CharSeq.collector());
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isSameAs(empty());
     }
 
     @Test
@@ -2883,7 +2927,7 @@ public class CharSeqTest {
     @Test
     public void shouldParallelStreamAndCollectNil() {
         final Seq<?> actual = java.util.stream.Stream.<Character> empty().parallel().collect(CharSeq.collector());
-        assertThat(actual).isEqualTo(empty());
+        assertThat(actual).isSameAs(empty());
     }
 
     @Test
