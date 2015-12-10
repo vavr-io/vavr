@@ -423,7 +423,7 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
         } else if (isSingletonType()) {
             return HashMap.of(f.apply(get()));
         } else {
-            return HashMap.ofAll(Iterator.ofAll(this).map(f));
+            return HashMap.ofEntries(Iterator.ofAll(this).map(f));
         }
     }
 

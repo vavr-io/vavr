@@ -56,7 +56,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
             left.addAll(right);
             return left;
         };
-        final Function<ArrayList<Tuple2<K, V>>, HashMap<K, V>> finisher = HashMap::ofAll;
+        final Function<ArrayList<Tuple2<K, V>>, HashMap<K, V>> finisher = HashMap::ofEntries;
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
@@ -138,7 +138,25 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given entries
      */
     @SafeVarargs
-    public static <K, V> HashMap<K, V> ofAll(Tuple2<? extends K, ? extends V>... entries) {
+    public static <K, V> HashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+        Objects.requireNonNull(entries, "entries is null");
+        HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
+        for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
+            trie = trie.put(entry.getKey(), entry.getValue());
+        }
+        return new HashMap<>(trie);
+    }
+
+    /**
+     * Creates a HashMap of the given entries.
+     *
+     * @param entries Map entries
+     * @param <K>     The key type
+     * @param <V>     The value type
+     * @return A new Map containing the given entries
+     */
+    @SafeVarargs
+    public static <K, V> HashMap<K, V> ofEntries(Tuple2<? extends K, ? extends V>... entries) {
         Objects.requireNonNull(entries, "entries is null");
         HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
         for (Tuple2<? extends K, ? extends V> entry : entries) {
@@ -156,7 +174,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given entries
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> HashMap<K, V> ofAll(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    public static <K, V> HashMap<K, V> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
         if (entries instanceof HashMap) {
             return (HashMap<K, V>) entries;
@@ -192,13 +210,13 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<K, V> distinctBy(Comparator<? super Tuple2<K, V>> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return HashMap.ofAll(iterator().distinctBy(comparator));
+        return HashMap.ofEntries(iterator().distinctBy(comparator));
     }
 
     @Override
     public <U> HashMap<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return HashMap.ofAll(iterator().distinctBy(keyExtractor));
+        return HashMap.ofEntries(iterator().distinctBy(keyExtractor));
     }
 
     @Override
@@ -209,7 +227,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         if (n >= length()) {
             return empty();
         }
-        return HashMap.ofAll(iterator().drop(n));
+        return HashMap.ofEntries(iterator().drop(n));
     }
 
     @Override
@@ -220,7 +238,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         if (n >= length()) {
             return empty();
         }
-        return HashMap.ofAll(iterator().dropRight(n));
+        return HashMap.ofEntries(iterator().dropRight(n));
     }
 
     @Override
@@ -232,7 +250,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return HashMap.ofAll(iterator().dropWhile(predicate));
+        return HashMap.ofEntries(iterator().dropWhile(predicate));
     }
 
     @Override
@@ -377,7 +395,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     public HashMap<K, V> merge(Map<? extends K, ? extends V> that) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
-            return HashMap.ofAll(that);
+            return HashMap.ofEntries(that);
         } else if (that.isEmpty()) {
             return this;
         } else {
@@ -391,7 +409,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         if (isEmpty()) {
-            return HashMap.ofAll(that);
+            return HashMap.ofEntries(that);
         } else if (that.isEmpty()) {
             return this;
         } else {
@@ -408,7 +426,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     public Tuple2<HashMap<K, V>, HashMap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<Tuple2<K, V>>, Iterator<Tuple2<K, V>>> p = iterator().partition(predicate);
-        return Tuple.of(HashMap.ofAll(p._1), HashMap.ofAll(p._2));
+        return Tuple.of(HashMap.ofEntries(p._1), HashMap.ofEntries(p._2));
     }
 
     @Override
@@ -499,14 +517,14 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Iterator<HashMap<K, V>> sliding(int size, int step) {
-        return iterator().sliding(size, step).map(HashMap::ofAll);
+        return iterator().sliding(size, step).map(HashMap::ofEntries);
     }
 
     @Override
     public Tuple2<HashMap<K, V>, HashMap<K, V>> span(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<Tuple2<K, V>>, Iterator<Tuple2<K, V>>> t = iterator().span(predicate);
-        return Tuple.of(HashMap.ofAll(t._1), HashMap.ofAll(t._2));
+        return Tuple.of(HashMap.ofEntries(t._1), HashMap.ofEntries(t._2));
     }
 
     @Override
@@ -532,7 +550,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         if (trie.size() <= n) {
             return this;
         } else {
-            return HashMap.ofAll(trie.iterator().take(n));
+            return HashMap.ofEntries(trie.iterator().take(n));
         }
     }
 
@@ -541,7 +559,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         if (trie.size() <= n) {
             return this;
         } else {
-            return HashMap.ofAll(trie.iterator().takeRight(n));
+            return HashMap.ofEntries(trie.iterator().takeRight(n));
         }
     }
 
@@ -554,7 +572,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final HashMap<K, V> taken = HashMap.ofAll(iterator().takeWhile(predicate));
+        final HashMap<K, V> taken = HashMap.ofEntries(iterator().takeWhile(predicate));
         return taken.length() == length() ? this : taken;
     }
 

@@ -11,6 +11,7 @@ import javaslang.control.Some;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -107,6 +108,9 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @SuppressWarnings("unchecked")
     abstract protected <K, V> Map<K, V> mapOf(Tuple2<? extends K, ? extends V>... entries);
 
+    @SuppressWarnings("unchecked")
+    abstract protected <K, V> Map<K, V> mapOf(java.util.Map.Entry<? extends K, ? extends V>... entries);
+
     abstract protected <K, V> Map<K, V> mapOfPairs(Object... pairs);
 
     abstract protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value);
@@ -192,6 +196,17 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldBeTheSame() {
         assertThat(mapOf(1, 2)).isEqualTo(emptyMap().put(1, 2));
+    }
+
+    private static java.util.Map.Entry<String, Integer> entry(String key, Integer value) {
+        return new AbstractMap.SimpleEntry<>(key, value);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldConstructFromEntries() {
+        Map<String, Integer> map = mapOf(entry("1", 1), entry("2", 2), entry("3", 3));
+        assertThat(map).isEqualTo(emptyMap().put("1", 1).put("2", 2).put("3", 3));
     }
 
     @Test
