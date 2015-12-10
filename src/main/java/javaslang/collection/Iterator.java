@@ -71,7 +71,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    static <T> Iterator<T> concat(java.lang.Iterable<? extends T>... iterables) {
+    static <T> Iterator<T> concat(Iterable<? extends T>... iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
         if (iterables.length == 0) {
             return empty();
@@ -87,7 +87,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param <T>       Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
-    static <T> Iterator<T> concat(java.lang.Iterable<? extends java.lang.Iterable<? extends T>> iterables) {
+    static <T> Iterator<T> concat(Iterable<? extends Iterable<? extends T>> iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
         if (!iterables.iterator().hasNext()) {
             return empty();
@@ -165,15 +165,15 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
-     * Creates an Iterator based on the given java.lang.Iterable. This is a convenience method for
+     * Creates an Iterator based on the given Iterable. This is a convenience method for
      * {@code Iterator.of(iterable.iterator()}.
      *
-     * @param iterable A {@link java.lang.Iterable}
+     * @param iterable A {@link Iterable}
      * @param <T>      Component type.
      * @return A new {@code javaslang.collection.Iterator}
      */
     @SuppressWarnings("unchecked")
-    static <T> Iterator<T> ofAll(java.lang.Iterable<? extends T> iterable) {
+    static <T> Iterator<T> ofAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         if (iterable instanceof Iterator) {
             return (Iterator<T>) iterable;
@@ -971,7 +971,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     // -- Additional methods of Iterator
 
-    // DEV-NOTE: cannot use arg java.lang.Iterable, it would be ambiguous
+    // DEV-NOTE: cannot use arg Iterable, it would be ambiguous
     default Iterator<T> concat(java.util.Iterator<T> that) {
         Objects.requireNonNull(that, "that is null");
         if (!that.hasNext()) {
@@ -1034,7 +1034,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default <U> Iterator<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
+    default <U> Iterator<Tuple2<T, U>> zip(Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
             return empty();
@@ -1059,7 +1059,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default <U> Iterator<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
+    default <U> Iterator<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         final java.util.Iterator<U> thatIt = that.iterator();
         if (isEmpty() && !thatIt.hasNext()) {
@@ -1336,14 +1336,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
-     * FlatMaps the elements of this Iterator to java.lang.Iterables, which are iterated in the order of occurrence.
+     * FlatMaps the elements of this Iterator to Iterables, which are iterated in the order of occurrence.
      *
      * @param mapper A mapper
      * @param <U>    Component type
-     * @return A new java.lang.Iterable
+     * @return A new Iterable
      */
     @Override
-    default <U> Iterator<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+    default <U> Iterator<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (!hasNext()) {
             return empty();
@@ -1635,10 +1635,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default Iterator<T> retainAll(java.lang.Iterable<? extends T> elements) {
+    default Iterator<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         // DEV-NOTE: Only Eclipse does need this unchecked cast, IntelliJ and javac are fine.
-        return hasNext() ? filter(HashSet.ofAll((java.lang.Iterable<T>) elements)::contains) : empty();
+        return hasNext() ? filter(HashSet.ofAll((Iterable<T>) elements)::contains) : empty();
     }
 
     @Override

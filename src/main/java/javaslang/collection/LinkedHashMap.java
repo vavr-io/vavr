@@ -88,7 +88,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> of(Object... pairs) {
         Objects.requireNonNull(pairs, "pairs is null");
-        if((pairs.length & 1) != 0) {
+        if ((pairs.length & 1) != 0) {
             throw new IllegalArgumentException("Odd length of key-value pairs list");
         }
         HashMap<K, V> map = HashMap.empty();
@@ -106,8 +106,8 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      * Returns a {@code LinkedHashMap}, from a source java.util.Map.
      *
      * @param map A map entry.
-     * @param <K>   The key type
-     * @param <V>   The value type
+     * @param <K> The key type
+     * @param <V> The value type
      * @return A new Map containing the given map
      */
     @SuppressWarnings("unchecked")
@@ -159,7 +159,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given entries
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> LinkedHashMap<K, V> ofAll(java.lang.Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    public static <K, V> LinkedHashMap<K, V> ofAll(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
         if (entries instanceof LinkedHashMap) {
             return (LinkedHashMap<K, V>) entries;
@@ -212,7 +212,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public <W> LinkedHashMap<K, W> mapValues(Function<? super V, ? extends W> mapper)  {
+    public <W> LinkedHashMap<K, W> mapValues(Function<? super V, ? extends W> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return map((k, v) -> Tuple.of(k, mapper.apply(v)));
     }
@@ -362,7 +362,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends java.lang.Iterable<? extends U>> mapper) {
+    public <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         // don't remove cast, doesn't compile in Eclipse without it
         return (Seq<U>) list.flatMap(mapper).toStream();

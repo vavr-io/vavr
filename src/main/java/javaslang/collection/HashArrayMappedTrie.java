@@ -26,7 +26,7 @@ import static javaslang.collection.HashArrayMappedTrieModule.Action.REMOVE;
  * @author Ruslan Sennov
  * @since 2.0.0
  */
-interface HashArrayMappedTrie<K, V> extends java.lang.Iterable<Tuple2<K, V>> {
+interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
 
     static <K, V> HashArrayMappedTrie<K, V> empty() {
         return EmptyNode.instance();
@@ -224,7 +224,9 @@ interface HashArrayMappedTrieModule {
     abstract class LeafNode<K, V> extends AbstractNode<K, V> {
 
         abstract K key();
+
         abstract V value();
+
         abstract int hash();
 
         abstract AbstractNode<K, V> removeElement(K key);
@@ -373,7 +375,7 @@ interface HashArrayMappedTrieModule {
         AbstractNode<K, V> modify(int shift, K key, V value, Action action) {
             if (Objects.hashCode(key) == hash) {
                 AbstractNode<K, V> filtered = removeElement(key);
-                if(action == REMOVE) {
+                if (action == REMOVE) {
                     return filtered;
                 } else {
                     if (filtered.isEmpty()) {
@@ -389,7 +391,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         AbstractNode<K, V> removeElement(K k) {
-            if(Objects.equals(k, this.key)) {
+            if (Objects.equals(k, this.key)) {
                 return tail;
             } else {
                 // recurrent calls is OK but can be improved
@@ -410,7 +412,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            return new AbstractIterator<Tuple2<K,V>>() {
+            return new AbstractIterator<Tuple2<K, V>>() {
                 LeafNode<K, V> node = LeafList.this;
 
                 @Override
@@ -423,8 +425,8 @@ interface HashArrayMappedTrieModule {
                     if (!hasNext()) {
                         EMPTY.next();
                     }
-                    Tuple2<K,V> tuple = Tuple.of(node.key(), node.value());
-                    if(node instanceof LeafSingleton) {
+                    Tuple2<K, V> tuple = Tuple.of(node.key(), node.value());
+                    if (node instanceof LeafSingleton) {
                         node = null;
                     } else {
                         node = ((LeafList<K, V>) node).tail;

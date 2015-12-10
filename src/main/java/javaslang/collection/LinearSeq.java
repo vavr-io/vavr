@@ -33,7 +33,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> append(T element);
 
     @Override
-    LinearSeq<T> appendAll(java.lang.Iterable<? extends T> elements);
+    LinearSeq<T> appendAll(Iterable<? extends T> elements);
 
     @Override
     LinearSeq<T> clear();
@@ -51,7 +51,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<? extends LinearSeq<T>> crossProduct(int power);
 
     @Override
-    <U> LinearSeq<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
+    <U> LinearSeq<Tuple2<T, U>> crossProduct(Iterable<? extends U> that);
 
     @Override
     LinearSeq<T> distinct();
@@ -78,7 +78,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> filter(Predicate<? super T> predicate);
 
     @Override
-    <U> LinearSeq<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> LinearSeq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
     <C> Map<C, ? extends LinearSeq<T>> groupBy(Function<? super T, ? extends C> classifier);
@@ -113,13 +113,13 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> insert(int index, T element);
 
     @Override
-    LinearSeq<T> insertAll(int index, java.lang.Iterable<? extends T> elements);
+    LinearSeq<T> insertAll(int index, Iterable<? extends T> elements);
 
     @Override
     LinearSeq<T> intersperse(T element);
 
     @Override
-    default int lastIndexOfSlice(java.lang.Iterable<? extends T> that, int end) {
+    default int lastIndexOfSlice(Iterable<? extends T> that, int end) {
         return LinearSeqModule.LastIndexOfSlice.lastIndexOfSlice(this, unit(that), end);
     }
 
@@ -146,7 +146,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> padTo(int length, T element);
 
     @Override
-    LinearSeq<T> patch(int from, java.lang.Iterable<? extends T> that, int replaced);
+    LinearSeq<T> patch(int from, Iterable<? extends T> that, int replaced);
 
     @Override
     Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> partition(Predicate<? super T> predicate);
@@ -161,7 +161,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> prepend(T element);
 
     @Override
-    LinearSeq<T> prependAll(java.lang.Iterable<? extends T> elements);
+    LinearSeq<T> prependAll(Iterable<? extends T> elements);
 
     @Override
     LinearSeq<T> remove(T element);
@@ -179,7 +179,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> removeAll(T element);
 
     @Override
-    LinearSeq<T> removeAll(java.lang.Iterable<? extends T> elements);
+    LinearSeq<T> removeAll(Iterable<? extends T> elements);
 
     @Override
     LinearSeq<T> replace(T currentElement, T newElement);
@@ -188,7 +188,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    LinearSeq<T> retainAll(java.lang.Iterable<? extends T> elements);
+    LinearSeq<T> retainAll(Iterable<? extends T> elements);
 
     @Override
     LinearSeq<T> reverse();
@@ -268,7 +268,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    <U> LinearSeq<U> unit(java.lang.Iterable<? extends U> iterable);
+    <U> LinearSeq<U> unit(Iterable<? extends U> iterable);
 
     @Override
     <T1, T2> Tuple2<? extends LinearSeq<T1>, ? extends LinearSeq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
@@ -277,10 +277,10 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> update(int index, T element);
 
     @Override
-    <U> LinearSeq<Tuple2<T, U>> zip(java.lang.Iterable<U> that);
+    <U> LinearSeq<Tuple2<T, U>> zip(Iterable<U> that);
 
     @Override
-    <U> LinearSeq<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem);
+    <U> LinearSeq<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     @Override
     LinearSeq<Tuple2<T, Integer>> zipWithIndex();
@@ -324,7 +324,7 @@ interface LinearSeqModule {
             }
             int p = 0;
             while (t.length() >= slice.length()) {
-                if(t.startsWith(slice)) {
+                if (t.startsWith(slice)) {
                     return Tuple.of(t, p);
                 }
                 p++;

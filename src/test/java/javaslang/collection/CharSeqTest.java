@@ -25,7 +25,7 @@ import static javaslang.Serializables.serialize;
 
 public class CharSeqTest {
 
-    protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
+    protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
         };
     }
@@ -1826,7 +1826,7 @@ public class CharSeqTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- crossProduct(java.lang.Iterable)
+    // -- crossProduct(Iterable)
 
     @Test
     public void shouldCalculateCrossProductOfNilAndNil() {
@@ -2352,7 +2352,7 @@ public class CharSeqTest {
         assertThat(t.removeLast(v -> v == 4)).isSameAs(t);
     }
 
-    // -- removeAll(java.lang.Iterable)
+    // -- removeAll(Iterable)
 
     @Test
     public void shouldRemoveAllElementsFromNil() {
@@ -2961,7 +2961,7 @@ public class CharSeqTest {
         assertThat(actual.get(1)).isEqualTo('2');
     }
 
-    // -- static ofAll(java.lang.Iterable)
+    // -- static ofAll(Iterable)
 
     @Test
     public void shouldCreateListOfIterable() {

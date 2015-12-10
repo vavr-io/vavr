@@ -586,13 +586,13 @@ public class TryTest {
 
     @Test
     public void shouldFlatMapOnIterable() {
-        final java.lang.Iterable<Integer> iterable = Arrays.asList(1, 2, 3);
+        final Iterable<Integer> iterable = Arrays.asList(1, 2, 3);
         assertThat(success().flatMap(s -> iterable).get()).isEqualTo(1);
     }
 
     @Test(expected = NonFatal.class)
     public void shouldFlatMapOnEmptyIterable() {
-        final java.lang.Iterable<Integer> iterable = Collections.emptyList();
+        final Iterable<Integer> iterable = Collections.emptyList();
         success().flatMap(s -> iterable).get();
     }
 

@@ -103,12 +103,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * if the iteration order of the elements is stable.
      *
      * @param <T>      Component type of the Array.
-     * @param elements An java.lang.Iterable of elements.
+     * @param elements An Iterable of elements.
      * @return A Array containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
-    public static <T> Array<T> ofAll(java.lang.Iterable<? extends T> elements) {
+    public static <T> Array<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Array) {
             return (Array<T>) elements;
@@ -421,7 +421,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> appendAll(java.lang.Iterable<? extends T> elements) {
+    public Array<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final Object[] source = create(elements);
         if (source.length == 0) {
@@ -491,7 +491,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Array<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
+    public <U> Array<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final Array<U> other = unit(that);
         return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
@@ -583,7 +583,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Array<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+    public <U> Array<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -684,7 +684,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> insertAll(int index, java.lang.Iterable<? extends T> elements) {
+    public Array<T> insertAll(int index, Iterable<? extends T> elements) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e)");
         }
@@ -754,7 +754,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> patch(int from, java.lang.Iterable<? extends T> that, int replaced) {
+    public Array<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = from < 0 ? 0 : from;
         replaced = replaced < 0 ? 0 : replaced;
         Array<T> result = take(from).appendAll(that);
@@ -806,7 +806,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> prependAll(java.lang.Iterable<? extends T> elements) {
+    public Array<T> prependAll(Iterable<? extends T> elements) {
         return insertAll(0, elements);
     }
 
@@ -894,7 +894,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> removeAll(java.lang.Iterable<? extends T> elements) {
+    public Array<T> removeAll(Iterable<? extends T> elements) {
         final java.util.Set<T> removed = new HashSet<>();
         for (T element : elements) {
             removed.add(element);
@@ -950,7 +950,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> retainAll(java.lang.Iterable<? extends T> elements) {
+    public Array<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final java.util.Set<T> kept = new HashSet<>();
         for (T element : elements) {
@@ -1175,7 +1175,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Array<U> unit(java.lang.Iterable<? extends U> iterable) {
+    public <U> Array<U> unit(Iterable<? extends U> iterable) {
         return wrap(create(iterable));
     }
 
@@ -1230,13 +1230,13 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Array<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
+    public <U> Array<Tuple2<T, U>> zip(Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         return Array.ofAll(iterator().zip(that));
     }
 
     @Override
-    public <U> Array<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
+    public <U> Array<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return Array.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
@@ -1269,7 +1269,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         return mkString("Array(", ", ", ")");
     }
 
-    private static <T> Object[] create(java.lang.Iterable<T> elements) {
+    private static <T> Object[] create(Iterable<T> elements) {
         if (elements instanceof java.util.List) {
             final java.util.List<T> list = (java.util.List<T>) elements;
             return list.toArray();

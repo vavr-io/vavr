@@ -23,8 +23,6 @@ import java.util.stream.Collector;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 
-import java.lang.Iterable;
-
 /**
  * Tests all methods defined in {@link javaslang.collection.Tree}.
  */

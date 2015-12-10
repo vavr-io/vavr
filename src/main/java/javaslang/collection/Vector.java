@@ -108,12 +108,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * if the iteration order of the elements is stable.
      *
      * @param <T>      Component type of the Vector.
-     * @param elements An java.lang.Iterable of elements.
+     * @param elements An Iterable of elements.
      * @return A vector containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
-    public static <T> Vector<T> ofAll(java.lang.Iterable<? extends T> elements) {
+    public static <T> Vector<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Vector) {
             return (Vector<T>) elements;
@@ -428,7 +428,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> appendAll(java.lang.Iterable<? extends T> elements) {
+    public Vector<T> appendAll(Iterable<? extends T> elements) {
         HashArrayMappedTrie<Integer, T> result = trie;
         for (T element : elements) {
             result = result.put(result.size() + indexShift, element);
@@ -462,7 +462,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Vector<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that) {
+    public <U> Vector<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final Vector<U> other = Vector.ofAll(that);
         return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
@@ -551,7 +551,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Vector<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+    public <U> Vector<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -656,7 +656,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> insertAll(int index, java.lang.Iterable<? extends T> elements) {
+    public Vector<T> insertAll(int index, Iterable<? extends T> elements) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e)");
         }
@@ -752,7 +752,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> patch(int from, java.lang.Iterable<? extends T> that, int replaced) {
+    public Vector<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = from < 0 ? 0 : from;
         replaced = replaced < 0 ? 0 : replaced;
         Vector<T> result = take(from).appendAll(that);
@@ -806,7 +806,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> prependAll(java.lang.Iterable<? extends T> elements) {
+    public Vector<T> prependAll(Iterable<? extends T> elements) {
         List<T> list = List.ofAll(elements);
         final int newIndexShift = indexShift - list.length();
         HashArrayMappedTrie<Integer, T> newTrie = trie;
@@ -898,7 +898,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> removeAll(java.lang.Iterable<? extends T> elements) {
+    public Vector<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<T, T> removed = HashArrayMappedTrie.empty();
         for (T element : elements) {
@@ -955,7 +955,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Vector<T> retainAll(java.lang.Iterable<? extends T> elements) {
+    public Vector<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         // TODO(Eclipse bug): remove cast + SuppressWarnings
         final Vector<T> kept = (Vector<T>) (Object) Vector.ofAll(elements).distinct();
@@ -1188,7 +1188,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Vector<U> unit(java.lang.Iterable<? extends U> iterable) {
+    public <U> Vector<U> unit(Iterable<? extends U> iterable) {
         return Vector.ofAll(iterable);
     }
 
@@ -1233,13 +1233,13 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Vector<Tuple2<T, U>> zip(java.lang.Iterable<U> that) {
+    public <U> Vector<Tuple2<T, U>> zip(Iterable<U> that) {
         Objects.requireNonNull(that, "that is null");
         return Vector.ofAll(iterator().zip(that));
     }
 
     @Override
-    public <U> Vector<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem) {
+    public <U> Vector<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return Vector.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }

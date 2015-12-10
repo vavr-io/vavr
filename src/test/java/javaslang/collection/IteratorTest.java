@@ -21,7 +21,7 @@ import java.util.stream.Collector;
 public class IteratorTest extends AbstractTraversableTest {
 
     @Override
-    protected <T> IterableAssert<T> assertThat(java.lang.Iterable<T> actual) {
+    protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
             @SuppressWarnings("unchecked")
             @Override
@@ -32,7 +32,7 @@ public class IteratorTest extends AbstractTraversableTest {
                     Assertions.assertThat(wrapIterator(opt1)).isEqualTo(wrapIterator(opt2));
                     return this;
                 } else {
-                    java.lang.Iterable<T> iterable = (java.lang.Iterable<T>) expected;
+                    Iterable<T> iterable = (Iterable<T>) expected;
                     Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll(iterable));
                     return this;
                 }
@@ -102,7 +102,7 @@ public class IteratorTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected <T> Iterator<T> ofAll(java.lang.Iterable<? extends T> elements) {
+    protected <T> Iterator<T> ofAll(Iterable<? extends T> elements) {
         return Iterator.ofAll(elements);
     }
 

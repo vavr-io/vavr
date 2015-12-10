@@ -224,7 +224,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
      * @return A new TreeMap containing the given entries.
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(
-            java.lang.Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+            Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         return ofAll((Comparator<? super K> & Serializable) K::compareTo, entries);
     }
 
@@ -238,7 +238,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
      * @return A new TreeMap containing the given entries.
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> TreeMap<K, V> ofAll(Comparator<? super K> keyComparator, java.lang.Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    public static <K, V> TreeMap<K, V> ofAll(Comparator<? super K> keyComparator, Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(keyComparator, "keyComparator is null");
         Objects.requireNonNull(entries, "entries is null");
         if (entries instanceof TreeMap) {
@@ -675,7 +675,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
      */
     @SuppressWarnings("unchecked")
     private static <K, V> TreeMap<K, V> createTreeMap(Comparator<? super Tuple2<K, V>> comparator,
-                                                      java.lang.Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+                                                      Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(comparator);
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             tree = tree.insert((Tuple2<K, V>) entry);

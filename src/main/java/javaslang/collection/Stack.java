@@ -28,7 +28,7 @@ import java.util.stream.Collector;
  * <li>{@link #pop2Option()}</li>
  * <li>{@link #push(Object)}</li>
  * <li>{@link #push(Object[])}</li>
- * <li>{@link #pushAll(java.lang.Iterable)}</li>
+ * <li>{@link #pushAll(Iterable)}</li>
  * </ul>
  *
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 7 ff.). Cambridge, 2003.
@@ -98,12 +98,12 @@ public interface Stack<T> extends LinearSeq<T> {
      * Creates a Stack of the given elements.
      *
      * @param <T>      Component type of the Stack.
-     * @param elements An java.lang.Iterable of elements.
+     * @param elements An Iterable of elements.
      * @return A stack containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
-    static <T> Stack<T> ofAll(java.lang.Iterable<? extends T> elements) {
+    static <T> Stack<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Stack) {
             return (Stack<T>) elements;
@@ -476,11 +476,11 @@ public interface Stack<T> extends LinearSeq<T> {
      * Pushes the given elements on top of this Stack. A Stack has LIFO order, i.e. the last of the given elements is
      * the first which will be retrieved.
      *
-     * @param elements An java.lang.Iterable of elements, may be empty
+     * @param elements An Iterable of elements, may be empty
      * @return a new {@code Stack} instance, containing the new elements on top of this Stack
      * @throws NullPointerException if elements is null
      */
-    Stack<T> pushAll(java.lang.Iterable<T> elements);
+    Stack<T> pushAll(Iterable<T> elements);
 
     // -- Adjusted return types of Seq methods
 
@@ -488,7 +488,7 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> append(T element);
 
     @Override
-    Stack<T> appendAll(java.lang.Iterable<? extends T> elements);
+    Stack<T> appendAll(Iterable<? extends T> elements);
 
     @Override
     Stack<T> clear();
@@ -506,7 +506,7 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<? extends Stack<T>> crossProduct(int power);
 
     @Override
-    <U> Stack<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
+    <U> Stack<Tuple2<T, U>> crossProduct(Iterable<? extends U> that);
 
     @Override
     Stack<T> distinct();
@@ -533,7 +533,7 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> filter(Predicate<? super T> predicate);
 
     @Override
-    <U> Stack<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> Stack<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
     <C> Map<C, ? extends Stack<T>> groupBy(Function<? super T, ? extends C> classifier);
@@ -551,7 +551,7 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> insert(int index, T element);
 
     @Override
-    Stack<T> insertAll(int index, java.lang.Iterable<? extends T> elements);
+    Stack<T> insertAll(int index, Iterable<? extends T> elements);
 
     @Override
     Stack<T> intersperse(T element);
@@ -563,7 +563,7 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> padTo(int length, T element);
 
     @Override
-    Stack<T> patch(int from, java.lang.Iterable<? extends T> that, int replaced);
+    Stack<T> patch(int from, Iterable<? extends T> that, int replaced);
 
     @Override
     Tuple2<? extends Stack<T>, ? extends Stack<T>> partition(Predicate<? super T> predicate);
@@ -578,7 +578,7 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> prepend(T element);
 
     @Override
-    Stack<T> prependAll(java.lang.Iterable<? extends T> elements);
+    Stack<T> prependAll(Iterable<? extends T> elements);
 
     @Override
     Stack<T> remove(T element);
@@ -596,7 +596,7 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> removeAll(T element);
 
     @Override
-    Stack<T> removeAll(java.lang.Iterable<? extends T> elements);
+    Stack<T> removeAll(Iterable<? extends T> elements);
 
     @Override
     Stack<T> replace(T currentElement, T newElement);
@@ -605,7 +605,7 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    Stack<T> retainAll(java.lang.Iterable<? extends T> elements);
+    Stack<T> retainAll(Iterable<? extends T> elements);
 
     @Override
     Stack<T> reverse();
@@ -677,7 +677,7 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    <U> Stack<U> unit(java.lang.Iterable<? extends U> iterable);
+    <U> Stack<U> unit(Iterable<? extends U> iterable);
 
     @Override
     <T1, T2> Tuple2<? extends Stack<T1>, ? extends Stack<T2>> unzip(
@@ -687,10 +687,10 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> update(int index, T element);
 
     @Override
-    <U> Stack<Tuple2<T, U>> zip(java.lang.Iterable<U> that);
+    <U> Stack<Tuple2<T, U>> zip(Iterable<U> that);
 
     @Override
-    <U> Stack<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem);
+    <U> Stack<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     @Override
     Stack<Tuple2<T, Integer>> zipWithIndex();

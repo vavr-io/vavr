@@ -41,7 +41,7 @@ public interface Set<T> extends Traversable<T> {
      * @param elements The elements to be added.
      * @return A new set containing all elements of this set and the given {@code elements}, if not already contained.
      */
-    Set<T> addAll(java.lang.Iterable<? extends T> elements);
+    Set<T> addAll(Iterable<? extends T> elements);
 
     /**
      * Calculates the difference between this set and another set.
@@ -77,7 +77,7 @@ public interface Set<T> extends Traversable<T> {
      * @param elements The elements to be removed from this set.
      * @return A new set consisting of the elements of this set, without the given {@code elements}.
      */
-    Set<T> removeAll(java.lang.Iterable<? extends T> elements);
+    Set<T> removeAll(Iterable<? extends T> elements);
 
     /**
      * Transforms this {@code Set}.
@@ -135,7 +135,7 @@ public interface Set<T> extends Traversable<T> {
     Set<T> filter(Predicate<? super T> predicate);
 
     @Override
-    <U> Set<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
     <C> Map<C, ? extends Set<T>> groupBy(Function<? super T, ? extends C> classifier);
@@ -171,7 +171,7 @@ public interface Set<T> extends Traversable<T> {
     Set<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    Set<T> retainAll(java.lang.Iterable<? extends T> elements);
+    Set<T> retainAll(Iterable<? extends T> elements);
 
     @Override
     Set<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
@@ -221,10 +221,10 @@ public interface Set<T> extends Traversable<T> {
     <T1, T2, T3> Tuple3<? extends Set<T1>, ? extends Set<T2>, ? extends Set<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     @Override
-    <U> Set<Tuple2<T, U>> zip(java.lang.Iterable<U> that);
+    <U> Set<Tuple2<T, U>> zip(Iterable<U> that);
 
     @Override
-    <U> Set<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem);
+    <U> Set<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     @Override
     Set<Tuple2<T, Integer>> zipWithIndex();

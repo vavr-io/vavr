@@ -34,7 +34,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> append(T element);
 
     @Override
-    IndexedSeq<T> appendAll(java.lang.Iterable<? extends T> elements);
+    IndexedSeq<T> appendAll(Iterable<? extends T> elements);
 
     @Override
     IndexedSeq<T> clear();
@@ -52,7 +52,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<? extends IndexedSeq<T>> crossProduct(int power);
 
     @Override
-    <U> IndexedSeq<Tuple2<T, U>> crossProduct(java.lang.Iterable<? extends U> that);
+    <U> IndexedSeq<Tuple2<T, U>> crossProduct(Iterable<? extends U> that);
 
     @Override
     IndexedSeq<T> distinct();
@@ -102,7 +102,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> filter(Predicate<? super T> predicate);
 
     @Override
-    <U> IndexedSeq<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> IndexedSeq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
     <C> Map<C, ? extends IndexedSeq<T>> groupBy(Function<? super T, ? extends C> classifier);
@@ -128,7 +128,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> insert(int index, T element);
 
     @Override
-    IndexedSeq<T> insertAll(int index, java.lang.Iterable<? extends T> elements);
+    IndexedSeq<T> insertAll(int index, Iterable<? extends T> elements);
 
     @Override
     IndexedSeq<T> intersperse(T element);
@@ -143,7 +143,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     }
 
     @Override
-    default int lastIndexOfSlice(java.lang.Iterable<? extends T> that, int end) {
+    default int lastIndexOfSlice(Iterable<? extends T> that, int end) {
         return IndexedSeqModule.LastIndexOfSlice.lastIndexOfSlice(this, unit(that), end);
     }
 
@@ -164,7 +164,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> padTo(int length, T element);
 
     @Override
-    IndexedSeq<T> patch(int from, java.lang.Iterable<? extends T> that, int replaced);
+    IndexedSeq<T> patch(int from, Iterable<? extends T> that, int replaced);
 
     @Override
     Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> partition(Predicate<? super T> predicate);
@@ -179,7 +179,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> prepend(T element);
 
     @Override
-    IndexedSeq<T> prependAll(java.lang.Iterable<? extends T> elements);
+    IndexedSeq<T> prependAll(Iterable<? extends T> elements);
 
     @Override
     IndexedSeq<T> remove(T element);
@@ -197,7 +197,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> removeAll(T element);
 
     @Override
-    IndexedSeq<T> removeAll(java.lang.Iterable<? extends T> elements);
+    IndexedSeq<T> removeAll(Iterable<? extends T> elements);
 
     @Override
     IndexedSeq<T> replace(T currentElement, T newElement);
@@ -206,7 +206,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    IndexedSeq<T> retainAll(java.lang.Iterable<? extends T> elements);
+    IndexedSeq<T> retainAll(Iterable<? extends T> elements);
 
     @Override
     IndexedSeq<T> reverse();
@@ -330,7 +330,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    <U> IndexedSeq<U> unit(java.lang.Iterable<? extends U> iterable);
+    <U> IndexedSeq<U> unit(Iterable<? extends U> iterable);
 
     @Override
     <T1, T2> Tuple2<? extends IndexedSeq<T1>, ? extends IndexedSeq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
@@ -342,10 +342,10 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> update(int index, T element);
 
     @Override
-    <U> IndexedSeq<Tuple2<T, U>> zip(java.lang.Iterable<U> that);
+    <U> IndexedSeq<Tuple2<T, U>> zip(Iterable<U> that);
 
     @Override
-    <U> IndexedSeq<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem);
+    <U> IndexedSeq<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     @Override
     IndexedSeq<Tuple2<T, Integer>> zipWithIndex();
@@ -385,7 +385,7 @@ interface IndexedSeqModule {
 
         private static <T> int findSlice(IndexedSeq<T> t, int p, int maxPtr, IndexedSeq<T> slice) {
             while (p <= maxPtr) {
-                if(t.startsWith(slice, p)) {
+                if (t.startsWith(slice, p)) {
                     return p;
                 }
                 p++;

@@ -113,12 +113,12 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
     //           However, it will be eventually garbage collected as soon as the lazy value is evaluated.
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Lazy<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+    default <U> Lazy<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return (Lazy<U>) this;
         } else {
-            final java.lang.Iterable<? extends U> iterable = mapper.apply(get());
+            final Iterable<? extends U> iterable = mapper.apply(get());
             if (iterable instanceof Lazy) {
                 return (Lazy<U>) iterable;
             } else if (iterable instanceof Value) {

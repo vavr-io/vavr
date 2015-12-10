@@ -35,7 +35,7 @@ public class StackTest extends AbstractSeqTest {
     }
 
     @Override
-    protected <T> Stack<T> ofAll(java.lang.Iterable<? extends T> elements) {
+    protected <T> Stack<T> ofAll(Iterable<? extends T> elements) {
         return Stack.ofAll(elements);
     }
 

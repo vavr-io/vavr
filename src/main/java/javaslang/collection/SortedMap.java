@@ -42,7 +42,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
      * @param <W>           New value type
      * @return A new Map instance containing mapped entries
      */
-    <U, W> SortedMap<U, W> flatMap(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper);
+    <U, W> SortedMap<U, W> flatMap(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper);
 
     /**
      * Same as {@link #map(BiFunction)} but using a specific comparator for values of the codomain of the given
@@ -86,7 +86,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    <U, W> SortedMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends java.lang.Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper);
+    <U, W> SortedMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper);
 
     @Override
     <C> Map<C, ? extends SortedMap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
@@ -139,7 +139,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> remove(K key);
 
     @Override
-    SortedMap<K, V> removeAll(java.lang.Iterable<? extends K> keys);
+    SortedMap<K, V> removeAll(Iterable<? extends K> keys);
 
     @Override
     SortedMap<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
@@ -148,7 +148,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
 
     @Override
-    SortedMap<K, V> retainAll(java.lang.Iterable<? extends Tuple2<K, V>> elements);
+    SortedMap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements);
 
     @Override
     SortedMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);

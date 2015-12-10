@@ -36,7 +36,7 @@ import static javaslang.collection.RedBlackTree.Color.RED;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-interface RedBlackTree<T> extends java.lang.Iterable<T> {
+interface RedBlackTree<T> extends Iterable<T> {
 
     static <T extends Comparable<? super T>> Empty<T> empty() {
         return new Empty<>((Comparator<? super T> & Serializable) T::compareTo);
@@ -75,13 +75,13 @@ interface RedBlackTree<T> extends java.lang.Iterable<T> {
         return tree;
     }
 
-    static <T extends Comparable<? super T>> RedBlackTree<T> ofAll(java.lang.Iterable<? extends T> values) {
+    static <T extends Comparable<? super T>> RedBlackTree<T> ofAll(Iterable<? extends T> values) {
         Objects.requireNonNull(values, "values is null");
         return ofAll((Comparator<? super T> & Serializable) T::compareTo, values);
     }
 
     @SuppressWarnings("unchecked")
-    static <T> RedBlackTree<T> ofAll(Comparator<? super T> comparator, java.lang.Iterable<? extends T> values) {
+    static <T> RedBlackTree<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
         // function equality is not computable => same object check

@@ -20,7 +20,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -220,8 +219,9 @@ public interface Future<T> extends Value<T> {
 
     /**
      * Creates a {@code Future} with the given java.util.concurrent.Future, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}
-     * @param future
-     * @param <T>
+     *
+     * @param future A {@link java.util.concurrent.Future}
+     * @param <T> Result type of the Future
      * @return A new {@code Future} wrapping the result of the Java future
      * @throws NullPointerException if future is null
      */
@@ -232,9 +232,10 @@ public interface Future<T> extends Value<T> {
 
     /**
      * Creates a {@code Future} with the given java.util.concurrent.Future, backed by given {@link ExecutorService}
-     * @param executorService
-     * @param future
-     * @param <T>
+     *
+     * @param executorService An {@link ExecutorService}
+     * @param future A {@link java.util.concurrent.Future}
+     * @param <T> Result type of the Future
      * @return A new {@code Future} wrapping the result of the Java future
      * @throws NullPointerException if executorService or future is null
      */
@@ -780,7 +781,7 @@ public interface Future<T> extends Value<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Future<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper) {
+    default <U> Future<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());
         onComplete(result -> result.map(mapper::apply)

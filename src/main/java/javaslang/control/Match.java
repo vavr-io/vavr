@@ -392,7 +392,7 @@ public interface Match<R> extends Function<Object, R> {
         MatchMonad<R> filter(Predicate<? super R> predicate);
 
         @Override
-        <U> MatchMonad<U> flatMap(Function<? super R, ? extends java.lang.Iterable<? extends U>> mapper);
+        <U> MatchMonad<U> flatMap(Function<? super R, ? extends Iterable<? extends U>> mapper);
 
         /**
          * A match is a singleton type.
@@ -657,7 +657,7 @@ public interface Match<R> extends Function<Object, R> {
                 @SuppressWarnings("unchecked")
                 @Override
                 public <U> MatchMonad<U> flatMap(
-                        Function<? super R, ? extends java.lang.Iterable<? extends U>> mapper) {
+                        Function<? super R, ? extends Iterable<? extends U>> mapper) {
                     Objects.requireNonNull(mapper, "mapper is null");
                     return result.map(supplier -> {
                         final Some<Supplier<? extends U>> some = new Some<>(
@@ -748,7 +748,7 @@ public interface Match<R> extends Function<Object, R> {
             }
 
             @Override
-            public <U> MatchMonad<U> flatMap(Function<? super R, ? extends java.lang.Iterable<? extends U>> mapper) {
+            public <U> MatchMonad<U> flatMap(Function<? super R, ? extends Iterable<? extends U>> mapper) {
                 return new Otherwise<>(() -> Value.get(mapper.apply(result.get())));
             }
 

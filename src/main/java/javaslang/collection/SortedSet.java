@@ -40,7 +40,7 @@ public interface SortedSet<T> extends Set<T> {
      * @param <U>        Type of flat-mapped values
      * @return A new Set instance containing mapped values
      */
-    <U> SortedSet<U> flatMap(Comparator<? super U> comparator, Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> SortedSet<U> flatMap(Comparator<? super U> comparator, Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     /**
      * Same as {@link #map(Function)} but using a specific comparator for values of the codomain of the given
@@ -59,7 +59,7 @@ public interface SortedSet<T> extends Set<T> {
     SortedSet<T> add(T element);
 
     @Override
-    SortedSet<T> addAll(java.lang.Iterable<? extends T> elements);
+    SortedSet<T> addAll(Iterable<? extends T> elements);
 
     @Override
     SortedSet<T> clear();
@@ -92,7 +92,7 @@ public interface SortedSet<T> extends Set<T> {
     SortedSet<T> filter(Predicate<? super T> predicate);
 
     @Override
-    <U> SortedSet<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> SortedSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
     <C> Map<C, ? extends SortedSet<T>> groupBy(Function<? super T, ? extends C> classifier);
@@ -127,7 +127,7 @@ public interface SortedSet<T> extends Set<T> {
     SortedSet<T> remove(T element);
 
     @Override
-    SortedSet<T> removeAll(java.lang.Iterable<? extends T> elements);
+    SortedSet<T> removeAll(Iterable<? extends T> elements);
 
     @Override
     SortedSet<T> replace(T currentElement, T newElement);
@@ -136,7 +136,7 @@ public interface SortedSet<T> extends Set<T> {
     SortedSet<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    SortedSet<T> retainAll(java.lang.Iterable<? extends T> elements);
+    SortedSet<T> retainAll(Iterable<? extends T> elements);
 
     @Override
     SortedSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
@@ -183,10 +183,10 @@ public interface SortedSet<T> extends Set<T> {
     <T1, T2> Tuple2<? extends SortedSet<T1>, ? extends SortedSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     @Override
-    <U> SortedSet<Tuple2<T, U>> zip(java.lang.Iterable<U> that);
+    <U> SortedSet<Tuple2<T, U>> zip(Iterable<U> that);
 
     @Override
-    <U> SortedSet<Tuple2<T, U>> zipAll(java.lang.Iterable<U> that, T thisElem, U thatElem);
+    <U> SortedSet<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     @Override
     SortedSet<Tuple2<T, Integer>> zipWithIndex();
