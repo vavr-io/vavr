@@ -1394,7 +1394,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
         @Override
         public String toString() {
-            return stringPrefix()+ "()";
+            return stringPrefix() + "()";
         }
 
         /**
