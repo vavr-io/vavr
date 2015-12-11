@@ -28,7 +28,14 @@ public class LinkedHashMapTest extends AbstractMapTest {
     @SafeVarargs
     @Override
     protected final <K, V> Map<K, V> mapOf(Tuple2<? extends K, ? extends V>... entries) {
-        return LinkedHashMap.ofAll(entries);
+        return LinkedHashMap.ofEntries(entries);
+    }
+
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    @Override
+    protected final <K, V> Map<K, V> mapOf(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+        return LinkedHashMap.ofEntries(entries);
     }
 
     @SuppressWarnings("unchecked")

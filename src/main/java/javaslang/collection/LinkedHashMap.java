@@ -53,7 +53,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
             left.addAll(right);
             return left;
         };
-        final Function<ArrayList<Tuple2<K, V>>, LinkedHashMap<K, V>> finisher = LinkedHashMap::ofAll;
+        final Function<ArrayList<Tuple2<K, V>>, LinkedHashMap<K, V>> finisher = LinkedHashMap::ofEntries;
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
@@ -144,8 +144,28 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given entries
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> LinkedHashMap<K, V> ofAll(Tuple2<? extends K, ? extends V>... entries) {
-        final HashMap<K, V> map = HashMap.ofAll(entries);
+    public static <K, V> LinkedHashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+        HashMap<K, V> map = HashMap.empty();
+        Queue<Tuple2<K, V>> list = Queue.empty();
+        for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
+            final Tuple2<K, V> tuple = Tuple.of(entry.getKey(), entry.getValue());
+            map = map.put(tuple);
+            list = list.append(tuple);
+        }
+        return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a LinkedHashMap of the given entries.
+     *
+     * @param entries Map entries
+     * @param <K>     The key type
+     * @param <V>     The value type
+     * @return A new Map containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> LinkedHashMap<K, V> ofEntries(Tuple2<? extends K, ? extends V>... entries) {
+        final HashMap<K, V> map = HashMap.ofEntries(entries);
         final Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>[]) entries);
         return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
     }
@@ -159,7 +179,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given entries
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> LinkedHashMap<K, V> ofAll(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    public static <K, V> LinkedHashMap<K, V> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
         if (entries instanceof LinkedHashMap) {
             return (LinkedHashMap<K, V>) entries;
@@ -285,7 +305,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Iterator<LinkedHashMap<K, V>> sliding(int size, int step) {
-        return iterator().sliding(size, step).map(LinkedHashMap::ofAll);
+        return iterator().sliding(size, step).map(LinkedHashMap::ofEntries);
     }
 
     @Override
@@ -311,13 +331,13 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public LinkedHashMap<K, V> distinctBy(Comparator<? super Tuple2<K, V>> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return LinkedHashMap.ofAll(list.distinctBy(comparator));
+        return LinkedHashMap.ofEntries(list.distinctBy(comparator));
     }
 
     @Override
     public <U> LinkedHashMap<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return LinkedHashMap.ofAll(list.distinctBy(keyExtractor));
+        return LinkedHashMap.ofEntries(list.distinctBy(keyExtractor));
     }
 
     @Override
@@ -328,7 +348,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         if (n >= length()) {
             return empty();
         }
-        return LinkedHashMap.ofAll(list.drop(n));
+        return LinkedHashMap.ofEntries(list.drop(n));
     }
 
     @Override
@@ -339,7 +359,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         if (n >= length()) {
             return empty();
         }
-        return LinkedHashMap.ofAll(list.dropRight(n));
+        return LinkedHashMap.ofEntries(list.dropRight(n));
     }
 
     @Override
@@ -351,13 +371,13 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public LinkedHashMap<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return LinkedHashMap.ofAll(list.dropWhile(predicate));
+        return LinkedHashMap.ofEntries(list.dropWhile(predicate));
     }
 
     @Override
     public LinkedHashMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return LinkedHashMap.ofAll(list.filter(predicate));
+        return LinkedHashMap.ofEntries(list.filter(predicate));
     }
 
     @SuppressWarnings("unchecked")
@@ -412,7 +432,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         if (isEmpty()) {
             throw new UnsupportedOperationException("init of empty LinkedHashMap");
         } else {
-            return LinkedHashMap.ofAll(list.init());
+            return LinkedHashMap.ofEntries(list.init());
         }
     }
 
@@ -451,7 +471,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
-            return LinkedHashMap.ofAll(that);
+            return LinkedHashMap.ofEntries(that);
         } else if (that.isEmpty()) {
             return this;
         } else {
@@ -464,7 +484,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         if (isEmpty()) {
-            return LinkedHashMap.ofAll(that);
+            return LinkedHashMap.ofEntries(that);
         } else if (that.isEmpty()) {
             return this;
         } else {
@@ -481,7 +501,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     public Tuple2<LinkedHashMap<K, V>, LinkedHashMap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<Tuple2<K, V>>, Iterator<Tuple2<K, V>>> p = iterator().partition(predicate);
-        return Tuple.of(LinkedHashMap.ofAll(p._1), LinkedHashMap.ofAll(p._2));
+        return Tuple.of(LinkedHashMap.ofEntries(p._1), LinkedHashMap.ofEntries(p._2));
     }
 
     @Override
@@ -521,7 +541,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     public Tuple2<LinkedHashMap<K, V>, LinkedHashMap<K, V>> span(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<Tuple2<K, V>>, Iterator<Tuple2<K, V>>> t = iterator().span(predicate);
-        return Tuple.of(LinkedHashMap.ofAll(t._1), LinkedHashMap.ofAll(t._2));
+        return Tuple.of(LinkedHashMap.ofEntries(t._1), LinkedHashMap.ofEntries(t._2));
     }
 
     @Override
@@ -529,7 +549,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty LinkedHashMap");
         } else {
-            return LinkedHashMap.ofAll(list.tail());
+            return LinkedHashMap.ofEntries(list.tail());
         }
     }
 
@@ -547,7 +567,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         if (size() <= n) {
             return this;
         } else {
-            return LinkedHashMap.ofAll(list.take(n));
+            return LinkedHashMap.ofEntries(list.take(n));
         }
     }
 
@@ -556,21 +576,21 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         if (size() <= n) {
             return this;
         } else {
-            return LinkedHashMap.ofAll(list.takeRight(n));
+            return LinkedHashMap.ofEntries(list.takeRight(n));
         }
     }
 
     @Override
     public LinkedHashMap<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final LinkedHashMap<K, V> taken = LinkedHashMap.ofAll(list.takeUntil(predicate));
+        final LinkedHashMap<K, V> taken = LinkedHashMap.ofEntries(list.takeUntil(predicate));
         return taken.length() == length() ? this : taken;
     }
 
     @Override
     public LinkedHashMap<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final LinkedHashMap<K, V> taken = LinkedHashMap.ofAll(list.takeWhile(predicate));
+        final LinkedHashMap<K, V> taken = LinkedHashMap.ofEntries(list.takeWhile(predicate));
         return taken.length() == length() ? this : taken;
     }
 
