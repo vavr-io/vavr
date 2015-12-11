@@ -35,7 +35,6 @@ public class HashMapTest extends AbstractMapTest {
         return HashMap.ofAll(entries);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected <K, V> Map<K, V> mapOfPairs(Object... pairs) {
         return HashMap.of(pairs);

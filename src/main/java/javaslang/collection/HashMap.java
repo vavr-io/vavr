@@ -85,7 +85,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @param <V> The value type
      * @return A new Map containing the given map
      */
-    @SuppressWarnings("unchecked")
     public static <K, V> HashMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
         Objects.requireNonNull(map, "map is null");
         HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
@@ -258,10 +257,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         });
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return iterator().flatMap(mapper).toStream();
+        return (Seq<U>) iterator().flatMap(mapper).toStream();
     }
 
     @Override
@@ -355,10 +355,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         return trie.size();
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return iterator().map(mapper).toStream();
+        return (Seq<U>) iterator().map(mapper).toStream();
     }
 
     @Override
