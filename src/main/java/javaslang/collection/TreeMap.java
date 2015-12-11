@@ -127,7 +127,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
      * @param <V>   The value type
      * @return A new Map containing the given map
      */
-    @SuppressWarnings("unchecked")
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
         Objects.requireNonNull(map, "map is null");
         RedBlackTree<Tuple2<K, V>> result = RedBlackTree.empty();

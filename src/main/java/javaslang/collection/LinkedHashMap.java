@@ -110,7 +110,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      * @param <V> The value type
      * @return A new Map containing the given map
      */
-    @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
         Objects.requireNonNull(map, "map is null");
         LinkedHashMap<K, V> result = LinkedHashMap.empty();
