@@ -455,12 +455,8 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
             }
 
             @Override
-            public T next() {
-                if (!hasNext()) {
-                    throw new NoSuchElementException();
-                } else {
-                    return (T) back[index++];
-                }
+            public T getNext() {
+                return (T) back[index++];
             }
         };
     }

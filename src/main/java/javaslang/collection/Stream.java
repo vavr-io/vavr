@@ -1629,10 +1629,7 @@ interface StreamModule {
         }
 
         @Override
-        public T next() {
-            if (!hasNext()) {
-                Iterator.empty().next();
-            }
+        public T getNext() {
             final Stream<T> stream = current.get();
             // DEV-NOTE: we make the stream even more lazy because the next head must not be evaluated on hasNext()
             current = stream::tail;

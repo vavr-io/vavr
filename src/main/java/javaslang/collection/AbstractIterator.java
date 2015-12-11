@@ -5,6 +5,8 @@
  */
 package javaslang.collection;
 
+import java.util.NoSuchElementException;
+
 /**
  * Provides a common {@link Object#toString()} implementation.
  * <p>
@@ -22,4 +24,13 @@ abstract class AbstractIterator<T> implements Iterator<T> {
         return (isEmpty() ? "" : "non-") + "empty iterator";
     }
 
+    protected abstract T getNext();
+
+    @Override
+    public final T next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException("next() on empty iterator");
+        }
+        return getNext();
+    }
 }

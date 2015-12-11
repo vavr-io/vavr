@@ -300,10 +300,7 @@ interface RedBlackTree<T> extends Iterable<T> {
                 }
 
                 @Override
-                public T next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public T getNext() {
                     final Tuple2<Node<T>, ? extends Stack<Node<T>>> result = stack.pop2();
                     final Node<T> node = result._1;
                     stack = node.right.isEmpty() ? result._2 : pushLeftChildren(result._2, (Node<T>) node.right);

@@ -421,10 +421,7 @@ interface HashArrayMappedTrieModule {
                 }
 
                 @Override
-                public Tuple2<K, V> next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public Tuple2<K, V> getNext() {
                     Tuple2<K, V> tuple = Tuple.of(node.key(), node.value());
                     if (node instanceof LeafSingleton) {
                         node = null;

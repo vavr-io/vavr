@@ -57,8 +57,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         }
 
         @Override
-        public Object next() {
-            throw new NoSuchElementException("next() on empty iterator");
+        public Object getNext() {
+            return null;
         }
     };
 
@@ -125,10 +125,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public T next() {
-                if (!hasNext) {
-                    EMPTY.next();
-                }
+            public T getNext() {
                 hasNext = false;
                 return element;
             }
@@ -155,10 +152,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public T next() {
-                if (!hasNext()) {
-                    EMPTY.next();
-                }
+            public T getNext() {
                 return elements[index++];
             }
         };
@@ -204,10 +198,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public T getNext() {
                     return iterator.next();
                 }
             };
@@ -231,10 +222,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Boolean next() {
-                if (!hasNext()) {
-                    EMPTY.next();
-                }
+            public Boolean getNext() {
                 return array[i++];
             }
         };
@@ -257,10 +245,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Byte next() {
-                if (!hasNext()) {
-                    EMPTY.next();
-                }
+            public Byte getNext() {
                 return array[i++];
             }
         };
@@ -283,10 +268,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Character next() {
-                if (!hasNext()) {
-                    EMPTY.next();
-                }
+            public Character getNext() {
                 return array[i++];
             }
         };
@@ -309,10 +291,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Double next() {
-                if (!hasNext()) {
-                    EMPTY.next();
-                }
+            public Double getNext() {
                 return array[i++];
             }
         };
@@ -335,10 +314,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Float next() {
-                if (!hasNext()) {
-                    EMPTY.next();
-                }
+            public Float getNext() {
                 return array[i++];
             }
         };
@@ -361,10 +337,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Integer next() {
-                if (!hasNext()) {
-                    EMPTY.next();
-                }
+            public Integer getNext() {
                 return array[i++];
             }
         };
@@ -387,10 +360,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Long next() {
-                if (!hasNext()) {
-                    EMPTY.next();
-                }
+            public Long getNext() {
                 return array[i++];
             }
         };
@@ -413,10 +383,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Short next() {
-                if (!hasNext()) {
-                    EMPTY.next();
-                }
+            public Short getNext() {
                 return array[i++];
             }
         };
@@ -491,10 +458,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public Double next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public Double getNext() {
                     final double next = curr;
                     if ((step > 0 && curr + step >= right) || (step < 0 && curr + step <= right)) {
                         hasNext = false;
@@ -680,10 +644,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public Double next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public Double getNext() {
                     final double next = curr;
                     if ((step > 0 && curr + step > toInclusive) || (step < 0 && curr + step < toInclusive)) {
                         hasNext = false;
@@ -759,10 +720,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public Integer next() {
-                    if (!hasNext) {
-                        EMPTY.next();
-                    }
+                public Integer getNext() {
                     final int next = i;
                     if ((step > 0 && i > toInclusive - step) || (step < 0 && i < toInclusive - step)) {
                         hasNext = false;
@@ -834,10 +792,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public Long next() {
-                    if (!hasNext) {
-                        EMPTY.next();
-                    }
+                public Long getNext() {
                     final long next = i;
                     if ((step > 0L && i > toInclusive - step) || (step < 0L && i < toInclusive - step)) {
                         hasNext = false;
@@ -868,7 +823,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Integer next() {
+            public Integer getNext() {
                 return next++;
             }
         };
@@ -892,7 +847,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Long next() {
+            public Long getNext() {
                 return next++;
             }
         };
@@ -914,7 +869,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public T next() {
+            public T getNext() {
                 return supplier.get();
             }
         };
@@ -940,7 +895,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public T next() {
+            public T getNext() {
                 T result = next;
                 next = f.apply(next);
                 return result;
@@ -963,7 +918,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public T next() {
+            public T getNext() {
                 return t;
             }
         };
@@ -1004,10 +959,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T next() {
-                    if (!that.hasNext()) {
-                        EMPTY.next();
-                    }
+                public T getNext() {
                     if (insertElement) {
                         insertElement = false;
                         return element;
@@ -1048,10 +1000,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public Tuple2<T, U> next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public Tuple2<T, U> getNext() {
                     return Tuple.of(it1.next(), it2.next());
                 }
             };
@@ -1073,10 +1022,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public Tuple2<T, U> next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public Tuple2<T, U> getNext() {
                     T v1 = thisIt.hasNext() ? thisIt.next() : thisElem;
                     U v2 = thatIt.hasNext() ? thatIt.next() : thatElem;
                     return Tuple.of(v1, v2);
@@ -1100,10 +1046,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public Tuple2<T, Integer> next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public Tuple2<T, Integer> getNext() {
                     return Tuple.of(it1.next(), index++);
                 }
             };
@@ -1198,10 +1141,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public T getNext() {
                     return that.next();
                 }
             };
@@ -1228,10 +1168,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public T getNext() {
                     Tuple2<T, Queue<T>> t = queue.append(that.next()).dequeue();
                     queue = t._2;
                     return t._1;
@@ -1269,10 +1206,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public T getNext() {
                     final T result = next;
                     next = null;
                     return result;
@@ -1310,10 +1244,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public T getNext() {
                     T result = next.get();
                     next = None.instance();
                     return result;
@@ -1364,10 +1295,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public U next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public U getNext() {
                     return current.next();
                 }
             };
@@ -1479,10 +1407,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public U next() {
-                    if (!that.hasNext()) {
-                        EMPTY.next();
-                    }
+                public U getNext() {
                     return mapper.apply(that.next());
                 }
             };
@@ -1516,10 +1441,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public T getNext() {
                     final T next = that.next();
                     action.accept(next);
                     return next;
@@ -1588,10 +1510,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T next() {
-                    if (!that.hasNext()) {
-                        EMPTY.next();
-                    }
+                public T getNext() {
                     final T elem = that.next();
                     if (done || !Objects.equals(currentElement, elem)) {
                         return elem;
@@ -1618,10 +1537,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T next() {
-                    if (!that.hasNext()) {
-                        EMPTY.next();
-                    }
+                public T getNext() {
                     final T elem = that.next();
                     if (Objects.equals(currentElement, elem)) {
                         return newElement;
@@ -1664,10 +1580,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public U next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public U getNext() {
                     if (isFirst) {
                         isFirst = false;
                         return acc;
@@ -1720,10 +1633,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public IndexedSeq<T> next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public IndexedSeq<T> getNext() {
                     final IndexedSeq<T> result = next;
                     next = null;
                     return result;
@@ -1793,10 +1703,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public T getNext() {
                     count--;
                     return that.next();
                 }
@@ -1825,10 +1732,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public T getNext() {
                     final Tuple2<T, Queue<T>> t = queue.dequeue();
                     queue = t._2;
                     return t._1;
@@ -1869,10 +1773,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T next() {
-                    if (!hasNext()) {
-                        EMPTY.next();
-                    }
+                public T getNext() {
                     final T result = next;
                     next = null;
                     return result;
@@ -1903,10 +1804,7 @@ interface IteratorModule {
         }
 
         @Override
-        public T next() {
-            if (!hasNext()) {
-                EMPTY.next();
-            }
+        public T getNext() {
             return current.next();
         }
     }
@@ -1938,10 +1836,7 @@ interface IteratorModule {
         }
 
         @Override
-        public T next() {
-            if (!hasNext()) {
-                EMPTY.next();
-            }
+        public T getNext() {
             final T result = next;
             next = null;
             return result;
