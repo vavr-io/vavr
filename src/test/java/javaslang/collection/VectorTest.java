@@ -204,7 +204,7 @@ public class VectorTest extends AbstractSeqTest {
                 throw new IllegalStateException("Hack incomplete - index not found");
             }
             /*
-			 * Hack the serialized data and fake zero elements.
+             * Hack the serialized data and fake zero elements.
 			 */
             listWithOneElement[index] = 0;
             Serializables.deserialize(listWithOneElement);

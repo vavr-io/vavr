@@ -6,7 +6,10 @@
 package javaslang.collection.euler;
 
 import javaslang.Tuple;
-import javaslang.collection.*;
+import javaslang.collection.Iterator;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
+import javaslang.collection.Stream;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

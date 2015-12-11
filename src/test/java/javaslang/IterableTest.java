@@ -5,15 +5,15 @@
  */
 package javaslang;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import javaslang.collection.List;
 import javaslang.collection.Queue;
 import javaslang.collection.Stream;
 import javaslang.control.None;
 import javaslang.control.Some;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

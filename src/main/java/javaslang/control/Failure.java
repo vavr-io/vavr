@@ -77,7 +77,7 @@ public final class Failure<T> implements Try<T>, Serializable {
 
     @Override
     public String toString() {
-        return stringPrefix() +"(" + cause.getCause() + ")";
+        return stringPrefix() + "(" + cause.getCause() + ")";
     }
 
     /**

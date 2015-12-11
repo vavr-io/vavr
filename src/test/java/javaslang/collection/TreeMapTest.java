@@ -10,7 +10,7 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Collector;
 

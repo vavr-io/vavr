@@ -109,7 +109,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     @SuppressWarnings("unchecked")
     public static <K, V> TreeMap<K, V> of(Object... pairs) {
         Objects.requireNonNull(pairs, "pairs is null");
-        if((pairs.length & 1) != 0) {
+        if ((pairs.length & 1) != 0) {
             throw new IllegalArgumentException("Odd length of key-value pairs list");
         }
         RedBlackTree<Tuple2<K, V>> result = RedBlackTree.empty();
@@ -123,8 +123,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
      * Returns a {@code TreeMap}, from a source java.util.Map.
      *
      * @param map A map entry.
-     * @param <K>   The key type
-     * @param <V>   The value type
+     * @param <K> The key type
+     * @param <V> The value type
      * @return A new Map containing the given map
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {

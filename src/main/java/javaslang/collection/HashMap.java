@@ -276,7 +276,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return (Seq<U>) iterator().flatMap(mapper).toStream();
@@ -374,7 +374,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return (Seq<U>) iterator().map(mapper).toStream();

@@ -980,7 +980,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         return scanLeft(zero, operation);
     }
 
-	@Override
+    @Override
     public <U> Array<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         return Collections.scanLeft(this, zero, operation,

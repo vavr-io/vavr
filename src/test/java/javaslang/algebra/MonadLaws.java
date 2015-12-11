@@ -20,7 +20,7 @@ public interface MonadLaws extends FunctorLaws {
     void shouldSatisfyMonadRightIdentity();
 
     void shouldSatisfyMonadAssociativity();
-    
+
     // needed to make left-identity work again for single-valued monads
     <U> Iterable<U> select(Iterable<U> iterable);
 

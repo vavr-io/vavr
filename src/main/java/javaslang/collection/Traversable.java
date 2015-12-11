@@ -266,6 +266,7 @@ public interface Traversable<T> extends Value<T> {
      *
      * @param predicate A predicate
      * @return A number {@code >= 0}
+     * @throws NullPointerException if {@code predicate} is null.
      */
     default int count(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
@@ -285,6 +286,7 @@ public interface Traversable<T> extends Value<T> {
      *
      * @param comparator A comparator
      * @return a new {@code Traversable} containing this elements without duplicates
+     * @throws NullPointerException if {@code comparator} is null.
      */
     Traversable<T> distinctBy(Comparator<? super T> comparator);
 
@@ -460,6 +462,7 @@ public interface Traversable<T> extends Value<T> {
      * @param classifier A function which classifies elements into classes
      * @param <C>        classified class type
      * @return A Map containing the grouped elements
+     * @throws NullPointerException if {@code classifier} is null.
      */
     <C> Map<C, ? extends Traversable<T>> groupBy(Function<? super T, ? extends C> classifier);
 
@@ -670,6 +673,7 @@ public interface Traversable<T> extends Value<T> {
      * @param f   A function that maps this elements to comparable elements
      * @param <U> The type where elements are compared
      * @return The element of type T which is the maximum within U
+     * @throws NullPointerException if {@code f} is null.
      */
     default <U extends Comparable<? super U>> Option<T> maxBy(Function<? super T, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
@@ -729,6 +733,7 @@ public interface Traversable<T> extends Value<T> {
      * @param f   A function that maps this elements to comparable elements
      * @param <U> The type where elements are compared
      * @return The element of type T which is the minimum within U
+     * @throws NullPointerException if {@code f} is null.
      */
     default <U extends Comparable<? super U>> Option<T> minBy(Function<? super T, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
@@ -946,6 +951,7 @@ public interface Traversable<T> extends Value<T> {
      * @param zero      neutral element for the operator op
      * @param operation the associative operator for the scan
      * @return a new traversable collection containing the prefix scan of the elements in this traversable collection
+     * @throws NullPointerException if {@code operation} is null.
      */
     Traversable<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
 
@@ -962,6 +968,7 @@ public interface Traversable<T> extends Value<T> {
      * @param zero      the initial value
      * @param operation the binary operator applied to the intermediate result and the element
      * @return collection with intermediate results
+     * @throws NullPointerException if {@code operation} is null.
      */
     <U> Traversable<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
 
@@ -979,6 +986,7 @@ public interface Traversable<T> extends Value<T> {
      * @param zero      the initial value
      * @param operation the binary operator applied to the intermediate result and the element
      * @return collection with intermediate results
+     * @throws NullPointerException if {@code operation} is null.
      */
     <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 

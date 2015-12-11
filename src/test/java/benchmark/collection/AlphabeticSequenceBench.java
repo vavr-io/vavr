@@ -5,7 +5,10 @@
  */
 package benchmark.collection;
 
-import javaslang.collection.*;
+import javaslang.collection.CharSeq;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
+import javaslang.collection.Stream;
 
 import static benchmark.Benchmark.bench;
 
