@@ -415,6 +415,68 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(1, 2, 3), 2)).isEqualTo(0);
     }
 
+    // -- indexWhere
+
+    @Test
+    public void shouldCalculateIndexWhere() {
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 0)).isEqualTo(0);
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 1)).isEqualTo(1);
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 2)).isEqualTo(2);
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 8)).isEqualTo(-1);
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 0, 3)).isEqualTo(4);
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 1, 3)).isEqualTo(5);
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 2, 3)).isEqualTo(6);
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 8, 3)).isEqualTo(-1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldFailIndexWhereNullPredicate() {
+        of(1).indexWhere(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldFailIndexWhereNullPredicateFrom() {
+        of(1).indexWhere(null, 0);
+    }
+
+    // -- lastIndexWhere
+
+    @Test
+    public void shouldCalculateLastIndexWhere() {
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 0)).isEqualTo(4);
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 1)).isEqualTo(5);
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 2)).isEqualTo(6);
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 8)).isEqualTo(-1);
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 0, 3)).isEqualTo(0);
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 1, 3)).isEqualTo(1);
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 2, 3)).isEqualTo(2);
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 8, 3)).isEqualTo(-1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldFailLastIndexWhereNullPredicate() {
+        of(1).lastIndexWhere(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldFailLastIndexWhereNullPredicateFrom() {
+        of(1).lastIndexWhere(null, 0);
+    }
+
+    // -- endsWith
+
+    @Test
+    public void shouldTestEndsWith() {
+        assertThat(empty().endsWith(empty())).isTrue();
+        assertThat(empty().endsWith(of(1))).isFalse();
+        assertThat(of(1, 2, 3, 4).endsWith(empty())).isTrue();
+        assertThat(of(1, 2, 3, 4).endsWith(of(4))).isTrue();
+        assertThat(of(1, 2, 3, 4).endsWith(of(3, 4))).isTrue();
+        assertThat(of(1, 2, 3, 4).endsWith(of(1, 2, 3, 4))).isTrue();
+        assertThat(of(1, 2, 3, 4).endsWith(of(0, 1, 2, 3, 4))).isFalse();
+        assertThat(of(1, 2, 3, 4).endsWith(of(2, 3, 5))).isFalse();
+    }
+
     // -- insert
 
     @Test
@@ -649,6 +711,37 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     public void shouldComputePermutationsOfNonEmptyList() {
         assertThat(of(1, 2, 3).permutations())
                 .isEqualTo(ofAll(of(of(1, 2, 3), of(1, 3, 2), of(2, 1, 3), of(2, 3, 1), of(3, 1, 2), of(3, 2, 1))));
+    }
+
+    // -- prefixLength
+
+    @Test
+    public void shouldCalculatePrefixLength() {
+        assertThat(of(1, 3, 5, 6).prefixLength(i -> (i & 1) > 0)).isEqualTo(3);
+        assertThat(of(1, 3, 5).prefixLength(i -> (i & 1) > 0)).isEqualTo(3);
+        assertThat(of(2).prefixLength(i -> (i & 1) > 0)).isEqualTo(0);
+        assertThat(empty().prefixLength(i -> true)).isEqualTo(0);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowPrefixLengthNullPredicate() {
+        of(1).prefixLength(null);
+    }
+
+    // -- segmentLength
+
+    @Test
+    public void shouldCalculateSegmentLength() {
+        assertThat(of(1, 3, 5, 6).segmentLength(i -> (i & 1) > 0, 1)).isEqualTo(2);
+        assertThat(of(1, 3, 5).segmentLength(i -> (i & 1) > 0, 1)).isEqualTo(2);
+        assertThat(of(2, 2).segmentLength(i -> (i & 1) > 0, 1)).isEqualTo(0);
+        assertThat(of(2).segmentLength(i -> (i & 1) > 0, 1)).isEqualTo(0);
+        assertThat(empty().segmentLength(i -> true, 1)).isEqualTo(0);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowSegmentLengthNullPredicate() {
+        of(1).segmentLength(null, 0);
     }
 
     // -- prepend
