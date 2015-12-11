@@ -256,6 +256,28 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(actual).isTrue();
     }
 
+    // -- count
+
+    @Test
+    public void shouldCountWhenIsEmpty() {
+        assertThat(empty().count(ignored -> true)).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldCountWhenNoneSatisfiesThePredicate() {
+        assertThat(of(1, 2, 3).count(ignored -> false)).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldCountWhenAllSatisfyThePredicate() {
+        assertThat(of(1, 2, 3).count(ignored -> true)).isEqualTo(3);
+    }
+
+    @Test
+    public void shouldCountWhenSomeSatisfyThePredicate() {
+        assertThat(of(1, 2, 3).count(i -> i % 2 == 0)).isEqualTo(1);
+    }
+
     // -- distinct
 
     @Test

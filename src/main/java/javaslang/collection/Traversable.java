@@ -73,6 +73,7 @@ import java.util.function.Predicate;
  * Reduction:
  *
  * <ul>
+ * <li>{@link #count(Predicate)}</li>
  * <li>{@link #foldLeft(Object, BiFunction)}</li>
  * <li>{@link #foldRight(Object, BiFunction)}</li>
  * <li>{@link #mkString()}</li>
@@ -258,6 +259,17 @@ public interface Traversable<T> extends Value<T> {
     default boolean containsAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return List.ofAll(elements).distinct().findFirst(e -> !this.contains(e)).isEmpty();
+    }
+
+    /**
+     * Counts the elements which satisfy the given predicate.
+     *
+     * @param predicate A predicate
+     * @return A number {@code >= 0}
+     */
+    default int count(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return foldLeft(0, (i, t) -> predicate.test(t) ? i + 1 : i);
     }
 
     /**
