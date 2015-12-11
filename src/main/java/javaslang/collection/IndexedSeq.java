@@ -222,12 +222,8 @@ public interface IndexedSeq<T> extends Seq<T> {
             }
 
             @Override
-            public T next() {
-                if (i > 0) {
-                    return IndexedSeq.this.get(--i);
-                } else {
-                    return Iterator.<T> empty().next();
-                }
+            public T getNext() {
+                return IndexedSeq.this.get(--i);
             }
         };
     }

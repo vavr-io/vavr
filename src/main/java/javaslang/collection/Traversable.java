@@ -566,14 +566,10 @@ public interface Traversable<T> extends Value<T> {
             }
 
             @Override
-            public T next() {
-                if (traversable.isEmpty()) {
-                    throw new NoSuchElementException();
-                } else {
-                    final T result = traversable.head();
-                    traversable = traversable.tail();
-                    return result;
-                }
+            public T getNext() {
+                final T result = traversable.head();
+                traversable = traversable.tail();
+                return result;
             }
         };
     }

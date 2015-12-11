@@ -442,10 +442,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
             }
 
             @Override
-            public Character next() {
-                if (index >= back.length()) {
-                    throw new NoSuchElementException();
-                }
+            public Character getNext() {
                 return back.charAt(index++);
             }
         };
