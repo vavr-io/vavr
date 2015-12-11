@@ -388,4 +388,9 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
     default Iterator<T> iterator() {
         return Iterator.of(get());
     }
+
+    @Override
+    default String stringPrefix() {
+        return "Gen";
+    }
 }

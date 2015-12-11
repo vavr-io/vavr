@@ -357,8 +357,13 @@ public interface Either<L, R> {
         }
 
         @Override
+        public String stringPrefix() {
+            return "LeftProjection";
+        }
+
+        @Override
         public String toString() {
-            return "LeftProjection(" + either + ")";
+            return stringPrefix() + "(" + either + ")";
         }
 
         private L asLeft() {
@@ -587,8 +592,13 @@ public interface Either<L, R> {
         }
 
         @Override
+        public String stringPrefix() {
+            return "RightProjection";
+        }
+
+        @Override
         public String toString() {
-            return "RightProjection(" + either + ")";
+            return stringPrefix() + "(" + either + ")";
         }
 
         private L asLeft() {

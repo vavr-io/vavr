@@ -174,6 +174,11 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
         return this;
     }
 
+    @Override
+    default String stringPrefix() {
+        return "Lazy";
+    }
+
     /**
      * Transforms this {@code Lazy}.
      *
@@ -245,7 +250,7 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
 
         @Override
         public String toString() {
-            return String.format("Lazy(%s)", !isEvaluated() ? "?" : value);
+            return stringPrefix() + "(" + (!isEvaluated() ? "?" : value) + ")";
         }
 
         /**
@@ -312,7 +317,7 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
 
         @Override
         public String toString() {
-            return "Lazy.Undefined";
+            return stringPrefix() + "()";
         }
 
         /**

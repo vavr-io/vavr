@@ -595,7 +595,12 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public String stringPrefix() {
+        return "LinkedHashMap";
+    }
+
+    @Override
     public String toString() {
-        return mkString("LinkedHashMap(", ", ", ")");
+        return mkString(stringPrefix() + "(", ", ", ")");
     }
 }

@@ -833,8 +833,13 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public String stringPrefix() {
+        return "LinkedHashSet";
+    }
+
+    @Override
     public String toString() {
-        return mkString("LinkedHashSet(", ", ", ")");
+        return mkString(stringPrefix() + "(", ", ", ")");
     }
 
     private static <T> LinkedHashMap<T, T> addAll(LinkedHashMap<T, T> initial,

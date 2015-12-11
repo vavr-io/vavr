@@ -875,4 +875,9 @@ public interface Future<T> extends Value<T> {
         onSuccess(action);
         return this;
     }
+
+    @Override
+    default String stringPrefix() {
+        return "Future";
+    }
 }

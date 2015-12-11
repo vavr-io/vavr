@@ -1280,8 +1280,13 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public String stringPrefix() {
+        return "Vector";
+    }
+
+    @Override
     public String toString() {
-        return mkString("Vector(", ", ", ")");
+        return mkString(stringPrefix() + "(", ", ", ")");
     }
 }
 

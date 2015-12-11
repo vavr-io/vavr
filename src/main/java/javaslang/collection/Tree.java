@@ -509,6 +509,11 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
+    default String stringPrefix() {
+        return "Tree";
+    }
+
+    @Override
     default Seq<T> tail() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty tree");
@@ -694,7 +699,7 @@ public interface Tree<T> extends Traversable<T> {
 
         @Override
         public String toString() {
-            return isLeaf() ? "(" + value + ")" : toLispString(this);
+            return stringPrefix() + (isLeaf() ? "(" + value + ")" : toLispString(this));
         }
 
         private static String toLispString(Tree<?> tree) {
@@ -858,7 +863,7 @@ public interface Tree<T> extends Traversable<T> {
 
         @Override
         public String toString() {
-            return "()";
+            return stringPrefix() + "()";
         }
 
         // -- Serializable implementation

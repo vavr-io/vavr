@@ -275,8 +275,8 @@ public class TreeTest extends AbstractTraversableTest {
     public void shouldGetChildrenOfBranch() {
         final List<? extends Tree<Integer>> children = tree.getChildren();
         assertThat(children.length()).isEqualTo(2);
-        assertThat(children.get(0).toString()).isEqualTo("(2 (4 7) 5)");
-        assertThat(children.get(1).toString()).isEqualTo("(3 (6 8 9))");
+        assertThat(children.get(0).toString()).isEqualTo("Tree(2 (4 7) 5)");
+        assertThat(children.get(1).toString()).isEqualTo("Tree(3 (6 8 9))");
     }
 
     @Test
@@ -432,7 +432,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     @Test
     public void shouldMapTree() {
-        assertThat(tree.map(i -> (char) (i + 64)).toString()).isEqualTo("(A (B (D G) E) (C (F H I)))");
+        assertThat(tree.map(i -> (char) (i + 64)).toString()).isEqualTo("Tree(A (B (D G) E) (C (F H I)))");
     }
 
     // -- replace
@@ -551,24 +551,24 @@ public class TreeTest extends AbstractTraversableTest {
 
     @Test
     public void shouldReturnStringRepresentationOfEmpty() {
-        assertThat(Tree.empty().toString()).isEqualTo("()");
+        assertThat(Tree.empty().toString()).isEqualTo("Tree()");
     }
 
     @Test
     public void shouldReturnStringRepresentationOfNode() {
-        assertThat(tree.toString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
+        assertThat(tree.toString()).isEqualTo("Tree(1 (2 (4 7) 5) (3 (6 8 9)))");
     }
 
     // -- toLispString
 
     @Test
     public void shouldConvertEmptyToLispString() {
-        assertThat(Tree.empty().toString()).isEqualTo("()");
+        assertThat(Tree.empty().toString()).isEqualTo("Tree()");
     }
 
     @Test
     public void shouldConvertNonEmptyToLispString() {
-        assertThat(tree.toString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
+        assertThat(tree.toString()).isEqualTo("Tree(1 (2 (4 7) 5) (3 (6 8 9)))");
     }
 
     // -- Serializable interface

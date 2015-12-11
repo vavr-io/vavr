@@ -67,7 +67,12 @@ public final class Some<T> implements Option<T>, Serializable {
     }
 
     @Override
+    public String stringPrefix() {
+        return "Some";
+    }
+
+    @Override
     public String toString() {
-        return "Some(" + value + ")";
+        return stringPrefix() + "(" + value + ")";
     }
 }

@@ -36,9 +36,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     private static final CharSeq EMPTY = new CharSeq("");
 
-    private final java.lang.String back;
+    private final String back;
 
-    private CharSeq(java.lang.String javaString) {
+    private CharSeq(String javaString) {
         this.back = javaString;
     }
 
@@ -86,7 +86,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return A new {@code CharSeq} instance containing the given element
      */
     public static CharSeq of(char character) {
-        return new CharSeq(new java.lang.String(new char[] { character }));
+        return new CharSeq(new String(new char[] { character }));
     }
 
     /**
@@ -100,7 +100,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         Objects.requireNonNull(characters, "characters is null");
         final char[] chrs = new char[characters.length];
         System.arraycopy(characters, 0, chrs, 0, characters.length);
-        return new CharSeq(new java.lang.String(chrs));
+        return new CharSeq(new String(chrs));
     }
 
     /**
@@ -422,7 +422,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         if (index > length()) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on String of length " + length());
         }
-        final java.lang.String javaString = back;
+        final String javaString = back;
         final StringBuilder sb = new StringBuilder(javaString.substring(0, index));
         for (Character element : elements) {
             sb.append(element);
@@ -626,7 +626,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public CharSeq removeAt(int index) {
-        final java.lang.String removed = back.substring(0, index) + back.substring(index + 1);
+        final String removed = back.substring(0, index) + back.substring(index + 1);
         return removed.isEmpty() ? EMPTY : of(removed);
     }
 
@@ -1129,7 +1129,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     //
     //
-    // java.lang.String
+    // String
     //
     //
 
@@ -1278,7 +1278,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return The resultant byte array
      * @throws UnsupportedEncodingException If the named charset is not supported
      */
-    public byte[] getBytes(java.lang.String charsetName) throws UnsupportedEncodingException {
+    public byte[] getBytes(String charsetName) throws UnsupportedEncodingException {
         return back.getBytes(charsetName);
     }
 
@@ -1863,6 +1863,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return CharSeq.of(back.substring(beginIndex, endIndex));
     }
 
+    @Override
+    public String stringPrefix() {
+        return "CharSeq";
+    }
+
     /**
      * Returns a string containing the characters in this sequence in the same
      * order as this sequence.  The length of the string will be the length of
@@ -1871,7 +1876,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return a string consisting of exactly this sequence of characters
      */
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return back;
     }
 
@@ -1908,7 +1913,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * same result as the expression
      *
      * <blockquote>
-     * {@link java.util.regex.Pattern}.{@link java.util.regex.Pattern#matches(java.lang.String, CharSequence)
+     * {@link java.util.regex.Pattern}.{@link java.util.regex.Pattern#matches(String, CharSequence)
      * matches(<i>regex</i>, <i>str</i>)}
      * </blockquote>
      *
@@ -1918,7 +1923,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see java.util.regex.Pattern
      */
-    public boolean matches(java.lang.String regex) {
+    public boolean matches(String regex) {
         return back.matches(regex);
     }
 
@@ -1965,7 +1970,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see java.util.regex.Pattern
      */
-    public CharSeq replaceFirst(java.lang.String regex, java.lang.String replacement) {
+    public CharSeq replaceFirst(String regex, String replacement) {
         return CharSeq.of(back.replaceFirst(regex, replacement));
     }
 
@@ -2001,7 +2006,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see java.util.regex.Pattern
      */
-    public CharSeq replaceAll(java.lang.String regex, java.lang.String replacement) {
+    public CharSeq replaceAll(String regex, String replacement) {
         return CharSeq.of(back.replaceAll(regex, replacement));
     }
 
@@ -2095,8 +2100,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see java.util.regex.Pattern
      */
-    public CharSeq[] split(java.lang.String regex, int limit) {
-        final java.lang.String[] javaStrings = back.split(regex, limit);
+    public CharSeq[] split(String regex, int limit) {
+        final String[] javaStrings = back.split(regex, limit);
         final CharSeq[] strings = new CharSeq[javaStrings.length];
         for (int i = 0; i < strings.length; i++) {
             strings[i] = of(javaStrings[i]);
@@ -2109,7 +2114,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * href="../util/regex/Pattern.html#sum">regular expression</a>.
      *
      * <p> This method works as if by invoking the two-argument {@link
-     * #split(java.lang.String, int) split} method with the given expression and a limit
+     * #split(String, int) split} method with the given expression and a limit
      * argument of zero.  Trailing empty strings are therefore not included in
      * the resulting array.
      *
@@ -2133,7 +2138,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see java.util.regex.Pattern
      */
-    public CharSeq[] split(java.lang.String regex) {
+    public CharSeq[] split(String regex) {
         return split(regex, 0);
     }
 
@@ -2184,9 +2189,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @param locale use the case transformation rules for this locale
      * @return the {@code CharSeq}, converted to lowercase.
-     * @see java.lang.String#toLowerCase()
-     * @see java.lang.String#toUpperCase()
-     * @see java.lang.String#toUpperCase(Locale)
+     * @see String#toLowerCase()
+     * @see String#toUpperCase()
+     * @see String#toUpperCase(Locale)
      */
     public CharSeq toLowerCase(Locale locale) {
         return CharSeq.of(back.toLowerCase(locale));
@@ -2210,7 +2215,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      *
      * @return the {@code CharSeq}, converted to lowercase.
-     * @see java.lang.String#toLowerCase(Locale)
+     * @see String#toLowerCase(Locale)
      */
     public CharSeq toLowerCase() {
         return CharSeq.of(back.toLowerCase(Locale.getDefault()));
@@ -2260,9 +2265,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @param locale use the case transformation rules for this locale
      * @return the {@code CharSeq}, converted to uppercase.
-     * @see java.lang.String#toUpperCase()
-     * @see java.lang.String#toLowerCase()
-     * @see java.lang.String#toLowerCase(Locale)
+     * @see String#toUpperCase()
+     * @see String#toLowerCase()
+     * @see String#toLowerCase(Locale)
      */
     public CharSeq toUpperCase(Locale locale) {
         return CharSeq.of(back.toUpperCase(locale));
@@ -2286,7 +2291,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      *
      * @return the {@code CharSeq}, converted to uppercase.
-     * @see java.lang.String#toUpperCase(Locale)
+     * @see String#toUpperCase(Locale)
      */
     public CharSeq toUpperCase() {
         return CharSeq.of(back.toUpperCase(Locale.getDefault()));
