@@ -67,8 +67,13 @@ public final class None<T> implements Option<T>, Serializable {
     }
 
     @Override
-    public String toString() {
+    public String stringPrefix() {
         return "None";
+    }
+
+    @Override
+    public String toString() {
+        return stringPrefix();
     }
 
     // -- Serializable implementation

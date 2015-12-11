@@ -1129,7 +1129,12 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
+    public String stringPrefix() {
+        return "Queue";
+    }
+
+    @Override
     public String toString() {
-        return mkString("Queue(", ", ", ")");
+        return mkString(stringPrefix() + "(", ", ", ")");
     }
 }

@@ -737,8 +737,13 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     }
 
     @Override
+    public String stringPrefix() {
+        return "TreeMap";
+    }
+
+    @Override
     public String toString() {
-        return mkString("TreeMap(", ", ", ")");
+        return mkString(stringPrefix() + "(", ", ", ")");
     }
 
     /**

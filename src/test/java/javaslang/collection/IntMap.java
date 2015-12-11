@@ -33,10 +33,6 @@ public class IntMap<T> implements Traversable<T>, Serializable {
         this.original = original;
     }
 
-    Map<Integer, T> original() {
-        return original;
-    }
-
     @Override
     public int hashCode() {
         return original.values().hashCode();
@@ -58,8 +54,13 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
+    public String stringPrefix() {
+        return "IntMap";
+    }
+
+    @Override
     public String toString() {
-        return original.mkString("IntMap(", ", ", ")");
+        return original.mkString(stringPrefix() + "(", ", ", ")");
     }
 
     @Override

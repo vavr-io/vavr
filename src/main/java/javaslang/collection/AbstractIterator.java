@@ -21,7 +21,7 @@ abstract class AbstractIterator<T> implements Iterator<T> {
 
     @Override
     public String toString() {
-        return (isEmpty() ? "" : "non-") + "empty iterator";
+        return stringPrefix() + "(" + (isEmpty() ? "" : "?") + ")";
     }
 
     protected abstract T getNext();

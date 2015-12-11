@@ -162,6 +162,11 @@ public interface Arbitrary<T> extends Value<T> {
         return apply(Checkable.DEFAULT_SIZE).iterator();
     }
 
+    @Override
+    default String stringPrefix() {
+        return "Arbitrary";
+    }
+
     /**
      * Generates arbitrary integer values.
      *

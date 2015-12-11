@@ -233,6 +233,6 @@ final class FutureImpl<T> implements Future<T> {
 
     @Override
     public String toString() {
-        return "Future(" + value.map(String::valueOf).orElse("?") + ")";
+        return stringPrefix() + "(" + value.map(String::valueOf).orElse("?") + ")";
     }
 }

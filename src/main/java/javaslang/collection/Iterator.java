@@ -1077,7 +1077,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         }
     }
 
-    // -- Overridden methods of TraversableOnce
+    // -- Overridden methods of Traversable
 
     @Override
     default Iterator<T> clear() {
@@ -1659,6 +1659,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         Stream<T> stream = Stream.ofAll(this);
         return Spliterators.spliterator(stream.iterator(), stream.length(),
                 Spliterator.ORDERED | Spliterator.IMMUTABLE);
+    }
+
+    @Override
+    default String stringPrefix() {
+        return "Iterator";
     }
 
     @Override

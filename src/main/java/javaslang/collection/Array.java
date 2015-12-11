@@ -1261,8 +1261,13 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public String stringPrefix() {
+        return "Array";
+    }
+
+    @Override
     public String toString() {
-        return mkString("Array(", ", ", ")");
+        return mkString(stringPrefix() + "(", ", ", ")");
     }
 
     private static <T> Object[] create(Iterable<T> elements) {

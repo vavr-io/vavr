@@ -66,13 +66,18 @@ public final class Failure<T> implements Try<T>, Serializable {
     }
 
     @Override
+    public String stringPrefix() {
+        return "Failure";
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hashCode(cause.getCause());
     }
 
     @Override
     public String toString() {
-        return "Failure(" + cause.getCause() + ")";
+        return stringPrefix() +"(" + cause.getCause() + ")";
     }
 
     /**

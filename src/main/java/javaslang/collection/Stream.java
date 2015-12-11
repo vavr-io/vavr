@@ -1139,6 +1139,11 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    default String stringPrefix() {
+        return "Stream";
+    }
+
+    @Override
     default Stream<T> subSequence(int beginIndex) {
         if (beginIndex < 0) {
             throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
@@ -1345,7 +1350,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
         @Override
         public String toString() {
-            return "Stream()";
+            return stringPrefix() + "()";
         }
 
         /**
@@ -1435,7 +1440,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
         @Override
         public String toString() {
-            final StringBuilder builder = new StringBuilder("Stream(");
+            final StringBuilder builder = new StringBuilder(stringPrefix()).append("(");
             Stream<T> stream = this;
             while (stream != null && !stream.isEmpty()) {
                 final Cons<T> cons = (Cons<T>) stream;

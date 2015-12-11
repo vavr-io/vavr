@@ -1166,6 +1166,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default String stringPrefix() {
+        return "List";
+    }
+
+    @Override
     default List<T> subSequence(int beginIndex) {
         if (beginIndex < 0) {
             throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
@@ -1389,7 +1394,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
         @Override
         public String toString() {
-            return "List()";
+            return stringPrefix()+ "()";
         }
 
         /**
@@ -1480,7 +1485,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
         @Override
         public String toString() {
-            return mkString("List(", ", ", ")");
+            return mkString(stringPrefix() + "(", ", ", ")");
         }
 
         /**

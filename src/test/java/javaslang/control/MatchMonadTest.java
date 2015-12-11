@@ -654,7 +654,7 @@ public class MatchMonadTest {
         assertThat(actual).isEqualTo(0);
     }
 
-    // TraversableOnce operations
+    // Traversable operations
 
     @Test
     public void shouldGetIteratorOfMatched() {

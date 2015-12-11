@@ -410,6 +410,11 @@ public interface Match<R> extends Function<Object, R> {
         @Override
         MatchMonad<R> peek(Consumer<? super R> action);
 
+        @Override
+        default String stringPrefix() {
+            return "Match";
+        }
+
         /**
          * Transforms this {@code MatchMonad}.
          *

@@ -47,6 +47,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #orElse(Object)}</li>
  * <li>{@link #orElseGet(Supplier)}</li>
  * <li>{@link #orElseThrow(Supplier)}</li>
+ * <li>{@link #stringPrefix()}</li>
  * </ul>
  *
  * Equality checks:
@@ -258,6 +259,13 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
      * @return this instance
      */
     Value<T> peek(Consumer<? super T> action);
+
+    /**
+     * Returns the name of this Value type, which is used by toString().
+     *
+     * @return This type name.
+     */
+    String stringPrefix();
 
     /**
      * Clarifies that values have a proper equals() method implemented.

@@ -66,7 +66,12 @@ public final class Success<T> implements Try<T>, Serializable {
     }
 
     @Override
+    public String stringPrefix() {
+        return "Success";
+    }
+
+    @Override
     public String toString() {
-        return "Success(" + value + ")";
+        return stringPrefix() + "(" + value + ")";
     }
 }
