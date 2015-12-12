@@ -302,6 +302,12 @@ public interface Gen<T> extends Value<T>, Function<Random, T>, Supplier<T> {
         };
     }
 
+    @Override
+    default Gen<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
+    }
+
     /**
      * Maps generated Ts to Us.
      *

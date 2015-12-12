@@ -180,12 +180,23 @@ public interface Try<T> extends Value<T> {
         }
     }
 
+    @Override
+    default Try<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
+    }
+
     default Try<T> filterTry(CheckedPredicate<? super T> predicate) {
         if (isFailure()) {
             return this;
         } else {
             return Try.of(() -> predicate.test(get())).flatMap(b -> filter(ignored -> b));
         }
+    }
+
+    default Try<T> filterNotTry(CheckedPredicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filterTry(predicate.negate());
     }
 
     /**
@@ -511,6 +522,15 @@ public interface Try<T> extends Value<T> {
          * @throws Throwable if an error occurs
          */
         boolean test(T t) throws Throwable;
+
+        /**
+         * Negates this predicate.
+         *
+         * @return A new CheckedPredicate.
+         */
+        default CheckedPredicate<T> negate() {
+            return t -> !test(t);
+        }
     }
 
     /**

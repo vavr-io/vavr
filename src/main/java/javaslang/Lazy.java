@@ -99,14 +99,22 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
      *
      * @param predicate A predicate
      * @return A new Option instance
+     * @throws NullPointerException if {@code predicate} is null.
      */
     @Override
     default Lazy<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return this;
         } else {
             return predicate.test(get()) ? this : Undefined.instance();
         }
+    }
+
+    @Override
+    default Lazy<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
     }
 
     // DEV-NOTE: The current implementation is lazy, the iterable is pulled into the lazy instance.

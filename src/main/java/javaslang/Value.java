@@ -304,6 +304,9 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
     Value<T> filter(Predicate<? super T> predicate);
 
     @Override
+    Value<T> filterNot(Predicate<? super T> predicate);
+
+    @Override
     <U> Value<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     // DEV-NOTE: default implementations for singleton types, needs to be overridden by multi valued types
