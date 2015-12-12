@@ -386,7 +386,7 @@ public interface Match<R> extends Function<Object, R> {
     /**
      * @since 2.0.0
      */
-    interface MatchMonad<R> extends Value<R> {
+    interface MatchMonad<R> extends Value<R>, Supplier<R> {
 
         @Override
         MatchMonad<R> filter(Predicate<? super R> predicate);
