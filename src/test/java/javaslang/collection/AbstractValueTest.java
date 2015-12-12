@@ -204,6 +204,30 @@ public abstract class AbstractValueTest {
         }
     }
 
+    // -- filterNot
+
+    @Test
+    public void shouldFilterNotEmptyTraversable() {
+        assertThat(empty().filter(ignored -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldFilterNotNonEmptyTraversable() {
+        assertThat(of(1, 2, 3, 4).filterNot(i -> i % 2 == 0)).isEqualTo(of(1, 3));
+    }
+
+    @Test
+    public void shouldFilterNotNonEmptyTraversableAllMatch() {
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            final Value<Integer> v1 = of(1, 2, 3, 4);
+            final Value<Integer> v2 = of(1, 2, 3, 4);
+            assertThat(v1.filterNot(i -> false)).isEqualTo(v2);
+        } else {
+            final Value<Integer> v = of(1, 2, 3, 4);
+            assertThat(v.filterNot(i -> false)).isSameAs(v);
+        }
+    }
+
     // -- flatMap
 
     @Test

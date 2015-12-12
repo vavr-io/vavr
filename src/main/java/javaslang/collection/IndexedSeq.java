@@ -102,6 +102,9 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> filter(Predicate<? super T> predicate);
 
     @Override
+    IndexedSeq<T> filterNot(Predicate<? super T> predicate);
+
+    @Override
     <U> IndexedSeq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override

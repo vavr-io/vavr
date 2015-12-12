@@ -379,6 +379,12 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         return LinkedHashMap.ofEntries(list.filter(predicate));
     }
 
+    @Override
+    public LinkedHashMap<K, V> filterNot(Predicate<? super Tuple2<K, V>> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {

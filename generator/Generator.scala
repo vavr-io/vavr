@@ -176,6 +176,17 @@ def generateMainClasses(): Unit = {
             Monad<T> filter(${im.getType("java.util.function.Predicate")}<? super T> predicate);
 
             /**
+             * Filters this {@code Monad} by testing the negation of a predicate.
+             * <p>
+             * Shortcut for {@code filter(predicate.negate()}.
+             *
+             * @param predicate A predicate
+             * @return a new Monad instance
+             * @throws NullPointerException if {@code predicate} is null
+             */
+            Monad<T> filterNot(${im.getType("java.util.function.Predicate")}<? super T> predicate);
+
+            /**
              * FlatMaps this value to a new value with different component type.
              * <p>
              * FlatMap is the sequence operation for functions and behaves like the imperative {@code ;}.

@@ -392,6 +392,12 @@ public interface Match<R> extends Function<Object, R> {
         MatchMonad<R> filter(Predicate<? super R> predicate);
 
         @Override
+        default MatchMonad<R> filterNot(Predicate<? super R> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            return filter(predicate.negate());
+        }
+
+        @Override
         <U> MatchMonad<U> flatMap(Function<? super R, ? extends Iterable<? extends U>> mapper);
 
         /**
@@ -649,6 +655,7 @@ public interface Match<R> extends Function<Object, R> {
 
                 @Override
                 public MatchMonad<R> filter(Predicate<? super R> predicate) {
+                    Objects.requireNonNull(predicate, "predicate is null");
                     return result.map(supplier -> {
                         final R resultValue = supplier.get();
                         if (predicate.test(resultValue)) {
@@ -682,6 +689,7 @@ public interface Match<R> extends Function<Object, R> {
 
                 @Override
                 public MatchMonad<R> peek(Consumer<? super R> action) {
+                    Objects.requireNonNull(action, "action is null");
                     result.peek(supplier -> action.accept(supplier.get()));
                     return this;
                 }
@@ -749,21 +757,25 @@ public interface Match<R> extends Function<Object, R> {
 
             @Override
             public MatchMonad<R> filter(Predicate<? super R> predicate) {
+                Objects.requireNonNull(predicate, "predicate is null");
                 return new Otherwise<>(() -> result.filter(predicate).get());
             }
 
             @Override
             public <U> MatchMonad<U> flatMap(Function<? super R, ? extends Iterable<? extends U>> mapper) {
+                Objects.requireNonNull(mapper, "mapper is null");
                 return new Otherwise<>(() -> Value.get(mapper.apply(result.get())));
             }
 
             @Override
             public <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper) {
+                Objects.requireNonNull(mapper, "mapper is null");
                 return new Otherwise<>(() -> mapper.apply(result.get()));
             }
 
             @Override
             public MatchMonad<R> peek(Consumer<? super R> action) {
+                Objects.requireNonNull(action, "action is null");
                 action.accept(result.get());
                 return this;
             }

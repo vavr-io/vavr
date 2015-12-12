@@ -779,6 +779,12 @@ public interface Future<T> extends Value<T> {
         return promise.future();
     }
 
+    @Override
+    default Future<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     default <U> Future<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {

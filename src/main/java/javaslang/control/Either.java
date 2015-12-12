@@ -269,6 +269,12 @@ public interface Either<L, R> {
             }
         }
 
+        @Override
+        public Option<L> filterNot(Predicate<? super L> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            return filter(predicate.negate());
+        }
+
         /**
          * FlatMaps the left value if the projected Either is a Left.
          *
@@ -494,6 +500,7 @@ public interface Either<L, R> {
          * @param predicate A predicate
          * @return A new Option
          */
+        @Override
         public Option<R> filter(Predicate<? super R> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             if (either.isRight()) {
@@ -502,6 +509,12 @@ public interface Either<L, R> {
             } else {
                 return None.instance();
             }
+        }
+
+        @Override
+        public Option<R> filterNot(Predicate<? super R> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            return filter(predicate.negate());
         }
 
         /**

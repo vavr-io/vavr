@@ -74,6 +74,12 @@ public interface Arbitrary<T> extends Value<T> {
         return size -> apply(size).filter(predicate);
     }
 
+    @Override
+    default Arbitrary<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
+    }
+
     /**
      * Maps arbitrary objects T to arbitrary object U.
      *

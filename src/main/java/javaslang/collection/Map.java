@@ -130,6 +130,9 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
     Map<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
+    Map<K, V> filterNot(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
     <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper);
 
     @Override
