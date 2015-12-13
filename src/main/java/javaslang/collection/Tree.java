@@ -631,6 +631,13 @@ public interface Tree<T> extends Traversable<T> {
     String toString();
 
     /**
+     * Creates a neat 2-dimensional drawing of a tree. Unicode characters are used to draw node junctions.
+     *
+     * @return A nice string representation of the tree.
+     */
+    String draw();
+
+    /**
      * Represents a tree node.
      *
      * @param <T> value type
@@ -706,6 +713,24 @@ public interface Tree<T> extends Traversable<T> {
         @Override
         public String toString() {
             return stringPrefix() + (isLeaf() ? "(" + value + ")" : toLispString(this));
+        }
+
+        @Override
+        public String draw() {
+            StringBuilder builder = new StringBuilder();
+            drawAux("", builder);
+            return builder.toString();
+        }
+
+        private void drawAux(String indent, StringBuilder builder) {
+            builder.append(value);
+            for (List<Node<T>> it = children; !it.isEmpty(); it = it.tail()) {
+                final boolean isLast = it.tail().isEmpty();
+                builder.append('\n')
+                        .append(indent)
+                        .append(isLast ? "└──" : "├──");
+                it.head().drawAux(indent + (isLast ? "   " : "│  "), builder);
+            }
         }
 
         private static String toLispString(Tree<?> tree) {
@@ -871,6 +896,9 @@ public interface Tree<T> extends Traversable<T> {
         public String toString() {
             return stringPrefix() + "()";
         }
+
+        @Override
+        public String draw() { return "▣"; }
 
         // -- Serializable implementation
 
