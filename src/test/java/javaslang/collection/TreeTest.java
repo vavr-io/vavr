@@ -571,6 +571,26 @@ public class TreeTest extends AbstractTraversableTest {
         assertThat(tree.toString()).isEqualTo("Tree(1 (2 (4 7) 5) (3 (6 8 9)))");
     }
 
+    // draw
+
+    @Test
+    public void shouldReturnDrawStringOfEmpty() {
+        assertThat(Tree.empty().draw()).isEqualTo("▣");
+    }
+
+    @Test
+    public void shouldReturnDrawStringOfNode() {
+        assertThat(tree.draw()).isEqualTo("1\n" +
+                "├──2\n" +
+                "│  ├──4\n" +
+                "│  │  └──7\n" +
+                "│  └──5\n" +
+                "└──3\n" +
+                "   └──6\n" +
+                "      ├──8\n" +
+                "      └──9");
+    }
+
     // -- Serializable interface
 
     @Test
