@@ -6,6 +6,8 @@
 package javaslang;
 
 import javaslang.collection.Iterator;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -58,6 +60,20 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
         } else {
             return new Defined<>(supplier);
         }
+    }
+
+    /**
+     * Reduces many {@code Lazy} values into a single {@code Lazy} by transforming an
+     * {@code Iterable<Lazy<? extends T>>} into a {@code Lazy<Seq<T>>}.
+     *
+     * @param <T>    Type of the lazy values.
+     * @param values An iterable of lazy values.
+     * @return A lazy sequence of values.
+     * @throws NullPointerException if values is null
+     */
+    static <T> Lazy<Seq<T>> sequence(Iterable<? extends Lazy<? extends T>> values) {
+        Objects.requireNonNull(values, "values is null");
+        return Lazy.of(() -> List.ofAll(values).map(v -> v.get()));
     }
 
     /**

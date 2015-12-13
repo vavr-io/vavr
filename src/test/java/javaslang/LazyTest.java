@@ -6,6 +6,7 @@
 package javaslang;
 
 import javaslang.collection.List;
+import javaslang.collection.Seq;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -33,7 +34,37 @@ public class LazyTest {
         }
     }
 
-    // -- of(Supplier, Class) -- Proxy
+    // -- sequence(Iterable)
+
+    @Test
+    public void shouldSequenceEmpty() {
+        final List<Lazy<Integer>> testee = List.empty();
+        final Lazy<Seq<Integer>> sequence = Lazy.sequence(testee);
+        assertThat(sequence.get()).isEqualTo(List.empty());
+    }
+
+    @Test
+    public void shouldSequenceNonEmptyLazy() {
+        final List<Lazy<Integer>> testee = List.of(1, 2, 3).map(i -> Lazy.of(() -> i));
+        final Lazy<Seq<Integer>> sequence = Lazy.sequence(testee);
+        assertThat(sequence.get()).isEqualTo(List.of(1, 2, 3));
+    }
+
+    @Test
+    public void shouldNotEvaluateEmptySequence() {
+        final List<Lazy<Integer>> testee = List.empty();
+        final Lazy<Seq<Integer>> sequence = Lazy.sequence(testee);
+        assertThat(sequence.isEvaluated()).isFalse();
+    }
+
+    @Test
+    public void shouldNotEvaluateNonEmptySequence() {
+        final List<Lazy<Integer>> testee = List.of(1, 2, 3).map(i -> Lazy.of(() -> i));
+        final Lazy<Seq<Integer>> sequence = Lazy.sequence(testee);
+        assertThat(sequence.isEvaluated()).isFalse();
+    }
+
+    // -- val(Supplier, Class) -- Proxy
 
     @Test
     public void shouldCreateLazyProxy() {
