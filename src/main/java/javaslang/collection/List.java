@@ -1435,7 +1435,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
          * @param head The head
          * @param tail The tail
          */
-        Cons(T head, List<T> tail) {
+        private Cons(T head, List<T> tail) {
             this.head = head;
             this.tail = tail;
             this.length = 1 + tail.length();
