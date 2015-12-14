@@ -66,7 +66,7 @@ final class FutureImpl<T> implements Future<T> {
      *
      * @@GuardedBy("lock")
      */
-    private volatile Option<Try<T>> value = None.instance();
+    private volatile Option<Try<T>> value = Option.none();
 
     /**
      * The queue of actions is filled when calling onComplete() before the Future is completed or cancelled.
@@ -116,7 +116,7 @@ final class FutureImpl<T> implements Future<T> {
             } else {
                 return Try.of(() -> job == null || job.cancel(mayInterruptIfRunning)).onSuccess(cancelled -> {
                     if (cancelled) {
-                        value = new Some<>(new Failure<>(new CancellationException()));
+                        value = Option.some(Try.failure(new CancellationException()));
                         actions = null;
                         job = null;
                     }
@@ -204,7 +204,7 @@ final class FutureImpl<T> implements Future<T> {
                 throw new IllegalStateException("The Future is completed.");
             }
             actions = this.actions;
-            this.value = new Some<>((Try<T>) value);
+            this.value = Option.some((Try<T>) value);
             this.actions = null;
             this.job = null;
         }

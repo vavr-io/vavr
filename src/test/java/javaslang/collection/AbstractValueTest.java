@@ -96,7 +96,7 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldGetOptionEmpty() {
-        assertThat(empty().getOption()).isEqualTo(None.instance());
+        assertThat(empty().getOption()).isEqualTo(Option.none());
     }
 
     @Test
@@ -311,7 +311,7 @@ public abstract class AbstractValueTest {
         assertThat(empty().orElseTry(() -> 2)).isEqualTo(2);
     }
 
-    @Test(expected = Failure.NonFatal.class)
+    @Test(expected = Try.NonFatalException.class)
     public void shouldThrowWhenCallingOrElseTryOnEmptyValueAndTryIsAFailure() {
         empty().orElseTry(() -> {
             throw new Error();
@@ -380,7 +380,7 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldConvertToOption() {
-        assertThat(empty().toOption()).isSameAs(None.instance());
+        assertThat(empty().toOption()).isSameAs(Option.none());
         assertThat(of(1).toOption()).isEqualTo(Option.of(1));
     }
 
@@ -425,7 +425,7 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertEmptyToTryUsingExceptionSupplier() {
         final Exception x = new Exception("test");
-        assertThat(empty().toTry(() -> x)).isEqualTo(new Failure<>(x));
+        assertThat(empty().toTry(() -> x)).isEqualTo(Try.failure(x));
     }
 
     @Test

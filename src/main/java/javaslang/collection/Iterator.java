@@ -10,9 +10,7 @@ import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.util.*;
 import java.util.function.*;
@@ -1230,14 +1228,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             final Iterator<T> that = this;
             return new AbstractIterator<T>() {
 
-                Option<T> next = None.instance();
+                Option<T> next = Option.none();
 
                 @Override
                 public boolean hasNext() {
                     while (next.isEmpty() && that.hasNext()) {
                         final T candidate = that.next();
                         if (predicate.test(candidate)) {
-                            next = new Some<>(candidate);
+                            next = Option.some(candidate);
                         }
                     }
                     return next.isDefined();
@@ -1246,7 +1244,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 @Override
                 public T getNext() {
                     T result = next.get();
-                    next = None.instance();
+                    next = Option.none();
                     return result;
                 }
             };
@@ -1354,7 +1352,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default Option<T> headOption() {
-        return hasNext() ? new Some<>(next()) : None.instance();
+        return hasNext() ? Option.some(next()) : Option.none();
     }
 
     @Override
@@ -1368,7 +1366,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default Option<Iterator<T>> initOption() {
-        return hasNext() ? new Some<>(init()) : None.instance();
+        return hasNext() ? Option.some(init()) : Option.none();
     }
 
     @Override
@@ -1471,10 +1469,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     default Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
             Stream<T> stream = Stream.ofAll(this);
-            return new Some<>(stream.tail().foldLeft(stream.head(), op::apply));
+            return Option.some(stream.tail().foldLeft(stream.head(), op::apply));
         }
     }
 
@@ -1493,10 +1491,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     default Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
             Stream<T> reversed = Stream.ofAll(this).reverse();
-            return new Some<>(reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs)));
+            return Option.some(reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs)));
         }
     }
 
@@ -1686,9 +1684,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     default Option<Iterator<T>> tailOption() {
         if (hasNext()) {
             next();
-            return new Some<>(this);
+            return Option.some(this);
         } else {
-            return None.instance();
+            return Option.none();
         }
     }
 

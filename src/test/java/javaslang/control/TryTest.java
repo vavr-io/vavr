@@ -6,7 +6,6 @@
 package javaslang.control;
 
 import javaslang.Serializables;
-import javaslang.control.Failure.NonFatal;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -26,12 +25,12 @@ public class TryTest {
 
     @Test
     public void shouldBeAwareOfPropertyThatHoldsExistsOfSuccess() {
-        assertThat(new Success<>(1).exists(i -> i == 1)).isTrue();
+        assertThat(new Try.Success<>(1).exists(i -> i == 1)).isTrue();
     }
 
     @Test
     public void shouldBeAwareOfPropertyThatNotHoldsExistsOfSuccess() {
-        assertThat(new Success<>(1).exists(i -> i == 2)).isFalse();
+        assertThat(new Try.Success<>(1).exists(i -> i == 2)).isFalse();
     }
 
     @Test
@@ -41,7 +40,7 @@ public class TryTest {
 
     @Test(expected = Error.class)
     public void shouldNotHoldPropertyExistsWhenPredicateThrows() {
-        new Success<>(1).exists(e -> {
+        new Try.Success<>(1).exists(e -> {
             throw new Error("error");
         });
     }
@@ -50,12 +49,12 @@ public class TryTest {
 
     @Test
     public void shouldBeAwareOfPropertyThatHoldsForAllOfSuccess() {
-        assertThat(new Success<>(1).forAll(i -> i == 1)).isTrue();
+        assertThat(new Try.Success<>(1).forAll(i -> i == 1)).isTrue();
     }
 
     @Test
     public void shouldBeAwareOfPropertyThatNotHoldsForAllOfSuccess() {
-        assertThat(new Success<>(1).forAll(i -> i == 2)).isFalse();
+        assertThat(new Try.Success<>(1).forAll(i -> i == 2)).isFalse();
     }
 
     @Test // a property holds for all elements of no elements
@@ -65,7 +64,7 @@ public class TryTest {
 
     @Test(expected = Error.class)
     public void shouldNotHoldPropertyForAllWhenPredicateThrows() {
-        new Success<>(1).forAll(e -> {
+        new Try.Success<>(1).forAll(e -> {
             throw new Error("error");
         });
     }
@@ -74,7 +73,7 @@ public class TryTest {
 
     @Test
     public void shouldReturnIteratorOfSuccess() {
-        assertThat((Iterator<Integer>) new Success<>(1).iterator()).isNotNull();
+        assertThat((Iterator<Integer>) new Try.Success<>(1).iterator()).isNotNull();
     }
 
     @Test
@@ -86,14 +85,14 @@ public class TryTest {
 
     @Test
     public void shouldCreateSuccessWhenCallingTryOfSupplier() {
-        assertThat(Try.of(() -> 1) instanceof Success).isTrue();
+        assertThat(Try.of(() -> 1) instanceof Try.Success).isTrue();
     }
 
     @Test
     public void shouldCreateFailureWhenCallingTryOfSupplier() {
         assertThat(Try.of(() -> {
             throw new Error("error");
-        }) instanceof Failure).isTrue();
+        }) instanceof Try.Failure).isTrue();
     }
 
     // -- Try.run
@@ -101,26 +100,26 @@ public class TryTest {
     @Test
     public void shouldCreateSuccessWhenCallingTryRunRunnable() {
         assertThat(Try.run(() -> {
-        }) instanceof Success).isTrue();
+        }) instanceof Try.Success).isTrue();
     }
 
     @Test
     public void shouldCreateFailureWhenCallingTryRunRunnable() {
         assertThat(Try.run(() -> {
             throw new Error("error");
-        }) instanceof Failure).isTrue();
+        }) instanceof Try.Failure).isTrue();
     }
 
     // -- Failure.Cause
 
-    @Test(expected = Failure.Fatal.class)
+    @Test(expected = Try.FatalException.class)
     public void shouldDetectFatalException() throws Exception {
-        NonFatal.of(new OutOfMemoryError());
+        Try.NonFatalException.of(new OutOfMemoryError());
     }
 
     @Test
     public void shouldDetectNonFatalException() throws Exception {
-        final NonFatal cause = NonFatal.of(new Exception());
+        final Try.NonFatalException cause = Try.NonFatalException.of(new Exception());
         assertThat(cause).isNotNull();
     }
 
@@ -133,7 +132,7 @@ public class TryTest {
         try {
             Try.of(outer::get).get();
             Assertions.fail("Exception expected");
-        } catch (Failure.Fatal x) {
+        } catch (Try.FatalException x) {
             Assertions.assertThat(x.getCause().getMessage()).isEqualTo("\uD83D\uDCA9");
         } catch (Throwable x) {
             Assertions.fail("Unexpected exception type: " + x.getClass().getName());
@@ -144,21 +143,21 @@ public class TryTest {
 
     @Test
     public void shouldReturnAndNotThrowOnNonFatal() {
-        final NonFatal cause = NonFatal.of(new Exception());
-        assertThat(NonFatal.of(cause) instanceof NonFatal).isTrue();
+        final Try.NonFatalException cause = Try.NonFatalException.of(new Exception());
+        assertThat(Try.NonFatalException.of(cause) instanceof Try.NonFatalException).isTrue();
     }
 
     @Test
     public void shouldReturnToStringOnNonFatal() {
         final Exception exception = new java.lang.Exception();
-        final NonFatal cause = NonFatal.of(exception);
+        final Try.NonFatalException cause = Try.NonFatalException.of(exception);
         assertThat(cause.toString()).isEqualTo("NonFatal(" + exception.toString() + ")");
     }
 
     @Test
     public void shouldReturnHasCodeOnNonFatal() {
         final Exception exception = new java.lang.Exception();
-        final NonFatal cause = NonFatal.of(exception);
+        final Try.NonFatalException cause = Try.NonFatalException.of(exception);
         assertThat(cause.hashCode()).isEqualTo(Objects.hashCode(exception));
     }
 
@@ -170,7 +169,7 @@ public class TryTest {
                 throw new UnknownError();
             });
             fail("Exception Expected");
-        } catch (Failure.Fatal x) {
+        } catch (Try.FatalException x) {
             assertThat(x.toString()).isEqualTo("Fatal(java.lang.UnknownError)");
         }
     }
@@ -183,7 +182,7 @@ public class TryTest {
                 throw error;
             });
             fail("Exception Expected");
-        } catch (Failure.Fatal x) {
+        } catch (Try.FatalException x) {
             assertThat(x.hashCode()).isEqualTo(Objects.hashCode(error));
         }
     }
@@ -196,13 +195,13 @@ public class TryTest {
                 throw error;
             });
             fail("Exception Expected");
-        } catch (Failure.Fatal x) {
+        } catch (Try.FatalException x) {
             try {
                 Try.of(() -> {
                     throw error;
                 });
                 fail("Exception Expected");
-            } catch (Failure.Fatal fatal) {
+            } catch (Try.FatalException fatal) {
                 assertThat(x.equals(fatal)).isEqualTo(true);
             }
         }
@@ -217,7 +216,7 @@ public class TryTest {
         }).isFailure()).isTrue();
     }
 
-    @Test(expected = Failure.Fatal.class)
+    @Test(expected = Try.FatalException.class)
     public void shouldPassThroughFatalException() {
         Try.of(() -> {
             throw new UnknownError();
@@ -234,7 +233,7 @@ public class TryTest {
         assertThat(failure().isSuccess()).isFalse();
     }
 
-    @Test(expected = NonFatal.class)
+    @Test(expected = Try.NonFatalException.class)
     public void shouldThrowWhenGetOnFailure() {
         failure().get();
     }
@@ -276,7 +275,7 @@ public class TryTest {
         final RuntimeException error = error();
         assertThat(failure().recoverWith(x -> {
             throw error;
-        })).isEqualTo(new Failure<>(error));
+        })).isEqualTo(new Try.Failure<>(error));
     }
 
     @Test
@@ -391,7 +390,7 @@ public class TryTest {
                 .mapTry(x -> x + 100)
                 .mapTry(x -> x + 50);
 
-        final Try<Integer> expected = new Success<>(250);
+        final Try<Integer> expected = new Try.Success<>(250);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -412,7 +411,7 @@ public class TryTest {
                 .andThen(arr -> arr.add(20))
                 .mapTry(arr -> arr.get(1));
 
-        final Try<Integer> expected = new Success<>(30);
+        final Try<Integer> expected = new Try.Success<>(30);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -439,23 +438,23 @@ public class TryTest {
 
     @Test
     public void shouldEqualFailureIfObjectIsSame() {
-        final Failure<?> success = new Failure<>(error());
+        final Try.Failure<?> success = new Try.Failure<>(error());
         assertThat(success).isEqualTo(success);
     }
 
     @Test
     public void shouldNotEqualFailureIfObjectIsNull() {
-        assertThat(new Failure<>(error())).isNotNull();
+        assertThat(new Try.Failure<>(error())).isNotNull();
     }
 
     @Test
     public void shouldNotEqualFailureIfObjectIsOfDifferentType() {
-        assertThat(new Failure<>(error()).equals(new Object())).isFalse();
+        assertThat(new Try.Failure<>(error()).equals(new Object())).isFalse();
     }
 
     @Test
     public void shouldEqualFailure() {
-        assertThat(new Failure<>(error())).isEqualTo(new Failure<>(error()));
+        assertThat(new Try.Failure<>(error())).isEqualTo(new Try.Failure<>(error()));
     }
 
     // hashCode
@@ -463,22 +462,22 @@ public class TryTest {
     @Test
     public void shouldHashFailure() {
         final Throwable error = error();
-        assertThat(new Failure<>(error).hashCode()).isEqualTo(Objects.hashCode(error));
+        assertThat(new Try.Failure<>(error).hashCode()).isEqualTo(Objects.hashCode(error));
     }
 
     // toString
 
     @Test
     public void shouldConvertFailureToString() {
-        assertThat(new Failure<>(error()).toString()).isEqualTo("Failure(java.lang.RuntimeException: error)");
+        assertThat(new Try.Failure<>(error()).toString()).isEqualTo("Failure(java.lang.RuntimeException: error)");
     }
 
     // serialization
 
     @Test
     public void shouldSerializeDeserializeFailure() {
-        final Object actual = Serializables.deserialize(Serializables.serialize(new Failure<>(error())));
-        assertThat(actual.toString()).isEqualTo(new Failure<>(error()).toString());
+        final Object actual = Serializables.deserialize(Serializables.serialize(new Try.Failure<>(error())));
+        assertThat(actual.toString()).isEqualTo(new Try.Failure<>(error()).toString());
     }
 
     // -- Success
@@ -567,7 +566,7 @@ public class TryTest {
         assertThat(success().filter(s -> true).get()).isEqualTo(OK);
     }
 
-    @Test(expected = NonFatal.class)
+    @Test(expected = Try.NonFatalException.class)
     public void shouldFilterNonMatchingPredicateOnSuccess() {
         success().filter(s -> false).get();
     }
@@ -590,7 +589,7 @@ public class TryTest {
         assertThat(success().flatMap(s -> iterable).get()).isEqualTo(1);
     }
 
-    @Test(expected = NonFatal.class)
+    @Test(expected = Try.NonFatalException.class)
     public void shouldFlatMapOnEmptyIterable() {
         final Iterable<Integer> iterable = Collections.emptyList();
         success().flatMap(s -> iterable).get();
@@ -615,14 +614,14 @@ public class TryTest {
         assertThat(success().map(s -> s + "!").get()).isEqualTo(OK + "!");
     }
 
-    @Test(expected = NonFatal.class)
+    @Test(expected = Try.NonFatalException.class)
     public void shouldMapWithExceptionOnSuccess() {
         success().map(s -> {
             throw new RuntimeException("xxx");
         }).get();
     }
 
-    @Test(expected = NonFatal.class)
+    @Test(expected = Try.NonFatalException.class)
     public void shouldThrowWhenCallingFailedOnSuccess() {
         success().failed().get();
     }
@@ -646,7 +645,7 @@ public class TryTest {
         final Try<Void> actual = Try.run(() -> {
         }).andThen(() -> {
         });
-        final Try<Void> expected = new Success<>(null);
+        final Try<Void> expected = new Try.Success<>(null);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -668,45 +667,45 @@ public class TryTest {
 
     @Test
     public void shouldEqualSuccessIfObjectIsSame() {
-        final Success<?> success = new Success<>(1);
+        final Try.Success<?> success = new Try.Success<>(1);
         assertThat(success).isEqualTo(success);
     }
 
     @Test
     public void shouldNotEqualSuccessIfObjectIsNull() {
-        assertThat(new Success<>(1)).isNotNull();
+        assertThat(new Try.Success<>(1)).isNotNull();
     }
 
     @Test
     public void shouldNotEqualSuccessIfObjectIsOfDifferentType() {
-        assertThat(new Success<>(1).equals(new Object())).isFalse();
+        assertThat(new Try.Success<>(1).equals(new Object())).isFalse();
     }
 
     @Test
     public void shouldEqualSuccess() {
-        assertThat(new Success<>(1)).isEqualTo(new Success<>(1));
+        assertThat(new Try.Success<>(1)).isEqualTo(new Try.Success<>(1));
     }
 
     // hashCode
 
     @Test
     public void shouldHashSuccess() {
-        assertThat(new Success<>(1).hashCode()).isEqualTo(Objects.hashCode(1));
+        assertThat(new Try.Success<>(1).hashCode()).isEqualTo(Objects.hashCode(1));
     }
 
     // toString
 
     @Test
     public void shouldConvertSuccessToString() {
-        assertThat(new Success<>(1).toString()).isEqualTo("Success(1)");
+        assertThat(new Try.Success<>(1).toString()).isEqualTo("Success(1)");
     }
 
     // serialization
 
     @Test
     public void shouldSerializeDeserializeSuccess() {
-        final Object actual = Serializables.deserialize(Serializables.serialize(new Success<>(1)));
-        assertThat(actual).isEqualTo(new Success<>(1));
+        final Object actual = Serializables.deserialize(Serializables.serialize(new Try.Success<>(1)));
+        assertThat(actual).isEqualTo(new Try.Success<>(1));
     }
 
     // -- Checked Functions

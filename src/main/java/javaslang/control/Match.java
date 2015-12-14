@@ -444,7 +444,7 @@ public interface Match<R> extends Function<Object, R> {
 
             public <R> When.Then<T, R> as(Class<R> resultType) {
                 Objects.requireNonNull(resultType, "resultType is null");
-                return new When.Then<>(value, None.instance());
+                return new When.Then<>(value, Option.none());
             }
 
             public <U> WhenUntyped<T, U> when(Function1<? super U, ? extends Boolean> predicate) {
@@ -480,7 +480,7 @@ public interface Match<R> extends Function<Object, R> {
 
             public <U, R> WhenApplicable<T, U, R> whenApplicable(Function1<? super U, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                return new WhenApplicable<>(value, None.instance(), function);
+                return new WhenApplicable<>(value, Option.none(), function);
             }
 
             public <R> Otherwise<R> otherwise(R that) {
@@ -517,7 +517,7 @@ public interface Match<R> extends Function<Object, R> {
 
             public <R> When.Then<T, R> then(Function<? super U, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                final Option<Supplier<? extends R>> result = When.computeResult(value, None.instance(), isMatching,
+                final Option<Supplier<? extends R>> result = When.computeResult(value, Option.none(), isMatching,
                         function);
                 return new When.Then<>(value, result);
             }
@@ -672,8 +672,7 @@ public interface Match<R> extends Function<Object, R> {
                         Function<? super R, ? extends Iterable<? extends U>> mapper) {
                     Objects.requireNonNull(mapper, "mapper is null");
                     return result.map(supplier -> {
-                        final Some<Supplier<? extends U>> some = new Some<>(
-                                () -> Value.get(mapper.apply(supplier.get())));
+                        final Option<Supplier<? extends U>> some = Option.some(() -> Value.get(mapper.apply(supplier.get())));
                         return (MatchMonad<U>) new Then<>(value, some);
                     }).orElse((MatchMonad<U>) this);
                 }
@@ -683,7 +682,7 @@ public interface Match<R> extends Function<Object, R> {
                 public <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper) {
                     Objects.requireNonNull(mapper, "mapper is null");
                     return result
-                            .map(supplier -> new Then<T, U>(value, new Some<>(() -> mapper.apply(supplier.get()))))
+                            .map(supplier -> new Then<T, U>(value, Option.some(() -> mapper.apply(supplier.get()))))
                             .orElseGet(() -> (Then<T, U>) this);
                 }
 

@@ -7,9 +7,7 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.collection.ArrayModule.Combinations;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.*;
@@ -625,7 +623,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Option<T> headOption() {
-        return isEmpty() ? None.instance() : new Some<>(head());
+        return isEmpty() ? Option.none() : Option.some(head());
     }
 
     @Override
@@ -651,9 +649,9 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Option<Array<T>> initOption() {
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
-            return new Some<>(init());
+            return Option.some(init());
         }
     }
 
@@ -1131,7 +1129,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Option<Array<T>> tailOption() {
-        return isEmpty() ? None.instance() : new Some<>(tail());
+        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @Override

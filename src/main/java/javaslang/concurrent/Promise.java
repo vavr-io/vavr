@@ -5,8 +5,6 @@
  */
 package javaslang.concurrent;
 
-import javaslang.control.Failure;
-import javaslang.control.Success;
 import javaslang.control.Try;
 
 import java.util.Objects;
@@ -196,7 +194,7 @@ public interface Promise<T> {
     /**
      * Completes this {@code Promise} with the given {@code value}.
      *
-     * @param value Either a {@link Success} containing the result or a {@link Failure} containing an exception.
+     * @param value Either a {@link Try.Success} containing the result or a {@link Try.Failure} containing an exception.
      * @return This {@code Promise}.
      * @throws IllegalStateException if this {@code Promise} has already been completed.
      */
@@ -211,7 +209,7 @@ public interface Promise<T> {
     /**
      * Attempts to completes this {@code Promise} with the given {@code value}.
      *
-     * @param value Either a {@link Success} containing the result or a {@link Failure} containing an exception.
+     * @param value Either a {@link Try.Success} containing the result or a {@link Try.Failure} containing an exception.
      * @return {@code false} if this {@code Promise} has already been completed, {@code true} otherwise.
      * @throws IllegalStateException if this {@code Promise} has already been completed.
      */
@@ -246,7 +244,7 @@ public interface Promise<T> {
      * @throws IllegalStateException if this {@code Promise} has already been completed.
      */
     default Promise<T> success(T value) {
-        return complete(new Success<>(value));
+        return complete(Try.success(value));
     }
 
     /**
@@ -256,7 +254,7 @@ public interface Promise<T> {
      * @return {@code false} if this {@code Promise} has already been completed, {@code true} otherwise.
      */
     default boolean trySuccess(T value) {
-        return tryComplete(new Success<>(value));
+        return tryComplete(Try.success(value));
     }
 
     /**
@@ -267,7 +265,7 @@ public interface Promise<T> {
      * @throws IllegalStateException if this {@code Promise} has already been completed.
      */
     default Promise<T> failure(Throwable exception) {
-        return complete(new Failure<>(exception));
+        return complete(Try.failure(exception));
     }
 
     /**
@@ -277,7 +275,7 @@ public interface Promise<T> {
      * @return {@code false} if this {@code Promise} has already been completed, {@code true} otherwise.
      */
     default boolean tryFailure(Throwable exception) {
-        return tryComplete(new Failure<>(exception));
+        return tryComplete(Try.failure(exception));
     }
 }
 

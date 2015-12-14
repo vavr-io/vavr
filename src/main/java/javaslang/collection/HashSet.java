@@ -9,9 +9,7 @@ import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -718,9 +716,9 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @Override
     public Option<HashSet<T>> tailOption() {
         if (tree.isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
-            return new Some<>(tail());
+            return Option.some(tail());
         }
     }
 

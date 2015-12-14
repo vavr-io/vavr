@@ -8,8 +8,7 @@ package javaslang;
 import javaslang.collection.List;
 import javaslang.collection.Queue;
 import javaslang.collection.Stream;
-import javaslang.control.None;
-import javaslang.control.Some;
+import javaslang.control.Option;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -24,15 +23,15 @@ public class IterableTest {
 
     @Test
     public void shouldEqNoneAndEmptyList() {
-        assertThat(None.instance().eq(List.empty())).isTrue();
-        assertThat(None.instance().eq(List.of(1))).isFalse();
+        assertThat(Option.none().eq(List.empty())).isTrue();
+        assertThat(Option.none().eq(List.of(1))).isFalse();
     }
 
     @Test
     public void shouldEqSomeAndNonEmptyList() {
-        assertThat(new Some<>(1).eq(List.of(1))).isTrue();
-        assertThat(new Some<>(1).eq(List.of(2))).isFalse();
-        assertThat(new Some<>(1).eq(List.empty())).isFalse();
+        assertThat(Option.some(1).eq(List.of(1))).isTrue();
+        assertThat(Option.some(1).eq(List.of(2))).isFalse();
+        assertThat(Option.some(1).eq(List.empty())).isFalse();
     }
 
     @Test

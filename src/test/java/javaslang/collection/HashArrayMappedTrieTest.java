@@ -7,8 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.control.None;
-import javaslang.control.Some;
+import javaslang.control.Option;
 import org.junit.Test;
 
 import java.util.Random;
@@ -23,11 +22,11 @@ public class HashArrayMappedTrieTest {
         Map<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.put(1, 2).put(4, 5).put(null, 7);
         assertThat(hamt.containsKey(1)).isTrue();
-        assertThat(hamt.get(1)).isEqualTo(new Some<>(2));
+        assertThat(hamt.get(1)).isEqualTo(Option.some(2));
         assertThat(hamt.containsKey(4)).isTrue();
-        assertThat(hamt.get(4)).isEqualTo(new Some<>(5));
+        assertThat(hamt.get(4)).isEqualTo(Option.some(5));
         assertThat(hamt.containsKey(null)).isTrue();
-        assertThat(hamt.get(null)).isEqualTo(new Some<>(7));
+        assertThat(hamt.get(null)).isEqualTo(Option.some(7));
     }
 
     @Test
@@ -35,9 +34,9 @@ public class HashArrayMappedTrieTest {
         Map<Integer, Integer> hamt = HashMap.empty();
         hamt = hamt.put(1, 2).put(4, 5);
         assertThat(hamt.containsKey(2)).isFalse();
-        assertThat(hamt.get(2)).isEqualTo(None.instance());
+        assertThat(hamt.get(2)).isEqualTo(Option.none());
         assertThat(hamt.containsKey(null)).isFalse();
-        assertThat(hamt.get(null)).isEqualTo(None.instance());
+        assertThat(hamt.get(null)).isEqualTo(Option.none());
     }
 
     @Test

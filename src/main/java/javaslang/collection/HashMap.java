@@ -8,9 +8,7 @@ package javaslang.collection;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -333,7 +331,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Option<Tuple2<K, V>> headOption() {
-        return isEmpty() ? None.instance() : new Some<>(head());
+        return isEmpty() ? Option.none() : Option.some(head());
     }
 
     @Override
@@ -348,9 +346,9 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public Option<HashMap<K, V>> initOption() {
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
-            return new Some<>(init());
+            return Option.some(init());
         }
     }
 
@@ -546,9 +544,9 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public Option<HashMap<K, V>> tailOption() {
         if (trie.isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
-            return new Some<>(tail());
+            return Option.some(tail());
         }
     }
 

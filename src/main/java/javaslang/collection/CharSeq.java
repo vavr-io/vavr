@@ -10,9 +10,7 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.CharSeqModule.Combinations;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -402,9 +400,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public Option<CharSeq> initOption() {
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
-            return new Some<>(init());
+            return Option.some(init());
         }
     }
 
@@ -832,9 +830,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public Option<CharSeq> tailOption() {
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
-            return new Some<>(CharSeq.of(back.substring(1)));
+            return Option.some(CharSeq.of(back.substring(1)));
         }
     }
 
@@ -1052,9 +1050,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public Option<Character> headOption() {
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
-            return new Some<>(back.charAt(0));
+            return Option.some(back.charAt(0));
         }
     }
 

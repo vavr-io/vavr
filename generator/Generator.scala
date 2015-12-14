@@ -51,12 +51,12 @@ def generateMainClasses(): Unit = {
       val HashMapType = im.getType("javaslang.collection.HashMap")
       val HashSetType = im.getType("javaslang.collection.HashSet")
       val LazyType = im.getType("javaslang.Lazy")
-      val LeftType = im.getType("javaslang.control.Left")
+      val LeftType = im.getType("javaslang.control.Either.Left")
       val ListType = im.getType("javaslang.collection.List")
       val MapType = im.getType("javaslang.collection.Map")
       val OptionType = im.getType("javaslang.control.Option")
       val QueueType = im.getType("javaslang.collection.Queue")
-      val RightType = im.getType("javaslang.control.Right")
+      val RightType = im.getType("javaslang.control.Either.Right")
       val SetType = im.getType("javaslang.collection.Set")
       val StackType = im.getType("javaslang.collection.Stack")
       val StreamType = im.getType("javaslang.collection.Stream")
@@ -585,11 +585,11 @@ def generateMainClasses(): Unit = {
           ${(1 to N).gen(i => {
 
               val checkedFunctionType = im.getType(s"javaslang.CheckedFunction$i")
-              val failureType = im.getType("javaslang.control.Failure")
-              val noneType = im.getType("javaslang.control.None")
+              val optionType = im.getType("javaslang.control.Option")
               val randomType = im.getType("java.util.Random")
-              val someType = im.getType("javaslang.control.Some")
               val tryType = im.getType("javaslang.control.Try")
+              val nonFatalType = im.getType("javaslang.control.Try.NonFatalException")
+              val fatalType = im.getType("javaslang.control.Try.FatalException")
               val tupleType = im.getType(s"javaslang.Tuple")
 
               val generics = (1 to i).gen(j => s"T$j")(", ")
@@ -663,20 +663,20 @@ def generateMainClasses(): Unit = {
                                                   return new CheckResult.Falsified(name, i, $tupleType.of(${(1 to i).gen(j => s"val$j")(", ")}));
                                               }
                                           }
-                                      } catch($failureType.NonFatal nonFatal) {
+                                      } catch($nonFatalType nonFatal) {
                                           logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                                          return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), new $someType<>($tupleType.of(${(1 to i).gen(j => s"val$j")(", ")})));
+                                          return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), $optionType.some($tupleType.of(${(1 to i).gen(j => s"val$j")(", ")})));
                                       }
-                                  } catch($failureType.NonFatal nonFatal) {
+                                  } catch($nonFatalType nonFatal) {
                                       logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                                      return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), $noneType.instance());
+                                      return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), $optionType.none());
                                   }
                               }
                               logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                               return new CheckResult.Satisfied(name, tries, exhausted);
-                          } catch($failureType.NonFatal nonFatal) {
+                          } catch($nonFatalType nonFatal) {
                               logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                              return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), $noneType.instance());
+                              return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), $optionType.none());
                           }
                       }
                   }

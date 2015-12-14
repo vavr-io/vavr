@@ -8,9 +8,7 @@ package javaslang.collection;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.Value;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -208,7 +206,7 @@ public interface Traversable<T> extends Value<T> {
     @SuppressWarnings("unchecked")
     default Option<Double> average() {
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
             final Traversable<?> objects = isTraversableAgain() ? this : toStream();
             final Object head = objects.head();
@@ -234,7 +232,7 @@ public interface Traversable<T> extends Value<T> {
             } else {
                 throw new UnsupportedOperationException("not numeric");
             }
-            return new Some<>(d);
+            return Option.some(d);
         }
     }
 
@@ -387,7 +385,7 @@ public interface Traversable<T> extends Value<T> {
         Objects.requireNonNull(predicate, "predicate is null");
         for (T a : this) {
             if (predicate.test(a)) {
-                return new Some<>(a); // may be Some(null)
+                return Option.some(a); // may be Some(null)
             }
         }
         return Option.none();
@@ -614,7 +612,7 @@ public interface Traversable<T> extends Value<T> {
      * @return {@code Some(element)} or {@code None} if this is empty.
      */
     default Option<T> lastOption() {
-        return isEmpty() ? None.instance() : new Some<>(last());
+        return isEmpty() ? Option.none() : Option.some(last());
     }
 
     /**
@@ -644,7 +642,7 @@ public interface Traversable<T> extends Value<T> {
     default Option<T> max() {
         final Stream<T> stream = Stream.ofAll(iterator());
         if (isEmpty() || !(stream.head() instanceof Comparable)) {
-            return None.instance();
+            return Option.none();
         } else {
             return stream.maxBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
         }
@@ -660,10 +658,10 @@ public interface Traversable<T> extends Value<T> {
     default Option<T> maxBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
             final T value = reduce((t1, t2) -> comparator.compare(t1, t2) >= 0 ? t1 : t2);
-            return new Some<>(value);
+            return Option.some(value);
         }
     }
 
@@ -678,7 +676,7 @@ public interface Traversable<T> extends Value<T> {
     default <U extends Comparable<? super U>> Option<T> maxBy(Function<? super T, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
             final Iterator<T> iter = iterator();
             T tm = iter.next();
@@ -691,7 +689,7 @@ public interface Traversable<T> extends Value<T> {
                     tm = t;
                 }
             }
-            return new Some<>(tm);
+            return Option.some(tm);
         }
     }
 
@@ -704,7 +702,7 @@ public interface Traversable<T> extends Value<T> {
     default Option<T> min() {
         final Stream<T> stream = Stream.ofAll(iterator());
         if (isEmpty() || !(stream.head() instanceof Comparable)) {
-            return None.instance();
+            return Option.none();
         } else {
             return stream.minBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
         }
@@ -720,10 +718,10 @@ public interface Traversable<T> extends Value<T> {
     default Option<T> minBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
             final T value = reduce((t1, t2) -> comparator.compare(t1, t2) <= 0 ? t1 : t2);
-            return new Some<>(value);
+            return Option.some(value);
         }
     }
 
@@ -738,7 +736,7 @@ public interface Traversable<T> extends Value<T> {
     default <U extends Comparable<? super U>> Option<T> minBy(Function<? super T, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
             final Iterator<T> iter = iterator();
             T tm = iter.next();
@@ -751,7 +749,7 @@ public interface Traversable<T> extends Value<T> {
                     tm = t;
                 }
             }
-            return new Some<>(tm);
+            return Option.some(tm);
         }
     }
 

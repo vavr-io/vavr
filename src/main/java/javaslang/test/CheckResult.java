@@ -6,9 +6,7 @@
 package javaslang.test;
 
 import javaslang.Tuple;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -183,13 +181,13 @@ public interface CheckResult {
         }
 
         @Override
-        public None<Tuple> sample() {
-            return None.instance();
+        public Option<Tuple> sample() {
+            return Option.none();
         }
 
         @Override
-        public None<Error> error() {
-            return None.instance();
+        public Option<Error> error() {
+            return Option.none();
         }
 
         @Override
@@ -267,13 +265,13 @@ public interface CheckResult {
         }
 
         @Override
-        public Some<Tuple> sample() {
-            return new Some<>(sample);
+        public Option<Tuple> sample() {
+            return Option.some(sample);
         }
 
         @Override
-        public None<Error> error() {
-            return None.instance();
+        public Option<Error> error() {
+            return Option.none();
         }
 
         @Override
@@ -358,8 +356,8 @@ public interface CheckResult {
         }
 
         @Override
-        public Some<Error> error() {
-            return new Some<>(error);
+        public Option<Error> error() {
+            return Option.some(error);
         }
 
         @Override

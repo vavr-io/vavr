@@ -8,9 +8,7 @@ package javaslang.collection;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -572,7 +570,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public Option<TreeSet<T>> initOption() {
-        return isEmpty() ? None.instance() : new Some<>(init());
+        return isEmpty() ? Option.none() : Option.some(init());
     }
 
     @SuppressWarnings("unchecked")
@@ -756,7 +754,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public Option<TreeSet<T>> tailOption() {
-        return isEmpty() ? None.instance() : new Some<>(tail());
+        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @Override

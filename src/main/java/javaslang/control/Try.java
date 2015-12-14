@@ -8,8 +8,9 @@ package javaslang.control;
 import javaslang.CheckedFunction1;
 import javaslang.Value;
 import javaslang.collection.Iterator;
-import javaslang.control.Failure.NonFatal;
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -238,7 +239,7 @@ public interface Try<T> extends Value<T> {
      * Gets the result of this Try if this is a Success or throws if this is a Failure.
      *
      * @return The result of this Try.
-     * @throws NonFatal if this is a Failure
+     * @throws NonFatalException if this is a Failure
      */
     @Override
     T get();
@@ -442,9 +443,9 @@ public interface Try<T> extends Value<T> {
 
     default Either<Throwable, T> toEither() {
         if (isFailure()) {
-            return new Left<>(getCause());
+            return Either.left(getCause());
         } else {
-            return new Right<>(get());
+            return Either.right(get());
         }
     }
 
@@ -562,5 +563,256 @@ public interface Try<T> extends Value<T> {
          * @throws Throwable if an error occurs
          */
         R get() throws Throwable;
+    }
+
+    /**
+     * A succeeded Try.
+     *
+     * @param <T> component type of this Success
+     * @author Daniel Dietrich
+     * @since 1.0.0
+     */
+    final class Success<T> implements Try<T>, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final T value;
+
+        /**
+         * Constructs a Success.
+         *
+         * @param value The value of this Success.
+         */
+        Success(T value) {
+            this.value = value;
+        }
+
+        @Override
+        public T get() {
+            return value;
+        }
+
+        @Override
+        public Throwable getCause() {
+            throw new UnsupportedOperationException("getCause on Success");
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public boolean isFailure() {
+            return false;
+        }
+
+        @Override
+        public boolean isSuccess() {
+            return true;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return (obj == this) || (obj instanceof Success && Objects.equals(value, ((Success<?>) obj).value));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(value);
+        }
+
+        @Override
+        public String stringPrefix() {
+            return "Success";
+        }
+
+        @Override
+        public String toString() {
+            return stringPrefix() + "(" + value + ")";
+        }
+    }
+
+    /**
+     * A failed Try.
+     *
+     * @param <T> component type of this Failure
+     * @author Daniel Dietrich
+     * @since 1.0.0
+     */
+    final class Failure<T> implements Try<T>, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final NonFatalException cause;
+
+        /**
+         * Constructs a Failure.
+         *
+         * @param exception A cause of type Throwable, may not be null.
+         * @throws NullPointerException if exception is null
+         * @throws Error                if the given exception if fatal, i.e. non-recoverable
+         */
+        Failure(Throwable exception) {
+            Objects.requireNonNull(exception, "exception is null");
+            cause = NonFatalException.of(exception);
+        }
+
+        // Throws NonFatal instead of Throwable because it is a RuntimeException which does not need to be checked.
+        @Override
+        public T get() throws NonFatalException {
+            throw cause;
+        }
+
+        @Override
+        public Throwable getCause() {
+            return cause.getCause();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public boolean isFailure() {
+            return true;
+        }
+
+        @Override
+        public boolean isSuccess() {
+            return false;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return (obj == this) || (obj instanceof Failure && Objects.equals(cause, ((Failure<?>) obj).cause));
+        }
+
+        @Override
+        public String stringPrefix() {
+            return "Failure";
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(cause.getCause());
+        }
+
+        @Override
+        public String toString() {
+            return stringPrefix() + "(" + cause.getCause() + ")";
+        }
+
+    }
+
+    /**
+     * An unchecked wrapper for Fatal exceptions.
+     * <p>
+     * See {@link NonFatalException}.
+     */
+    final class FatalException extends RuntimeException implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private FatalException(Throwable exception) {
+            super(exception);
+        }
+
+        /**
+         * Two Fatal exceptions are equal, if they have the same stack trace.
+         *
+         * @param o An object
+         * @return true, if o equals this, false otherwise.
+         */
+        @Override
+        public boolean equals(Object o) {
+            return (o == this) || (o instanceof FatalException
+                    && Arrays.deepEquals(getCause().getStackTrace(), ((FatalException) o).getCause().getStackTrace()));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(getCause());
+        }
+
+        @Override
+        public String toString() {
+            return "Fatal(" + getCause() + ")";
+        }
+    }
+
+    /**
+     * An unchecked wrapper for non-fatal/recoverable exceptions. The underlying exception can
+     * be accessed via {@link #getCause()}.
+     * <p>
+     * The following exceptions are considered to be fatal/non-recoverable:
+     * <ul>
+     * <li>{@linkplain InterruptedException}</li>
+     * <li>{@linkplain LinkageError}</li>
+     * <li>{@linkplain ThreadDeath}</li>
+     * <li>{@linkplain VirtualMachineError} (i.e. {@linkplain OutOfMemoryError} or {@linkplain StackOverflowError})</li>
+     * </ul>
+     */
+    final class NonFatalException extends RuntimeException implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private NonFatalException(Throwable exception) {
+            super(exception);
+        }
+
+        /**
+         * Wraps the given exception in a {@code NonFatal} or throws an {@link Error} if the given exception is fatal.
+         * <p>
+         * Note: InterruptedException is not considered to be fatal. It should be handled explicitly but we cannot
+         * throw it directly because it is not an Error. If we would wrap it in an Error, we couldn't handle it
+         * directly. Therefore it is not thrown as fatal exception.
+         *
+         * @param exception A Throwable
+         * @return A new {@code NonFatal} if the given exception is recoverable
+         * @throws Error                if the given exception is fatal, i.e. not recoverable
+         * @throws NullPointerException if exception is null
+         */
+        static NonFatalException of(Throwable exception) {
+            Objects.requireNonNull(exception, "exception is null");
+            if (exception instanceof NonFatalException) {
+                return (NonFatalException) exception;
+            } else if (exception instanceof FatalException) {
+                throw (FatalException) exception;
+            } else {
+                final boolean isFatal = exception instanceof InterruptedException
+                        || exception instanceof LinkageError
+                        || exception instanceof ThreadDeath
+                        || exception instanceof VirtualMachineError;
+                if (isFatal) {
+                    throw new FatalException(exception);
+                } else {
+                    return new NonFatalException(exception);
+                }
+            }
+        }
+
+        /**
+         * Two NonFatal exceptions are equal, if they have the same stack trace.
+         *
+         * @param o An object
+         * @return true, if o equals this, false otherwise.
+         */
+        @Override
+        public boolean equals(Object o) {
+            return (o == this) || (o instanceof NonFatalException
+                    && Arrays.deepEquals(getCause().getStackTrace(), ((NonFatalException) o).getCause().getStackTrace()));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(getCause());
+        }
+
+        @Override
+        public String toString() {
+            return "NonFatal(" + getCause() + ")";
+        }
     }
 }

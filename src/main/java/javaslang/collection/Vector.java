@@ -7,9 +7,7 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.collection.VectorModule.Combinations;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.*;
@@ -592,9 +590,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Option<T> headOption() {
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
-            return new Some<>(get(0));
+            return Option.some(get(0));
         }
     }
 
@@ -635,9 +633,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Option<? extends Vector<T>> initOption() {
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
-            return new Some<>(init());
+            return Option.some(init());
         }
     }
 
@@ -1134,12 +1132,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Option<Vector<T>> tailOption() {
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         }
         if (length() == 1) {
-            return new Some<>(empty());
+            return Option.some(empty());
         } else {
-            return new Some<>(tail());
+            return Option.some(tail());
         }
     }
 

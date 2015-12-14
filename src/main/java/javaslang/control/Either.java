@@ -8,6 +8,7 @@ package javaslang.control;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 
+import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -15,8 +16,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * Either represents a value of two possible types. An Either is either a {@link javaslang.control.Left} or a
- * {@link javaslang.control.Right}.
+ * Either represents a value of two possible types. An Either is either a {@link Left} or a
+ * {@link Right}.
  * <p>
  * If the given Either is a Right and projected to a Left, the Left operations have no effect on the Right value.<br>
  * If the given Either is a Left and projected to a Right, the Right operations have no effect on the Left value.<br>
@@ -263,9 +264,9 @@ public interface Either<L, R> {
             Objects.requireNonNull(predicate, "predicate is null");
             if (either.isLeft()) {
                 final L value = asLeft();
-                return predicate.test(value) ? new Some<>(value) : None.instance();
+                return predicate.test(value) ? Option.some(value) : Option.none();
             } else {
-                return None.instance();
+                return Option.none();
             }
         }
 
@@ -505,9 +506,9 @@ public interface Either<L, R> {
             Objects.requireNonNull(predicate, "predicate is null");
             if (either.isRight()) {
                 final R value = asRight();
-                return predicate.test(value) ? new Some<>(value) : None.instance();
+                return predicate.test(value) ? Option.some(value) : Option.none();
             } else {
-                return None.instance();
+                return Option.none();
             }
         }
 
@@ -620,6 +621,158 @@ public interface Either<L, R> {
 
         private R asRight() {
             return ((Right<L, R>) either).get();
+        }
+    }
+
+    /**
+     * The {@code Left} version of an {@code Either}.
+     *
+     * @param <L> left component type
+     * @param <R> right component type
+     * @author Daniel Dietrich
+     * @since 1.0.0
+     */
+    final class Left<L, R> implements Either<L, R>, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final L value;
+
+        /**
+         * Constructs a {@code Left}.
+         *
+         * @param value a left value
+         */
+        private Left(L value) {
+            this.value = value;
+        }
+
+        @Override
+        public boolean isLeft() {
+            return true;
+        }
+
+        @Override
+        public boolean isRight() {
+            return false;
+        }
+
+        @Override
+        public <X, Y> Left<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
+            Objects.requireNonNull(leftMapper, "leftMapper is null");
+            Objects.requireNonNull(rightMapper, "rightMapper is null");
+            return new Left<>(leftMapper.apply(value));
+        }
+
+        /**
+         * Returns the value of this {@code Left}.
+         *
+         * @return the value of this {@code Left}
+         */
+        @Override
+        public L get() {
+            return value;
+        }
+
+        /**
+         * Wrap the value of this {@code Left} in a new {@code Right}.
+         *
+         * @return a new {@code Right} containing this value
+         */
+        @Override
+        public Right<R, L> swap() {
+            return new Right<>(value);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return (obj == this) || (obj instanceof Left && Objects.equals(value, ((Left<?, ?>) obj).value));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(value);
+        }
+
+        @Override
+        public String toString() {
+            return "Left(" + value + ")";
+        }
+    }
+
+    /**
+     * The {@code Right} version of an {@code Either}.
+     *
+     * @param <L> left component type
+     * @param <R> right component type
+     * @author Daniel Dietrich
+     * @since 1.0.0
+     */
+    final class Right<L, R> implements Either<L, R>, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final R value;
+
+        /**
+         * Constructs a {@code Right}.
+         *
+         * @param value a right value
+         */
+        private Right(R value) {
+            this.value = value;
+        }
+
+        @Override
+        public boolean isLeft() {
+            return false;
+        }
+
+        @Override
+        public boolean isRight() {
+            return true;
+        }
+
+        @Override
+        public <X, Y> Right<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
+            Objects.requireNonNull(leftMapper, "leftMapper is null");
+            Objects.requireNonNull(rightMapper, "rightMapper is null");
+            return new Right<>(rightMapper.apply(value));
+        }
+
+        /**
+         * Returns the value of this {@code Right}.
+         *
+         * @return the value of this {@code Right}
+         */
+        @Override
+        public R get() {
+            return value;
+        }
+
+        /**
+         * Wrap the value of this {@code Right} in a new {@code Left}.
+         *
+         * @return a new {@code Left} containing this value
+         */
+        @Override
+        public Left<R, L> swap() {
+            return new Left<>(value);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return (obj == this) || (obj instanceof Right && Objects.equals(value, ((Right<?, ?>) obj).value));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(value);
+        }
+
+        @Override
+        public String toString() {
+            return "Right(" + value + ")";
         }
     }
 }
