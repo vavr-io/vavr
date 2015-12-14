@@ -583,7 +583,7 @@ public interface Try<T> extends Value<T> {
          *
          * @param value The value of this Success.
          */
-        Success(T value) {
+        private Success(T value) {
             this.value = value;
         }
 
@@ -653,7 +653,7 @@ public interface Try<T> extends Value<T> {
          * @throws NullPointerException if exception is null
          * @throws Error                if the given exception if fatal, i.e. non-recoverable
          */
-        Failure(Throwable exception) {
+        private Failure(Throwable exception) {
             Objects.requireNonNull(exception, "exception is null");
             cause = NonFatalException.of(exception);
         }

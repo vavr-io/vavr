@@ -81,7 +81,7 @@ public interface Option<T> extends Value<T> {
      *
      * @return {@code Some<Void>}
      */
-    static Some<Void> nothing() {
+    static Option<Void> nothing() {
         return Some.NOTHING;
     }
 
