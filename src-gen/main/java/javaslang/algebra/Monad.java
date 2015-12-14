@@ -16,9 +16,9 @@ import java.util.function.Supplier;
 import javaslang.*;
 import javaslang.collection.*;
 import javaslang.control.Either;
-import javaslang.control.Left;
+import javaslang.control.Either.Left;
+import javaslang.control.Either.Right;
 import javaslang.control.Option;
-import javaslang.control.Right;
 import javaslang.control.Try;
 
 /**

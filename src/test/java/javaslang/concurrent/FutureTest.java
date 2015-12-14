@@ -111,7 +111,7 @@ public class FutureTest extends AbstractValueTest {
         final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.of(() -> i)).take(20);
         final Future<Option<Integer>> testee = Future.find(futures, i -> i == 13);
         waitUntil(testee::isCompleted);
-        assertCompleted(testee, new Some<>(13));
+        assertCompleted(testee, Option.some(13));
     }
 
     @Test
@@ -119,7 +119,7 @@ public class FutureTest extends AbstractValueTest {
         final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.of(() -> i)).take(20);
         final Future<Option<Integer>> testee = Future.find(futures, i -> false);
         waitUntil(testee::isCompleted);
-        assertCompleted(testee, None.instance());
+        assertCompleted(testee, Option.none());
     }
 
     @Test
@@ -132,7 +132,7 @@ public class FutureTest extends AbstractValueTest {
                 .append(Future.of(() -> 13));
         final Future<Option<Integer>> testee = Future.find(futures, i -> i == 13);
         waitUntil(testee::isCompleted);
-        assertCompleted(testee, new Some<>(13));
+        assertCompleted(testee, Option.some(13));
     }
 
     @Test
@@ -144,7 +144,7 @@ public class FutureTest extends AbstractValueTest {
                 .take(20);
         final Future<Option<Integer>> testee = Future.find(futures, i -> i == 13);
         waitUntil(testee::isCompleted);
-        assertCompleted(testee, None.instance());
+        assertCompleted(testee, Option.none());
     }
 
     // -- static firstCompletedOf()
@@ -200,7 +200,7 @@ public class FutureTest extends AbstractValueTest {
                 List.of(Future.of(zZz(1)), Future.of(zZz(2)))
         );
         waitUntil(sequence::isCompleted);
-        assertThat(sequence.getValue().get()).isEqualTo(new Success<>(Stream.of(1, 2)));
+        assertThat(sequence.getValue().get()).isEqualTo(Try.success(Stream.of(1, 2)));
     }
 
     @Test
@@ -245,7 +245,7 @@ public class FutureTest extends AbstractValueTest {
         });
         final Future<Integer> testee = future.fallbackTo(that);
         waitUntil(testee::isCompleted);
-        assertThat(testee.getValue().get()).isEqualTo(new Success<>(1));
+        assertThat(testee.getValue().get()).isEqualTo(Try.success(1));
     }
 
     @Test
@@ -256,7 +256,7 @@ public class FutureTest extends AbstractValueTest {
         final Future<Integer> that = Future.of(() -> 1);
         final Future<Integer> testee = future.fallbackTo(that);
         waitUntil(testee::isCompleted);
-        assertThat(testee.getValue().get()).isEqualTo(new Success<>(1));
+        assertThat(testee.getValue().get()).isEqualTo(Try.success(1));
     }
 
     @Test
@@ -281,7 +281,7 @@ public class FutureTest extends AbstractValueTest {
         final Seq<Future<Integer>> futures = Stream.empty();
         final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b);
         waitUntil(testee::isCompleted);
-        assertThat(testee.getValue().get()).isEqualTo(new Success<>(0));
+        assertThat(testee.getValue().get()).isEqualTo(Try.success(0));
     }
 
     @Test
@@ -289,7 +289,7 @@ public class FutureTest extends AbstractValueTest {
         final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.of(zZz(i))).take(5);
         final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b);
         waitUntil(testee::isCompleted);
-        assertThat(testee.getValue().get()).isEqualTo(new Success<>(15));
+        assertThat(testee.getValue().get()).isEqualTo(Try.success(15));
     }
 
     @Test
@@ -447,7 +447,7 @@ public class FutureTest extends AbstractValueTest {
     // checks the invariant for cancelled state
     <T> void assertCompleted(Future<?> future, T value) {
         assertThat(future.isCompleted()).isTrue();
-        assertThat(future.getValue()).isEqualTo(new Some<>(new Success<>(value)));
+        assertThat(future.getValue()).isEqualTo(Option.some(Try.success(value)));
     }
 
     <T> java.util.concurrent.Future<T> generateJavaFuture(T value, int waitPeriod) {

@@ -13,9 +13,7 @@ import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.Empty;
 import javaslang.collection.Tree.Node;
 import javaslang.collection.TreeModule.*;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.*;
 import java.util.*;
@@ -392,7 +390,7 @@ public interface Tree<T> extends Traversable<T> {
 
     @Override
     default Option<T> headOption() {
-        return isEmpty() ? None.instance() : new Some<>(head());
+        return isEmpty() ? Option.none() : Option.some(head());
     }
 
     @Override
@@ -406,7 +404,7 @@ public interface Tree<T> extends Traversable<T> {
 
     @Override
     default Option<Seq<T>> initOption() {
-        return isEmpty() ? None.instance() : new Some<>(init());
+        return isEmpty() ? Option.none() : Option.some(init());
     }
 
     @Override
@@ -530,7 +528,7 @@ public interface Tree<T> extends Traversable<T> {
 
     @Override
     default Option<Seq<T>> tailOption() {
-        return isEmpty() ? None.instance() : new Some<>(tail());
+        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @Override

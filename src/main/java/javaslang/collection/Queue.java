@@ -6,9 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.*;
@@ -468,7 +466,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @return {@code None} if this Queue is empty, otherwise {@code Some} {@code Tuple} containing the first element and the remaining elements of this Queue
      */
     public Option<Tuple2<T, Queue<T>>> dequeueOption() {
-        return isEmpty() ? None.instance() : new Some<>(dequeue());
+        return isEmpty() ? Option.none() : Option.some(dequeue());
     }
 
     /**
@@ -536,7 +534,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @return {@code None} if this Queue is empty, otherwise a {@code Some} containing the first element
      */
     public Option<T> peekOption() {
-        return isEmpty() ? None.instance() : new Some<>(front.head());
+        return isEmpty() ? Option.none() : Option.some(front.head());
     }
 
     // -- Adjusted return types of Seq methods
@@ -698,7 +696,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Option<T> headOption() {
-        return isEmpty() ? None.instance() : new Some<>(front.head());
+        return isEmpty() ? Option.none() : Option.some(front.head());
     }
 
     @Override
@@ -726,7 +724,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Option<Queue<T>> initOption() {
-        return isEmpty() ? None.instance() : new Some<>(init());
+        return isEmpty() ? Option.none() : Option.some(init());
     }
 
     @Override
@@ -1027,7 +1025,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Option<Queue<T>> tailOption() {
-        return isEmpty() ? None.instance() : new Some<>(tail());
+        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @Override

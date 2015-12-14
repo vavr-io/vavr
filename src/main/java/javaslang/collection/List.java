@@ -9,9 +9,7 @@ import javaslang.*;
 import javaslang.collection.List.Nil;
 import javaslang.collection.ListModule.Combinations;
 import javaslang.collection.ListModule.SplitAt;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.*;
 import java.util.*;
@@ -661,7 +659,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default Option<T> headOption() {
-        return isEmpty() ? None.instance() : new Some<>(head());
+        return isEmpty() ? Option.none() : Option.some(head());
     }
 
     @Override
@@ -686,7 +684,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default Option<List<T>> initOption() {
-        return isEmpty() ? None.instance() : new Some<>(init());
+        return isEmpty() ? Option.none() : Option.some(init());
     }
 
     @Override
@@ -802,7 +800,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default Option<T> peekOption() {
-        return isEmpty() ? None.instance() : new Some<>(head());
+        return isEmpty() ? Option.none() : Option.some(head());
     }
 
     /**
@@ -845,7 +843,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default Option<List<T>> popOption() {
-        return isEmpty() ? None.instance() : new Some<>(tail());
+        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @Override
@@ -855,7 +853,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default Option<Tuple2<T, List<T>>> pop2Option() {
-        return isEmpty() ? None.instance() : new Some<>(Tuple.of(head(), tail()));
+        return isEmpty() ? Option.none() : Option.some(Tuple.of(head(), tail()));
     }
 
     @Override
@@ -1216,7 +1214,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default Option<List<T>> tailOption() {
-        return isEmpty() ? None.instance() : new Some<>(tail());
+        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @Override
@@ -1437,7 +1435,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
          * @param head The head
          * @param tail The tail
          */
-        public Cons(T head, List<T> tail) {
+        private Cons(T head, List<T> tail) {
             this.head = head;
             this.tail = tail;
             this.length = 1 + tail.length();

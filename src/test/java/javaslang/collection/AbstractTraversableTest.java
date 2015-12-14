@@ -6,9 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Tuple;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 import org.junit.Test;
 
 import java.io.*;
@@ -155,7 +153,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnNoneWhenComputingAverageOfNil() {
-        assertThat(empty().average()).isEqualTo(None.instance());
+        assertThat(empty().average()).isEqualTo(Option.none());
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -528,7 +526,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnSomeHeadWhenCallingHeadOptionOnNonNil() {
-        assertThat(of(1, 2, 3).headOption()).isEqualTo(new Some<>(1));
+        assertThat(of(1, 2, 3).headOption()).isEqualTo(Option.some(1));
     }
 
     // -- init
@@ -612,7 +610,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnSomeInitWhenCallingInitOptionOnNonNil() {
-        assertThat(of(1, 2, 3).initOption()).isEqualTo(new Some<>(of(1, 2)));
+        assertThat(of(1, 2, 3).initOption()).isEqualTo(Option.some(of(1, 2)));
     }
 
     // -- isEmpty
@@ -719,7 +717,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnSomeLastWhenCallingLastOptionOnNonNil() {
-        assertThat(of(1, 2, 3).lastOption()).isEqualTo(new Some<>(3));
+        assertThat(of(1, 2, 3).lastOption()).isEqualTo(Option.some(3));
     }
 
     // -- length
@@ -765,62 +763,62 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnNoneWhenComputingMaxOfNil() {
-        assertThat(empty().max()).isEqualTo(None.instance());
+        assertThat(empty().max()).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldComputeMaxOfStrings() {
-        assertThat(of("1", "2", "3").max()).isEqualTo(new Some<>("3"));
+        assertThat(of("1", "2", "3").max()).isEqualTo(Option.some("3"));
     }
 
     @Test
     public void shouldComputeMaxOfBoolean() {
-        assertThat(of(true, false).max()).isEqualTo(new Some<>(true));
+        assertThat(of(true, false).max()).isEqualTo(Option.some(true));
     }
 
     @Test
     public void shouldComputeMaxOfByte() {
-        assertThat(of((byte) 1, (byte) 2).max()).isEqualTo(new Some<>((byte) 2));
+        assertThat(of((byte) 1, (byte) 2).max()).isEqualTo(Option.some((byte) 2));
     }
 
     @Test
     public void shouldComputeMaxOfChar() {
-        assertThat(of('a', 'b', 'c').max()).isEqualTo(new Some<>('c'));
+        assertThat(of('a', 'b', 'c').max()).isEqualTo(Option.some('c'));
     }
 
     @Test
     public void shouldComputeMaxOfDouble() {
-        assertThat(of(.1, .2, .3).max()).isEqualTo(new Some<>(.3));
+        assertThat(of(.1, .2, .3).max()).isEqualTo(Option.some(.3));
     }
 
     @Test
     public void shouldComputeMaxOfFloat() {
-        assertThat(of(.1f, .2f, .3f).max()).isEqualTo(new Some<>(.3f));
+        assertThat(of(.1f, .2f, .3f).max()).isEqualTo(Option.some(.3f));
     }
 
     @Test
     public void shouldComputeMaxOfInt() {
-        assertThat(of(1, 2, 3).max()).isEqualTo(new Some<>(3));
+        assertThat(of(1, 2, 3).max()).isEqualTo(Option.some(3));
     }
 
     @Test
     public void shouldComputeMaxOfLong() {
-        assertThat(of(1L, 2L, 3L).max()).isEqualTo(new Some<>(3L));
+        assertThat(of(1L, 2L, 3L).max()).isEqualTo(Option.some(3L));
     }
 
     @Test
     public void shouldComputeMaxOfShort() {
-        assertThat(of((short) 1, (short) 2, (short) 3).max()).isEqualTo(new Some<>((short) 3));
+        assertThat(of((short) 1, (short) 2, (short) 3).max()).isEqualTo(Option.some((short) 3));
     }
 
     @Test
     public void shouldComputeMaxOfBigInteger() {
-        assertThat(of(BigInteger.ZERO, BigInteger.ONE).max()).isEqualTo(new Some<>(BigInteger.ONE));
+        assertThat(of(BigInteger.ZERO, BigInteger.ONE).max()).isEqualTo(Option.some(BigInteger.ONE));
     }
 
     @Test
     public void shouldComputeMaxOfBigDecimal() {
-        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).max()).isEqualTo(new Some<>(BigDecimal.ONE));
+        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).max()).isEqualTo(Option.some(BigDecimal.ONE));
     }
 
     // -- maxBy(Comparator)
@@ -832,17 +830,17 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldThrowWhenMaxByOfNil() {
-        assertThat(empty().maxBy((o1, o2) -> 0)).isEqualTo(None.instance());
+        assertThat(empty().maxBy((o1, o2) -> 0)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldCalculateMaxByOfInts() {
-        assertThat(of(1, 2, 3).maxBy((i1, i2) -> i1 - i2)).isEqualTo(new Some<>(3));
+        assertThat(of(1, 2, 3).maxBy((i1, i2) -> i1 - i2)).isEqualTo(Option.some(3));
     }
 
     @Test
     public void shouldCalculateInverseMaxByOfInts() {
-        assertThat(of(1, 2, 3).maxBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>(1));
+        assertThat(of(1, 2, 3).maxBy((i1, i2) -> i2 - i1)).isEqualTo(Option.some(1));
     }
 
     // -- maxBy(Function)
@@ -854,17 +852,17 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldThrowWhenMaxByFunctionOfNil() {
-        assertThat(this.<Integer> empty().maxBy(i -> i)).isEqualTo(None.instance());
+        assertThat(this.<Integer> empty().maxBy(i -> i)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldCalculateMaxByFunctionOfInts() {
-        assertThat(of(1, 2, 3).maxBy(i -> i)).isEqualTo(new Some<>(3));
+        assertThat(of(1, 2, 3).maxBy(i -> i)).isEqualTo(Option.some(3));
     }
 
     @Test
     public void shouldCalculateInverseMaxByFunctionOfInts() {
-        assertThat(of(1, 2, 3).maxBy(i -> -i)).isEqualTo(new Some<>(1));
+        assertThat(of(1, 2, 3).maxBy(i -> -i)).isEqualTo(Option.some(1));
     }
 
     @Test
@@ -873,7 +871,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 2, 3).maxBy(i -> {
             cnt[0]++;
             return i;
-        })).isEqualTo(new Some<>(3));
+        })).isEqualTo(Option.some(3));
         assertThat(cnt[0]).isEqualTo(3);
     }
 
@@ -881,62 +879,62 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnNoneWhenComputingMinOfNil() {
-        assertThat(empty().min()).isEqualTo(None.instance());
+        assertThat(empty().min()).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldComputeMinOfStrings() {
-        assertThat(of("1", "2", "3").min()).isEqualTo(new Some<>("1"));
+        assertThat(of("1", "2", "3").min()).isEqualTo(Option.some("1"));
     }
 
     @Test
     public void shouldComputeMinOfBoolean() {
-        assertThat(of(true, false).min()).isEqualTo(new Some<>(false));
+        assertThat(of(true, false).min()).isEqualTo(Option.some(false));
     }
 
     @Test
     public void shouldComputeMinOfByte() {
-        assertThat(of((byte) 1, (byte) 2).min()).isEqualTo(new Some<>((byte) 1));
+        assertThat(of((byte) 1, (byte) 2).min()).isEqualTo(Option.some((byte) 1));
     }
 
     @Test
     public void shouldComputeMinOfChar() {
-        assertThat(of('a', 'b', 'c').min()).isEqualTo(new Some<>('a'));
+        assertThat(of('a', 'b', 'c').min()).isEqualTo(Option.some('a'));
     }
 
     @Test
     public void shouldComputeMinOfDouble() {
-        assertThat(of(.1, .2, .3).min()).isEqualTo(new Some<>(.1));
+        assertThat(of(.1, .2, .3).min()).isEqualTo(Option.some(.1));
     }
 
     @Test
     public void shouldComputeMinOfFloat() {
-        assertThat(of(.1f, .2f, .3f).min()).isEqualTo(new Some<>(.1f));
+        assertThat(of(.1f, .2f, .3f).min()).isEqualTo(Option.some(.1f));
     }
 
     @Test
     public void shouldComputeMinOfInt() {
-        assertThat(of(1, 2, 3).min()).isEqualTo(new Some<>(1));
+        assertThat(of(1, 2, 3).min()).isEqualTo(Option.some(1));
     }
 
     @Test
     public void shouldComputeMinOfLong() {
-        assertThat(of(1L, 2L, 3L).min()).isEqualTo(new Some<>(1L));
+        assertThat(of(1L, 2L, 3L).min()).isEqualTo(Option.some(1L));
     }
 
     @Test
     public void shouldComputeMinOfShort() {
-        assertThat(of((short) 1, (short) 2, (short) 3).min()).isEqualTo(new Some<>((short) 1));
+        assertThat(of((short) 1, (short) 2, (short) 3).min()).isEqualTo(Option.some((short) 1));
     }
 
     @Test
     public void shouldComputeMinOfBigInteger() {
-        assertThat(of(BigInteger.ZERO, BigInteger.ONE).min()).isEqualTo(new Some<>(BigInteger.ZERO));
+        assertThat(of(BigInteger.ZERO, BigInteger.ONE).min()).isEqualTo(Option.some(BigInteger.ZERO));
     }
 
     @Test
     public void shouldComputeMinOfBigDecimal() {
-        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).min()).isEqualTo(new Some<>(BigDecimal.ZERO));
+        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).min()).isEqualTo(Option.some(BigDecimal.ZERO));
     }
 
     // -- minBy(Comparator)
@@ -948,17 +946,17 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldThrowWhenMinByOfNil() {
-        assertThat(empty().minBy((o1, o2) -> 0)).isEqualTo(None.instance());
+        assertThat(empty().minBy((o1, o2) -> 0)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldCalculateMinByOfInts() {
-        assertThat(of(1, 2, 3).minBy((i1, i2) -> i1 - i2)).isEqualTo(new Some<>(1));
+        assertThat(of(1, 2, 3).minBy((i1, i2) -> i1 - i2)).isEqualTo(Option.some(1));
     }
 
     @Test
     public void shouldCalculateInverseMinByOfInts() {
-        assertThat(of(1, 2, 3).minBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>(3));
+        assertThat(of(1, 2, 3).minBy((i1, i2) -> i2 - i1)).isEqualTo(Option.some(3));
     }
 
     // -- minBy(Function)
@@ -970,17 +968,17 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldThrowWhenMinByFunctionOfNil() {
-        assertThat(this.<Integer> empty().minBy(i -> i)).isEqualTo(None.instance());
+        assertThat(this.<Integer> empty().minBy(i -> i)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldCalculateMinByFunctionOfInts() {
-        assertThat(of(1, 2, 3).minBy(i -> i)).isEqualTo(new Some<>(1));
+        assertThat(of(1, 2, 3).minBy(i -> i)).isEqualTo(Option.some(1));
     }
 
     @Test
     public void shouldCalculateInverseMinByFunctionOfInts() {
-        assertThat(of(1, 2, 3).minBy(i -> -i)).isEqualTo(new Some<>(3));
+        assertThat(of(1, 2, 3).minBy(i -> -i)).isEqualTo(Option.some(3));
     }
 
     @Test
@@ -989,7 +987,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 2, 3).minBy(i -> {
             cnt[0]++;
             return i;
-        })).isEqualTo(new Some<>(1));
+        })).isEqualTo(Option.some(1));
         assertThat(cnt[0]).isEqualTo(3);
     }
 
@@ -1642,7 +1640,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
-        assertThat(of(1, 2, 3).tailOption()).isEqualTo(new Some<>(of(2, 3)));
+        assertThat(of(1, 2, 3).tailOption()).isEqualTo(Option.some(of(2, 3)));
     }
 
     // -- toJavaArray(Class)

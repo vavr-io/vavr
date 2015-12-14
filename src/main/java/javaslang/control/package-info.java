@@ -18,14 +18,14 @@
  * <strong>Option</strong>
  * <p>
  * The Option control is a replacement for {@linkplain java.util.Optional}. An Option is either
- * {@linkplain javaslang.control.Some} value or {@linkplain javaslang.control.None}.
+ * {@linkplain javaslang.control.Option.Some} value or {@linkplain javaslang.control.Option.None}.
  * In contrast to Optional, Option supports null values, i.e. it is possible to call {@code new Some(null)}.
  * However, {@code Option.of(null)} results in None.
  * <p>
  * <strong>Try</strong>
  * <p>
  * Exceptions are handled with the {@linkplain javaslang.control.Try} control which is either a
- * {@linkplain javaslang.control.Success}, containing a result, or a {@linkplain javaslang.control.Failure},
+ * {@linkplain javaslang.control.Try.Success}, containing a result, or a {@linkplain javaslang.control.Try.Failure},
  * containing an Exception.
  * <p>
  * Try internally handles exceptions by wrapping exceptions in a Cause.

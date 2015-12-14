@@ -6,7 +6,6 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
-import javaslang.control.Success;
 import javaslang.control.Try;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -415,7 +414,7 @@ public class StreamTest extends AbstractSeqTest {
         return Stream.of(vals)
                 .map(v -> Try.run(() -> func.accept(v)))
                 .findFirst(Try::isFailure)
-                .orElseGet(() -> new Success<>(null));
+                .orElseGet(() -> Try.success(null));
     }
 
     private Try<Void> flatTryWithJavaStream(Integer[] vals, Try.CheckedConsumer<Integer> func) {
@@ -423,7 +422,7 @@ public class StreamTest extends AbstractSeqTest {
                 .map(v -> Try.run(() -> func.accept(v)))
                 .filter(Try::isFailure)
                 .findFirst()
-                .orElseGet(() -> new Success<>(null));
+                .orElseGet(() -> Try.success(null));
     }
 
     private String doStuff(int i, StringBuilder builder) throws Exception {

@@ -9,9 +9,7 @@ import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.HashArrayMappedTrieModule.EmptyNode;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -171,7 +169,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         Option<V> lookup(int shift, K key) {
-            return None.instance();
+            return Option.none();
         }
 
         @Override
@@ -285,9 +283,9 @@ interface HashArrayMappedTrieModule {
         @Override
         Option<V> lookup(int shift, K key) {
             if (Objects.equals(key, this.key)) {
-                return new Some<>(value);
+                return Option.some(value);
             } else {
-                return None.instance();
+                return Option.none();
             }
         }
 
@@ -366,7 +364,7 @@ interface HashArrayMappedTrieModule {
         @Override
         Option<V> lookup(int shift, K key) {
             if (hash != Objects.hashCode(key)) {
-                return None.instance();
+                return Option.none();
             }
             return iterator().findFirst(t -> Objects.equals(t._1, key)).map(t -> t._2);
         }
@@ -474,7 +472,7 @@ interface HashArrayMappedTrieModule {
             int h = Objects.hashCode(key);
             int frag = hashFragment(shift, h);
             int bit = toBitmap(frag);
-            return ((bitmap & bit) != 0) ? subNodes.get(fromBitmap(bitmap, bit)).lookup(shift + SIZE, key) : None.instance();
+            return ((bitmap & bit) != 0) ? subNodes.get(fromBitmap(bitmap, bit)).lookup(shift + SIZE, key) : Option.none();
         }
 
         @Override

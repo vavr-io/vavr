@@ -7,9 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -444,9 +442,9 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public Option<LinkedHashMap<K, V>> initOption() {
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
-            return new Some<>(init());
+            return Option.some(init());
         }
     }
 
@@ -561,9 +559,9 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public Option<LinkedHashMap<K, V>> tailOption() {
         if (isEmpty()) {
-            return None.instance();
+            return Option.none();
         } else {
-            return new Some<>(tail());
+            return Option.some(tail());
         }
     }
 

@@ -7,9 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -425,7 +423,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
 
     @Override
     public Option<Tuple2<K, V>> headOption() {
-        return isEmpty() ? None.instance() : new Some<>(head());
+        return isEmpty() ? Option.none() : Option.some(head());
     }
 
     @Override
@@ -440,7 +438,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
 
     @Override
     public Option<TreeMap<K, V>> initOption() {
-        return isEmpty() ? None.instance() : new Some<>(init());
+        return isEmpty() ? Option.none() : Option.some(init());
     }
 
     @Override
@@ -674,7 +672,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
 
     @Override
     public Option<TreeMap<K, V>> tailOption() {
-        return isEmpty() ? None.instance() : new Some<>(tail());
+        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @Override

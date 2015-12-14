@@ -121,7 +121,7 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
      * @return Some(value) if a value is present, None otherwise
      */
     default Option<T> getOption() {
-        return isEmpty() ? None.instance() : new Some<>(get());
+        return isEmpty() ? Option.none() : Option.some(get());
     }
 
     /**
@@ -243,7 +243,7 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
      * @param supplier An alternative value supplier.
      * @return A value of type {@code T}.
      * @throws NullPointerException               if supplier is null
-     * @throws javaslang.control.Failure.NonFatal containing the original exception if this Value was empty and the Try failed.
+     * @throws Try.NonFatalException containing the original exception if this Value was empty and the Try failed.
      */
     default T orElseTry(Try.CheckedSupplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
@@ -418,7 +418,7 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
     @Override
     default <R> Either<T, R> toLeft(Supplier<? extends R> right) {
         Objects.requireNonNull(right, "right is null");
-        return isEmpty() ? new Right<>(right.get()) : new Left<>(get());
+        return isEmpty() ? Either.right(right.get()) : Either.left(get());
     }
 
     @Override
@@ -443,7 +443,7 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
         if (this instanceof Option) {
             return (Option<T>) this;
         } else {
-            return isEmpty() ? None.instance() : new Some<>(get());
+            return isEmpty() ? Option.none() : Option.some(get());
         }
     }
 
@@ -455,7 +455,7 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
     @Override
     default <L> Either<L, T> toRight(Supplier<? extends L> left) {
         Objects.requireNonNull(left, "left is null");
-        return isEmpty() ? new Left<>(left.get()) : new Right<>(get());
+        return isEmpty() ? Either.left(left.get()) : Either.right(get());
     }
 
     @Override
@@ -491,7 +491,7 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
     @Override
     default Try<T> toTry(Supplier<? extends Throwable> ifEmpty) {
         Objects.requireNonNull(ifEmpty, "ifEmpty is null");
-        return isEmpty() ? new Failure<>(ifEmpty.get()) : toTry();
+        return isEmpty() ? Try.failure(ifEmpty.get()) : toTry();
     }
 
     @Override

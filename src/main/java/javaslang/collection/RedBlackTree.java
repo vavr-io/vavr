@@ -11,9 +11,7 @@ import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.RedBlackTreeModule.Empty;
 import javaslang.collection.RedBlackTreeModule.Node;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -209,7 +207,7 @@ interface RedBlackTree<T> extends Iterable<T> {
      * @return Some element, if this is not empty, otherwise None
      */
     default Option<T> max() {
-        return isEmpty() ? None.instance() : new Some<>(Node.maximum((Node<T>) this));
+        return isEmpty() ? Option.none() : Option.some(Node.maximum((Node<T>) this));
     }
 
     /**
@@ -218,7 +216,7 @@ interface RedBlackTree<T> extends Iterable<T> {
      * @return Some element, if this is not empty, otherwise None
      */
     default Option<T> min() {
-        return isEmpty() ? None.instance() : new Some<>(Node.minimum((Node<T>) this));
+        return isEmpty() ? Option.none() : Option.some(Node.minimum((Node<T>) this));
     }
 
     /**
@@ -424,7 +422,7 @@ interface RedBlackTreeModule {
             } else if (result > 0) {
                 return right.find(value);
             } else {
-                return new Some<>(this.value);
+                return Option.some(this.value);
             }
         }
 
@@ -911,7 +909,7 @@ interface RedBlackTreeModule {
 
         @Override
         public Option<T> find(T value) {
-            return None.instance();
+            return Option.none();
         }
 
         @Override

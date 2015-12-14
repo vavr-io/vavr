@@ -6,7 +6,6 @@
 package javaslang.test;
 
 import javaslang.Tuple;
-import javaslang.control.None;
 import javaslang.control.Option;
 import org.junit.Test;
 
@@ -18,7 +17,7 @@ public class CheckResultTest {
 
     static final CheckResult.Satisfied SATISFIED = new CheckResult.Satisfied("test", 0, false);
     static final CheckResult.Falsified FALSIFIED = new CheckResult.Falsified("test", 0, Tuple.of(1));
-    static final CheckResult.Erroneous ERRONEOUS = new CheckResult.Erroneous("test", 0, new Error("test"), None.instance());
+    static final CheckResult.Erroneous ERRONEOUS = new CheckResult.Erroneous("test", 0, new Error("test"), Option.none());
 
     // -- Satisfied
 
@@ -59,12 +58,12 @@ public class CheckResultTest {
 
     @Test
     public void shouldHaveNoSampleWhenIsSatisfied() {
-        assertThat(SATISFIED.sample()).isEqualTo(None.instance());
+        assertThat(SATISFIED.sample()).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldHaveNoErrorWhenIsSatisfied() {
-        assertThat(SATISFIED.error()).isEqualTo(None.instance());
+        assertThat(SATISFIED.error()).isEqualTo(Option.none());
     }
 
     @Test
@@ -143,7 +142,7 @@ public class CheckResultTest {
 
     @Test
     public void shouldHaveNoErrorWhenIsFalsified() {
-        assertThat(FALSIFIED.error()).isEqualTo(None.instance());
+        assertThat(FALSIFIED.error()).isEqualTo(Option.none());
     }
 
     @Test
@@ -217,7 +216,7 @@ public class CheckResultTest {
 
     @Test
     public void shouldHaveNoSampleWhenIsErroneousWithoutSample() {
-        assertThat(ERRONEOUS.sample()).isEqualTo(None.instance());
+        assertThat(ERRONEOUS.sample()).isEqualTo(Option.none());
     }
 
     @Test
@@ -241,7 +240,7 @@ public class CheckResultTest {
     @Test
     public void shouldIdentififyEqualErroneousObjectsWhenObjectsHaveSameTypeAndEqualValues() {
         final CheckResult.Erroneous erroneous1 = ERRONEOUS;
-        final CheckResult.Erroneous erroneous2 = new CheckResult.Erroneous("test", 0, new Error("test"), None.instance());
+        final CheckResult.Erroneous erroneous2 = new CheckResult.Erroneous("test", 0, new Error("test"), Option.none());
         assertThat(erroneous1.equals(erroneous2)).isTrue();
     }
 
@@ -254,13 +253,13 @@ public class CheckResultTest {
     @Test
     public void shouldIdentififyUnequalErroneousObjectsWhenValuesAreUnequal() {
         final CheckResult.Erroneous erroneous1 = ERRONEOUS;
-        final CheckResult.Erroneous erroneous2 = new CheckResult.Erroneous("test", 1, new Error("error"), None.instance());
+        final CheckResult.Erroneous erroneous2 = new CheckResult.Erroneous("test", 1, new Error("error"), Option.none());
         assertThat(erroneous1.equals(erroneous2)).isFalse();
     }
 
     @Test
     public void shouldComputeHashCodeOfErroneous() {
-        assertThat(ERRONEOUS.hashCode()).isEqualTo(Objects.hash("test", 0, ERRONEOUS.deepHashCode(new Error("test")), None.instance()));
+        assertThat(ERRONEOUS.hashCode()).isEqualTo(Objects.hash("test", 0, ERRONEOUS.deepHashCode(new Error("test")), Option.none()));
     }
 
     @Test
@@ -330,7 +329,7 @@ public class CheckResultTest {
 
     @Test
     public void shouldAssertThatCheckResultIsErroneous() {
-        new CheckResult.Erroneous("test", 0, new Error(), None.instance()).assertIsErroneous();
+        new CheckResult.Erroneous("test", 0, new Error(), Option.none()).assertIsErroneous();
     }
 
     @Test(expected = AssertionError.class)

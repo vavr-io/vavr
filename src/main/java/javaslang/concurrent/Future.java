@@ -83,7 +83,7 @@ public interface Future<T> extends Value<T> {
 
     /**
      * Returns a {@code Future} that eventually succeeds with the first result of the given {@code Future}s which
-     * matches the given {@code predicate}. If no result matches, the {@code Future} will contain {@link None}.
+     * matches the given {@code predicate}. If no result matches, the {@code Future} will contain {@link Option.None}.
      * <p>
      * The returned {@code Future} is backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
      *
@@ -99,7 +99,7 @@ public interface Future<T> extends Value<T> {
 
     /**
      * Returns a {@code Future} that eventually succeeds with the first result of the given {@code Future}s which
-     * matches the given {@code predicate}. If no result matches, the {@code Future} will contain {@link None}.
+     * matches the given {@code predicate}. If no result matches, the {@code Future} will contain {@link Option.None}.
      * <p>
      * The returned {@code Future} is backed by the given {@link ExecutorService}.
      *
@@ -117,7 +117,7 @@ public interface Future<T> extends Value<T> {
         final Promise<Option<T>> promise = Promise.make(executorService);
         final List<Future<? extends T>> list = List.ofAll(futures);
         if (list.isEmpty()) {
-            promise.success(None.instance());
+            promise.success(Option.none());
         } else {
             final AtomicInteger count = new AtomicInteger(list.length());
             list.forEach(future -> future.onComplete(result -> {
@@ -128,10 +128,10 @@ public interface Future<T> extends Value<T> {
                         final boolean wasLast = count.decrementAndGet() == 0;
                         // when result is a Failure or predicate is false then we check in onFailure for finish
                         result.filter(predicate)
-                                .onSuccess(value -> promise.trySuccess(new Some<>(value)))
+                                .onSuccess(value -> promise.trySuccess(Option.some(value)))
                                 .onFailure(ignored -> {
                                     if (wasLast) {
-                                        promise.trySuccess(None.instance());
+                                        promise.trySuccess(Option.none());
                                     }
                                 });
                     }
@@ -660,7 +660,7 @@ public interface Future<T> extends Value<T> {
     void onComplete(Consumer<? super Try<T>> action);
 
     /**
-     * Performs the action once the Future is complete and the result is a {@link Failure}. Please note that the
+     * Performs the action once the Future is complete and the result is a {@link Try.Failure}. Please note that the
      * future is also a failure when it was cancelled.
      *
      * @param action An action to be performed when this future failed.
@@ -672,7 +672,7 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
-     * Performs the action once the Future is complete and the result is a {@link Success}.
+     * Performs the action once the Future is complete and the result is a {@link Try.Success}.
      *
      * @param action An action to be performed when this future succeeded.
      * @throws NullPointerException if {@code action} is null.
@@ -758,7 +758,7 @@ public interface Future<T> extends Value<T> {
         final Promise<Tuple2<T, U>> promise = Promise.make(executorService());
         onComplete(res1 -> {
             if (res1.isFailure()) {
-                promise.complete((Failure<Tuple2<T, U>>) res1);
+                promise.complete((Try.Failure<Tuple2<T, U>>) res1);
             } else {
                 that.onComplete(res2 -> {
                     final Try<Tuple2<T, U>> result = res1.flatMap(t -> res2.map(u -> Tuple.of(t, u)));
@@ -799,7 +799,7 @@ public interface Future<T> extends Value<T> {
                         if (iter.hasNext()) {
                             promise.success(iter.next());
                         } else {
-                            promise.complete(new Failure<>(new NoSuchElementException("flatMap resulted in empty Iterable")));
+                            promise.complete(Try.failure(new NoSuchElementException("flatMap resulted in empty Iterable")));
                         }
                     }
                 })

@@ -183,38 +183,38 @@ public class MatchFunctionTest {
     @Test
     public void shouldMatchSuperTypeByValue() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.whenIs(option).then(true).apply(new Some<>(1));
+        final boolean actual = Match.whenIs(option).then(true).apply(Option.some(1));
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSuperTypeByValueIn() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.whenIsIn(None.instance(), option).then(true).apply(new Some<>(1));
+        final boolean actual = Match.whenIsIn(Option.none(), option).then(true).apply(Option.some(1));
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSuperTypeByPredicate() {
-        final boolean actual = Match.when((Option<?> o) -> true).then(true).apply(new Some<>(1));
+        final boolean actual = Match.when((Option<?> o) -> true).then(true).apply(Option.some(1));
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSuperTypeByType() {
-        final boolean actual = Match.whenType(Option.class).then(true).apply(new Some<>(1));
+        final boolean actual = Match.whenType(Option.class).then(true).apply(Option.some(1));
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSuperTypeByTypeIn() {
-        final boolean actual = Match.whenTypeIn(Boolean.class, Option.class).then(true).apply(new Some<>(1));
+        final boolean actual = Match.whenTypeIn(Boolean.class, Option.class).then(true).apply(Option.some(1));
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSuperTypeByFunction() {
-        final boolean actual = Match.whenApplicable((Option<?> o) -> true).thenApply().apply(new Some<>(1));
+        final boolean actual = Match.whenApplicable((Option<?> o) -> true).thenApply().apply(Option.some(1));
         assertThat(actual).isTrue();
     }
 
@@ -223,42 +223,42 @@ public class MatchFunctionTest {
     @Test
     public void shouldMatchSubTypeByValue() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.whenIs(new Some<>(1)).then(true).apply(option);
+        final boolean actual = Match.whenIs(Option.some(1)).then(true).apply(option);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSubTypeByValueIn() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.whenIsIn(None.instance(), new Some<>(1)).then(true).apply(option);
+        final boolean actual = Match.whenIsIn(Option.none(), Option.some(1)).then(true).apply(option);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSubTypeByPredicate() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.when((Some<?> o) -> true).then(true).apply(option);
+        final boolean actual = Match.when((Option.Some<?> o) -> true).then(true).apply(option);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSubTypeByType() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.whenType(Some.class).then(true).apply(option);
+        final boolean actual = Match.whenType(Option.Some.class).then(true).apply(option);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSubTypeByTypeIn() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.whenTypeIn(Boolean.class, Some.class).then(true).apply(option);
+        final boolean actual = Match.whenTypeIn(Boolean.class, Option.Some.class).then(true).apply(option);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSubTypeByFunction() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.whenApplicable((Some<?> o) -> true).thenApply().apply(option);
+        final boolean actual = Match.whenApplicable((Option.Some<?> o) -> true).thenApply().apply(option);
         assertThat(actual).isTrue();
     }
 

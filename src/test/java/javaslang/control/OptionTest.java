@@ -18,7 +18,7 @@ public class OptionTest {
 
     @Test
     public void shouldMapNullToNone() {
-        assertThat(Option.of(null)).isEqualTo(None.instance());
+        assertThat(Option.of(null)).isEqualTo(Option.none());
     }
 
     @Test
@@ -29,13 +29,13 @@ public class OptionTest {
 
     @Test
     public void shouldWrapNullInSome() {
-        final Some<?> some = new Some<>(null);
+        final Option<?> some = Option.some(null);
         assertThat(some.get()).isEqualTo(null);
     }
 
     @Test
     public void shouldCreateNothing() {
-        assertThat(Some.nothing()).isEqualTo(new Some<Void>(null));
+        assertThat(Option.nothing()).isEqualTo(Option.some(null));
     }
 
     @Test
@@ -91,12 +91,12 @@ public class OptionTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenReduceNil() {
-        None.instance().reduce((a, b) -> a);
+        Option.none().reduce((a, b) -> a);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceNullOperator() {
-        None.instance().reduce(null);
+        Option.none().reduce(null);
     }
 
     @Test
@@ -108,12 +108,12 @@ public class OptionTest {
 
     @Test
     public void shouldThrowWhenReduceOptionNil() {
-        assertThat(None.instance().reduceOption((a, b) -> a)).isSameAs(Option.none());
+        assertThat(Option.none().reduceOption((a, b) -> a)).isSameAs(Option.none());
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceOptionNullOperator() {
-        None.instance().reduceOption(null);
+        Option.none().reduceOption(null);
     }
 
     @Test
@@ -125,12 +125,12 @@ public class OptionTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenReduceLeftNil() {
-        None.instance().reduceLeft((a, b) -> a);
+        Option.none().reduceLeft((a, b) -> a);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceLeftNullOperator() {
-        None.instance().reduceLeft(null);
+        Option.none().reduceLeft(null);
     }
 
     @Test
@@ -142,12 +142,12 @@ public class OptionTest {
 
     @Test
     public void shouldReduceLeftOptionNil() {
-        assertThat(None.instance().reduceLeftOption((a, b) -> a)).isSameAs(Option.none());
+        assertThat(Option.none().reduceLeftOption((a, b) -> a)).isSameAs(Option.none());
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceLeftOptionNullOperator() {
-        None.instance().reduceLeftOption(null);
+        Option.none().reduceLeftOption(null);
     }
 
     @Test
@@ -159,12 +159,12 @@ public class OptionTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowWhenReduceRightNil() {
-        None.instance().reduceRight((a, b) -> a);
+        Option.none().reduceRight((a, b) -> a);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceRightNullOperator() {
-        None.instance().reduceRight(null);
+        Option.none().reduceRight(null);
     }
 
     @Test
@@ -176,12 +176,12 @@ public class OptionTest {
 
     @Test
     public void shouldThrowWhenReduceRightOptionNil() {
-        assertThat(None.instance().reduceRightOption((a, b) -> a)).isSameAs(Option.none());
+        assertThat(Option.none().reduceRightOption((a, b) -> a)).isSameAs(Option.none());
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceRightOptionNullOperator() {
-        None.instance().reduceRightOption(null);
+        Option.none().reduceRightOption(null);
     }
 
     @Test
@@ -229,13 +229,13 @@ public class OptionTest {
 
     @Test
     public void shouldConvertNoneToJavaOptional() {
-        final None<Object> none = None.instance();
+        final Option<Object> none = Option.none();
         assertThat(none.toJavaOptional()).isEqualTo(Optional.empty());
     }
 
     @Test
     public void shouldConvertSomeToJavaOptional() {
-        final Some<Integer> some = new Some<>(1);
+        final Option<Integer> some = Option.some(1);
         assertThat(some.toJavaOptional()).isEqualTo(Optional.of(1));
     }
 
@@ -336,34 +336,34 @@ public class OptionTest {
 
     @Test
     public void shouldBeAwareOfPropertyThatHoldsExistsOfSome() {
-        assertThat(new Some<>(1).exists(i -> i == 1)).isTrue();
+        assertThat(Option.some(1).exists(i -> i == 1)).isTrue();
     }
 
     @Test
     public void shouldBeAwareOfPropertyThatNotHoldsExistsOfSome() {
-        assertThat(new Some<>(1).exists(i -> i == 2)).isFalse();
+        assertThat(Option.some(1).exists(i -> i == 2)).isFalse();
     }
 
     @Test
     public void shouldNotHoldPropertyExistsOfNone() {
-        assertThat(None.instance().exists(e -> true)).isFalse();
+        assertThat(Option.none().exists(e -> true)).isFalse();
     }
 
     // -- forall
 
     @Test
     public void shouldBeAwareOfPropertyThatHoldsForAllOfSome() {
-        assertThat(new Some<>(1).forAll(i -> i == 1)).isTrue();
+        assertThat(Option.some(1).forAll(i -> i == 1)).isTrue();
     }
 
     @Test
     public void shouldBeAwareOfPropertyThatNotHoldsForAllOfSome() {
-        assertThat(new Some<>(1).forAll(i -> i == 2)).isFalse();
+        assertThat(Option.some(1).forAll(i -> i == 2)).isFalse();
     }
 
     @Test // a property holds for all elements of no elements
     public void shouldNotHoldPropertyForAllOfNone() {
-        assertThat(None.instance().forAll(e -> true)).isTrue();
+        assertThat(Option.none().forAll(e -> true)).isTrue();
     }
 
     // -- forEach
@@ -404,84 +404,84 @@ public class OptionTest {
 
     @Test
     public void shouldReturnIteratorOfSome() {
-        assertThat((Iterator<Integer>) new Some<>(1).iterator()).isNotNull();
+        assertThat((Iterator<Integer>) Option.some(1).iterator()).isNotNull();
     }
 
     @Test
     public void shouldReturnIteratorOfNone() {
-        assertThat((Iterator<Object>) None.instance().iterator()).isNotNull();
+        assertThat((Iterator<Object>) Option.none().iterator()).isNotNull();
     }
 
     // -- equals
 
     @Test
     public void shouldEqualNoneIfObjectIsSame() {
-        final None<?> none = None.instance();
+        final Option<?> none = Option.none();
         assertThat(none).isEqualTo(none);
     }
 
     @Test
     public void shouldEqualSomeIfObjectIsSame() {
-        final Some<?> some = new Some<>(1);
+        final Option<?> some = Option.some(1);
         assertThat(some).isEqualTo(some);
     }
 
     @Test
     public void shouldNotEqualNoneIfObjectIsNull() {
-        assertThat(None.instance()).isNotNull();
+        assertThat(Option.none()).isNotNull();
     }
 
     @Test
     public void shouldNotEqualSomeIfObjectIsNull() {
-        assertThat(new Some<>(1)).isNotNull();
+        assertThat(Option.some(1)).isNotNull();
     }
 
     @Test
     public void shouldNotEqualNoneIfObjectIsOfDifferentType() {
-        final Object none = None.instance();
+        final Object none = Option.none();
         assertThat(none.equals(new Object())).isFalse();
     }
 
     @Test
     public void shouldNotEqualSomeIfObjectIsOfDifferentType() {
-        final Object some = new Some<>(1);
+        final Object some = Option.some(1);
         assertThat(some.equals(new Object())).isFalse();
     }
 
     @Test
     public void shouldEqualSome() {
-        assertThat(new Some<>(1)).isEqualTo(new Some<>(1));
+        assertThat(Option.some(1)).isEqualTo(Option.some(1));
     }
 
     // -- hashCode
 
     @Test
     public void shouldHashNone() {
-        assertThat(None.instance().hashCode()).isEqualTo(Objects.hash());
+        assertThat(Option.none().hashCode()).isEqualTo(Objects.hash());
     }
 
     @Test
     public void shouldHashSome() {
-        assertThat(new Some<>(1).hashCode()).isEqualTo(Objects.hashCode(1));
+        assertThat(Option.some(1).hashCode()).isEqualTo(Objects.hashCode(1));
     }
 
     // -- toString
 
     @Test
     public void shouldConvertSomeToString() {
-        assertThat(new Some<>(1).toString()).isEqualTo("Some(1)");
+        assertThat(Option.some(1).toString()).isEqualTo("Some(1)");
     }
 
     @Test
     public void shouldConvertNoneToString() {
-        assertThat(None.instance().toString()).isEqualTo("None");
+        assertThat(Option.none().toString()).isEqualTo("None");
     }
 
     // -- serialization
 
     @Test
     public void shouldPreserveSingletonWhenDeserializingNone() {
-        final Object none = Serializables.deserialize(Serializables.serialize(None.instance()));
-        assertThat(none == None.instance()).isTrue();
+        final Object none = Serializables.deserialize(Serializables.serialize(Option.none()));
+        assertThat(none == Option.none()).isTrue();
     }
 }

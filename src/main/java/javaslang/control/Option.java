@@ -8,6 +8,8 @@ package javaslang.control;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 
+import java.io.Serializable;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -19,8 +21,8 @@ import java.util.function.Supplier;
  * Replacement for {@link java.util.Optional}.
  * <p>
  * Option is a <a href="http://stackoverflow.com/questions/13454347/monads-with-java-8">monadic</a> container type which
- * represents an optional value. Instances of Option are either an instance of {@link javaslang.control.Some} or the
- * singleton {@link javaslang.control.None}.
+ * represents an optional value. Instances of Option are either an instance of {@link Some} or the
+ * singleton {@link None}.
  * <p>
  * Most of the API is taken from {@link java.util.Optional}. A similar type can be found in <a
  * href="http://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Maybe.html">Haskell</a> and <a
@@ -40,7 +42,7 @@ public interface Option<T> extends Value<T> {
      * @return {@code Some(value)} if value is not {@code null}, {@code None} otherwise
      */
     static <T> Option<T> of(T value) {
-        return (value == null) ? None.instance() : new Some<>(value);
+        return (value == null) ? none() : some(value);
     }
 
     /**
@@ -69,7 +71,18 @@ public interface Option<T> extends Value<T> {
      * @return the single instance of {@code None}
      */
     static <T> Option<T> none() {
-        return None.instance();
+        @SuppressWarnings("unchecked")
+        final None<T> none = (None<T>) None.INSTANCE;
+        return none;
+    }
+
+    /**
+     * Return the singleton instance of {@code Some<Void>}.
+     *
+     * @return {@code Some<Void>}
+     */
+    static Option<Void> nothing() {
+        return Some.NOTHING;
     }
 
     /**
@@ -187,7 +200,7 @@ public interface Option<T> extends Value<T> {
     @Override
     default Option<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return (isEmpty() || predicate.test(get())) ? this : None.instance();
+        return (isEmpty() || predicate.test(get())) ? this : none();
     }
 
     @Override
@@ -208,7 +221,7 @@ public interface Option<T> extends Value<T> {
     default <U> Option<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
-            return None.instance();
+            return none();
         } else {
             final Iterable<? extends U> iterable = mapper.apply(get());
             if (iterable instanceof Value) {
@@ -216,9 +229,9 @@ public interface Option<T> extends Value<T> {
             } else {
                 final java.util.Iterator<? extends U> iterator = iterable.iterator();
                 if (iterator.hasNext()) {
-                    return new Some<>(iterator.next());
+                    return some(iterator.next());
                 } else {
-                    return None.instance();
+                    return none();
                 }
             }
         }
@@ -235,9 +248,9 @@ public interface Option<T> extends Value<T> {
     default <U> Option<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
-            return None.instance();
+            return none();
         } else {
-            return new Some<>(mapper.apply(get()));
+            return some(mapper.apply(get()));
         }
     }
 
@@ -282,4 +295,129 @@ public interface Option<T> extends Value<T> {
 
     @Override
     String toString();
+
+    /**
+     * Some represents a defined {@link Option}. It contains a value which may be null. However, to
+     * create an Option containing null, {@code new Some(null)} has to be called. In all other cases
+     * {@link Option#of(Object)} is sufficient.
+     *
+     * @param <T> The type of the optional value.
+     * @author Daniel Dietrich
+     * @since 1.0.0
+     */
+    final class Some<T> implements Option<T>, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * The singleton instance of {@code Some<Void>}.
+         */
+        private static final Some<Void> NOTHING = new Some<>(null);
+
+        private final T value;
+
+        /**
+         * Creates a new Some containing the given value.
+         *
+         * @param value A value, may be null
+         */
+        private Some(T value) {
+            this.value = value;
+        }
+
+        @Override
+        public T get() {
+            return value;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return (obj == this) || (obj instanceof Some && Objects.equals(value, ((Some<?>) obj).value));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(value);
+        }
+
+        @Override
+        public String stringPrefix() {
+            return "Some";
+        }
+
+        @Override
+        public String toString() {
+            return stringPrefix() + "(" + value + ")";
+        }
+    }
+
+    /**
+     * None is a singleton representation of the undefined {@link Option}.
+     *
+     * @param <T> The type of the optional value.
+     * @author Daniel Dietrich
+     * @since 1.0.0
+     */
+    final class None<T> implements Option<T>, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * The singleton instance of None.
+         */
+        private static final None<?> INSTANCE = new None<>();
+
+        /**
+         * Hidden constructor.
+         */
+        private None() {
+        }
+
+        @Override
+        public T get() {
+            throw new NoSuchElementException("No value present");
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o == this;
+        }
+
+        @Override
+        public int hashCode() {
+            return 1;
+        }
+
+        @Override
+        public String stringPrefix() {
+            return "None";
+        }
+
+        @Override
+        public String toString() {
+            return stringPrefix();
+        }
+
+        // -- Serializable implementation
+
+        /**
+         * Instance control for object serialization.
+         *
+         * @return The singleton instance of None.
+         * @see Serializable
+         */
+        private Object readResolve() {
+            return INSTANCE;
+        }
+    }
 }

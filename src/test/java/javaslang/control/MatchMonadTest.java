@@ -172,7 +172,7 @@ public class MatchMonadTest {
     @Test
     public void shouldMatchSuperTypeByValue() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.of(new Some<>(1)).whenIs(option).then(true).get();
+        final boolean actual = Match.of(Option.some(1)).whenIs(option).then(true).get();
         assertThat(actual).isTrue();
     }
 
@@ -180,31 +180,31 @@ public class MatchMonadTest {
     @Test
     public void shouldMatchSuperTypeByValueIn() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.of(new Some<>(1)).whenIsIn(None.instance(), option).then(true).get();
+        final boolean actual = Match.of(Option.some(1)).whenIsIn(Option.none(), option).then(true).get();
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSuperTypeByPredicate() {
-        final boolean actual = Match.of(new Some<>(1)).when((Option<?> o) -> true).then(true).get();
+        final boolean actual = Match.of(Option.some(1)).when((Option<?> o) -> true).then(true).get();
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSuperTypeByType() {
-        final boolean actual = Match.of(new Some<>(1)).whenType(Option.class).then(true).get();
+        final boolean actual = Match.of(Option.some(1)).whenType(Option.class).then(true).get();
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSuperTypeByTypeIn() {
-        final boolean actual = Match.of(new Some<>(1)).whenTypeIn(Boolean.class, Option.class).then(true).get();
+        final boolean actual = Match.of(Option.some(1)).whenTypeIn(Boolean.class, Option.class).then(true).get();
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSuperTypeByFunction() {
-        final boolean actual = Match.of(new Some<>(1)).whenApplicable((Option<?> o) -> true).thenApply().get();
+        final boolean actual = Match.of(Option.some(1)).whenApplicable((Option<?> o) -> true).thenApply().get();
         assertThat(actual).isTrue();
     }
 
@@ -213,7 +213,7 @@ public class MatchMonadTest {
     @Test
     public void shouldMatchSubTypeByValue() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.of(option).whenIs(new Some<>(1)).then(true).get();
+        final boolean actual = Match.of(option).whenIs(Option.some(1)).then(true).get();
         assertThat(actual).isTrue();
     }
 
@@ -221,35 +221,35 @@ public class MatchMonadTest {
     @Test
     public void shouldMatchSubTypeByValueIn() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.of(option).whenIsIn(None.instance(), new Some<>(1)).then(true).get();
+        final boolean actual = Match.of(option).whenIsIn(Option.none(), Option.some(1)).then(true).get();
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSubTypeByPredicate() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.of(option).when((Some<?> o) -> true).then(true).get();
+        final boolean actual = Match.of(option).when((Option.Some<?> o) -> true).then(true).get();
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSubTypeByType() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.of(option).whenType(Some.class).then(true).get();
+        final boolean actual = Match.of(option).whenType(Option.Some.class).then(true).get();
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSubTypeByTypeIn() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.of(option).whenTypeIn(Boolean.class, Some.class).then(true).get();
+        final boolean actual = Match.of(option).whenTypeIn(Boolean.class, Option.Some.class).then(true).get();
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldMatchSubTypeByFunction() {
         final Option<Integer> option = Option.of(1);
-        final boolean actual = Match.of(option).whenApplicable((Some<?> o) -> true).thenApply().get();
+        final boolean actual = Match.of(option).whenApplicable((Option.Some<?> o) -> true).thenApply().get();
         assertThat(actual).isTrue();
     }
 

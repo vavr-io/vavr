@@ -9,9 +9,7 @@ import javaslang.*;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Empty;
 import javaslang.collection.StreamModule.*;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 
 import java.io.*;
 import java.util.*;
@@ -777,7 +775,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Option<T> headOption() {
-        return isEmpty() ? None.instance() : new Some<>(head());
+        return isEmpty() ? Option.none() : Option.some(head());
     }
 
     @Override
@@ -807,7 +805,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Option<Stream<T>> initOption() {
-        return isEmpty() ? None.instance() : new Some<>(init());
+        return isEmpty() ? Option.none() : Option.some(init());
     }
 
     @Override
@@ -1185,7 +1183,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Option<Stream<T>> tailOption() {
-        return isEmpty() ? None.instance() : new Some<>(tail());
+        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @Override
@@ -1392,7 +1390,7 @@ public interface Stream<T> extends LinearSeq<T> {
          * @param head A head element
          * @param tail A tail {@code Stream} supplier, {@linkplain Empty} denotes the end of the {@code Stream}
          */
-        public Cons(T head, Supplier<Stream<T>> tail) {
+        private Cons(T head, Supplier<Stream<T>> tail) {
             Objects.requireNonNull(tail, "tail is null");
             this.head = head;
             this.tail = Lazy.of(tail);
@@ -1580,7 +1578,7 @@ interface StreamModule {
         }
 
         private Cons<T> appendAll(Cons<T> stream, Function<? super Stream<T>, ? extends Stream<T>> mapper) {
-            return new Cons<>(stream.head(), () -> {
+            return (Cons<T>) Stream.cons(stream.head(), () -> {
                 final Stream<T> tail = stream.tail();
                 return tail.isEmpty() ? mapper.apply(self) : appendAll((Cons<T>) tail, mapper);
             });
@@ -1613,7 +1611,7 @@ interface StreamModule {
             } else if (front.isEmpty()) {
                 return apply(rear.reverse(), List.empty(), remaining);
             } else {
-                return new Cons<>(front.head(),
+                return Stream.cons(front.head(),
                         () -> apply(front.tail(), rear.prepend(remaining.head()), remaining.tail()));
             }
         }
@@ -1622,7 +1620,7 @@ interface StreamModule {
     final class StreamFactory {
 
         static <T> Stream<T> create(java.util.Iterator<? extends T> iterator) {
-            return iterator.hasNext() ? new Cons<>(iterator.next(), () -> create(iterator)) : Empty.instance();
+            return iterator.hasNext() ? Stream.cons(iterator.next(), () -> create(iterator)) : Empty.instance();
         }
     }
 

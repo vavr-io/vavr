@@ -7,9 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.control.None;
 import javaslang.control.Option;
-import javaslang.control.Some;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
@@ -362,7 +360,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReturnNoneWhenComputingAverageOfNil() {
-        assertThat(empty().average()).isEqualTo(None.instance());
+        assertThat(empty().average()).isEqualTo(Option.none());
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -731,7 +729,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReturnSomeHeadWhenCallingHeadOptionOnNonNil() {
-        assertThat(CharSeq.ofAll('1', '2', '3').headOption()).isEqualTo(new Some<>('1'));
+        assertThat(CharSeq.ofAll('1', '2', '3').headOption()).isEqualTo(Option.some('1'));
     }
 
     // -- hasDefiniteSize
@@ -783,7 +781,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReturnSomeInitWhenCallingInitOptionOnNonNil() {
-        assertThat(CharSeq.ofAll('1', '2', '3').initOption()).isEqualTo(new Some<>(CharSeq.ofAll('1', '2')));
+        assertThat(CharSeq.ofAll('1', '2', '3').initOption()).isEqualTo(Option.some(CharSeq.ofAll('1', '2')));
     }
 
     // -- isEmpty
@@ -883,7 +881,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReturnSomeLastWhenCallingLastOptionOnNonNil() {
-        assertThat(CharSeq.ofAll('1', '2', '3').lastOption()).isEqualTo(new Some<>('3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').lastOption()).isEqualTo(Option.some('3'));
     }
 
     // -- length
@@ -974,12 +972,12 @@ public class CharSeqTest {
 
     @Test
     public void shouldReturnNoneWhenComputingMaxOfNil() {
-        assertThat(empty().max()).isEqualTo(None.instance());
+        assertThat(empty().max()).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldComputeMaxOfChar() {
-        assertThat(CharSeq.ofAll('a', 'b', 'c').max()).isEqualTo(new Some<>('c'));
+        assertThat(CharSeq.ofAll('a', 'b', 'c').max()).isEqualTo(Option.some('c'));
     }
 
     // -- maxBy(Comparator)
@@ -991,17 +989,17 @@ public class CharSeqTest {
 
     @Test
     public void shouldThrowWhenMaxByOfNil() {
-        assertThat(empty().maxBy((o1, o2) -> 0)).isEqualTo(None.instance());
+        assertThat(empty().maxBy((o1, o2) -> 0)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldCalculateMaxByOfInts() {
-        assertThat(CharSeq.ofAll('1', '2', '3').maxBy((i1, i2) -> i1 - i2)).isEqualTo(new Some<>('3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').maxBy((i1, i2) -> i1 - i2)).isEqualTo(Option.some('3'));
     }
 
     @Test
     public void shouldCalculateInverseMaxByOfInts() {
-        assertThat(CharSeq.ofAll('1', '2', '3').maxBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>('1'));
+        assertThat(CharSeq.ofAll('1', '2', '3').maxBy((i1, i2) -> i2 - i1)).isEqualTo(Option.some('1'));
     }
 
     // -- maxBy(Function)
@@ -1013,29 +1011,29 @@ public class CharSeqTest {
 
     @Test
     public void shouldThrowWhenMaxByFunctionOfNil() {
-        assertThat(empty().maxBy(i -> i)).isEqualTo(None.instance());
+        assertThat(empty().maxBy(i -> i)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldCalculateMaxByFunctionOfInts() {
-        assertThat(CharSeq.ofAll('1', '2', '3').maxBy(i -> i)).isEqualTo(new Some<>('3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').maxBy(i -> i)).isEqualTo(Option.some('3'));
     }
 
     @Test
     public void shouldCalculateInverseMaxByFunctionOfInts() {
-        assertThat(CharSeq.ofAll('1', '2', '3').maxBy(i -> -i)).isEqualTo(new Some<>('1'));
+        assertThat(CharSeq.ofAll('1', '2', '3').maxBy(i -> -i)).isEqualTo(Option.some('1'));
     }
 
     // -- min
 
     @Test
     public void shouldReturnNoneWhenComputingMinOfNil() {
-        assertThat(empty().min()).isEqualTo(None.instance());
+        assertThat(empty().min()).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldComputeMinOfChar() {
-        assertThat(CharSeq.ofAll('a', 'b', 'c').min()).isEqualTo(new Some<>('a'));
+        assertThat(CharSeq.ofAll('a', 'b', 'c').min()).isEqualTo(Option.some('a'));
     }
 
     // -- minBy(Comparator)
@@ -1047,17 +1045,17 @@ public class CharSeqTest {
 
     @Test
     public void shouldThrowWhenMinByOfNil() {
-        assertThat(empty().minBy((o1, o2) -> 0)).isEqualTo(None.instance());
+        assertThat(empty().minBy((o1, o2) -> 0)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldCalculateMinByOfInts() {
-        assertThat(CharSeq.ofAll('1', '2', '3').minBy((i1, i2) -> i1 - i2)).isEqualTo(new Some<>('1'));
+        assertThat(CharSeq.ofAll('1', '2', '3').minBy((i1, i2) -> i1 - i2)).isEqualTo(Option.some('1'));
     }
 
     @Test
     public void shouldCalculateInverseMinByOfInts() {
-        assertThat(CharSeq.ofAll('1', '2', '3').minBy((i1, i2) -> i2 - i1)).isEqualTo(new Some<>('3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').minBy((i1, i2) -> i2 - i1)).isEqualTo(Option.some('3'));
     }
 
     // -- minBy(Function)
@@ -1069,17 +1067,17 @@ public class CharSeqTest {
 
     @Test
     public void shouldThrowWhenMinByFunctionOfNil() {
-        assertThat(empty().minBy(i -> i)).isEqualTo(None.instance());
+        assertThat(empty().minBy(i -> i)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldCalculateMinByFunctionOfInts() {
-        assertThat(CharSeq.ofAll('1', '2', '3').minBy(i -> i)).isEqualTo(new Some<>('1'));
+        assertThat(CharSeq.ofAll('1', '2', '3').minBy(i -> i)).isEqualTo(Option.some('1'));
     }
 
     @Test
     public void shouldCalculateInverseMinByFunctionOfInts() {
-        assertThat(CharSeq.ofAll('1', '2', '3').minBy(i -> -i)).isEqualTo(new Some<>('3'));
+        assertThat(CharSeq.ofAll('1', '2', '3').minBy(i -> -i)).isEqualTo(Option.some('3'));
     }
 
     // -- peek
@@ -1532,7 +1530,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
-        assertThat(CharSeq.ofAll('1', '2', '3').tailOption()).isEqualTo(new Some<>(CharSeq.ofAll('2', '3')));
+        assertThat(CharSeq.ofAll('1', '2', '3').tailOption()).isEqualTo(Option.some(CharSeq.ofAll('2', '3')));
     }
 
     // -- toJavaArray(Class)
