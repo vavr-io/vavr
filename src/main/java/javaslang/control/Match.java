@@ -191,6 +191,22 @@ public interface Match<R> extends Function<Object, R> {
                     throw supplier.get();
                 });
             }
+
+            public When.Then<Void> thenRun(Consumer<? super T> action) {
+                Objects.requireNonNull(action, "action is null");
+                return then(value -> {
+                    action.accept(value);
+                    return null;
+                });
+            }
+
+            public When.Then<Void> thenRun(Runnable action) {
+                Objects.requireNonNull(action, "action is null");
+                return then(value -> {
+                    action.run();
+                    return null;
+                });
+            }
         }
 
         final class When<T, R> {
@@ -221,6 +237,22 @@ public interface Match<R> extends Function<Object, R> {
                 Objects.requireNonNull(supplier, "supplier is null");
                 return then(ignored -> {
                     throw supplier.get();
+                });
+            }
+
+            public When.Then<R> thenRun(Consumer<? super T> action) {
+                Objects.requireNonNull(action, "action is null");
+                return then(value -> {
+                    action.accept(value);
+                    return null;
+                });
+            }
+
+            public When.Then<R> thenRun(Runnable action) {
+                Objects.requireNonNull(action, "action is null");
+                return then(value -> {
+                    action.run();
+                    return null;
                 });
             }
 
@@ -316,6 +348,22 @@ public interface Match<R> extends Function<Object, R> {
                     Objects.requireNonNull(supplier, "supplier is null");
                     return new Otherwise<>(ignored -> {
                         throw supplier.get();
+                    }, cases);
+                }
+
+                public Otherwise<R> otherwiseRun(Consumer<? super Object> action) {
+                    Objects.requireNonNull(action, "action is null");
+                    return new Otherwise<>(value -> {
+                        action.accept(value);
+                        return null;
+                    }, cases);
+                }
+
+                public Otherwise<R> otherwiseRun(Runnable action) {
+                    Objects.requireNonNull(action, "action is null");
+                    return new Otherwise<>(value -> {
+                        action.run();
+                        return null;
                     }, cases);
                 }
             }
