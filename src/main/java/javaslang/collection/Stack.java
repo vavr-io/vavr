@@ -39,6 +39,8 @@ import java.util.stream.Collector;
  */
 public interface Stack<T> extends LinearSeq<T> {
 
+    long serialVersionUID = 1L;
+
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.Stack}

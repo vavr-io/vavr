@@ -27,6 +27,8 @@ import java.util.function.Predicate;
  */
 public interface LinearSeq<T> extends Seq<T> {
 
+    long serialVersionUID = 1L;
+
     // -- Adjusted return types of Seq methods
 
     @Override
