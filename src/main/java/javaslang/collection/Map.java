@@ -66,6 +66,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
 
     Map<K, V> removeAll(Iterable<? extends K> keys);
 
+    @Override
     int size();
 
     /**
