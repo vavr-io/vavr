@@ -8,10 +8,12 @@ package javaslang.control;
 import javaslang.Function1;
 import org.junit.Test;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
 public class MatchFunctionTest {
@@ -608,6 +610,90 @@ public class MatchFunctionTest {
             fail("nothing thrown");
         } catch (RuntimeException x) {
             // ok
+        }
+    }
+
+    @Test
+    public void shouldConsumeDefaultCaseWhenNoMatchFound() {
+        //given
+        final IntegerConsumer integerConsumer = new IntegerConsumer();
+        //when
+        Match.whenIs(1).thenRun(integerConsumer)
+             .otherwiseRun(i -> {integerConsumer.accept(2);})
+             .apply(2);
+        //then
+        assertThat(integerConsumer.value).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldConsumeFirstMatchingCase() {
+        //given
+        final IntegerConsumer integerConsumer = new IntegerConsumer();
+        //when
+        Match.whenIs(2).thenRun(integerConsumer)
+             .when(String::isEmpty).thenRun(i -> {integerConsumer.accept(-1);})
+             .otherwiseRun(i -> {integerConsumer.accept(3);})
+             .apply("");
+
+        //then
+        assertThat(integerConsumer.value).isEqualTo(-1);
+    }
+
+    @Test
+    public void shouldNotConsumeWhenNoMatchFoundAnoNoDefaultCase() {
+        //given
+        final IntegerConsumer integerConsumer = new IntegerConsumer();
+        final Function<Object, Void> match = Match.whenIs(1).thenRun(integerConsumer)
+                                                  .whenIs(2).thenRun(integerConsumer)
+                                                  .whenType(String.class).thenRun(i -> {integerConsumer.accept(3);});
+        //expect
+        assertThatThrownBy(() -> match.apply(10)).isInstanceOf(MatchError.class);
+        assertThat(integerConsumer.value).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldAllowToDefineRunnableAsDefaultCase() {
+        //given
+        final SimpleRunnable simpleRunnable = new SimpleRunnable();
+
+        //when
+        Match.whenIs(1).thenRun(simpleRunnable)
+             .otherwiseRun(simpleRunnable)
+             .apply(2);
+
+        //then
+        assertThat(simpleRunnable.executed).isEqualTo(true);
+    }
+
+    @Test
+    public void shouldAllowToDefineRunnableAsMatchingAction() {
+        //given
+        final SimpleRunnable simpleRunnable = new SimpleRunnable();
+        final Function<Object, Void> match = Match.whenIs(1).thenRun(simpleRunnable)
+                                                  .whenIs(2).thenRun(simpleRunnable)
+                                                  .when(o -> !simpleRunnable.executed)
+                                                  .thenThrow(() -> new IllegalStateException("runnable not consumed"));
+        //expect
+        assertThatThrownBy(() -> match.apply(3))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("runnable not consumed");
+    }
+
+    static private class IntegerConsumer implements Consumer<Integer> {
+        public int value;
+
+        @Override
+        public void accept(Integer i) {
+            this.value = i;
+        }
+    }
+
+    static private class SimpleRunnable implements Runnable {
+        public boolean executed;
+
+        @Override
+        public void run() {
+            this.executed=true;
         }
     }
 }
