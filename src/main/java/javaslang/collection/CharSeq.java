@@ -94,7 +94,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return A string containing the given characters in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    public static CharSeq ofAll(char... characters) {
+    public static CharSeq of(char... characters) {
         Objects.requireNonNull(characters, "characters is null");
         final char[] chrs = new char[characters.length];
         System.arraycopy(characters, 0, chrs, 0, characters.length);
@@ -511,7 +511,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
             for (int i = 0; i < chars.length; i++) {
                 chars[i] = mapper.apply(chars[i]);
             }
-            return CharSeq.ofAll(chars);
+            return CharSeq.of(chars);
         }
     }
 
