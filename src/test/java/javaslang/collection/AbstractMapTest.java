@@ -371,6 +371,14 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 .isEqualTo(emptyMap().put(2, 'b'));
     }
 
+    // -- transform
+
+    @Test
+    public void shouldTransform() {
+        Map<?, ?> actual = emptyIntInt().put(1, 11).transform(map -> map.put(2, 22));
+        assertThat(actual).isEqualTo(emptyIntInt().put(1, 11).put(2, 22));
+    }
+
     // -- unzip
 
     @Test

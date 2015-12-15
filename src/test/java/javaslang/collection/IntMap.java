@@ -97,7 +97,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMap<T> dropUntil(Predicate<? super T> predicate) {
-        return dropWhile(predicate.negate());
+        return IntMap.of(original.dropUntil(p -> predicate.test(p._2)));
     }
 
     @Override
@@ -112,7 +112,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMap<T> filterNot(Predicate<? super T> predicate) {
-        return filter(predicate.negate());
+        return IntMap.of(original.filterNot(p -> predicate.test(p._2)));
     }
 
     @Override
@@ -133,7 +133,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public Iterator<IntMap<T>> grouped(int size) {
-        return sliding(size, size);
+        return original.grouped(size).map(IntMap::of);
     }
 
     @Override
@@ -235,7 +235,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public Iterator<IntMap<T>> sliding(int size) {
-        return sliding(size, 1);
+        return original.sliding(size).map(IntMap::of);
     }
 
     @Override
@@ -301,8 +301,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public Traversable<T> takeUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return takeWhile(predicate.negate());
+        return IntMap.of(original.takeUntil(p -> predicate.test(p._2)));
     }
 
     @Override
