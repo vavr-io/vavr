@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Function1;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
@@ -20,7 +21,9 @@ import java.util.function.*;
  * @author Daniel Dietrich, Ruslan Sennov
  * @since 2.0.0
  */
-public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function<K, V> {
+public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
+
+    long serialVersionUID = 1L;
 
     @Override
     default V apply(K key) {

@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -90,7 +91,9 @@ import java.util.function.*;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public interface Seq<T> extends Traversable<T>, IntFunction<T> {
+public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
+
+    long serialVersionUID = 1L;
 
     /**
      * Creates a Seq of the given elements.
@@ -123,7 +126,7 @@ public interface Seq<T> extends Traversable<T>, IntFunction<T> {
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
     @Override
-    default T apply(int index) {
+    default T apply(Integer index) {
         return get(index);
     }
 

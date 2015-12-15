@@ -65,7 +65,9 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  * @since 1.0.0
  */
-public interface Match<R> extends Function<Object, R> {
+public interface Match<R> extends Function1<Object, R> {
+
+    long serialVersionUID = 1L;
 
     /**
      * Applies this {@code Match} to an {@code Object}.
@@ -285,6 +287,8 @@ public interface Match<R> extends Function<Object, R> {
 
             public static final class Then<R> implements Match<R> {
 
+                private final static long serialVersionUID = 1L;
+
                 private final List<Case<R>> cases;
 
                 private Then(List<Case<R>> cases) {
@@ -394,6 +398,8 @@ public interface Match<R> extends Function<Object, R> {
         }
 
         final class Otherwise<R> implements Match<R> {
+
+            private final static long serialVersionUID = 1L;
 
             private final Function<? super Object, ? extends R> function;
             private final List<Case<R>> cases;

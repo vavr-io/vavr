@@ -25,6 +25,8 @@ import java.util.function.Predicate;
  */
 public interface SortedMap<K, V> extends Map<K, V> {
 
+    long serialVersionUID = 1L;
+
     /**
      * Returns the underlying key-comparator which defines the order of the elements contained in this map.
      *
