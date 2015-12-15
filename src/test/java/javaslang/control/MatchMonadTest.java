@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -704,5 +705,158 @@ public class MatchMonadTest {
         } catch (RuntimeException x) {
             // ok
         }
+    }
+
+    @Test
+    public void shouldConsumeWhenOnlyOtherwiseCase() {
+        //given
+        final IntegerConsumer integerConsumer = new IntegerConsumer();
+        final Match.MatchMonad<Void> match = Match.of(1).otherwiseRun(integerConsumer);
+
+        //when
+        match.get();
+
+        //then
+        assertThat(integerConsumer.value).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldRunWhenOnlyOtherwiseCase() {
+        //given
+        final SimpleRunnable simpleRunnable = new SimpleRunnable();
+        final Match.MatchMonad<Void> match = Match.of(1).otherwiseRun(simpleRunnable);
+
+        //when
+        match.get();
+
+        //then
+        assertThat(simpleRunnable.executed).isEqualTo(true);
+    }
+
+    @Test
+    public void shouldConsumeMatchingCase() {
+        //given
+        final IntegerConsumer integerConsumer = new IntegerConsumer();
+        final Match.MatchMonad<Void> match = Match.of(-1)
+                .whenIsIn(5, 3, -1)
+                .thenRun(integerConsumer);
+
+        //when
+        match.get();
+
+        //then
+        assertThat(integerConsumer.value).isEqualTo(-1);
+    }
+
+    @Test
+    public void shouldRunMatchingCase() {
+        //given
+        final SimpleRunnable simpleRunnable = new SimpleRunnable();
+        final Match.MatchMonad<Void> match = Match.of(-1)
+                .whenType(Number.class)
+                .thenRun(simpleRunnable);
+
+        //when
+        match.get();
+
+        //then
+        assertThat(simpleRunnable.executed).isEqualTo(true);
+    }
+
+    @Test
+    public void shouldNotConsumeOtherwiseCaseWhenMatchingCaseFound() {
+        //given
+        final IntegerConsumer integerConsumer = new IntegerConsumer();
+        final Match.MatchMonad<Void> match = Match.of(-1)
+                .whenIsIn(5,3,-1)
+                .thenRun(integerConsumer)
+                .otherwiseRun(i -> integerConsumer.accept(666));
+
+        //when
+        match.get();
+
+        //then
+        assertThat(integerConsumer.value).isEqualTo(-1);
+    }
+
+    @Test
+    public void shouldNotRunOtherwiseCaseWhenMatchingCaseFound() {
+        //given
+        final SimpleRunnable simpleRunnable = new SimpleRunnable();
+        final Match.MatchMonad<Void> match = Match.of(-1)
+                .whenType(Number.class)
+                .thenRun(simpleRunnable)
+                .otherwiseRun(() -> {simpleRunnable.executed=false;});
+
+        //when
+        match.get();
+
+        //then
+        assertThat(simpleRunnable.executed).isEqualTo(true);
+    }
+
+    @Test
+    public void shouldConsumeOtherwiseCaseWhenNoMatchingFound() {
+        //given
+        final IntegerConsumer integerConsumer = new IntegerConsumer();
+        final Match.MatchMonad<Void> match = Match.of(-1)
+                .whenIsIn(5,3)
+                .thenRun(integerConsumer)
+                .otherwiseRun(i -> integerConsumer.accept(666));
+
+        //when
+        match.get();
+
+        //then
+        assertThat(integerConsumer.value).isEqualTo(666);
+    }
+
+    @Test
+    public void shouldRunOtherwiseCaseWhenMatchingCaseFound() {
+        //given
+        final SimpleRunnable simpleRunnable = new SimpleRunnable();
+        final Match.MatchMonad<?> match = Match.of(-1)
+                .whenType(Double.class)
+                .thenThrow(IllegalArgumentException::new)
+                .otherwiseRun(() -> {simpleRunnable.executed=true;});
+
+        //when
+        match.get();
+
+        //then
+        assertThat(simpleRunnable.executed).isEqualTo(true);
+    }
+
+    @Test
+    public void shouldConsumeOnlyFirstMatchingCase() {
+        //given
+        final IntegerConsumer integerConsumer = new IntegerConsumer();
+        final Match.MatchMonad<Void> match = Match.of(-1)
+                .whenIs(3).thenRun(integerConsumer)
+                .whenIs(4).thenRun(integerConsumer)
+                .whenType(Integer.class).thenRun(integerConsumer)
+                .otherwiseRun(i -> integerConsumer.accept(666));
+
+        //when
+        match.get();
+
+        //then
+        assertThat(integerConsumer.value).isEqualTo(-1);
+    }
+
+    @Test
+    public void shouldRunOnlyFirstMatchingCase() {
+        //given
+        final SimpleRunnable simpleRunnable = new SimpleRunnable();
+        final Match.MatchMonad<Void> match = Match.of(-1)
+                .whenIs(-1).thenRun(simpleRunnable)
+                .whenIs(Integer.class).thenRun(() -> {simpleRunnable.executed=false;})
+                .otherwiseRun(() -> {simpleRunnable.executed=false;});
+
+        //when
+        match.get();
+
+        //then
+        assertThat(simpleRunnable.executed).isEqualTo(true);
     }
 }

@@ -678,22 +678,4 @@ public class MatchFunctionTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("runnable not consumed");
     }
-
-    static private class IntegerConsumer implements Consumer<Integer> {
-        public int value;
-
-        @Override
-        public void accept(Integer i) {
-            this.value = i;
-        }
-    }
-
-    static private class SimpleRunnable implements Runnable {
-        public boolean executed;
-
-        @Override
-        public void run() {
-            this.executed=true;
-        }
-    }
 }
