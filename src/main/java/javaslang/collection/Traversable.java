@@ -41,6 +41,7 @@ import java.util.function.Predicate;
  * <li>{@link #last()}</li>
  * <li>{@link #lastOption()}</li>
  * <li>{@link #length()}</li>
+ * <li>{@link #size()}</li>
  * <li>{@link #tail()}</li>
  * <li>{@link #tailOption()}</li>
  * </ul>
@@ -616,7 +617,9 @@ public interface Traversable<T> extends Value<T> {
     }
 
     /**
-     * Computes the number of elements of this.
+     * Computes the number of elements of this Traversable.
+     * <p>
+     * Same as {@link #size()}.
      *
      * @return the number of elements
      */
@@ -987,6 +990,17 @@ public interface Traversable<T> extends Value<T> {
      * @throws NullPointerException if {@code operation} is null.
      */
     <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+
+    /**
+     * Computes the number of elements of this Traversable.
+     * <p>
+     * Same as {@link #length()}.
+     *
+     * @return the number of elements
+     */
+    default int size() {
+        return length();
+    }
 
     /**
      * Slides a window of a specific {@code size} and step size 1 over this {@code Traversable} by calling
