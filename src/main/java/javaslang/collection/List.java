@@ -797,6 +797,9 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default T peek() {
+        if(isEmpty()) {
+            throw new NoSuchElementException("peek of empty list");
+        }
         return head();
     }
 
@@ -840,6 +843,9 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> pop() {
+        if(isEmpty()) {
+            throw new NoSuchElementException("pop of empty list");
+        }
         return tail();
     }
 
@@ -850,6 +856,9 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default Tuple2<T, List<T>> pop2() {
+        if(isEmpty()) {
+            throw new NoSuchElementException("pop2 of empty list");
+        }
         return Tuple.of(head(), tail());
     }
 
@@ -878,7 +887,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default List<T> push(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        List<T> result = Nil.<T> instance();
+        List<T> result = this;
         for (T element : elements) {
             result = result.prepend(element);
         }
@@ -888,7 +897,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default List<T> pushAll(Iterable<T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        List<T> result = Nil.<T> instance();
+        List<T> result = this;
         for (T element : elements) {
             result = result.prepend(element);
         }
@@ -1600,7 +1609,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
 interface ListModule {
 
-    final class Combinations {
+    interface Combinations {
 
         static <T> List<List<T>> apply(List<T> elements, int k) {
             if (k == 0) {
@@ -1613,7 +1622,7 @@ interface ListModule {
         }
     }
 
-    final class SplitAt {
+    interface SplitAt {
 
         static <T> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");

@@ -6,10 +6,13 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
+import javaslang.Tuple;
+import javaslang.control.Option;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.stream.Collector;
 
 public class ListTest extends AbstractSeqTest {
@@ -156,6 +159,84 @@ public class ListTest extends AbstractSeqTest {
     @Override
     protected int getPeekNonNilPerformingAnAction() {
         return 1;
+    }
+
+    // -- peek
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailPeekOfNil() {
+        empty().peek();
+    }
+
+    @Test
+    public void shouldPeekOfNonNil() {
+        assertThat(of(1).peek()).isEqualTo(1);
+        assertThat(of(1, 2).peek()).isEqualTo(1);
+    }
+
+    // -- peekOption
+
+    @Test
+    public void shouldPeekOption() {
+        assertThat(empty().peekOption()).isSameAs(Option.none());
+        assertThat(of(1).peekOption()).isEqualTo(Option.of(1));
+        assertThat(of(1, 2).peekOption()).isEqualTo(Option.of(1));
+    }
+
+    // -- pop
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailPopOfNil() {
+        empty().pop();
+    }
+
+    @Test
+    public void shouldPopOfNonNil() {
+        assertThat(of(1).pop()).isSameAs(empty());
+        assertThat(of(1, 2).pop()).isEqualTo(of(2));
+    }
+
+    // -- popOption
+
+    @Test
+    public void shouldPopOption() {
+        assertThat(empty().popOption()).isSameAs(Option.none());
+        assertThat(of(1).popOption()).isEqualTo(Option.of(empty()));
+        assertThat(of(1, 2).popOption()).isEqualTo(Option.of(of(2)));
+    }
+
+    // -- pop2
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailPop2OfNil() {
+        empty().pop2();
+    }
+
+    @Test
+    public void shouldPop2OfNonNil() {
+        assertThat(of(1).pop2()).isEqualTo(Tuple.of(1, empty()));
+        assertThat(of(1, 2).pop2()).isEqualTo(Tuple.of(1, of(2)));
+    }
+
+    // -- pop2Option
+
+    @Test
+    public void shouldPop2Option() {
+        assertThat(empty().pop2Option()).isSameAs(Option.none());
+        assertThat(of(1).pop2Option()).isEqualTo(Option.of(Tuple.of(1, empty())));
+        assertThat(of(1, 2).pop2Option()).isEqualTo(Option.of(Tuple.of(1, of(2))));
+    }
+
+    // -- push
+
+    @Test
+    public void shouldPushElements() {
+        assertThat(empty().push(1)).isEqualTo(of(1));
+        assertThat(empty().push(1, 2, 3)).isEqualTo(of(3, 2, 1));
+        assertThat(empty().pushAll(of(1, 2, 3))).isEqualTo(of(3, 2, 1));
+        assertThat(of(0).push(1)).isEqualTo(of(1, 0));
+        assertThat(of(0).push(1, 2, 3)).isEqualTo(of(3, 2, 1, 0));
+        assertThat(of(0).pushAll(of(1, 2, 3))).isEqualTo(of(3, 2, 1, 0));
     }
 
     // -- toString
