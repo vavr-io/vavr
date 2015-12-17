@@ -362,19 +362,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @return the index {@code >= from} of the first element of this Seq that
      * satisfies the given {@code predicate}, or {@code -1}, if none exists.
      */
-    default int indexWhere(Predicate<? super T> predicate, int from) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        int i = from;
-        Iterator<T> it = iterator().drop(from);
-        while (it.hasNext()) {
-            if (predicate.test(it.next())) {
-                return i;
-            } else {
-                i++;
-            }
-        }
-        return -1;
-    }
+    int indexWhere(Predicate<? super T> predicate, int from);
 
     /**
      * Inserts the given element at the specified index.
@@ -446,20 +434,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @return the index {@code <= end} of the last element of this Seq that
      * satisfies the given {@code predicate}, or {@code -1}, if none exists.
      */
-    default int lastIndexWhere(Predicate<? super T> predicate, int end) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        int i = length() - 1;
-        Iterator<T> it = reverseIterator();
-        while (it.hasNext()) {
-            T elem = it.next();
-            if (i > end || !predicate.test(elem)) {
-                i--;
-            } else {
-                break;
-            }
-        }
-        return i;
-    }
+    int lastIndexWhere(Predicate<? super T> predicate, int end);
 
     /**
      * Returns the index of the last occurrence of the given element before or at a given end index
