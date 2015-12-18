@@ -92,10 +92,6 @@ interface HashArrayMappedTrieModule {
             return bitCount(bitmap & (bit - 1));
         }
 
-        boolean isLeaf() {
-            return false;
-        }
-
         abstract Option<V> lookup(int shift, K key);
 
         abstract AbstractNode<K, V> modify(int shift, K key, V value, Action action);
@@ -183,11 +179,6 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        boolean isLeaf() {
-            return true;
-        }
-
-        @Override
         public boolean isEmpty() {
             return true;
         }
@@ -245,11 +236,6 @@ interface HashArrayMappedTrieModule {
                 return new IndexedNode<>(newBitmap, leaf1.size() + leaf2.size(),
                         subH1 < subH2 ? List.of(leaf1, leaf2) : List.of(leaf2, leaf1));
             }
-        }
-
-        @Override
-        boolean isLeaf() {
-            return true;
         }
 
         @Override
@@ -376,11 +362,7 @@ interface HashArrayMappedTrieModule {
                 if (action == REMOVE) {
                     return filtered;
                 } else {
-                    if (filtered.isEmpty()) {
-                        return new LeafSingleton<>(hash, key, value);
-                    } else {
-                        return new LeafList<>(hash, key, value, (LeafNode<K, V>) filtered);
-                    }
+                    return new LeafList<>(hash, key, value, (LeafNode<K, V>) filtered);
                 }
             } else {
                 return (action == REMOVE) ? this : mergeLeaves(shift, this, new LeafSingleton<>(Objects.hashCode(key), key, value));
@@ -491,7 +473,7 @@ interface HashArrayMappedTrieModule {
             if (newBitmap == 0) {
                 return EmptyNode.instance();
             } else if (removed) {
-                if (subNodes.length() <= 2 && subNodes.get(index ^ 1).isLeaf()) {
+                if (subNodes.length() <= 2 && subNodes.get(index ^ 1) instanceof LeafNode) {
                     return subNodes.get(index ^ 1); // collapse
                 } else {
                     return new IndexedNode<>(newBitmap, size - atIndx.size(), subNodes.removeAt(index));
