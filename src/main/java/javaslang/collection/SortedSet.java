@@ -24,6 +24,8 @@ import java.util.function.Predicate;
  */
 public interface SortedSet<T> extends Set<T> {
 
+    long serialVersionUID = 1L;
+
     /**
      * Returns the underlying comparator which defines the order of the elements contained in this set.
      *
