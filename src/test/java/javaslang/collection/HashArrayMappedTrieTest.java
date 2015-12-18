@@ -19,7 +19,7 @@ public class HashArrayMappedTrieTest {
 
     @Test
     public void testGetExistingKey() {
-        Map<Integer, Integer> hamt = HashMap.empty();
+        HashArrayMappedTrie<Integer, Integer> hamt = empty();
         hamt = hamt.put(1, 2).put(4, 5).put(null, 7);
         assertThat(hamt.containsKey(1)).isTrue();
         assertThat(hamt.get(1)).isEqualTo(Option.some(2));
@@ -31,7 +31,7 @@ public class HashArrayMappedTrieTest {
 
     @Test
     public void testGetUnknownKey() {
-        Map<Integer, Integer> hamt = HashMap.empty();
+        HashArrayMappedTrie<Integer, Integer> hamt = empty();
         hamt = hamt.put(1, 2).put(4, 5);
         assertThat(hamt.containsKey(2)).isFalse();
         assertThat(hamt.get(2)).isEqualTo(Option.none());
@@ -41,14 +41,14 @@ public class HashArrayMappedTrieTest {
 
     @Test
     public void testRemoveFromEmpty() {
-        Map<Integer, Integer> hamt = HashMap.empty();
+        HashArrayMappedTrie<Integer, Integer> hamt = empty();
         hamt = hamt.remove(1);
         assertThat(hamt.size()).isEqualTo(0);
     }
 
     @Test
     public void testRemoveUnknownKey() {
-        Map<Integer, Integer> hamt = HashMap.empty();
+        HashArrayMappedTrie<Integer, Integer> hamt = empty();
         hamt = hamt.put(1, 2).remove(3);
         assertThat(hamt.size()).isEqualTo(1);
         hamt = hamt.remove(1);
@@ -81,7 +81,7 @@ public class HashArrayMappedTrieTest {
 
     @Test
     public void shouldLookupNullInZeroKey() {
-        HashArrayMappedTrie<Integer, Integer> trie = HashArrayMappedTrie.empty();
+        HashArrayMappedTrie<Integer, Integer> trie = empty();
         // should contain all node types
         for (int i = 0; i < 5000; i++) {
             trie = trie.put(i, i);
@@ -95,33 +95,23 @@ public class HashArrayMappedTrieTest {
 
     @Test
     public void shouldEqualSameHAMTInstance() {
-        final HashArrayMappedTrie<?, ?> trie = HashArrayMappedTrie.empty();
-        assertThat(trie).isEqualTo(trie);
-    }
-
-    @Test
-    public void shouldNilNotEqualsNull() {
-        assertThat(HashArrayMappedTrie.empty()).isNotNull();
-    }
-
-    @Test
-    public void shouldNonNilNotEqualsNull() {
-        assertThat(of(1)).isNotNull();
+        HashArrayMappedTrie<Integer, Integer> trie = empty();
+        assertThat(trie.equals(trie)).isTrue();
     }
 
     @Test
     public void shouldEmptyNotEqualsDifferentType() {
-        assertThat(HashArrayMappedTrie.empty()).isNotEqualTo("");
+        assertThat(empty().equals("")).isFalse();
     }
 
     @Test
     public void shouldNonEmptyNotEqualsDifferentType() {
-        assertThat(of(1)).isNotEqualTo("");
+        assertThat(of(1).equals("")).isFalse();
     }
 
     @Test
     public void shouldRecognizeEqualityOfNils() {
-        assertThat(HashArrayMappedTrie.empty()).isEqualTo(HashArrayMappedTrie.empty());
+        assertThat(empty().equals(empty())).isTrue();
     }
 
     @Test
@@ -137,18 +127,27 @@ public class HashArrayMappedTrieTest {
     @Test
     public void shouldRecognizeNonEqualityOfHAMTOfDifferentSize() {
         assertThat(of(1, 2, 3).equals(of(1, 2))).isFalse();
+        assertThat(of(1, 2).equals(of(1, 2, 3))).isFalse();
     }
 
     // -- hashCode
 
     @Test
-    public void shouldCalculateHashCodeOfNil() {
-        assertThat(HashArrayMappedTrie.empty().hashCode() == HashArrayMappedTrie.empty().hashCode()).isTrue();
+    public void shouldCheckHashCodeInLeafList() {
+        HashArrayMappedTrie<Integer, Integer> trie = empty();
+        trie = trie.put(0, 1).put(null, 2);       // LeafList.hash == 0
+        Option<Integer> none = trie.get(1 << 6);  // (key.hash & BUCKET_BITS) == 0
+        assertThat(none).isEqualTo(Option.none());
     }
 
     @Test
-    public void shouldCalculateHashCodeOfNonNil() {
-        assertThat(of(1, 2).hashCode() == of(1, 2).hashCode()).isTrue();
+    public void shouldCalculateHashCodeOfNil() {
+        assertThat(empty().hashCode()).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldCalculateHashCodeOfCollision() {
+        assertThat(empty().put(null, 1).put(0, 2).hashCode()).isEqualTo(empty().put(null, 1).put(0, 2).hashCode());
     }
 
     @Test
@@ -158,8 +157,8 @@ public class HashArrayMappedTrieTest {
 
     @Test
     public void shouldCalculateBigHashCode() {
-        HashArrayMappedTrie<Integer, Integer> h1 = HashArrayMappedTrie.empty();
-        HashArrayMappedTrie<Integer, Integer> h2 = HashArrayMappedTrie.empty();
+        HashArrayMappedTrie<Integer, Integer> h1 = empty();
+        HashArrayMappedTrie<Integer, Integer> h2 = empty();
         int count = 1234;
         for (int i = 0; i <= count; i++) {
             h1 = h1.put(i, i);
@@ -172,18 +171,22 @@ public class HashArrayMappedTrieTest {
 
     @Test
     public void shouldMakeString() {
-        assertThat(HashArrayMappedTrie.empty().toString()).isEqualTo("HashArrayMappedTrie()");
-        assertThat(HashArrayMappedTrie.empty().put(1, 2).toString()).isEqualTo("HashArrayMappedTrie(1 -> 2)");
+        assertThat(empty().toString()).isEqualTo("HashArrayMappedTrie()");
+        assertThat(empty().put(1, 2).toString()).isEqualTo("HashArrayMappedTrie(1 -> 2)");
     }
 
     // -- helpers
 
     private HashArrayMappedTrie<Integer, Integer> of(int... ints) {
-        HashArrayMappedTrie<Integer, Integer> h = HashArrayMappedTrie.empty();
+        HashArrayMappedTrie<Integer, Integer> h = empty();
         for (int i : ints) {
             h = h.put(h.size(), i);
         }
         return h;
+    }
+
+    private <K, V> HashArrayMappedTrie<K, V> empty() {
+        return HashArrayMappedTrie.empty();
     }
 
     private class WeakInteger implements Comparable<WeakInteger> {
