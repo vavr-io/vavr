@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Function1;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
@@ -25,7 +26,9 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich, Ruslan Sennov
  * @since 2.0.0
  */
-public interface Set<T> extends Traversable<T> {
+public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
+
+    long serialVersionUID = 1L;
 
     /**
      * Add the given element to this set, if it is not already contained.
@@ -42,6 +45,19 @@ public interface Set<T> extends Traversable<T> {
      * @return A new set containing all elements of this set and the given {@code elements}, if not already contained.
      */
     Set<T> addAll(Iterable<? extends T> elements);
+
+    /**
+     * Tests if a given {@code element} is contained in this {@code Set}.
+     * <p>
+     * This method is equivalent to {@link #contains(Object)}.
+     *
+     * @param element the element to test for membership.
+     * @return {@code true} if the given {@code element} is contained, {@code false} otherwise.
+     */
+    @Override
+    default Boolean apply(T element) {
+        return contains(element);
+    }
 
     /**
      * Calculates the difference between this set and another set.
