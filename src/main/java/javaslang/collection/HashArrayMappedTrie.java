@@ -218,8 +218,6 @@ interface HashArrayMappedTrieModule {
 
         abstract int hash();
 
-        abstract AbstractNode<K, V> removeElement(K key);
-
         static <K, V> AbstractNode<K, V> mergeLeaves(int shift, LeafNode<K, V> leaf1, LeafSingleton<K, V> leaf2) {
             final int h1 = leaf1.hash();
             final int h2 = leaf2.hash();
@@ -301,11 +299,6 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        AbstractNode<K, V> removeElement(K key) {
-            return Objects.equals(key, this.key) ? EmptyNode.instance() : this;
-        }
-
-        @Override
         int hash() {
             return hash;
         }
@@ -369,15 +362,42 @@ interface HashArrayMappedTrieModule {
             }
         }
 
-        @Override
-        AbstractNode<K, V> removeElement(K k) {
+        private static <K, V> AbstractNode<K, V> mergeNodes(LeafNode<K, V> leaf1, LeafNode<K, V> leaf2) {
+            if(leaf2 == null) {
+                return leaf1;
+            }
+            if(leaf1 instanceof LeafSingleton) {
+                return new LeafList<>(leaf1.hash(), leaf1.key(), leaf1.value(), leaf2);
+            }
+            if(leaf2 instanceof LeafSingleton) {
+                return new LeafList<>(leaf2.hash(), leaf2.key(), leaf2.value(), leaf1);
+            }
+            LeafNode<K, V> result = leaf1;
+            LeafNode<K, V> tail = leaf2;
+            while (tail instanceof LeafList) {
+                final LeafList<K, V> list = (LeafList<K, V>) tail;
+                result = new LeafList<>(list.hash, list.key, list.value, result);
+                tail = list.tail;
+            }
+            return new LeafList<>(tail.hash(), tail.key(), tail.value(), result);
+        }
+
+        private AbstractNode<K, V> removeElement(K k) {
             if (Objects.equals(k, this.key)) {
                 return tail;
-            } else {
-                // recurrent calls is OK but can be improved
-                AbstractNode<K, V> newTail = tail.removeElement(k);
-                return newTail.isEmpty() ? new LeafSingleton<>(hash, key, value) : new LeafList<>(hash, key, value, (LeafNode<K, V>) newTail);
             }
+            LeafNode<K, V> leaf1 = new LeafSingleton<>(hash, key, value);
+            LeafNode<K, V> leaf2 = tail;
+            boolean found = false;
+            while (!found && leaf2 != null) {
+                if (Objects.equals(k, leaf2.key())) {
+                    found = true;
+                } else {
+                    leaf1 = new LeafList<>(leaf2.hash(), leaf2.key(), leaf2.value(), leaf1);
+                }
+                leaf2 = leaf2 instanceof LeafList ? ((LeafList<K, V>) leaf2).tail : null;
+            }
+            return mergeNodes(leaf1, leaf2);
         }
 
         @Override
