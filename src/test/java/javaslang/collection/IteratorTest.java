@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.control.Option;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
@@ -54,6 +55,11 @@ public class IteratorTest extends AbstractTraversableTest {
                     final Tuple2<?, ?> t2 = ((Tuple2<?, ?>) expected).flatMap(this::toList);
                     Assertions.assertThat((Object) t1).isEqualTo(t2);
                     return this;
+                } else if (actual instanceof Tuple3) {
+                    final Tuple3<?, ?, ?> t1 = ((Tuple3<?, ?, ?>) actual).flatMap(this::toList);
+                    final Tuple3<?, ?, ?> t2 = ((Tuple3<?, ?, ?>) expected).flatMap(this::toList);
+                    Assertions.assertThat((Object) t1).isEqualTo(t2);
+                    return this;
                 } else {
                     return super.isEqualTo(expected);
                 }
@@ -61,6 +67,10 @@ public class IteratorTest extends AbstractTraversableTest {
 
             private Tuple2<Object, Object> toList(Object o1, Object o2) {
                 return Tuple.of(wrapIterator(o1), wrapIterator(o2));
+            }
+
+            private Tuple3<Object, Object, Object> toList(Object o1, Object o2, Object o3) {
+                return Tuple.of(wrapIterator(o1), wrapIterator(o2), wrapIterator(o3));
             }
 
             private Object wrapIterator(Object o) {

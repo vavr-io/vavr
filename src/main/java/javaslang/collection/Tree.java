@@ -1108,7 +1108,7 @@ interface TreeModule {
                 final Tuple2<T, U> value = Tuple.of(node.getValue(), that.next());
                 final List<Node<Tuple2<T, U>>> children = (List<Node<Tuple2<T, U>>>) (Object) node
                         .getChildren()
-                        .map(child -> Zip.apply(child, that))
+                        .map(child -> ZipAll.apply(child, that, thatElem))
                         .filter(Tree::isDefined);
                 return new Node<>(value, children);
             }

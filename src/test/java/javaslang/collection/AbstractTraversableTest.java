@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.Option;
 import org.junit.Test;
 
@@ -1641,6 +1642,148 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
         assertThat(of(1, 2, 3).tailOption()).isEqualTo(Option.some(of(2, 3)));
+    }
+
+
+    // -- unzip
+
+    @Test
+    public void shouldUnzipNil() {
+        assertThat(empty().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(empty(), empty()));
+    }
+
+    @Test
+    public void shouldUnzipNonNil() {
+        final Tuple actual = of(0, 1).unzip(i -> Tuple.of(i, (char) ((short) 'a' + i)));
+        final Tuple expected = Tuple.of(of(0, 1), this.<Character> of('a', 'b'));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldUnzip3Nil() {
+        assertThat(empty().unzip3(x -> Tuple.of(x, x, x))).isEqualTo(Tuple.of(empty(), empty(), empty()));
+    }
+
+    @Test
+    public void shouldUnzip3NonNil() {
+        final Tuple actual = of(0, 1).unzip3(i -> Tuple.of(i, (char) ((short) 'a' + i), (char) ((short) 'a' + i + 1)));
+        final Tuple expected = Tuple.of(of(0, 1), this.<Character> of('a', 'b'), this.<Character> of('b', 'c'));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- zip
+
+    @Test
+    public void shouldZipNils() {
+        final Traversable<?> actual = empty().zip(empty());
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void shouldZipEmptyAndNonNil() {
+        final Traversable<?> actual = empty().zip(of(1));
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void shouldZipNonEmptyAndNil() {
+        final Traversable<?> actual = of(1).zip(empty());
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void shouldZipNonNilsIfThisIsSmaller() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2).zip(of("a", "b", "c"));
+        @SuppressWarnings("unchecked")
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldZipNonNilsIfThatIsSmaller() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b"));
+        @SuppressWarnings("unchecked")
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldZipNonNilsOfSameSize() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b", "c"));
+        @SuppressWarnings("unchecked")
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowIfZipWithThatIsNull() {
+        empty().zip(null);
+    }
+
+    // -- zipAll
+
+    @Test
+    public void shouldZipAllNils() {
+        final Traversable<?> actual = empty().zipAll(empty(), null, null);
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void shouldZipAllEmptyAndNonNil() {
+        final Traversable<?> actual = empty().zipAll(of(1), null, null);
+        final Traversable<Tuple2<Object, Integer>> expected = of(Tuple.of(null, 1));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldZipAllNonEmptyAndNil() {
+        final Traversable<?> actual = of(1).zipAll(empty(), null, null);
+        final Traversable<Tuple2<Integer, Object>> expected = of(Tuple.of(1, null));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldZipAllNonNilsIfThisIsSmaller() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2).zipAll(of("a", "b", "c"), 9, "z");
+        @SuppressWarnings("unchecked")
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldZipAllNonNilsIfThatIsSmaller() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b"), 9, "z");
+        @SuppressWarnings("unchecked")
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldZipAllNonNilsOfSameSize() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b", "c"), 9, "z");
+        @SuppressWarnings("unchecked")
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowIfZipAllWithThatIsNull() {
+        empty().zipAll(null, null, null);
+    }
+
+    // -- zipWithIndex
+
+    @Test
+    public void shouldZipNilWithIndex() {
+        assertThat(this.<String> empty().zipWithIndex()).isEqualTo(this.<Tuple2<String, Integer>> empty());
+    }
+
+    @Test
+    public void shouldZipNonNilWithIndex() {
+        final Traversable<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex();
+        @SuppressWarnings("unchecked")
+        final Traversable<Tuple2<String, Integer>> expected = of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- toJavaArray(Class)
