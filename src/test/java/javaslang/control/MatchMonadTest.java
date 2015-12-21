@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
