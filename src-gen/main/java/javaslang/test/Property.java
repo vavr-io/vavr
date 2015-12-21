@@ -14,7 +14,6 @@ import java.util.Random;
 import javaslang.*;
 import javaslang.control.Option;
 import javaslang.control.Try;
-import javaslang.control.Try.FatalException;
 import javaslang.control.Try.NonFatalException;
 
 /**
