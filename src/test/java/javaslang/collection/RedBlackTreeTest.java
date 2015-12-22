@@ -236,6 +236,8 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldIntersectOnNonEmptyGivenNonEmptyUnbalancedHeightLeft() {
+        // Node::mergeGT
+        //
         // Trees have
         // - different values
         // - similar to each other left children
@@ -249,6 +251,8 @@ public class RedBlackTreeTest {
 
     @Test
     public void shouldIntersectOnNonEmptyGivenNonEmptyUnbalancedHeightRight() {
+        // Node::mergeLT
+        //
         // Trees have
         // - different values
         // - unlike each other left children
@@ -258,6 +262,15 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> actual = t1.intersection(t2);
         final RedBlackTree<Integer> expected = RedBlackTree.of(2, 61, 62, 63, 64, 65);
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldIntersectOnNonEmptyGivenNonEmptyBalancedHeightRight() {
+        // Node::mergeEQ && isRed(n1.right)
+        //
+        final RedBlackTree<Integer> t1 = RedBlackTree.of(-10, -20, -30, -40, -50, 1, 10, 20, 30);
+        final RedBlackTree<Integer> t2 = RedBlackTree.of(-10, -20, -30, -40, -50, 2, 10, 20, 30);
+        assertThat(t1.intersection(t2)).isEqualTo(t1.delete(1));
     }
 
     // union()
