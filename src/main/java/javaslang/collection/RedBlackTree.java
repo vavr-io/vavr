@@ -36,22 +36,22 @@ import static javaslang.collection.RedBlackTree.Color.RED;
  */
 interface RedBlackTree<T> extends Iterable<T> {
 
-    static <T extends Comparable<? super T>> Empty<T> empty() {
+    static <T extends Comparable<? super T>> RedBlackTree<T> empty() {
         return new Empty<>((Comparator<? super T> & Serializable) T::compareTo);
     }
 
-    static <T> Empty<T> empty(Comparator<? super T> comparator) {
+    static <T> RedBlackTree<T> empty(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return new Empty<>(comparator);
     }
 
-    static <T extends Comparable<? super T>> Node<T> of(T value) {
+    static <T extends Comparable<? super T>> RedBlackTree<T> of(T value) {
         return of((Comparator<? super T> & Serializable) T::compareTo, value);
     }
 
-    static <T> Node<T> of(Comparator<? super T> comparator, T value) {
+    static <T> RedBlackTree<T> of(Comparator<? super T> comparator, T value) {
         Objects.requireNonNull(comparator, "comparator is null");
-        final Empty<T> empty = empty(comparator);
+        final Empty<T> empty = new Empty<>(comparator);
         return new Node<>(BLACK, 1, empty, value, empty, empty);
     }
 
@@ -100,7 +100,7 @@ interface RedBlackTree<T> extends Iterable<T> {
      * @param value A value.
      * @return A new tree if this tree does not contain the given value, otherwise the same tree instance.
      */
-    default Node<T> insert(T value) {
+    default RedBlackTree<T> insert(T value) {
         return Node.insert(this, value).color(BLACK);
     }
 
@@ -109,7 +109,7 @@ interface RedBlackTree<T> extends Iterable<T> {
      *
      * @return An empty ReadBlackTree
      */
-    Empty<T> clear();
+    RedBlackTree<T> clear();
 
     /**
      * Return the {@link Color} of this Red/Black Tree node.
