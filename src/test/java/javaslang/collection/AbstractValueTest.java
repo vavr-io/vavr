@@ -477,6 +477,50 @@ public abstract class AbstractValueTest {
         assertThat(List.ofAll(s1::iterator)).isEqualTo(List.ofAll(s2::iterator));
     }
 
+    @Test
+    public void shouldConvertToEitherLeftFromValueSupplier() {
+        Either<Integer,String> either = of(0).toLeft(() -> "fallback");
+        assertThat(either.isLeft()).isTrue();
+        assertThat(either.get()).isEqualTo(0);
+
+        Either<Object,String> either2 = empty().toLeft(() -> "fallback");
+        assertThat(either2.isRight()).isTrue();
+        assertThat(either2.get()).isEqualTo("fallback");
+    }
+
+    @Test
+    public void shouldConvertToEitherLeftFromValue() {
+        Either<Integer,String> either = of(0).toLeft("fallback");
+        assertThat(either.isLeft()).isTrue();
+        assertThat(either.get()).isEqualTo(0);
+
+        Either<Object,String> either2 = empty().toLeft("fallback");
+        assertThat(either2.isRight()).isTrue();
+        assertThat(either2.get()).isEqualTo("fallback");
+    }
+
+    @Test
+    public void shouldConvertToEitherRightFromValueSupplier() {
+        Either<String,Integer> either = of(0).toRight(() -> "fallback");
+        assertThat(either.isRight()).isTrue();
+        assertThat(either.get()).isEqualTo(0);
+
+        Either<String,Object> either2 = empty().toRight(() -> "fallback");
+        assertThat(either2.isLeft()).isTrue();
+        assertThat(either2.get()).isEqualTo("fallback");
+    }
+
+    @Test
+    public void shouldConvertToEitherRightFromValue() {
+        Either<String,Integer> either = of(0).toRight("fallback");
+        assertThat(either.isRight()).isTrue();
+        assertThat(either.get()).isEqualTo(0);
+
+        Either<String,Object> either2 = empty().toRight("fallback");
+        assertThat(either2.isLeft()).isTrue();
+        assertThat(either2.get()).isEqualTo("fallback");
+    }
+
     // -- exists
 
     @Test
