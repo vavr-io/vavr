@@ -11,11 +11,14 @@ import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import static javaslang.control.MatchModule.*;
 
 /**
  * {@code Match} is a Java switch on steroids (without the negative 'side effects'). Some characteristics of
@@ -103,28 +106,28 @@ public interface Match<R> extends Function1<Object, R> {
 
     static <T> MatchFunction.WhenUntyped<T> when(Function1<? super T, ? extends Boolean> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return new MatchFunction.WhenUntyped<>(MatchFunction.When.of(predicate));
+        return new MatchFunction.WhenUntyped<>(isTrue(predicate));
     }
 
     static <T> MatchFunction.WhenUntyped<T> whenIs(T prototype) {
-        return new MatchFunction.WhenUntyped<>(MatchFunction.When.is(prototype));
+        return new MatchFunction.WhenUntyped<>(is(prototype));
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     static <T> MatchFunction.WhenUntyped<T> whenIsIn(T... prototypes) {
         Objects.requireNonNull(prototypes, "prototypes is null");
-        return new MatchFunction.WhenUntyped<>(MatchFunction.When.isIn(prototypes));
+        return new MatchFunction.WhenUntyped<>(isIn(prototypes));
     }
 
     static <T> MatchFunction.WhenUntyped<T> whenType(Class<T> type) {
         Objects.requireNonNull(type, "type is null");
-        return new MatchFunction.WhenUntyped<>(MatchFunction.When.type(type));
+        return new MatchFunction.WhenUntyped<>(isType(type));
     }
 
     static MatchFunction.WhenUntyped<Object> whenTypeIn(Class<?>... types) {
         Objects.requireNonNull(types, "types is null");
-        return new MatchFunction.WhenUntyped<>(MatchFunction.When.typeIn(types));
+        return new MatchFunction.WhenUntyped<>(isTypeIn(types));
     }
 
     static <T, R> MatchFunction.WhenApplicable<T, R> whenApplicable(Function1<? super T, ? extends R> function) {
@@ -144,6 +147,22 @@ public interface Match<R> extends Function1<Object, R> {
     static <R> MatchFunction.Otherwise<R> otherwise(Supplier<? extends R> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return new MatchFunction.Otherwise<>(ignored -> supplier.get(), List.empty());
+    }
+
+    static MatchFunction.OtherwiseRun otherwiseRun(Consumer<? super Object> action) {
+        Objects.requireNonNull(action, "action is null");
+        return new MatchFunction.OtherwiseRun(value -> {
+            action.accept(value);
+            return null;
+        }, List.empty());
+    }
+
+    static MatchFunction.OtherwiseRun otherwiseRun(Runnable action) {
+        Objects.requireNonNull(action, "action is null");
+        return new MatchFunction.OtherwiseRun(value -> {
+            action.run();
+            return null;
+        }, List.empty());
     }
 
     static <R> MatchFunction.Otherwise<R> otherwiseThrow(Supplier<? extends RuntimeException> supplier) {
@@ -174,8 +193,7 @@ public interface Match<R> extends Function1<Object, R> {
 
             public <R> When.Then<R> then(Function<? super T, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                final Case<R> caze = new Case<>(predicate, function);
-                return new When.Then<>(List.of(caze));
+                return new When.Then<>(List.of(new Case(predicate, function)));
             }
 
             public <R> When.Then<R> then(R that) {
@@ -187,26 +205,26 @@ public interface Match<R> extends Function1<Object, R> {
                 return then(ignored -> supplier.get());
             }
 
+            public WhenRun.ThenRun thenRun(Consumer<? super T> action) {
+                Objects.requireNonNull(action, "action is null");
+                return new WhenRun.ThenRun(List.of(new Case(predicate, value -> {
+                    action.accept(value);
+                    return null;
+                })));
+            }
+
+            public WhenRun.ThenRun thenRun(Runnable action) {
+                Objects.requireNonNull(action, "action is null");
+                return new WhenRun.ThenRun(List.of(new Case(predicate, value -> {
+                    action.run();
+                    return null;
+                })));
+            }
+
             public <R> When.Then<R> thenThrow(Supplier<? extends RuntimeException> supplier) {
                 Objects.requireNonNull(supplier, "supplier is null");
                 return then(ignored -> {
                     throw supplier.get();
-                });
-            }
-
-            public When.Then<Void> thenRun(Consumer<? super T> action) {
-                Objects.requireNonNull(action, "action is null");
-                return then(value -> {
-                    action.accept(value);
-                    return null;
-                });
-            }
-
-            public When.Then<Void> thenRun(Runnable action) {
-                Objects.requireNonNull(action, "action is null");
-                return then(value -> {
-                    action.run();
-                    return null;
                 });
             }
         }
@@ -214,16 +232,16 @@ public interface Match<R> extends Function1<Object, R> {
         final class When<T, R> {
 
             private final Predicate<? super T> predicate;
-            private final List<Case<R>> cases;
+            private final List<Case> cases;
 
-            private When(Predicate<? super T> predicate, List<Case<R>> cases) {
+            private When(Predicate<? super T> predicate, List<Case> cases) {
                 this.predicate = predicate;
                 this.cases = cases;
             }
 
             public Then<R> then(Function<? super T, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                return new Then<>(cases.prepend(new Case<>(predicate, function)));
+                return new Then<>(cases.prepend(new Case(predicate, function)));
             }
 
             public Then<R> then(R that) {
@@ -242,63 +260,20 @@ public interface Match<R> extends Function1<Object, R> {
                 });
             }
 
-            public When.Then<R> thenRun(Consumer<? super T> action) {
-                Objects.requireNonNull(action, "action is null");
-                return then(value -> {
-                    action.accept(value);
-                    return null;
-                });
-            }
-
-            public When.Then<R> thenRun(Runnable action) {
-                Objects.requireNonNull(action, "action is null");
-                return then(value -> {
-                    action.run();
-                    return null;
-                });
-            }
-
-            // NOTE: These private methods should move to the outer Monad interface (staying private) with Java 9+ because they are used by MatchFunction and MatchMonad
-
-            @SuppressWarnings("unchecked")
-            private static <T> Predicate<? super Object> of(Function1<? super T, ? extends Boolean> predicate) {
-                final Class<? super T> type = predicate.getType().parameterType1();
-                return value -> (value == null || type.isAssignableFrom(value.getClass()))
-                        && ((Function1<? super Object, ? extends Boolean>) predicate).apply(value);
-            }
-
-            private static <T> Predicate<? super Object> is(T prototype) {
-                return value -> value == prototype || (value != null && value.equals(prototype));
-            }
-
-            @SuppressWarnings("varargs")
-            @SafeVarargs
-            private static <T> Predicate<? super Object> isIn(T... prototypes) {
-                return value -> Iterator.of(prototypes).findFirst(prototype -> is(prototype).test(value)).isDefined();
-            }
-
-            private static <T> Predicate<? super Object> type(Class<T> type) {
-                return value -> value != null && type.isAssignableFrom(value.getClass());
-            }
-
-            private static <T> Predicate<? super Object> typeIn(Class<?>... types) {
-                return value -> Iterator.of(types).findFirst(type -> type(type).test(value)).isDefined();
-            }
-
             public static final class Then<R> implements Match<R> {
 
                 private final static long serialVersionUID = 1L;
 
-                private final List<Case<R>> cases;
+                private final List<Case> cases;
 
-                private Then(List<Case<R>> cases) {
+                private Then(List<Case> cases) {
                     this.cases = cases;
                 }
 
+                @SuppressWarnings("unchecked")
                 @Override
                 public R apply(Object o) {
-                    return cases
-                            .reverse()
+                    return (R) cases.reverse()
                             .findFirst(caze -> caze.isApplicable(o))
                             .map(caze -> caze.apply(o))
                             .orElseThrow(() -> new MatchError(o));
@@ -306,27 +281,27 @@ public interface Match<R> extends Function1<Object, R> {
 
                 public <T> When<T, R> when(Function1<? super T, ? extends Boolean> predicate) {
                     Objects.requireNonNull(predicate, "predicate is null");
-                    return new When<>(When.of(predicate), cases);
+                    return new When<>(isTrue(predicate), cases);
                 }
 
                 public <T> When<T, R> whenIs(T prototype) {
-                    return new When<>(When.is(prototype), cases);
+                    return new When<>(is(prototype), cases);
                 }
 
                 @SuppressWarnings("unchecked")
                 public <T> When<T, R> whenIsIn(T... prototypes) {
                     Objects.requireNonNull(prototypes, "prototypes is null");
-                    return new When<>(When.isIn(prototypes), cases);
+                    return new When<>(isIn(prototypes), cases);
                 }
 
                 public <T> When<T, R> whenType(Class<T> type) {
                     Objects.requireNonNull(type, "type is null");
-                    return new When<>(When.type(type), cases);
+                    return new When<>(isType(type), cases);
                 }
 
                 public When<Object, R> whenTypeIn(Class<?>... types) {
                     Objects.requireNonNull(types, "types is null");
-                    return new When<>(When.typeIn(types), cases);
+                    return new When<>(isTypeIn(types), cases);
                 }
 
                 public <T> WhenApplicable<T, R> whenApplicable(Function1<? super T, ? extends R> function) {
@@ -354,20 +329,111 @@ public interface Match<R> extends Function1<Object, R> {
                         throw supplier.get();
                     }, cases);
                 }
+            }
+        }
 
-                public Otherwise<R> otherwiseRun(Consumer<? super Object> action) {
+        final class WhenRun<T> {
+
+            private final Predicate<? super T> predicate;
+            private final List<Case> cases;
+
+            private WhenRun(Predicate<? super T> predicate, List<Case> cases) {
+                this.predicate = predicate;
+                this.cases = cases;
+            }
+
+            public ThenRun thenRun(Consumer<? super T> action) {
+                Objects.requireNonNull(action, "action is null");
+                return new ThenRun(cases.prepend(new Case(predicate, value -> {
+                    action.accept(value);
+                    return null;
+                })));
+            }
+
+            public ThenRun thenRun(Runnable action) {
+                Objects.requireNonNull(action, "action is null");
+                return new ThenRun(cases.prepend(new Case(predicate, ignored -> {
+                    action.run();
+                    return null;
+                })));
+            }
+
+            public ThenRun thenThrow(Supplier<? extends RuntimeException> supplier) {
+                Objects.requireNonNull(supplier, "supplier is null");
+                return new ThenRun(cases.prepend(new Case(predicate, ignored -> {
+                    throw supplier.get();
+                })));
+            }
+
+            public static final class ThenRun implements Match<Void> {
+
+                private final static long serialVersionUID = 1L;
+
+                private final List<Case> cases;
+
+                private ThenRun(List<Case> cases) {
+                    this.cases = cases;
+                }
+
+                @Override
+                public Void apply(Object o) {
+                    cases.reverse()
+                            .findFirst(caze -> caze.isApplicable(o))
+                            .map(caze -> caze.apply(o))
+                            .orElseThrow(() -> new MatchError(o));
+                    return null;
+                }
+
+                public <T> WhenRun<T> when(Function1<? super T, ? extends Boolean> predicate) {
+                    Objects.requireNonNull(predicate, "predicate is null");
+                    return new WhenRun<>(isTrue(predicate), cases);
+                }
+
+                public <T> WhenRun<T> whenIs(T prototype) {
+                    return new WhenRun<>(is(prototype), cases);
+                }
+
+                @SuppressWarnings("unchecked")
+                public <T> WhenRun<T> whenIsIn(T... prototypes) {
+                    Objects.requireNonNull(prototypes, "prototypes is null");
+                    return new WhenRun<>(isIn(prototypes), cases);
+                }
+
+                public <T> WhenRun<T> whenType(Class<T> type) {
+                    Objects.requireNonNull(type, "type is null");
+                    return new WhenRun<>(isType(type), cases);
+                }
+
+                public WhenRun<Object> whenTypeIn(Class<?>... types) {
+                    Objects.requireNonNull(types, "types is null");
+                    return new WhenRun<>(isTypeIn(types), cases);
+                }
+
+                public <T> WhenRunnable<T> whenRunnable(SerializableConsumer<? super T> action) {
                     Objects.requireNonNull(action, "action is null");
-                    return new Otherwise<>(value -> {
+                    return new WhenRunnable<>(action, cases);
+                }
+
+                public OtherwiseRun otherwiseRun(Consumer<? super Object> action) {
+                    Objects.requireNonNull(action, "action is null");
+                    return new OtherwiseRun(value -> {
                         action.accept(value);
                         return null;
                     }, cases);
                 }
 
-                public Otherwise<R> otherwiseRun(Runnable action) {
+                public OtherwiseRun otherwiseRun(Runnable action) {
                     Objects.requireNonNull(action, "action is null");
-                    return new Otherwise<>(value -> {
+                    return new OtherwiseRun(ignored -> {
                         action.run();
                         return null;
+                    }, cases);
+                }
+
+                public OtherwiseRun otherwiseThrow(Supplier<? extends RuntimeException> supplier) {
+                    Objects.requireNonNull(supplier, "supplier is null");
+                    return new OtherwiseRun(ignored -> {
+                        throw supplier.get();
                     }, cases);
                 }
             }
@@ -377,21 +443,48 @@ public interface Match<R> extends Function1<Object, R> {
 
             private final Predicate<? super Object> predicate;
             private final Function1<? super T, ? extends R> function;
-            private final List<Case<R>> cases;
+            private final List<Case> cases;
 
-            private WhenApplicable(Function1<? super T, ? extends R> function, List<Case<R>> cases) {
+            private WhenApplicable(Function1<? super T, ? extends R> function, List<Case> cases) {
                 this.predicate = function::isApplicableTo;
                 this.function = function;
                 this.cases = cases;
             }
 
             public When.Then<R> thenApply() {
-                return new When.Then<>(cases.prepend(new Case<>(predicate, function)));
+                return new When.Then<>(cases.prepend(new Case(predicate, function)));
             }
 
             public When.Then<R> thenThrow(Supplier<? extends RuntimeException> supplier) {
                 Objects.requireNonNull(supplier, "supplier is null");
-                return new When.Then<>(cases.prepend(new Case<>(predicate, ignored -> {
+                return new When.Then<>(cases.prepend(new Case(predicate, ignored -> {
+                    throw supplier.get();
+                })));
+            }
+        }
+
+        final class WhenRunnable<T> {
+
+            private final Predicate<? super Object> predicate;
+            private final Function1<? super T, ? extends Void> function;
+            private final List<Case> cases;
+
+            private WhenRunnable(SerializableConsumer<? super T> action, List<Case> cases) {
+                this.function = Function1.of((T t) -> {
+                    action.accept(t);
+                    return null;
+                });
+                this.predicate = function::isApplicableTo;
+                this.cases = cases;
+            }
+
+            public WhenRun.ThenRun thenRun() {
+                return new WhenRun.ThenRun(cases.prepend(new Case(predicate, function)));
+            }
+
+            public WhenRun.ThenRun thenThrow(Supplier<? extends RuntimeException> supplier) {
+                Objects.requireNonNull(supplier, "supplier is null");
+                return new WhenRun.ThenRun(cases.prepend(new Case(predicate, ignored -> {
                     throw supplier.get();
                 })));
             }
@@ -402,44 +495,71 @@ public interface Match<R> extends Function1<Object, R> {
             private final static long serialVersionUID = 1L;
 
             private final Function<? super Object, ? extends R> function;
-            private final List<Case<R>> cases;
+            private final List<Case> cases;
 
-            private Otherwise(Function<? super Object, ? extends R> function, List<Case<R>> cases) {
+            private Otherwise(Function<? super Object, ? extends R> function, List<Case> cases) {
+                this.function = function;
+                this.cases = cases;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public R apply(Object o) {
+                return (R) cases.reverse()
+                        .findFirst(caze -> caze.isApplicable(o))
+                        .map(caze -> caze.apply(o))
+                        .orElseGet(() -> function.apply(o));
+            }
+        }
+
+        final class OtherwiseRun implements Match<Void> {
+
+            private final static long serialVersionUID = 1L;
+
+            private final Function<? super Object, ? extends Void> function;
+            private final List<Case> cases;
+
+            private OtherwiseRun(Function<? super Object, ? extends Void> function, List<Case> cases) {
                 this.function = function;
                 this.cases = cases;
             }
 
             @Override
-            public R apply(Object o) {
-                return cases.reverse().findFirst(caze -> caze.isApplicable(o)).map(caze -> caze.apply(o)).orElseGet(
-                        () -> function.apply(o));
+            public Void apply(Object o) {
+                cases.reverse()
+                        .findFirst(caze -> caze.isApplicable(o))
+                        .map(caze -> caze.apply(o))
+                        .orElseGet(() -> function.apply(o));
+                return null;
             }
         }
 
-        final class Case<R> {
+        final class Case {
 
             private final Predicate<? super Object> predicate;
-            private final Function<? super Object, ? extends R> function;
+            private final Function<? super Object, ? extends Object> function;
 
             @SuppressWarnings("unchecked")
-            private <T> Case(Predicate<? super T> predicate, Function<? super T, ? extends R> function) {
+            private <T, R> Case(Predicate<? super T> predicate, Function<? super T, ? extends R> function) {
                 this.predicate = (Predicate<? super Object>) predicate;
-                this.function = (Function<? super Object, ? extends R>) function;
+                this.function = (Function<? super Object, ? extends Object>) function;
             }
 
             private boolean isApplicable(Object object) {
                 return predicate.test(object);
             }
 
-            private R apply(Object object) {
+            private Object apply(Object object) {
                 return function.apply(object);
             }
         }
+
+        // TODO: move this into the MatchModule (i.e. need to share it between Match states)?
+        @FunctionalInterface
+        interface SerializableConsumer<T> extends Consumer<T>, Serializable {
+        }
     }
 
-    /**
-     * @since 2.0.0
-     */
     interface MatchMonad<R> extends Value<R>, Supplier<R> {
 
         @Override
@@ -503,32 +623,32 @@ public interface Match<R> extends Function1<Object, R> {
 
             public <U> WhenUntyped<T, U> when(Function1<? super U, ? extends Boolean> predicate) {
                 Objects.requireNonNull(predicate, "predicate is null");
-                final boolean isMatching = MatchFunction.When.of(predicate).test(value);
+                final boolean isMatching = isTrue(predicate).test(value);
                 return new WhenUntyped<>(value, isMatching);
             }
 
             public <U> WhenUntyped<T, U> whenIs(U prototype) {
-                final boolean isMatching = MatchFunction.When.is(prototype).test(value);
+                final boolean isMatching = is(prototype).test(value);
                 return new WhenUntyped<>(value, isMatching);
             }
 
             @SuppressWarnings("unchecked")
             public <U> WhenUntyped<T, U> whenIsIn(U... prototypes) {
                 Objects.requireNonNull(prototypes, "prototypes is null");
-                final boolean isMatching = MatchFunction.When.isIn(prototypes).test(value);
+                final boolean isMatching = isIn(prototypes).test(value);
                 return new WhenUntyped<>(value, isMatching);
             }
 
             public <U> WhenUntyped<T, U> whenType(Class<U> type) {
                 Objects.requireNonNull(type, "type is null");
-                final boolean isMatching = MatchFunction.When.type(type).test(value);
+                final boolean isMatching = isType(type).test(value);
                 return new WhenUntyped<>(value, isMatching);
             }
 
             // DEV-NOTE: return WhenUntyped<U = T> because lower bound of class types Class<? super U> cannot be calculated (this is the best we can do)
             public <U> WhenUntyped<T, Object> whenTypeIn(Class<?>... types) {
                 Objects.requireNonNull(types, "types is null");
-                final boolean isMatching = MatchFunction.When.typeIn(types).test(value);
+                final boolean isMatching = isTypeIn(types).test(value);
                 return new WhenUntyped<>(value, isMatching);
             }
 
@@ -596,6 +716,11 @@ public interface Match<R> extends Function1<Object, R> {
                 return then(ignored -> that);
             }
 
+            public <R> When.Then<T, R> then(Supplier<? extends R> supplier) {
+                Objects.requireNonNull(supplier, "supplier is null");
+                return then(ignored -> supplier.get());
+            }
+
             public When.Then<T, Void> thenRun(Consumer<? super U> action) {
                 return then(param -> {
                     action.accept(param);
@@ -608,11 +733,6 @@ public interface Match<R> extends Function1<Object, R> {
                     action.run();
                     return null;
                 });
-            }
-
-            public <R> When.Then<T, R> then(Supplier<? extends R> supplier) {
-                Objects.requireNonNull(supplier, "supplier is null");
-                return then(ignored -> supplier.get());
             }
 
             public <R> When.Then<T, R> thenThrow(Supplier<? extends RuntimeException> supplier) {
@@ -637,8 +757,7 @@ public interface Match<R> extends Function1<Object, R> {
 
             public Then<T, R> then(Function<? super U, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                final Option<Supplier<? extends R>> updatedResult = When.computeResult(value, result, isMatching,
-                        function);
+                final Option<Supplier<? extends R>> updatedResult = When.computeResult(value, result, isMatching, function);
                 return new Then<>(value, updatedResult);
             }
 
@@ -651,18 +770,24 @@ public interface Match<R> extends Function1<Object, R> {
                 return then(ignored -> supplier.get());
             }
 
-            public When.Then<T, R> thenRun(Consumer<? super U> action) {
-                return then(param -> {
-                    action.accept(param);
+            public When.Then<T, Void> thenRun(Consumer<? super U> action) {
+                Objects.requireNonNull(action, "action is null");
+                final Function<? super U, ? extends Void> function = value -> {
+                    action.accept(value);
                     return null;
-                });
+                };
+                final Option<Supplier<? extends Void>> updatedResult = When.computeResult(value, result, isMatching, function);
+                return new Then<>(value, updatedResult);
             }
 
-            public When.Then<T, R> thenRun(Runnable action) {
-                return then(ignored -> {
+            public When.Then<T, Void> thenRun(Runnable action) {
+                Objects.requireNonNull(action, "action is null");
+                final Function<? super U, ? extends Void> function = ignored -> {
                     action.run();
                     return null;
-                });
+                };
+                final Option<Supplier<? extends Void>> updatedResult = When.computeResult(value, null, isMatching, function);
+                return new Then<>(value, updatedResult);
             }
 
             public Then<T, R> thenThrow(Supplier<? extends RuntimeException> supplier) {
@@ -698,32 +823,32 @@ public interface Match<R> extends Function1<Object, R> {
 
                 public <U> When<T, U, R> when(Function1<? super U, ? extends Boolean> predicate) {
                     Objects.requireNonNull(predicate, "predicate is null");
-                    final boolean isMatching = isMatching(() -> MatchFunction.When.of(predicate));
+                    final boolean isMatching = isMatching(() -> isTrue(predicate));
                     return new When<>(value, result, isMatching);
                 }
 
                 public <U> When<T, U, R> whenIs(U prototype) {
-                    final boolean isMatching = isMatching(() -> MatchFunction.When.is(prototype));
+                    final boolean isMatching = isMatching(() -> is(prototype));
                     return new When<>(value, result, isMatching);
                 }
 
                 @SuppressWarnings("unchecked")
                 public <U> When<T, U, R> whenIsIn(U... prototypes) {
                     Objects.requireNonNull(prototypes, "prototypes is null");
-                    final boolean isMatching = isMatching(() -> MatchFunction.When.isIn(prototypes));
+                    final boolean isMatching = isMatching(() -> isIn(prototypes));
                     return new When<>(value, result, isMatching);
                 }
 
                 public <U> When<T, U, R> whenType(Class<U> type) {
                     Objects.requireNonNull(type, "type is null");
-                    final boolean isMatching = isMatching(() -> MatchFunction.When.type(type));
+                    final boolean isMatching = isMatching(() -> isType(type));
                     return new When<>(value, result, isMatching);
                 }
 
                 // U = T is the best we can do
                 public When<T, T, R> whenTypeIn(Class<?>... types) {
                     Objects.requireNonNull(types, "types is null");
-                    final boolean isMatching = isMatching(() -> MatchFunction.When.typeIn(types));
+                    final boolean isMatching = isMatching(() -> isTypeIn(types));
                     return new When<>(value, result, isMatching);
                 }
 
@@ -746,20 +871,26 @@ public interface Match<R> extends Function1<Object, R> {
                     return new Otherwise<>(() -> result.orElse(supplier).get());
                 }
 
-                public Otherwise<R> otherwiseRun(Consumer<? super T> action) {
+                public OtherwiseVoid otherwiseRun(Consumer<? super T> action) {
                     Objects.requireNonNull(action, "action is null");
-                    return new Otherwise<>(() -> result.orElse(() -> {
-                        action.accept(value);
+                    return new OtherwiseVoid(() -> {
+                        result.orElse(() -> {
+                            action.accept(value);
+                            return null;
+                        }).get();
                         return null;
-                    }).get());
+                    });
                 }
 
-                public Otherwise<R> otherwiseRun(Runnable action) {
+                public OtherwiseVoid otherwiseRun(Runnable action) {
                     Objects.requireNonNull(action, "action is null");
-                    return new Otherwise<>(() -> result.orElse(() -> {
-                        action.run();
+                    return new OtherwiseVoid(() -> {
+                        result.orElse(() -> {
+                            action.run();
+                            return null;
+                        }).get();
                         return null;
-                    }).get());
+                    });
                 }
 
                 public Otherwise<R> otherwiseThrow(Supplier<? extends RuntimeException> supplier) {
@@ -828,6 +959,88 @@ public interface Match<R> extends Function1<Object, R> {
             }
         }
 
+        final class WhenVoid<T, U> {
+
+            ...
+
+            public static final class ThenVoid<T> {
+
+                private final T value;
+
+                private ThenVoid(T value) {
+                    this.value = value;
+                }
+
+                public <U> WhenVoid<T, U> when(Function1<? super U, ? extends Boolean> predicate) {
+                    Objects.requireNonNull(predicate, "predicate is null");
+                    final boolean isMatching = isMatching(() -> isTrue(predicate));
+                    return new WhenVoid<>(value, isMatching);
+                }
+
+                public <U> WhenVoid<T, U> whenIs(U prototype) {
+                    final boolean isMatching = isMatching(() -> is(prototype));
+                    return new WhenVoid<>(value, isMatching);
+                }
+
+                @SuppressWarnings("unchecked")
+                public <U> WhenVoid<T, U> whenIsIn(U... prototypes) {
+                    Objects.requireNonNull(prototypes, "prototypes is null");
+                    final boolean isMatching = isMatching(() -> isIn(prototypes));
+                    return new WhenVoid<>(value, isMatching);
+                }
+
+                public <U> WhenVoid<T, U> whenType(Class<U> type) {
+                    Objects.requireNonNull(type, "type is null");
+                    final boolean isMatching = isMatching(() -> isType(type));
+                    return new WhenVoid<>(value, isMatching);
+                }
+
+                // U = T is the best we can do
+                public WhenVoid<T, T> whenTypeIn(Class<?>... types) {
+                    Objects.requireNonNull(types, "types is null");
+                    final boolean isMatching = isMatching(() -> isTypeIn(types));
+                    return new WhenVoid<>(value, isMatching);
+                }
+
+                // we widen function result type because Void is of type Object
+                public <U> WhenApplicableVoid<T, U> whenApplicable(Function1<? super U, ? extends Object> function) {
+                    Objects.requireNonNull(function, "function is null");
+                    return new WhenApplicable<>(value, function);
+                }
+
+                public OtherwiseVoid otherwiseRun(Consumer<? super T> action) {
+                    Objects.requireNonNull(action, "action is null");
+                    return new OtherwiseVoid(() -> {
+                        result.orElse(() -> {
+                            action.accept(value);
+                            return null;
+                        }).get();
+                        return null;
+                    });
+                }
+
+                public OtherwiseVoid otherwiseRun(Runnable action) {
+                    Objects.requireNonNull(action, "action is null");
+                    return new OtherwiseVoid(() -> {
+                        result.orElse(() -> {
+                            action.run();
+                            return null;
+                        }).get();
+                        return null;
+                    });
+                }
+
+                public OtherwiseVoid otherwiseThrow(Supplier<? extends RuntimeException> supplier) {
+                    Objects.requireNonNull(supplier, "supplier is null");
+                    return new Otherwise<>(() -> result.orElseThrow(supplier).get());
+                }
+
+                private boolean isMatching(Supplier<Predicate<? super Object>> predicate) {
+                    return result.isEmpty() && predicate.get().test(value);
+                }
+            }
+        }
+
         final class WhenApplicable<T, U, R> {
 
             private final T value;
@@ -857,6 +1070,10 @@ public interface Match<R> extends Function1<Object, R> {
                         });
                 return new When.Then<T, R>(value, updatedResult);
             }
+        }
+
+        final class WhenApplicableVoid<T, U> {
+            ...
         }
 
         final class Otherwise<R> implements MatchMonad<R> {
@@ -908,5 +1125,47 @@ public interface Match<R> extends Function1<Object, R> {
                 return Iterator.of(get());
             }
         }
+
+        final class OtherwiseVoid {
+
+            // we need to ensure referential transparency of Otherwise.get()
+            private final Lazy<Void> result;
+
+            private OtherwiseVoid(Supplier<Void> supplier) {
+                this.result = Lazy.of(supplier);
+            }
+
+            public void run() {
+                result.get();
+            }
+        }
+    }
+}
+
+interface MatchModule {
+
+    static <T> Predicate<? super Object> is(T prototype) {
+        return value -> value == prototype || (value != null && value.equals(prototype));
+    }
+
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    static <T> Predicate<? super Object> isIn(T... prototypes) {
+        return value -> Iterator.of(prototypes).findFirst(prototype -> is(prototype).test(value)).isDefined();
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T> Predicate<? super Object> isTrue(Function1<? super T, ? extends Boolean> predicate) {
+        final Class<? super T> type = predicate.getType().parameterType1();
+        return value -> (value == null || type.isAssignableFrom(value.getClass()))
+                && ((Function1<? super Object, ? extends Boolean>) predicate).apply(value);
+    }
+
+    static <T> Predicate<? super Object> isType(Class<T> type) {
+        return value -> value != null && type.isAssignableFrom(value.getClass());
+    }
+
+    static <T> Predicate<? super Object> isTypeIn(Class<?>... types) {
+        return value -> Iterator.of(types).findFirst(type -> isType(type).test(value)).isDefined();
     }
 }
