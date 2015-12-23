@@ -8,7 +8,6 @@ package javaslang.control;
 import javaslang.Function1;
 import org.junit.Test;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 

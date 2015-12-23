@@ -394,6 +394,18 @@ public class CharSeqTest {
         assertThat(actual).isTrue();
     }
 
+    @Test
+    public void shouldRecognizeNonNilDoesNotContainCharSequence() {
+        final boolean actual = CharSeq.of('1', '2', '3').contains("13");
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonNilDoesContainCharSequence() {
+        final boolean actual = CharSeq.of('1', '2', '3').contains("23");
+        assertThat(actual).isTrue();
+    }
+
     // -- containsAll
 
     @Test
@@ -577,11 +589,25 @@ public class CharSeqTest {
     @Test
     public void shouldFilterNonEmptyTraversableAllMatch() {
         final CharSeq t = CharSeq.of('1', '2', '3', '4');
-        if (isThisLazyCollection()) {
-            assertThat(t.filter(i -> true)).isEqualTo(t);
-        } else {
-            assertThat(t.filter(i -> true)).isSameAs(t);
-        }
+        assertThat(t.filter(i -> true)).isSameAs(t);
+    }
+
+    // -- filterNot
+
+    @Test
+    public void shouldFilterNotEmptyTraversable() {
+        assertThat(empty().filterNot(ignored -> true)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldFilterNotNonEmptyTraversable() {
+        assertThat(CharSeq.of('1', '2', '3', '4').filterNot(i -> i == '2' || i == '4')).isEqualTo(CharSeq.of('1', '3'));
+    }
+
+    @Test
+    public void shouldFilterNotNonEmptyTraversableAllMatch() {
+        final CharSeq t = CharSeq.of('1', '2', '3', '4');
+        assertThat(t.filterNot(i -> false)).isSameAs(t);
     }
 
     // -- findFirst
@@ -1426,11 +1452,7 @@ public class CharSeqTest {
     @Test
     public void shouldTakeAllIfCountExceedsSize() {
         final CharSeq t = CharSeq.of('1', '2', '3');
-        if (isThisLazyCollection()) {
-            assertThat(t.take(4)).isEqualTo(t);
-        } else {
-            assertThat(t.take(4)).isSameAs(t);
-        }
+        assertThat(t.take(4)).isSameAs(t);
     }
 
     // -- takeRight
@@ -1526,6 +1548,22 @@ public class CharSeqTest {
         assertThat(CharSeq.of('1', '2', '3').tailOption()).isEqualTo(Option.some(CharSeq.of('2', '3')));
     }
 
+    // -- toLowerCase
+
+    @Test
+    public void shouldConvertToLowerCase() {
+        assertThat(CharSeq.of("JaVasLAng").toLowerCase()).isEqualTo(CharSeq.of("javaslang"));
+        assertThat(CharSeq.of("JaVasLAng").toLowerCase(Locale.ENGLISH)).isEqualTo(CharSeq.of("javaslang"));
+    }
+
+    // -- toUpperCase
+
+    @Test
+    public void shouldConvertTotoUpperCase() {
+        assertThat(CharSeq.of("JaVasLAng").toUpperCase()).isEqualTo(CharSeq.of("JAVASLANG"));
+        assertThat(CharSeq.of("JaVasLAng").toUpperCase(Locale.ENGLISH)).isEqualTo(CharSeq.of("JAVASLANG"));
+    }
+
     // -- toJavaArray(Class)
 
     @Test
@@ -1585,6 +1623,13 @@ public class CharSeqTest {
         assertThat(CharSeq.of('1', '2', '2', '3').toJavaSet()).isEqualTo(expected);
     }
 
+    // -- stringPrefix
+
+    @Test
+    public void shouldReturnStringPrefix() {
+        assertThat(CharSeq.of('1').stringPrefix()).isEqualTo("CharSeq");
+    }
+
     // ++++++ OBJECT ++++++
 
     // -- equals
@@ -1623,6 +1668,12 @@ public class CharSeqTest {
     @Test
     public void shouldRecognizeEqualityOfNonNils() {
         assertThat(CharSeq.of('1', '2', '3').equals(CharSeq.of('1', '2', '3'))).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeContentEqualityOfNonNil() {
+        assertThat(CharSeq.of('1', '2', '3').contentEquals(new StringBuffer().append("123"))).isTrue();
+        assertThat(CharSeq.of('1', '2', '3').contentEquals("123")).isTrue();
     }
 
     @Test
@@ -1939,16 +1990,19 @@ public class CharSeqTest {
     @Test
     public void shouldFindIndexOfFirstElement() {
         assertThat(CharSeq.of('1', '2', '3').indexOf('1')).isEqualTo(0);
+        assertThat(CharSeq.of('1', '2', '3').indexOf(Character.valueOf('1'))).isEqualTo(0);
     }
 
     @Test
     public void shouldFindIndexOfInnerElement() {
         assertThat(CharSeq.of('1', '2', '3').indexOf('2')).isEqualTo(1);
+        assertThat(CharSeq.of('1', '2', '3').indexOf(Character.valueOf('2'))).isEqualTo(1);
     }
 
     @Test
     public void shouldFindIndexOfLastElement() {
         assertThat(CharSeq.of('1', '2', '3').indexOf('3')).isEqualTo(2);
+        assertThat(CharSeq.of('1', '2', '3').indexOf(Character.valueOf('3'))).isEqualTo(2);
     }
 
     // -- indexOfSlice
@@ -1993,11 +2047,13 @@ public class CharSeqTest {
     @Test
     public void shouldFindLastIndexOfElement() {
         assertThat(CharSeq.of('1', '2', '3', '1', '2', '3').lastIndexOf('1')).isEqualTo(3);
+        assertThat(CharSeq.of('1', '2', '3', '1', '2', '3').lastIndexOf(Character.valueOf('1'))).isEqualTo(3);
     }
 
     @Test
     public void shouldFindLastIndexOfElementWithEnd() {
         assertThat(CharSeq.of('1', '2', '3', '1', '2', '3').lastIndexOf('1', 1)).isEqualTo(0);
+        assertThat(CharSeq.of('1', '2', '3', '1', '2', '3').lastIndexOf(Character.valueOf('1'), 1)).isEqualTo(0);
     }
 
     // -- lastIndexOfSlice
@@ -2242,15 +2298,7 @@ public class CharSeqTest {
     @Test
     public void shouldRemoveNonExistingElement() {
         final CharSeq t = CharSeq.of('1', '2', '3');
-        if (isThisLazyCollection()) {
-            assertThat(t.remove('4')).isEqualTo(t);
-        } else {
-            assertThat(t.remove('4')).isSameAs(t);
-        }
-    }
-
-    boolean isThisLazyCollection() {
-        return false;
+        assertThat(t.remove('4')).isSameAs(t);
     }
 
     // -- removeFirst(Predicate)
@@ -2359,11 +2407,7 @@ public class CharSeqTest {
     @Test
     public void shouldNotRemoveAllNonExistingElementsFromNonNil() {
         final CharSeq t = CharSeq.of('1', '2', '3');
-        if (isThisLazyCollection()) {
-            assertThat(t.removeAll(CharSeq.of('4', '5'))).isEqualTo(t);
-        } else {
-            assertThat(t.removeAll(CharSeq.of('4', '5'))).isSameAs(t);
-        }
+        assertThat(t.removeAll(CharSeq.of('4', '5'))).isSameAs(t);
     }
 
     // -- removeAll(Object)
@@ -2381,11 +2425,7 @@ public class CharSeqTest {
     @Test
     public void shouldNotRemoveAllNonObjectsElementsFromNonNil() {
         final CharSeq t = CharSeq.of('1', '2', '3');
-        if (isThisLazyCollection()) {
-            assertThat(t.removeAll('4')).isEqualTo(t);
-        } else {
-            assertThat(t.removeAll('4')).isSameAs(t);
-        }
+        assertThat(t.removeAll('4')).isSameAs(t);
     }
 
     // -- reverse

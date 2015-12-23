@@ -11,6 +11,7 @@ import javaslang.test.Gen;
 import javaslang.test.Property;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.function.IntUnaryOperator;
 
 import static javaslang.collection.RedBlackTree.Color.BLACK;
@@ -51,6 +52,23 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> tree = RedBlackTree.empty();
         assertThat(tree.isEmpty()).isTrue();
         assertThat(tree.size()).isEqualTo(0);
+        assertThat(tree.color()).isEqualTo(BLACK);
+        assertThat(tree.clear()).isSameAs(tree);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldFailLeftOfEmpty() {
+        RedBlackTree.empty().left();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldFailRightOfEmpty() {
+        RedBlackTree.empty().right();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailValueOfEmpty() {
+        RedBlackTree.empty().value();
     }
 
     // isEmpty
@@ -163,7 +181,7 @@ public class RedBlackTreeTest {
     // difference()
 
     @Test
-    public void shouldShouldSubtractEmptyFromNonEmpty() {
+    public void shouldSubtractEmptyFromNonEmpty() {
         final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
         final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> actual = t1.difference(t2);
@@ -171,7 +189,7 @@ public class RedBlackTreeTest {
     }
 
     @Test
-    public void shouldShouldSubtractNonEmptyFromEmpty() {
+    public void shouldSubtractNonEmptyFromEmpty() {
         final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
         final RedBlackTree<Integer> actual = t1.difference(t2);
@@ -179,7 +197,7 @@ public class RedBlackTreeTest {
     }
 
     @Test
-    public void shouldShouldSubtractNonEmptyFromNonEmpty() {
+    public void shouldSubtractNonEmptyFromNonEmpty() {
         final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
         final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
         final RedBlackTree<Integer> actual = t1.difference(t2);
@@ -190,7 +208,7 @@ public class RedBlackTreeTest {
     // intersection()
 
     @Test
-    public void shouldShouldIntersectOnNonEmptyGivenEmpty() {
+    public void shouldIntersectOnNonEmptyGivenEmpty() {
         final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
         final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> actual = t1.intersection(t2);
@@ -199,7 +217,7 @@ public class RedBlackTreeTest {
     }
 
     @Test
-    public void shouldShouldIntersectOnEmptyGivenNonEmpty() {
+    public void shouldIntersectOnEmptyGivenNonEmpty() {
         final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
         final RedBlackTree<Integer> actual = t1.intersection(t2);
@@ -208,7 +226,7 @@ public class RedBlackTreeTest {
     }
 
     @Test
-    public void shouldShouldIntersectOnNonEmptyGivenNonEmpty() {
+    public void shouldIntersectOnNonEmptyGivenNonEmpty() {
         final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
         final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
         final RedBlackTree<Integer> actual = t1.intersection(t2);
@@ -216,10 +234,49 @@ public class RedBlackTreeTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    public void shouldIntersectOnNonEmptyGivenNonEmptyUnbalancedHeightLeft() {
+        // Node::mergeGT
+        //
+        // Trees have
+        // - different values
+        // - similar to each other left children
+        // - and unlike each other right children
+        final RedBlackTree<Integer> t1 = RedBlackTree.of(1, 2, 3, 4, 5, 6, 7, 8, 60, 66, 67);
+        final RedBlackTree<Integer> t2 = RedBlackTree.of(1, 2, 3, 10, 11, 12, 13, 14, 60, 76, 77);
+        final RedBlackTree<Integer> actual = t1.intersection(t2);
+        final RedBlackTree<Integer> expected = RedBlackTree.of(1, 2, 3, 60);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldIntersectOnNonEmptyGivenNonEmptyUnbalancedHeightRight() {
+        // Node::mergeLT
+        //
+        // Trees have
+        // - different values
+        // - unlike each other left children
+        // - and similar to each other right children
+        final RedBlackTree<Integer> t1 = RedBlackTree.of(1, 2, 3, 4, 40, 61, 62, 63, 64, 65);
+        final RedBlackTree<Integer> t2 = RedBlackTree.of(2, 7, 8, 9, 50, 61, 62, 63, 64, 65);
+        final RedBlackTree<Integer> actual = t1.intersection(t2);
+        final RedBlackTree<Integer> expected = RedBlackTree.of(2, 61, 62, 63, 64, 65);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldIntersectOnNonEmptyGivenNonEmptyBalancedHeightRight() {
+        // Node::mergeEQ && isRed(n1.right)
+        //
+        final RedBlackTree<Integer> t1 = RedBlackTree.of(-10, -20, -30, -40, -50, 1, 10, 20, 30);
+        final RedBlackTree<Integer> t2 = RedBlackTree.of(-10, -20, -30, -40, -50, 2, 10, 20, 30);
+        assertThat(t1.intersection(t2)).isEqualTo(t1.delete(1));
+    }
+
     // union()
 
     @Test
-    public void shouldShouldUnionOnNonEmptyGivenEmpty() {
+    public void shouldUnionOnNonEmptyGivenEmpty() {
         final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
         final RedBlackTree<Integer> t2 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> actual = t1.union(t2);
@@ -228,7 +285,7 @@ public class RedBlackTreeTest {
     }
 
     @Test
-    public void shouldShouldUnionOnEmptyGivenNonEmpty() {
+    public void shouldUnionOnEmptyGivenNonEmpty() {
         final RedBlackTree<Integer> t1 = RedBlackTree.<Integer> empty();
         final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
         final RedBlackTree<Integer> actual = t1.union(t2);
@@ -237,7 +294,7 @@ public class RedBlackTreeTest {
     }
 
     @Test
-    public void shouldShouldUnionOnNonEmptyGivenNonEmpty() {
+    public void shouldUnionOnNonEmptyGivenNonEmpty() {
         final RedBlackTree<Integer> t1 = RedBlackTree.of(3, 5);
         final RedBlackTree<Integer> t2 = RedBlackTree.of(5, 7);
         final RedBlackTree<Integer> actual = t1.union(t2);

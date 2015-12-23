@@ -186,6 +186,16 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return new CharSeq(Iterator.rangeClosedBy(from, toInclusive, step).mkString());
     }
 
+    private Tuple2<CharSeq, CharSeq> splitByBuilder(StringBuilder sb) {
+        if (sb.length() == 0) {
+            return Tuple.of(EMPTY, this);
+        } else if (sb.length() == length()) {
+            return Tuple.of(this, EMPTY);
+        } else {
+            return Tuple.of(of(sb.toString()), of(back.substring(sb.length())));
+        }
+    }
+
     /**
      * Repeats a character {@code times} times.
      *
@@ -484,7 +494,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         for (int i = 0; i < limit; i++) {
             sb.append(element);
         }
-        return sb.length() == 0 ? EMPTY : new CharSeq(sb.toString());
+        return new CharSeq(sb.toString());
     }
 
     @Override
@@ -790,13 +800,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
                 break;
             }
         }
-        if (sb.length() == 0) {
-            return Tuple.of(EMPTY, this);
-        } else if (sb.length() == length()) {
-            return Tuple.of(this, EMPTY);
-        } else {
-            return Tuple.of(of(sb.toString()), CharSeq.of(back.substring(sb.length())));
-        }
+        return splitByBuilder(sb);
     }
 
     @Override
@@ -1001,13 +1005,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
                 break;
             }
         }
-        if (left.length() == 0) {
-            return Tuple.of(EMPTY, this);
-        } else if (left.length() == length()) {
-            return Tuple.of(this, EMPTY);
-        } else {
-            return Tuple.of(of(left.toString()), of(back.substring(left.length())));
-        }
+        return splitByBuilder(left);
     }
 
     @Override
@@ -1024,13 +1022,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
                 break;
             }
         }
-        if (left.length() == 0) {
-            return Tuple.of(EMPTY, this);
-        } else if (left.length() == length()) {
-            return Tuple.of(this, EMPTY);
-        } else {
-            return Tuple.of(of(left.toString()), of(back.substring(left.length())));
-        }
+        return splitByBuilder(left);
     }
 
     @Override
@@ -2357,7 +2349,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
 interface CharSeqModule {
 
-    final class Combinations {
+    interface Combinations {
 
         static IndexedSeq<CharSeq> apply(CharSeq elements, int k) {
             if (k == 0) {
