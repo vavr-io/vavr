@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.control.Either;
 import javaslang.control.Option;
 import org.junit.Test;
 
@@ -1424,6 +1425,54 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         } finally {
             System.setOut(originalOut);
         }
+    }
+
+    // -- toLeft
+
+    @Test
+    public void shouldCreateEitherLeftFromValueSupplier() {
+        Either<Integer,String> either = of(0).toLeft(() -> "no");
+        assertThat(either.isLeft()).isTrue();
+        assertThat(either.get()).isEqualTo(0);
+
+        Either<Object,String> either2 = empty().toLeft(() -> "no");
+        assertThat(either2.isRight()).isTrue();
+        assertThat(either2.get()).isEqualTo("no");
+    }
+
+    @Test
+    public void shouldCreateEitherLeftFromValue() {
+        Either<Integer,String> either = of(0).toLeft("no");
+        assertThat(either.isLeft()).isTrue();
+        assertThat(either.get()).isEqualTo(0);
+
+        Either<Object,String> either2 = empty().toLeft("no");
+        assertThat(either2.isRight()).isTrue();
+        assertThat(either2.get()).isEqualTo("no");
+    }
+
+    // -- toRight
+
+    @Test
+    public void shouldCreateEitherRightFromValueSupplier() {
+        Either<String,Integer> either = of(0).toRight(() -> "no");
+        assertThat(either.isRight()).isTrue();
+        assertThat(either.get()).isEqualTo(0);
+
+        Either<String,Object> either2 = empty().toRight(() -> "no");
+        assertThat(either2.isLeft()).isTrue();
+        assertThat(either2.get()).isEqualTo("no");
+    }
+
+    @Test
+    public void shouldCreateEitherRightFromValue() {
+        Either<String,Integer> either = of(0).toRight("no");
+        assertThat(either.isRight()).isTrue();
+        assertThat(either.get()).isEqualTo(0);
+
+        Either<String,Object> either2 = empty().toRight("no");
+        assertThat(either2.isLeft()).isTrue();
+        assertThat(either2.get()).isEqualTo("no");
     }
 
     // -- PrintStream
