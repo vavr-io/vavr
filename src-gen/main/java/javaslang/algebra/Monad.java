@@ -410,6 +410,17 @@ interface Convertible<T> {
     <R> Either<T, R> toLeft(Supplier<? extends R> right);
 
     /**
+     * Converts this value to a {@link Either}.
+     *
+     * @param <R> right type
+     * @param right An instance of a right value
+     * @return A new {@link Right} containing the value of {@code right} if this is empty, otherwise
+     *         a new {@link Left} containing this value.
+     * @throws NullPointerException if {@code right} is null
+     */
+    <R> Either<T, R> toLeft(R right);
+
+    /**
      * Converts this value to a {@link List}.
      *
      * @return A new {@link List}.
@@ -450,6 +461,17 @@ interface Convertible<T> {
      * @throws NullPointerException if {@code left} is null
      */
     <L> Either<L, T> toRight(Supplier<? extends L> left);
+
+    /**
+     * Converts this value to a {@link Either}.
+     *
+     * @param <L> left type
+     * @param left An instance of a left value
+     * @return A new {@link Left} containing the value of {@code left} if this is empty, otherwise
+     *         a new {@link Right} containing this value.
+     * @throws NullPointerException if {@code left} is null
+     */
+    <L> Either<L, T> toRight(L left);
 
     /**
      * Converts this value to a {@link Set}.

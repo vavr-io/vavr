@@ -330,6 +330,17 @@ def generateMainClasses(): Unit = {
             <R> $EitherType<T, R> toLeft($SupplierType<? extends R> right);
 
             /**
+             * Converts this value to a {@link $EitherType}.
+             *
+             * @param <R> right type
+             * @param right An instance of a right value
+             * @return A new {@link $RightType} containing the value of {@code right} if this is empty, otherwise
+             *         a new {@link $LeftType} containing this value.
+             * @throws NullPointerException if {@code right} is null
+             */
+            <R> $EitherType<T, R> toLeft(R right);
+
+            /**
              * Converts this value to a {@link $ListType}.
              *
              * @return A new {@link $ListType}.
@@ -370,6 +381,17 @@ def generateMainClasses(): Unit = {
              * @throws NullPointerException if {@code left} is null
              */
             <L> $EitherType<L, T> toRight($SupplierType<? extends L> left);
+
+            /**
+             * Converts this value to a {@link $EitherType}.
+             *
+             * @param <L> left type
+             * @param left An instance of a left value
+             * @return A new {@link $LeftType} containing the value of {@code left} if this is empty, otherwise
+             *         a new {@link $RightType} containing this value.
+             * @throws NullPointerException if {@code left} is null
+             */
+            <L> $EitherType<L, T> toRight(L left);
 
             /**
              * Converts this value to a {@link $SetType}.
