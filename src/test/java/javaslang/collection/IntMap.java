@@ -220,17 +220,18 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public Traversable<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-        return scanLeft(zero, operation);
+        final int[] index = new int[] { 0 };
+        return original.scan(Tuple.of(-1, zero), (i, t) -> Tuple.of(index[0]++, operation.apply(i._2, t._2))).values();
     }
 
     @Override
     public <U> Traversable<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return original.values().scanLeft(zero, operation);
+        return original.scanLeft(zero, (i, t) -> operation.apply(i, t._2));
     }
 
     @Override
     public <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return original.values().scanRight(zero, operation);
+        return original.scanRight(zero, (t, i) -> operation.apply(t._2, i));
     }
 
     @Override
