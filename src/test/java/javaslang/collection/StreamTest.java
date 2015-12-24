@@ -196,6 +196,13 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(Stream.gen(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
     }
 
+    // -- static repeat(T)
+
+    @Test
+    public void shouldGenerateInfiniteStreamBasedOnRepeatedElement() {
+        assertThat(Stream.repeat(2).take(3).reduce((i, j) -> i + j)).isEqualTo(6);
+    }
+
     // -- static cons(T, Supplier)
 
     @Test
