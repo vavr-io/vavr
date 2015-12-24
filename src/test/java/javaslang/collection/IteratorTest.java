@@ -241,6 +241,33 @@ public class IteratorTest extends AbstractTraversableTest {
 
     }
 
+    // -- concat
+
+    @Test
+    public void shouldConcatThisNonEmptyWithEmpty() {
+        Iterator<Integer> it = Iterator.of(1);
+        assertThat(it.concat(Iterator.<Integer>empty())).isSameAs(it);
+    }
+
+    @Test
+    public void shouldConcatThisEmptyWithNonEmpty() {
+        Iterator<Integer> it = Iterator.of(1);
+        assertThat(Iterator.<Integer>empty().concat(it)).isSameAs(it);
+    }
+
+    @Test
+    public void shouldConcatThisNonEmptyWithNonEmpty() {
+        assertThat(Iterator.of(1).concat(Iterator.of(2))).isEqualTo(Iterator.of(1, 2));
+    }
+
+    // -- transform
+
+    @Test
+    public void shouldTransform() {
+        Iterator<?> it = Iterator.of(1, 2).transform(ii -> ii.drop(1));
+        assertThat(it).isEqualTo(Iterator.of(2));
+    }
+
     // -- static from(int)
 
     @Test
