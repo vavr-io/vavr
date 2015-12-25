@@ -5,9 +5,12 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple;
+import javaslang.control.Option;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.stream.Collector;
 
 public class QueueTest extends AbstractSeqTest {
@@ -151,11 +154,105 @@ public class QueueTest extends AbstractSeqTest {
         return Queue.rangeClosedBy(from, toInclusive, step);
     }
 
-    // -- indexOf
+    @Override
+    protected int getPeekNonNilPerformingAnAction() {
+        return 1;
+    }
+
+    @Override
+    protected boolean useIsEqualToInsteadOfIsSameAs() {
+        return false;
+    }
+
+    // -- peek
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailPeekOfEmpty() {
+        Queue.empty().peek();
+    }
+
+    @Test
+    public void shouldReturnPeekOfNonEmpty() {
+        assertThat(Queue.of(1).peek()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldReturnPeekOption() {
+        assertThat(Queue.empty().peekOption()).isEqualTo(Option.none());
+        assertThat(Queue.of(1).peekOption()).isEqualTo(Option.of(1));
+    }
+
+    // -- dequeue
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailDequeueOfEmpty() {
+        Queue.empty().dequeue();
+    }
+
+    @Test
+    public void shouldDequeueOfNonEmpty() {
+        assertThat(Queue.of(1, 2, 3).dequeue()).isEqualTo(Tuple.of(1, Queue.of(2, 3)));
+    }
+
+    @Test
+    public void shouldDequeueOption() {
+        assertThat(Queue.empty().dequeueOption()).isEqualTo(Option.none());
+        assertThat(Queue.of(1, 2, 3).dequeueOption()).isEqualTo(Option.of(Tuple.of(1, Queue.of(2, 3))));
+    }
+
+    // -- special cases
 
     private Queue<Integer> enqueued() {
         return Queue.of(1).enqueue(2, 3, 1, 5, 6);
     }
+
+    // -- get
+
+    @Test
+    public void shouldGetFrontEnc() {
+        assertThat(enqueued().get(0)).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldGetRearEnc() {
+        assertThat(enqueued().get(1)).isEqualTo(2);
+    }
+
+    // -- take
+
+    @Test
+    public void shouldTakeFrontEnc() {
+        assertThat(enqueued().take(1)).isEqualTo(of(1));
+    }
+
+    // -- insertAll
+
+    @Test
+    public void shouldInsertAllEnc() {
+        assertThat(enqueued().insertAll(0, List.of(91, 92))).isEqualTo(of(91, 92, 1, 2, 3, 1, 5, 6));
+        assertThat(enqueued().insertAll(1, List.of(91, 92))).isEqualTo(of(1, 91, 92, 2, 3, 1, 5, 6));
+        assertThat(enqueued().insertAll(2, List.of(91, 92))).isEqualTo(of(1, 2, 91, 92, 3, 1, 5, 6));
+        assertThat(enqueued().insertAll(6, List.of(91, 92))).isEqualTo(of(1, 2, 3, 1, 5, 6, 91, 92));
+    }
+
+    // -- insert
+
+    @Test
+    public void shouldInsertEnc() {
+        assertThat(enqueued().insert(0, 9)).isEqualTo(of(9, 1, 2, 3, 1, 5, 6));
+        assertThat(enqueued().insert(1, 9)).isEqualTo(of(1, 9, 2, 3, 1, 5, 6));
+        assertThat(enqueued().insert(2, 9)).isEqualTo(of(1, 2, 9, 3, 1, 5, 6));
+        assertThat(enqueued().insert(6, 9)).isEqualTo(of(1, 2, 3, 1, 5, 6, 9));
+    }
+
+    // -- intersperse
+
+    @Test
+    public void shouldIntersperseEnc() {
+        assertThat(enqueued().intersperse(9)).isEqualTo(of(1, 9, 2, 9, 3, 9, 1, 9, 5, 9, 6));
+    }
+
+    // -- indexOf
 
     @Test
     public void shouldNotFindIndexOfElementWhenStartIsGreaterEnc() {
@@ -193,16 +290,12 @@ public class QueueTest extends AbstractSeqTest {
     public void shouldFindLastIndexOfElementWithEndEnc() {
         assertThat(enqueued().lastIndexOf(1, 1)).isEqualTo(0);
     }
-    // -- other
 
-    @Override
-    protected int getPeekNonNilPerformingAnAction() {
-        return 1;
-    }
+    // -- equals
 
-    @Override
-    protected boolean useIsEqualToInsteadOfIsSameAs() {
-        return false;
+    @Test
+    public void shouldChackHashCodeWhenComparing() {
+        assertThat(Queue.of(0, null).equals(Queue.of(0, 0))).isFalse();
     }
 
 }
