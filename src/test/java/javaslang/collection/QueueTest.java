@@ -294,7 +294,7 @@ public class QueueTest extends AbstractSeqTest {
     // -- equals
 
     @Test
-    public void shouldChackHashCodeWhenComparing() {
+    public void shouldCheckHashCodeWhenComparing() {
         assertThat(Queue.of(0, null).equals(Queue.of(0, 0))).isFalse();
     }
 
