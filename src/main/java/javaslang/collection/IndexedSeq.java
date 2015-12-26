@@ -354,7 +354,7 @@ public interface IndexedSeq<T> extends Seq<T> {
 }
 
 interface IndexedSeqModule {
-    class LastIndexOfSlice {
+    interface LastIndexOfSlice {
         static <T> int lastIndexOfSlice(IndexedSeq<T> t, IndexedSeq<T> slice, int end) {
             if (end < 0) {
                 return -1;
@@ -384,7 +384,7 @@ interface IndexedSeqModule {
             return result;
         }
 
-        private static <T> int findSlice(IndexedSeq<T> t, int p, int maxPtr, IndexedSeq<T> slice) {
+        static <T> int findSlice(IndexedSeq<T> t, int p, int maxPtr, IndexedSeq<T> slice) {
             while (p <= maxPtr) {
                 if (t.startsWith(slice, p)) {
                     return p;
