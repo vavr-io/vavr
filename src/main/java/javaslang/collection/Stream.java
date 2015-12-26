@@ -1591,7 +1591,7 @@ interface StreamModule {
         }
     }
 
-    final class Combinations {
+    interface Combinations {
 
         static <T> Stream<Stream<T>> apply(Stream<T> elements, int k) {
             if (k == 0) {
@@ -1604,7 +1604,7 @@ interface StreamModule {
         }
     }
 
-    final class DropRight {
+    interface DropRight {
 
         // works with infinite streams by buffering elements
         static <T> Stream<T> apply(List<T> front, List<T> rear, Stream<T> remaining) {
@@ -1619,7 +1619,7 @@ interface StreamModule {
         }
     }
 
-    final class StreamFactory {
+    interface StreamFactory {
 
         static <T> Stream<T> create(java.util.Iterator<? extends T> iterator) {
             return iterator.hasNext() ? Stream.cons(iterator.next(), () -> create(iterator)) : Empty.instance();

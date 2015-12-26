@@ -293,7 +293,7 @@ public interface LinearSeq<T> extends Seq<T> {
 }
 
 interface LinearSeqModule {
-    class LastIndexOfSlice {
+    interface LastIndexOfSlice {
         static <T> int lastIndexOfSlice(LinearSeq<T> t, LinearSeq<T> slice, int end) {
             if (end < 0) {
                 return -1;
@@ -323,10 +323,7 @@ interface LinearSeqModule {
             return result;
         }
 
-        private static <T> Tuple2<LinearSeq<T>, Integer> findSlice(LinearSeq<T> t, LinearSeq<T> slice) {
-            if (t.isEmpty()) {
-                return slice.isEmpty() ? Tuple.of(t, 0) : null;
-            }
+        static <T> Tuple2<LinearSeq<T>, Integer> findSlice(LinearSeq<T> t, LinearSeq<T> slice) {
             int p = 0;
             while (t.length() >= slice.length()) {
                 if (t.startsWith(slice)) {
