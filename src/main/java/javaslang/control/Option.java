@@ -47,7 +47,12 @@ public interface Option<T> extends Value<T> {
 
     /**
      * Reduces many {@code Option}s into a single {@code Option} by transforming an
-     * {@code Iterable<Option<? extends T>>} into a {@code Option<Seq<T>>}.
+     * {@code Iterable<Option<? extends T>>} into a {@code Option<Seq<T>>}. If any of
+     * the Options are {@link Option.None}, then this returns {@link Option.None}.
+     *
+     * @param values An {@code Iterable} of {@code Option}s.
+     * @param <T> type of the Options.
+     * @return An {@code Option} of a {@link Seq} of results.
      */
     static <T> Option<Seq<T>> sequence(Iterable<? extends Option<? extends T>> values) {
         final Option<Seq<T>> zero = Option.of(List.empty());

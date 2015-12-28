@@ -63,7 +63,12 @@ public interface Try<T> extends Value<T> {
 
     /**
      * Reduces many {@code Try}s into a single {@code Try} by transforming an
-     * {@code Iterable<Try<? extends T>>} into a {@code Try<Seq<T>>}.
+     * {@code Iterable<Try<? extends T>>} into a {@code Try<Seq<T>>}. If any of
+     * the {@code Try}s are {@link Try.Failure}, then this returns a {@link Try.Failure}.
+     *
+     * @param values An {@link Iterable} of {@code Try}s.
+     * @param <T> type of the Trys.
+     * @return A {@code Try} of a {@link Seq} of results.
      */
     static <T> Try<Seq<T>> sequence(Iterable<? extends Try<? extends T>> values) {
         final Try<Seq<T>> zero = Try.of(List::empty);
