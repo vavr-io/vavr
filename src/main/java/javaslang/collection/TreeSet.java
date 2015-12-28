@@ -688,7 +688,8 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
             return this;
         } else {
             final RedBlackTree<T> kept = RedBlackTree.ofAll(tree.comparator(), elements);
-            return new TreeSet<>(tree.intersection(kept));
+            final RedBlackTree<T> newTree = tree.intersection(kept);
+            return newTree.size() == tree.size() ? this : new TreeSet<>(tree.intersection(kept));
         }
     }
 

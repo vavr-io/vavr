@@ -896,18 +896,30 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Queue<T> replace(T currentElement, T newElement) {
-        return toList().replace(currentElement, newElement).toQueue();
+        final List<T> newFront = front.replace(currentElement, newElement);
+        final List<T> newRear = rear.replace(currentElement, newElement);
+        return newFront.size() + newRear.size() == 0 ? empty()
+                : newFront == front && newRear == rear ? this
+                : new Queue<>(newFront, newRear);
     }
 
     @Override
     public Queue<T> replaceAll(T currentElement, T newElement) {
-        return new Queue<>(front.replaceAll(currentElement, newElement), rear.replaceAll(currentElement, newElement));
+        final List<T> newFront = front.replaceAll(currentElement, newElement);
+        final List<T> newRear = rear.replaceAll(currentElement, newElement);
+        return newFront.size() + newRear.size() == 0 ? empty()
+                : newFront == front && newRear == rear ? this
+                : new Queue<>(newFront, newRear);
     }
 
     @Override
     public Queue<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new Queue<>(front.retainAll(elements), rear.retainAll(elements));
+        final List<T> newFront = front.retainAll(elements);
+        final List<T> newRear = rear.retainAll(elements);
+        return newFront.size() + newRear.size() == 0 ? empty()
+                : newFront.size() + newRear.size() == size() ? this
+                : new Queue<>(newFront, newRear);
     }
 
     @Override

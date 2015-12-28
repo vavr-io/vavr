@@ -675,7 +675,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
                 that = that.put(element, element);
             }
         }
-        return new LinkedHashSet<>(that);
+        return that.isEmpty() ? empty() : that.size() == size() ? this : new LinkedHashSet<>(that);
     }
 
     @Override
