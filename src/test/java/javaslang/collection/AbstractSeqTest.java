@@ -408,7 +408,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldFindLastIndexOfSliceWithEnd() {
+        assertThat(empty().lastIndexOfSlice(empty(), -1)).isEqualTo(-1);
+        assertThat(empty().lastIndexOfSlice(empty(), 0)).isEqualTo(0);
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(empty(), -1)).isEqualTo(-1);
         assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(empty(), 2)).isEqualTo(2);
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(2), -1)).isEqualTo(-1);
         assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(2), 2)).isEqualTo(1);
         assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(2, 3), 2)).isEqualTo(1);
         assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSlice(of(2, 3), 2)).isEqualTo(1);
@@ -1460,6 +1464,21 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubSequenceWhenBeginIndexIsGreaterThanEndIndex() {
         of(1, 2, 3).subSequence(2, 1).mkString(); // force computation of last element, e.g. because Stream is lazy
+    }
+
+    // -- IndexedSeq special cases
+
+    @Test
+    public void shouldTestIdexedSeqStartsWithNonIndexedSeq() {
+        assertThat(of(1, 3, 4).startsWith(Stream.of(1, 3))).isTrue();
+        assertThat(of(1, 2, 3, 4).startsWith(Stream.of(1, 2, 4))).isFalse();
+        assertThat(of(1, 2).startsWith(Stream.of(1, 2, 4))).isFalse();
+    }
+
+    @Test
+    public void shouldTestIdexedSeqEndsWithNonIndexedSeq() {
+        assertThat(of(1, 3, 4).endsWith(Stream.of(3, 4))).isTrue();
+        assertThat(of(1, 2, 3, 4).endsWith(Stream.of(2, 3, 5))).isFalse();
     }
 
 }

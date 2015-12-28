@@ -431,24 +431,22 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     static Iterator<Double> rangeBy(double from, double toExclusive, double step) {
-        if (Double.isNaN(from * toExclusive * step)) {
-            throw new IllegalArgumentException("NaN");
+        if (Double.isNaN(from)) {
+            throw new IllegalArgumentException("from is NaN");
+        } else if (Double.isNaN(toExclusive)) {
+            throw new IllegalArgumentException("toExclusive is NaN");
+        } else if (Double.isNaN(step)) {
+            throw new IllegalArgumentException("step is NaN");
         } else if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (step * (from - toExclusive) >= 0) {
             return Iterator.empty();
         } else {
-            final double left = (from == Double.NEGATIVE_INFINITY)
-                    ? Double.MIN_VALUE
-                    : (from == Double.POSITIVE_INFINITY) ? Double.MAX_VALUE : from;
-            final double right = (toExclusive == Double.NEGATIVE_INFINITY)
-                    ? Double.MIN_VALUE
-                    : (toExclusive == Double.POSITIVE_INFINITY) ? Double.MAX_VALUE : toExclusive;
             return new AbstractIterator<Double>() {
 
                 double prev = Double.NaN;
-                double curr = left;
-                boolean hasNext = (step > 0) ? curr < right : curr > right;
+                double curr = from;
+                boolean hasNext = true;
 
                 @Override
                 public boolean hasNext() {
@@ -458,7 +456,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 @Override
                 public Double getNext() {
                     final double next = curr;
-                    if ((step > 0 && curr + step >= right) || (step < 0 && curr + step <= right)) {
+                    if ((step > 0 && curr + step >= toExclusive) || (step < 0 && curr + step <= toExclusive)) {
                         hasNext = false;
                     } else {
                         prev = curr;
@@ -619,12 +617,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     static Iterator<Double> rangeClosedBy(double from, double toInclusive, double step) {
-        if (Double.isNaN(from * toInclusive * step)) {
-            throw new IllegalArgumentException("NaN");
+        if (Double.isNaN(from)) {
+            throw new IllegalArgumentException("from is NaN");
+        } else if (Double.isNaN(toInclusive)) {
+            throw new IllegalArgumentException("toInclusive is NaN");
+        } else if (Double.isNaN(step)) {
+            throw new IllegalArgumentException("step is NaN");
         } else if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
-        } else if (Double.isInfinite(from) || Double.isInfinite(toInclusive)) {
-            throw new IllegalArgumentException("cannot close over infinity");
         } else if (from == toInclusive) {
             return Iterator.of(from);
         } else if (step * (from - toInclusive) > 0) {
@@ -634,7 +634,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
                 double prev = Double.NaN;
                 double curr = from;
-                boolean hasNext = (step > 0) ? curr <= toInclusive : curr >= toInclusive;
+                boolean hasNext = true;
 
                 @Override
                 public boolean hasNext() {
@@ -710,7 +710,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return new AbstractIterator<Integer>() {
 
                 int i = from;
-                boolean hasNext = (step > 0) ? i <= toInclusive : i >= toInclusive;
+                boolean hasNext = true;
 
                 @Override
                 public boolean hasNext() {
@@ -782,7 +782,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return new AbstractIterator<Long>() {
 
                 long i = from;
-                boolean hasNext = (step > 0L) ? i <= toInclusive : i >= toInclusive;
+                boolean hasNext = true;
 
                 @Override
                 public boolean hasNext() {
@@ -1345,7 +1345,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     @Override
     default T head() {
         if (!hasNext()) {
-            EMPTY.next();
+            throw new NoSuchElementException("head() on empty iterator");
         }
         return next();
     }

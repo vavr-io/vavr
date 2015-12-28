@@ -1309,6 +1309,21 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     // -- sliding(size, step)
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenSlidingNilByPositiveStepAndNegativeSize() {
+        empty().sliding(-1, 1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenSlidingNilByNegativeStepAndNegativeSize() {
+        empty().sliding(-1, -1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenSlidingNilByNegativeStepAndPositiveSize() {
+        empty().sliding(1, -1);
+    }
+
     @Test
     public void shouldSlideNilBySizeAndStep() {
         assertThat(empty().sliding(1, 1).isEmpty()).isTrue();

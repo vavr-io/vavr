@@ -64,10 +64,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
             @Override
             public BinaryOperator<ArrayList<T>> combiner() {
-                return (left, right) -> {
-                    left.addAll(right);
-                    return left;
-                };
+                return (left, right) -> fromTuples(mapCollector.combiner().apply(toTuples(left), toTuples(right)));
             }
 
             @Override
@@ -78,6 +75,23 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
             @Override
             public Set<Characteristics> characteristics() {
                 return mapCollector.characteristics();
+            }
+
+            private ArrayList<Tuple2<Integer, T>> toTuples(java.util.List<T> list) {
+                final ArrayList<Tuple2<Integer, T>> result = new ArrayList<>();
+                Stream.ofAll(list)
+                        .zipWithIndex()
+                        .map(tu -> Tuple.of(tu._2, tu._1))
+                        .forEach(result::add);
+                return result;
+            }
+
+            private ArrayList<T> fromTuples(java.util.List<Tuple2<Integer, T>> list) {
+                final ArrayList<T> result = new ArrayList<>();
+                Stream.ofAll(list)
+                        .map(tu -> tu._2)
+                        .forEach(result::add);
+                return result;
             }
         };
     }

@@ -7,17 +7,32 @@ package javaslang;
 
 import javaslang.collection.List;
 import javaslang.collection.Seq;
+import javaslang.control.Try;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Function;
 
+import static javaslang.Serializables.deserialize;
+import static javaslang.Serializables.serialize;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LazyTest {
 
+    @Test
+    public void shouldBeSingletonType() {
+        assertThat(Lazy.of(() -> 1).isSingletonType()).isTrue();
+    }
+
     // -- of(Supplier)
+
+    @Test
+    public void shouldNotChangeLazy() {
+        final Lazy<Integer> expected = Lazy.of(() -> 1);
+        assertThat(Lazy.of(expected)).isSameAs(expected);
+    }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowOnNullSupplier() {
@@ -103,6 +118,15 @@ public class LazyTest {
         assertThat(chars.toString()).isEqualTo("Yay!");
     }
 
+    // -- iterator
+
+    @Test
+    public void shouldReturnIterator() {
+        assertThat(Lazy.undefined().iterator().hasNext()).isFalse();
+        assertThat(Lazy.of(() -> 1).iterator().hasNext()).isTrue();
+        assertThat(Lazy.of(() -> 1).iterator().next()).isEqualTo(1);
+    }
+
     // -- isEmpty()
 
     @Test
@@ -116,6 +140,11 @@ public class LazyTest {
     }
 
     // -- isEvaluated()
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldFailIsEvaluatedOfUndefined() {
+        Lazy.undefined().isEvaluated();
+    }
 
     @Test
     public void shouldBeAwareOfEvaluated() {
@@ -154,6 +183,27 @@ public class LazyTest {
         assertThat(actual == testee).isTrue();
     }
 
+    // -- filterNot
+
+    @Test
+    public void shouldThrowFilterNotEmptyLazy() {
+        final Lazy<Integer> testee = Lazy.undefined();
+        final Lazy<Integer> actual = testee.filterNot(i -> false);
+        assertThat(actual == testee).isTrue();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowEmptyFilterNotNonEmptyLazy() {
+        Lazy.of(() -> 1).filterNot(i -> true).get();
+    }
+
+    @Test
+    public void shouldFilterNotNonEmptyLazy() {
+        final Lazy<Integer> testee = Lazy.of(() -> 1);
+        final Lazy<Integer> actual = testee.filterNot(i -> false);
+        assertThat(actual == testee).isTrue();
+    }
+
     // -- flatMap
 
     @Test(expected = NoSuchElementException.class)
@@ -163,7 +213,11 @@ public class LazyTest {
 
     @Test
     public void shouldFlatMapNonEmptyLazy() {
+        assertThat(Lazy.of(() -> 1).flatMap(Collections::singletonList)).isEqualTo(Lazy.of(() -> 1));
+        assertThat(Lazy.of(() -> 1).flatMap(l -> Collections.emptyList())).isSameAs(Lazy.undefined());
+        assertThat(Lazy.of(() -> 1).flatMap(l -> Lazy.of(() -> l))).isEqualTo(Lazy.of(() -> 1));
         assertThat(Lazy.of(() -> 1).flatMap(List::of)).isEqualTo(Lazy.of(() -> 1));
+        assertThat(Lazy.of(() -> 1).flatMap(l -> List.empty())).isEqualTo(Lazy.undefined());
     }
 
     // -- map
@@ -196,11 +250,62 @@ public class LazyTest {
         assertThat(effect[0]).isEqualTo(1);
     }
 
+    // -- transform
+
+    @Test
+    public void shouldTransform() {
+        assertThat((Integer) Lazy.of(() -> 1).transform(l -> l.get())).isEqualTo(1);
+    }
+
+    // -- serializable
+
+    @Test
+    public void shouldPreserveSingletonInstanceOnDeserialization() {
+        final boolean actual = deserialize(serialize(Lazy.undefined())) == Lazy.undefined();
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void shouldSerializeDeserializeNonNil() {
+        final Object actual = deserialize(serialize(Lazy.of(() -> 1)));
+        final Object expected = Lazy.of(() -> 1);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- concurrency
+
+    @Test
+    public void shouldSupportMultithreading() {
+        final boolean[] lock = new boolean[] { true };
+        final Lazy<Integer> lazy = Lazy.of(() -> {
+            while (lock[0]) {
+                Try.run(() -> Thread.sleep(300));
+            }
+            return 1;
+        });
+        new Thread(() -> {
+            Try.run(() -> Thread.sleep(100));
+            new Thread(() -> {
+                Try.run(() -> Thread.sleep(100));
+                lock[0] = false;
+            }).start();
+            assertThat(lazy.isEvaluated()).isFalse();
+            lazy.get();
+        }).start();
+        assertThat(lazy.get()).isEqualTo(1);
+    }
+
     // -- equals
 
     @Test
     public void shouldDetectEqualObject() {
+        assertThat(Lazy.undefined().equals(Lazy.undefined())).isTrue();
+        assertThat(Lazy.undefined().equals(Lazy.of(() -> 1))).isFalse();
+        assertThat(Lazy.of(() -> 1).equals("")).isFalse();
         assertThat(Lazy.of(() -> 1).equals(Lazy.of(() -> 1))).isTrue();
+        assertThat(Lazy.of(() -> 1).equals(Lazy.of(() -> 2))).isFalse();
+        Lazy<Integer> same = Lazy.of(() -> 1);
+        assertThat(same.equals(same)).isTrue();
     }
 
     @Test
@@ -213,6 +318,7 @@ public class LazyTest {
     @Test
     public void shouldComputeHashCode() {
         assertThat(Lazy.of(() -> 1).hashCode()).isEqualTo(Objects.hash(1));
+        assertThat(Lazy.undefined().hashCode()).isEqualTo(Lazy.undefined().hashCode());
     }
 
     // -- toString
@@ -228,5 +334,10 @@ public class LazyTest {
         final Lazy<Integer> lazy = Lazy.of(() -> 1);
         lazy.get();
         assertThat(lazy.toString()).isEqualTo("Lazy(1)");
+    }
+
+    @Test
+    public void shouldConvertUndefinedToString() {
+        assertThat(Lazy.undefined().toString()).isEqualTo("Lazy()");
     }
 }

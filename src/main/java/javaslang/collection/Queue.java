@@ -739,7 +739,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
             final int rearIndex = index - length;
             final int rearLength = rear.length();
             if (rearIndex <= rearLength) {
-                final int reverseRearIndex = rearLength - rearIndex - 1;
+                final int reverseRearIndex = rearLength - rearIndex;
                 return new Queue<>(front, rear.insert(reverseRearIndex, element));
             } else {
                 throw new IndexOutOfBoundsException(
@@ -761,8 +761,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
             final int rearIndex = index - length;
             final int rearLength = rear.length();
             if (rearIndex <= rearLength) {
-                final int reverseRearIndex = rearLength - rearIndex - 1;
-                return new Queue<>(front, rear.insertAll(reverseRearIndex, elements));
+                final int reverseRearIndex = rearLength - rearIndex;
+                return new Queue<>(front, rear.insertAll(reverseRearIndex, List.ofAll(elements).reverse()));
             } else {
                 throw new IndexOutOfBoundsException(
                         String.format("insertAll(%s, e) on Queue of length %s", index, length()));

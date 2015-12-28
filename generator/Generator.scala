@@ -1352,6 +1352,7 @@ def generateMainClasses(): Unit = {
 def generateTestClasses(): Unit = {
 
   genFunctionTests()
+  genMonadTest()
   genPropertyCheckTests()
   genTupleTests()
 
@@ -1598,6 +1599,40 @@ def generateTestClasses(): Unit = {
           }
         """
       }
+    })
+  }
+
+  /**
+   * Generator of Monad test
+   */
+  def genMonadTest(): Unit = {
+    genJavaslangFile("javaslang.algebra", "MonadTest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+
+      val test = im.getType("org.junit.Test")
+      val list = im.getType("javaslang.collection.List")
+      val tuple = im.getType("javaslang.Tuple")
+      val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+
+      xs"""
+        public class $className {
+            ${(1 to N).gen(i => {
+                val generics = (1 to i).gen(j => s"Integer")(", ")
+                val tupleN = im.getType(s"javaslang.Tuple$i")
+                xs"""
+
+                @$test
+                public void testList$i() {
+                    $list<Integer> list = List.of(1, 2);
+                    $list<$tupleN<$generics>> crossProductPower = ($list<$tupleN<$generics>>) Monad
+                            .lift((Function$i<$generics, $tupleN<$generics>>) $tuple::of)
+                            .apply(${(1 to i).gen(j => "list")(", ")});
+                    $assertThat(crossProductPower.size()).isEqualTo(1 << $i);
+                }
+
+                """})
+            }
+        }
+      """
     })
   }
 
