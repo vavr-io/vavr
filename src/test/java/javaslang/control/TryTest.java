@@ -6,6 +6,7 @@
 package javaslang.control;
 
 import javaslang.Serializables;
+import javaslang.collection.Seq;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -470,6 +471,33 @@ public class TryTest {
     @Test
     public void shouldConvertFailureToString() {
         assertThat(Try.failure(error()).toString()).isEqualTo("Failure(java.lang.RuntimeException: error)");
+    }
+
+    // -- sequence
+
+    @Test
+    public void shouldConvertListOfSuccessToTryOfList() {
+        List<Try<String>> tries = Arrays.asList(Try.success("a"), Try.success("b"), Try.success("c"));
+        Try<Seq<String>> reducedTry = Try.sequence(tries);
+        assertThat(reducedTry instanceof Try.Success).isTrue();
+        assertThat(reducedTry.get().size()).isEqualTo(3);
+        assertThat(reducedTry.get().mkString()).isEqualTo("abc");
+    }
+
+    @Test
+    public void shouldConvertListOfFailureToTryOfList() {
+        Throwable t = new RuntimeException("failure");
+        List<Try<String>> tries = Arrays.asList(Try.failure(t), Try.failure(t), Try.failure(t));
+        Try<Seq<String>> reducedTry = Try.sequence(tries);
+        assertThat(reducedTry instanceof Try.Failure).isTrue();
+    }
+
+    @Test
+    public void shouldConvertListOfMixedTryToTryOfList() {
+        Throwable t = new RuntimeException("failure");
+        List<Try<String>> tries = Arrays.asList(Try.success("a"), Try.failure(t), Try.success("c"));
+        Try<Seq<String>> reducedTry = Try.sequence(tries);
+        assertThat(reducedTry instanceof Try.Failure).isTrue();
     }
 
     // serialization

@@ -8,11 +8,14 @@ package javaslang.control;
 import javaslang.CheckedFunction1;
 import javaslang.Value;
 import javaslang.collection.Iterator;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -56,6 +59,17 @@ public interface Try<T> extends Value<T> {
         } catch (Throwable t) {
             return new Failure<>(t);
         }
+    }
+
+    /**
+     * Reduces many {@code Try}s into a single {@code Try} by transforming an
+     * {@code Iterable<Try<? extends T>>} into a {@code Try<Seq<T>>}.
+     */
+    static <T> Try<Seq<T>> sequence(Iterable<? extends Try<? extends T>> values) {
+        final Try<Seq<T>> zero = Try.of(List::empty);
+        final BiFunction<Try<Seq<T>>, Try<? extends T>, Try<Seq<T>>> f =
+                (result, next) -> result.flatMap(sequence -> next.map(sequence::append));
+        return Iterator.ofAll(values).foldLeft(zero, f);
     }
 
     /**

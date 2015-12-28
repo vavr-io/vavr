@@ -7,15 +7,15 @@ package javaslang.control;
 
 import javaslang.Value;
 import javaslang.collection.Iterator;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
+import javaslang.collection.Stream;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -43,6 +43,17 @@ public interface Option<T> extends Value<T> {
      */
     static <T> Option<T> of(T value) {
         return (value == null) ? none() : some(value);
+    }
+
+    /**
+     * Reduces many {@code Option}s into a single {@code Option} by transforming an
+     * {@code Iterable<Option<? extends T>>} into a {@code Option<Seq<T>>}.
+     */
+    static <T> Option<Seq<T>> sequence(Iterable<? extends Option<? extends T>> values) {
+        final Option<Seq<T>> zero = Option.of(List.empty());
+        final BiFunction<Option<Seq<T>>, Option<? extends T>, Option<Seq<T>>> f =
+                (result, option) -> result.flatMap(sequence -> option.map(sequence::append));
+        return Iterator.ofAll(values).foldLeft(zero, f);
     }
 
     /**
