@@ -1166,11 +1166,31 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(0, 1, 2).replace(1, 3)).isEqualTo(of(0, 3, 2));
     }
 
+    @Test
+    public void shouldReplaceElementOfNonNilUsingCurrNewWhenNoOccurrenceExists() {
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(0, 1, 2).replace(33, 3)).isEqualTo(of(0, 1, 2));
+        } else {
+            final Traversable<Integer> src = of(0, 1, 2);
+            assertThat(src.replace(33, 3)).isSameAs(src);
+        }
+    }
+
     // -- replaceAll(curr, new)
 
     @Test
     public void shouldReplaceAllElementsOfNilUsingCurrNew() {
         assertThat(this.<Integer> empty().replaceAll(1, 2)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldReplaceAllElementsOfNonNilUsingCurrNonExistingNew() {
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(0, 1, 2, 1).replaceAll(33, 3)).isEqualTo(of(0, 1, 2, 1));
+        } else {
+            final Traversable<Integer> src = of(0, 1, 2, 1);
+            assertThat(src.replaceAll(33, 3)).isSameAs(src);
+        }
     }
 
     @Test
@@ -1188,6 +1208,16 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldRetainAllExistingElementsFromNonNil() {
         assertThat(of(1, 2, 3, 1, 2, 3).retainAll(of(1, 2))).isEqualTo(of(1, 2, 1, 2));
+    }
+
+    @Test
+    public void shouldRetainAllElementsFromNonNil() {
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 1, 2, 2).retainAll(of(1, 2))).isEqualTo(of(1, 2, 1, 2, 2));
+        } else {
+            final Traversable<Integer> src = of(1, 2, 1, 2, 2);
+            assertThat(src.retainAll(of(1, 2))).isSameAs(src);
+        }
     }
 
     @Test

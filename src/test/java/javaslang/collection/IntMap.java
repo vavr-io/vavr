@@ -40,11 +40,9 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof IntMap) {
+        if (o instanceof IntMap) {
             final IntMap<?> that = (IntMap<?>) o;
-            return original.values().equals(that.original.values());
+            return original.equals(that.original) || original.values().equals(that.original.values());
         } else if (o instanceof Iterable) {
             final Iterable<?> that = (Iterable<?>) o;
             return original.values().equals(that);

@@ -1026,12 +1026,17 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default List<T> replaceAll(T currentElement, T newElement) {
         List<T> result = Nil.instance();
+        boolean changed = false;
         for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
             final T head = list.head();
-            final T elem = Objects.equals(head, currentElement) ? newElement : head;
-            result = result.prepend(elem);
+            if(Objects.equals(head, currentElement)) {
+                result = result.prepend(newElement);
+                changed = true;
+            } else {
+                result = result.prepend(head);
+            }
         }
-        return result.reverse();
+        return changed ? result.reverse() : this;
     }
 
     @SuppressWarnings("unchecked")
@@ -1046,7 +1051,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
                 result = result.prepend(element);
             }
         }
-        return result.reverse();
+        return result.size() == size() ? this : result.reverse();
     }
 
     @Override
