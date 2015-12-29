@@ -17,6 +17,7 @@ import java.io.PrintStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
@@ -3001,5 +3002,46 @@ public class CharSeqTest {
         assertThat(actual.length()).isEqualTo(2);
         assertThat(actual.get(0)).isEqualTo('1');
         assertThat(actual.get(1)).isEqualTo('2');
+    }
+
+    @Test
+    public void shouldFillTheCharSeq() {
+        Function<Integer, Character> f = i -> i.toString().charAt(0);
+        CharSeq actual = CharSeq.fill(3, f);
+        assertThat(actual).isEqualTo(CharSeq.of('0', '1', '2'));
+    }
+
+    @Test
+    public void shouldFillTheCharSeqCallingTheFunctionInTheRightOrder() {
+        java.util.LinkedList<Character> chars = new java.util.LinkedList<>(Arrays.asList('0', '1', '2'));
+        CharSeq actual = CharSeq.fill(3, i -> chars.remove());
+        assertThat(actual).isEqualTo(CharSeq.of('0', '1', '2'));
+    }
+
+    @Test
+    public void shouldFillTheCharSeqWith0ElementsGivenAFunction() {
+        assertThat(CharSeq.fill(0, i -> 'a')).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldFillTheCharSeqWith0ElementsWhenNIsNegativeGivenAFunction() {
+        assertThat(CharSeq.fill(-1, i -> 'a')).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldFillTheCharSeqCallingTheSupplierInTheRightOrder() {
+        java.util.LinkedList<Character> chars = new java.util.LinkedList<>(Arrays.asList('0', '1'));
+        CharSeq actual = CharSeq.fill(2, () -> chars.remove());
+        assertThat(actual).isEqualTo(CharSeq.of('0', '1'));
+    }
+
+    @Test
+    public void shouldFillTheCharSeqWith0ElementsGivenASupplier() {
+        assertThat(CharSeq.fill(0, () -> 'a')).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldFillTheCharSeqWith0ElementsWhenNIsNegativeGivenASupplier() {
+        assertThat(CharSeq.fill(-1, () -> 'a')).isEqualTo(empty());
     }
 }

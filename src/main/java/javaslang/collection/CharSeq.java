@@ -121,6 +121,37 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     /**
+     * Returns a CharSeq containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1}.
+     *
+     * @param n The number of elements in the CharSeq
+     * @param f The Function computing element values
+     * @return A CharSeq consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code n} or {@code f} are null
+     */
+    public static CharSeq fill(Integer n, Function<Integer, Character> f) {
+        Objects.requireNonNull(n, "n is null");
+        Objects.requireNonNull(f, "f is null");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            sb.append(f.apply(i));
+        }
+        return new CharSeq(sb.toString());
+    }
+
+    /**
+     * Returns a CharSeq containing {@code n} values supplied by a given Supplier {@code s}.
+     *
+     * @param n The number of elements in the CharSeq
+     * @param s The Supplier computing element values
+     * @return A CharSeq of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code n} or {@code s} are null
+     */
+    public static CharSeq fill(Integer n, Supplier<Character> s) {
+        return fill(n, anything -> s.get());
+    }
+
+    /**
      * Creates a CharSeq starting from character {@code from}, extending to character {@code toExclusive - 1}.
      * <p>
      * Examples:

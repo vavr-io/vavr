@@ -10,6 +10,8 @@ import org.junit.Test;
 
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class VectorTest extends AbstractSeqTest {
@@ -78,6 +80,16 @@ public class VectorTest extends AbstractSeqTest {
     @Override
     protected Vector<Short> ofAll(short[] array) {
         return Vector.ofAll(array);
+    }
+
+    @Override
+    protected <T> Vector<T> fill(Integer n, Function<Integer, ? extends T> f) {
+        return Vector.fill(n, f);
+    }
+
+    @Override
+    protected <T> Vector<T> fill(Integer n, Supplier<? extends T> s) {
+        return Vector.fill(n, s);
     }
 
     @Override

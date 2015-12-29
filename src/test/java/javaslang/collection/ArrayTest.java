@@ -8,6 +8,8 @@ package javaslang.collection;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class ArrayTest extends AbstractSeqTest {
@@ -77,6 +79,16 @@ public class ArrayTest extends AbstractSeqTest {
     @Override
     protected Array<Short> ofAll(short[] array) {
         return Array.ofAll(array);
+    }
+
+    @Override
+    protected <T> Array<T> fill(Integer n, Function<Integer, ? extends T> f) {
+        return Array.fill(n, f);
+    }
+
+    @Override
+    protected <T> Array<T> fill(Integer n, Supplier<? extends T> s) {
+        return Array.fill(n, s);
     }
 
     @Override

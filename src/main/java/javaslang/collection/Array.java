@@ -203,6 +203,42 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         return Array.ofAll(Iterator.ofAll(array));
     }
 
+    /**
+     * Returns an Array containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1}.
+     *
+     * @param <T> Component type of the Array
+     * @param n The number of elements in the Array
+     * @param f The Function computing element values
+     * @return An Array consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code n} or {@code f} are null
+     */
+    public static <T> Array<T> fill(Integer n, Function<Integer, ? extends T> f) {
+        Objects.requireNonNull(n, "n is null");
+        Objects.requireNonNull(f, "f is null");
+        int nOrZero = java.lang.Math.max(n, 0);
+        @SuppressWarnings("unchecked")
+        T[] elements = (T[]) new Object[nOrZero];
+        for (int i = 0; i < n; i++) {
+            elements[i] = f.apply(i);
+        }
+        return wrap(elements);
+    }
+
+    /**
+     * Returns an Array containing {@code n} values supplied by a given Supplier {@code s}.
+     *
+     * @param <T> Component type of the Array
+     * @param n The number of elements in the Array
+     * @param s The Supplier computing element values
+     * @return An Array of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code n} or {@code s} are null
+     */
+    public static <T> Array<T> fill(Integer n, Supplier<? extends T> s) {
+        return fill(n, anything -> s.get());
+    }
+
+
     public static Array<Character> range(char from, char toExclusive) {
         return Array.ofAll(Iterator.range(from, toExclusive));
     }

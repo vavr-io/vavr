@@ -202,6 +202,35 @@ public interface Stack<T> extends LinearSeq<T> {
         return List.ofAll(array);
     }
 
+    /**
+     * Returns a Stack containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1}.
+     *
+     * @param <T> Component type of the Stack
+     * @param n The number of elements in the Stack
+     * @param f The Function computing element values
+     * @return A Stack consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code n} or {@code f} are null
+     */
+    static <T> Stack<T> fill(Integer n, Function<Integer, ? extends T> f) {
+        Objects.requireNonNull(n, "n is null");
+        Objects.requireNonNull(f, "f is null");
+        return List.fill(n, f);
+    }
+
+    /**
+     * Returns a Stack containing {@code n} values supplied by a given Supplier {@code s}.
+     *
+     * @param <T> Component type of the Stack
+     * @param n The number of elements in the Stack
+     * @param s The Supplier computing element values
+     * @return A Stack of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code n} or {@code s} are null
+     */
+    static <T> Stack<T> fill(Integer n, Supplier<? extends T> s) {
+        return fill(n, anything -> s.get());
+    }
+
     static Stack<Character> range(char from, char toExclusive) {
         return List.range(from, toExclusive);
     }
