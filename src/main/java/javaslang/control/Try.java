@@ -8,11 +8,14 @@ package javaslang.control;
 import javaslang.CheckedFunction1;
 import javaslang.Value;
 import javaslang.collection.Iterator;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -56,6 +59,29 @@ public interface Try<T> extends Value<T> {
         } catch (Throwable t) {
             return new Failure<>(t);
         }
+    }
+
+    /**
+     * Reduces many {@code Try}s into a single {@code Try} by transforming an
+     * {@code Iterable<Try<? extends T>>} into a {@code Try<Seq<T>>}. If any of
+     * the {@code Try}s are {@link Try.Failure}, then this returns a {@link Try.Failure}.
+     *
+     * @param values An {@link Iterable} of {@code Try}s
+     * @param <T> type of the Trys
+     * @return A {@code Try} of a {@link Seq} of results
+     * @throws NullPointerException if {@code values} is null
+     */
+    static <T> Try<Seq<T>> sequence(Iterable<? extends Try<? extends T>> values) {
+        Objects.requireNonNull(values, "values is null");
+        List<T> list = List.empty();
+        for (Try<? extends T> value : values) {
+            if(value.isFailure()) {
+                return Try.failure(value.getCause());
+            }
+            list = list.prepend(value.get());
+        }
+
+        return Try.success(list.reverse());
     }
 
     /**
