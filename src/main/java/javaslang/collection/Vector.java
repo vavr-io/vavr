@@ -969,7 +969,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
                 result = result.put(result.size(), element);
             }
         }
-        return result.isEmpty() ? empty() : new Vector<>(result);
+        return result.isEmpty() ? empty() : result.size() == trie.size() ? this : new Vector<>(result);
     }
 
     @Override

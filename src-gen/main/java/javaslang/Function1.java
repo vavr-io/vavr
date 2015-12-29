@@ -152,20 +152,20 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
 
     /**
      * Returns a composed function that first applies this Function1 to the given argument and then applies
-     * {@linkplain Function1} {@code after} to the result.
+     * {@linkplain Function} {@code after} to the result.
      *
      * @param <V> return type of after
      * @param after the function applied after this
      * @return a function composed of this and after
      * @throws NullPointerException if after is null
      */
-    default <V> Function1<T1, V> andThen(Function1<? super R, ? extends V> after) {
+    default <V> Function1<T1, V> andThen(Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after, "after is null");
         return (t1) -> after.apply(apply(t1));
     }
 
     /**
-     * Returns a composed function that first applies the {@linkplain Function1} {@code before} the
+     * Returns a composed function that first applies the {@linkplain Function} {@code before} the
      * given argument and then applies this Function1 to the result.
      *
      * @param <V> argument type of before
@@ -173,7 +173,7 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <V> Function1<V, R> compose(Function1<? super V, ? extends T1> before) {
+    default <V> Function1<V, R> compose(Function<? super V, ? extends T1> before) {
         Objects.requireNonNull(before, "before is null");
         return v -> apply(before.apply(v));
     }

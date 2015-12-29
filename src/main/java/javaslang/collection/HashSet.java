@@ -665,7 +665,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
                 that = that.put(element, element);
             }
         }
-        return new HashSet<>(that);
+        return that.isEmpty() ? empty() : that.size() == size() ? this : new HashSet<>(that);
     }
 
     @Override

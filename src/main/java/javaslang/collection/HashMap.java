@@ -455,7 +455,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> remove(K key) {
-        return new HashMap<>(trie.remove(key));
+        final HashArrayMappedTrie<K, V> result = trie.remove(key);
+        return result.size() == trie.size() ? this : new HashMap<>(result);
     }
 
     @Override
@@ -465,7 +466,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         for (K key : keys) {
             result = result.remove(key);
         }
-        return result.isEmpty() ? empty() : new HashMap<>(result);
+        return result.isEmpty() ? empty() : result.size() == trie.size() ? this : new HashMap<>(result);
     }
 
     @Override

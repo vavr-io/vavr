@@ -752,7 +752,7 @@ def generateMainClasses(): Unit = {
         val params = (1 to i).gen(j => s"t$j")(", ")
         val paramsReversed = (1 to i).reverse.gen(j => s"t$j")(", ")
         val tupled = (1 to i).gen(j => s"t._$j")(", ")
-        val compositionType = s"${checked.gen("Checked")}Function1"
+        val compositionType = if(checked) "CheckedFunction1" else im.getType("java.util.function.Function")
 
         // imports
 
