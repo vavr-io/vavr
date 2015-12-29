@@ -242,7 +242,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A Stream consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    static <T> Stream<T> tabulate(int n, Function<Integer, ? extends T> f) {
+    static <T> Stream<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         int nOrZero = java.lang.Math.max(n, 0);
         @SuppressWarnings("unchecked")

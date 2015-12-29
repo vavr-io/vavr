@@ -3006,7 +3006,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldTabulateTheCharSeq() {
-        Function<Integer, Character> f = i -> i.toString().charAt(0);
+        Function<Number, Character> f = i -> i.toString().charAt(0);
         CharSeq actual = CharSeq.tabulate(3, f);
         assertThat(actual).isEqualTo(CharSeq.of('0', '1', '2'));
     }

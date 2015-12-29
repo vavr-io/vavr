@@ -62,7 +62,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Override
     abstract protected Seq<Short> ofAll(short[] array);
 
-    abstract protected <T> Seq<T> tabulate(int n, Function<Integer, ? extends T> f);
+    abstract protected <T> Seq<T> tabulate(int n, Function<? super Integer, ? extends T> f);
 
     abstract protected <T> Seq<T> fill(int n, Supplier<? extends T> s);
 
@@ -1490,15 +1490,16 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldTabulateTheSeq() {
-        Function<Integer, Integer> f = i -> i * i;
-        assertThat(tabulate(3, f)).isEqualTo(of(0, 1, 4));
+        Function<Number, Integer> f = i -> i.intValue() * i.intValue();
+        Seq<Number> actual = tabulate(3, f);
+        assertThat(actual).isEqualTo(of(0, 1, 4));
     }
 
     @Test
     public void shouldTabulateTheSeqCallingTheFunctionInTheRightOrder() {
         java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 1, 2));
         Function<Integer, Integer> f = i -> ints.remove();
-        Seq<Number> actual = tabulate(3, f);
+        Seq<Integer> actual = tabulate(3, f);
         assertThat(actual).isEqualTo(of(0, 1, 2));
     }
 

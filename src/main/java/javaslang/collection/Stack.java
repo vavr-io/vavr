@@ -212,7 +212,7 @@ public interface Stack<T> extends LinearSeq<T> {
      * @return A Stack consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    static <T> Stack<T> tabulate(int n, Function<Integer, ? extends T> f) {
+    static <T> Stack<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return List.tabulate(n, f);
     }
