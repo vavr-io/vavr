@@ -52,7 +52,7 @@ public interface Option<T> extends Value<T> {
      *
      * @param values An {@code Iterable} of {@code Option}s
      * @param <T> type of the Options
-     * @return An {@code Option} of a {@link Seq} of results.\
+     * @return An {@code Option} of a {@link Seq} of results
      * @throws NullPointerException if {@code values} is null
      */
     static <T> Option<Seq<T>> sequence(Iterable<? extends Option<? extends T>> values) {
