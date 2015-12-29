@@ -62,9 +62,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Override
     abstract protected Seq<Short> ofAll(short[] array);
 
-    abstract protected <T> Seq<T> tabulate(Integer n, Function<Integer, ? extends T> f);
+    abstract protected <T> Seq<T> tabulate(int n, Function<Integer, ? extends T> f);
 
-    abstract protected <T> Seq<T> fill(Integer n, Supplier<? extends T> s);
+    abstract protected <T> Seq<T> fill(int n, Supplier<? extends T> s);
 
     @Override
     abstract protected Seq<Character> range(char from, char toExclusive);

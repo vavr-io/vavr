@@ -211,10 +211,9 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @param n The number of elements in the Array
      * @param f The Function computing element values
      * @return An Array consisting of elements {@code f(0),f(1), ..., f(n - 1)}
-     * @throws NullPointerException if {@code n} or {@code f} are null
+     * @throws NullPointerException if {@code f} is null
      */
-    public static <T> Array<T> tabulate(Integer n, Function<Integer, ? extends T> f) {
-        Objects.requireNonNull(n, "n is null");
+    public static <T> Array<T> tabulate(int n, Function<Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         int nOrZero = java.lang.Math.max(n, 0);
         @SuppressWarnings("unchecked")
@@ -232,9 +231,9 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @param n The number of elements in the Array
      * @param s The Supplier computing element values
      * @return An Array of size {@code n}, where each element contains the result supplied by {@code s}.
-     * @throws NullPointerException if {@code n} or {@code s} are null
+     * @throws NullPointerException if {@code s} is null
      */
-    public static <T> Array<T> fill(Integer n, Supplier<? extends T> s) {
+    public static <T> Array<T> fill(int n, Supplier<? extends T> s) {
         return tabulate(n, anything -> s.get());
     }
 

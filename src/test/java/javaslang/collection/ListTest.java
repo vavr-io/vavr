@@ -89,12 +89,12 @@ public class ListTest extends AbstractSeqTest {
     }
 
     @Override
-    protected <T> List<T> tabulate(Integer n, Function<Integer, ? extends T> f) {
+    protected <T> List<T> tabulate(int n, Function<Integer, ? extends T> f) {
         return List.tabulate(n, f);
     }
 
     @Override
-    protected <T> List<T> fill(Integer n, Supplier<? extends T> s) {
+    protected <T> List<T> fill(int n, Supplier<? extends T> s) {
         return List.fill(n, s);
     }
 

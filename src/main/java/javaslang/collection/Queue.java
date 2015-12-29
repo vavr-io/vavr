@@ -246,10 +246,9 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @param n The number of elements in the Queue
      * @param f The Function computing element values
      * @return A Queue consisting of elements {@code f(0),f(1), ..., f(n - 1)}
-     * @throws NullPointerException if {@code n} or {@code f} are null
+     * @throws NullPointerException if {@code f} is null
      */
-    public static <T> Queue<T> tabulate(Integer n, Function<Integer, ? extends T> f) {
-        Objects.requireNonNull(n, "n is null");
+    public static <T> Queue<T> tabulate(int n, Function<Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return new Queue<>(List.tabulate(n, f), List.empty());
     }
@@ -261,9 +260,9 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @param n The number of elements in the Queue
      * @param s The Supplier computing element values
      * @return An Queue of size {@code n}, where each element contains the result supplied by {@code s}.
-     * @throws NullPointerException if {@code n} or {@code s} are null
+     * @throws NullPointerException if {@code s} is null
      */
-    public static <T> Queue<T> fill(Integer n, Supplier<? extends T> s) {
+    public static <T> Queue<T> fill(int n, Supplier<? extends T> s) {
         return tabulate(n, anything -> s.get());
     }
 

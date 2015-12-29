@@ -286,10 +286,9 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @param n The number of elements in the List
      * @param f The Function computing element values
      * @return A List consisting of elements {@code f(0),f(1), ..., f(n - 1)}
-     * @throws NullPointerException if {@code n} or {@code f} are null
+     * @throws NullPointerException if {@code f} is null
      */
-    static <T> List<T> tabulate(Integer n, Function<Integer, ? extends T> f) {
-        Objects.requireNonNull(n, "n is null");
+    static <T> List<T> tabulate(int n, Function<Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         int nOrZero = java.lang.Math.max(n, 0);
         @SuppressWarnings("unchecked")
@@ -307,9 +306,9 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @param n The number of elements in the List
      * @param s The Supplier computing element values
      * @return A List of size {@code n}, where each element contains the result supplied by {@code s}.
-     * @throws NullPointerException if {@code n} or {@code s} are null
+     * @throws NullPointerException if {@code s} is null
      */
-    static <T> List<T> fill(Integer n, Supplier<? extends T> s) {
+    static <T> List<T> fill(int n, Supplier<? extends T> s) {
         return List.tabulate(n, anything -> s.get());
     }
 
