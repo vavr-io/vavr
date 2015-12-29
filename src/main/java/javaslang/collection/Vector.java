@@ -115,7 +115,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         for (int i = 0; i <n; i++) {
             trie = trie.put(trie.size(), f.apply(i));
         }
-        return new Vector<>(trie);
+        return trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 
     /**
