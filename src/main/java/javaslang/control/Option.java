@@ -50,15 +50,22 @@ public interface Option<T> extends Value<T> {
      * {@code Iterable<Option<? extends T>>} into a {@code Option<Seq<T>>}. If any of
      * the Options are {@link Option.None}, then this returns {@link Option.None}.
      *
-     * @param values An {@code Iterable} of {@code Option}s.
-     * @param <T> type of the Options.
-     * @return An {@code Option} of a {@link Seq} of results.
+     * @param values An {@code Iterable} of {@code Option}s
+     * @param <T> type of the Options
+     * @return An {@code Option} of a {@link Seq} of results.\
+     * @throws NullPointerException if {@code values} is null
      */
     static <T> Option<Seq<T>> sequence(Iterable<? extends Option<? extends T>> values) {
-        final Option<Seq<T>> zero = Option.of(List.empty());
-        final BiFunction<Option<Seq<T>>, Option<? extends T>, Option<Seq<T>>> f =
-                (result, option) -> result.flatMap(sequence -> option.map(sequence::append));
-        return Iterator.ofAll(values).foldLeft(zero, f);
+        Objects.requireNonNull(values, "values is null");
+        List<T> list = List.empty();
+        for (Option<? extends T> value : values) {
+            if (value.isEmpty()) {
+                return Option.none();
+            }
+            list = list.prepend(value.get());
+        }
+
+        return Option.some(list.reverse());
     }
 
     /**

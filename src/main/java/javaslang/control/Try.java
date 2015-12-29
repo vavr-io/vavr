@@ -66,15 +66,22 @@ public interface Try<T> extends Value<T> {
      * {@code Iterable<Try<? extends T>>} into a {@code Try<Seq<T>>}. If any of
      * the {@code Try}s are {@link Try.Failure}, then this returns a {@link Try.Failure}.
      *
-     * @param values An {@link Iterable} of {@code Try}s.
-     * @param <T> type of the Trys.
-     * @return A {@code Try} of a {@link Seq} of results.
+     * @param values An {@link Iterable} of {@code Try}s
+     * @param <T> type of the Trys
+     * @return A {@code Try} of a {@link Seq} of results
+     * @throws NullPointerException if {@code values} is null
      */
     static <T> Try<Seq<T>> sequence(Iterable<? extends Try<? extends T>> values) {
-        final Try<Seq<T>> zero = Try.of(List::empty);
-        final BiFunction<Try<Seq<T>>, Try<? extends T>, Try<Seq<T>>> f =
-                (result, next) -> result.flatMap(sequence -> next.map(sequence::append));
-        return Iterator.ofAll(values).foldLeft(zero, f);
+        Objects.requireNonNull(values, "values is null");
+        List<T> list = List.empty();
+        for (Try<? extends T> value : values) {
+            if(value.isFailure()) {
+                return Try.failure(value.getCause());
+            }
+            list = list.prepend(value.get());
+        }
+
+        return Try.success(list.reverse());
     }
 
     /**
