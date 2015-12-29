@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import javaslang.Function2Module.Memoized;
 import javaslang.control.Option;
 import javaslang.control.Try;
@@ -153,14 +154,14 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
 
     /**
      * Returns a composed function that first applies this Function2 to the given argument and then applies
-     * {@linkplain Function1} {@code after} to the result.
+     * {@linkplain Function} {@code after} to the result.
      *
      * @param <V> return type of after
      * @param after the function applied after this
      * @return a function composed of this and after
      * @throws NullPointerException if after is null
      */
-    default <V> Function2<T1, T2, V> andThen(Function1<? super R, ? extends V> after) {
+    default <V> Function2<T1, T2, V> andThen(Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after, "after is null");
         return (t1, t2) -> after.apply(apply(t1, t2));
     }
