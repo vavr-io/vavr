@@ -135,7 +135,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         for (int i = 0; i < n; i++) {
             sb.append(f.apply(i));
         }
-        return new CharSeq(sb.toString());
+        return of(sb);
     }
 
     /**
