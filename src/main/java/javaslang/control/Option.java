@@ -7,15 +7,15 @@ package javaslang.control;
 
 import javaslang.Value;
 import javaslang.collection.Iterator;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
+import javaslang.collection.Stream;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -43,6 +43,29 @@ public interface Option<T> extends Value<T> {
      */
     static <T> Option<T> of(T value) {
         return (value == null) ? none() : some(value);
+    }
+
+    /**
+     * Reduces many {@code Option}s into a single {@code Option} by transforming an
+     * {@code Iterable<Option<? extends T>>} into a {@code Option<Seq<T>>}. If any of
+     * the Options are {@link Option.None}, then this returns {@link Option.None}.
+     *
+     * @param values An {@code Iterable} of {@code Option}s
+     * @param <T> type of the Options
+     * @return An {@code Option} of a {@link Seq} of results
+     * @throws NullPointerException if {@code values} is null
+     */
+    static <T> Option<Seq<T>> sequence(Iterable<? extends Option<? extends T>> values) {
+        Objects.requireNonNull(values, "values is null");
+        List<T> list = List.empty();
+        for (Option<? extends T> value : values) {
+            if (value.isEmpty()) {
+                return Option.none();
+            }
+            list = list.prepend(value.get());
+        }
+
+        return Option.some(list.reverse());
     }
 
     /**

@@ -6,6 +6,7 @@
 package javaslang.control;
 
 import javaslang.Serializables;
+import javaslang.collection.Seq;
 import org.junit.Test;
 
 import java.util.*;
@@ -73,6 +74,31 @@ public class OptionTest {
     @Test(expected = NullPointerException.class)
     public void shouldThrowExceptionOnNullOptional() {
         assertThat(Option.none()).isEqualTo(Option.ofOptional(null));
+    }
+
+    // -- sequence
+
+    @Test
+    public void shouldConvertListOfNonEmptyOptionsToOptionOfList() {
+        List<Option<String>> options = Arrays.asList(Option.of("a"), Option.of("b"), Option.of("c"));
+        Option<Seq<String>> reducedOption = Option.sequence(options);
+        assertThat(reducedOption instanceof Option.Some).isTrue();
+        assertThat(reducedOption.get().size()).isEqualTo(3);
+        assertThat(reducedOption.get().mkString()).isEqualTo("abc");
+    }
+
+    @Test
+    public void shouldConvertListOfEmptyOptionsToOptionOfList() {
+        List<Option<String>> options = Arrays.asList(Option.none(), Option.none(), Option.none());
+        Option<Seq<String>> option = Option.sequence(options);
+        assertThat(option instanceof Option.None).isTrue();
+    }
+
+    @Test
+    public void shouldConvertListOfMixedOptionsToOptionOfList() {
+        List<Option<String>> options = Arrays.asList(Option.of("a"), Option.none(), Option.of("c"));
+        Option<Seq<String>> option = Option.sequence(options);
+        assertThat(option instanceof Option.None).isTrue();
     }
 
     // -- get
