@@ -87,8 +87,8 @@ public class QueueTest extends AbstractSeqTest {
     }
 
     @Override
-    protected <T> Queue<T> fill(Integer n, Function<Integer, ? extends T> f) {
-        return Queue.fill(n, f);
+    protected <T> Queue<T> tabulate(Integer n, Function<Integer, ? extends T> f) {
+        return Queue.tabulate(n, f);
     }
 
     @Override

@@ -3005,27 +3005,27 @@ public class CharSeqTest {
     }
 
     @Test
-    public void shouldFillTheCharSeq() {
+    public void shouldTabulateTheCharSeq() {
         Function<Integer, Character> f = i -> i.toString().charAt(0);
-        CharSeq actual = CharSeq.fill(3, f);
+        CharSeq actual = CharSeq.tabulate(3, f);
         assertThat(actual).isEqualTo(CharSeq.of('0', '1', '2'));
     }
 
     @Test
-    public void shouldFillTheCharSeqCallingTheFunctionInTheRightOrder() {
+    public void shouldTabulateTheCharSeqCallingTheFunctionInTheRightOrder() {
         java.util.LinkedList<Character> chars = new java.util.LinkedList<>(Arrays.asList('0', '1', '2'));
-        CharSeq actual = CharSeq.fill(3, i -> chars.remove());
+        CharSeq actual = CharSeq.tabulate(3, i -> chars.remove());
         assertThat(actual).isEqualTo(CharSeq.of('0', '1', '2'));
     }
 
     @Test
-    public void shouldFillTheCharSeqWith0ElementsGivenAFunction() {
-        assertThat(CharSeq.fill(0, i -> 'a')).isEqualTo(empty());
+    public void shouldTabulateTheCharSeqWith0Elements() {
+        assertThat(CharSeq.tabulate(0, i -> 'a')).isEqualTo(empty());
     }
 
     @Test
-    public void shouldFillTheCharSeqWith0ElementsWhenNIsNegativeGivenAFunction() {
-        assertThat(CharSeq.fill(-1, i -> 'a')).isEqualTo(empty());
+    public void shouldTabulateTheCharSeqWith0ElementsWhenNIsNegative() {
+        assertThat(CharSeq.tabulate(-1, i -> 'a')).isEqualTo(empty());
     }
 
     @Test
@@ -3036,12 +3036,12 @@ public class CharSeqTest {
     }
 
     @Test
-    public void shouldFillTheCharSeqWith0ElementsGivenASupplier() {
+    public void shouldFillTheCharSeqWith0Elements() {
         assertThat(CharSeq.fill(0, () -> 'a')).isEqualTo(empty());
     }
 
     @Test
-    public void shouldFillTheCharSeqWith0ElementsWhenNIsNegativeGivenASupplier() {
+    public void shouldFillTheCharSeqWith0ElementsWhenNIsNegative() {
         assertThat(CharSeq.fill(-1, () -> 'a')).isEqualTo(empty());
     }
 }

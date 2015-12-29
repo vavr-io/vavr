@@ -129,7 +129,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return A CharSeq consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code n} or {@code f} are null
      */
-    public static CharSeq fill(Integer n, Function<Integer, Character> f) {
+    public static CharSeq tabulate(Integer n, Function<Integer, Character> f) {
         Objects.requireNonNull(n, "n is null");
         Objects.requireNonNull(f, "f is null");
         StringBuilder sb = new StringBuilder();
@@ -148,7 +148,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @throws NullPointerException if {@code n} or {@code s} are null
      */
     public static CharSeq fill(Integer n, Supplier<Character> s) {
-        return fill(n, anything -> s.get());
+        return tabulate(n, anything -> s.get());
     }
 
     /**

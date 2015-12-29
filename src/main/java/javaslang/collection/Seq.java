@@ -127,10 +127,10 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @return A Seq consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code n} or {@code f} are null
      */
-    static <T> Seq<T> fill(Integer n, Function<Integer, ? extends T> f) {
+    static <T> Seq<T> tabulate(Integer n, Function<Integer, ? extends T> f) {
         Objects.requireNonNull(n, "n is null");
         Objects.requireNonNull(f, "f is null");
-        return List.fill(n, f);
+        return List.tabulate(n, f);
     }
 
     /**
@@ -143,7 +143,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @throws NullPointerException if {@code n} or {@code s} are null
      */
     static <T> Seq<T> fill(Integer n, Supplier<? extends T> s) {
-        return fill(n, anything -> s.get());
+        return tabulate(n, anything -> s.get());
     }
 
     /**

@@ -82,8 +82,8 @@ public class ArrayTest extends AbstractSeqTest {
     }
 
     @Override
-    protected <T> Array<T> fill(Integer n, Function<Integer, ? extends T> f) {
-        return Array.fill(n, f);
+    protected <T> Array<T> tabulate(Integer n, Function<Integer, ? extends T> f) {
+        return Array.tabulate(n, f);
     }
 
     @Override

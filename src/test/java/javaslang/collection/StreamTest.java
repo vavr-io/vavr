@@ -88,8 +88,8 @@ public class StreamTest extends AbstractSeqTest {
     }
 
     @Override
-    protected <T> Stream<T> fill(Integer n, Function<Integer, ? extends T> f) {
-        return Stream.fill(n, f);
+    protected <T> Stream<T> tabulate(Integer n, Function<Integer, ? extends T> f) {
+        return Stream.tabulate(n, f);
     }
 
     @Override

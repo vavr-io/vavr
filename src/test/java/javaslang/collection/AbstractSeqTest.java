@@ -62,7 +62,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Override
     abstract protected Seq<Short> ofAll(short[] array);
 
-    abstract protected <T> Seq<T> fill(Integer n, Function<Integer, ? extends T> f);
+    abstract protected <T> Seq<T> tabulate(Integer n, Function<Integer, ? extends T> f);
 
     abstract protected <T> Seq<T> fill(Integer n, Supplier<? extends T> s);
 
@@ -1489,27 +1489,27 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     }
 
     @Test
-    public void shouldFillTheSeq() {
+    public void shouldTabulateTheSeq() {
         Function<Integer, Integer> f = i -> i * i;
-        assertThat(fill(3, f)).isEqualTo(of(0, 1, 4));
+        assertThat(tabulate(3, f)).isEqualTo(of(0, 1, 4));
     }
 
     @Test
-    public void shouldFillTheSeqCallingTheFunctionInTheRightOrder() {
+    public void shouldTabulateTheSeqCallingTheFunctionInTheRightOrder() {
         java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 1, 2));
         Function<Integer, Integer> f = i -> ints.remove();
-        Seq<Number> actual = fill(3, f);
+        Seq<Number> actual = tabulate(3, f);
         assertThat(actual).isEqualTo(of(0, 1, 2));
     }
 
     @Test
-    public void shouldFillTheSeqWith0ElementsGivenAFunction() {
-        assertThat(fill(0, i -> i)).isEqualTo(empty());
+    public void shouldTabulateTheSeqWith0Elements() {
+        assertThat(tabulate(0, i -> i)).isEqualTo(empty());
     }
 
     @Test
-    public void shouldFillTheSeqWith0ElementsWhenNIsNegativeGivenAFunction() {
-        assertThat(fill(-1, i -> i)).isEqualTo(empty());
+    public void shouldTabulateTheSeqWith0ElementsWhenNIsNegative() {
+        assertThat(tabulate(-1, i -> i)).isEqualTo(empty());
     }
 
     @Test
@@ -1521,12 +1521,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     }
 
     @Test
-    public void shouldFillTheSeqWith0ElementsGivenASupplier() {
+    public void shouldFillTheSeqWith0Elements() {
         assertThat(fill(0, () -> 1)).isEqualTo(empty());
     }
 
     @Test
-    public void shouldFillTheSeqWith0ElementsWhenNIsNegativeGivenASupplier() {
+    public void shouldFillTheSeqWith0ElementsWhenNIsNegative() {
         assertThat(fill(-1, () -> 1)).isEqualTo(empty());
     }
 

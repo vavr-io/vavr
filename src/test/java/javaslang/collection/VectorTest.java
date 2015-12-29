@@ -83,8 +83,8 @@ public class VectorTest extends AbstractSeqTest {
     }
 
     @Override
-    protected <T> Vector<T> fill(Integer n, Function<Integer, ? extends T> f) {
-        return Vector.fill(n, f);
+    protected <T> Vector<T> tabulate(Integer n, Function<Integer, ? extends T> f) {
+        return Vector.tabulate(n, f);
     }
 
     @Override

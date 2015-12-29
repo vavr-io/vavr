@@ -109,7 +109,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return A Vector consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code n} or {@code f} are null
      */
-    public static <T> Vector<T> fill(Integer n, Function<Integer, ? extends T> f) {
+    public static <T> Vector<T> tabulate(Integer n, Function<Integer, ? extends T> f) {
         Objects.requireNonNull(n, "n is null");
         Objects.requireNonNull(f, "f is null");
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
@@ -129,7 +129,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if {@code n} or {@code s} are null
      */
     public static <T> Vector<T> fill(Integer n, Supplier<? extends T> s) {
-        return fill(n, anything -> s.get());
+        return tabulate(n, anything -> s.get());
     }
 
     /**

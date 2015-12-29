@@ -82,8 +82,8 @@ public class StackTest extends AbstractSeqTest {
     }
 
     @Override
-    protected <T> Stack<T> fill(Integer n, Function<Integer, ? extends T> f) {
-        return Stack.fill(n, f);
+    protected <T> Stack<T> tabulate(Integer n, Function<Integer, ? extends T> f) {
+        return Stack.tabulate(n, f);
     }
 
     @Override
