@@ -269,7 +269,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         final HashSet<K> toRemove = HashSet.ofAll(keys);
         final Queue<Tuple2<K, V>> newList = list.filter(t -> !toRemove.contains(t._1));
         final HashMap<K, V> newMap = map.filter(t -> !toRemove.contains(t._1));
-        return newList.isEmpty() ? empty() : new LinkedHashMap<>(newList, newMap);
+        return newList.isEmpty() ? empty() : newList.size() == size() ? this : new LinkedHashMap<>(newList, newMap);
     }
 
     @Override

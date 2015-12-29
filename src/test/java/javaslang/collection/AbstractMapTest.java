@@ -377,12 +377,23 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(emptyIntInt().put(Tuple.of(1, 2))).isEqualTo(emptyIntInt().put(1, 2));
     }
 
+    // -- remove
+
+    @Test
+    public void shouldRemoveKey() {
+        Map<Integer, Object> src = emptyInt().put(1, 'a').put(2, 'b').put(3, 'c');
+        assertThat(src.remove(2)).isEqualTo(emptyMap().put(1, 'a').put(3, 'c'));
+        assertThat(src.remove(33)).isSameAs(src);
+    }
+
     // -- removeAll
 
     @Test
-    public void shouldRemoveAll() {
-        assertThat(emptyMap().put(1, 'a').put(2, 'b').put(3, 'c').removeAll(List.of(1, 3)))
-                .isEqualTo(emptyMap().put(2, 'b'));
+    public void shouldRemoveAllKeys() {
+        Map<Integer, Object> src = emptyInt().put(1, 'a').put(2, 'b').put(3, 'c');
+        assertThat(src.removeAll(List.of(1, 3))).isEqualTo(emptyMap().put(2, 'b'));
+        assertThat(src.removeAll(List.of(33))).isSameAs(src);
+        assertThat(src.removeAll(List.empty())).isSameAs(src);
     }
 
     // -- transform
