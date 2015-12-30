@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -18,6 +19,7 @@ final class Collections {
 
     static <K, V> Map<K, V> mergeMaps(Map<K, V> map1, Map<? extends K, ? extends V> map2,
                                       Function<Map<? extends K, ? extends V>, Map<K, V>> converter) {
+        Objects.requireNonNull(map2, "that is null");
         if (map1.isEmpty()) {
             return converter.apply(map2);
         } else if (map2.isEmpty()) {
@@ -30,6 +32,8 @@ final class Collections {
     static <K, V, U extends V> Map<K, V> mergeMaps(Map<K, V> map1, Map<? extends K, U> map2,
                                                    Function<Map<? extends K, U>, Map<K, V>> converter,
                                                    BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
+        Objects.requireNonNull(map2, "that is null");
+        Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         if (map1.isEmpty()) {
             return converter.apply(map2);
         } else if (map2.isEmpty()) {

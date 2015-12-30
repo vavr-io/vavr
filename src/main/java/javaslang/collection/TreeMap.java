@@ -502,15 +502,12 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
 
     @Override
     public TreeMap<K, V> merge(Map<? extends K, ? extends V> that) {
-        Objects.requireNonNull(that, "that is null");
         return (TreeMap<K, V>) Collections.mergeMaps(this, that, m -> createTreeMap(entries.comparator(), that));
     }
 
     @Override
     public <U extends V> TreeMap<K, V> merge(Map<? extends K, U> that,
                                              BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         return (TreeMap<K, V>) Collections.mergeMaps(this, that, m -> createTreeMap(entries.comparator(), that), collisionResolution);
     }
 

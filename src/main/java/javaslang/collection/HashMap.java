@@ -398,15 +398,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> merge(Map<? extends K, ? extends V> that) {
-        Objects.requireNonNull(that, "that is null");
         return (HashMap<K, V>) Collections.mergeMaps(this, that, HashMap::ofEntries);
     }
 
     @Override
     public <U extends V> HashMap<K, V> merge(Map<? extends K, U> that,
                                              BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         return (HashMap<K, V>) Collections.mergeMaps(this, that, HashMap::ofEntries, collisionResolution);
     }
 
