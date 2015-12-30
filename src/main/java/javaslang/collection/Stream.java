@@ -244,9 +244,9 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static <T> Stream<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        int nOrZero = java.lang.Math.max(n, 0);
+        n = n < 0 ? 0 : n;
         @SuppressWarnings("unchecked")
-        T[] elements = (T[]) new Object[nOrZero];
+        T[] elements = (T[]) new Object[n];
         for (int i = 0; i < n; i++) {
             elements[i] = f.apply(i);
         }
