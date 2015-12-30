@@ -118,34 +118,6 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     }
 
     /**
-     * Returns a Seq containing {@code n} values of a given Function {@code f}
-     * over a range of integer values from 0 to {@code n - 1}.
-     *
-     * @param <T> Component type of the Seq
-     * @param n The number of elements in the Seq
-     * @param f The Function computing element values
-     * @return A Seq consisting of elements {@code f(0),f(1), ..., f(n - 1)}
-     * @throws NullPointerException if {@code f} is null
-     */
-    static <T> Seq<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
-        Objects.requireNonNull(f, "f is null");
-        return List.tabulate(n, f);
-    }
-
-    /**
-     * Returns a Seq containing {@code n} values supplied by a given Supplier {@code s}.
-     *
-     * @param <T> Component type of the Seq
-     * @param n The number of elements in the Seq
-     * @param s The Supplier computing element values
-     * @return A Seq of size {@code n}, where each element contains the result supplied by {@code s}.
-     * @throws NullPointerException if {@code s} is null
-     */
-    static <T> Seq<T> fill(int n, Supplier<? extends T> s) {
-        return tabulate(n, anything -> s.get());
-    }
-
-    /**
      * A {@code Seq} is a partial function which returns the element at the specified index by calling
      * {@linkplain #get(int)}.
      *
