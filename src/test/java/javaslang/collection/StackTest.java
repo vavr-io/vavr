@@ -6,6 +6,8 @@
 package javaslang.collection;
 
 import java.util.ArrayList;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class StackTest extends AbstractSeqTest {
@@ -77,6 +79,16 @@ public class StackTest extends AbstractSeqTest {
     @Override
     protected Stack<Short> ofAll(short[] array) {
         return Stack.ofAll(array);
+    }
+
+    @Override
+    protected <T> Stack<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        return Stack.tabulate(n, f);
+    }
+
+    @Override
+    protected <T> Stack<T> fill(int n, Supplier<? extends T> s) {
+        return Stack.fill(n, s);
     }
 
     @Override
