@@ -100,6 +100,38 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     /**
+     * Returns a Vector containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1}.
+     *
+     * @param <T> Component type of the Vector
+     * @param n The number of elements in the Vector
+     * @param f The Function computing element values
+     * @return A Vector consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public static <T> Vector<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        Objects.requireNonNull(f, "f is null");
+        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
+        for (int i = 0; i <n; i++) {
+            trie = trie.put(trie.size(), f.apply(i));
+        }
+        return trie.isEmpty() ? empty() : new Vector<>(trie);
+    }
+
+    /**
+     * Returns a Vector containing {@code n} values supplied by a given Supplier {@code s}.
+     *
+     * @param <T> Component type of the Vector
+     * @param n The number of elements in the Vector
+     * @param s The Supplier computing element values
+     * @return A Vector of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code s} is null
+     */
+    public static <T> Vector<T> fill(int n, Supplier<? extends T> s) {
+        return tabulate(n, anything -> s.get());
+    }
+
+    /**
      * Creates a Vector of the given elements.
      *
      * The resulting vector has the same iteration order as the given iterable of elements

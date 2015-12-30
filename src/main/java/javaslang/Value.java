@@ -352,7 +352,7 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
 
     @Override
     default Array<T> toArray() {
-        return ValueModule.toSeq(this, Array.empty());
+        return ValueModule.toTraversable(this, Array.empty(), Array::of, Array::ofAll);
     }
 
     @Override
@@ -429,7 +429,7 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
 
     @Override
     default List<T> toList() {
-        return ValueModule.toSeq(this, List.empty());
+        return ValueModule.toTraversable(this, List.empty(), List::of, List::ofAll);
     }
 
     @Override
@@ -455,7 +455,7 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
 
     @Override
     default Queue<T> toQueue() {
-        return ValueModule.toSeq(this, Queue.empty());
+        return ValueModule.toTraversable(this, Queue.empty(), Queue::of, Queue::ofAll);
     }
 
     @Override
@@ -472,23 +472,17 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
 
     @Override
     default Set<T> toSet() {
-        if (isEmpty()) {
-            return HashSet.empty();
-        } else if (isSingletonType()) {
-            return HashSet.of(get());
-        } else {
-            return HashSet.ofAll(this);
-        }
+        return ValueModule.toTraversable(this, HashSet.empty(), HashSet::of, HashSet::ofAll);
     }
 
     @Override
     default Stack<T> toStack() {
-        return ValueModule.toSeq(this, Stack.empty());
+        return ValueModule.toTraversable(this, Stack.empty(), Stack::of, Stack::ofAll);
     }
 
     @Override
     default Stream<T> toStream() {
-        return ValueModule.toSeq(this, Stream.empty());
+        return ValueModule.toTraversable(this, Stream.empty(), Stream::of, Stream::ofAll);
     }
 
     @Override
@@ -508,18 +502,12 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
 
     @Override
     default Tree<T> toTree() {
-        if (isEmpty()) {
-            return Tree.empty();
-        } else if (isSingletonType()) {
-            return Tree.of(get());
-        } else {
-            return Tree.ofAll(this);
-        }
+        return ValueModule.toTraversable(this, Tree.empty(), Tree::of, Tree::ofAll);
     }
 
     @Override
     default Vector<T> toVector() {
-        return ValueModule.toSeq(this, Vector.empty());
+        return ValueModule.toTraversable(this, Vector.empty(), Vector::of, Vector::ofAll);
     }
 
     // -- Printable implementation
@@ -547,14 +535,15 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
 
 interface ValueModule {
 
-    @SuppressWarnings("unchecked")
-    static <T extends Seq<V>, V> T toSeq(Value<V> value, T empty) {
+    static <T extends Traversable<V>, V> T toTraversable(Value<V> value, T empty,
+                                                         Function<V, T> ofElement,
+                                                         Function<java.lang.Iterable<V>, T> ofAll) {
         if (value.isEmpty()) {
             return empty;
         } else if (value.isSingletonType()) {
-            return (T) empty.append(value.get());
+            return ofElement.apply(value.get());
         } else {
-            return (T) empty.appendAll(value);
+            return ofAll.apply(value);
         }
     }
 

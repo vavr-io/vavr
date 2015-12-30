@@ -11,6 +11,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class QueueTest extends AbstractSeqTest {
@@ -82,6 +84,16 @@ public class QueueTest extends AbstractSeqTest {
     @Override
     protected Queue<Short> ofAll(short[] array) {
         return Queue.ofAll(array);
+    }
+
+    @Override
+    protected <T> Queue<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        return Queue.tabulate(n, f);
+    }
+
+    @Override
+    protected <T> Queue<T> fill(int n, Supplier<? extends T> s) {
+        return Queue.fill(n, s);
     }
 
     @Override
