@@ -512,14 +512,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Integer> rangeBy(int from, int toExclusive, int step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toExclusive || Integer.signum(step) * Integer.signum(from - toExclusive) > 0) {
-            return Iterator.empty();
-        } else {
-            final int one = (from < toExclusive) ? 1 : -1;
-            return Iterator.rangeClosedBy(from, toExclusive - one, step);
-        }
+        final int one = step > 0 ? 1 : -1;
+        return Iterator.rangeClosedBy(from, toExclusive - one, step);
     }
 
     /**
@@ -563,14 +557,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Long> rangeBy(long from, long toExclusive, long step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toExclusive || Long.signum(step) * Long.signum(from - toExclusive) > 0) {
-            return Iterator.empty();
-        } else {
-            final int one = (from < toExclusive) ? 1 : -1;
-            return Iterator.rangeClosedBy(from, toExclusive - one, step);
-        }
+        final int one = step > 0 ? 1 : -1;
+        return Iterator.rangeClosedBy(from, toExclusive - one, step);
     }
 
     /**

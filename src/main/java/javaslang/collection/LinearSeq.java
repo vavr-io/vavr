@@ -106,8 +106,6 @@ public interface LinearSeq<T> extends Seq<T> {
         return -1;
     }
 
-    ;
-
     @Override
     LinearSeq<T> init();
 

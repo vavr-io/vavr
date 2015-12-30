@@ -9,14 +9,39 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * Internal class, containing scan* implementations.
+ * Internal class, containing helpers.
  *
  * @author Daniel Dietrich
  * @since 2.0.0
  */
 final class Collections {
 
-    private Collections() {
+    static <K, V> Map<K, V> mergeMaps(Map<K, V> map1, Map<? extends K, ? extends V> map2,
+                                      Function<Map<? extends K, ? extends V>, Map<K, V>> converter) {
+        if (map1.isEmpty()) {
+            return converter.apply(map2);
+        } else if (map2.isEmpty()) {
+            return map1;
+        } else {
+            return map2.foldLeft(map1, (map, entry) -> !map.containsKey(entry._1) ? map.put(entry) : map);
+        }
+    }
+
+    static <K, V, U extends V> Map<K, V> mergeMaps(Map<K, V> map1, Map<? extends K, U> map2,
+                                                   Function<Map<? extends K, U>, Map<K, V>> converter,
+                                                   BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
+        if (map1.isEmpty()) {
+            return converter.apply(map2);
+        } else if (map2.isEmpty()) {
+            return map1;
+        } else {
+            return map2.foldLeft(map1, (map, entry) -> {
+                final K key = entry._1;
+                final U value = entry._2;
+                final V newValue = map.get(key).map(v -> (V) collisionResolution.apply(v, value)).orElse(value);
+                return map.put(key, newValue);
+            });
+        }
     }
 
     static <T, U, C extends Iterable<U>, R extends Traversable<U>> R scanLeft(
