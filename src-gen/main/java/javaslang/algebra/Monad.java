@@ -18,6 +18,7 @@ import javaslang.collection.*;
 import javaslang.control.Either;
 import javaslang.control.Either.Left;
 import javaslang.control.Either.Right;
+import javaslang.control.Match.MatchMonad.Of;
 import javaslang.control.Option;
 import javaslang.control.Try;
 
@@ -529,4 +530,10 @@ interface Convertible<T> {
      */
     Vector<T> toVector();
 
+    /**
+     * Provides syntactic sugar for {@link Of}.
+     *
+     * @return a new type-safe match builder.
+     */
+    Of<T> match();
 }
