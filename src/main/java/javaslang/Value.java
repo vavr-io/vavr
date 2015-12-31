@@ -8,7 +8,10 @@ package javaslang;
 import javaslang.algebra.Foldable;
 import javaslang.algebra.Monad;
 import javaslang.collection.*;
-import javaslang.control.*;
+import javaslang.control.Either;
+import javaslang.control.Match;
+import javaslang.control.Option;
+import javaslang.control.Try;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -508,6 +511,12 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
     @Override
     default Vector<T> toVector() {
         return ValueModule.toTraversable(this, Vector.empty(), Vector::of, Vector::ofAll);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    default Match.MatchMonad.Of<T> match() {
+        return Match.of((T) this);
     }
 
     // -- Printable implementation
