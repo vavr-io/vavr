@@ -1000,7 +1000,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             tail = tail.tail();
             index--;
         }
-        if (index > 0 && tail.isEmpty()) {
+        if (index > 0) {
             throw new IndexOutOfBoundsException("removeAt() on Nil");
         }
         return init.reverse().appendAll(tail.tail());
@@ -1119,7 +1119,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             List<T> list = this;
             final int lowerBound = Math.max(beginIndex, 0);
             final int upperBound = Math.min(endIndex, length());
-            for (int i = 0; i < upperBound && !list.isEmpty(); i++) {
+            for (int i = 0; i < upperBound; i++) {
                 if (i >= lowerBound) {
                     result = result.prepend(list.head());
                 }
@@ -1277,7 +1277,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
         List<T> result = Nil.instance();
         List<T> list = this;
-        for (int i = 0; i < n && !list.isEmpty(); i++, list = list.tail()) {
+        for (int i = 0; i < n; i++, list = list.tail()) {
             result = result.prepend(list.head());
         }
         return result.reverse();

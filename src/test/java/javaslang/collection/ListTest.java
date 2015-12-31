@@ -173,6 +173,16 @@ public class ListTest extends AbstractSeqTest {
         return 1;
     }
 
+    // -- ofAll(NavigableSet)
+
+    @Test
+    public void shouldAcceptNavigableSet() {
+        java.util.TreeSet<Integer> javaSet = new java.util.TreeSet<>();
+        javaSet.add(2);
+        javaSet.add(1);
+        assertThat(List.ofAll(javaSet)).isEqualTo(List.of(1, 2));
+    }
+
     // -- peek
 
     @Test(expected = NoSuchElementException.class)

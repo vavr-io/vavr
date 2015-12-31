@@ -1924,8 +1924,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldEqualSameTraversableInstance() {
-        final Traversable<?> traversable = empty();
-        assertThat(traversable).isEqualTo(traversable);
+        final Traversable<?> nonEmpty = of(1);
+        assertThat(nonEmpty.equals(nonEmpty)).isTrue();
+        assertThat(empty().equals(empty())).isTrue();
     }
 
     @Test
@@ -1966,6 +1967,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldRecognizeNonEqualityOfTraversablesOfDifferentSize() {
         assertThat(of(1, 2, 3).equals(of(1, 2))).isFalse();
+        assertThat(of(1, 2).equals(of(1, 2, 3))).isFalse();
     }
 
     // -- hashCode
