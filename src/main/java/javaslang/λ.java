@@ -151,10 +151,6 @@ public interface λ<R> extends Serializable {
         private final Class<R> returnType;
         private final Class<?>[] parameterTypes;
 
-        private transient final Lazy<Integer> hashCode = Lazy.of(
-                () -> List.of(parameterTypes()).map(c -> c.getName().hashCode()).fold(1, (acc, i) -> acc * 31 + i) * 31
-                        + returnType().getName().hashCode());
-
         /**
          * Internal constructor.
          *
@@ -191,7 +187,10 @@ public interface λ<R> extends Serializable {
 
         @Override
         public int hashCode() {
-            return hashCode.get();
+            return List.of(parameterTypes())
+                    .map(c -> c.getName().hashCode())
+                    .fold(1, (acc, i) -> acc * 31 + i)
+                    * 31 + returnType().getName().hashCode();
         }
 
         @Override
