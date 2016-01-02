@@ -2,7 +2,8 @@ package javaslang.control;
 
 import java.util.function.Consumer;
 
-public class IntegerConsumer implements Consumer<Integer> {
+class IntegerConsumer implements Consumer<Integer> {
+
     public int value;
 
     @Override
