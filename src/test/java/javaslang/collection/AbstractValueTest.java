@@ -10,6 +10,7 @@ import javaslang.Tuple;
 import javaslang.Value;
 import javaslang.control.*;
 import org.assertj.core.api.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -519,6 +520,13 @@ public abstract class AbstractValueTest {
         Either<String,Object> either2 = empty().toRight("fallback");
         assertThat(either2.isLeft()).isTrue();
         assertThat(either2.get()).isEqualTo("fallback");
+    }
+
+    @Test
+    @Ignore
+    public void shouldCreateMatchMonadFromValue() {
+        Value<Integer> value = of(1);
+        assertThat(value.match()).isEqualTo(Match.of(value));
     }
 
     // -- exists

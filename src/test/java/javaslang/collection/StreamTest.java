@@ -317,6 +317,13 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(actual).isTrue();
     }
 
+    // -- lazy dropRight
+
+    @Test
+    public void shouldLazyDropRight() {
+        assertThat(Stream.from(1).takeUntil(i -> i == 18).dropRight(7)).isEqualTo(Stream.range(1, 11));
+    }
+
     // -- cycle
 
     @Test
@@ -346,6 +353,13 @@ public class StreamTest extends AbstractSeqTest {
         final Stream<Integer> stream = this.of(1, 2, 3);
         stream.tail(); // evaluates second head element
         assertThat(stream.toString()).isEqualTo("Stream(1, 2, ?)");
+    }
+
+    @Test
+    public void shouldStringifyNonNilAndNilTail() {
+        final Stream<Integer> stream = this.of(1);
+        stream.tail(); // evaluates empty tail
+        assertThat(stream.toString()).isEqualTo("Stream(1)");
     }
 
     // -- Serializable

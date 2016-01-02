@@ -64,6 +64,7 @@ def generateMainClasses(): Unit = {
       val TreeType = im.getType("javaslang.collection.Tree")
       val TryType = im.getType("javaslang.control.Try")
       val VectorType = im.getType("javaslang.collection.Vector")
+      val MatchMonadTypeOf = im.getType("javaslang.control.Match.MatchMonad.Of")
 
       xs"""
         /**
@@ -449,6 +450,12 @@ def generateMainClasses(): Unit = {
              */
             $VectorType<T> toVector();
 
+            /**
+             * Provides syntactic sugar for {@link $MatchMonadTypeOf}.
+             *
+             * @return a new type-safe match builder.
+             */
+            $MatchMonadTypeOf<T> match();
         }
       """
     }
