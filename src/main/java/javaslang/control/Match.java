@@ -348,7 +348,7 @@ public interface Match<R> extends Function1<Object, R> {
                 final Function<? super T, ? extends Void> function = value -> {
                     action.accept(value);
                     return null;
-                }; 
+                };
                 return new ThenRun(cases.prepend(new Case(predicate, function)));
             }
 
@@ -961,13 +961,13 @@ public interface Match<R> extends Function1<Object, R> {
 
                 public <U> WhenRunnable<T, U> whenRunnable(SerializableConsumer<U> action) {
                     Objects.requireNonNull(action, "action is null");
-                    return new WhenRunnable<>(value, action);
+                    return new WhenRunnable<>(value, isActionPerformed, action);
                 }
 
                 // DEV-NOTE: setting U = Object because the argument is ignored by the action
                 public WhenRunnable<T, Object> whenRunnable(Runnable action) {
                     Objects.requireNonNull(action, "action is null");
-                    return new WhenRunnable<>(value, ignored -> action.run());
+                    return new WhenRunnable<>(value, isActionPerformed, ignored -> action.run());
                 }
 
                 public void otherwiseRun(Consumer<? super T> action) {
@@ -1027,8 +1027,32 @@ public interface Match<R> extends Function1<Object, R> {
 
         final class WhenRunnable<T, U> {
 
-            private WhenRunnable(T value, SerializableConsumer<? super U> action) {
-                // TODO
+            private final T value;
+            private final boolean isActionPerformed;
+            private final boolean isMatching;
+            private final SerializableConsumer<? super U> action;
+
+            private WhenRunnable(T value, boolean isActionPerformed, SerializableConsumer<? super U> action) {
+                this.value = value;
+                this.isActionPerformed = isActionPerformed;
+                this.isMatching = !isActionPerformed && action.isApplicableTo(value);
+                this.action = action;
+            }
+
+            @SuppressWarnings("unchecked")
+            public WhenRun.ThenRun<T> thenRun() {
+                if (isMatching) {
+                    action.accept((U) value);
+                }
+                return new WhenRun.ThenRun<>(value, isActionPerformed || isMatching);
+            }
+
+            public WhenRun.ThenRun<T> thenThrow(Supplier<? extends RuntimeException> supplier) {
+                Objects.requireNonNull(supplier, "supplier is null");
+                if (isMatching) {
+                    throw supplier.get();
+                }
+                return new WhenRun.ThenRun<>(value, isActionPerformed);
             }
         }
 
@@ -1084,12 +1108,19 @@ public interface Match<R> extends Function1<Object, R> {
     }
 
     @FunctionalInterface
-    interface SerializableConsumer<T> extends Consumer<T>, λ<Void> {
+    interface SerializableConsumer<T> extends λ<Void> {
 
         /**
          * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
          */
         long serialVersionUID = 1L;
+
+        /**
+         * Performs this action on the given argument.
+         *
+         * @param t a value of type T
+         */
+        void accept(T t);
 
         @Override
         default int arity() {
@@ -1144,12 +1175,20 @@ public interface Match<R> extends Function1<Object, R> {
     }
 
     @FunctionalInterface
-    interface SerializablePredicate<T> extends Predicate<T>, λ<Boolean> {
+    interface SerializablePredicate<T> extends λ<Boolean> {
 
         /**
          * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
          */
         long serialVersionUID = 1L;
+
+        /**
+         * Checks if the given argument satisfies this predicate.
+         *
+         * @param t a value of type T
+         * @return {@code true} if {@code t} satisfies this predicate, otherwise {@code false}
+         */
+        boolean test(T t);
 
         @Override
         default int arity() {
@@ -1216,7 +1255,7 @@ interface MatchModule {
     @SuppressWarnings("unchecked")
     static <T> Predicate<Object> isTrue(SerializablePredicate<T> predicate) {
         final Class<T> type = predicate.getType().parameterType1();
-        return value -> (value == null || type.isAssignableFrom(value.getClass())) && ((Predicate<Object>) predicate).test(value);
+        return value -> (value == null || type.isAssignableFrom(value.getClass())) && ((SerializablePredicate<Object>) predicate).test(value);
     }
 
     static <T> Predicate<Object> isType(Class<T> type) {

@@ -355,8 +355,7 @@ public abstract class AbstractValueTest {
     public void shouldConvertNonEmptyValueToMatchMonad() {
         final Value<Integer> value = of(1);
         final String actual = value.match()
-                .when((Value<Integer> v) -> v.orElse(-1) == 1)
-                .then("ok")
+                .when((Value<Integer> v) -> v.orElse(-1) == 1).then("ok")
                 .orElse("nok");
         assertThat(actual).isEqualTo("ok");
     }
@@ -365,8 +364,7 @@ public abstract class AbstractValueTest {
     public void shouldConvertEmptyValueToMatchMonad() {
         final Value<Integer> value = empty();
         final String actual = value.match()
-                .when((Value<Integer> v) -> v.isEmpty())
-                .then("ok")
+                .when(Value<Integer>::isEmpty).then("ok")
                 .orElse("nok");
         assertThat(actual).isEqualTo("ok");
     }
@@ -502,44 +500,44 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldConvertToEitherLeftFromValueSupplier() {
-        Either<Integer,String> either = of(0).toLeft(() -> "fallback");
+        Either<Integer, String> either = of(0).toLeft(() -> "fallback");
         assertThat(either.isLeft()).isTrue();
         assertThat(either.get()).isEqualTo(0);
 
-        Either<Object,String> either2 = empty().toLeft(() -> "fallback");
+        Either<Object, String> either2 = empty().toLeft(() -> "fallback");
         assertThat(either2.isRight()).isTrue();
         assertThat(either2.get()).isEqualTo("fallback");
     }
 
     @Test
     public void shouldConvertToEitherLeftFromValue() {
-        Either<Integer,String> either = of(0).toLeft("fallback");
+        Either<Integer, String> either = of(0).toLeft("fallback");
         assertThat(either.isLeft()).isTrue();
         assertThat(either.get()).isEqualTo(0);
 
-        Either<Object,String> either2 = empty().toLeft("fallback");
+        Either<Object, String> either2 = empty().toLeft("fallback");
         assertThat(either2.isRight()).isTrue();
         assertThat(either2.get()).isEqualTo("fallback");
     }
 
     @Test
     public void shouldConvertToEitherRightFromValueSupplier() {
-        Either<String,Integer> either = of(0).toRight(() -> "fallback");
+        Either<String, Integer> either = of(0).toRight(() -> "fallback");
         assertThat(either.isRight()).isTrue();
         assertThat(either.get()).isEqualTo(0);
 
-        Either<String,Object> either2 = empty().toRight(() -> "fallback");
+        Either<String, Object> either2 = empty().toRight(() -> "fallback");
         assertThat(either2.isLeft()).isTrue();
         assertThat(either2.get()).isEqualTo("fallback");
     }
 
     @Test
     public void shouldConvertToEitherRightFromValue() {
-        Either<String,Integer> either = of(0).toRight("fallback");
+        Either<String, Integer> either = of(0).toRight("fallback");
         assertThat(either.isRight()).isTrue();
         assertThat(either.get()).isEqualTo(0);
 
-        Either<String,Object> either2 = empty().toRight("fallback");
+        Either<String, Object> either2 = empty().toRight("fallback");
         assertThat(either2.isLeft()).isTrue();
         assertThat(either2.get()).isEqualTo("fallback");
     }
