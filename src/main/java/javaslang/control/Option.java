@@ -9,7 +9,6 @@ import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
-import javaslang.collection.Stream;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;

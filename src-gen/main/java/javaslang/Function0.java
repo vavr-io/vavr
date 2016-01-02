@@ -12,7 +12,6 @@ package javaslang;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import javaslang.Function0Module.Memoized;
 import javaslang.control.Option;
 import javaslang.control.Try;
 
@@ -127,11 +126,6 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
         }
     }
 
-    @Override
-    default boolean isMemoized() {
-        return this instanceof Memoized;
-    }
-
     /**
      * Returns a composed function that first applies this Function0 to the given argument and then applies
      * {@linkplain Function} {@code after} to the result.
@@ -168,14 +162,5 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
             super(λ);
         }
 
-    }
-}
-
-interface Function0Module {
-
-    /**
-     * Tagging ZAM interface for Memoized functions.
-     */
-    interface Memoized {
     }
 }

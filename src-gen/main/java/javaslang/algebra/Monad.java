@@ -313,6 +313,10 @@ public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
     @Override
     <U> Monad<U> map(Function<? super T, ? extends U> mapper);
 
+    // -- adjusting return types of Convertible methods
+
+    Of<? extends Monad<T>> match();
+
 }
 
 /**
@@ -321,6 +325,29 @@ public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
  * @param <T> Component type.
  */
 interface Convertible<T> {
+
+    /**
+     * Provides syntactic sugar for {@link javaslang.control.Match.MatchMonad.Of}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * value.match()
+     *      .when(...).then(...)
+     *      .get();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Match.of(value)
+     *      .when(...).then(...)
+     *      .get();
+     * </code></pre>
+     *
+     * @return a new type-safe match builder.
+     */
+    Of<? extends Convertible<T>> match();
 
     /**
      * Converts this value to a {@link Array}.
@@ -529,11 +556,4 @@ interface Convertible<T> {
      * @return A new {@link Vector}.
      */
     Vector<T> toVector();
-
-    /**
-     * Provides syntactic sugar for {@link Of}.
-     *
-     * @return a new type-safe match builder.
-     */
-    Of<T> match();
 }

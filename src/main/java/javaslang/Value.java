@@ -354,6 +354,11 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
     // -- Convertible implementation
 
     @Override
+    default Match.MatchMonad.Of<? extends Value<T>> match() {
+        return Match.of(this);
+    }
+
+    @Override
     default Array<T> toArray() {
         return ValueModule.toTraversable(this, Array.empty(), Array::of, Array::ofAll);
     }
@@ -511,12 +516,6 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
     @Override
     default Vector<T> toVector() {
         return ValueModule.toTraversable(this, Vector.empty(), Vector::of, Vector::ofAll);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    default Match.MatchMonad.Of<T> match() {
-        return Match.of((T) this);
     }
 
     // -- Printable implementation
