@@ -17,7 +17,6 @@ import java.io.PrintStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
