@@ -1412,7 +1412,7 @@ public interface Stream<T> extends LinearSeq<T> {
         private static final long serialVersionUID = 1L;
 
         private final T head;
-        private Lazy<Stream<T>> tail;
+        private final Lazy<Stream<T>> tail;
 
         /**
          * Creates a new {@code Stream} consisting of a head element and a lazy trailing {@code Stream}.
