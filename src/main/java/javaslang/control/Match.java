@@ -435,8 +435,6 @@ public interface Match {
 
             final class Then implements Consumer<Object> {
 
-                private final static long serialVersionUID = 1L;
-
                 private final List<Case> cases;
 
                 private Then(List<Case> cases) {
@@ -533,8 +531,6 @@ public interface Match {
             }
 
             final class Otherwise implements Consumer<Object> {
-
-                private final static long serialVersionUID = 1L;
 
                 private final Function<? super Object, ? extends Void> action;
                 private final List<Case> cases;
