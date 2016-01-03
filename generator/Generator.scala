@@ -54,6 +54,7 @@ def generateMainClasses(): Unit = {
       val LeftType = im.getType("javaslang.control.Either.Left")
       val ListType = im.getType("javaslang.collection.List")
       val MapType = im.getType("javaslang.collection.Map")
+      val MatchType = im.getType("javaslang.control.Match")
       val OptionType = im.getType("javaslang.control.Option")
       val QueueType = im.getType("javaslang.collection.Queue")
       val RightType = im.getType("javaslang.control.Either.Right")
@@ -64,7 +65,6 @@ def generateMainClasses(): Unit = {
       val TreeType = im.getType("javaslang.collection.Tree")
       val TryType = im.getType("javaslang.control.Try")
       val VectorType = im.getType("javaslang.collection.Vector")
-      val MatchMonadTypeOf = im.getType("javaslang.control.Match.MatchMonad.Of")
 
       xs"""
         /**
@@ -235,7 +235,8 @@ def generateMainClasses(): Unit = {
 
             // -- adjusting return types of Convertible methods
 
-            $MatchMonadTypeOf<? extends Monad<T>> match();
+            @Override
+            $MatchType.MatchMonad.Of<? extends Monad<T>> match();
 
         }
 
@@ -267,7 +268,7 @@ def generateMainClasses(): Unit = {
              *
              * @return a new type-safe match builder.
              */
-            $MatchMonadTypeOf<? extends Convertible<T>> match();
+            $MatchType.MatchMonad.Of<? extends Convertible<T>> match();
 
             /**
              * Converts this value to a {@link $ArrayType}.
