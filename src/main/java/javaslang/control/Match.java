@@ -62,22 +62,10 @@ import static javaslang.control.MatchModule.*;
  *     .apply(1.0d); // result: -1
  * </code></pre>
  *
- * @param <R> The result type of the {@code Match}.
  * @author Daniel Dietrich
  * @since 1.0.0
  */
-public interface Match<R> extends Function1<Object, R> {
-
-    long serialVersionUID = 1L;
-
-    /**
-     * Applies this {@code Match} to an {@code Object}.
-     *
-     * @param o an {@code Object}
-     * @throws MatchError if no {@code Case} matched
-     */
-    @Override
-    R apply(Object o);
+public interface Match {
 
     /**
      * Creates a type-safe match by fixating the value to be matched.
@@ -174,7 +162,18 @@ public interface Match<R> extends Function1<Object, R> {
     /**
      * Match as Function
      */
-    interface MatchFunction {
+    interface MatchFunction<R> extends Function1<Object, R> {
+
+        long serialVersionUID = 1L;
+
+        /**
+         * Applies this {@code Match} to an {@code Object}.
+         *
+         * @param o an {@code Object}
+         * @throws MatchError if no {@code Case} matched
+         */
+        @Override
+        R apply(Object o);
 
         /**
          * {@code WhenUntyped} is needed, when the return type of the MatchFunction is still unknown,
@@ -261,7 +260,7 @@ public interface Match<R> extends Function1<Object, R> {
             }
         }
 
-        final class Then<R> implements Match<R> {
+        final class Then<R> implements MatchFunction<R> {
 
             private final static long serialVersionUID = 1L;
 
@@ -355,7 +354,7 @@ public interface Match<R> extends Function1<Object, R> {
             }
         }
 
-        final class Otherwise<R> implements Match<R> {
+        final class Otherwise<R> implements MatchFunction<R> {
 
             private final static long serialVersionUID = 1L;
 
@@ -434,7 +433,7 @@ public interface Match<R> extends Function1<Object, R> {
                 }
             }
 
-            final class Then implements Match<Void> {
+            final class Then implements Consumer<Object> {
 
                 private final static long serialVersionUID = 1L;
 
@@ -445,12 +444,11 @@ public interface Match<R> extends Function1<Object, R> {
                 }
 
                 @Override
-                public Void apply(Object o) {
+                public void accept(Object o) {
                     cases.reverse()
                             .findFirst(caze -> caze.isApplicable(o))
                             .map(caze -> caze.apply(o))
                             .orElseThrow(() -> new MatchError(o));
-                    return null;
                 }
 
                 public <T> When<T> when(SerializablePredicate<? super T> predicate) {
@@ -534,7 +532,7 @@ public interface Match<R> extends Function1<Object, R> {
                 }
             }
 
-            final class Otherwise implements Match<Void> {
+            final class Otherwise implements Consumer<Object> {
 
                 private final static long serialVersionUID = 1L;
 
@@ -547,12 +545,11 @@ public interface Match<R> extends Function1<Object, R> {
                 }
 
                 @Override
-                public Void apply(Object o) {
+                public void accept(Object o) {
                     cases.reverse()
                             .findFirst(caze -> caze.isApplicable(o))
                             .map(caze -> caze.apply(o))
                             .orElseGet(() -> action.apply(o));
-                    return null;
                 }
             }
         }
