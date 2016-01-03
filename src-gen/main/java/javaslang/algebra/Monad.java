@@ -18,7 +18,7 @@ import javaslang.collection.*;
 import javaslang.control.Either;
 import javaslang.control.Either.Left;
 import javaslang.control.Either.Right;
-import javaslang.control.Match.MatchMonad.Of;
+import javaslang.control.Match;
 import javaslang.control.Option;
 import javaslang.control.Try;
 
@@ -315,7 +315,8 @@ public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
 
     // -- adjusting return types of Convertible methods
 
-    Of<? extends Monad<T>> match();
+    @Override
+    Match.MatchMonad.Of<? extends Monad<T>> match();
 
 }
 
@@ -347,7 +348,7 @@ interface Convertible<T> {
      *
      * @return a new type-safe match builder.
      */
-    Of<? extends Convertible<T>> match();
+    Match.MatchMonad.Of<? extends Convertible<T>> match();
 
     /**
      * Converts this value to a {@link Array}.
