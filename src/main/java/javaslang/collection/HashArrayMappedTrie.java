@@ -255,13 +255,13 @@ interface HashArrayMappedTrieModule {
         private final int hash;
         private final K key;
         private final V value;
-        private final Lazy<Integer> hashCode;
+        private final int hashCode;
 
         LeafSingleton(int hash, K key, V value) {
             this.hash = hash;
             this.key = key;
             this.value = value;
-            this.hashCode = Lazy.of(() -> Objects.hash(key, value));
+            this.hashCode = Objects.hash(key, value);
         }
 
         @Override
@@ -295,7 +295,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public int hashCode() {
-            return hashCode.get();
+            return hashCode;
         }
 
         @Override
@@ -329,7 +329,7 @@ interface HashArrayMappedTrieModule {
         private final V value;
         private final int size;
         private final LeafNode<K, V> tail;
-        private final Lazy<Integer> hashCode;
+        private final int hashCode;
 
         LeafList(int hash, K key, V value, LeafNode<K, V> tail) {
             this.hash = hash;
@@ -337,7 +337,7 @@ interface HashArrayMappedTrieModule {
             this.value = value;
             this.size = 1 + tail.size();
             this.tail = tail;
-            this.hashCode = Lazy.of(() -> Objects.hash(key, value, tail));
+            this.hashCode = Objects.hash(key, value, tail);
         }
 
         @Override
@@ -402,7 +402,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public int hashCode() {
-            return hashCode.get();
+            return hashCode;
         }
 
         @Override
