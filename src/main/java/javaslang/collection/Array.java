@@ -76,7 +76,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      */
     @SuppressWarnings("unchecked")
     public static <T> Array<T> of(T element) {
-        return wrap((T[]) new Object[] { element });
+        return wrap(new Object[] { element });
     }
 
     /**
