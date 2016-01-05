@@ -89,7 +89,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
             tree = tree.put(entry.getKey(), entry.getValue());
         }
-        return tree.isEmpty() ? empty() : new HashMap<>(tree);
+        return wrap(tree);
     }
 
     /**
@@ -123,7 +123,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         for (int i = 0; i < pairs.length; i += 2) {
             trie = trie.put((K) pairs[i], (V) pairs[i + 1]);
         }
-        return new HashMap<>(trie);
+        return wrap(trie);
     }
 
     /**
@@ -141,7 +141,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
             trie = trie.put(entry.getKey(), entry.getValue());
         }
-        return new HashMap<>(trie);
+        return wrap(trie);
     }
 
     /**
@@ -159,7 +159,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             trie = trie.put(entry._1, entry._2);
         }
-        return new HashMap<>(trie);
+        return wrap(trie);
     }
 
     /**
@@ -180,7 +180,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
             for (Tuple2<? extends K, ? extends V> entry : entries) {
                 trie = trie.put(entry._1, entry._2);
             }
-            return new HashMap<>(trie);
+            return wrap(trie);
         }
     }
 
@@ -436,7 +436,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public HashMap<K, V> remove(K key) {
         final HashArrayMappedTrie<K, V> result = trie.remove(key);
-        return result.size() == trie.size() ? this : new HashMap<>(result);
+        return result.size() == trie.size() ? this : wrap(result);
     }
 
     @Override
@@ -446,7 +446,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         for (K key : keys) {
             result = result.remove(key);
         }
-        return result.isEmpty() ? empty() : result.size() == trie.size() ? this : new HashMap<>(result);
+        return result.size() == trie.size() ? this : wrap(result);
     }
 
     @Override
@@ -470,7 +470,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
                 tree = tree.put(entry._1, entry._2);
             }
         }
-        return tree.isEmpty() ? empty() : new HashMap<>(tree);
+        return wrap(tree);
     }
 
     @Override
@@ -596,5 +596,9 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public String toString() {
         return mkString(stringPrefix() + "(", ", ", ")");
+    }
+
+    private static <K, V> HashMap<K, V> wrap(HashArrayMappedTrie<K, V> trie) {
+        return trie.isEmpty() ? empty() : new HashMap<>(trie);
     }
 }
