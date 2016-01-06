@@ -1323,7 +1323,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     private static <T> Vector<T> wrap(HashArrayMappedTrie<Integer, T> trie) {
-        return trie.isEmpty() ? empty() : new Vector<T>(trie);
+        return trie.isEmpty() ? empty() : new Vector<>(trie);
     }
 }
 

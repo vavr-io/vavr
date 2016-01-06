@@ -631,6 +631,9 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
         if (n <= 0) {
             return this;
         }
+        if (n >= length()) {
+            return empty();
+        }
         return new Queue<>(front.drop(n), rear.dropRight(n - front.length()));
     }
 
@@ -638,6 +641,9 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     public Queue<T> dropRight(int n) {
         if (n <= 0) {
             return this;
+        }
+        if (n >= length()) {
+            return empty();
         }
         return new Queue<>(front.dropRight(n - rear.length()), rear.drop(n));
     }
@@ -1070,6 +1076,9 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Queue<T> take(int n) {
+        if (n <= 0) {
+            return empty();
+        }
         if (n >= length()) {
             return this;
         }
@@ -1085,6 +1094,9 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
 
     @Override
     public Queue<T> takeRight(int n) {
+        if (n <= 0) {
+            return empty();
+        }
         if (n >= length()) {
             return this;
         }
