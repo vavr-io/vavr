@@ -57,3 +57,7 @@ mvn release:prepare
 ```
 mvn release:perform
 ```
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/javaslang/javaslang/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
