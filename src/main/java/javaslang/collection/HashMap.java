@@ -127,6 +127,39 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     /**
+     * Returns an HashMap containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1}.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param n The number of elements in the HashMap
+     * @param f The Function computing element values
+     * @return An HashMap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code f} is null
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> HashMap<K, V> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return ofEntries(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
+    }
+
+    /**
+     * Returns an HashMap containing {@code n} values supplied by a given Supplier {@code s}.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param n The number of elements in the HashMap
+     * @param s The Supplier computing element values
+     * @return An HashMap of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code s} is null
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> HashMap<K, V> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+        Objects.requireNonNull(s, "s is null");
+        return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
+    }
+
+    /**
      * Creates a HashMap of the given entries.
      *
      * @param entries Map entries
