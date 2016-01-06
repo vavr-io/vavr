@@ -31,7 +31,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     private final Queue<Tuple2<K, V>> list;
     private final HashMap<K, V> map;
 
-    public LinkedHashMap(Queue<Tuple2<K, V>> list, HashMap<K, V> map) {
+    private LinkedHashMap(Queue<Tuple2<K, V>> list, HashMap<K, V> map) {
         this.list = list;
         this.map = map;
     }
@@ -97,7 +97,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
             map = map.put(k, v);
             list = list.append(Tuple.of(k, v));
         }
-        return new LinkedHashMap<>(list, map);
+        return wrap(list, map);
     }
 
     /**
@@ -149,7 +149,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
             map = map.put(tuple);
             list = list.append(tuple);
         }
-        return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
+        return wrap(list, map);
     }
 
     /**
@@ -164,7 +164,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     public static <K, V> LinkedHashMap<K, V> ofEntries(Tuple2<? extends K, ? extends V>... entries) {
         final HashMap<K, V> map = HashMap.ofEntries(entries);
         final Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>[]) entries);
-        return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
+        return wrap(list, map);
     }
 
     /**
@@ -187,7 +187,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
                 map = map.put(entry);
                 list = list.append((Tuple2<K, V>) entry);
             }
-            return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
+            return wrap(list, map);
         }
     }
 
@@ -257,7 +257,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         if (containsKey(key)) {
             final Queue<Tuple2<K, V>> newList = list.removeFirst(t -> t._1.equals(key));
             final HashMap<K, V> newMap = map.remove(key);
-            return newList.isEmpty() ? empty() : new LinkedHashMap<>(newList, newMap);
+            return wrap(newList, newMap);
         } else {
             return this;
         }
@@ -269,7 +269,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         final HashSet<K> toRemove = HashSet.ofAll(keys);
         final Queue<Tuple2<K, V>> newList = list.filter(t -> !toRemove.contains(t._1));
         final HashMap<K, V> newMap = map.filter(t -> !toRemove.contains(t._1));
-        return newList.isEmpty() ? empty() : newList.size() == size() ? this : new LinkedHashMap<>(newList, newMap);
+        return newList.size() == size() ? this : wrap(newList, newMap);
     }
 
     @Override
@@ -605,5 +605,9 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public String toString() {
         return mkString(stringPrefix() + "(", ", ", ")");
+    }
+
+    private static <K, V> LinkedHashMap<K, V> wrap(Queue<Tuple2<K, V>> list, HashMap<K, V> map) {
+        return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
     }
 }
