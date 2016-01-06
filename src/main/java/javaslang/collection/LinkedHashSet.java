@@ -92,6 +92,35 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     /**
+     * Returns a LinkedHashSet containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1}.
+     *
+     * @param <T> Component type of the LinkedHashSet
+     * @param n The number of elements in the LinkedHashSet
+     * @param f The Function computing element values
+     * @return A LinkedHashSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public static <T> LinkedHashSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        Objects.requireNonNull(f, "f is null");
+        return Collections.tabulate(n, f, LinkedHashSet.empty(), LinkedHashSet::of);
+    }
+
+    /**
+     * Returns a LinkedHashSet containing {@code n} values supplied by a given Supplier {@code s}.
+     *
+     * @param <T> Component type of the LinkedHashSet
+     * @param n The number of elements in the LinkedHashSet
+     * @param s The Supplier computing element values
+     * @return A LinkedHashSet of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code s} is null
+     */
+    public static <T> LinkedHashSet<T> fill(int n, Supplier<? extends T> s) {
+        Objects.requireNonNull(s, "s is null");
+        return Collections.fill(n, s, LinkedHashSet.empty(), LinkedHashSet::of);
+    }
+
+    /**
      * Creates a LinkedHashSet of the given elements.
      *
      * @param elements Set elements
