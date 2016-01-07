@@ -77,7 +77,9 @@ public interface λ<R> extends Serializable {
      *
      * @return true, if this function is memoizing, false otherwise
      */
-    boolean isMemoized();
+    default boolean isMemoized() {
+        return this instanceof Memoized;
+    }
 
     /**
      * Get reflective type information about lambda parameters and return type.
@@ -151,10 +153,6 @@ public interface λ<R> extends Serializable {
         private final Class<R> returnType;
         private final Class<?>[] parameterTypes;
 
-        private transient final Lazy<Integer> hashCode = Lazy.of(
-                () -> List.of(parameterTypes()).map(c -> c.getName().hashCode()).fold(1, (acc, i) -> acc * 31 + i) * 31
-                        + returnType().getName().hashCode());
-
         /**
          * Internal constructor.
          *
@@ -191,13 +189,22 @@ public interface λ<R> extends Serializable {
 
         @Override
         public int hashCode() {
-            return hashCode.get();
+            return List.of(parameterTypes())
+                    .map(c -> c.getName().hashCode())
+                    .fold(1, (acc, i) -> acc * 31 + i)
+                    * 31 + returnType().getName().hashCode();
         }
 
         @Override
         public String toString() {
             return List.of(parameterTypes).map(Class::getName).mkString("(", ", ", ")") + " -> " + returnType.getName();
         }
+    }
+
+    /**
+     * Zero Abstract Method (ZAM) interface for marking functions as memoized using intersection types.
+     */
+    interface Memoized {
     }
 }
 

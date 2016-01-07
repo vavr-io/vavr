@@ -12,7 +12,6 @@ package javaslang;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import javaslang.CheckedFunction2Module.Memoized;
 import javaslang.control.Option;
 import javaslang.control.Try;
 
@@ -145,11 +144,6 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
         }
     }
 
-    @Override
-    default boolean isMemoized() {
-        return this instanceof Memoized;
-    }
-
     /**
      * Returns a composed function that first applies this CheckedFunction2 to the given argument and then applies
      * {@linkplain CheckedFunction1} {@code after} to the result.
@@ -197,14 +191,5 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
         public Class<T2> parameterType2() {
             return (Class<T2>) parameterTypes()[1];
         }
-    }
-}
-
-interface CheckedFunction2Module {
-
-    /**
-     * Tagging ZAM interface for Memoized functions.
-     */
-    interface Memoized {
     }
 }

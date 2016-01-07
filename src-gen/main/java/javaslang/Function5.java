@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import javaslang.Function5Module.Memoized;
 import javaslang.control.Option;
 import javaslang.control.Try;
 
@@ -197,11 +196,6 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends λ<R> {
         }
     }
 
-    @Override
-    default boolean isMemoized() {
-        return this instanceof Memoized;
-    }
-
     /**
      * Returns a composed function that first applies this Function5 to the given argument and then applies
      * {@linkplain Function} {@code after} to the result.
@@ -267,14 +261,5 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends λ<R> {
         public Class<T5> parameterType5() {
             return (Class<T5>) parameterTypes()[4];
         }
-    }
-}
-
-interface Function5Module {
-
-    /**
-     * Tagging ZAM interface for Memoized functions.
-     */
-    interface Memoized {
     }
 }

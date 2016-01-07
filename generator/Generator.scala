@@ -54,6 +54,7 @@ def generateMainClasses(): Unit = {
       val LeftType = im.getType("javaslang.control.Either.Left")
       val ListType = im.getType("javaslang.collection.List")
       val MapType = im.getType("javaslang.collection.Map")
+      val MatchType = im.getType("javaslang.control.Match")
       val OptionType = im.getType("javaslang.control.Option")
       val QueueType = im.getType("javaslang.collection.Queue")
       val RightType = im.getType("javaslang.control.Either.Right")
@@ -232,6 +233,11 @@ def generateMainClasses(): Unit = {
             @Override
             <U> Monad<U> map(${im.getType("java.util.function.Function")}<? super T, ? extends U> mapper);
 
+            // -- adjusting return types of Convertible methods
+
+            @Override
+            $MatchType.MatchMonad.Of<? extends Monad<T>> match();
+
         }
 
         /**
@@ -240,6 +246,29 @@ def generateMainClasses(): Unit = {
          * @param <T> Component type.
          */
         interface Convertible<T> {
+
+            /**
+             * Provides syntactic sugar for {@link javaslang.control.Match.MatchMonad.Of}.
+             * <p>
+             * We write
+             *
+             * <pre><code>
+             * value.match()
+             *      .when(...).then(...)
+             *      .get();
+             * </code></pre>
+             *
+             * instead of
+             *
+             * <pre><code>
+             * Match.of(value)
+             *      .when(...).then(...)
+             *      .get();
+             * </code></pre>
+             *
+             * @return a new type-safe match builder.
+             */
+            $MatchType.MatchMonad.Of<? extends Convertible<T>> match();
 
             /**
              * Converts this value to a {@link $ArrayType}.
@@ -448,7 +477,6 @@ def generateMainClasses(): Unit = {
              * @return A new {@link $VectorType}.
              */
             $VectorType<T> toVector();
-
         }
       """
     }
@@ -756,7 +784,6 @@ def generateMainClasses(): Unit = {
 
         // imports
 
-        val Memoized = im.getType(s"javaslang.${className}Module.Memoized")
         val Objects = im.getType("java.util.Objects")
         val Try = if (checked) im.getType("javaslang.control.Try") else ""
         val additionalExtends = (checked, i) match {
@@ -943,12 +970,12 @@ def generateMainClasses(): Unit = {
                           case _ => null
                         }
                         if (i == 0) xs"""
-                          return ($className$fullGenerics & $Memoized) Lazy.of($mappingFunction)::get;
+                          return ($className$fullGenerics & Memoized) Lazy.of($mappingFunction)::get;
                         """ else if (i == 1) xs"""
                           final Lazy<R> forNull = Lazy.of($forNull);
                           final Object lock = new Object();
                           final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.HashMap")}<>();
-                          return ($className$fullGenerics & $Memoized) t1 -> {
+                          return ($className$fullGenerics & Memoized) t1 -> {
                               if (t1 == null) {
                                   return forNull.get();
                               } else {
@@ -963,7 +990,7 @@ def generateMainClasses(): Unit = {
                           final Object lock = new Object();
                           final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.HashMap")}<>();
                           final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
-                          return ($className$fullGenerics & $Memoized) ($params) -> {
+                          return ($className$fullGenerics & Memoized) ($params) -> {
                               final R result;
                               synchronized (lock) {
                                   result = cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
@@ -973,11 +1000,6 @@ def generateMainClasses(): Unit = {
                         """
                       }
                   }
-              }
-
-              @Override
-              default boolean isMemoized() {
-                  return this instanceof $Memoized;
               }
 
               /$javadoc
@@ -1038,15 +1060,6 @@ def generateMainClasses(): Unit = {
                         return (Class<T$j>) parameterTypes()[${j-1}];
                     }
                   """)("\n\n")}
-              }
-          }
-
-          interface ${className}Module {
-
-              /**
-               * Tagging ZAM interface for Memoized functions.
-               */
-              interface Memoized {
               }
           }
         """

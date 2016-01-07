@@ -12,6 +12,8 @@ import org.junit.Test;
 
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class StreamTest extends AbstractSeqTest {
@@ -83,6 +85,16 @@ public class StreamTest extends AbstractSeqTest {
     @Override
     protected Stream<Short> ofAll(short[] array) {
         return Stream.ofAll(array);
+    }
+
+    @Override
+    protected <T> Stream<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        return Stream.tabulate(n, f);
+    }
+
+    @Override
+    protected <T> Stream<T> fill(int n, Supplier<? extends T> s) {
+        return Stream.fill(n, s);
     }
 
     @Override
@@ -305,6 +317,13 @@ public class StreamTest extends AbstractSeqTest {
         assertThat(actual).isTrue();
     }
 
+    // -- lazy dropRight
+
+    @Test
+    public void shouldLazyDropRight() {
+        assertThat(Stream.from(1).takeUntil(i -> i == 18).dropRight(7)).isEqualTo(Stream.range(1, 11));
+    }
+
     // -- cycle
 
     @Test
@@ -334,6 +353,13 @@ public class StreamTest extends AbstractSeqTest {
         final Stream<Integer> stream = this.of(1, 2, 3);
         stream.tail(); // evaluates second head element
         assertThat(stream.toString()).isEqualTo("Stream(1, 2, ?)");
+    }
+
+    @Test
+    public void shouldStringifyNonNilAndNilTail() {
+        final Stream<Integer> stream = this.of(1);
+        stream.tail(); // evaluates empty tail
+        assertThat(stream.toString()).isEqualTo("Stream(1)");
     }
 
     // -- Serializable

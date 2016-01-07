@@ -388,6 +388,47 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
+     * Returns an Iterator on a sequence of {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1}.
+     *
+     * @param <T> Component type of the Iterator
+     * @param n The number of elements
+     * @param f The Function computing element values
+     * @return An Iterator on a sequence of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code f} is null
+     */
+    static <T> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        Objects.requireNonNull(f, "f is null");
+        return new AbstractIterator<T>() {
+
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < n;
+            }
+
+            @Override
+            protected T getNext() {
+                return f.apply(i++);
+            }
+        };
+    }
+
+    /**
+     * Returns an Iterator on a sequence of {@code n} values supplied by a given Supplier {@code s}.
+     *
+     * @param <T> Component type of the Iterator
+     * @param n The number of elements
+     * @param s The Supplier computing element values
+     * @return An iterator on a sequence of {@code n} elements, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code s} is null
+     */
+    static <T> Iterator<T> fill(int n, Supplier<? extends T> s) {
+        return tabulate(n, anything -> s.get());
+    }
+
+    /**
      * Creates an Iterator of characters starting from {@code from}, extending to {@code toExclusive - 1}.
      * <p>
      * Examples:
@@ -512,14 +553,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Integer> rangeBy(int from, int toExclusive, int step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toExclusive || Integer.signum(step) * Integer.signum(from - toExclusive) > 0) {
-            return Iterator.empty();
-        } else {
-            final int one = (from < toExclusive) ? 1 : -1;
-            return Iterator.rangeClosedBy(from, toExclusive - one, step);
-        }
+        final int one = step > 0 ? 1 : -1;
+        return Iterator.rangeClosedBy(from, toExclusive - one, step);
     }
 
     /**
@@ -563,14 +598,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Long> rangeBy(long from, long toExclusive, long step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toExclusive || Long.signum(step) * Long.signum(from - toExclusive) > 0) {
-            return Iterator.empty();
-        } else {
-            final int one = (from < toExclusive) ? 1 : -1;
-            return Iterator.rangeClosedBy(from, toExclusive - one, step);
-        }
+        final int one = step > 0 ? 1 : -1;
+        return Iterator.rangeClosedBy(from, toExclusive - one, step);
     }
 
     /**

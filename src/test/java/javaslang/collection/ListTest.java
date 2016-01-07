@@ -13,6 +13,8 @@ import org.junit.Test;
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class ListTest extends AbstractSeqTest {
@@ -84,6 +86,16 @@ public class ListTest extends AbstractSeqTest {
     @Override
     protected List<Short> ofAll(short[] array) {
         return List.ofAll(array);
+    }
+
+    @Override
+    protected <T> List<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        return List.tabulate(n, f);
+    }
+
+    @Override
+    protected <T> List<T> fill(int n, Supplier<? extends T> s) {
+        return List.fill(n, s);
     }
 
     @Override
@@ -159,6 +171,16 @@ public class ListTest extends AbstractSeqTest {
     @Override
     protected int getPeekNonNilPerformingAnAction() {
         return 1;
+    }
+
+    // -- ofAll(NavigableSet)
+
+    @Test
+    public void shouldAcceptNavigableSet() {
+        java.util.TreeSet<Integer> javaSet = new java.util.TreeSet<>();
+        javaSet.add(2);
+        javaSet.add(1);
+        assertThat(List.ofAll(javaSet)).isEqualTo(List.of(1, 2));
     }
 
     // -- peek

@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.algebra.Monoid;
 import javaslang.control.Option;
 import org.junit.Test;
 
@@ -207,12 +208,20 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
 
     public void shouldClearNil() {
-        assertThat(empty().clear()).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(empty().clear()).isEqualTo(empty());
+        } else {
+            assertThat(empty().clear()).isSameAs(empty());
+        }
     }
 
     @Test
     public void shouldClearNonNil() {
-        assertThat(of(1, 2, 3).clear()).isEmpty();
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 3).clear()).isEqualTo(empty());
+        } else {
+            assertThat(of(1, 2, 3).clear()).isSameAs(empty());
+        }
     }
 
     // -- contains
@@ -281,7 +290,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeDistinctOfEmptyTraversable() {
-        assertThat(empty().distinct()).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(empty().distinct()).isEqualTo(empty());
+        } else {
+            assertThat(empty().distinct()).isSameAs(empty());
+        }
     }
 
     @Test
@@ -294,7 +307,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldComputeDistinctByOfEmptyTraversableUsingComparator() {
         final Comparator<Integer> comparator = (i1, i2) -> i1 - i2;
-        assertThat(this.<Integer> empty().distinctBy(comparator)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(this.<Integer> empty().distinctBy(comparator)).isEqualTo(empty());
+        } else {
+            assertThat(this.<Integer> empty().distinctBy(comparator)).isSameAs(empty());
+        }
     }
 
     @Test
@@ -307,7 +324,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeDistinctByOfEmptyTraversableUsingKeyExtractor() {
-        assertThat(empty().distinctBy(Function.identity())).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(empty().distinctBy(Function.identity())).isEqualTo(empty());
+        } else {
+            assertThat(empty().distinctBy(Function.identity())).isSameAs(empty());
+        }
     }
 
     @Test
@@ -320,7 +341,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldDropNoneOnNil() {
-        assertThat(empty().drop(1)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(empty().drop(1)).isEqualTo(empty());
+        } else {
+            assertThat(empty().drop(1)).isSameAs(empty());
+        }
     }
 
     @Test
@@ -336,14 +361,22 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldDropAllIfCountExceedsSize() {
-        assertThat(of(1, 2, 3).drop(4)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 3).drop(4)).isEqualTo(empty());
+        } else {
+            assertThat(of(1, 2, 3).drop(4)).isSameAs(empty());
+        }
     }
 
     // -- dropRight
 
     @Test
     public void shouldDropRightNoneOnNil() {
-        assertThat(empty().dropRight(1)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(empty().dropRight(1)).isEqualTo(empty());
+        } else {
+            assertThat(empty().dropRight(1)).isSameAs(empty());
+        }
     }
 
     @Test
@@ -359,7 +392,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldDropRightAllIfCountExceedsSize() {
-        assertThat(of(1, 2, 3).dropRight(4)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 3).dropRight(4)).isEqualTo(empty());
+        } else {
+            assertThat(of(1, 2, 3).dropRight(4)).isSameAs(empty());
+        }
     }
 
 
@@ -367,7 +404,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldDropUntilNoneOnNil() {
-        assertThat(empty().dropUntil(ignored -> true)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(empty().dropUntil(ignored -> true)).isEqualTo(empty());
+        } else {
+            assertThat(empty().dropUntil(ignored -> true)).isSameAs(empty());
+        }
     }
 
     @Test
@@ -382,7 +423,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldDropUntilAllIfPredicateIsFalse() {
-        assertThat(of(1, 2, 3).dropUntil(ignored -> false)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 3).dropUntil(ignored -> false)).isEqualTo(empty());
+        } else {
+            assertThat(of(1, 2, 3).dropUntil(ignored -> false)).isSameAs(empty());
+        }
     }
 
     @Test
@@ -394,7 +439,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldDropWhileNoneOnNil() {
-        assertThat(empty().dropWhile(ignored -> true)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(empty().dropWhile(ignored -> true)).isEqualTo(empty());
+        } else {
+            assertThat(empty().dropWhile(ignored -> true)).isSameAs(empty());
+        }
     }
 
     @Test
@@ -409,7 +458,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldDropWhileAllIfPredicateIsTrue() {
-        assertThat(of(1, 2, 3).dropWhile(ignored -> true)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 3).dropWhile(ignored -> true)).isEqualTo(empty());
+        } else {
+            assertThat(of(1, 2, 3).dropWhile(ignored -> true)).isSameAs(empty());
+        }
     }
 
     @Test
@@ -462,6 +515,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldFoldMultipleElements() {
+        assertThat(of(1, 2, 3).fold(Monoid.of(0, (a, b) -> a + b))).isEqualTo(6);
         assertThat(of(1, 2, 3).fold(0, (a, b) -> a + b)).isEqualTo(6);
     }
 
@@ -469,6 +523,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldFoldLeftNil() {
+        assertThat(this.<String> empty().foldLeft(Monoid.of("", (xs, x) -> xs + x))).isEqualTo("");
         assertThat(this.<String> empty().foldLeft("", (xs, x) -> xs + x)).isEqualTo("");
     }
 
@@ -479,6 +534,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldFoldLeftNonNil() {
+        assertThat(of("a", "b", "c").foldLeft(Monoid.of("", (xs, x) -> xs + x))).isEqualTo("abc");
         assertThat(of("a", "b", "c").foldLeft("", (xs, x) -> xs + x)).isEqualTo("abc");
     }
 
@@ -486,6 +542,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldFoldRightNil() {
+        assertThat(this.<String> empty().foldRight(Monoid.of("", (x, xs) -> x + xs))).isEqualTo("");
         assertThat(this.<String> empty().foldRight("", (x, xs) -> x + xs)).isEqualTo("");
     }
 
@@ -496,7 +553,30 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldFoldRightNonNil() {
+        assertThat(of("a", "b", "c").foldRight(Monoid.of("", (x, xs) -> x + xs))).isEqualTo("abc");
         assertThat(of("a", "b", "c").foldRight("", (x, xs) -> x + xs)).isEqualTo("abc");
+    }
+
+    // -- foldMap
+
+    @Test
+    public void shouldFoldMapNil() {
+        assertThat(empty().foldMap(Monoid.of("", (x, xs) -> x + xs), String::valueOf)).isEqualTo("");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldFoldMapFailNullMonoid() {
+        empty().foldMap(null, String::valueOf);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldFoldMapFailNullMapper() {
+        empty().foldMap(Monoid.of("", (x, xs) -> x + xs), null);
+    }
+
+    @Test
+    public void shouldFoldMapNonNil() {
+        assertThat(of(1, 2, 3).foldMap(Monoid.of("", (x, xs) -> x + xs), String::valueOf)).isEqualTo("123");
     }
 
     // -- hasDefiniteSize
@@ -1150,7 +1230,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldReplaceElementOfNilUsingCurrNew() {
-        assertThat(this.<Integer> empty().replace(1, 2)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(this.<Integer> empty().replace(1, 2)).isEqualTo(empty());
+        } else {
+            assertThat(this.<Integer> empty().replace(1, 2)).isSameAs(empty());
+        }
     }
 
     @Test
@@ -1180,7 +1264,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldReplaceAllElementsOfNilUsingCurrNew() {
-        assertThat(this.<Integer> empty().replaceAll(1, 2)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(this.<Integer> empty().replaceAll(1, 2)).isEqualTo(empty());
+        } else {
+            assertThat(this.<Integer> empty().replaceAll(1, 2)).isSameAs(empty());
+        }
     }
 
     @Test
@@ -1202,7 +1290,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldRetainAllElementsFromNil() {
-        assertThat(empty().retainAll(of(1, 2, 3))).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(empty().retainAll(of(1, 2, 3))).isEqualTo(empty());
+        } else {
+            assertThat(empty().retainAll(of(1, 2, 3))).isSameAs(empty());
+        }
     }
 
     @Test
@@ -1222,7 +1314,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldNotRetainAllNonExistingElementsFromNonNil() {
-        assertThat(of(1, 2, 3).retainAll(of(4, 5))).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 3).retainAll(of(4, 5))).isEqualTo(empty());
+        } else {
+            assertThat(of(1, 2, 3).retainAll(of(4, 5))).isSameAs(empty());
+        }
     }
 
     // -- scan, scanLeft, scanRight
@@ -1561,12 +1657,20 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeNoneOnNil() {
-        assertThat(empty().take(1)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(empty().take(1)).isEqualTo(empty());
+        } else {
+            assertThat(empty().take(1)).isSameAs(empty());
+        }
     }
 
     @Test
     public void shouldTakeNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).take(-1)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 3).take(-1)).isEqualTo(empty());
+        } else {
+            assertThat(of(1, 2, 3).take(-1)).isSameAs(empty());
+        }
     }
 
     @Test
@@ -1588,12 +1692,20 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeRightNoneOnNil() {
-        assertThat(empty().takeRight(1)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(empty().takeRight(1)).isEqualTo(empty());
+        } else {
+            assertThat(empty().takeRight(1)).isSameAs(empty());
+        }
     }
 
     @Test
     public void shouldTakeRightNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).takeRight(-1)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 3).takeRight(-1)).isEqualTo(empty());
+        } else {
+            assertThat(of(1, 2, 3).takeRight(-1)).isSameAs(empty());
+        }
     }
 
     @Test
@@ -1615,7 +1727,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeUntilNoneOnNil() {
-        assertThat(empty().takeUntil(x -> true)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(empty().takeUntil(x -> true)).isEqualTo(empty());
+        } else {
+            assertThat(empty().takeUntil(x -> true)).isSameAs(empty());
+        }
     }
 
     @Test
@@ -1630,7 +1746,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeUntilAllOnTrueCondition() {
-        assertThat(of(1, 2, 3).takeUntil(x -> true)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 3).takeUntil(x -> true)).isEqualTo(empty());
+        } else {
+            assertThat(of(1, 2, 3).takeUntil(x -> true)).isSameAs(empty());
+        }
     }
 
     @Test
@@ -1642,12 +1762,20 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldTakeWhileNoneOnNil() {
-        assertThat(empty().takeWhile(x -> true)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(empty().takeWhile(x -> true)).isEqualTo(empty());
+        } else {
+            assertThat(empty().takeWhile(x -> true)).isSameAs(empty());
+        }
     }
 
     @Test
     public void shouldTakeWhileAllOnFalseCondition() {
-        assertThat(of(1, 2, 3).takeWhile(x -> false)).isEqualTo(empty());
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 3).takeWhile(x -> false)).isEqualTo(empty());
+        } else {
+            assertThat(of(1, 2, 3).takeWhile(x -> false)).isSameAs(empty());
+        }
     }
 
     @Test
@@ -1896,8 +2024,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldEqualSameTraversableInstance() {
-        final Traversable<?> traversable = empty();
-        assertThat(traversable).isEqualTo(traversable);
+        final Traversable<?> nonEmpty = of(1);
+        assertThat(nonEmpty.equals(nonEmpty)).isTrue();
+        assertThat(empty().equals(empty())).isTrue();
     }
 
     @Test
@@ -1938,6 +2067,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldRecognizeNonEqualityOfTraversablesOfDifferentSize() {
         assertThat(of(1, 2, 3).equals(of(1, 2))).isFalse();
+        assertThat(of(1, 2).equals(of(1, 2, 3))).isFalse();
     }
 
     // -- hashCode

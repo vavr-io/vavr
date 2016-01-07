@@ -5,15 +5,15 @@
  */
 package javaslang.control;
 
-import javaslang.Function1;
+import javaslang.control.Match.MatchFunction;
+import javaslang.control.Match.SerializablePredicate;
 import org.junit.Test;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.*;
 
 public class MatchFunctionTest {
 
@@ -65,10 +65,8 @@ public class MatchFunctionTest {
     @Test
     public void shouldMatchEvenIntByPredicate() {
         final String divisibility = Match
-                .when((String s) -> true)
-                .then("oops")
-                .when((Integer i) -> i % 2 == 0)
-                .then("even")
+                .when((String s) -> true).then("oops")
+                .when((Integer i) -> i % 2 == 0).then("even")
                 .otherwise("odd")
                 .apply(0);
         assertThat(divisibility).isEqualTo("even");
@@ -77,7 +75,7 @@ public class MatchFunctionTest {
     @Test
     public void shouldMatchIntByMatcher() {
         class Matcher {
-            Function1<? super Object, Boolean> is(Object prototype) {
+            SerializablePredicate<? super Object> is(Object prototype) {
                 return value -> value == prototype || (value != null && value.equals(prototype));
             }
         }
@@ -267,14 +265,14 @@ public class MatchFunctionTest {
 
     @Test
     public void shouldApplyThenValueWhenMatched() {
-        Match<Boolean> match = Match.whenIs(1).then(true).whenIs(2).then(false);
+        MatchFunction<Boolean> match = Match.whenIs(1).then(true).whenIs(2).then(false);
         assertThat(match.apply(1)).isTrue();
         assertThat(match.apply(2)).isFalse();
     }
 
     @Test
     public void shouldApplyThenSupplierWhenMatched() {
-        Match<Boolean> match = Match.whenIs(1).then(() -> true).whenIs(2).then(() -> false);
+        MatchFunction<Boolean> match = Match.whenIs(1).then(() -> true).whenIs(2).then(() -> false);
         assertThat(match.apply(1)).isTrue();
         assertThat(match.apply(2)).isFalse();
     }
@@ -614,66 +612,51 @@ public class MatchFunctionTest {
 
     @Test
     public void shouldConsumeDefaultCaseWhenNoMatchFound() {
-        //given
         final IntegerConsumer integerConsumer = new IntegerConsumer();
-        //when
         Match.whenIs(1).thenRun(integerConsumer)
-             .otherwiseRun(i -> {integerConsumer.accept(2);})
-             .apply(2);
-        //then
+                .otherwiseRun(i -> {integerConsumer.accept(2);})
+                .accept(2);
         assertThat(integerConsumer.value).isEqualTo(2);
     }
 
     @Test
     public void shouldConsumeFirstMatchingCase() {
-        //given
         final IntegerConsumer integerConsumer = new IntegerConsumer();
-        //when
         Match.whenIs(2).thenRun(integerConsumer)
-             .when(String::isEmpty).thenRun(i -> {integerConsumer.accept(-1);})
-             .otherwiseRun(i -> {integerConsumer.accept(3);})
-             .apply("");
-
-        //then
+                .when(String::isEmpty).thenRun(i -> {integerConsumer.accept(-1);})
+                .otherwiseRun(i -> {integerConsumer.accept(3);})
+                .accept("");
         assertThat(integerConsumer.value).isEqualTo(-1);
     }
 
     @Test
     public void shouldNotConsumeWhenNoMatchFoundAnoNoDefaultCase() {
-        //given
         final IntegerConsumer integerConsumer = new IntegerConsumer();
-        final Function<Object, Void> match = Match.whenIs(1).thenRun(integerConsumer)
-                                                  .whenIs(2).thenRun(integerConsumer)
-                                                  .whenType(String.class).thenRun(i -> {integerConsumer.accept(3);});
-        //expect
-        assertThatThrownBy(() -> match.apply(10)).isInstanceOf(MatchError.class);
+        final Consumer<Object> match = Match
+                .whenIs(1).thenRun(integerConsumer)
+                .whenIs(2).thenRun(integerConsumer)
+                .whenType(String.class).thenRun(i -> integerConsumer.accept(3));
+        assertThatThrownBy(() -> match.accept(10)).isInstanceOf(MatchError.class);
         assertThat(integerConsumer.value).isEqualTo(0);
     }
 
     @Test
     public void shouldAllowToDefineRunnableAsDefaultCase() {
-        //given
         final SimpleRunnable simpleRunnable = new SimpleRunnable();
-
-        //when
         Match.whenIs(1).thenRun(simpleRunnable)
-             .otherwiseRun(simpleRunnable)
-             .apply(2);
-
-        //then
+                .otherwiseRun(simpleRunnable)
+                .accept(2);
         assertThat(simpleRunnable.executed).isEqualTo(true);
     }
 
     @Test
     public void shouldAllowToDefineRunnableAsMatchingAction() {
-        //given
         final SimpleRunnable simpleRunnable = new SimpleRunnable();
-        final Function<Object, Void> match = Match.whenIs(1).thenRun(simpleRunnable)
-                                                  .whenIs(2).thenRun(simpleRunnable)
-                                                  .when(o -> !simpleRunnable.executed)
-                                                  .thenThrow(() -> new IllegalStateException("runnable not consumed"));
-        //expect
-        assertThatThrownBy(() -> match.apply(3))
+        final Consumer<Object> match = Match
+                .whenIs(1).thenRun(simpleRunnable)
+                .whenIs(2).thenRun(simpleRunnable)
+                .when(o -> !simpleRunnable.executed).thenThrow(() -> new IllegalStateException("runnable not consumed"));
+        assertThatThrownBy(() -> match.accept(3))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("runnable not consumed");
     }

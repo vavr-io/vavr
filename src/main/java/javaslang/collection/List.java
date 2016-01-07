@@ -278,6 +278,40 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return List.ofAll(Iterator.ofAll(array));
     }
 
+    /**
+     * Returns a List containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1}.
+     *
+     * @param <T> Component type of the List
+     * @param n The number of elements in the List
+     * @param f The Function computing element values
+     * @return A List consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code f} is null
+     */
+    static <T> List<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        Objects.requireNonNull(f, "f is null");
+        n = n < 0 ? 0 : n;
+        @SuppressWarnings("unchecked")
+        T[] elements = (T[]) new Object[n];
+        for (int i = 0; i < n; i++) {
+            elements[i] = f.apply(i);
+        }
+        return List.of(elements);
+    }
+
+    /**
+     * Returns a List containing {@code n} values supplied by a given Supplier {@code s}.
+     *
+     * @param <T> Component type of the List
+     * @param n The number of elements in the List
+     * @param s The Supplier computing element values
+     * @return A List of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code s} is null
+     */
+    static <T> List<T> fill(int n, Supplier<? extends T> s) {
+        return List.tabulate(n, anything -> s.get());
+    }
+
     static List<Character> range(char from, char toExclusive) {
         return List.ofAll(Iterator.range(from, toExclusive));
     }
@@ -966,7 +1000,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             tail = tail.tail();
             index--;
         }
-        if (index > 0 && tail.isEmpty()) {
+        if (index > 0) {
             throw new IndexOutOfBoundsException("removeAt() on Nil");
         }
         return init.reverse().appendAll(tail.tail());
@@ -1085,7 +1119,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             List<T> list = this;
             final int lowerBound = Math.max(beginIndex, 0);
             final int upperBound = Math.min(endIndex, length());
-            for (int i = 0; i < upperBound && !list.isEmpty(); i++) {
+            for (int i = 0; i < upperBound; i++) {
                 if (i >= lowerBound) {
                     result = result.prepend(list.head());
                 }
@@ -1243,7 +1277,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
         List<T> result = Nil.instance();
         List<T> list = this;
-        for (int i = 0; i < n && !list.isEmpty(); i++, list = list.tail()) {
+        for (int i = 0; i < n; i++, list = list.tail()) {
             result = result.prepend(list.head());
         }
         return result.reverse();
