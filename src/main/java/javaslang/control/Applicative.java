@@ -5,13 +5,15 @@
  */
 package javaslang.control;
 
-public interface Applicative<T> extends Apply<T> {
+import javaslang.algebra.Functor;
 
-    Applicative<T> point(T t);
+import java.util.function.Function;
 
-    // Alias for point
-    default Applicative<T> pure(T t) {
-        return point(t);
-    }
+public interface Applicative<E extends Kind<E, ?>, T> extends Functor<T> {
+
+    <U> Applicative<E, U> ap(Kind<E, ? extends Function<? super T, ? extends U>> f);
+
+    @Override
+    <U> Applicative<E, U> map(Function<? super T, ? extends U> f);
 
 }

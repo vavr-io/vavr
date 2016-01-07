@@ -22,24 +22,24 @@ public class ValidationTest {
 
     @Test
     public void shouldCreateSuccessWhenCallingValidationSuccess() {
-        assertThat(Validation.success(1) instanceof Validation.Success).isTrue();
+        assertThat(Validation.success(1) instanceof Validation.Valid).isTrue();
     }
 
     @Test
     public void shouldCreateSuccessWhenCallingValidationSuccessSupplier() {
-        assertThat(Validation.success(() -> 1) instanceof Validation.Success).isTrue();
+        assertThat(Validation.success(() -> 1) instanceof Validation.Valid).isTrue();
     }
 
     // -- Validation.failure
 
     @Test
     public void shouldCreateFailureWhenCallingValidationFailure() {
-        assertThat(Validation.failure("error") instanceof Validation.Failure).isTrue();
+        assertThat(Validation.failure("error") instanceof Validation.Invalid).isTrue();
     }
 
     @Test
     public void shouldCreateFailureWhenCallingValidationFailureSupplier() {
-        assertThat(Validation.failure(() -> "error") instanceof Validation.Failure).isTrue();
+        assertThat(Validation.failure(() -> "error") instanceof Validation.Invalid).isTrue();
     }
 
     // -- fold
@@ -62,13 +62,13 @@ public class ValidationTest {
 
     @Test
     public void shouldSwapSuccessToFailure() {
-        assertThat(success().swap() instanceof Validation.Failure).isTrue();
+        assertThat(success().swap() instanceof Validation.Invalid).isTrue();
         assertThat(success().swap().get()).isEqualTo(OK);
     }
 
     @Test
     public void shouldSwapFailureToSuccess() {
-        assertThat(failure().swap() instanceof Validation.Success).isTrue();
+        assertThat(failure().swap() instanceof Validation.Valid).isTrue();
         assertThat(failure().swap().get()).isEqualTo(ERRORS);
     }
 
@@ -90,7 +90,7 @@ public class ValidationTest {
     public void shouldMapOnlySuccessValue() {
         Validation<List<String>,String> successValidation = success();
         Validation<Integer,Integer> successMapping = successValidation.bimap(List::length, String::length);
-        assertThat(successMapping instanceof Validation.Success).isTrue();
+        assertThat(successMapping instanceof Validation.Valid).isTrue();
         assertThat(successMapping.get()).isEqualTo(2);
     }
 
@@ -98,7 +98,7 @@ public class ValidationTest {
     public void shouldMapOnlyFailureValue() {
         Validation<List<String>,String> failureValidation = failure();
         Validation<Integer,Integer> failureMapping = failureValidation.bimap(List::length, String::length);
-        assertThat(failureMapping instanceof Validation.Failure).isTrue();
+        assertThat(failureMapping instanceof Validation.Invalid).isTrue();
         assertThat(failureMapping.get()).isEqualTo(3);
     }
 
@@ -114,7 +114,7 @@ public class ValidationTest {
         assertThat(failure().leftMap(x -> 5).get()).isEqualTo(5);
     }
 
-    // -- foreach
+    // -- forEach
 
     @Test
     public void shouldProcessFunctionInForEach() {
@@ -122,11 +122,11 @@ public class ValidationTest {
         Validation<String,String>  v2 = Validation.failure("error");
 
         // Not sure best way to test a side-effect only function?
-        v1.foreach(System.out::println);
+        v1.forEach(System.out::println);
         assertThat(true).isTrue();
     }
 
-    // -- bld and ap
+    // -- combine and apply
 
     @Test
     public void shouldBuildUpForSuccess() {
@@ -135,10 +135,15 @@ public class ValidationTest {
         Validation<String,Option<String>> v3 = Validation.success(Option.of("address"));
         Validation<String,Option<String>> v4 = Validation.success(Option.none());
 
-        Validation<List<String>,TestValidation> result  = v1.bld(v2).apply(TestValidation::new);
-        Validation<List<String>,TestValidation> result2 = v1.bld(v2).bld(v3).apply(TestValidation::new);
-        Validation<List<String>,TestValidation> result3 = v1.bld(v2).bld(v4).apply(TestValidation::new);
-        Validation<List<String>,String> result4 = v1.bld(v2).bld(v3).apply((p1,p2,p3) -> p1+":"+p2+":"+p3.orElse("none"));
+        Validation<String,TestValidation> result  = v1.combine(v2).ap(TestValidation::new);
+        Validation<String,TestValidation> result2 = v1.combine(v2).combine(v3).ap(TestValidation::new);
+        Validation<String,TestValidation> result3 = v1.combine(v2).combine(v4).ap(TestValidation::new);
+        Validation<String,String> result4 = v1.combine(v2).combine(v3).ap((p1, p2, p3) -> p1+":"+p2+":"+p3.orElse("none"));
+
+        // Alternative map(n) functions to the 'combine' function
+        Validation<String,TestValidation> result5 = Validation.map2(v1, v2).ap(TestValidation::new);
+        Validation<String,TestValidation> result6 = Validation.map3(v1, v2, v3).ap(TestValidation::new);
+        Validation<String,String> result7 = Validation.map3(v1, v2, v3).ap((p1, p2, p3) -> p1+":"+p2+":"+p3.orElse("none"));
 
         assertThat(result.isSuccess()).isTrue();
         assertThat(result2.isSuccess()).isTrue();
@@ -159,15 +164,11 @@ public class ValidationTest {
         Validation<String,Integer> e2 = Validation.failure("error1");
         Validation<String,Option<String>>  e3 = Validation.failure("error3");
 
-        Validation<List<String>,TestValidation> result  = v1.bld(e2).bld(v3).apply(TestValidation::new);
-        Validation<List<String>,TestValidation> result2 = e1.bld(v2).bld(e3).apply(TestValidation::new);
+        Validation<String,TestValidation> result  = v1.combine(e2).combine(v3).ap(TestValidation::new);
+        Validation<String,TestValidation> result2 = e1.combine(v2).combine(e3).ap(TestValidation::new);
 
         assertThat(result.isFailure()).isTrue();
         assertThat(result2.isFailure()).isTrue();
-
-        assertThat(result.get() instanceof List).isTrue();
-        assertThat(((List<String>) result.get()).length()).isEqualTo(1);
-        assertThat(((List<String>) result2.get()).length()).isEqualTo(2);
     }
 
     // -- miscellaneous

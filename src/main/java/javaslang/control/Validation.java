@@ -5,10 +5,6 @@
  */
 package javaslang.control;
 
-import javaslang.Function1;
-import javaslang.algebra.Functor;
-import javaslang.collection.List;
-
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -41,22 +37,30 @@ import java.util.function.Supplier;
  * @since 2.0.1
  * @see <a href="http://eed3si9n.com/learning-scalaz/Validation.html">Validation</a>
  */
-public interface Validation<E,T> extends Functor<T> {
+public interface Validation<E,T> extends Kind<Validation<E,?>, T>, Applicative<Validation<E, ?>, T> {
 
     static <E,T> Validation<E,T> success(T value) {
-        return new Success<>(value);
+        return new Valid<>(value);
     }
 
-    static <E,T> Validation<E,T> success(Supplier<T> supplier) {
-        return new Success<>(supplier.get());
+    static <E,T> Validation<E,T> success(Supplier<? extends T> supplier) {
+        return new Valid<>(supplier.get());
     }
 
     static <E,T> Validation<E,T> failure(E error) {
-        return new Failure<>(error);
+        return new Invalid<>(error);
     }
 
-    static <E,T> Validation<E,T> failure(Supplier<E> supplier) {
-        return new Failure<>(supplier.get());
+    static <E,T> Validation<E,T> failure(Supplier<? extends E> supplier) {
+        return new Invalid<>(supplier.get());
+    }
+
+    static <E,T1,T2> ValidationBuilder<E,T1,T2> map2(Validation<E,T1> v1, Validation<E,T2> v2) {
+        return new ValidationBuilder<>(v1, v2);
+    }
+
+    static <E,T1,T2,T3> ValidationBuilder.ValidationBuilder3<E,T1,T2,T3> map3(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3) {
+        return new ValidationBuilder.ValidationBuilder3<>(v1, v2, v3);
     }
 
     boolean isSuccess();
@@ -65,7 +69,7 @@ public interface Validation<E,T> extends Functor<T> {
 
     Object get();
 
-    void foreach(Consumer<T> f);
+    void forEach(Consumer<? super T> f);
 
     @Override
     boolean equals(Object o);
@@ -78,89 +82,91 @@ public interface Validation<E,T> extends Functor<T> {
 
     default <U> U fold(Function<? super E,? extends U> fail, Function<? super T,? extends U> success) {
         if(isFailure()) {
-            E v = ((Failure<E,T>) this).get();
+            E v = ((Invalid<E,T>) this).get();
             return fail.apply(v);
         } else {
-            T v = ((Success<E,T>) this).get();
+            T v = ((Valid<E,T>) this).get();
             return success.apply(v);
         }
     }
 
     default Validation<T,E> swap() {
         if(isFailure()) {
-            E v = ((Failure<E,T>) this).get();
+            E v = ((Invalid<E,T>) this).get();
             return Validation.success(v);
         } else {
-            T v = ((Success<E,T>) this).get();
+            T v = ((Valid<E,T>) this).get();
             return Validation.failure(v);
         }
     }
 
     @Override
-    default <U> Validation<E,U> map(Function<? super T,? extends U> mapper) {
+    default <U> Validation<E,U> map(Function<? super T,? extends U> f) {
         if(isFailure()) {
-            E v = ((Failure<E,T>) this).get();
-            return Validation.failure(v);
+            return (Invalid<E,U>) this;
         } else {
-            T v = ((Success<E,T>) this).get();
-            return Validation.success(mapper.apply(v));
+            T v = ((Valid<E,T>) this).get();
+            return Validation.success(f.apply(v));
         }
     }
 
     default <U,R> Validation<U,R> bimap(Function<? super E,? extends U> fail, Function<? super T,? extends R> success) {
         if(isFailure()) {
-            E v = ((Failure<E,T>) this).get();
+            E v = ((Invalid<E,T>) this).get();
             return Validation.failure(fail.apply(v));
         } else {
-            T v = ((Success<E,T>) this).get();
+            T v = ((Valid<E,T>) this).get();
             return Validation.success(success.apply(v));
         }
     }
 
     default <U> Validation<U,T> leftMap(Function<? super E,? extends U> f) {
         if(isFailure()) {
-            E v = ((Failure<E,T>) this).get();
+            E v = ((Invalid<E,T>) this).get();
             return Validation.failure(f.apply(v));
         } else {
-            T v = ((Success<E,T>) this).get();
-            return Validation.success(v);
+            return (Valid<U,T>) this;
         }
     }
 
-    default <U> Validation<List<E>,U> ap(Validation<List<E>,Function1<T,U>> vv) {
-        if(isSuccess() && vv.isSuccess()) {
+    default <U> Validation<E,U> ap(Validation<E,? extends Function<? super T,? extends U>> v) {
+        if(isSuccess() && v.isSuccess()) {
             return success(() -> {
-                Function<T,U> f = ((Success<List<E>,Function1<T,U>>) vv).get();
-                return f.apply(((Success<E,T>)this).get());
+                Function<? super T,? extends U> f = ((Valid<E,? extends Function<? super T,? extends U>>) v).get();
+                return f.apply(((Valid<E,T>)this).get());
             });
-        } else if(isSuccess() && vv.isFailure()) {
-            return (Failure<List<E>,U>) vv;
-        } else if(isFailure() && vv.isSuccess()) {
-            E e = ((Failure<E,T>) this).get();
-            return failure(List.of(e));
+        } else if(isSuccess() && v.isFailure()) {
+            return (Invalid<E,U>) v;
+        } else if(isFailure() && v.isSuccess()) {
+            E e = ((Invalid<E,T>) this).get();
+            return failure(e);
         } else {
             return failure(() -> {
-                List<E> e  = ((Failure<List<E>,Function1<T,U>>) vv).get();
-                E  e2 = ((Failure<E,T>) this).get();
-                return e.append(e2);
+                E e = ((Invalid<E,T>) this).get();
+                return e;
             });
         }
     }
 
-    default <U> ValidationBuilder<E,T,U> bld(Validation<E,U> v) {
+    @Override
+    default <U> Validation<E,U> ap(Kind<Validation<E, ?>, ? extends Function<? super T, ? extends U>> f) {
+        return ap((Validation<E,? extends Function<? super T,? extends U>>) ((Object) f));
+    }
+
+    default <U> ValidationBuilder<E,T,U> combine(Validation<E,U> v) {
         return new ValidationBuilder<>(this, v);
     }
 
 
-    final class Success<E,T> implements Validation<E,T> {
+    final class Valid<E,T> implements Validation<E,T> {
 
         private final T value;
 
         /**
-         * Construct a Success
+         * Construct a {@code Valid}
          * @param value The value of this success
          */
-        public Success(T value) {
+        public Valid(T value) {
             this.value = value;
         }
 
@@ -175,7 +181,7 @@ public interface Validation<E,T> extends Functor<T> {
         }
 
         @Override
-        public void foreach(Consumer<T> f) {
+        public void forEach(Consumer<? super T> f) {
             f.accept(get());
         }
 
@@ -186,7 +192,7 @@ public interface Validation<E,T> extends Functor<T> {
 
         @Override
         public boolean equals(Object obj) {
-            return (obj == this) || (obj instanceof Success && Objects.equals(value, ((Success<?,?>) obj).value));
+            return (obj == this) || (obj instanceof Valid && Objects.equals(value, ((Valid<?,?>) obj).value));
         }
 
         @Override
@@ -201,15 +207,15 @@ public interface Validation<E,T> extends Functor<T> {
 
     }
 
-    final class Failure<E,T> implements Validation<E,T> {
+    final class Invalid<E,T> implements Validation<E,T> {
 
         private final E error;
 
         /**
-         * Construct a Failure
+         * Construct an {@code Invalid}
          * @param error The value of this error
          */
-        public Failure(E error) {
+        public Invalid(E error) {
             this.error = error;
         }
 
@@ -224,7 +230,7 @@ public interface Validation<E,T> extends Functor<T> {
         }
 
         @Override
-        public void foreach(Consumer<T> f) {
+        public void forEach(Consumer<? super T> f) {
             // Do nothing if Failure
         }
 
@@ -235,7 +241,7 @@ public interface Validation<E,T> extends Functor<T> {
 
         @Override
         public boolean equals(Object obj) {
-            return (obj == this) || (obj instanceof Failure && Objects.equals(error, ((Failure<?,?>) obj).error));
+            return (obj == this) || (obj instanceof Invalid && Objects.equals(error, ((Invalid<?,?>) obj).error));
         }
 
         @Override

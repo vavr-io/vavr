@@ -8,7 +8,6 @@ package javaslang.control;
 import javaslang.Function2;
 import javaslang.Function3;
 import javaslang.Function4;
-import javaslang.collection.List;
 
 public class ValidationBuilder<E,T1,T2> {
 
@@ -20,11 +19,11 @@ public class ValidationBuilder<E,T1,T2> {
         this.v2 = v2;
     }
 
-    public <R> Validation<List<E>,R> apply(Function2<T1,T2,R> f) {
+    public <R> Validation<E,R> ap(Function2<T1,T2,R> f) {
         return v2.ap(v1.ap(Validation.success(f.curried())));
     }
 
-    public <T3> ValidationBuilder3<E,T1,T2,T3> bld(Validation<E,T3> v3) {
+    public <T3> ValidationBuilder3<E,T1,T2,T3> combine(Validation<E,T3> v3) {
         return new ValidationBuilder3<>(v1, v2, v3);
     }
 
@@ -41,11 +40,11 @@ public class ValidationBuilder<E,T1,T2> {
             this.v3 = v3;
         }
 
-        public <R> Validation<List<E>,R> apply(Function3<T1,T2,T3,R> f) {
+        public <R> Validation<E,R> ap(Function3<T1,T2,T3,R> f) {
             return v3.ap(v2.ap(v1.ap(Validation.success(f.curried()))));
         }
 
-        public <T4> ValidationBuilder4<E,T1,T2,T3,T4> bld(Validation<E,T4> v4) {
+        public <T4> ValidationBuilder4<E,T1,T2,T3,T4> combine(Validation<E,T4> v4) {
             return new ValidationBuilder4<>(v1, v2, v3, v4);
         }
 
@@ -64,7 +63,7 @@ public class ValidationBuilder<E,T1,T2> {
                 this.v4 = v4;
             }
 
-            public <R> Validation<List<E>,R> apply(Function4<T1,T2,T3,T4,R> f) {
+            public <R> Validation<E,R> ap(Function4<T1,T2,T3,T4,R> f) {
                 return v4.ap(v3.ap(v2.ap(v1.ap(Validation.success(f.curried())))));
             }
 
