@@ -1443,7 +1443,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
         @Override
         public int hashCode() {
-            return Traversable.hash(this);
+            return 1;
         }
 
         @Override
@@ -1476,8 +1476,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         private final T head;
         private final List<T> tail;
         private final int length;
-
-        private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
+        private final int hashCode;
 
         /**
          * Creates a List consisting of a head value and a trailing List.
@@ -1489,6 +1488,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             this.head = head;
             this.tail = tail;
             this.length = 1 + tail.length();
+            this.hashCode = 31 * Objects.hashCode(head) + Objects.hashCode(tail);
         }
 
         @Override
@@ -1534,7 +1534,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
         @Override
         public int hashCode() {
-            return hashCode.get();
+            return hashCode;
         }
 
         @Override

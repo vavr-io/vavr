@@ -373,7 +373,7 @@ interface RedBlackTreeModule {
         final Empty<T> empty;
         final int size;
 
-        private final transient Lazy<Integer> hashCode;
+        private final int hashCode;
 
         // This is no public API! The RedBlackTree takes care of passing the correct Comparator.
         Node(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Empty<T> empty) {
@@ -383,7 +383,7 @@ interface RedBlackTreeModule {
             this.value = value;
             this.right = right;
             this.empty = empty;
-            this.hashCode = Lazy.of(() -> Objects.hash(this.value, this.left, this.right));
+            this.hashCode = 31 * 31 * Objects.hashCode(this.value) + 31 * Objects.hashCode(this.left) + Objects.hashCode(this.right);
             this.size = left.size() + right.size() + 1;
         }
 
@@ -472,7 +472,7 @@ interface RedBlackTreeModule {
 
         @Override
         public int hashCode() {
-            return hashCode.get();
+            return hashCode;
         }
 
         @Override
