@@ -68,6 +68,16 @@ public class FutureTest extends AbstractValueTest {
     // -- static failed()
 
     @Test
+    public void shouldCreateFailerFuture() {
+        final Future<Void> failed = Future.failed(new RuntimeException("ooops"));
+        waitUntil(failed::isCompleted);
+        assertThat(failed.isFailure()).isTrue();
+        Throwable t = failed.getValue().get().getCause();
+        assertThat(t.getClass()).isEqualTo(RuntimeException.class);
+        assertThat(t.getMessage()).isEqualTo("ooops");
+    }
+
+    @Test
     public void shouldCreateAndFailAFutureUsingForkJoinPool() {
         final Future<Integer> future = Future.of(() -> {
             throw new Error();
@@ -105,6 +115,12 @@ public class FutureTest extends AbstractValueTest {
     }
 
     // -- static find()
+
+    @Test
+    public void shouldFindNoneWhenEmptySeq() {
+        final Future<Option<Object>> testee = Future.find(List.empty(), t -> true);
+        assertCompleted(testee, Option.none());
+    }
 
     @Test
     public void shouldFindFirstValueThatSatisfiesAPredicateUsingForkJoinPool() {
@@ -167,7 +183,19 @@ public class FutureTest extends AbstractValueTest {
 
     // -- static fromTry()
 
-    // TODO
+    @Test
+    public void shouldCreateFailFutureFromTry() {
+        final Future<Integer> future = Future.fromTry(Try.of(() -> { throw new Error(); }));
+        waitUntil(future::isCompleted);
+        assertThat(future.isFailure()).isTrue();
+    }
+
+    @Test
+    public void shouldCreateSuccessFutureFromTry() {
+        final Future<Integer> future = Future.fromTry(Try.of(() -> 42));
+        waitUntil(future::isCompleted);
+        assertThat(future.get()).isEqualTo(42);
+    }
 
     // -- static of()
 
@@ -186,16 +214,45 @@ public class FutureTest extends AbstractValueTest {
 
     // -- static reduce()
 
-    // TODO
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailReduceEmptySequence() {
+        Future.<Integer>reduce(List.empty(), (i1, i2) -> i1 + i2);
+    }
+
+    @Test
+    public void shouldReduceSequenceOfFutures() {
+        final Future<String> future = Future.reduce(
+                List.of(Future.of(zZz("Java")), Future.of(zZz("slang"))),
+                (i1, i2) -> i1 + i2
+        );
+        waitUntil(future::isCompleted);
+        assertThat(future.get()).isEqualTo("Javaslang");
+    }
+
+    @Test
+    public void shouldReduceWithErrorIfSequenceOfFuturesContainsOneError() {
+        final Future<Integer> future = Future.reduce(
+                List.of(Future.of(zZz(13)), Future.of(zZz(new Error()))),
+                (i1, i2) -> i1 + i2
+        );
+        waitUntil(future::isCompleted);
+        assertFailed(future, Error.class);
+    }
 
     // -- static run()
 
-    // TODO
+    @Test
+    public void shouldCompleteRunnable() {
+        final int[] sideEffect = new int[] { 0 };
+        final Future<Void> future = Future.run(() -> sideEffect[0] = 42);
+        waitUntil(future::isCompleted);
+        assertThat(sideEffect[0]).isEqualTo(42);
+    }
 
     // -- static sequence()
 
     @Test
-    public void shoudCompleteWithSeqOfValueIfSequenceOfFuturesContainsNoError() {
+    public void shouldCompleteWithSeqOfValueIfSequenceOfFuturesContainsNoError() {
         final Future<Seq<Integer>> sequence = Future.sequence(
                 List.of(Future.of(zZz(1)), Future.of(zZz(2)))
         );
@@ -204,7 +261,7 @@ public class FutureTest extends AbstractValueTest {
     }
 
     @Test
-    public void shoudCompleteWithErrorIfSequenceOfFuturesContainsOneError() {
+    public void shouldCompleteWithErrorIfSequenceOfFuturesContainsOneError() {
         final Future<Seq<Integer>> sequence = Future.sequence(
                 List.of(Future.of(zZz(13)), Future.of(zZz(new Error())))
         );
@@ -214,15 +271,55 @@ public class FutureTest extends AbstractValueTest {
 
     // -- static successful()
 
-    // TODO
+    @Test
+    public void shouldCreateSuccessful() {
+        final Future<Integer> succ = Future.successful(42);
+        assertThat(succ.isCompleted()).isTrue();
+        assertThat(succ.isSuccess()).isTrue();
+        assertThat(succ.get()).isEqualTo(42);
+    }
 
     // -- static traverse()
 
-    // TODO
+    @Test
+    public void shouldCompleteTraverse() {
+        Future<Seq<Integer>> future = Future.traverse(List.of(1, 2, 3), i -> Future.of(zZz(i)));
+        waitUntil(future::isCompleted);
+        assertThat(future.get()).isEqualTo(Stream.of(1, 2, 3));
+    }
 
     // -- andThen
 
-    // TODO
+    @Test
+    public void shouldCompleteWithErrorIfFailAndThenFail() {
+        final Future<Integer> future = Future.<Integer>of(zZz(new Error("fail!")))
+                .andThen(t -> zZz(new Error("and then fail!")));
+        waitUntil(future::isCompleted);
+        assertFailed(future, Error.class);
+    }
+
+    @Test
+    public void shouldCompleteWithSuccessIfSuccessAndThenFail() {
+        final Future<Integer> future = Future.of(zZz(42))
+                .andThen(t -> zZz(new Error("and then fail!")));
+        waitUntil(future::isCompleted);
+        assertThat(future.getValue().get()).isEqualTo(Try.success(42));
+    }
+
+    @Test
+    public void shouldCompleteWithSpecificOrderIfSuccessAndThenSuccess() {
+        final boolean[] lock = new boolean[] { true };
+        final int[] sideEffect = new int[] { 0 };
+        final Future<Void> future = Future.<Void>of(() -> {
+            waitUntil(() -> !lock[0]);
+            return null;
+        }).andThen(t -> sideEffect[0] = 42);
+        assertThat(future.isCompleted()).isFalse();
+        assertThat(sideEffect[0]).isEqualTo(0);
+        lock[0] = false;
+        waitUntil(future::isCompleted);
+        assertThat(sideEffect[0]).isEqualTo(42);
+    }
 
     // -- await
 
@@ -233,6 +330,24 @@ public class FutureTest extends AbstractValueTest {
             return 1;
         });
         assertThat(future.get()).isEqualTo(1);
+    }
+
+    // -- failed
+
+    @Test
+    public void shouldConvertToFailedFromFail() {
+        Future<Throwable> future = Future.of(zZz(new Error())).failed();
+        waitUntil(future::isCompleted);
+        assertThat(future.isSuccess()).isTrue();
+        assertThat(future.get().getClass()).isEqualTo(Error.class);
+    }
+
+    @Test
+    public void shouldConvertToFailedFromSuccess() {
+        Future<Throwable> future = Future.of(zZz(42)).failed();
+        waitUntil(future::isCompleted);
+        assertThat(future.isFailure()).isTrue();
+        assertThat(future.getValue().get().getCause().getClass()).isEqualTo(NoSuchElementException.class);
     }
 
     // -- fallbackTo
