@@ -28,10 +28,10 @@ import java.util.function.Supplier;
  * <pre>
  * <code>
  * final Lazy&lt;Double&gt; l = Lazy.of(Math::random);
- * l.isDefined(); // = false
- * l.get();       // = 0.123 (random generated)
- * l.isDefined(); // = true
- * l.get();       // = 0.123 (memoized)
+ * l.isEvaluated(); // = false
+ * l.get();         // = 0.123 (random generated)
+ * l.isEvaluated(); // = true
+ * l.get();         // = 0.123 (memoized)
  * </code>
  * </pre>
  *
