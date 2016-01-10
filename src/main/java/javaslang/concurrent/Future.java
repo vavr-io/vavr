@@ -616,6 +616,16 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
+     * Returns the underlying exception of this Future, syntactic sugar for {@code future.getValue().map(Try::getCause)}.
+     *
+     * @return None if the Future is not completed yet. Returns Some(Throwable) if the Future was completed with a failure.
+     * @throws UnsupportedOperationException if the Future was successfully completed with a value
+     */
+    default Option<Throwable> getCause() {
+        return getValue().map(Try::getCause);
+    }
+
+    /**
      * Returns the value of the Future.
      *
      * @return {@code None}, if the Future is not yet completed or was cancelled, otherwise {@code Some(Try)}.
