@@ -102,15 +102,15 @@ public interface Tree<T> extends Traversable<T> {
      * Creates a Tree of the given elements.
      *
      * @param <T> Component type of the List.
-     * @param nodes Zero or more nodes.
-     * @return A Tree containing the given nodes.
-     * @throws NullPointerException if {@code nodes} is null
+     * @param values Zero or more values.
+     * @return A Tree containing the given values.
+     * @throws NullPointerException if {@code values} is null
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    static <T> Tree<T> of(T... nodes) {
-        Objects.requireNonNull(nodes, "nodes is null");
-        List<T> list = List.of(nodes);
+    static <T> Tree<T> of(T... values) {
+        Objects.requireNonNull(values, "values is null");
+        List<T> list = List.of(values);
         return list.isEmpty() ? Empty.instance() : new Node<>(list.head(), list.tail().map(Tree::of));
     }
 
