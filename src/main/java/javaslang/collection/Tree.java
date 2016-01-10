@@ -100,6 +100,22 @@ public interface Tree<T> extends Traversable<T> {
 
     /**
      * Creates a Tree of the given elements.
+     *
+     * @param <T> Component type of the List.
+     * @param nodes Zero or more nodes.
+     * @return A Tree containing the given nodes.
+     * @throws NullPointerException if {@code nodes} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    static <T> Tree<T> of(T... nodes) {
+        Objects.requireNonNull(nodes, "nodes is null");
+        List<T> list = List.of(nodes);
+        return list.isEmpty() ? Empty.instance() : new Node<>(list.head(), list.tail().map(Tree::of));
+    }
+
+    /**
+     * Creates a Tree of the given elements.
      * <p>
      * If the given iterable is a tree, it is returned as result.
      * if the iteration order of the elements is stable.
@@ -118,6 +134,35 @@ public interface Tree<T> extends Traversable<T> {
             final List<T> list = List.ofAll(iterable);
             return list.isEmpty() ? Empty.instance() : new Node<>(list.head(), list.tail().map(Tree::of));
         }
+    }
+
+    /**
+     * Returns a Tree containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1}.
+     *
+     * @param <T> Component type of the Tree
+     * @param n The number of elements in the Tree
+     * @param f The Function computing element values
+     * @return A Tree consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code f} is null
+     */
+    static <T> Tree<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        Objects.requireNonNull(f, "f is null");
+        return Collections.tabulate(n, f, Tree.empty(), Tree::of);
+    }
+
+    /**
+     * Returns a Tree containing {@code n} values supplied by a given Supplier {@code s}.
+     *
+     * @param <T> Component type of the Tree
+     * @param n The number of elements in the Tree
+     * @param s The Supplier computing element values
+     * @return A Tree of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code s} is null
+     */
+    static <T> Tree<T> fill(int n, Supplier<? extends T> s) {
+        Objects.requireNonNull(s, "s is null");
+        return Collections.fill(n, s, Tree.empty(), Tree::of);
     }
 
     /**
