@@ -349,11 +349,7 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if unit is null.
      */
     static Future<Void> run(CheckedRunnable unit) {
-        Objects.requireNonNull(unit, "unit is null");
-        return Future.of(DEFAULT_EXECUTOR_SERVICE, () -> {
-            unit.run();
-            return null;
-        });
+        return run(DEFAULT_EXECUTOR_SERVICE, unit);
     }
 
     /**
