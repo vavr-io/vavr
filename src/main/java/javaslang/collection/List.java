@@ -290,13 +290,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      */
     static <T> List<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        n = n < 0 ? 0 : n;
-        @SuppressWarnings("unchecked")
-        T[] elements = (T[]) new Object[n];
-        for (int i = 0; i < n; i++) {
-            elements[i] = f.apply(i);
-        }
-        return List.of(elements);
+        return Collections.tabulate(n, f, List.empty(), List::of);
     }
 
     /**
@@ -309,7 +303,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * @throws NullPointerException if {@code s} is null
      */
     static <T> List<T> fill(int n, Supplier<? extends T> s) {
-        return List.tabulate(n, anything -> s.get());
+        Objects.requireNonNull(s, "s is null");
+        return Collections.fill(n, s, List.empty(), List::of);
     }
 
     static List<Character> range(char from, char toExclusive) {

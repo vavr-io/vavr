@@ -244,7 +244,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static <T> Stream<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return Stream.ofAll(Iterator.tabulate(n, f));
+        return Stream.ofAll(Collections.tabulate(n, f));
     }
 
     /**
@@ -257,7 +257,8 @@ public interface Stream<T> extends LinearSeq<T> {
      * @throws NullPointerException if {@code s} is null
      */
     static <T> Stream<T> fill(int n, Supplier<? extends T> s) {
-        return tabulate(n, anything -> s.get());
+        Objects.requireNonNull(s, "s is null");
+        return Stream.ofAll(Collections.fill(n, s));
     }
 
     /**

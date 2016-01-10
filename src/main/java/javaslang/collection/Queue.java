@@ -250,7 +250,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      */
     public static <T> Queue<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return new Queue<>(List.tabulate(n, f), List.empty());
+        return Collections.tabulate(n, f, Queue.empty(), Queue::of);
     }
 
     /**
@@ -263,7 +263,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * @throws NullPointerException if {@code s} is null
      */
     public static <T> Queue<T> fill(int n, Supplier<? extends T> s) {
-        return tabulate(n, anything -> s.get());
+        Objects.requireNonNull(s, "s is null");
+        return Collections.fill(n, s, Queue.empty(), Queue::of);
     }
 
     public static Queue<Character> range(char from, char toExclusive) {

@@ -215,12 +215,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      */
     public static <T> Array<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        n = n < 0 ? 0 : n;
-        Object[] elements = new Object[n];
-        for (int i = 0; i < n; i++) {
-            elements[i] = f.apply(i);
-        }
-        return wrap(elements);
+        return Collections.tabulate(n, f, Array.empty(), Array::of);
     }
 
     /**
@@ -233,7 +228,8 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if {@code s} is null
      */
     public static <T> Array<T> fill(int n, Supplier<? extends T> s) {
-        return tabulate(n, anything -> s.get());
+        Objects.requireNonNull(s, "s is null");
+        return Collections.fill(n, s, Array.empty(), Array::of);
     }
 
 
