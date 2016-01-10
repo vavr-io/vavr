@@ -17,6 +17,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class IteratorTest extends AbstractTraversableTest {
@@ -154,6 +155,16 @@ public class IteratorTest extends AbstractTraversableTest {
     @Override
     protected Iterator<Short> ofAll(short[] array) {
         return Iterator.ofAll(array);
+    }
+
+    @Override
+    protected <T> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        return Iterator.tabulate(n, f);
+    }
+
+    @Override
+    protected <T> Iterator<T> fill(int n, Supplier<? extends T> s) {
+        return Iterator.fill(n, s);
     }
 
     @Override

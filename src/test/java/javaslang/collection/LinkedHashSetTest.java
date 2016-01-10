@@ -3,6 +3,8 @@ package javaslang.collection;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class LinkedHashSetTest extends AbstractSetTest {
@@ -82,6 +84,16 @@ public class LinkedHashSetTest extends AbstractSetTest {
     @Override
     protected LinkedHashSet<Short> ofAll(short[] array) {
         return LinkedHashSet.ofAll(array);
+    }
+
+    @Override
+    protected <T> LinkedHashSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        return LinkedHashSet.tabulate(n, f);
+    }
+
+    @Override
+    protected <T> LinkedHashSet<T> fill(int n, Supplier<? extends T> s) {
+        return LinkedHashSet.fill(n, s);
     }
 
     @Override

@@ -178,6 +178,76 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     }
 
     /**
+     * Returns a TreeMap containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1}.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param keyComparator The comparator used to sort the entries by their key
+     * @param n The number of elements in the TreeMap
+     * @param f The Function computing element values
+     * @return A TreeMap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code keyComparator} or {@code f} are null
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> TreeMap<K, V> tabulate(Comparator<? super K> keyComparator, int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+        Objects.requireNonNull(keyComparator, "keyComparator is null");
+        Objects.requireNonNull(f, "f is null");
+        return ofEntries(keyComparator, Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
+    }
+
+    /**
+     * Returns a TreeMap containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1}.
+     * The underlying key comparator is the natural comparator of K.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param n The number of elements in the TreeMap
+     * @param f The Function computing element values
+     * @return A TreeMap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return tabulate((Comparator<? super K> & Serializable) K::compareTo, n, f);
+    }
+
+    /**
+     * Returns a TreeMap containing {@code n} values supplied by a given Supplier {@code s}.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param keyComparator The comparator used to sort the entries by their key
+     * @param n The number of elements in the TreeMap
+     * @param s The Supplier computing element values
+     * @return A TreeMap of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code keyComparator} or {@code s} are null
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> TreeMap<K, V> fill(Comparator<? super K> keyComparator, int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+        Objects.requireNonNull(keyComparator, "keyComparator is null");
+        Objects.requireNonNull(s, "s is null");
+        return ofEntries(keyComparator, Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
+    }
+
+    /**
+     * Returns a TreeMap containing {@code n} values supplied by a given Supplier {@code s}.
+     * The underlying key comparator is the natural comparator of K.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param n The number of elements in the TreeMap
+     * @param s The Supplier computing element values
+     * @return A TreeMap of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code s} is null
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+        Objects.requireNonNull(s, "s is null");
+        return fill((Comparator<? super K> & Serializable) K::compareTo, n, s);
+    }
+
+    /**
      * Creates a {@code TreeMap} of the given entries using the natural key comparator.
      *
      * @param <K>     The key type

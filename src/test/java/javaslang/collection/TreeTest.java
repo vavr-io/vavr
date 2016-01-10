@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static javaslang.Serializables.deserialize;
@@ -158,6 +160,16 @@ public class TreeTest extends AbstractTraversableTest {
     @Override
     protected Tree<Short> ofAll(short[] array) {
         return Tree.ofAll(List.ofAll(array));
+    }
+
+    @Override
+        protected <T> Tree<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        return Tree.tabulate(n, f);
+    }
+
+    @Override
+    protected <T> Tree<T> fill(int n, Supplier<? extends T> s) {
+        return Tree.fill(n, s);
     }
 
     @Override

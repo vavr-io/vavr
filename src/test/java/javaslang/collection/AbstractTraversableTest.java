@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static java.lang.System.lineSeparator;
@@ -59,6 +60,10 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     abstract protected Traversable<Long> ofAll(long[] array);
 
     abstract protected Traversable<Short> ofAll(short[] array);
+
+    abstract protected <T> Traversable<T> tabulate(int n, Function<? super Integer, ? extends T> f);
+
+    abstract protected <T> Traversable<T> fill(int n, Supplier<? extends T> s);
 
     // -- static empty()
 
@@ -2141,6 +2146,49 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
             final Traversable<?> actual = java.util.stream.Stream.of(1, 2, 3).parallel().collect(this.<Object> collector());
             assertThat(actual).isEqualTo(of(1, 2, 3));
         });
+    }
+
+    @Test
+    public void shouldTabulateTheSeq() {
+        Function<Number, Integer> f = i -> i.intValue() * i.intValue();
+        Traversable<Number> actual = tabulate(3, f);
+        assertThat(actual).isEqualTo(of(0, 1, 4));
+    }
+
+    @Test
+    public void shouldTabulateTheSeqCallingTheFunctionInTheRightOrder() {
+        java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 1, 2));
+        Function<Integer, Integer> f = i -> ints.remove();
+        Traversable<Integer> actual = tabulate(3, f);
+        assertThat(actual).isEqualTo(of(0, 1, 2));
+    }
+
+    @Test
+    public void shouldTabulateTheSeqWith0Elements() {
+        assertThat(tabulate(0, i -> i)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTabulateTheSeqWith0ElementsWhenNIsNegative() {
+        assertThat(tabulate(-1, i -> i)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldFillTheSeqCallingTheSupplierInTheRightOrder() {
+        java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 1));
+        Supplier<Integer> s = () -> ints.remove();
+        Traversable<Number> actual = fill(2, s);
+        assertThat(actual).isEqualTo(of(0, 1));
+    }
+
+    @Test
+    public void shouldFillTheSeqWith0Elements() {
+        assertThat(fill(0, () -> 1)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldFillTheSeqWith0ElementsWhenNIsNegative() {
+        assertThat(fill(-1, () -> 1)).isEqualTo(empty());
     }
 
     private void testCollector(Runnable test) {

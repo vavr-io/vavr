@@ -10,8 +10,12 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import org.junit.Test;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static javaslang.collection.Comparators.naturalComparator;
@@ -57,6 +61,16 @@ public class TreeMapTest extends AbstractMapTest {
         return TreeMap.of(key, value);
     }
 
+    @Override
+    protected <K, V> TreeMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+        return TreeMap.tabulate(toStringComparator(), n, f);
+    }
+
+    @Override
+    protected <K, V> TreeMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+        return TreeMap.fill(toStringComparator(), n, s);
+    }
+
     @Test
     public void shouldScan() {
         final TreeMap<String, Integer> tm = TreeMap.ofEntries(Tuple.of("one", 1), Tuple.of("two", 2));
@@ -91,5 +105,9 @@ public class TreeMapTest extends AbstractMapTest {
     @Override
     public void shouldPreserveSingletonInstanceOnDeserialization() {
         // The empty TreeMap encapsulates a comparator and therefore cannot be a singleton
+    }
+
+    private static Comparator<Object> toStringComparator() { // moveup
+        return (Comparator<Object> & Serializable) (o1, o2) -> String.valueOf(o1).compareTo(String.valueOf(o2));
     }
 }
