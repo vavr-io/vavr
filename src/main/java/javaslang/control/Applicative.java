@@ -6,14 +6,15 @@
 package javaslang.control;
 
 import javaslang.algebra.Functor;
+import javaslang.collection.List;
 
 import java.util.function.Function;
 
-public interface Applicative<E extends Kind<E, ?>, T> extends Functor<T> {
+public interface Applicative<V extends Kind<V, ?, ?>, E, T> extends Functor<T> {
 
-    <U> Applicative<E, U> ap(Kind<E, ? extends Function<? super T, ? extends U>> f);
+    <U> Applicative<V, List<E>, U> ap(Kind<V, List<E>, ? extends Function<? super T, ? extends U>> f);
 
     @Override
-    <U> Applicative<E, U> map(Function<? super T, ? extends U> f);
+    <U> Applicative<V, E, U> map(Function<? super T, ? extends U> f);
 
 }

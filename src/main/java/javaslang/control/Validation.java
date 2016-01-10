@@ -5,6 +5,9 @@
  */
 package javaslang.control;
 
+import javaslang.collection.List;
+
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -23,35 +26,35 @@ import java.util.function.Supplier;
  *
  * <pre>
  * <code>
- * Validation.Success:
- * Validation&lt;List&lt;String&gt;,Integer&gt; valS = Validation.success(5);
+ * Validation.Valid:
+ * Validation&lt;List&lt;String&gt;,Integer&gt; valS = Validation.valid(5);
  *
- * Validation.Failure:
- * Validation&lt;List&lt;String&gt;,Integer&gt; valE = Validation.failure(List.of("error1","error2"));
+ * Validation.Invalid:
+ * Validation&lt;List&lt;String&gt;,Integer&gt; valE = Validation.invalid(List.of("error1","error2"));
  * </code>
  * </pre>
  *
- * @param <E> Value type in the case of failure.
- * @param <T> Value type in the case of success.
+ * @param <E> Value type in the case of invalid.
+ * @param <T> Value type in the case of valid.
  * @author Eric Nelson
  * @since 2.0.1
  * @see <a href="http://eed3si9n.com/learning-scalaz/Validation.html">Validation</a>
  */
-public interface Validation<E,T> extends Kind<Validation<E,?>, T>, Applicative<Validation<E, ?>, T> {
+public interface Validation<E,T> extends Kind<Validation<?,?>, E, T>, Applicative<Validation<?,?>, E, T> {
 
-    static <E,T> Validation<E,T> success(T value) {
+    static <E,T> Validation<E,T> valid(T value) {
         return new Valid<>(value);
     }
 
-    static <E,T> Validation<E,T> success(Supplier<? extends T> supplier) {
+    static <E,T> Validation<E,T> valid(Supplier<? extends T> supplier) {
         return new Valid<>(supplier.get());
     }
 
-    static <E,T> Validation<E,T> failure(E error) {
+    static <E,T> Validation<E,T> invalid(E error) {
         return new Invalid<>(error);
     }
 
-    static <E,T> Validation<E,T> failure(Supplier<? extends E> supplier) {
+    static <E,T> Validation<E,T> invalid(Supplier<? extends E> supplier) {
         return new Invalid<>(supplier.get());
     }
 
@@ -63,11 +66,13 @@ public interface Validation<E,T> extends Kind<Validation<E,?>, T>, Applicative<V
         return new ValidationBuilder.ValidationBuilder3<>(v1, v2, v3);
     }
 
-    boolean isSuccess();
+    boolean isValid();
 
-    boolean isFailure();
+    boolean isInvalid();
 
-    Object get();
+    T get();
+
+    E error();
 
     void forEach(Consumer<? super T> f);
 
@@ -81,77 +86,84 @@ public interface Validation<E,T> extends Kind<Validation<E,?>, T>, Applicative<V
     String toString();
 
     default <U> U fold(Function<? super E,? extends U> fail, Function<? super T,? extends U> success) {
-        if(isFailure()) {
-            E v = ((Invalid<E,T>) this).get();
+        if(isInvalid()) {
+            E v = this.error();
             return fail.apply(v);
         } else {
-            T v = ((Valid<E,T>) this).get();
+            T v = this.get();
             return success.apply(v);
         }
     }
 
     default Validation<T,E> swap() {
-        if(isFailure()) {
-            E v = ((Invalid<E,T>) this).get();
-            return Validation.success(v);
+        if(isInvalid()) {
+            E v = this.error();
+            return Validation.valid(v);
         } else {
-            T v = ((Valid<E,T>) this).get();
-            return Validation.failure(v);
+            T v = this.get();
+            return Validation.invalid(v);
         }
     }
 
     @Override
-    default <U> Validation<E,U> map(Function<? super T,? extends U> f) {
-        if(isFailure()) {
+    default <U> Validation<E,U> map(Function<? super T, ? extends U> f) {
+        if(isInvalid()) {
             return (Invalid<E,U>) this;
         } else {
-            T v = ((Valid<E,T>) this).get();
-            return Validation.success(f.apply(v));
+            T v = this.get();
+            return Validation.valid(f.apply(v));
         }
     }
 
     default <U,R> Validation<U,R> bimap(Function<? super E,? extends U> fail, Function<? super T,? extends R> success) {
-        if(isFailure()) {
-            E v = ((Invalid<E,T>) this).get();
-            return Validation.failure(fail.apply(v));
+        if(isInvalid()) {
+            E v = this.error();
+            return Validation.invalid(fail.apply(v));
         } else {
-            T v = ((Valid<E,T>) this).get();
-            return Validation.success(success.apply(v));
+            T v = this.get();
+            return Validation.valid(success.apply(v));
         }
     }
 
     default <U> Validation<U,T> leftMap(Function<? super E,? extends U> f) {
-        if(isFailure()) {
-            E v = ((Invalid<E,T>) this).get();
-            return Validation.failure(f.apply(v));
+        if(isInvalid()) {
+            E v = this.error();
+            return Validation.invalid(f.apply(v));
         } else {
             return (Valid<U,T>) this;
         }
     }
 
-    default <U> Validation<E,U> ap(Validation<E,? extends Function<? super T,? extends U>> v) {
-        if(isSuccess() && v.isSuccess()) {
-            return success(() -> {
+    default <U> Validation<List<E>,U> ap(Validation<List<E>, ? extends Function<? super T,? extends U>> v) {
+        if(isValid() && v.isValid()) {
+            return valid(() -> {
                 Function<? super T,? extends U> f = ((Valid<E,? extends Function<? super T,? extends U>>) v).get();
-                return f.apply(((Valid<E,T>)this).get());
+                return f.apply(this.get());
             });
-        } else if(isSuccess() && v.isFailure()) {
-            return (Invalid<E,U>) v;
-        } else if(isFailure() && v.isSuccess()) {
-            E e = ((Invalid<E,T>) this).get();
-            return failure(e);
+        } else if(isValid() && v.isInvalid()) {
+            List<E> errors = v.error();
+            return invalid(errors);
+        } else if(isInvalid() && v.isValid()) {
+            E error = this.error();
+            return invalid(List.of(error));
         } else {
-            return failure(() -> {
-                E e = ((Invalid<E,T>) this).get();
-                return e;
+            return invalid(() -> {
+                List<E> errors = v.error();
+                E e = this.error();
+                return errors.append(e);
             });
         }
     }
 
     @Override
-    default <U> Validation<E,U> ap(Kind<Validation<E, ?>, ? extends Function<? super T, ? extends U>> f) {
-        return ap((Validation<E,? extends Function<? super T,? extends U>>) ((Object) f));
+    default <U> Validation<List<E>,U> ap(Kind<Validation<?, ?>, List<E>, ? extends Function<? super T, ? extends U>> f) {
+        return ap((Validation<List<E>,? extends Function<? super T,? extends U>>) ((Object) f));
     }
+
+    //    @Override
+//    default <U> Validation<E,U> ap(Kind<Validation<E, ?>, ? extends Function<? super T, ? extends U>> f) {
+//        return ap((Validation<E,? extends Function<? super T,? extends U>>) ((Object) f));
+//    }
 
     default <U> ValidationBuilder<E,T,U> combine(Validation<E,U> v) {
         return new ValidationBuilder<>(this, v);
@@ -171,12 +183,12 @@ public interface Validation<E,T> extends Kind<Validation<E,?>, T>, Applicative<V
         }
 
         @Override
-        public boolean isSuccess() {
+        public boolean isValid() {
             return true;
         }
 
         @Override
-        public boolean isFailure() {
+        public boolean isInvalid() {
             return false;
         }
 
@@ -191,6 +203,11 @@ public interface Validation<E,T> extends Kind<Validation<E,?>, T>, Applicative<V
         }
 
         @Override
+        public E error() throws RuntimeException {
+            throw new NoSuchElementException("errors of 'valid' Validation");
+        }
+
+        @Override
         public boolean equals(Object obj) {
             return (obj == this) || (obj instanceof Valid && Objects.equals(value, ((Valid<?,?>) obj).value));
         }
@@ -202,7 +219,7 @@ public interface Validation<E,T> extends Kind<Validation<E,?>, T>, Applicative<V
 
         @Override
         public String toString() {
-            return "Success(" + value + ")";
+            return "Valid(" + value + ")";
         }
 
     }
@@ -220,22 +237,27 @@ public interface Validation<E,T> extends Kind<Validation<E,?>, T>, Applicative<V
         }
 
         @Override
-        public boolean isSuccess() {
+        public boolean isValid() {
             return false;
         }
 
         @Override
-        public boolean isFailure() {
+        public boolean isInvalid() {
             return true;
         }
 
         @Override
         public void forEach(Consumer<? super T> f) {
-            // Do nothing if Failure
+            // Do nothing if Invalid
         }
 
         @Override
-        public E get() {
+        public T get() throws RuntimeException {
+            throw new NoSuchElementException("get of 'invalid' Validation");
+        }
+
+        @Override
+        public E error() {
             return error;
         }
 
@@ -251,7 +273,7 @@ public interface Validation<E,T> extends Kind<Validation<E,?>, T>, Applicative<V
 
         @Override
         public String toString() {
-            return "Failure(" + error + ")";
+            return "Invalid(" + error + ")";
         }
 
     }
