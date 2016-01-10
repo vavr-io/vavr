@@ -34,6 +34,18 @@ public class EitherTest {
     }
 
     @Test
+    public void shouldFoldLeft() {
+        final String value = Either.left("L").fold(l -> l + "+", r -> r + "-");
+        assertThat(value).isEqualTo("L+");
+    }
+
+    @Test
+    public void shouldFoldRight() {
+        final String value = Either.right("R").fold(l -> l + "-", r -> r + "+");
+        assertThat(value).isEqualTo("R+");
+    }
+
+    @Test
     public void shouldSwapLeft() {
         assertThat(Either.left(1).swap()).isEqualTo(Either.right(1));
     }

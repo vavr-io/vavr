@@ -106,9 +106,37 @@ public interface Either<L, R> {
      * @param rightMapper maps the right value if this is a Right
      * @param <X>         The new left type of the resulting Either
      * @param <Y>         The new right type of the resulting Either
-     * @return A new either instance
+     * @return A new Either instance
      */
-    <X, Y> Either<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper);
+    @SuppressWarnings("unchecked")
+    default <X, Y> Either<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
+        Objects.requireNonNull(leftMapper, "leftMapper is null");
+        Objects.requireNonNull(rightMapper, "rightMapper is null");
+        if (isRight()) {
+            return new Right<>(rightMapper.apply((R) get()));
+        } else {
+            return new Left<>(leftMapper.apply((L) get()));
+        }
+    }
+
+    /**
+     * Folds either the left or the right side of this disjunction.
+     *
+     * @param leftMapper  maps the left value if this is a Left
+     * @param rightMapper maps the right value if this is a Right
+     * @param <U>         type of the folded value
+     * @return A value of type U
+     */
+    @SuppressWarnings("unchecked")
+    default <U> U fold(Function<? super L, ? extends U> leftMapper, Function<? super R, ? extends U> rightMapper) {
+        Objects.requireNonNull(leftMapper, "leftMapper is null");
+        Objects.requireNonNull(rightMapper, "rightMapper is null");
+        if (isRight()) {
+            return rightMapper.apply((R) get());
+        } else {
+            return leftMapper.apply((L) get());
+        }
+    }
 
     /**
      * Returns the left value of type {@code L} if this is a {@code Left},
@@ -125,7 +153,14 @@ public interface Either<L, R> {
      *
      * @return a new {@code Either}
      */
-    Either<R, L> swap();
+    @SuppressWarnings("unchecked")
+    default Either<R, L> swap() {
+        if (isRight()) {
+            return new Left<>((R) get());
+        } else {
+            return new Right<>((L) get());
+        }
+    }
 
     // -- Object.*
 
@@ -657,13 +692,6 @@ public interface Either<L, R> {
             return false;
         }
 
-        @Override
-        public <X, Y> Left<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
-            Objects.requireNonNull(leftMapper, "leftMapper is null");
-            Objects.requireNonNull(rightMapper, "rightMapper is null");
-            return new Left<>(leftMapper.apply(value));
-        }
-
         /**
          * Returns the value of this {@code Left}.
          *
@@ -672,16 +700,6 @@ public interface Either<L, R> {
         @Override
         public L get() {
             return value;
-        }
-
-        /**
-         * Wrap the value of this {@code Left} in a new {@code Right}.
-         *
-         * @return a new {@code Right} containing this value
-         */
-        @Override
-        public Right<R, L> swap() {
-            return new Right<>(value);
         }
 
         @Override
@@ -733,13 +751,6 @@ public interface Either<L, R> {
             return true;
         }
 
-        @Override
-        public <X, Y> Right<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
-            Objects.requireNonNull(leftMapper, "leftMapper is null");
-            Objects.requireNonNull(rightMapper, "rightMapper is null");
-            return new Right<>(rightMapper.apply(value));
-        }
-
         /**
          * Returns the value of this {@code Right}.
          *
@@ -748,16 +759,6 @@ public interface Either<L, R> {
         @Override
         public R get() {
             return value;
-        }
-
-        /**
-         * Wrap the value of this {@code Right} in a new {@code Left}.
-         *
-         * @return a new {@code Left} containing this value
-         */
-        @Override
-        public Left<R, L> swap() {
-            return new Left<>(value);
         }
 
         @Override
