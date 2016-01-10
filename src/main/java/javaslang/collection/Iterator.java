@@ -399,7 +399,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static <T> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return Collections.tabulate(n, f, Iterator.empty(), Iterator::of);
+        return Collections.tabulate(n, f);
     }
 
     /**
@@ -413,7 +413,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static <T> Iterator<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return Collections.fill(n, s, Iterator.empty(), Iterator::of);
+        return Collections.fill(n, s);
     }
 
     /**
