@@ -5,6 +5,8 @@ import javaslang.Tuple2;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class LinkedHashMapTest extends AbstractMapTest {
@@ -46,6 +48,16 @@ public class LinkedHashMapTest extends AbstractMapTest {
     @Override
     protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value) {
         return LinkedHashMap.of(key, value);
+    }
+
+    @Override
+    protected <K, V> LinkedHashMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+        return LinkedHashMap.tabulate(n, f);
+    }
+
+    @Override
+    protected <K, V> LinkedHashMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+        return LinkedHashMap.fill(n, s);
     }
 
     @Test

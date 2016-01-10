@@ -10,6 +10,8 @@ import org.junit.Test;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class TreeSetTest extends AbstractSortedSetTest {
@@ -95,6 +97,16 @@ public class TreeSetTest extends AbstractSortedSetTest {
     @Override
     protected TreeSet<Short> ofAll(short[] array) {
         return TreeSet.ofAll(array);
+    }
+
+    @Override
+    protected <T> TreeSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        return TreeSet.tabulate(toStringComparator(), n, f);
+    }
+
+    @Override
+    protected <T> TreeSet<T> fill(int n, Supplier<? extends T> s) {
+        return TreeSet.fill(toStringComparator(), n, s);
     }
 
     @Override

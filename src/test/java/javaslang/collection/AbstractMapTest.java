@@ -11,9 +11,7 @@ import javaslang.control.Option;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -129,6 +127,10 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     abstract protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value);
 
+    abstract protected <K, V> Map<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f);
+
+    abstract protected <K, V> Map<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s);
+
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return true;
@@ -203,6 +205,20 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Override
     protected IntMap<Short> ofAll(short[] array) {
         return ofAll(Iterator.ofAll(array));
+    }
+
+    @Override
+    protected <T> IntMap<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        Map<Integer, T> map = emptyMap();
+        for (int i = 0; i < n; i++) {
+            map = map.put(map.size(), f.apply(i));
+        }
+        return IntMap.of(map);
+    }
+
+    @Override
+    protected <T> IntMap<T> fill(int n, Supplier<? extends T> s) {
+        return tabulate(n, anything -> s.get());
     }
 
     // -- construction
@@ -641,4 +657,51 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         });
         assertThat(result[0]).isEqualTo(10);
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldTabulateTheSeq() {
+        Function<Number, Tuple2<Long, Float>> f = i -> new Tuple2<>(i.longValue(), i.floatValue());
+        Map<Number, Number> map = mapTabulate(3, f);
+        assertThat(map).isEqualTo(mapOf(new Tuple2<>(0l, 0f), new Tuple2<>(1l, 1f), new Tuple2<>(2l, 2f)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldTabulateTheSeqCallingTheFunctionInTheRightOrder() {
+        java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 0, 1, 1, 2, 2));
+        Function<Integer, Tuple2<Long, Float>> f = i -> new Tuple2<>(ints.remove().longValue(), ints.remove().floatValue());
+        Map<Number, Number> map = mapTabulate(3, f);
+        assertThat(map).isEqualTo(mapOf(new Tuple2<>(0l, 0f), new Tuple2<>(1l, 1f), new Tuple2<>(2l, 2f)));
+    }
+
+    @Test
+    public void shouldTabulateTheSeqWith0Elements() {
+        assertThat(mapTabulate(0, i -> new Tuple2<>(i, i))).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTabulateTheSeqWith0ElementsWhenNIsNegative() {
+        assertThat(mapTabulate(-1, i -> new Tuple2<>(i, i))).isEqualTo(empty());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldFillTheSeqCallingTheSupplierInTheRightOrder() {
+        java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 0, 1, 1, 2, 2));
+        Supplier<Tuple2<Long, Float>> s = () -> new Tuple2<>(ints.remove().longValue(), ints.remove().floatValue());
+        Map<Number, Number> actual = mapFill(3, s);
+        assertThat(actual).isEqualTo(mapOf(new Tuple2<>(0l, 0f), new Tuple2<>(1l, 1f), new Tuple2<>(2l, 2f)));
+    }
+
+    @Test
+    public void shouldFillTheSeqWith0Elements() {
+        assertThat(mapFill(0, () -> new Tuple2<>(1, 1))).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldFillTheSeqWith0ElementsWhenNIsNegative() {
+        assertThat(mapFill(-1, () -> new Tuple2<>(1, 1))).isEqualTo(empty());
+    }
+
 }

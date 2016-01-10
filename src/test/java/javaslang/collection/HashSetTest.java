@@ -11,6 +11,8 @@ import org.assertj.core.api.*;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static org.junit.Assert.assertTrue;
@@ -142,6 +144,16 @@ public class HashSetTest extends AbstractSetTest {
     @Override
     protected HashSet<Short> ofAll(short[] array) {
         return HashSet.ofAll(array);
+    }
+
+    @Override
+    protected <T> HashSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        return HashSet.tabulate(n, f);
+    }
+
+    @Override
+    protected <T> HashSet<T> fill(int n, Supplier<? extends T> s) {
+        return HashSet.fill(n, s);
     }
 
     @Override
