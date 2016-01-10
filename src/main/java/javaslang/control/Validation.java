@@ -160,11 +160,6 @@ public interface Validation<E,T> extends Kind<Validation<?,?>, E, T>, Applicativ
         return ap((Validation<List<E>,? extends Function<? super T,? extends U>>) ((Object) f));
     }
 
-    //    @Override
-//    default <U> Validation<E,U> ap(Kind<Validation<E, ?>, ? extends Function<? super T, ? extends U>> f) {
-//        return ap((Validation<E,? extends Function<? super T,? extends U>>) ((Object) f));
-//    }
-
     default <U> ValidationBuilder<E,T,U> combine(Validation<E,U> v) {
         return new ValidationBuilder<>(this, v);
     }
@@ -204,7 +199,7 @@ public interface Validation<E,T> extends Kind<Validation<?,?>, E, T>, Applicativ
 
         @Override
         public E error() throws RuntimeException {
-            throw new NoSuchElementException("errors of 'valid' Validation");
+            throw new NoSuchElementException("error of 'valid' Validation");
         }
 
         @Override
