@@ -8,6 +8,7 @@ package javaslang.control;
 import javaslang.collection.List;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -123,20 +124,26 @@ public class ValidationTest {
 
     @Test
     public void shouldProcessFunctionInForEach() {
-        Validation<String,String>  v1 = Validation.valid("Eric Nelson");
+        final java.util.List<String> accumulator = new ArrayList<>();
+
+        Validation<String,String>  v1 = Validation.valid("valid");
         Validation<String,String>  v2 = Validation.invalid("error");
 
-        // Not sure best way to test a side-effect only function?
-        v1.forEach(System.out::println);
-        v2.forEach(System.out::println);
-        assertThat(true).isTrue();
+        accumulator.clear();
+        v1.forEach(accumulator::add);
+        assertThat(accumulator.size()).isEqualTo(1);
+        assertThat(accumulator.get(0)).isEqualTo("valid");
+
+        accumulator.clear();
+        v2.forEach(accumulator::add);
+        assertThat(accumulator.size()).isEqualTo(0);
     }
 
     // -- combine and apply
 
     @Test
-    public void shouldBuildUpForSuccess() {
-        Validation<String,String>  v1 = Validation.valid("Eric Nelson");
+    public void shouldBuildUpForSuccessCombine() {
+        Validation<String,String>  v1 = Validation.valid("John Doe");
         Validation<String,Integer> v2 = Validation.valid(39);
         Validation<String,Option<String>> v3 = Validation.valid(Option.of("address"));
         Validation<String,Option<String>> v4 = Validation.valid(Option.none());
@@ -174,8 +181,8 @@ public class ValidationTest {
     }
 
     @Test
-    public void shouldBuildUpForSuccessCombine() {
-        Validation<String,String>  v1 = Validation.valid("Eric Nelson");
+    public void shouldBuildUpForSuccessMapN() {
+        Validation<String,String>  v1 = Validation.valid("John Doe");
         Validation<String,Integer> v2 = Validation.valid(39);
         Validation<String,Option<String>> v3 = Validation.valid(Option.of("address"));
         Validation<String,Option<String>> v4 = Validation.valid(Option.none());
@@ -213,7 +220,7 @@ public class ValidationTest {
 
     @Test
     public void shouldBuildUpForFailure() {
-        Validation<String,String>  v1 = Validation.valid("Eric Nelson");
+        Validation<String,String>  v1 = Validation.valid("John Doe");
         Validation<String,Integer> v2 = Validation.valid(39);
         Validation<String,Option<String>> v3 = Validation.valid(Option.of("address"));
 

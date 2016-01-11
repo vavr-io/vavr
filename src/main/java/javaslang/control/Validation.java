@@ -27,17 +27,18 @@ import java.util.function.Supplier;
  * </p>
  *
  * <pre>
+ * {@code Validation} construction:
  * <code>
  * Validation.Valid:
- * Validation&lt;List&lt;String&gt;,Integer&gt; valS = Validation.valid(5);
+ * Validation&lt;String,Integer&gt; valid = Validation.valid(5);
  *
  * Validation.Invalid:
- * Validation&lt;List&lt;String&gt;,Integer&gt; valE = Validation.invalid(List.of("error1","error2"));
+ * Validation&lt;String,Integer&gt; invalid = Validation.invalid(List.of("error1","error2"));
  * </code>
  * </pre>
  *
- * @param <E> Value type in the case of invalid.
- * @param <T> Value type in the case of valid.
+ * @param <E> value type in the case of invalid
+ * @param <T> value type in the case of valid
  * @author Eric Nelson
  * @since 2.0.0
  * @see <a href="http://eed3si9n.com/learning-scalaz/Validation.html">Validation</a>
