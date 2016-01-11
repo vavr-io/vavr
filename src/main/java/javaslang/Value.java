@@ -6,7 +6,6 @@
 package javaslang;
 
 import javaslang.algebra.Foldable;
-import javaslang.algebra.Monad;
 import javaslang.collection.*;
 import javaslang.control.Either;
 import javaslang.control.Match;
@@ -90,7 +89,7 @@ import java.util.stream.StreamSupport;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>, ValueModule.Printable {
+public interface Value<T> extends Convertible<T>, Foldable<T>, ValueModule.Iterable<T>, ValueModule.Printable {
 
     /**
      * Gets the first value of the given Iterable if exists, otherwise throws.
@@ -245,7 +244,7 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
      *
      * @param supplier An alternative value supplier.
      * @return A value of type {@code T}.
-     * @throws NullPointerException               if supplier is null
+     * @throws NullPointerException  if supplier is null
      * @throws Try.NonFatalException containing the original exception if this Value was empty and the Try failed.
      */
     default T orElseTry(Try.CheckedSupplier<? extends T> supplier) {
@@ -301,16 +300,7 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
     @Override
     String toString();
 
-    // -- Adjusted return types of FilterMonadic
-
-    @Override
-    Value<T> filter(Predicate<? super T> predicate);
-
-    @Override
-    Value<T> filterNot(Predicate<? super T> predicate);
-
-    @Override
-    <U> Value<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+    // -- Adjusted return types of Foldable
 
     // DEV-NOTE: default implementations for singleton types, needs to be overridden by multi valued types
     @Override
@@ -323,9 +313,6 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> combine) {
         return isEmpty() ? zero : combine.apply(get(), zero);
     }
-
-    @Override
-    <U> Value<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
     default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {

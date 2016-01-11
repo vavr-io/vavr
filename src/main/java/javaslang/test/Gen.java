@@ -8,6 +8,7 @@ package javaslang.test;
 import javaslang.Function1;
 import javaslang.Tuple2;
 import javaslang.Value;
+import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.Stream;
 import javaslang.control.Match;
@@ -38,7 +39,7 @@ import java.util.function.Supplier;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Gen<T> extends Value<T>, Function1<Random, T>, Supplier<T> {
+public interface Gen<T> extends Monad<T>, Value<T>, Function1<Random, T>, Supplier<T> {
 
     long serialVersionUID = 1L;
 

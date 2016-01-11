@@ -6,6 +6,7 @@
 package javaslang.control;
 
 import javaslang.Value;
+import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 
 import java.io.Serializable;
@@ -182,7 +183,7 @@ public interface Either<L, R> {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class LeftProjection<L, R> implements Value<L> {
+    final class LeftProjection<L, R> implements Monad<L>, Value<L> {
 
         private final Either<L, R> either;
 
@@ -429,7 +430,7 @@ public interface Either<L, R> {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class RightProjection<L, R> implements Value<R> {
+    final class RightProjection<L, R> implements Monad<R>, Value<R> {
 
         private final Either<L, R> either;
 

@@ -7,6 +7,7 @@ package javaslang.control;
 
 import javaslang.CheckedFunction1;
 import javaslang.Value;
+import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
@@ -26,7 +27,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich
  * @since 1.0.0
  */
-public interface Try<T> extends Value<T> {
+public interface Try<T> extends Monad<T>, Value<T> {
 
     /**
      * Creates a Try of a CheckedSupplier.

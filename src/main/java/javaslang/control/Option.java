@@ -6,6 +6,7 @@
 package javaslang.control;
 
 import javaslang.Value;
+import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
@@ -31,7 +32,7 @@ import java.util.function.*;
  * @author Daniel Dietrich
  * @since 1.0.0
  */
-public interface Option<T> extends Value<T> {
+public interface Option<T> extends Monad<T>, Value<T> {
 
     /**
      * Creates a new {@code Option} of a given value.
