@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -840,6 +841,11 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     public <U> Queue<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return new Queue<>(front.map(mapper), rear.map(mapper));
+    }
+
+    @Override
+    public Match.MatchMonad.Of<Queue<T>> match() {
+        return Match.of(this);
     }
 
     @Override

@@ -10,6 +10,7 @@ import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.util.*;
@@ -1433,6 +1434,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
             };
         }
+    }
+
+    @Override
+    default Match.MatchMonad.Of<Iterator<T>> match() {
+        return Match.of(this);
     }
 
     @Override

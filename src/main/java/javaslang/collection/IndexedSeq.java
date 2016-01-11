@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple2;
 import javaslang.Tuple3;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.util.Comparator;
@@ -164,6 +165,9 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     <U> IndexedSeq<U> map(Function<? super T, ? extends U> mapper);
+
+    @Override
+    Match.MatchMonad.Of<? extends IndexedSeq<T>> match();
 
     @Override
     IndexedSeq<T> padTo(int length, T element);

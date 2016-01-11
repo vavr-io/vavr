@@ -276,6 +276,11 @@ public interface Option<T> extends Value<T> {
         }
     }
 
+    @Override
+    default Match.MatchMonad.Of<Option<T>> match() {
+        return Match.of(this);
+    }
+
     /**
      * Applies an action to this value, if this option is defined, otherwise does nothing.
      *

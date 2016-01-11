@@ -8,6 +8,7 @@ package javaslang;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
+import javaslang.control.Match;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -188,6 +189,11 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
     @Override
     default <U> Lazy<U> map(Function<? super T, ? extends U> mapper) {
         return Lazy.of(() -> mapper.apply(get()));
+    }
+
+    @Override
+    default Match.MatchMonad.Of<Lazy<T>> match() {
+        return Match.of(this);
     }
 
     @Override

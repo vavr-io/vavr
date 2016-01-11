@@ -13,6 +13,7 @@ import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.Empty;
 import javaslang.collection.Tree.Node;
 import javaslang.collection.TreeModule.*;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.*;
@@ -471,6 +472,11 @@ public interface Tree<T> extends Traversable<T> {
     default <U> Tree<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Empty.instance() : TreeModule.Map.apply((Node<T>) this, mapper);
+    }
+
+    @Override
+    default Match.MatchMonad.Of<Tree<T>> match() {
+        return Match.of(this);
     }
 
     @SuppressWarnings("unchecked")

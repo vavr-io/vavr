@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -678,6 +679,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public <U> TreeSet<U> map(Function<? super T, ? extends U> mapper) {
         return map(naturalComparator(), mapper);
+    }
+
+    @Override
+    public Match.MatchMonad.Of<TreeSet<T>> match() {
+        return Match.of(this);
     }
 
     @Override

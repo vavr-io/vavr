@@ -882,6 +882,11 @@ public interface Future<T> extends Value<T> {
     }
 
     @Override
+    default Match.MatchMonad.Of<Future<T>> match() {
+        return Match.of(this);
+    }
+
+    @Override
     default Future<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         onSuccess(action);

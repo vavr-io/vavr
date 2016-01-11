@@ -10,6 +10,7 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.CharSeqModule.Combinations;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -553,6 +554,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
             }
             return CharSeq.of(chars);
         }
+    }
+
+    @Override
+    public Match.MatchMonad.Of<CharSeq> match() {
+        return Match.of(this);
     }
 
     @Override

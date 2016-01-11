@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.collection.ArrayModule.Combinations;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -772,6 +773,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
             arr[i] = mapper.apply(get(i));
         }
         return wrap(arr);
+    }
+
+    @Override
+    public Match.MatchMonad.Of<Array<T>> match() {
+        return Match.of(this);
     }
 
     @Override

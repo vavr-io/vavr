@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -427,6 +428,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     public <W> HashMap<K, W> mapValues(Function<? super V, ? extends W> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return map((k, v) -> Tuple.of(k, mapper.apply(v)));
+    }
+
+    @Override
+    public Match.MatchMonad.Of<HashMap<K, V>> match() {
+        return Match.of(this);
     }
 
     @Override

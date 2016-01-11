@@ -354,9 +354,7 @@ public interface Value<T> extends Foldable<T>, Monad<T>, ValueModule.Iterable<T>
     // -- Convertible implementation
 
     @Override
-    default Match.MatchMonad.Of<? extends Value<T>> match() {
-        return Match.of(this);
-    }
+    Match.MatchMonad.Of<? extends Value<T>> match();
 
     @Override
     default Array<T> toArray() {
