@@ -8,6 +8,7 @@ package javaslang.concurrent;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
+import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
@@ -46,7 +47,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich, Dillon Jett Callis
  * @since 2.0.0
  */
-public interface Future<T> extends Value<T> {
+public interface Future<T> extends Monad<T>, Value<T> {
 
     /**
      * The default executor service is {@link Executors#newCachedThreadPool()}.

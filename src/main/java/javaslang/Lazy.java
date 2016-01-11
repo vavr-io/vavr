@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
@@ -43,7 +44,7 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  * @since 1.2.1
  */
-public interface Lazy<T> extends Supplier<T>, Value<T> {
+public interface Lazy<T> extends Monad<T>, Supplier<T>, Value<T> {
 
     /**
      * Creates a {@code Lazy} that requests its value from a given {@code Supplier}. The supplier is asked only once,

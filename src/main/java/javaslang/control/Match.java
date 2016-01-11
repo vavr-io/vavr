@@ -6,6 +6,7 @@
 package javaslang.control;
 
 import javaslang.*;
+import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.control.Match.SerializablePredicate;
@@ -550,7 +551,7 @@ public interface Match {
         }
     }
 
-    interface MatchMonad<R> extends Value<R>, Supplier<R> {
+    interface MatchMonad<R> extends Monad<R>, Supplier<R>, Value<R> {
 
         @Override
         MatchMonad<R> filter(Predicate<? super R> predicate);

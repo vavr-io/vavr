@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.Value;
+import javaslang.algebra.Monad;
 import javaslang.control.Match;
 import javaslang.control.Option;
 
@@ -136,7 +137,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich and others
  * @since 1.1.0
  */
-public interface Traversable<T> extends Value<T> {
+public interface Traversable<T> extends Monad<T>, Value<T> {
 
     /**
      * Used by collections to compute the hashCode only once.

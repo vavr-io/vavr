@@ -382,7 +382,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     @Test
     @Override
-    public void shouldFlatMapTraversableByExpandingElements() {
+    public void shouldFlatMapNonEmptyByExpandingElements() {
         assertThat(of(1, 2, 3).flatMap(i -> {
             if (i == 1) {
                 return of(1, 2, 3);
@@ -396,11 +396,11 @@ public class TreeTest extends AbstractTraversableTest {
 
     @Test
     @Override
-    public void shouldFlatMapElementsToSequentialValuesInTheRightOrder() {
+    public void shouldFlatMapNonEmptyInTheRightOrder() {
         final AtomicInteger seq = new AtomicInteger(0);
-        final Value<Integer> actualInts = $(0, $(1), $(2))
+        final Tree<Integer> actualInts = $(0, $(1), $(2))
                 .flatMap(ignored -> of(seq.getAndIncrement(), seq.getAndIncrement()));
-        final Value<Integer> expectedInts = $(0, $(1), $(2, $(3)), $(4, $(5)));
+        final Tree<Integer> expectedInts = $(0, $(1), $(2, $(3)), $(4, $(5)));
         assertThat(actualInts).isEqualTo(expectedInts);
     }
 

@@ -7,7 +7,7 @@ package javaslang.concurrent;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.collection.AbstractValueTest;
+import javaslang.AbstractValueTest;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 import javaslang.collection.Stream;

@@ -6,6 +6,7 @@
 package javaslang.test;
 
 import javaslang.Value;
+import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
@@ -24,7 +25,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Arbitrary<T> extends Value<T> {
+public interface Arbitrary<T> extends Monad<T>, Value<T> {
 
     /**
      * Returns a generator for objects of type T.
