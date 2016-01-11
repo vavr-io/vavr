@@ -5,6 +5,8 @@
  */
 package javaslang.control;
 
+import javaslang.*;
+import javaslang.algebra.Applicative;
 import javaslang.collection.List;
 
 import java.util.NoSuchElementException;
@@ -37,33 +39,92 @@ import java.util.function.Supplier;
  * @param <E> Value type in the case of invalid.
  * @param <T> Value type in the case of valid.
  * @author Eric Nelson
- * @since 2.0.1
+ * @since 2.0.0
  * @see <a href="http://eed3si9n.com/learning-scalaz/Validation.html">Validation</a>
  */
-public interface Validation<E,T> extends Kind<Validation<?,?>, E, T>, Applicative<Validation<?,?>, E, T> {
+public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicative<Validation<?,?>, E, T> {
 
     static <E,T> Validation<E,T> valid(T value) {
+        Objects.requireNonNull(value, "value is null");
         return new Valid<>(value);
     }
 
     static <E,T> Validation<E,T> valid(Supplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
         return new Valid<>(supplier.get());
     }
 
     static <E,T> Validation<E,T> invalid(E error) {
+        Objects.requireNonNull(error, "error is null");
         return new Invalid<>(error);
     }
 
     static <E,T> Validation<E,T> invalid(Supplier<? extends E> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
         return new Invalid<>(supplier.get());
     }
 
-    static <E,T1,T2> ValidationBuilder<E,T1,T2> map2(Validation<E,T1> v1, Validation<E,T2> v2) {
-        return new ValidationBuilder<>(v1, v2);
+    static <E,T1,T2> ValidationBuilder<E,T1,T2> map2(Validation<E,T1> validation1, Validation<E,T2> validation2) {
+        Objects.requireNonNull(validation1, "validation1 is null");
+        Objects.requireNonNull(validation2, "validation2 is null");
+        return new ValidationBuilder<>(validation1, validation2);
     }
 
-    static <E,T1,T2,T3> ValidationBuilder.ValidationBuilder3<E,T1,T2,T3> map3(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3) {
-        return new ValidationBuilder.ValidationBuilder3<>(v1, v2, v3);
+    static <E,T1,T2,T3> ValidationBuilder3<E,T1,T2,T3> map3(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3) {
+        Objects.requireNonNull(validation1, "validation1 is null");
+        Objects.requireNonNull(validation2, "validation2 is null");
+        Objects.requireNonNull(validation3, "validation3 is null");
+        return new ValidationBuilder3<>(validation1, validation2, validation3);
+    }
+
+    static <E,T1,T2,T3,T4> ValidationBuilder4<E,T1,T2,T3,T4> map4(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4) {
+        Objects.requireNonNull(validation1, "validation1 is null");
+        Objects.requireNonNull(validation2, "validation2 is null");
+        Objects.requireNonNull(validation3, "validation3 is null");
+        Objects.requireNonNull(validation4, "validation4 is null");
+        return new ValidationBuilder4<>(validation1, validation2, validation3, validation4);
+    }
+
+    static <E,T1,T2,T3,T4,T5> ValidationBuilder5<E,T1,T2,T3,T4,T5> map5(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5) {
+        Objects.requireNonNull(validation1, "validation1 is null");
+        Objects.requireNonNull(validation2, "validation2 is null");
+        Objects.requireNonNull(validation3, "validation3 is null");
+        Objects.requireNonNull(validation4, "validation4 is null");
+        Objects.requireNonNull(validation5, "validation5 is null");
+        return new ValidationBuilder5<>(validation1, validation2, validation3, validation4, validation5);
+    }
+
+    static <E,T1,T2,T3,T4,T5,T6> ValidationBuilder6<E,T1,T2,T3,T4,T5,T6> map6(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5, Validation<E,T6> validation6) {
+        Objects.requireNonNull(validation1, "validation1 is null");
+        Objects.requireNonNull(validation2, "validation2 is null");
+        Objects.requireNonNull(validation3, "validation3 is null");
+        Objects.requireNonNull(validation4, "validation4 is null");
+        Objects.requireNonNull(validation5, "validation5 is null");
+        Objects.requireNonNull(validation6, "validation6 is null");
+        return new ValidationBuilder6<>(validation1, validation2, validation3, validation4, validation5, validation6);
+    }
+
+    static <E,T1,T2,T3,T4,T5,T6,T7> ValidationBuilder7<E,T1,T2,T3,T4,T5,T6,T7> map7(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5, Validation<E,T6> validation6, Validation<E,T7> validation7) {
+        Objects.requireNonNull(validation1, "validation1 is null");
+        Objects.requireNonNull(validation2, "validation2 is null");
+        Objects.requireNonNull(validation3, "validation3 is null");
+        Objects.requireNonNull(validation4, "validation4 is null");
+        Objects.requireNonNull(validation5, "validation5 is null");
+        Objects.requireNonNull(validation6, "validation6 is null");
+        Objects.requireNonNull(validation7, "validation7 is null");
+        return new ValidationBuilder7<>(validation1, validation2, validation3, validation4, validation5, validation6, validation7);
+    }
+
+    static <E,T1,T2,T3,T4,T5,T6,T7,T8> ValidationBuilder8<E,T1,T2,T3,T4,T5,T6,T7,T8> map8(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5, Validation<E,T6> validation6, Validation<E,T7> validation7, Validation<E,T8> validation8) {
+        Objects.requireNonNull(validation1, "validation1 is null");
+        Objects.requireNonNull(validation2, "validation2 is null");
+        Objects.requireNonNull(validation3, "validation3 is null");
+        Objects.requireNonNull(validation4, "validation4 is null");
+        Objects.requireNonNull(validation5, "validation5 is null");
+        Objects.requireNonNull(validation6, "validation6 is null");
+        Objects.requireNonNull(validation7, "validation7 is null");
+        Objects.requireNonNull(validation8, "validation8 is null");
+        return new ValidationBuilder8<>(validation1, validation2, validation3, validation4, validation5, validation6, validation7, validation8);
     }
 
     boolean isValid();
@@ -72,9 +133,7 @@ public interface Validation<E,T> extends Kind<Validation<?,?>, E, T>, Applicativ
 
     T get();
 
-    E error();
-
-    void forEach(Consumer<? super T> f);
+    E getError();
 
     @Override
     boolean equals(Object o);
@@ -85,83 +144,95 @@ public interface Validation<E,T> extends Kind<Validation<?,?>, E, T>, Applicativ
     @Override
     String toString();
 
-    default <U> U fold(Function<? super E,? extends U> fail, Function<? super T,? extends U> success) {
+    default void forEach(Consumer<? super T> f) {
+        Objects.requireNonNull(f, "function f is null");
+        if(isValid())
+            f.accept(get());
+    }
+
+    default <U> U fold(Function<? super E,? extends U> fInvalid, Function<? super T,? extends U> fValid) {
+        Objects.requireNonNull(fInvalid, "function fInvalid null");
+        Objects.requireNonNull(fValid, "function fValid null");
         if(isInvalid()) {
-            E v = this.error();
-            return fail.apply(v);
+            E error = this.getError();
+            return fInvalid.apply(error);
         } else {
-            T v = this.get();
-            return success.apply(v);
+            T value = this.get();
+            return fValid.apply(value);
         }
     }
 
     default Validation<T,E> swap() {
         if(isInvalid()) {
-            E v = this.error();
-            return Validation.valid(v);
+            E error = this.getError();
+            return Validation.valid(error);
         } else {
-            T v = this.get();
-            return Validation.invalid(v);
+            T value = this.get();
+            return Validation.invalid(value);
         }
     }
 
     @Override
     default <U> Validation<E,U> map(Function<? super T, ? extends U> f) {
+        Objects.requireNonNull(f, "function f is null");
         if(isInvalid()) {
-            return (Invalid<E,U>) this;
+            return Validation.invalid(this.getError());
         } else {
-            T v = this.get();
-            return Validation.valid(f.apply(v));
+            T value = this.get();
+            return Validation.valid(f.apply(value));
         }
     }
 
-    default <U,R> Validation<U,R> bimap(Function<? super E,? extends U> fail, Function<? super T,? extends R> success) {
+    default <U,R> Validation<U,R> bimap(Function<? super E,? extends U> invalidMapper, Function<? super T,? extends R> validMapper) {
+        Objects.requireNonNull(invalidMapper, "function invalidMapper is null");
+        Objects.requireNonNull(validMapper, "function validMapper is null");
         if(isInvalid()) {
-            E v = this.error();
-            return Validation.invalid(fail.apply(v));
+            E error = this.getError();
+            return Validation.invalid(invalidMapper.apply(error));
         } else {
-            T v = this.get();
-            return Validation.valid(success.apply(v));
+            T value = this.get();
+            return Validation.valid(validMapper.apply(value));
         }
     }
 
     default <U> Validation<U,T> leftMap(Function<? super E,? extends U> f) {
+        Objects.requireNonNull(f, "function f is null");
         if(isInvalid()) {
-            E v = this.error();
-            return Validation.invalid(f.apply(v));
+            E error = this.getError();
+            return Validation.invalid(f.apply(error));
         } else {
-            return (Valid<U,T>) this;
+            return Validation.valid(this.get());
         }
     }
 
-    default <U> Validation<List<E>,U> ap(Validation<List<E>, ? extends Function<? super T,? extends U>> v) {
-        if(isValid() && v.isValid()) {
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Validation<List<E>,U> ap(Kind2<Validation<?, ?>, List<E>, ? extends Function<? super T, ? extends U>> kind) {
+        Objects.requireNonNull(kind, "kind is null");
+        Validation<List<E>, ? extends Function<? super T,? extends U>> validation = (Validation<List<E>,? extends Function<? super T,? extends U>>) ((Object) kind);
+
+        if(isValid() && validation.isValid()) {
             return valid(() -> {
-                Function<? super T,? extends U> f = ((Valid<E,? extends Function<? super T,? extends U>>) v).get();
+                Function<? super T,? extends U> f = validation.get();
                 return f.apply(this.get());
             });
-        } else if(isValid() && v.isInvalid()) {
-            List<E> errors = v.error();
+        } else if(isValid() && validation.isInvalid()) {
+            List<E> errors = validation.getError();
             return invalid(errors);
-        } else if(isInvalid() && v.isValid()) {
-            E error = this.error();
+        } else if(isInvalid() && validation.isValid()) {
+            E error = this.getError();
             return invalid(List.of(error));
         } else {
             return invalid(() -> {
-                List<E> errors = v.error();
-                E e = this.error();
-                return errors.append(e);
+                List<E> errors = validation.getError();
+                E error = this.getError();
+                return errors.append(error);
             });
         }
     }
 
-    @Override
-    default <U> Validation<List<E>,U> ap(Kind<Validation<?, ?>, List<E>, ? extends Function<? super T, ? extends U>> f) {
-        return ap((Validation<List<E>,? extends Function<? super T,? extends U>>) ((Object) f));
-    }
-
-    default <U> ValidationBuilder<E,T,U> combine(Validation<E,U> v) {
-        return new ValidationBuilder<>(this, v);
+    default <U> ValidationBuilder<E,T,U> combine(Validation<E,U> validation) {
+        return new ValidationBuilder<>(this, validation);
     }
 
 
@@ -173,7 +244,7 @@ public interface Validation<E,T> extends Kind<Validation<?,?>, E, T>, Applicativ
          * Construct a {@code Valid}
          * @param value The value of this success
          */
-        public Valid(T value) {
+        private Valid(T value) {
             this.value = value;
         }
 
@@ -188,17 +259,12 @@ public interface Validation<E,T> extends Kind<Validation<?,?>, E, T>, Applicativ
         }
 
         @Override
-        public void forEach(Consumer<? super T> f) {
-            f.accept(get());
-        }
-
-        @Override
         public T get() {
             return value;
         }
 
         @Override
-        public E error() throws RuntimeException {
+        public E getError() throws RuntimeException {
             throw new NoSuchElementException("error of 'valid' Validation");
         }
 
@@ -227,7 +293,7 @@ public interface Validation<E,T> extends Kind<Validation<?,?>, E, T>, Applicativ
          * Construct an {@code Invalid}
          * @param error The value of this error
          */
-        public Invalid(E error) {
+        private Invalid(E error) {
             this.error = error;
         }
 
@@ -242,17 +308,12 @@ public interface Validation<E,T> extends Kind<Validation<?,?>, E, T>, Applicativ
         }
 
         @Override
-        public void forEach(Consumer<? super T> f) {
-            // Do nothing if Invalid
-        }
-
-        @Override
         public T get() throws RuntimeException {
             throw new NoSuchElementException("get of 'invalid' Validation");
         }
 
         @Override
-        public E error() {
+        public E getError() {
             return error;
         }
 
@@ -269,6 +330,184 @@ public interface Validation<E,T> extends Kind<Validation<?,?>, E, T>, Applicativ
         @Override
         public String toString() {
             return "Invalid(" + error + ")";
+        }
+
+    }
+
+    final class ValidationBuilder<E,T1,T2> {
+
+        private Validation<E,T1> v1;
+        private Validation<E,T2> v2;
+
+        private ValidationBuilder(Validation<E,T1> v1, Validation<E,T2> v2) {
+            this.v1 = v1;
+            this.v2 = v2;
+        }
+
+        public <R> Validation<List<E>,R> ap(Function2<T1,T2,R> f) {
+            return v2.ap(v1.ap(Validation.valid(f.curried())));
+        }
+
+        public <T3> ValidationBuilder3<E,T1,T2,T3> combine(Validation<E,T3> v3) {
+            return new ValidationBuilder3<>(v1, v2, v3);
+        }
+
+    }
+
+    final class ValidationBuilder3<E,T1,T2,T3> {
+
+        private Validation<E,T1> v1;
+        private Validation<E,T2> v2;
+        private Validation<E,T3> v3;
+
+        private ValidationBuilder3(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3) {
+            this.v1 = v1;
+            this.v2 = v2;
+            this.v3 = v3;
+        }
+
+        public <R> Validation<List<E>,R> ap(Function3<T1,T2,T3,R> f) {
+            return v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))));
+        }
+
+        public <T4> ValidationBuilder4<E,T1,T2,T3,T4> combine(Validation<E,T4> v4) {
+            return new ValidationBuilder4<>(v1, v2, v3, v4);
+        }
+
+    }
+
+    final class ValidationBuilder4<E,T1,T2,T3,T4> {
+
+        private Validation<E,T1> v1;
+        private Validation<E,T2> v2;
+        private Validation<E,T3> v3;
+        private Validation<E,T4> v4;
+
+        private ValidationBuilder4(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3, Validation<E,T4> v4) {
+            this.v1 = v1;
+            this.v2 = v2;
+            this.v3 = v3;
+            this.v4 = v4;
+        }
+
+        public <R> Validation<List<E>,R> ap(Function4<T1,T2,T3,T4,R> f) {
+            return v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))));
+        }
+
+        public <T5> ValidationBuilder5<E,T1,T2,T3,T4,T5> combine(Validation<E,T5> v5) {
+            return new ValidationBuilder5<>(v1, v2, v3, v4, v5);
+        }
+
+    }
+
+    final class ValidationBuilder5<E,T1,T2,T3,T4,T5> {
+
+        private Validation<E,T1> v1;
+        private Validation<E,T2> v2;
+        private Validation<E,T3> v3;
+        private Validation<E,T4> v4;
+        private Validation<E,T5> v5;
+
+        private ValidationBuilder5(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3, Validation<E,T4> v4, Validation<E,T5> v5) {
+            this.v1 = v1;
+            this.v2 = v2;
+            this.v3 = v3;
+            this.v4 = v4;
+            this.v5 = v5;
+        }
+
+        public <R> Validation<List<E>,R> ap(Function5<T1,T2,T3,T4,T5,R> f) {
+            return v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))))));
+        }
+
+        public <T6> ValidationBuilder6<E,T1,T2,T3,T4,T5,T6> combine(Validation<E,T6> v6) {
+            return new ValidationBuilder6<>(v1, v2, v3, v4, v5, v6);
+        }
+
+    }
+
+    final class ValidationBuilder6<E,T1,T2,T3,T4,T5,T6> {
+
+        private Validation<E,T1> v1;
+        private Validation<E,T2> v2;
+        private Validation<E,T3> v3;
+        private Validation<E,T4> v4;
+        private Validation<E,T5> v5;
+        private Validation<E,T6> v6;
+
+        private ValidationBuilder6(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3, Validation<E,T4> v4, Validation<E,T5> v5, Validation<E,T6> v6) {
+            this.v1 = v1;
+            this.v2 = v2;
+            this.v3 = v3;
+            this.v4 = v4;
+            this.v5 = v5;
+            this.v6 = v6;
+        }
+
+        public <R> Validation<List<E>,R> ap(Function6<T1,T2,T3,T4,T5,T6,R> f) {
+            return v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))))));
+        }
+
+        public <T7> ValidationBuilder7<E,T1,T2,T3,T4,T5,T6,T7> combine(Validation<E,T7> v7) {
+            return new ValidationBuilder7<>(v1, v2, v3, v4, v5, v6, v7);
+        }
+
+    }
+
+    final class ValidationBuilder7<E,T1,T2,T3,T4,T5,T6,T7> {
+
+        private Validation<E,T1> v1;
+        private Validation<E,T2> v2;
+        private Validation<E,T3> v3;
+        private Validation<E,T4> v4;
+        private Validation<E,T5> v5;
+        private Validation<E,T6> v6;
+        private Validation<E,T7> v7;
+
+        private ValidationBuilder7(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3, Validation<E,T4> v4, Validation<E,T5> v5, Validation<E,T6> v6, Validation<E,T7> v7) {
+            this.v1 = v1;
+            this.v2 = v2;
+            this.v3 = v3;
+            this.v4 = v4;
+            this.v5 = v5;
+            this.v6 = v6;
+            this.v7 = v7;
+        }
+
+        public <R> Validation<List<E>,R> ap(Function7<T1,T2,T3,T4,T5,T6,T7,R> f) {
+            return v7.ap(v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))))))));
+        }
+
+        public <T8> ValidationBuilder8<E,T1,T2,T3,T4,T5,T6,T7,T8> combine(Validation<E,T8> v8) {
+            return new ValidationBuilder8<>(v1, v2, v3, v4, v5, v6, v7, v8);
+        }
+
+    }
+
+    final class ValidationBuilder8<E,T1,T2,T3,T4,T5,T6,T7,T8> {
+
+        private Validation<E,T1> v1;
+        private Validation<E,T2> v2;
+        private Validation<E,T3> v3;
+        private Validation<E,T4> v4;
+        private Validation<E,T5> v5;
+        private Validation<E,T6> v6;
+        private Validation<E,T7> v7;
+        private Validation<E,T8> v8;
+
+        private ValidationBuilder8(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3, Validation<E,T4> v4, Validation<E,T5> v5, Validation<E,T6> v6, Validation<E,T7> v7, Validation<E,T8> v8) {
+            this.v1 = v1;
+            this.v2 = v2;
+            this.v3 = v3;
+            this.v4 = v4;
+            this.v5 = v5;
+            this.v6 = v6;
+            this.v7 = v7;
+            this.v8 = v8;
+        }
+
+        public <R> Validation<List<E>,R> ap(Function8<T1,T2,T3,T4,T5,T6,T7,T8,R> f) {
+            return v8.ap(v7.ap(v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))))))));
         }
 
     }

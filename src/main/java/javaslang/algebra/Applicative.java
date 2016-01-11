@@ -3,18 +3,18 @@
  *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/  \__/  /   Copyright 2014-now Daniel Dietrich
  * /___/\_/  \_/\____/\_/  \_/\__\/__/___\_/  \_//  \__/_____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.control;
+package javaslang.algebra;
 
-import javaslang.algebra.Functor;
+import javaslang.Kind2;
 import javaslang.collection.List;
 
 import java.util.function.Function;
 
-public interface Applicative<V extends Kind<V, ?, ?>, E, T> extends Functor<T> {
+public interface Applicative<TYPE extends Kind2<TYPE, ?, ?>, E, T> extends Functor<T> {
 
-    <U> Applicative<V, List<E>, U> ap(Kind<V, List<E>, ? extends Function<? super T, ? extends U>> f);
+    <U> Applicative<TYPE, List<E>, U> ap(Kind2<TYPE, List<E>, ? extends Function<? super T, ? extends U>> f);
 
     @Override
-    <U> Applicative<V, E, U> map(Function<? super T, ? extends U> f);
+    <U> Applicative<TYPE, E, U> map(Function<? super T, ? extends U> f);
 
 }
