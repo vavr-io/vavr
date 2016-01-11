@@ -560,7 +560,7 @@ public class FutureTest extends AbstractValueTest {
         final Future<?> future = Future.of(zZz(new Error()));
         final Throwable[] holder = new Throwable[] { null };
         future.onFailure(t -> holder[0] = t);
-        waitUntil(future::isCompleted);
+        waitUntil(() -> holder[0] != null);
         assertThat(holder[0].getClass()).isEqualTo(Error.class);
     }
 
@@ -571,7 +571,7 @@ public class FutureTest extends AbstractValueTest {
         final Future<Integer> future = Future.of(zZz(42));
         final int[] holder = new int[] { 0 };
         future.onSuccess(i -> holder[0] = i);
-        waitUntil(future::isCompleted);
+        waitUntil(() -> holder[0] > 0);
         assertThat(holder[0]).isEqualTo(42);
     }
 
