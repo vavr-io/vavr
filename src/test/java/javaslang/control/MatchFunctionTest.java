@@ -146,12 +146,11 @@ public class MatchFunctionTest {
         assertThat(Match.otherwise(ignored -> true).apply(null)).isTrue();
     }
 
-    // DOES CALL Match.otherwise(R value) instead of Match.otherwise(Function)
-    //    @Test(expected = NullPointerException.class)
-    //    public void shouldThrowWhenMatchDefaultCaseAndFunctionIsNull() {
-    //        final Function<?, ?> f = null;
-    //        Match.otherwise(f).apply(null);
-    //    }
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenMatchDefaultCaseAndFunctionIsNull() {
+        final Function<Object, String> f = null;
+        Match.otherwise(f).apply(1);
+    }
 
     // otherwise(Supplier)
 
@@ -163,6 +162,34 @@ public class MatchFunctionTest {
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenMatchDefaultCaseAndSupplierIsNull() {
         Match.otherwise((Supplier<?>) null).apply(null);
+    }
+
+    // otherwiseRun(Consumer)
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowOnOtherwiseRunWhenConsumerIsNull() {
+        Match.otherwiseRun((Consumer<Object>) null);
+    }
+
+    @Test
+    public void shouldPerformActionWhenOtherwiseRunAndConsumerIsNotNull() {
+        final int[] check = { 0 };
+        Match.otherwiseRun(o -> check[0] = 1).accept(null);
+        assertThat(check[0]).isEqualTo(1);
+    }
+
+    // otherwiseRun(Runnable)
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowOnOtherwiseRunWhenRunnableIsNull() {
+        Match.otherwiseRun((Runnable) null);
+    }
+
+    @Test
+    public void shouldPerformActionWhenOtherwiseRunAndRunnableIsNotNull() {
+        final int[] check = { 0 };
+        Match.otherwiseRun(() -> check[0] = 1).accept(null);
+        assertThat(check[0]).isEqualTo(1);
     }
 
     // otherwiseThrow(Supplier)
@@ -294,6 +321,20 @@ public class MatchFunctionTest {
         assertThat(actual).isTrue();
     }
 
+    @Test
+    public void shouldRunConsumerWhenMatchedAsFunction() {
+        final int[] check = { 0 };
+        Match.whenIs(1).thenRun(i -> check[0] = i).accept(1);
+        assertThat(check[0]).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldRunRunnableWhenMatchedAsFunction() {
+        final int[] check = { 0 };
+        Match.whenIs(1).thenRun(() -> check[0] = 1).accept(1);
+        assertThat(check[0]).isEqualTo(1);
+    }
+
     // should not apply then() when unmatched (honoring When, WhenApplicable)
 
     @Test
@@ -329,6 +370,20 @@ public class MatchFunctionTest {
     public void shouldNotApplyFunctionWhenApplicableUnmatched() {
         final boolean actual = Match.whenApplicable((Integer i) -> false).thenApply().otherwise(true).apply(true);
         assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void shouldNotRunConsumerWhenUnmatchedAsFunction() {
+        final int[] check = { 0 };
+        Match.whenIs(1).thenRun(i -> check[0] = i).accept(-1);
+        assertThat(check[0]).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldNotRunRunnableWhenUnmatchedAsFunction() {
+        final int[] check = { 0 };
+        Match.whenIs(1).thenRun(() -> check[0] = 1).accept(-1);
+        assertThat(check[0]).isEqualTo(0);
     }
 
     // transport matched states
@@ -632,11 +687,10 @@ public class MatchFunctionTest {
     @Test
     public void shouldNotConsumeWhenNoMatchFoundAnoNoDefaultCase() {
         final IntegerConsumer integerConsumer = new IntegerConsumer();
-        final Consumer<Object> match = Match
-                .whenIs(1).thenRun(integerConsumer)
+        Match.whenIs(1).thenRun(integerConsumer)
                 .whenIs(2).thenRun(integerConsumer)
-                .whenType(String.class).thenRun(i -> integerConsumer.accept(3));
-        assertThatThrownBy(() -> match.accept(10)).isInstanceOf(MatchError.class);
+                .whenType(String.class).thenRun(i -> integerConsumer.accept(3))
+                .accept(10);
         assertThat(integerConsumer.value).isEqualTo(0);
     }
 
