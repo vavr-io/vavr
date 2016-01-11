@@ -445,8 +445,7 @@ public interface Match {
                 public void accept(Object o) {
                     cases.reverse()
                             .findFirst(caze -> caze.isApplicable(o))
-                            .map(caze -> caze.apply(o))
-                            .orElseThrow(() -> new MatchError(o));
+                            .map(caze -> caze.apply(o));
                 }
 
                 public <T> When<T> when(SerializablePredicate<? super T> predicate) {
