@@ -5,6 +5,8 @@
  */
 package javaslang.concurrent;
 
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.collection.AbstractValueTest;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
@@ -16,6 +18,8 @@ import org.junit.Test;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static javaslang.concurrent.Concurrent.waitUntil;
 import static javaslang.concurrent.Concurrent.zZz;
@@ -440,7 +444,14 @@ public class FutureTest extends AbstractValueTest {
 
     // -- executorService()
 
-    // TODO
+    @Test
+    public void shouldReturnExecutorService() {
+        final Future<Integer> f1 = Future.of(() -> 42);
+        assertThat(f1.executorService()).isSameAs(Future.DEFAULT_EXECUTOR_SERVICE);
+        final ExecutorService customExecutorService = Executors.newCachedThreadPool();
+        final Future<Integer> f2 = Future.of(customExecutorService, () -> 42);
+        assertThat(f2.executorService()).isSameAs(customExecutorService);
+    }
 
     // -- getCause()
 
@@ -544,11 +555,81 @@ public class FutureTest extends AbstractValueTest {
 
     // -- onFailure()
 
-    // TODO
+    @Test
+    public void shouldDoActionOnFailure() {
+        final Future<?> future = Future.of(zZz(new Error()));
+        final Throwable[] holder = new Throwable[] { null };
+        future.onFailure(t -> holder[0] = t);
+        waitUntil(future::isCompleted);
+        assertThat(holder[0].getClass()).isEqualTo(Error.class);
+    }
 
     // -- onSuccess()
 
-    // TODO
+    @Test
+    public void shouldDoActionOnSuccess() {
+        final Future<Integer> future = Future.of(zZz(42));
+        final int[] holder = new int[] { 0 };
+        future.onSuccess(i -> holder[0] = i);
+        waitUntil(future::isCompleted);
+        assertThat(holder[0]).isEqualTo(42);
+    }
+
+    // -- recover()
+
+    @Test
+    public void shouldRecoverFailedFuture() {
+        final Future<Integer> recovered = Future.<Integer>of(zZz(new Error())).recover(t -> 42);
+        waitUntil(recovered::isCompleted);
+        assertThat(recovered.isSuccess()).isTrue();
+        assertThat(recovered.get()).isEqualTo(42);
+    }
+
+    // -- recoverWith()
+
+    @Test
+    public void shouldRecoverFailedFutureWithFuture() {
+        final Future<String> recovered = Future.<String>of(() -> { throw new Error("oh!"); })
+                .recoverWith(x -> Future.of(x::getMessage));
+        waitUntil(recovered::isCompleted);
+        assertThat(recovered.isSuccess()).isTrue();
+        assertThat(recovered.get()).isEqualTo("oh!");
+    }
+
+    @Test
+    public void shouldRecoverSuccessFutureWithFuture() {
+        final Future<String> recovered = Future.of(() -> "oh!")
+                .recoverWith(ignored -> Future.of(() -> "ignored"));
+        waitUntil(recovered::isCompleted);
+        assertThat(recovered.isSuccess()).isTrue();
+        assertThat(recovered.get()).isEqualTo("oh!");
+    }
+
+    // -- transform()
+
+    @Test
+    public void shouldTransform() {
+        String transformed = Future.of(() -> 42).transform(f -> String.valueOf(f.get()));
+        assertThat(transformed).isEqualTo("42");
+    }
+
+    // -- zip()
+
+    @Test
+    public void shouldZipSuccess() {
+        Future<Tuple2<Integer, Integer>> future = Future.of(zZz(1)).zip(Future.of(zZz(2)));
+        waitUntil(future::isCompleted);
+        waitUntil(future::isSuccess);
+        assertThat(future.get()).isEqualTo(Tuple.of(1, 2));
+    }
+
+    @Test
+    public void shouldZipFailure() {
+        Future<Tuple2<Integer, Integer>> future = Future.<Integer>of(zZz(new Error())).zip(Future.of(zZz(2)));
+        waitUntil(future::isCompleted);
+        waitUntil(future::isFailure);
+        assertThat(future.getCause().get().getClass()).isEqualTo(Error.class);
+    }
 
     // -- Value implementation
 
