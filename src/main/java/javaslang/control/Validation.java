@@ -64,47 +64,47 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
         return new Invalid<>(supplier.get());
     }
 
-    static <E,T1,T2> ValidationBuilder<E,T1,T2> map2(Validation<E,T1> validation1, Validation<E,T2> validation2) {
+    static <E,T1,T2> Builder<E,T1,T2> map2(Validation<E,T1> validation1, Validation<E,T2> validation2) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
-        return new ValidationBuilder<>(validation1, validation2);
+        return new Builder<>(validation1, validation2);
     }
 
-    static <E,T1,T2,T3> ValidationBuilder3<E,T1,T2,T3> map3(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3) {
+    static <E,T1,T2,T3> Builder3<E,T1,T2,T3> map3(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
-        return new ValidationBuilder3<>(validation1, validation2, validation3);
+        return new Builder3<>(validation1, validation2, validation3);
     }
 
-    static <E,T1,T2,T3,T4> ValidationBuilder4<E,T1,T2,T3,T4> map4(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4) {
+    static <E,T1,T2,T3,T4> Builder4<E,T1,T2,T3,T4> map4(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
         Objects.requireNonNull(validation4, "validation4 is null");
-        return new ValidationBuilder4<>(validation1, validation2, validation3, validation4);
+        return new Builder4<>(validation1, validation2, validation3, validation4);
     }
 
-    static <E,T1,T2,T3,T4,T5> ValidationBuilder5<E,T1,T2,T3,T4,T5> map5(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5) {
+    static <E,T1,T2,T3,T4,T5> Builder5<E,T1,T2,T3,T4,T5> map5(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
         Objects.requireNonNull(validation4, "validation4 is null");
         Objects.requireNonNull(validation5, "validation5 is null");
-        return new ValidationBuilder5<>(validation1, validation2, validation3, validation4, validation5);
+        return new Builder5<>(validation1, validation2, validation3, validation4, validation5);
     }
 
-    static <E,T1,T2,T3,T4,T5,T6> ValidationBuilder6<E,T1,T2,T3,T4,T5,T6> map6(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5, Validation<E,T6> validation6) {
+    static <E,T1,T2,T3,T4,T5,T6> Builder6<E,T1,T2,T3,T4,T5,T6> map6(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5, Validation<E,T6> validation6) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
         Objects.requireNonNull(validation4, "validation4 is null");
         Objects.requireNonNull(validation5, "validation5 is null");
         Objects.requireNonNull(validation6, "validation6 is null");
-        return new ValidationBuilder6<>(validation1, validation2, validation3, validation4, validation5, validation6);
+        return new Builder6<>(validation1, validation2, validation3, validation4, validation5, validation6);
     }
 
-    static <E,T1,T2,T3,T4,T5,T6,T7> ValidationBuilder7<E,T1,T2,T3,T4,T5,T6,T7> map7(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5, Validation<E,T6> validation6, Validation<E,T7> validation7) {
+    static <E,T1,T2,T3,T4,T5,T6,T7> Builder7<E,T1,T2,T3,T4,T5,T6,T7> map7(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5, Validation<E,T6> validation6, Validation<E,T7> validation7) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -112,10 +112,10 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
         Objects.requireNonNull(validation5, "validation5 is null");
         Objects.requireNonNull(validation6, "validation6 is null");
         Objects.requireNonNull(validation7, "validation7 is null");
-        return new ValidationBuilder7<>(validation1, validation2, validation3, validation4, validation5, validation6, validation7);
+        return new Builder7<>(validation1, validation2, validation3, validation4, validation5, validation6, validation7);
     }
 
-    static <E,T1,T2,T3,T4,T5,T6,T7,T8> ValidationBuilder8<E,T1,T2,T3,T4,T5,T6,T7,T8> map8(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5, Validation<E,T6> validation6, Validation<E,T7> validation7, Validation<E,T8> validation8) {
+    static <E,T1,T2,T3,T4,T5,T6,T7,T8> Builder8<E,T1,T2,T3,T4,T5,T6,T7,T8> map8(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5, Validation<E,T6> validation6, Validation<E,T7> validation7, Validation<E,T8> validation8) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -124,7 +124,7 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
         Objects.requireNonNull(validation6, "validation6 is null");
         Objects.requireNonNull(validation7, "validation7 is null");
         Objects.requireNonNull(validation8, "validation8 is null");
-        return new ValidationBuilder8<>(validation1, validation2, validation3, validation4, validation5, validation6, validation7, validation8);
+        return new Builder8<>(validation1, validation2, validation3, validation4, validation5, validation6, validation7, validation8);
     }
 
     boolean isValid();
@@ -231,8 +231,8 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
         }
     }
 
-    default <U> ValidationBuilder<E,T,U> combine(Validation<E,U> validation) {
-        return new ValidationBuilder<>(this, validation);
+    default <U> Builder<E,T,U> combine(Validation<E,U> validation) {
+        return new Builder<>(this, validation);
     }
 
 
@@ -334,12 +334,12 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
 
     }
 
-    final class ValidationBuilder<E,T1,T2> {
+    final class Builder<E,T1,T2> {
 
         private Validation<E,T1> v1;
         private Validation<E,T2> v2;
 
-        private ValidationBuilder(Validation<E,T1> v1, Validation<E,T2> v2) {
+        private Builder(Validation<E,T1> v1, Validation<E,T2> v2) {
             this.v1 = v1;
             this.v2 = v2;
         }
@@ -348,19 +348,19 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
             return v2.ap(v1.ap(Validation.valid(f.curried())));
         }
 
-        public <T3> ValidationBuilder3<E,T1,T2,T3> combine(Validation<E,T3> v3) {
-            return new ValidationBuilder3<>(v1, v2, v3);
+        public <T3> Builder3<E,T1,T2,T3> combine(Validation<E,T3> v3) {
+            return new Builder3<>(v1, v2, v3);
         }
 
     }
 
-    final class ValidationBuilder3<E,T1,T2,T3> {
+    final class Builder3<E,T1,T2,T3> {
 
         private Validation<E,T1> v1;
         private Validation<E,T2> v2;
         private Validation<E,T3> v3;
 
-        private ValidationBuilder3(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3) {
+        private Builder3(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3) {
             this.v1 = v1;
             this.v2 = v2;
             this.v3 = v3;
@@ -370,20 +370,20 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
             return v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))));
         }
 
-        public <T4> ValidationBuilder4<E,T1,T2,T3,T4> combine(Validation<E,T4> v4) {
-            return new ValidationBuilder4<>(v1, v2, v3, v4);
+        public <T4> Builder4<E,T1,T2,T3,T4> combine(Validation<E,T4> v4) {
+            return new Builder4<>(v1, v2, v3, v4);
         }
 
     }
 
-    final class ValidationBuilder4<E,T1,T2,T3,T4> {
+    final class Builder4<E,T1,T2,T3,T4> {
 
         private Validation<E,T1> v1;
         private Validation<E,T2> v2;
         private Validation<E,T3> v3;
         private Validation<E,T4> v4;
 
-        private ValidationBuilder4(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3, Validation<E,T4> v4) {
+        private Builder4(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3, Validation<E,T4> v4) {
             this.v1 = v1;
             this.v2 = v2;
             this.v3 = v3;
@@ -394,13 +394,13 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
             return v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))));
         }
 
-        public <T5> ValidationBuilder5<E,T1,T2,T3,T4,T5> combine(Validation<E,T5> v5) {
-            return new ValidationBuilder5<>(v1, v2, v3, v4, v5);
+        public <T5> Builder5<E,T1,T2,T3,T4,T5> combine(Validation<E,T5> v5) {
+            return new Builder5<>(v1, v2, v3, v4, v5);
         }
 
     }
 
-    final class ValidationBuilder5<E,T1,T2,T3,T4,T5> {
+    final class Builder5<E,T1,T2,T3,T4,T5> {
 
         private Validation<E,T1> v1;
         private Validation<E,T2> v2;
@@ -408,7 +408,7 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
         private Validation<E,T4> v4;
         private Validation<E,T5> v5;
 
-        private ValidationBuilder5(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3, Validation<E,T4> v4, Validation<E,T5> v5) {
+        private Builder5(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3, Validation<E,T4> v4, Validation<E,T5> v5) {
             this.v1 = v1;
             this.v2 = v2;
             this.v3 = v3;
@@ -420,13 +420,13 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
             return v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))))));
         }
 
-        public <T6> ValidationBuilder6<E,T1,T2,T3,T4,T5,T6> combine(Validation<E,T6> v6) {
-            return new ValidationBuilder6<>(v1, v2, v3, v4, v5, v6);
+        public <T6> Builder6<E,T1,T2,T3,T4,T5,T6> combine(Validation<E,T6> v6) {
+            return new Builder6<>(v1, v2, v3, v4, v5, v6);
         }
 
     }
 
-    final class ValidationBuilder6<E,T1,T2,T3,T4,T5,T6> {
+    final class Builder6<E,T1,T2,T3,T4,T5,T6> {
 
         private Validation<E,T1> v1;
         private Validation<E,T2> v2;
@@ -435,7 +435,7 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
         private Validation<E,T5> v5;
         private Validation<E,T6> v6;
 
-        private ValidationBuilder6(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3, Validation<E,T4> v4, Validation<E,T5> v5, Validation<E,T6> v6) {
+        private Builder6(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3, Validation<E,T4> v4, Validation<E,T5> v5, Validation<E,T6> v6) {
             this.v1 = v1;
             this.v2 = v2;
             this.v3 = v3;
@@ -448,13 +448,13 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
             return v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))))));
         }
 
-        public <T7> ValidationBuilder7<E,T1,T2,T3,T4,T5,T6,T7> combine(Validation<E,T7> v7) {
-            return new ValidationBuilder7<>(v1, v2, v3, v4, v5, v6, v7);
+        public <T7> Builder7<E,T1,T2,T3,T4,T5,T6,T7> combine(Validation<E,T7> v7) {
+            return new Builder7<>(v1, v2, v3, v4, v5, v6, v7);
         }
 
     }
 
-    final class ValidationBuilder7<E,T1,T2,T3,T4,T5,T6,T7> {
+    final class Builder7<E,T1,T2,T3,T4,T5,T6,T7> {
 
         private Validation<E,T1> v1;
         private Validation<E,T2> v2;
@@ -464,7 +464,7 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
         private Validation<E,T6> v6;
         private Validation<E,T7> v7;
 
-        private ValidationBuilder7(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3, Validation<E,T4> v4, Validation<E,T5> v5, Validation<E,T6> v6, Validation<E,T7> v7) {
+        private Builder7(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3, Validation<E,T4> v4, Validation<E,T5> v5, Validation<E,T6> v6, Validation<E,T7> v7) {
             this.v1 = v1;
             this.v2 = v2;
             this.v3 = v3;
@@ -478,13 +478,13 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
             return v7.ap(v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))))))));
         }
 
-        public <T8> ValidationBuilder8<E,T1,T2,T3,T4,T5,T6,T7,T8> combine(Validation<E,T8> v8) {
-            return new ValidationBuilder8<>(v1, v2, v3, v4, v5, v6, v7, v8);
+        public <T8> Builder8<E,T1,T2,T3,T4,T5,T6,T7,T8> combine(Validation<E,T8> v8) {
+            return new Builder8<>(v1, v2, v3, v4, v5, v6, v7, v8);
         }
 
     }
 
-    final class ValidationBuilder8<E,T1,T2,T3,T4,T5,T6,T7,T8> {
+    final class Builder8<E,T1,T2,T3,T4,T5,T6,T7,T8> {
 
         private Validation<E,T1> v1;
         private Validation<E,T2> v2;
@@ -495,7 +495,7 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
         private Validation<E,T7> v7;
         private Validation<E,T8> v8;
 
-        private ValidationBuilder8(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3, Validation<E,T4> v4, Validation<E,T5> v5, Validation<E,T6> v6, Validation<E,T7> v7, Validation<E,T8> v8) {
+        private Builder8(Validation<E,T1> v1, Validation<E,T2> v2, Validation<E,T3> v3, Validation<E,T4> v4, Validation<E,T5> v5, Validation<E,T6> v6, Validation<E,T7> v7, Validation<E,T8> v8) {
             this.v1 = v1;
             this.v2 = v2;
             this.v3 = v3;

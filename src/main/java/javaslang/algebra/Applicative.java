@@ -10,11 +10,11 @@ import javaslang.collection.List;
 
 import java.util.function.Function;
 
-public interface Applicative<TYPE extends Kind2<TYPE, ?, ?>, E, T> extends Functor<T> {
+public interface Applicative<TYPE extends Kind2<TYPE, ?, ?>, T1, T2> extends Functor<T2> {
 
-    <U> Applicative<TYPE, List<E>, U> ap(Kind2<TYPE, List<E>, ? extends Function<? super T, ? extends U>> f);
+    <U> Applicative<TYPE, List<T1>, U> ap(Kind2<TYPE, List<T1>, ? extends Function<? super T2, ? extends U>> f);
 
     @Override
-    <U> Applicative<TYPE, E, U> map(Function<? super T, ? extends U> f);
+    <U> Applicative<TYPE, T1, U> map(Function<? super T2, ? extends U> f);
 
 }
