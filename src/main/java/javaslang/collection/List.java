@@ -9,6 +9,7 @@ import javaslang.*;
 import javaslang.collection.List.Nil;
 import javaslang.collection.ListModule.Combinations;
 import javaslang.collection.ListModule.SplitAt;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.*;
@@ -793,6 +794,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
             list = list.prepend(mapper.apply(t));
         }
         return list.reverse();
+    }
+
+    @Override
+    default Match.MatchMonad.Of<List<T>> match() {
+        return Match.of(this);
     }
 
     @Override

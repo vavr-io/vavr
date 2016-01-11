@@ -579,6 +579,11 @@ public interface Match {
         <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper);
 
         @Override
+        default MatchMonad.Of<MatchMonad<R>> match() {
+            return Match.of(this);
+        }
+
+        @Override
         MatchMonad<R> peek(Consumer<? super R> action);
 
         @Override

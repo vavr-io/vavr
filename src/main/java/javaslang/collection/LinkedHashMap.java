@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -265,6 +266,11 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     public <W> LinkedHashMap<K, W> mapValues(Function<? super V, ? extends W> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return map((k, v) -> Tuple.of(k, mapper.apply(v)));
+    }
+
+    @Override
+    public Match.MatchMonad.Of<LinkedHashMap<K, V>> match() {
+        return Match.of(this);
     }
 
     @Override

@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -177,6 +178,11 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     @Override
     public <U> Traversable<U> map(Function<? super T, ? extends U> mapper) {
         return original.map(e -> mapper.apply(e._2));
+    }
+
+    @Override
+    public Match.MatchMonad.Of<IntMap<T>> match() {
+        return Match.of(this);
     }
 
     @Override

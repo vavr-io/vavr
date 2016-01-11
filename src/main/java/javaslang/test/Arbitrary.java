@@ -9,6 +9,7 @@ import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
+import javaslang.control.Match;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -116,6 +117,11 @@ public interface Arbitrary<T> extends Value<T> {
             final Gen<T> generator = apply(n);
             return random -> mapper.apply(generator.apply(random));
         };
+    }
+
+    @Override
+    default Match.MatchMonad.Of<Arbitrary<T>> match() {
+        return Match.of(this);
     }
 
     @Override

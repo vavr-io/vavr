@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.collection.VectorModule.Combinations;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -773,6 +774,11 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             trie = trie.put(i, mapper.apply(get(i)));
         }
         return wrap(trie);
+    }
+
+    @Override
+    public Match.MatchMonad.Of<Vector<T>> match() {
+        return Match.of(this);
     }
 
     @Override

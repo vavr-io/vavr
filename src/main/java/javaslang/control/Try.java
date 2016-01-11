@@ -354,6 +354,11 @@ public interface Try<T> extends Value<T> {
         }
     }
 
+    @Override
+    default Match.MatchMonad.Of<Try<T>> match() {
+        return Match.of(this);
+    }
+
     /**
      * Consumes the throwable if this is a Failure.
      *

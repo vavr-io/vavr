@@ -9,6 +9,7 @@ import javaslang.*;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Empty;
 import javaslang.collection.StreamModule.*;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.*;
@@ -908,6 +909,11 @@ public interface Stream<T> extends LinearSeq<T> {
         } else {
             return new Cons<>(mapper.apply(head()), () -> tail().map(mapper));
         }
+    }
+
+    @Override
+    default Match.MatchMonad.Of<Stream<T>> match() {
+        return Match.of(this);
     }
 
     @Override

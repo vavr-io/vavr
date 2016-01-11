@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Tuple2;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.util.Comparator;
@@ -121,6 +122,9 @@ public interface SortedSet<T> extends Set<T> {
 
     @Override
     <U> SortedSet<U> map(Function<? super T, ? extends U> mapper);
+
+    @Override
+    Match.MatchMonad.Of<? extends SortedSet<T>> match();
 
     @Override
     Tuple2<? extends SortedSet<T>, ? extends SortedSet<T>> partition(Predicate<? super T> predicate);

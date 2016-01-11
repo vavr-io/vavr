@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.util.Comparator;
@@ -144,6 +145,9 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     <U> LinearSeq<U> map(Function<? super T, ? extends U> mapper);
+
+    @Override
+    Match.MatchMonad.Of<? extends LinearSeq<T>> match();
 
     @Override
     LinearSeq<T> padTo(int length, T element);

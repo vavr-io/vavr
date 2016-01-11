@@ -9,6 +9,7 @@ import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.*;
@@ -631,6 +632,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
             });
             return new HashSet<>(that);
         }
+    }
+
+    @Override
+    public Match.MatchMonad.Of<HashSet<T>> match() {
+        return Match.of(this);
     }
 
     @Override

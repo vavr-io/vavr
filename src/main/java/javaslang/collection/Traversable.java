@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.Value;
+import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.math.BigDecimal;
@@ -635,6 +636,9 @@ public interface Traversable<T> extends Value<T> {
      */
     @Override
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
+
+    @Override
+    Match.MatchMonad.Of<? extends Traversable<T>> match();
 
     /**
      * Calculates the maximum of this elements according to their natural order.

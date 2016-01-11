@@ -351,6 +351,11 @@ public interface Either<L, R> {
             }
         }
 
+        @Override
+        public Match.MatchMonad.Of<LeftProjection<L, R>> match() {
+            return Match.of(this);
+        }
+
         /**
          * Applies the given action to the value if the projected either is a Left. Otherwise nothing happens.
          *
@@ -591,6 +596,11 @@ public interface Either<L, R> {
             else {
                 return (RightProjection<L, U>) this;
             }
+        }
+
+        @Override
+        public Match.MatchMonad.Of<RightProjection<L, R>> match() {
+            return Match.of(this);
         }
 
         /**

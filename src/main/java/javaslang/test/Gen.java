@@ -10,6 +10,7 @@ import javaslang.Tuple2;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.Stream;
+import javaslang.control.Match;
 
 import java.util.Objects;
 import java.util.Random;
@@ -343,6 +344,11 @@ public interface Gen<T> extends Value<T>, Function1<Random, T>, Supplier<T> {
     default <U> Gen<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return random -> mapper.apply(apply(random));
+    }
+
+    @Override
+    default Match.MatchMonad.Of<Gen<T>> match() {
+        return Match.of(this);
     }
 
     @Override
