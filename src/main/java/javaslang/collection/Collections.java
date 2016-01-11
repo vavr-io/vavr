@@ -8,6 +8,7 @@ package javaslang.collection;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Internal class, containing helpers.
@@ -77,5 +78,55 @@ final class Collections {
         return Iterator
                 .range(1, power)
                 .foldLeft((Iterator<Seq<T>>) seq.sliding(1), (product, ignored) -> product.flatMap(tuple -> seq.map(tuple::append)));
+    }
+
+    static <C extends Traversable<T>, T> C tabulate(int n, Function<? super Integer, ? extends T> f, C empty, Function<T[], C> of) {
+        Objects.requireNonNull(f, "f is null");
+        Objects.requireNonNull(empty, "empty is null");
+        Objects.requireNonNull(of, "of is null");
+        if (n <= 0) {
+            return empty;
+        } else {
+            @SuppressWarnings("unchecked")
+            T[] elements = (T[]) new Object[n];
+            for (int i = 0; i < n; i++) {
+                elements[i] = f.apply(i);
+            }
+            return of.apply(elements);
+        }
+    }
+
+    static <C extends Traversable<T>, T> C fill(int n, Supplier<? extends T> s, C empty, Function<T[], C> of) {
+        Objects.requireNonNull(s, "s is null");
+        Objects.requireNonNull(empty, "empty is null");
+        Objects.requireNonNull(of, "of is null");
+        return tabulate(n, anything -> s.get(), empty, of);
+    }
+
+    static <T> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        Objects.requireNonNull(f, "f is null");
+        if (n <= 0) {
+            return Iterator.empty();
+        } else {
+            return new AbstractIterator<T>() {
+
+                int i = 0;
+
+                @Override
+                public boolean hasNext() {
+                    return i < n;
+                }
+
+                @Override
+                protected T getNext() {
+                    return f.apply(i++);
+                }
+            };
+        }
+    }
+
+    static <T> Iterator<T> fill(int n, Supplier<? extends T> s) {
+        Objects.requireNonNull(s, "s is null");
+        return tabulate(n, anything -> s.get());
     }
 }

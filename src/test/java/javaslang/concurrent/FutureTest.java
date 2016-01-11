@@ -442,9 +442,43 @@ public class FutureTest extends AbstractValueTest {
 
     // TODO
 
+    // -- getCause()
+
+    @Test
+    public void shouldGetCauseOfUncompletedFuture() {
+        final Future<?> future = Future.of(Concurrent::waitForever);
+        assertThat(future.getCause()).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldGetCauseOfFailedFuture() {
+        final Error error = new Error();
+        assertThat(Future.failed(error).getCause()).isEqualTo(Option.some(error));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenGettingCauseOfSucceededFuture() {
+        Future.successful("ok").getCause();
+    }
+
     // -- getValue()
 
-    // TODO
+    @Test
+    public void shouldGetValueOfUncompletedFuture() {
+        final Future<?> future = Future.of(Concurrent::waitForever);
+        assertThat(future.getValue()).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldGetValueOfSucceededFuture() {
+        assertThat(Future.successful("ok").getValue()).isEqualTo(Option.some(Try.success("ok")));
+    }
+
+    @Test
+    public void shouldThrowWhenGettingValueOfFailedFuture() {
+        final Error error = new Error();
+        assertThat(Future.failed(error).getValue()).isEqualTo(Option.some(Try.failure(error)));
+    }
 
     // -- isCompleted()
 

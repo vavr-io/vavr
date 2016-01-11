@@ -89,6 +89,70 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return new TreeSet<>(RedBlackTree.of(comparator, values));
     }
 
+    /**
+     * Returns a TreeSet containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1}.
+     *
+     * @param <T> Component type of the TreeSet
+     * @param comparator The comparator used to sort the elements
+     * @param n The number of elements in the TreeSet
+     * @param f The Function computing element values
+     * @return A TreeSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code comparator} or {@code f} are null
+     */
+    public static <T> TreeSet<T> tabulate(Comparator<? super T> comparator, int n, Function<? super Integer, ? extends T> f) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        Objects.requireNonNull(f, "f is null");
+        return Collections.tabulate(n, f, TreeSet.empty(comparator), values -> TreeSet.of(comparator, values));
+    }
+
+    /**
+     * Returns a TreeSet containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1}.
+     * The underlying comparator is the natural comparator of T.
+     *
+     * @param <T> Component type of the TreeSet
+     * @param n The number of elements in the TreeSet
+     * @param f The Function computing element values
+     * @return A TreeSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public static <T extends Comparable<? super T>> TreeSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        Objects.requireNonNull(f, "f is null");
+        return tabulate((Comparator<? super T> & Serializable) T::compareTo, n, f);
+    }
+
+    /**
+     * Returns a TreeSet containing {@code n} values supplied by a given Supplier {@code s}.
+     *
+     * @param <T> Component type of the TreeSet
+     * @param comparator The comparator used to sort the elements
+     * @param n The number of elements in the TreeSet
+     * @param s The Supplier computing element values
+     * @return A TreeSet of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code comparator} or {@code s} are null
+     */
+    public static <T> TreeSet<T> fill(Comparator<? super T> comparator, int n, Supplier<? extends T> s) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        Objects.requireNonNull(s, "s is null");
+        return Collections.fill(n, s, TreeSet.empty(comparator), values -> TreeSet.of(comparator, values));
+    }
+
+    /**
+     * Returns a TreeSet containing {@code n} values supplied by a given Supplier {@code s}.
+     * The underlying comparator is the natural comparator of T.
+     *
+     * @param <T> Component type of the TreeSet
+     * @param n The number of elements in the TreeSet
+     * @param s The Supplier computing element values
+     * @return A TreeSet of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code s} is null
+     */
+    public static <T extends Comparable<? super T>> TreeSet<T> fill(int n, Supplier<? extends T> s) {
+        Objects.requireNonNull(s, "s is null");
+        return fill((Comparator<? super T> & Serializable) T::compareTo, n, s);
+    }
+
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(Iterable<? extends T> values) {
         Objects.requireNonNull(values, "values is null");
         return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(values)) : empty();

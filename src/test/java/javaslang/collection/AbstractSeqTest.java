@@ -10,9 +10,6 @@ import javaslang.Tuple2;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
@@ -61,10 +58,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Override
     abstract protected Seq<Short> ofAll(short[] array);
-
-    abstract protected <T> Seq<T> tabulate(int n, Function<? super Integer, ? extends T> f);
-
-    abstract protected <T> Seq<T> fill(int n, Supplier<? extends T> s);
 
     @Override
     abstract protected Seq<Character> range(char from, char toExclusive);
@@ -1486,49 +1479,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     public void shouldTestIdexedSeqEndsWithNonIndexedSeq() {
         assertThat(of(1, 3, 4).endsWith(Stream.of(3, 4))).isTrue();
         assertThat(of(1, 2, 3, 4).endsWith(Stream.of(2, 3, 5))).isFalse();
-    }
-
-    @Test
-    public void shouldTabulateTheSeq() {
-        Function<Number, Integer> f = i -> i.intValue() * i.intValue();
-        Seq<Number> actual = tabulate(3, f);
-        assertThat(actual).isEqualTo(of(0, 1, 4));
-    }
-
-    @Test
-    public void shouldTabulateTheSeqCallingTheFunctionInTheRightOrder() {
-        java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 1, 2));
-        Function<Integer, Integer> f = i -> ints.remove();
-        Seq<Integer> actual = tabulate(3, f);
-        assertThat(actual).isEqualTo(of(0, 1, 2));
-    }
-
-    @Test
-    public void shouldTabulateTheSeqWith0Elements() {
-        assertThat(tabulate(0, i -> i)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldTabulateTheSeqWith0ElementsWhenNIsNegative() {
-        assertThat(tabulate(-1, i -> i)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldFillTheSeqCallingTheSupplierInTheRightOrder() {
-        java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 1));
-        Supplier<Integer> s = () -> ints.remove();
-        Seq<Number> actual = fill(2, s);
-        assertThat(actual).isEqualTo(of(0, 1));
-    }
-
-    @Test
-    public void shouldFillTheSeqWith0Elements() {
-        assertThat(fill(0, () -> 1)).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldFillTheSeqWith0ElementsWhenNIsNegative() {
-        assertThat(fill(-1, () -> 1)).isEqualTo(empty());
     }
 
 }
