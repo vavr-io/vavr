@@ -75,7 +75,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @param <T>     The component type
      * @return A new Array instance containing the given element
      */
-    @SuppressWarnings("unchecked")
     public static <T> Array<T> of(T element) {
         return wrap(new Object[] { element });
     }
