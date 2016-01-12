@@ -847,13 +847,14 @@ public interface Match {
 
             @SuppressWarnings("unchecked")
             @Override
-            public <U> MatchMonad<U> flatMap(
-                    Function<? super R, ? extends Iterable<? extends U>> mapper) {
+            public <U> MatchMonad<U> flatMap(Function<? super R, ? extends Iterable<? extends U>> mapper) {
                 Objects.requireNonNull(mapper, "mapper is null");
                 return result.map(supplier -> {
-                    final Option<Supplier<? extends U>> some = Option.some(() -> Value.get(mapper.apply(supplier.get())));
-                    return (MatchMonad<U>) new Then<>(value, some);
-                }).orElse((MatchMonad<U>) this);
+                    final Option<Supplier<? extends U>> mappedResult = Value
+                            .getOption(mapper.apply(supplier.get()))
+                            .map((U u) -> (Supplier<U>) () -> u);
+                    return new Then<>(value, mappedResult);
+                }).orElse((Then<T, U>) this);
             }
 
             @SuppressWarnings("unchecked")
@@ -938,7 +939,7 @@ public interface Match {
             @Override
             public <U> MatchMonad<U> flatMap(Function<? super R, ? extends Iterable<? extends U>> mapper) {
                 Objects.requireNonNull(mapper, "mapper is null");
-                return new Otherwise<>(() -> Value.get(mapper.apply(result.get())));
+                return new Otherwise<>(() -> Value.getOption(mapper.apply(result.get())).get());
             }
 
             @Override

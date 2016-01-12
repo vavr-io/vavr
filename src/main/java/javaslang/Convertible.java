@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  *
  * @param <T> Component type.
  * @author Daniel Dietrich
- * @since 2.0.0
+ *
  */
 public interface Convertible<T> {
 

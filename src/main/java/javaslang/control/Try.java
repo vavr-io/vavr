@@ -253,7 +253,7 @@ public interface Try<T> extends Monad<T>, Value<T> {
                 if (iterable instanceof Value) {
                     return ((Value<U>) iterable).toTry();
                 } else {
-                    return Try.of(() -> Value.get(iterable));
+                    return Try.of(() -> Value.getOption(iterable).get());
                 }
             } catch (Throwable t) {
                 return new Failure<>(t);

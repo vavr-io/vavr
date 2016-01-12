@@ -92,20 +92,26 @@ import java.util.stream.StreamSupport;
 public interface Value<T> extends Convertible<T>, Foldable<T>, ValueModule.Iterable<T>, ValueModule.Printable {
 
     /**
-     * Gets the first value of the given Iterable if exists, otherwise throws.
+     * Gets the first value of the given Iterable if exists.
      *
      * @param iterable An Iterable
      * @param <T>      Component type
-     * @return An object of type T
-     * @throws java.util.NoSuchElementException if the given iterable is empty
+     * @return {@code Some(value)} if iterable is not empty, otherwise {@code None}.
+     * @throws java.lang.NullPointerException if iterable is null
      */
     @SuppressWarnings("unchecked")
-    static <T> T get(Iterable<? extends T> iterable) {
+    static <T> Option<T> getOption(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         if (iterable instanceof Value) {
-            return ((Value<T>) iterable).get();
+            final Value<T> value = (Value<T>) iterable;
+            return value.getOption();
         } else {
-            return iterable.iterator().next();
+            final java.util.Iterator<? extends T> iterator = iterable.iterator();
+            if (iterator.hasNext()) {
+                return Option.some(iterator.next());
+            } else {
+                return Option.none();
+            }
         }
     }
 
@@ -416,7 +422,6 @@ public interface Value<T> extends Convertible<T>, Foldable<T>, ValueModule.Itera
 
     @Override
     default <R> Either<T, R> toLeft(R right) {
-        Objects.requireNonNull(right, "right is null");
         return isEmpty() ? Either.right(right) : Either.left(get());
     }
 
@@ -459,7 +464,6 @@ public interface Value<T> extends Convertible<T>, Foldable<T>, ValueModule.Itera
 
     @Override
     default <L> Either<L, T> toRight(L left) {
-        Objects.requireNonNull(left, "left is null");
         return isEmpty() ? Either.left(left) : Either.right(get());
     }
 
