@@ -329,7 +329,7 @@ public interface Gen<T> extends Monad<T>, Value<T>, Function1<Random, T>, Suppli
             if (iterable instanceof Gen) {
                 return ((Gen<U>) iterable).apply(random);
             } else {
-                return Value.get(iterable);
+                return Value.getOption(iterable).get();
             }
         };
     }

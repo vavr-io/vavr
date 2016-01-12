@@ -99,7 +99,7 @@ public interface Arbitrary<T> extends Monad<T>, Value<T> {
                 if (iterable instanceof Arbitrary) {
                     return ((Arbitrary<U>) iterable).apply(size).apply(random);
                 } else {
-                    return Value.get(iterable);
+                    return Value.getOption(iterable).get();
                 }
             };
         };
