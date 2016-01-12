@@ -493,7 +493,7 @@ public interface Either<L, R> extends Monad<R>, Value<R> {
                     return (LeftProjection<U, R>) iterable;
                 } else {
                     // DEV-NOTE: Scala has an implicit converter (L -> R) in case mapper result is empty, we use null
-                    return (LeftProjection<U, R>) Value.getOption(mapper.apply(either.getLeft())).toLeft((R) null).left();
+                    return Value.getOption(mapper.apply(either.getLeft())).toLeft((R) null).left();
                 }
             } else {
                 return (LeftProjection<U, R>) this;
@@ -717,7 +717,7 @@ public interface Either<L, R> extends Monad<R>, Value<R> {
                 if (iterable instanceof RightProjection) {
                     return (RightProjection<L, U>) iterable;
                 } else {
-                    return (RightProjection<L, U>) either.flatMap(mapper).right();
+                    return either.flatMap(mapper).right();
                 }
             } else {
                 return (RightProjection<L, U>) this;
@@ -735,7 +735,7 @@ public interface Either<L, R> extends Monad<R>, Value<R> {
         public <U> RightProjection<L, U> map(Function<? super R, ? extends U> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight())
-                return (RightProjection<L, U>) either.map(mapper).right();
+                return either.map(mapper).right();
             else {
                 return (RightProjection<L, U>) this;
             }
