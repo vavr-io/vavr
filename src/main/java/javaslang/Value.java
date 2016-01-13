@@ -32,7 +32,7 @@ import java.util.stream.StreamSupport;
  * Static methods:
  *
  * <ul>
- * <li>{@link #get(Iterable)}</li>
+ * <li>{@link #getOption(Iterable)}</li>
  * </ul>
  *
  * Basic operations:

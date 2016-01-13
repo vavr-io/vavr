@@ -114,8 +114,8 @@ def generateMainClasses(): Unit = {
          * </ul>
          *
          * The {@code select} functioned mentioned is not explicitly defined. Monad implementations are responsible for
-         * implementing the correct behavior of {@code flatMap}. For single-valued types {@link javaslang.Value#get(Iterable)}
-         * may be used.
+         * implementing the correct behavior of {@code flatMap}. For single-valued types
+         * {@link javaslang.Value#getOption(Iterable)} may be used.
          * <p>
          * To read further about monads in Java please refer to
          * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
