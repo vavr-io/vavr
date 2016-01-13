@@ -89,7 +89,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         for (T element : elements) {
             map = map.put(element, element);
         }
-        return new LinkedHashSet<>(map);
+        return map.isEmpty() ? LinkedHashSet.empty() : new LinkedHashSet<>(map);
     }
 
     /**

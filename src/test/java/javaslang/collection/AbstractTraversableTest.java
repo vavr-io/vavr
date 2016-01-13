@@ -37,6 +37,10 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Override
     abstract protected <T> Traversable<T> empty();
 
+    protected boolean emptyShouldBeSingleton() {
+        return true;
+    }
+
     @Override
     abstract protected <T> Traversable<T> of(T element);
 
@@ -2190,6 +2194,18 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldFillTheSeqWith0ElementsWhenNIsNegative() {
         assertThat(fill(-1, () -> 1)).isEqualTo(empty());
+    }
+
+    @Test
+    public void ofShouldReturnTheSingletonEmpty() {
+        if (!emptyShouldBeSingleton()) return;
+        assertThat(of()).isSameAs(empty());
+    }
+
+    @Test
+    public void ofAllShouldReturnTheSingletonEmpty() {
+        if (!emptyShouldBeSingleton()) return;
+        assertThat(ofAll(Iterator.empty())).isSameAs(empty());
     }
 
     private void testCollector(Runnable test) {

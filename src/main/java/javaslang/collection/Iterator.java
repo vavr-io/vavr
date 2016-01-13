@@ -141,6 +141,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     @SafeVarargs
     static <T> Iterator<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
+        if (elements.length == 0) return Iterator.empty();
         return new AbstractIterator<T>() {
 
             int index = 0;

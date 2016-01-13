@@ -136,6 +136,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Queue) {
             return (Queue<T>) elements;
+        } else if (!elements.iterator().hasNext()) {
+            return empty();
         } else if (elements instanceof List) {
             return new Queue<>((List<T>) elements, List.empty());
         } else {
