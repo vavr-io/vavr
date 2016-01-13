@@ -5,21 +5,20 @@
  */
 package javaslang.collection;
 
-import javaslang.Lazy;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.collection.RedBlackTreeModule.Empty;
-import javaslang.collection.RedBlackTreeModule.Node;
-import javaslang.control.Option;
+import static javaslang.collection.RedBlackTree.Color.BLACK;
+import static javaslang.collection.RedBlackTree.Color.RED;
 
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-import static javaslang.collection.RedBlackTree.Color.BLACK;
-import static javaslang.collection.RedBlackTree.Color.RED;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
+import javaslang.collection.RedBlackTreeModule.Empty;
+import javaslang.collection.RedBlackTreeModule.Node;
+import javaslang.control.Option;
 
 /**
  * Purely functional Red/Black Tree, inspired by <a href="https://github.com/kazu-yamamoto/llrbtree/blob/master/Data/Set/RBTree.hs">Kazu Yamamoto's Haskell implementation</a>.

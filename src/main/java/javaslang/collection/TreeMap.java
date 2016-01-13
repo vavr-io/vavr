@@ -306,7 +306,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
      * @param keyComparator A key comparator
      * @return A new TreeMap containing the given entries.
      */
-    @SuppressWarnings("unchecked")
     @SafeVarargs
     public static <K, V> TreeMap<K, V> ofEntries(Comparator<? super K> keyComparator, java.util.Map.Entry<? extends K, ? extends V>... entries) {
         Objects.requireNonNull(keyComparator, "keyComparator is null");

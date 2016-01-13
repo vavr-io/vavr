@@ -267,7 +267,7 @@ public interface Either<L, R> extends Monad<R>, Value<R> {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isRight()) {
             // DEV-NOTE: Scala has an implicit converter (R -> L) in case mapper result is empty, we use null
-            return Value.getOption(mapper.apply(get())).toRight(null);
+            return (Either<L, U>) Value.getOption(mapper.apply(get())).toRight(null);
         } else {
             return (Either<L, U>) this;
         }
