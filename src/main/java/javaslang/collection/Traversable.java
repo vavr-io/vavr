@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.Value;
+import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.control.Match;
 import javaslang.control.Option;
@@ -137,7 +138,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich and others
  * @since 1.1.0
  */
-public interface Traversable<T> extends Monad<T>, Value<T> {
+public interface Traversable<T> extends Monad<Traversable<?>, T>, Value<T> {
 
     /**
      * Used by collections to compute the hashCode only once.
@@ -374,7 +375,6 @@ public interface Traversable<T> extends Monad<T>, Value<T> {
      * @return a new traversable
      * @throws NullPointerException if {@code predicate} is null
      */
-    @Override
     Traversable<T> filter(Predicate<? super T> predicate);
 
     /**
@@ -409,6 +409,16 @@ public interface Traversable<T> extends Monad<T>, Value<T> {
     }
 
     @Override
+    <U> Traversable<U> flatMapM(Function<? super T, ? extends Kind1<? extends Traversable<?>, ? extends U>> mapper);
+
+    /**
+     * FlatMaps this Traversable. This is a relaxed version of {@link #flatMapM(Function)} with a mapper that returns
+     * an {@link Iterable}.
+     *
+     * @param mapper A mapper
+     * @param <U> The resulting component type.
+     * @return A new Traversable instance.
+     */
     <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     /**

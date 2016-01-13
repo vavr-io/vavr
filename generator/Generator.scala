@@ -142,7 +142,7 @@ def generateMainClasses(): Unit = {
              * @return a mapped {@code Monad}
              * @throws NullPointerException if {@code mapper} is null
              */
-            <U> Monad<M, U> flatMapM(Function<? super T, ? extends Kind1<M, U>> mapper);
+            <U> Monad<M, U> flatMapM(Function<? super T, ? extends Kind1<? extends M, ? extends U>> mapper);
 
             // -- adjusting return types of super interface methods
 
