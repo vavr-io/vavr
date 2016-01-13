@@ -5,7 +5,6 @@
  */
 package javaslang.algebra;
 
-import javaslang.Kind2;
 import javaslang.collection.List;
 
 import java.util.function.Function;
@@ -24,7 +23,7 @@ import java.util.function.Function;
  * @since 2.0.0
  * @see <a href="http://eed3si9n.com/learning-scalaz/Applicative.html">Applicative</a>
  */
-public interface Applicative<TYPE extends Kind2<TYPE, ?, ?>, T1, T2> extends Functor<T2> {
+public interface Applicative<TYPE extends Kind2<TYPE, ?, ?>, T1, T2> extends Kind2<TYPE, T1, T2>, Functor<T2> {
 
     /**
      * Applies a function wrapped inside of an {@code Applicative}, f, to a value inside of this

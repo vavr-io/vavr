@@ -45,28 +45,6 @@ def generateMainClasses(): Unit = {
 
     def genMonad(im: ImportManager, packageName: String, className: String): String = {
 
-      val ArrayType = im.getType("javaslang.collection.Array")
-      val CharSeqType = im.getType("javaslang.collection.CharSeq")
-      val ConvertibleType = im.getType("javaslang.Convertible")
-      val EitherType = im.getType("javaslang.control.Either")
-      val HashMapType = im.getType("javaslang.collection.HashMap")
-      val HashSetType = im.getType("javaslang.collection.HashSet")
-      val LazyType = im.getType("javaslang.Lazy")
-      val LeftType = im.getType("javaslang.control.Either.Left")
-      val ListType = im.getType("javaslang.collection.List")
-      val MapType = im.getType("javaslang.collection.Map")
-      val MatchType = im.getType("javaslang.control.Match")
-      val OptionType = im.getType("javaslang.control.Option")
-      val QueueType = im.getType("javaslang.collection.Queue")
-      val RightType = im.getType("javaslang.control.Either.Right")
-      val SetType = im.getType("javaslang.collection.Set")
-      val StackType = im.getType("javaslang.collection.Stack")
-      val StreamType = im.getType("javaslang.collection.Stream")
-      val SupplierType = im.getType("java.util.function.Supplier")
-      val TreeType = im.getType("javaslang.collection.Tree")
-      val TryType = im.getType("javaslang.control.Try")
-      val VectorType = im.getType("javaslang.collection.Vector")
-
       xs"""
         /**
          * Defines a Monad by generalizing the flatMap function.
@@ -89,34 +67,6 @@ def generateMainClasses(): Unit = {
          * <li><strong>Associativity:</strong> {@code m.flatMap(f).flatMap(g) ≡ m.flatMap(x -> f.apply(x).flatMap(g))}</li>
          * </ul>
          *
-         * <strong>The left identity `unit(a).flatMap(f) ≡ f.apply(a)` can't be satisfied for single-valued monads.</strong>
-         * <p>
-         * Example:
-         *
-         * <pre>
-         * <code>
-         * // = Try(1)
-         * Try.success(20).flatMap(i -&gt; List.of(1, 2, 3));
-         * </code>
-         * </pre>
-         *
-         * Therefore we need to adapt the left identity law:
-         *
-         * <pre>
-         * <code>unit(a).flatMap(f) ≡ select(f.apply(a))</code>
-         * </pre>
-         *
-         * where select
-         *
-         * <ul>
-         * <li>takes the first element (if present), if the underlying monad is single-value</li>
-         * <li>takes all elements (if any is present), if the underlying monad is multi-valued</li>
-         * </ul>
-         *
-         * The {@code select} functioned mentioned is not explicitly defined. Monad implementations are responsible for
-         * implementing the correct behavior of {@code flatMap}. For single-valued types
-         * {@link javaslang.Value#getOption(Iterable)} may be used.
-         * <p>
          * To read further about monads in Java please refer to
          * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
          *
@@ -124,13 +74,13 @@ def generateMainClasses(): Unit = {
          * @author Daniel Dietrich
          * @since 1.1.0
          */
-        public interface Monad<T> extends Functor<T>, Iterable<T>, $ConvertibleType<T> {
+        public interface Monad<M extends Kind1<M, ?>, T> extends Kind1<M, T>, Functor<T> {
 
             ${(1 to N).gen(i => {
 
               val genericsF = if (i == 1) "? super T" else (1 to i).gen(j => s"? super T$j")(", ")
               val genericsT = if (i == 1) "T" else (1 to i).gen(j => s"T$j")(", ")
-              val genericsM = if (i == 1) "? super Monad<T>" else (1 to i).gen(j => s"Monad<T$j>")(", ")
+              val genericsM = if (i == 1) "Monad<M, T>" else (1 to i).gen(j => s"Monad<M, T$j>")(", ")
               val function = i match {
                 case 1 => im.getType("java.util.function.Function")
                 case 2 => im.getType("java.util.function.BiFunction")
@@ -142,51 +92,24 @@ def generateMainClasses(): Unit = {
                  * Lifts a {@code $function} to a higher {@code Function$i} that operates on Monads.
                  *
                  ${(1 to i).gen(j => s"* @param <${if (i == 1) "T" else s"T$j"}> ${j.ordinal} argument type of f")("\n")}
+                 * @param <M> Monad type
                  * @param <R> result type of f
                  * @param f a $function
                  * @return a new Function$i that lifts the given function f in a layer that operates on monads.
                  */
-                static <$genericsT, R> Function$i<$genericsM, Monad<R>> lift($function<$genericsF, ? extends R> f) {
+                static <M extends Monad<M, ?>, $genericsT, R> Function$i<$genericsM, Monad<M, R>> lift($function<$genericsF, ? extends R> f) {
                     ${if (i == 1) {
                       "return mT -> mT.map(f::apply);"
                     } else {
                       xs"""
                         return (${(1 to i).gen(j => s"mT$j")(", ")}) ->
-                                ${(1 to i - 1).gen(j => s"mT$j.flatMap(t$j ->")("\n")}
+                                ${(1 to i - 1).gen(j => s"mT$j.flatMapM(t$j ->")("\n")}
                                 mT$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")})${")" * i};
                       """
                     }}
                 }
               """
             })("\n\n")}
-
-            /**
-             * Filters this {@code Monad} by testing a predicate.
-             * <p>
-             * The semantics may vary from class to class, e.g. for single-valued type (like Option) and multi-values types
-             * (like Traversable). The commonality is, that filtered.isEmpty() will return true, if no element satisfied
-             * the given predicate.
-             * <p>
-             * Also, an implementation may throw {@code NoSuchElementException}, if no element makes it through the filter
-             * and this state cannot be reflected. E.g. this is the case for {@link javaslang.control.Either.LeftProjection} and
-             * {@link javaslang.control.Either.RightProjection}.
-             *
-             * @param predicate A predicate
-             * @return a new Monad instance
-             * @throws NullPointerException if {@code predicate} is null
-             */
-            Monad<T> filter(${im.getType("java.util.function.Predicate")}<? super T> predicate);
-
-            /**
-             * Filters this {@code Monad} by testing the negation of a predicate.
-             * <p>
-             * Shortcut for {@code filter(predicate.negate()}.
-             *
-             * @param predicate A predicate
-             * @return a new Monad instance
-             * @throws NullPointerException if {@code predicate} is null
-             */
-            Monad<T> filterNot(${im.getType("java.util.function.Predicate")}<? super T> predicate);
 
             /**
              * FlatMaps this value to a new value with different component type.
@@ -196,9 +119,9 @@ def generateMainClasses(): Unit = {
              * If the previous results are needed, flatMap cascades:
              * <pre>
              * <code>
-             * m1().flatMap(result1 -&gt;
-             *      m2(result1).flatMap(result2 -&gt;
-             *          m3(result1, result2).flatMap(result3 -&gt;
+             * m1().flatMapM(result1 -&gt;
+             *      m2(result1).flatMapM(result2 -&gt;
+             *          m3(result1, result2).flatMapM(result3 -&gt;
              *              ...
              *          )
              *      )
@@ -208,9 +131,9 @@ def generateMainClasses(): Unit = {
              * If only the last result is needed, flatMap may be used sequentially:
              * <pre>
              * <code>
-             * m1().flatMap(this::m2)
-             *     .flatMap(this::m3)
-             *     .flatMap(...);
+             * m1().flatMapM(this::m2)
+             *     .flatMapM(this::m3)
+             *     .flatMapM(...);
              * </code>
              * </pre>
              *
@@ -219,7 +142,7 @@ def generateMainClasses(): Unit = {
              * @return a mapped {@code Monad}
              * @throws NullPointerException if {@code mapper} is null
              */
-            <U> Monad<U> flatMap(${im.getType("java.util.function.Function")}<? super T, ? extends Iterable<? extends U>> mapper);
+            <U> Monad<M, U> flatMapM(Function<? super T, ? extends Kind1<M, U>> mapper);
 
             // -- adjusting return types of super interface methods
 
@@ -232,12 +155,7 @@ def generateMainClasses(): Unit = {
              * @throws NullPointerException if {@code mapper} is null
              */
             @Override
-            <U> Monad<U> map(${im.getType("java.util.function.Function")}<? super T, ? extends U> mapper);
-
-            // -- adjusting return types of Convertible methods
-
-            @Override
-            $MatchType.MatchMonad.Of<? extends Monad<T>> match();
+            <U> Monad<M, U> map(${im.getType("java.util.function.Function")}<? super T, ? extends U> mapper);
 
         }
       """

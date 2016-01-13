@@ -7,6 +7,7 @@ package javaslang.control;
 
 import javaslang.*;
 import javaslang.algebra.Applicative;
+import javaslang.algebra.Kind2;
 import javaslang.collection.List;
 
 import java.util.NoSuchElementException;
@@ -56,7 +57,7 @@ import java.util.function.Supplier;
  * @since 2.0.0
  * @see <a href="https://github.com/scalaz/scalaz/blob/series/7.3.x/core/src/main/scala/scalaz/Validation.scala">Validation</a>
  */
-public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicative<Validation<?,?>, E, T> {
+public interface Validation<E,T> extends Applicative<Validation<?,?>, E, T> {
 
     /**
      * Creates a {@link Valid} that contains the given {@code value}.
