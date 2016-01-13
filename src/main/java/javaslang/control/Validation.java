@@ -125,7 +125,7 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
      * @return an instance of Builder&lt;E,T1,T2&gt;
      * @throws NullPointerException if validation1 or validation2 is null
      */
-    static <E,T1,T2> Builder<E,T1,T2> map2(Validation<E,T1> validation1, Validation<E,T2> validation2) {
+    static <E,T1,T2> Builder<E,T1,T2> combine(Validation<E,T1> validation1, Validation<E,T2> validation2) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         return new Builder<>(validation1, validation2);
@@ -144,7 +144,7 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
      * @return an instance of Builder3&lt;E,T1,T2,T3&gt;
      * @throws NullPointerException if validation1, validation2 or validation3 is null
      */
-    static <E,T1,T2,T3> Builder3<E,T1,T2,T3> map3(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3) {
+    static <E,T1,T2,T3> Builder3<E,T1,T2,T3> combine(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -166,7 +166,7 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4&gt;
      * @throws NullPointerException if validation1, validation2, validation3 or validation4 is null
      */
-    static <E,T1,T2,T3,T4> Builder4<E,T1,T2,T3,T4> map4(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4) {
+    static <E,T1,T2,T3,T4> Builder4<E,T1,T2,T3,T4> combine(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -191,7 +191,7 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4 or validation5 is null
      */
-    static <E,T1,T2,T3,T4,T5> Builder5<E,T1,T2,T3,T4,T5> map5(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5) {
+    static <E,T1,T2,T3,T4,T5> Builder5<E,T1,T2,T3,T4,T5> combine(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -219,7 +219,7 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5 or validation6 is null
      */
-    static <E,T1,T2,T3,T4,T5,T6> Builder6<E,T1,T2,T3,T4,T5,T6> map6(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5, Validation<E,T6> validation6) {
+    static <E,T1,T2,T3,T4,T5,T6> Builder6<E,T1,T2,T3,T4,T5,T6> combine(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5, Validation<E,T6> validation6) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -250,7 +250,7 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6,T7&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5, validation6 or validation7 is null
      */
-    static <E,T1,T2,T3,T4,T5,T6,T7> Builder7<E,T1,T2,T3,T4,T5,T6,T7> map7(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5, Validation<E,T6> validation6, Validation<E,T7> validation7) {
+    static <E,T1,T2,T3,T4,T5,T6,T7> Builder7<E,T1,T2,T3,T4,T5,T6,T7> combine(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5, Validation<E,T6> validation6, Validation<E,T7> validation7) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -284,7 +284,7 @@ public interface Validation<E,T> extends Kind2<Validation<?,?>, E, T>, Applicati
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6,T7,T8&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5, validation6, validation7 or validation8 is null
      */
-    static <E,T1,T2,T3,T4,T5,T6,T7,T8> Builder8<E,T1,T2,T3,T4,T5,T6,T7,T8> map8(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5, Validation<E,T6> validation6, Validation<E,T7> validation7, Validation<E,T8> validation8) {
+    static <E,T1,T2,T3,T4,T5,T6,T7,T8> Builder8<E,T1,T2,T3,T4,T5,T6,T7,T8> combine(Validation<E,T1> validation1, Validation<E,T2> validation2, Validation<E,T3> validation3, Validation<E,T4> validation4, Validation<E,T5> validation5, Validation<E,T6> validation6, Validation<E,T7> validation7, Validation<E,T8> validation8) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
