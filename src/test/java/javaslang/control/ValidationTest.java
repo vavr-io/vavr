@@ -193,16 +193,16 @@ public class ValidationTest {
         Validation<String,String>  v9 = Validation.valid("alt4");
 
         // Alternative map(n) functions to the 'combine' function
-        Validation<List<String>,TestValidation> result = Validation.map2(v1, v2).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result2 = Validation.map3(v1, v2, v3).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result3 = Validation.map3(v1, v2, v4).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result4 = Validation.map4(v1, v2, v3, v5).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result5 = Validation.map5(v1, v2, v3, v5, v6).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result6 = Validation.map6(v1, v2, v3, v5, v6, v7).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result7 = Validation.map7(v1, v2, v3, v5, v6, v7, v8).ap(TestValidation::new);
-        Validation<List<String>,TestValidation> result8 = Validation.map8(v1, v2, v3, v5, v6, v7, v8, v9).ap(TestValidation::new);
+        Validation<List<String>,TestValidation> result  = Validation.combine(v1, v2).ap(TestValidation::new);
+        Validation<List<String>,TestValidation> result2 = Validation.combine(v1, v2, v3).ap(TestValidation::new);
+        Validation<List<String>,TestValidation> result3 = Validation.combine(v1, v2, v4).ap(TestValidation::new);
+        Validation<List<String>,TestValidation> result4 = Validation.combine(v1, v2, v3, v5).ap(TestValidation::new);
+        Validation<List<String>,TestValidation> result5 = Validation.combine(v1, v2, v3, v5, v6).ap(TestValidation::new);
+        Validation<List<String>,TestValidation> result6 = Validation.combine(v1, v2, v3, v5, v6, v7).ap(TestValidation::new);
+        Validation<List<String>,TestValidation> result7 = Validation.combine(v1, v2, v3, v5, v6, v7, v8).ap(TestValidation::new);
+        Validation<List<String>,TestValidation> result8 = Validation.combine(v1, v2, v3, v5, v6, v7, v8, v9).ap(TestValidation::new);
 
-        Validation<List<String>,String> result9 = Validation.map3(v1, v2, v3).ap((p1, p2, p3) -> p1+":"+p2+":"+p3.orElse("none"));
+        Validation<List<String>,String> result9 = Validation.combine(v1, v2, v3).ap((p1, p2, p3) -> p1+":"+p2+":"+p3.orElse("none"));
 
         assertThat(result.isValid()).isTrue();
         assertThat(result2.isValid()).isTrue();
