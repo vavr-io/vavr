@@ -33,6 +33,16 @@ public class TreeMapTest extends AbstractMapTest {
     }
 
     @Override
+    protected boolean emptyMapShouldBeSingleton() {
+        return false;
+    }
+
+    @Override
+    protected boolean emptyShouldBeSingleton() {
+        return false;
+    }
+
+    @Override
     protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
         return TreeMap.<Integer, T> collector();
     }
@@ -40,14 +50,14 @@ public class TreeMapTest extends AbstractMapTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> Map<K, V> mapOf(Tuple2<? extends K, ? extends V>... entries) {
+    protected final <K, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
         return TreeMap.ofEntries(naturalComparator(), entries);
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> Map<K, V> mapOf(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+    protected final <K, V> Map<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         return TreeMap.ofEntries(naturalComparator(), entries);
     }
 
