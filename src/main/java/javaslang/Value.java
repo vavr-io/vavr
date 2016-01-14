@@ -6,6 +6,8 @@
 package javaslang;
 
 import javaslang.algebra.Foldable;
+import javaslang.algebra.Functor;
+import javaslang.algebra.Monoid;
 import javaslang.collection.*;
 import javaslang.control.Either;
 import javaslang.control.Match;
@@ -26,14 +28,8 @@ import java.util.stream.StreamSupport;
  * Hence the result may be undefined. If a value is undefined, we say it is empty.
  * <p>
  * How the empty state is interpreted depends on the context, i.e. it may be <em>undefined</em>, <em>failed</em>,
- * <em>not yet defined</em>, etc.
+ * <em>no elements</em>, etc.
  * <p>
- *
- * Static methods:
- *
- * <ul>
- * <li>{@link #getOption(Iterable)}</li>
- * </ul>
  *
  * Basic operations:
  *
@@ -44,12 +40,18 @@ import java.util.stream.StreamSupport;
  * <li>{@link #ifDefined(Object, Object)}</li>
  * <li>{@link #ifEmpty(Supplier, Supplier)}</li>
  * <li>{@link #ifEmpty(Object, Object)}</li>
- * <li>{@link #isDefined()}</li>
- * <li>{@link #isEmpty()}</li>
  * <li>{@link #orElse(Object)}</li>
  * <li>{@link #orElseGet(Supplier)}</li>
  * <li>{@link #orElseThrow(Supplier)}</li>
  * <li>{@link #stringPrefix()}</li>
+ * </ul>
+ *
+ * Checks:
+ *
+ * <ul>
+ * <li>{@link #isDefined()}</li>
+ * <li>{@link #isEmpty()}</li>
+ * <li>{@link #isSingleValued()}</li>
  * </ul>
  *
  * Equality checks:
@@ -57,6 +59,30 @@ import java.util.stream.StreamSupport;
  * <ul>
  * <li>{@link #corresponds(Iterable, BiPredicate)}</li>
  * <li>{@link #eq(Object)}</li>
+ * </ul>
+ *
+ * Filtering and transformation:
+ * <ul>
+ * <li>{@link #filter(Predicate)}</li>
+ * <li>{@link #filterNot(Predicate)}</li>
+ * <li>{@link #map(Function)}</li>
+ * </ul>
+ *
+ * Folding:
+ * <ul>
+ * <li>{@link #fold(Monoid)}</li>
+ * <li>{@link #fold(Object, BiFunction)}</li>
+ * <li>{@link #foldLeft(Monoid)}</li>
+ * <li>{@link #foldLeft(Object, BiFunction)}</li>
+ * <li>{@link #foldMap(Monoid, Function)}</li>
+ * <li>{@link #foldRight(Object, BiFunction)}</li>
+ * <li>{@link #foldRight(Monoid)}</li>
+ * <li>{@link #reduce(BiFunction)}</li>
+ * <li>{@link #reduceOption(BiFunction)}</li>
+ * <li>{@link #reduceLeft(BiFunction)}</li>
+ * <li>{@link #reduceLeftOption(BiFunction)}</li>
+ * <li>{@link #reduceRight(BiFunction)}</li>
+ * <li>{@link #reduceRightOption(BiFunction)}</li>
  * </ul>
  *
  * Iterable extensions:
@@ -82,14 +108,47 @@ import java.util.stream.StreamSupport;
  * Tests:
  *
  * <ul>
- * <li>{@link #isSingletonType()}</li>
+ * <li>{@link #isSingleValued()}</li>
  * </ul>
+ *
+ * Type conversion:
+ *
+ * <ul>
+ * <li>{@link #toArray()}</li>
+ * <li>{@link #toCharSeq()}</li>
+ * <li>{@link #toJavaArray()}</li>
+ * <li>{@link #toJavaArray(Class)}</li>
+ * <li>{@link #toJavaList()}</li>
+ * <li>{@link #toJavaMap(Function)}</li>
+ * <li>{@link #toJavaOptional()}</li>
+ * <li>{@link #toJavaSet()}</li>
+ * <li>{@link #toJavaStream()}</li>
+ * <li>{@link #toLazy()}</li>
+ * <li>{@link #toLeft(Object)}</li>
+ * <li>{@link #toLeft(Supplier)}</li>
+ * <li>{@link #toList()}</li>
+ * <li>{@link #toMap(Function)}</li>
+ * <li>{@link #toOption()}</li>
+ * <li>{@link #toQueue()}</li>
+ * <li>{@link #toRight(Object)}</li>
+ * <li>{@link #toRight(Supplier)}</li>
+ * <li>{@link #toSet()}</li>
+ * <li>{@link #toStack()}</li>
+ * <li>{@link #toStream()}</li>
+ * <li>{@link #toString()}</li>
+ * <li>{@link #toTree()}</li>
+ * <li>{@link #toTry()}</li>
+ * <li>{@link #toTry(Supplier)}</li>
+ * <li>{@link #toVector()}</li>
+ * </ul>
+ *
+ * <strong>Please note:</strong> flatMap signatures are manifold and have to be declared by subclasses of Value.
  *
  * @param <T> The type of the wrapped value.
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Value<T> extends Foldable<T>, Iterable<T> {
+public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
 
     /**
      * Shortcut for {@code exists(e -> Objects.equals(e, element))}, tests if the given {@code element} is contained.
@@ -190,6 +249,30 @@ public interface Value<T> extends Foldable<T>, Iterable<T> {
     }
 
     /**
+     * Filters this {@code Value} by testing a predicate.
+     * <p>
+     * The semantics may vary from class to class, e.g. for single-valued types (like {@code Option})
+     * and multi-valued types (like {@link Traversable).
+     * The commonality is that filtered.isEmpty() will return true, if no element satisfied the given predicate.
+     *
+     * @param predicate A predicate
+     * @return a new {@code Value} instance
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Value<T> filter(Predicate<? super T> predicate);
+
+    /**
+     * Filters this {@code Value} by testing the negation of a predicate.
+     * <p>
+     * Shortcut for {@code filter(predicate.negate()}.
+     *
+     * @param predicate A predicate
+     * @return a new {@code Value} instance
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Value<T> filterNot(Predicate<? super T> predicate);
+
+    /**
      * Checks, if the given predicate holds for all elements.
      *
      * @param predicate A Predicate
@@ -215,30 +298,6 @@ public interface Value<T> extends Foldable<T>, Iterable<T> {
     }
 
     /**
-     * Gets the first value of the given Iterable if exists.
-     *
-     * @param iterable An Iterable
-     * @param <T>      Component type
-     * @return {@code Some(value)} if iterable is not empty, otherwise {@code None}.
-     * @throws java.lang.NullPointerException if iterable is null
-     */
-    @SuppressWarnings("unchecked")
-    static <T> Option<T> getOption(Iterable<? extends T> iterable) {
-        Objects.requireNonNull(iterable, "iterable is null");
-        if (iterable instanceof Value) {
-            final Value<T> value = (Value<T>) iterable;
-            return value.getOption();
-        } else {
-            final java.util.Iterator<? extends T> iterator = iterable.iterator();
-            if (iterator.hasNext()) {
-                return Option.some(iterator.next());
-            } else {
-                return Option.none();
-            }
-        }
-    }
-
-    /**
      * Gets the underlying value or throws if no value is present.
      *
      * @return the underlying value
@@ -247,7 +306,7 @@ public interface Value<T> extends Foldable<T>, Iterable<T> {
     T get();
 
     /**
-     * Gets the underlying as Option.
+     * Gets the underlying value as Option.
      *
      * @return Some(value) if a value is present, None otherwise
      */
@@ -320,13 +379,11 @@ public interface Value<T> extends Foldable<T>, Iterable<T> {
     }
 
     /**
-     * States, if this value may contain (at most) one element or more than one element, like collections.
-     * <p>
-     * We call a type <em>singleton type</em>, which may contain at most one element.
+     * States, if this {@code Value} may contain (at most) one element or more than one element, like collections.
      *
-     * @return {@code true}, if this is a singleton type, {@code false} otherwise.
+     * @return {@code true} if this is single-valued, otherwise {@code false}.
      */
-    boolean isSingletonType();
+    boolean isSingleValued();
 
     /**
      * Returns the underlying value if present, otherwise {@code other}.
@@ -439,43 +496,100 @@ public interface Value<T> extends Foldable<T>, Iterable<T> {
     @Override
     Iterator<T> iterator();
 
-    // -- Adjusted return types of Foldable
+    // -- Default implementation of Foldable
 
-    // DEV-NOTE: default implementations for singleton types, needs to be overridden by multi valued types
+    /**
+     * Default implementation of {@link Foldable#foldLeft(Object, BiFunction)}
+     * <strong>for single-valued types only</strong>, needs to be overridden for multi-valued types.
+     *
+     * @param <U>     the type to fold over
+     * @param zero    A zero element to start with.
+     * @param combine A function which combines elements.
+     * @return a folded value
+     * @throws NullPointerException if {@code combine} is null
+     */
     @Override
     default <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> combine) {
+        Objects.requireNonNull(combine, "combine is null");
         return isEmpty() ? zero : combine.apply(zero, get());
     }
 
-    // DEV-NOTE: default implementations for singleton types, needs to be overridden by multi valued types
+    /**
+     * Default implementation of {@link Foldable#foldRight(Object, BiFunction)}
+     * <strong>for single-valued types only</strong>, needs to be overridden for multi-valued types.
+     *
+     * @param zero    A zero element to start with.
+     * @param combine A function which combines elements.
+     * @param <U>     the  type to fold over
+     * @return a folded value
+     * @throws NullPointerException if {@code combine} is null
+     */
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> combine) {
+        Objects.requireNonNull(combine, "combine is null");
         return isEmpty() ? zero : combine.apply(get(), zero);
     }
 
+    /**
+     * Default implementation of {@link Foldable#reduceLeft(BiFunction)}
+     * <strong>for single-valued types only</strong>, needs to be overridden for multi-valued types.
+     *
+     * @param op A BiFunction of type T
+     * @return a reduced value
+     * @throws NullPointerException if {@code op} is null
+     */
     @Override
     default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         return get();
     }
 
+    /**
+     * Shortcut for {@code isEmpty() ? Option.none() : Option.some(reduceLeft(op))}, does not need to be
+     * overridden by subclasses.
+     *
+     * @param op A BiFunction of type T
+     * @return a reduced value
+     * @throws NullPointerException if {@code op} is null
+     */
     @Override
     default Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
-        return getOption();
+        return isEmpty() ? Option.none() : Option.some(reduceLeft(op));
     }
 
+    /**
+     * Default implementation of {@link Foldable#reduceRight(BiFunction)}
+     * <strong>for single-valued types only</strong>, needs to be overridden for multi-valued types.
+     *
+     * @param op A BiFunction of type T
+     * @return a reduced value
+     * @throws NullPointerException if {@code op} is null
+     */
     @Override
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         return get();
     }
 
+    /**
+     * Shortcut for {@code isEmpty() ? Option.none() : Option.some(reduceRight(op))}, does not need to be
+     * overridden by subclasses.
+     *
+     * @param op An operation of type T
+     * @return a reduced value
+     * @throws NullPointerException if {@code op} is null
+     */
     @Override
     default Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
-        return getOption();
+        return isEmpty() ? Option.none() : Option.some(reduceRight(op));
     }
+
+    // -- Adjusted return types of Functor
+
+    @Override
+    <U> Value<U> map(Function<? super T, ? extends U> mapper);
 
     // -- conversion methods
 
@@ -564,7 +678,7 @@ public interface Value<T> extends Foldable<T>, Iterable<T> {
         Objects.requireNonNull(f, "f is null");
         final java.util.Map<K, V> map = new java.util.HashMap<>();
         if (isDefined()) {
-            if (isSingletonType()) {
+            if (isSingleValued()) {
                 final Tuple2<? extends K, ? extends V> entry = f.apply(get());
                 map.put(entry._1, entry._2);
             } else {
@@ -665,7 +779,7 @@ public interface Value<T> extends Foldable<T>, Iterable<T> {
         Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
             return HashMap.empty();
-        } else if (isSingletonType()) {
+        } else if (isSingleValued()) {
             return HashMap.of(f.apply(get()));
         } else {
             return HashMap.ofEntries(Iterator.ofAll(this).map(f));
@@ -858,7 +972,7 @@ interface ValueModule {
                                                          Function<Iterable<V>, T> ofAll) {
         if (value.isEmpty()) {
             return empty;
-        } else if (value.isSingletonType()) {
+        } else if (value.isSingleValued()) {
             return ofElement.apply(value.get());
         } else {
             return ofAll.apply(value);
@@ -867,7 +981,7 @@ interface ValueModule {
 
     static <T extends java.util.Collection<V>, V> T toJavaCollection(Value<V> value, T empty) {
         if (value.isDefined()) {
-            if (value.isSingletonType()) {
+            if (value.isSingleValued()) {
                 empty.add(value.get());
             } else {
                 value.forEach(empty::add);

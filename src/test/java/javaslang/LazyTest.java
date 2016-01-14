@@ -10,7 +10,6 @@ import javaslang.collection.Seq;
 import javaslang.control.Try;
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Function;
@@ -23,7 +22,7 @@ public class LazyTest {
 
     @Test
     public void shouldBeSingletonType() {
-        assertThat(Lazy.of(() -> 1).isSingletonType()).isTrue();
+        assertThat(Lazy.of(() -> 1).isSingleValued()).isTrue();
     }
 
     // -- of(Supplier)
@@ -208,23 +207,20 @@ public class LazyTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldFlatMapEmptyLazy() {
-        Lazy.undefined().flatMap(List::of).get();
+        Lazy.undefined().flatMap(v -> Lazy.of(() -> v)).get();
     }
 
     @Test
     public void shouldFlatMapNonEmptyLazy() {
-        assertThat(Lazy.of(() -> 1).flatMap(Collections::singletonList)).isEqualTo(Lazy.of(() -> 1));
-        assertThat(Lazy.of(() -> 1).flatMap(l -> Collections.emptyList())).isSameAs(Lazy.undefined());
-        assertThat(Lazy.of(() -> 1).flatMap(l -> Lazy.of(() -> l))).isEqualTo(Lazy.of(() -> 1));
-        assertThat(Lazy.of(() -> 1).flatMap(List::of)).isEqualTo(Lazy.of(() -> 1));
-        assertThat(Lazy.of(() -> 1).flatMap(l -> List.empty())).isEqualTo(Lazy.undefined());
+        assertThat(Lazy.of(() -> 1).flatMap(v -> Lazy.of(() -> v))).isEqualTo(Lazy.of(() -> 1));
+        assertThat(Lazy.of(() -> 1).flatMap(ignored -> Lazy.undefined())).isSameAs(Lazy.undefined());
     }
 
     // -- map
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldMapEmpty() {
-        Lazy.undefined().map(Function.identity()).get();
+        assertThat(Lazy.undefined().map(Function.identity())).isEqualTo(Lazy.undefined());
     }
 
     @Test

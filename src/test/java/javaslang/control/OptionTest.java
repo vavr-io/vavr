@@ -201,7 +201,7 @@ public class OptionTest {
     // -- reduceRightOption
 
     @Test
-    public void shouldThrowWhenReduceRightOptionNil() {
+    public void shouldReduceRightOptionNil() {
         assertThat(Option.none().reduceRightOption((a, b) -> a)).isSameAs(Option.none());
     }
 

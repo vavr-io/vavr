@@ -9,6 +9,8 @@ import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
+import javaslang.algebra.Kind;
+import javaslang.algebra.Monad;
 import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.Empty;
 import javaslang.collection.Tree.Node;
@@ -30,7 +32,7 @@ import static javaslang.collection.Tree.Order.PRE_ORDER;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public interface Tree<T> extends Traversable<T> {
+public interface Tree<T> extends Traversable<T>, Monad<Tree<?>, T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -392,6 +394,12 @@ public interface Tree<T> extends Traversable<T> {
     default <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Empty.instance() : FlatMap.apply((Node<T>) this, mapper);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Tree<U> flatMapM(Function<? super T, ? extends Kind<? extends Tree<?>, ? extends U>> mapper) {
+        return flatMap((Function<T, Tree<U>>) mapper);
     }
 
     @Override

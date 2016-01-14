@@ -78,7 +78,7 @@ public interface Foldable<T> {
     /**
      * Folds this elements from the left, starting with {@code zero} and successively calling {@code combine}.
      *
-     * @param <U>     the type of the folded value
+     * @param <U>     the type to fold over
      * @param zero    A zero element to start with.
      * @param combine A function which combines elements.
      * @return a folded value
@@ -148,7 +148,7 @@ public interface Foldable<T> {
      * The order of element iteration is undetermined.
      *
      * @param op A BiFunction of type T
-     * @return Some of reduced value or None.
+     * @return Some of reduced value or None if the Foldable is empty.
      * @throws NullPointerException if {@code op} is null
      */
     default Option<T> reduceOption(BiFunction<? super T, ? super T, ? extends T> op) {
@@ -170,7 +170,7 @@ public interface Foldable<T> {
      * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the left.
      *
      * @param op A BiFunction of type T
-     * @return Some of reduced value or None.
+     * @return Some of reduced value or None if the Foldable is empty.
      * @throws NullPointerException if {@code op} is null
      */
     Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op);

@@ -8,12 +8,15 @@ package javaslang.concurrent;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
+import javaslang.algebra.Kind;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 import javaslang.collection.Stream;
-import javaslang.control.*;
+import javaslang.control.Match;
+import javaslang.control.Option;
+import javaslang.control.Try;
 import javaslang.control.Try.CheckedRunnable;
 import javaslang.control.Try.CheckedSupplier;
 
@@ -47,7 +50,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich, Dillon Jett Callis
  * @since 2.0.0
  */
-public interface Future<T> extends Monad<T>, Value<T> {
+public interface Future<T> extends Monad<Future<?>, T>, Value<T> {
 
     /**
      * The default executor service is {@link Executors#newCachedThreadPool()}.
@@ -616,6 +619,20 @@ public interface Future<T> extends Monad<T>, Value<T> {
         return promise.future();
     }
 
+    @Override
+    default Future<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        final Promise<T> promise = Promise.make(executorService());
+        onComplete(result -> promise.complete(result.filter(predicate)));
+        return promise.future();
+    }
+
+    @Override
+    default Future<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
+    }
+
     /**
      * Returns the underlying exception of this Future, syntactic sugar for {@code future.getValue().map(Try::getCause)}.
      *
@@ -776,43 +793,23 @@ public interface Future<T> extends Monad<T>, Value<T> {
         return promise.future();
     }
 
-    // -- Value implementation
+    // -- Value & Monad implementation
 
-    @Override
-    default Future<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final Promise<T> promise = Promise.make(executorService());
-        onComplete(result -> promise.complete(result.filter(predicate)));
+    @SuppressWarnings("unchecked")
+    default <U> Future<U> flatMap(Function<? super T, ? extends Future<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        final Promise<U> promise = Promise.make(executorService());
+        onComplete(result -> result.map(mapper::apply)
+                .onSuccess(promise::completeWith)
+                .onFailure(promise::failure)
+        );
         return promise.future();
-    }
-
-    @Override
-    default Future<T> filterNot(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Future<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        final Promise<U> promise = Promise.make(executorService());
-        onComplete(result -> result.map(mapper::apply)
-                .onSuccess(us -> {
-                    if (us instanceof Future) {
-                        promise.completeWith((Future<U>) us);
-                    } else {
-                        final java.util.Iterator<? extends U> iter = us.iterator();
-                        if (iter.hasNext()) {
-                            promise.success(iter.next());
-                        } else {
-                            promise.complete(Try.failure(new NoSuchElementException("flatMap resulted in empty Iterable")));
-                        }
-                    }
-                })
-                .onFailure(promise::failure)
-        );
-        return promise.future();
+    default <U> Future<U> flatMapM(Function<? super T, ? extends Kind<? extends Future<?>, ? extends U>> mapper) {
+        return flatMap((Function<T, Future<U>>) mapper);
     }
 
     /**
@@ -860,12 +857,12 @@ public interface Future<T> extends Monad<T>, Value<T> {
     }
 
     /**
-     * A future is a singleton type.
+     * A {@code Future} is single-valued.
      *
      * @return {@code true}
      */
     @Override
-    default boolean isSingletonType() {
+    default boolean isSingleValued() {
         return true;
     }
 

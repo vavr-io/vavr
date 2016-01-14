@@ -8,6 +8,8 @@ package javaslang.collection;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
+import javaslang.algebra.Kind;
+import javaslang.algebra.Monad;
 import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
 import javaslang.control.Match;
@@ -41,7 +43,7 @@ import java.util.function.*;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
+public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T>, Monad<Iterator<?>, T> {
 
     // DEV-NOTE: we prefer returning empty() over this if !hasNext() == true in order to free memory.
 
@@ -1324,6 +1326,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Iterator<U> flatMapM(Function<? super T, ? extends Kind<? extends Iterator<?>, ? extends U>> mapper) {
+        return flatMap((Function<T, Iterator<U>>) mapper);
+    }
+
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
@@ -1489,17 +1497,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            Stream<T> stream = Stream.ofAll(this);
-            return Option.some(stream.tail().foldLeft(stream.head(), op::apply));
-        }
-    }
-
-    @Override
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
@@ -1507,17 +1504,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else {
             Stream<T> reversed = Stream.ofAll(this).reverse();
             return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
-        }
-    }
-
-    @Override
-    default Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            Stream<T> reversed = Stream.ofAll(this).reverse();
-            return Option.some(reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs)));
         }
     }
 

@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import javaslang.algebra.Kind;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -44,7 +45,7 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  * @since 1.2.1
  */
-public interface Lazy<T> extends Monad<T>, Supplier<T>, Value<T> {
+public interface Lazy<T> extends Monad<Lazy<?>, T>, Supplier<T>, Value<T> {
 
     /**
      * Creates a {@code Lazy} that requests its value from a given {@code Supplier}. The supplier is asked only once,
@@ -75,7 +76,7 @@ public interface Lazy<T> extends Monad<T>, Supplier<T>, Value<T> {
      */
     static <T> Lazy<Seq<T>> sequence(Iterable<? extends Lazy<? extends T>> values) {
         Objects.requireNonNull(values, "values is null");
-        return Lazy.of(() -> List.ofAll(values).map(v -> v.get()));
+        return Lazy.of(() -> List.ofAll(values).map(Lazy::get));
     }
 
     /**
@@ -135,26 +136,20 @@ public interface Lazy<T> extends Monad<T>, Supplier<T>, Value<T> {
         return filter(predicate.negate());
     }
 
-    // DEV-NOTE: The current implementation is lazy, the iterable is pulled into the lazy instance.
-    //           However, it will be eventually garbage collected as soon as the lazy value is evaluated.
     @SuppressWarnings("unchecked")
-    @Override
-    default <U> Lazy<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U> Lazy<U> flatMap(Function<? super T, ? extends Lazy<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return (Lazy<U>) this;
         } else {
-            final Iterable<? extends U> iterable = mapper.apply(get());
-            if (iterable instanceof Lazy) {
-                return (Lazy<U>) iterable;
-            } else if (iterable instanceof Value) {
-                final Value<U> value = (Value<U>) iterable;
-                return value.isEmpty() ? Undefined.instance() : Lazy.of(value::get);
-            } else {
-                final java.util.Iterator<? extends U> iterator = iterable.iterator();
-                return iterator.hasNext() ? Lazy.of(iterator::next) : Undefined.instance();
-            }
+            return (Lazy<U>) mapper.apply(get());
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Lazy<U> flatMapM(Function<? super T, ? extends Kind<? extends Lazy<?>, ? extends U>> mapper) {
+        return flatMap((Function<T, Lazy<U>>) mapper);
     }
 
     /**
@@ -178,12 +173,12 @@ public interface Lazy<T> extends Monad<T>, Supplier<T>, Value<T> {
     boolean isEvaluated();
 
     /**
-     * A lazy value is a singleton type.
+     * A {@code Lazy} is single-valued.
      *
      * @return {@code true}
      */
     @Override
-    default boolean isSingletonType() {
+    default boolean isSingleValued() {
         return true;
     }
 
@@ -234,7 +229,7 @@ public interface Lazy<T> extends Monad<T>, Supplier<T>, Value<T> {
 
         // read http://javarevisited.blogspot.de/2014/05/double-checked-locking-on-singleton-in-java.html
         private transient volatile Supplier<? extends T> supplier;
-        private volatile T value = null;
+        private volatile T value;
 
         // should not be called directly
         private Defined(Supplier<? extends T> supplier) {

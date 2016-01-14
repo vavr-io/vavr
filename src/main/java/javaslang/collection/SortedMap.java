@@ -41,23 +41,52 @@ public interface SortedMap<K, V> extends Map<K, V> {
      *
      * @param keyComparator A comparator for keys of type U
      * @param mapper        A function which maps key/value pairs to Iterables map entries
-     * @param <U>           New key type
-     * @param <W>           New value type
+     * @param <K2>          New key type
+     * @param <V2>          New value type
      * @return A new Map instance containing mapped entries
      */
-    <U, W> SortedMap<U, W> flatMap(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper);
+    <K2, V2> SortedMap<K2, V2> flatMap(Comparator<? super K2> keyComparator, BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends K2, ? extends V2>>> mapper);
 
     /**
-     * Same as {@link #map(BiFunction)} but using a specific comparator for values of the codomain of the given
+     * Same as {@link #map(BiFunction)}, using a specific comparator for keys of the codomain of the given
      * {@code mapper}.
      *
      * @param keyComparator A comparator for keys of type U
-     * @param mapper        A function which maps key/value pairs to map entries
-     * @param <U>           New key type
-     * @param <W>           New value type
-     * @return A new Map instance containing mapped entries
+     * @param <K2>          key's component type of the map result
+     * @param <V2>          value's component type of the map result
+     * @param mapper        a {@code Function} that maps entries of type {@code (K, V)} to entries of type {@code (K2, V2)}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code mapper} is null
      */
-    <U, W> SortedMap<U, W> map(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper);
+    <K2, V2> SortedMap<K2, V2> map(Comparator<? super K2> keyComparator, BiFunction<? super K, ? super V, ? extends Tuple2<? extends K2, ? extends V2>> mapper);
+
+
+    /**
+     * Same as {@link #map(Function, Function)}, using a specific comparator for keys of the codomain of the given
+     * {@code keyMapper}.
+     *
+     * @param <K2>        key's component type of the map result
+     * @param <V2>        value's component type of the map result
+     * @param keyMapper   a {@code Function} that maps the keys of type {@code K} to keys of type {@code K2}
+     * @param valueMapper a {@code Function} that the values of type {@code V} to values of type {@code V2}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code keyMapper} or {@code valueMapper} is null
+     */
+    <K2, V2> SortedMap<K2, V2> map(Comparator<? super K2> keyComparator,
+                                   Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
+
+    /**
+     * Same as {@link #map2(Function)}, using a specific comparator for keys of the codomain of the given
+     * {@code mapper}.
+     *
+     * @param <K2>   key's component type of the map result
+     * @param <V2>   value's component type of the map result
+     * @param mapper a {@code Function} that maps entries of type {@code (K, V)} to entries of type {@code (K2, V2)}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    <K2, V2> SortedMap<K2, V2> map2(Comparator<? super K2> keyComparator,
+                                    Function<? super Tuple2<? super K, ? super V>, ? extends Tuple2<? extends K2, ? extends V2>> mapper);
 
     // -- Adjusted return types of Map methods
 
@@ -92,7 +121,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> filterNot(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    <U, W> SortedMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper);
+    <K2, V2> SortedMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends K2, ? extends V2>>> mapper);
 
     @Override
     <C> Map<C, ? extends SortedMap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
@@ -115,13 +144,19 @@ public interface SortedMap<K, V> extends Map<K, V> {
     }
 
     @Override
+    <K2, V2> SortedMap<K2, V2> map(BiFunction<? super K, ? super V, ? extends Tuple2<? extends K2, ? extends V2>> mapper);
+
+    @Override
+    <K2, V2> SortedMap<K2, V2> map(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
+
+    @Override
     <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper);
 
     @Override
-    <U, W> SortedMap<U, W> map(BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper);
+    <K2, V2> SortedMap<K2, V2> map2(Function<? super Tuple2<? super K, ? super V>, ? extends Tuple2<? extends K2, ? extends V2>> mapper);
 
     @Override
-    <W> SortedMap<K, W> mapValues(Function<? super V, ? extends W> mapper);
+    <V2> SortedMap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper);
 
     @Override
     Match.MatchMonad.Of<? extends SortedMap<K, V>> match();

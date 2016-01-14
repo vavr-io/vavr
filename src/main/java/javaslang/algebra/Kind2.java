@@ -7,6 +7,8 @@ package javaslang.algebra;
 
 /**
  * Recursive self type representing {@code TYPE<T1, T2>}, which allows similar behavior to higher-kinded types.
+ * <p>
+ * For a general example how to use Kind* see {@link Kind}.
  *
  * @param <TYPE> The recursive type described by {@code Kind2}
  * @param <T1>   The first type, described by {@code Kind2}
@@ -15,5 +17,4 @@ package javaslang.algebra;
  * @since 2.0.0
  */
 public interface Kind2<TYPE extends Kind2<TYPE, ?, ?>, T1, T2> {
-
 }

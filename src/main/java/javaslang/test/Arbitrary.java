@@ -6,6 +6,7 @@
 package javaslang.test;
 
 import javaslang.Value;
+import javaslang.algebra.Kind;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -25,7 +26,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Arbitrary<T> extends Monad<T>, Value<T> {
+public interface Arbitrary<T> extends Monad<Arbitrary<?>, T>, Value<T> {
 
     /**
      * Returns a generator for objects of type T.
@@ -90,19 +91,17 @@ public interface Arbitrary<T> extends Monad<T>, Value<T> {
      * @return A new Arbitrary
      */
     @SuppressWarnings("unchecked")
-    @Override
-    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Arbitrary<? extends U>> mapper) {
         return size -> {
             final Gen<T> gen = apply(size);
-            return random -> {
-                final Iterable<? extends U> iterable = mapper.apply(gen.apply(random));
-                if (iterable instanceof Arbitrary) {
-                    return ((Arbitrary<U>) iterable).apply(size).apply(random);
-                } else {
-                    return Value.getOption(iterable).get();
-                }
-            };
+            return random -> mapper.apply(gen.apply(random)).apply(size).apply(random);
         };
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Arbitrary<U> flatMapM(Function<? super T, ? extends Kind<? extends Arbitrary<?>, ? extends U>> mapper) {
+        return flatMap((Function<T, Arbitrary<U>>) mapper);
     }
 
     /**
@@ -154,13 +153,12 @@ public interface Arbitrary<T> extends Monad<T>, Value<T> {
     }
 
     /**
-     * This is philosophical. An arbitrary value is a singleton type.
-     * However, subsequent calls may return different objects.
+     * This is philosophical. We see an {@çode Arbitrary} as single-valued type which holds a variable random value.
      *
      * @return {@code true}
      */
     @Override
-    default boolean isSingletonType() {
+    default boolean isSingleValued() {
         return true;
     }
 

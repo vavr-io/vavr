@@ -29,9 +29,9 @@ import javaslang.*;
  * </ul>
  * Then all instances of the {@code Monad} interface should obey the three control laws:
  * <ul>
- * <li><strong>Left identity:</strong> {@code unit(a).flatMap(f) ≡ f a}</li>
- * <li><strong>Right identity:</strong> {@code m.flatMap(unit) ≡ m}</li>
- * <li><strong>Associativity:</strong> {@code m.flatMap(f).flatMap(g) ≡ m.flatMap(x -> f.apply(x).flatMap(g))}</li>
+ * <li><strong>Left identity:</strong> {@code unit(a).flatMapM(f) ≡ f a}</li>
+ * <li><strong>Right identity:</strong> {@code m.flatMapM(unit) ≡ m}</li>
+ * <li><strong>Associativity:</strong> {@code m.flatMapM(f).flatMapM(g) ≡ m.flatMapM(x -> f.apply(x).flatMapM(g))}</li>
  * </ul>
  *
  * To read further about monads in Java please refer to
@@ -41,7 +41,7 @@ import javaslang.*;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public interface Monad<M extends Kind1<M, ?>, T> extends Kind1<M, T>, Functor<T> {
+public interface Monad<M extends Kind<M, ?>, T> extends Kind<M, T>, Functor<T> {
 
     /**
      * Lifts a {@code Function} to a higher {@code Function1} that operates on Monads.
@@ -211,7 +211,7 @@ public interface Monad<M extends Kind1<M, ?>, T> extends Kind1<M, T>, Functor<T>
     }
 
     /**
-     * FlatMaps this value to a new value with different component type.
+     * FlatMaps this Monad to a new Monad with different component type.
      * <p>
      * FlatMap is the sequence operation for functions and behaves like the imperative {@code ;}.
      * <p>
@@ -241,18 +241,10 @@ public interface Monad<M extends Kind1<M, ?>, T> extends Kind1<M, T>, Functor<T>
      * @return a mapped {@code Monad}
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U> Monad<M, U> flatMapM(Function<? super T, ? extends Kind1<? extends M, ? extends U>> mapper);
+    <U> Monad<M, U> flatMapM(Function<? super T, ? extends Kind<? extends M, ? extends U>> mapper);
 
     // -- adjusting return types of super interface methods
 
-    /**
-     * Maps this value to a new value with different component type.
-     *
-     * @param mapper A mapper
-     * @param <U>    Component type of the mapped {@code Monad}
-     * @return a mapped {@code Monad}
-     * @throws NullPointerException if {@code mapper} is null
-     */
     @Override
     <U> Monad<M, U> map(Function<? super T, ? extends U> mapper);
 

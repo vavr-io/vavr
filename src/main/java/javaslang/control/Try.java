@@ -7,6 +7,7 @@ package javaslang.control;
 
 import javaslang.CheckedFunction1;
 import javaslang.Value;
+import javaslang.algebra.Kind;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -27,7 +28,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich
  * @since 1.0.0
  */
-public interface Try<T> extends Monad<T>, Value<T> {
+public interface Try<T> extends Monad<Try<?>, T>, Value<T> {
 
     /**
      * Creates a Try of a CheckedSupplier.
@@ -67,7 +68,7 @@ public interface Try<T> extends Monad<T>, Value<T> {
      * the {@code Try}s are {@link Try.Failure}, then this returns a {@link Try.Failure}.
      *
      * @param values An {@link Iterable} of {@code Try}s
-     * @param <T> type of the Trys
+     * @param <T>    type of the Trys
      * @return A {@code Try} of a {@link Seq} of results
      * @throws NullPointerException if {@code values} is null
      */
@@ -75,7 +76,7 @@ public interface Try<T> extends Monad<T>, Value<T> {
         Objects.requireNonNull(values, "values is null");
         List<T> list = List.empty();
         for (Try<? extends T> value : values) {
-            if(value.isFailure()) {
+            if (value.isFailure()) {
                 return Try.failure(value.getCause());
             }
             list = list.prepend(value.get());
@@ -234,27 +235,27 @@ public interface Try<T> extends Monad<T>, Value<T> {
      * @return a new Try
      */
     @SuppressWarnings("unchecked")
-    @Override
-    default <U> Try<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
         if (isFailure()) {
             return (Failure<U>) this;
         } else {
-            return flatMapTry((CheckedFunction<T, Iterable<? extends U>>) mapper::apply);
+            return flatMapTry((CheckedFunction<T, Try<? extends U>>) mapper::apply);
         }
     }
 
     @SuppressWarnings("unchecked")
-    default <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Iterable<? extends U>> mapper) {
+    @Override
+    default <U> Try<U> flatMapM(Function<? super T, ? extends Kind<? extends Try<?>, ? extends U>> mapper) {
+        return flatMap((Function<T, Try<U>>) mapper);
+    }
+
+    @SuppressWarnings("unchecked")
+    default <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Try<? extends U>> mapper) {
         if (isFailure()) {
             return (Failure<U>) this;
         } else {
             try {
-                final Iterable<? extends U> iterable = mapper.apply(get());
-                if (iterable instanceof Value) {
-                    return ((Value<U>) iterable).toTry();
-                } else {
-                    return Try.of(() -> Value.getOption(iterable).get());
-                }
+                return (Try<U>) mapper.apply(get());
             } catch (Throwable t) {
                 return new Failure<>(t);
             }
@@ -294,12 +295,12 @@ public interface Try<T> extends Monad<T>, Value<T> {
     boolean isFailure();
 
     /**
-     * A try is a singleton type.
+     * A {@code Try} is a single-valued.
      *
      * @return {@code true}
      */
     @Override
-    default boolean isSingletonType() {
+    default boolean isSingleValued() {
         return true;
     }
 

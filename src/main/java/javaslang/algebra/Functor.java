@@ -8,8 +8,8 @@ package javaslang.algebra;
 import java.util.function.Function;
 
 /**
- * <p>Defines a Functor by generalizing the map.</p>
- *
+ * Defines a Functor by generalizing the {@code map} function.
+ * <p>
  * All instances of the Functor interface should obey the two functor laws:
  * <ul>
  * <li>{@code m.map(a -> a) ≡ m}</li>
@@ -25,12 +25,12 @@ import java.util.function.Function;
 public interface Functor<T> {
 
     /**
-     * Applies a function f to the components of this Functor.
+     * Applies a function {@code f} to the components of this Functor.
      *
-     * @param <U>    type of the component of the resulting Functor
-     * @param mapper a Function which maps the component of this Functor
+     * @param <U> 1st component type of the resulting Functor
+     * @param f   a Function which maps the component of this Functor
      * @return a new Functor
      * @throws NullPointerException if {@code f} is null
      */
-    <U> Functor<U> map(Function<? super T, ? extends U> mapper);
+    <U> Functor<U> map(Function<? super T, ? extends U> f);
 }

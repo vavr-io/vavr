@@ -6,6 +6,7 @@
 package javaslang.control;
 
 import javaslang.*;
+import javaslang.algebra.Kind;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -551,7 +552,7 @@ public interface Match {
         }
     }
 
-    interface MatchMonad<R> extends Monad<R>, Supplier<R>, Value<R> {
+    interface MatchMonad<R> extends Monad<MatchMonad<?>, R>, Supplier<R>, Value<R> {
 
         @Override
         MatchMonad<R> filter(Predicate<? super R> predicate);
@@ -562,16 +563,21 @@ public interface Match {
             return filter(predicate.negate());
         }
 
+        <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper);
+
+        @SuppressWarnings("unchecked")
         @Override
-        <U> MatchMonad<U> flatMap(Function<? super R, ? extends Iterable<? extends U>> mapper);
+        default <U> MatchMonad<U> flatMapM(Function<? super R, ? extends Kind<? extends MatchMonad<?>, ? extends U>> mapper) {
+            return flatMap((Function<R, MatchMonad<U>>) mapper);
+        }
 
         /**
-         * A match is a singleton type.
+         * A {@code MatchMonad} is single-valued.
          *
          * @return {@code true}
          */
         @Override
-        default boolean isSingletonType() {
+        default boolean isSingleValued() {
             return true;
         }
 
@@ -847,14 +853,13 @@ public interface Match {
 
             @SuppressWarnings("unchecked")
             @Override
-            public <U> MatchMonad<U> flatMap(Function<? super R, ? extends Iterable<? extends U>> mapper) {
+            public <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper) {
                 Objects.requireNonNull(mapper, "mapper is null");
-                return result.map(supplier -> {
-                    final Option<Supplier<? extends U>> mappedResult = Value
-                            .getOption(mapper.apply(supplier.get()))
-                            .map((U u) -> (Supplier<U>) () -> u);
-                    return new Then<>(value, mappedResult);
-                }).orElse((Then<T, U>) this);
+                if (result.isEmpty()) {
+                    return (MatchMonad<U>) this;
+                } else {
+                    return (MatchMonad<U>) mapper.apply(result.get().get());
+                }
             }
 
             @SuppressWarnings("unchecked")
@@ -936,10 +941,11 @@ public interface Match {
                 return new Otherwise<>(() -> result.filter(predicate).get());
             }
 
+            @SuppressWarnings("unchecked")
             @Override
-            public <U> MatchMonad<U> flatMap(Function<? super R, ? extends Iterable<? extends U>> mapper) {
+            public <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper) {
                 Objects.requireNonNull(mapper, "mapper is null");
-                return new Otherwise<>(() -> Value.getOption(mapper.apply(result.get())).get());
+                return (MatchMonad<U>) mapper.apply(result.get());
             }
 
             @Override

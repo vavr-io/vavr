@@ -8,8 +8,6 @@ package javaslang.collection;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.Value;
-import javaslang.algebra.Kind1;
-import javaslang.algebra.Monad;
 import javaslang.control.Match;
 import javaslang.control.Option;
 
@@ -138,7 +136,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich and others
  * @since 1.1.0
  */
-public interface Traversable<T> extends Monad<Traversable<?>, T>, Value<T> {
+public interface Traversable<T> extends Value<T> {
 
     /**
      * Used by collections to compute the hashCode only once.
@@ -408,15 +406,11 @@ public interface Traversable<T> extends Monad<Traversable<?>, T>, Value<T> {
         return iterator().findLast(predicate);
     }
 
-    @Override
-    <U> Traversable<U> flatMapM(Function<? super T, ? extends Kind1<? extends Traversable<?>, ? extends U>> mapper);
-
     /**
-     * FlatMaps this Traversable. This is a relaxed version of {@link #flatMapM(Function)} with a mapper that returns
-     * an {@link Iterable}.
+     * FlatMaps this Traversable.
      *
      * @param mapper A mapper
-     * @param <U> The resulting component type.
+     * @param <U>    The resulting component type.
      * @return A new Traversable instance.
      */
     <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
@@ -561,7 +555,7 @@ public interface Traversable<T> extends Monad<Traversable<?>, T>, Value<T> {
      * @return {@code false}
      */
     @Override
-    default boolean isSingletonType() {
+    default boolean isSingleValued() {
         return false;
     }
 
@@ -881,23 +875,6 @@ public interface Traversable<T> extends Monad<Traversable<?>, T>, Value<T> {
     }
 
     /**
-     * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the left.
-     *
-     * @param op A BiFunction of type T
-     * @return Some of reduced value or None.
-     * @throws NullPointerException if {@code op} is null
-     */
-    @Override
-    default Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.of(tail().foldLeft(head(), op));
-        }
-    }
-
-    /**
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the right.
      *
      * @param op An operation of type T
@@ -912,23 +889,6 @@ public interface Traversable<T> extends Monad<Traversable<?>, T>, Value<T> {
             throw new NoSuchElementException("reduceRight on empty");
         } else {
             return iterator().reduceRight(op);
-        }
-    }
-
-    /**
-     * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the right.
-     *
-     * @param op An operation of type T
-     * @return Some of reduced value or None.
-     * @throws NullPointerException if {@code op} is null
-     */
-    @Override
-    default Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.of(iterator().reduceRight(op));
         }
     }
 
