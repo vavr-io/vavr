@@ -1078,7 +1078,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T>, Mona
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
-            final Stream<Tuple2<? extends T1, ? extends T2>> source = Stream.ofAll(this.map(unzipper::apply));
+            final Stream<Tuple2<? extends T1, ? extends T2>> source = Stream.ofAll(this.map(unzipper));
             return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator());
         }
     }
@@ -1090,7 +1090,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T>, Mona
         if (!hasNext()) {
             return Tuple.of(empty(), empty(), empty());
         } else {
-            final Stream<Tuple3<? extends T1, ? extends T2, ? extends T3>> source = Stream.ofAll(this.map(unzipper::apply));
+            final Stream<Tuple3<? extends T1, ? extends T2, ? extends T3>> source = Stream.ofAll(this.map(unzipper));
             return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator(), source.map(t -> (T3) t._3).iterator());
         }
     }
@@ -1335,7 +1335,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T>, Mona
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
-        return Stream.ofAll(this).foldRight(zero, f::apply);
+        return Stream.ofAll(this).foldRight(zero, f);
     }
 
     @Override
@@ -1492,7 +1492,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T>, Mona
             throw new NoSuchElementException("reduceLeft on Nil");
         } else {
             Stream<T> stream = Stream.ofAll(this);
-            return stream.tail().foldLeft(stream.head(), op::apply);
+            return stream.tail().foldLeft(stream.head(), op);
         }
     }
 

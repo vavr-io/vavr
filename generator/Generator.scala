@@ -33,7 +33,7 @@ def generateMainClasses(): Unit = {
 
   genFunctions()
   genMonad()
-  genMonad2()
+  genBiMonad()
   genPropertyChecks()
   genTuples()
 
@@ -100,7 +100,7 @@ def generateMainClasses(): Unit = {
                  */
                 static <M extends Monad<M, ?>, $genericsT, R> Function$i<$genericsM, Monad<M, R>> lift($function<$genericsF, ? extends R> f) {
                     ${if (i == 1) {
-                      "return mT -> mT.map(f::apply);"
+                      "return mT -> mT.map(f);"
                     } else {
                       xs"""
                         return (${(1 to i).gen(j => s"mT$j")(", ")}) ->
@@ -158,11 +158,11 @@ def generateMainClasses(): Unit = {
   /**
     * Generator of javaslang.algebra.Monad
     */
-  def genMonad2() : Unit = {
+  def genBiMonad() : Unit = {
 
-    genJavaslangFile("javaslang.algebra", "Monad2")(genMonad2)
+    genJavaslangFile("javaslang.algebra", "BiMonad")(genBiMonad)
 
-    def genMonad2(im: ImportManager, packageName: String, className: String): String = {
+    def genBiMonad(im: ImportManager, packageName: String, className: String): String = {
 
       val Function = im.getType("java.util.function.Function")
       val BiFunction = im.getType("java.util.function.BiFunction")
@@ -177,13 +177,13 @@ def generateMainClasses(): Unit = {
          * @author Daniel Dietrich
          * @since 2.0.0
          */
-        public interface Monad2<M extends Kind2<M, ?, ?>, T1, T2> extends Kind2<M, T1, T2>, Functor2<T1, T2> {
+        public interface BiMonad<M extends Kind2<M, ?, ?>, T1, T2> extends Kind2<M, T1, T2>, BiFunctor<T1, T2> {
 
             ${(1 to N).gen(i => {
 
               val genericsF = if (i == 1) "? super Tuple2<? super T1, ? super T2>" else (1 to i).gen(j => s"? super Tuple2<? super T${j}1, ? super T${j}2>")(", ")
               val genericsT = if (i == 1) "T1, T2" else (1 to i).gen(j => s"T${j}1, T${j}2")(", ")
-              val genericsM = if (i == 1) "Monad2<M, T1, T2>" else (1 to i).gen(j => s"Monad2<M, T${j}1, T${j}2>")(", ")
+              val genericsM = if (i == 1) "BiMonad<M, T1, T2>" else (1 to i).gen(j => s"BiMonad<M, T${j}1, T${j}2>")(", ")
               val function = i match {
                 case 1 => im.getType("java.util.function.Function")
                 case 2 => im.getType("java.util.function.BiFunction")
@@ -204,14 +204,14 @@ def generateMainClasses(): Unit = {
                  * @param f a $function
                  * @return a new Function$i that lifts the given function f in a layer that operates on monads.
                  */
-                static <M extends Monad2<M, ?, ?>, $genericsT, R1, R2> $Function$i<$genericsM, Monad2<M, R1, R2>> lift($function<$genericsF, ? extends Tuple2<? extends R1, ? extends R2>> f) {
+                static <M extends BiMonad<M, ?, ?>, $genericsT, R1, R2> $Function$i<$genericsM, BiMonad<M, R1, R2>> lift($function<$genericsF, ? extends Tuple2<? extends R1, ? extends R2>> f) {
                     ${if (i == 1) {
-                      "return mT -> mT.map2(t -> f.apply(t));"
+                      "return mT -> mT.bimap(f);"
                     } else {
                       xs"""
                         return (${(1 to i).gen(j => s"mT$j")(", ")}) ->
                                 ${(1 to i - 1).gen(j => s"mT$j.flatMapM(t$j ->")("\n")}
-                                mT$i.map2(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")})${")" * i};
+                                mT$i.bimap(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")})${")" * i};
                       """
                     }}
                 }
@@ -219,37 +219,37 @@ def generateMainClasses(): Unit = {
             })("\n\n")}
 
             /**
-             * FlatMaps this Monad2 to a new Monad2 with different component types.
+             * FlatMaps this BiMonad to a new BiMonad with different component types.
              *
              * @param mapper A mapper
-             * @param <U1>   1st component type of the resulting Monad2
-             * @param <U2>   2nd component type of the resulting Monad2
-             * @return a mapped {@code Monad2}
+             * @param <U1>   1st component type of the resulting BiMonad
+             * @param <U2>   2nd component type of the resulting BiMonad
+             * @return a mapped {@code BiMonad}
              * @throws NullPointerException if {@code mapper} is null
              */
-            <U1, U2> Monad2<M, U1, U2> flatMapM($BiFunction<? super T1, ? super T2, ? extends Kind2<? extends M, ? extends U1, ? extends U2>> mapper);
+            <U1, U2> BiMonad<M, U1, U2> flatMapM($BiFunction<? super T1, ? super T2, ? extends Kind2<? extends M, ? extends U1, ? extends U2>> mapper);
 
             /**
-             * FlatMaps this Monad2 to a new Monad2 with different component types.
+             * FlatMaps this BiMonad to a new BiMonad with different component types.
              *
              * @param mapper A mapper
-             * @param <U1>   1st component type of the resulting Monad2
-             * @param <U2>   2nd component type of the resulting Monad2
-             * @return a mapped {@code Monad2}
+             * @param <U1>   1st component type of the resulting BiMonad
+             * @param <U2>   2nd component type of the resulting BiMonad
+             * @return a mapped {@code BiMonad}
              * @throws NullPointerException if {@code mapper} is null
              */
-            <U1, U2> Monad2<M, U1, U2> flatMapM(Function<? super Tuple2<? super T1, ? super T2>, ? extends Kind2<? extends M, ? extends U1, ? extends U2>> mapper);
+            <U1, U2> BiMonad<M, U1, U2> flatMapM(Function<? super Tuple2<? super T1, ? super T2>, ? extends Kind2<? extends M, ? extends U1, ? extends U2>> mapper);
 
             // -- adjusting return types of super interface methods
 
             @Override
-            <U1, U2> Monad2<M, U1, U2> map($BiFunction<? super T1, ? super T2, ? extends $Tuple2<? extends U1, ? extends U2>> mapper);
+            <U1, U2> BiMonad<M, U1, U2> bimap($BiFunction<? super T1, ? super T2, ? extends $Tuple2<? extends U1, ? extends U2>> mapper);
 
             @Override
-            <U1, U2> Monad2<M, U1, U2> map($Function<? super T1, ? extends U1> f1, $Function<? super T2, ? extends U2> f2);
+            <U1, U2> BiMonad<M, U1, U2> bimap($Function<? super T1, ? extends U1> f1, $Function<? super T2, ? extends U2> f2);
 
             @Override
-            <U1, U2> Monad2<M, U1, U2> map2(Function<? super Tuple2<? super T1, ? super T2>, ? extends Tuple2<? extends U1, ? extends U2>> f);
+            <U1, U2> BiMonad<M, U1, U2> bimap(Function<? super Tuple2<? super T1, ? super T2>, ? extends Tuple2<? extends U1, ? extends U2>> f);
 
         }
       """

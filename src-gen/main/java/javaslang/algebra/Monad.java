@@ -53,7 +53,7 @@ public interface Monad<M extends Kind<M, ?>, T> extends Kind<M, T>, Functor<T> {
      * @return a new Function1 that lifts the given function f in a layer that operates on monads.
      */
     static <M extends Monad<M, ?>, T, R> Function1<Monad<M, T>, Monad<M, R>> lift(Function<? super T, ? extends R> f) {
-        return mT -> mT.map(f::apply);
+        return mT -> mT.map(f);
     }
 
     /**

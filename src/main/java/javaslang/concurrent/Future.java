@@ -799,7 +799,7 @@ public interface Future<T> extends Monad<Future<?>, T>, Value<T> {
     default <U> Future<U> flatMap(Function<? super T, ? extends Future<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());
-        onComplete(result -> result.map(mapper::apply)
+        onComplete(result -> result.map(mapper)
                 .onSuccess(promise::completeWith)
                 .onFailure(promise::failure)
         );
