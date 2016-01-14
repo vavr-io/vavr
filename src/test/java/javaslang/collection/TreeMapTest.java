@@ -33,6 +33,11 @@ public class TreeMapTest extends AbstractMapTest {
     }
 
     @Override
+    protected boolean emptyMapShouldBeSingleton() {
+        return false;
+    }
+
+    @Override
     protected boolean emptyShouldBeSingleton() {
         return false;
     }

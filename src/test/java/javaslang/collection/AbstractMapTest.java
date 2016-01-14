@@ -120,6 +120,10 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     abstract protected <T1, T2> Map<T1, T2> emptyMap();
 
+    protected boolean emptyMapShouldBeSingleton() {
+        return true;
+    }
+
     abstract protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector();
 
     @SuppressWarnings("unchecked")
@@ -712,21 +716,21 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void mapOfTuplesShouldReturnTheSingletonEmpty() {
-        if (!emptyShouldBeSingleton()) return;
+        if (!emptyMapShouldBeSingleton()) return;
         assertThat(mapOfTuples()).isSameAs(emptyMap());
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void mapOfEntriesShouldReturnTheSingletonEmpty() {
-        if (!emptyShouldBeSingleton()) return;
+        if (!emptyMapShouldBeSingleton()) return;
         assertThat(mapOfEntries()).isSameAs(emptyMap());
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void mapOfPairsShouldReturnTheSingletonEmpty() {
-        if (!emptyShouldBeSingleton()) return;
+        if (!emptyMapShouldBeSingleton()) return;
         assertThat(mapOfPairs()).isSameAs(emptyMap());
     }
 
