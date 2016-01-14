@@ -97,9 +97,13 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      */
     public static CharSeq of(char... characters) {
         Objects.requireNonNull(characters, "characters is null");
-        final char[] chrs = new char[characters.length];
-        System.arraycopy(characters, 0, chrs, 0, characters.length);
-        return characters.length == 0 ? empty() : new CharSeq(new String(chrs));
+        if (characters.length == 0) {
+            return empty();
+        } else {
+            final char[] chrs = new char[characters.length];
+            System.arraycopy(characters, 0, chrs, 0, characters.length);
+            return new CharSeq(new String(chrs));
+        }
     }
 
     /**
