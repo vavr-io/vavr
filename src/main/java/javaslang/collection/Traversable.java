@@ -883,7 +883,7 @@ public interface Traversable<T> extends Monad<T>, Value<T> {
         if (isEmpty()) {
             return Option.none();
         } else {
-            return Option.of(tail().foldLeft(head(), op));
+            return Option.some(tail().foldLeft(head(), op));
         }
     }
 
@@ -918,7 +918,7 @@ public interface Traversable<T> extends Monad<T>, Value<T> {
         if (isEmpty()) {
             return Option.none();
         } else {
-            return Option.of(iterator().reduceRight(op));
+            return Option.some(iterator().reduceRight(op));
         }
     }
 
