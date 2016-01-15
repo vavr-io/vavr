@@ -41,11 +41,9 @@ public interface Foldable<T> {
      * @return a folded value
      * @throws NullPointerException if {@code monoid} is null
      */
-    @SuppressWarnings("unchecked")
-    default T fold(Monoid<? extends T> monoid) {
+    default T fold(Monoid<T> monoid) {
         Objects.requireNonNull(monoid, "fold monoid is null");
-        final Monoid<T> m = (Monoid<T>) monoid;
-        return foldLeft(m.zero(), m::combine);
+        return foldLeft(monoid.zero(), monoid::combine);
     }
 
     /**
@@ -68,11 +66,9 @@ public interface Foldable<T> {
      * @return a folded value
      * @throws NullPointerException if {@code monoid} is null
      */
-    @SuppressWarnings("unchecked")
-    default T foldLeft(Monoid<? extends T> monoid) {
+    default T foldLeft(Monoid<T> monoid) {
         Objects.requireNonNull(monoid, "foldLeft monoid is null");
-        final Monoid<T> m = (Monoid<T>) monoid;
-        return foldLeft(m.zero(), m::combine);
+        return foldLeft(monoid.zero(), monoid::combine);
     }
 
     /**
@@ -111,11 +107,9 @@ public interface Foldable<T> {
      * @return a folded value
      * @throws NullPointerException if {@code monoid} is null
      */
-    @SuppressWarnings("unchecked")
-    default T foldRight(Monoid<? extends T> monoid) {
+    default T foldRight(Monoid<T> monoid) {
         Objects.requireNonNull(monoid, "foldRight monoid is null");
-        final Monoid<T> m = (Monoid<T>) monoid;
-        return foldRight(m.zero(), m::combine);
+        return foldRight(monoid.zero(), monoid::combine);
     }
 
     /**
