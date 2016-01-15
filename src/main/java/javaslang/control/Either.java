@@ -540,7 +540,7 @@ public interface Either<L, R> extends Monad<Either<L, ?>, R>, Value<R> {
         public <U> LeftProjection<U, R> map(Function<? super L, ? extends U> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft()) {
-            	return (LeftProjection<U, R>) either.mapLeft(mapper).left();
+            	return either.mapLeft(mapper).left();
             } else {
                 return (LeftProjection<U, R>) this;
             }
@@ -765,7 +765,7 @@ public interface Either<L, R> extends Monad<Either<L, ?>, R>, Value<R> {
         public <U> RightProjection<L, U> map(Function<? super R, ? extends U> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight()) {
-                return (RightProjection<L, U>) either.map(mapper).right();
+                return either.map(mapper).right();
             } else {
                 return (RightProjection<L, U>) this;
             }

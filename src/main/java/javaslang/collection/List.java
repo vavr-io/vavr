@@ -1033,7 +1033,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T>, Monad<List<?>, T> {
     @Override
     default List<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final List<T> removed = (List<T>) List.ofAll(elements).distinct();
+        final List<T> removed = List.ofAll(elements).distinct();
         List<T> result = Nil.instance();
         boolean found = false;
         for (T element : this) {
@@ -1085,7 +1085,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T>, Monad<List<?>, T> {
     @Override
     default List<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final List<T> kept = (List<T>) List.ofAll(elements).distinct();
+        final List<T> kept = List.ofAll(elements).distinct();
         List<T> result = Nil.instance();
         for (T element : this) {
             if (kept.contains(element)) {

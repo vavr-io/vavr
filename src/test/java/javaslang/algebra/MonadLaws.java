@@ -20,18 +20,15 @@ public interface MonadLaws<M extends Monad<M, ?>> extends FunctorLaws {
 
     void shouldSatisfyMonadAssociativity();
 
-    // needed to make left-identity work again for single-valued monads
-    <U> Iterable<U> select(Iterable<U> iterable);
-
     // unit(t).flatMapM(f) ≡ f.apply(t)
     default <T, U> CheckResult checkMonadLeftIdentity(Function<? super T, ? extends Monad<M, T>> unit,
-    		                                                       Arbitrary<T> ts,
-    		                                                       Arbitrary<Function<? super T, ? extends Monad<M, U>>> fs) {
-		 return Property.def("monad.left_identity")
-		         .forAll(ts, fs)
-		         .suchThat((t, f) -> unit.apply(t).flatMapM(f).equals(f.apply(t)))
-		         .check();
-		    }
+                                                      Arbitrary<T> ts,
+                                                      Arbitrary<Function<? super T, ? extends Monad<M, U>>> fs) {
+        return Property.def("monad.left_identity")
+                .forAll(ts, fs)
+                .suchThat((t, f) -> unit.apply(t).flatMapM(f).equals(f.apply(t)))
+                .check();
+    }
 
     // m.flatMapM(unit) ≡ m
     default <T> CheckResult checkMonadRightIdentity(Function<? super T, ? extends Monad<M, T>> unit,

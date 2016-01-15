@@ -82,6 +82,7 @@ def generateMainClasses(): Unit = {
               val genericsF = if (i == 1) "? super T" else (1 to i).gen(j => s"? super T$j")(", ")
               val genericsT = if (i == 1) "T" else (1 to i).gen(j => s"T$j")(", ")
               val genericsM = if (i == 1) "Monad<M, T>" else (1 to i).gen(j => s"Monad<M, T$j>")(", ")
+              val args = if (i == 1) "Monad<M, T> mT" else (1 to i).gen(j => s"Monad<M, T$j> mT$j")(", ")
               val function = i match {
                 case 1 => im.getType("java.util.function.Function")
                 case 2 => im.getType("java.util.function.BiFunction")
@@ -90,24 +91,27 @@ def generateMainClasses(): Unit = {
 
               xs"""
                 /$javadoc
-                 * Lifts a {@code $function} to a higher {@code Function$i} that operates on Monads.
+                 * Lifts a {@code $function} to a higher {@code Lifted$i} function that operates on Monads.
                  *
                  ${(1 to i).gen(j => s"* @param <${if (i == 1) "T" else s"T$j"}> ${j.ordinal} argument type of f")("\n")}
-                 * @param <M> Monad type
                  * @param <R> result type of f
                  * @param f a $function
-                 * @return a new Function$i that lifts the given function f in a layer that operates on monads.
+                 * @return a new Lifted$i function that lifts the given function f in a layer that operates on monads.
                  */
-                static <M extends Monad<M, ?>, $genericsT, R> Function$i<$genericsM, Monad<M, R>> lift($function<$genericsF, ? extends R> f) {
-                    ${if (i == 1) {
-                      "return mT -> mT.map(f);"
-                    } else {
-                      xs"""
-                        return (${(1 to i).gen(j => s"mT$j")(", ")}) ->
-                                ${(1 to i - 1).gen(j => s"mT$j.flatMapM(t$j ->")("\n")}
-                                mT$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")})${")" * i};
-                      """
-                    }}
+                static <$genericsT, R> Lifted$i<$genericsT, R> lift($function<$genericsF, ? extends R> f) {
+                    return new Lifted$i<$genericsT, R>() {
+                        @Override
+                        public <M extends Monad<M, ?>> Monad<M, R> apply($args) {
+                            ${if (i == 1) {
+                              "return mT.map(f);"
+                            } else {
+                              xs"""
+                                return ${(1 to i - 1).gen(j => s"mT$j.flatMapM(t$j ->")("\n")}
+                                       mT$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")})${")" * i};
+                              """
+                            }}
+                        }
+                    };
                 }
               """
             })("\n\n")}
@@ -150,6 +154,29 @@ def generateMainClasses(): Unit = {
             @Override
             <U> Monad<M, U> map(${im.getType("java.util.function.Function")}<? super T, ? extends U> mapper);
 
+            // -- Lifted Functions
+
+            ${(1 to N).gen(i => {
+
+              val paramsM = if (i == 1) "M<T>" else "(" + (1 to i).gen(j => s"M<T$j>")(", ") + ")"
+              val paramsT = if (i == 1) "T" else "(" + (1 to i).gen(j => s"T$j")(", ") + ")"
+              val genericsT = if (i == 1) "T" else (1 to i).gen(j => s"T$j")(", ")
+              val args = if (i == 1) "Monad<M, T> mT" else (1 to i).gen(j => s"Monad<M, T$j> m$j")(", ")
+
+              xs"""
+                /$javadoc
+                 * Represents a function {@code $paramsT -> R}
+                 * lifted to {@code $paramsM -> M<R>}.
+                 *
+                 ${(1 to i).gen(j => s"* @param <${if (i == 1) "T" else s"T$j"}> ${j.ordinal} argument type")("\n")}
+                 * @param <R> result type
+                 */
+                // DEV-NOTE: intentionally no @FunctionalInterface
+                interface Lifted$i<$genericsT, R> {
+                    <M extends Monad<M, ?>> Monad<M, R> apply($args);
+                }
+              """
+            })("\n\n")}
         }
       """
     }

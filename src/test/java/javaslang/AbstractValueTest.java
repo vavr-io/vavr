@@ -5,7 +5,6 @@
  */
 package javaslang;
 
-import javaslang.algebra.Monad;
 import javaslang.collection.*;
 import javaslang.control.Either;
 import javaslang.control.Match;
@@ -17,7 +16,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractValueTest {
 
@@ -56,132 +54,6 @@ public abstract class AbstractValueTest {
         };
     }
 
-    // DIRTY! We need to move the monad stuff out of AbstractValueTest!
-    // ===========================
-    // ==         Monad         ==
-    // ===========================
-
-    @SuppressWarnings("unchecked")
-    private <T> Monad<T> unit() {
-        return (Monad<T>) empty();
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> Monad<T> unit(T element) {
-        return (Monad<T>) of(element);
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> Monad<T> unit(T... elements) {
-        return (Monad<T>) of(elements);
-    }
-
-    // -- filter
-
-    @Test
-    public void shouldFilterEmptyTraversable() {
-        assertThat(unit().filter(ignored -> true)).isEqualTo(unit());
-    }
-
-    @Test
-    public void shouldFilterNonEmptyTraversable() {
-        assertThat(unit(1, 2, 3, 4).filter(i -> i % 2 == 0)).isEqualTo(unit(2, 4));
-    }
-
-    @Test
-    public void shouldFilterNonEmptyTraversableAllMatch() {
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            final Monad<Integer> v1 = unit(1, 2, 3, 4);
-            final Monad<Integer> v2 = unit(1, 2, 3, 4);
-            assertThat(v1.filter(i -> true)).isEqualTo(v2);
-        } else {
-            final Monad<Integer> v = unit(1, 2, 3, 4);
-            assertThat(v.filter(i -> true)).isSameAs(v);
-        }
-    }
-
-    // -- filterNot
-
-    @Test
-    public void shouldFilterNotEmptyTraversable() {
-        assertThat(unit().filter(ignored -> true)).isEqualTo(unit());
-    }
-
-    @Test
-    public void shouldFilterNotNonEmptyTraversable() {
-        assertThat(unit(1, 2, 3, 4).filterNot(i -> i % 2 == 0)).isEqualTo(unit(1, 3));
-    }
-
-    @Test
-    public void shouldFilterNotNonEmptyTraversableAllMatch() {
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            final Monad<Integer> v1 = unit(1, 2, 3, 4);
-            final Monad<Integer> v2 = unit(1, 2, 3, 4);
-            assertThat(v1.filterNot(i -> false)).isEqualTo(v2);
-        } else {
-            final Monad<Integer> v = unit(1, 2, 3, 4);
-            assertThat(v.filterNot(i -> false)).isSameAs(v);
-        }
-    }
-
-    // -- flatMap
-
-    @Test
-    public void shouldFlatMapEmpty() {
-        assertThat(unit().flatMap(this::unit)).isEqualTo(unit());
-    }
-
-    @Test
-    public void shouldFlatMapNonEmpty() {
-        assertThat(unit(1, 2, 3).flatMap(this::unit)).isEqualTo(unit(1, 2, 3));
-    }
-
-    @Test
-    public void shouldFlatMapNonEmptyByExpandingElements() {
-        assertThat(unit(1, 2, 3).flatMap(i -> {
-            if (i == 1) {
-                return unit(1, 2, 3);
-            } else if (i == 2) {
-                return unit(4, 5);
-            } else {
-                return unit(6);
-            }
-        })).isEqualTo(unit(1, 2, 3, 4, 5, 6));
-    }
-
-    @Test
-    public void shouldFlatMapNonEmptyInTheRightOrder() {
-        final AtomicInteger seq = new AtomicInteger(0);
-        final Monad<Integer> actualInts = unit(0, 1, 2)
-                .flatMap(ignored -> unit(seq.getAndIncrement(), seq.getAndIncrement()));
-        final Monad<Integer> expectedInts = unit(0, 1, 2, 3, 4, 5);
-        assertThat(actualInts).isEqualTo(expectedInts);
-    }
-
-    // -- map
-
-    @Test
-    public void shouldMapNil() {
-        assertThat(this.<Integer> unit().map(i -> i + 1)).isEqualTo(unit());
-    }
-
-    @Test
-    public void shouldMapNonNil() {
-        assertThat(unit(1, 2, 3).map(i -> i + 1)).isEqualTo(unit(2, 3, 4));
-    }
-
-    @Test
-    public void shouldMapInTheRightOrder() {
-        final AtomicInteger seq = new AtomicInteger(0);
-        final Monad<Integer> expectedInts = unit(0, 1, 2, 3, 4);
-        final Monad<Integer> actualInts = unit(0, 1, 2, 3, 4).map(ignored -> seq.getAndIncrement());
-        assertThat(actualInts).isEqualTo(expectedInts);
-    }
-
-    // ===========================
-    // ==         Value         ==
-    // ===========================
-
     abstract protected <T> Value<T> empty();
 
     abstract protected <T> Value<T> of(T element);
@@ -194,18 +66,52 @@ public abstract class AbstractValueTest {
     // returns the peek result of the specific Traversable implementation
     abstract protected int getPeekNonNilPerformingAnAction();
 
-    // -- get(Iterable)
+        // -- filter
 
     @Test
-    public void shouldGetOfValue() {
-        assertThat(Value.getOption(of(1))).isEqualTo(Option.some(1));
+    public void shouldFilterEmptyTraversable() {
+        assertThat(empty().filter(ignored -> true)).isEqualTo(empty());
     }
 
     @Test
-    public void shouldGetOfIterable() {
-        java.util.List<Integer> iterable = new ArrayList<>();
-        iterable.add(11);
-        assertThat(Value.getOption(iterable)).isEqualTo(Option.some(11));
+    public void shouldFilterNonEmptyTraversable() {
+        assertThat(of(1, 2, 3, 4).filter(i -> i % 2 == 0)).isEqualTo(of(2, 4));
+    }
+
+    @Test
+    public void shouldFilterNonEmptyTraversableAllMatch() {
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            final Value<Integer> v1 = of(1, 2, 3, 4);
+            final Value<Integer> v2 = of(1, 2, 3, 4);
+            assertThat(v1.filter(i -> true)).isEqualTo(v2);
+        } else {
+            final Value<Integer> v = of(1, 2, 3, 4);
+            assertThat(v.filter(i -> true)).isSameAs(v);
+        }
+    }
+
+    // -- filterNot
+
+    @Test
+    public void shouldFilterNotEmptyTraversable() {
+        assertThat(empty().filter(ignored -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldFilterNotNonEmptyTraversable() {
+        assertThat(of(1, 2, 3, 4).filterNot(i -> i % 2 == 0)).isEqualTo(of(1, 3));
+    }
+
+    @Test
+    public void shouldFilterNotNonEmptyTraversableAllMatch() {
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            final Value<Integer> v1 = of(1, 2, 3, 4);
+            final Value<Integer> v2 = of(1, 2, 3, 4);
+            assertThat(v1.filterNot(i -> false)).isEqualTo(v2);
+        } else {
+            final Value<Integer> v = of(1, 2, 3, 4);
+            assertThat(v.filterNot(i -> false)).isSameAs(v);
+        }
     }
 
     // -- get()
