@@ -6,6 +6,8 @@
 package javaslang.collection;
 
 import javaslang.*;
+import javaslang.algebra.Kind1;
+import javaslang.algebra.Monad;
 import javaslang.collection.List.Nil;
 import javaslang.collection.ListModule.Combinations;
 import javaslang.collection.ListModule.SplitAt;
@@ -34,7 +36,7 @@ import java.util.stream.Collector;
  * List.empty()                        // = List.of() = Nil.instance()
  * List.of(x)                          // = new Cons&lt;&gt;(x, Nil.instance())
  * List.of(Object...)                  // e.g. List.of(1, 2, 3)
- * List.ofAll(Iterable)      // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
+ * List.ofAll(Iterable)                // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
  * List.ofAll(&lt;primitive array&gt;) // e.g. List.of(new int[] {1, 2, 3}) = 1, 2, 3
  *
  * // int sequences
@@ -52,7 +54,7 @@ import java.util.stream.Collector;
  * <code>
  * List&lt;Integer&gt;       s1 = List.of(1);
  * List&lt;Integer&gt;       s2 = List.of(1, 2, 3);
- *                     // = List.of(new Integer[] {1, 2, 3});
+ *                           // = List.of(new Integer[] {1, 2, 3});
  *
  * List&lt;int[]&gt;         s3 = List.ofAll(new int[] {1, 2, 3});
  * List&lt;List&lt;Integer&gt;&gt; s4 = List.ofAll(List.of(1, 2, 3));
@@ -80,7 +82,7 @@ import java.util.stream.Collector;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public interface List<T> extends LinearSeq<T>, Stack<T> {
+public interface List<T> extends LinearSeq<T>, Stack<T>, Monad<List<?>, T> {
 
     long serialVersionUID = 1L;
 
@@ -643,6 +645,12 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> List<U> flatMapM(Function<? super T, ? extends Kind1<List<?>, U>> mapper) {
+        return flatMap((Function<T, List<U>>) mapper);
+    }
+
     @Override
     default void forEach(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
@@ -676,7 +684,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, List.ofAll(it)));
+        return iterator().groupBy(classifier).bimap((c, it) -> Tuple.of(c, List.ofAll(it)));
     }
 
     @Override
@@ -1025,8 +1033,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default List<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        // TODO(Eclipse bug): remove cast + SuppressWarnings
-        List<T> removed = (List<T>) (Object) List.ofAll(elements).distinct();
+        final List<T> removed = (List<T>) List.ofAll(elements).distinct();
         List<T> result = Nil.instance();
         boolean found = false;
         for (T element : this) {
@@ -1078,8 +1085,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     @Override
     default List<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        // TODO(Eclipse bug): remove cast + SuppressWarnings
-        final List<T> kept = (List<T>) (Object) List.ofAll(elements).distinct();
+        final List<T> kept = (List<T>) List.ofAll(elements).distinct();
         List<T> result = Nil.instance();
         for (T element : this) {
             if (kept.contains(element)) {

@@ -5,7 +5,6 @@
  */
 package javaslang.algebra;
 
-import javaslang.collection.Iterator;
 import javaslang.test.Arbitrary;
 import javaslang.test.CheckResult;
 import javaslang.test.Property;
@@ -13,7 +12,7 @@ import javaslang.test.Property;
 import java.util.function.Function;
 
 @SuppressWarnings("Convert2MethodRef")
-public interface MonadLaws extends FunctorLaws {
+public interface MonadLaws<M extends Monad<M, ?>> extends FunctorLaws {
 
     void shouldSatisfyMonadLeftIdentity();
 
@@ -24,44 +23,32 @@ public interface MonadLaws extends FunctorLaws {
     // needed to make left-identity work again for single-valued monads
     <U> Iterable<U> select(Iterable<U> iterable);
 
-    // unit(a).flatMap(f) ≡ f.apply(a)
-    default <T, U> CheckResult checkMonadLeftIdentity(Function<? super T, ? extends Monad<T>> unit,
-                                                      Arbitrary<T> ts,
-                                                      Arbitrary<Function<? super T, ? extends Iterable<U>>> fs) {
-        return Property.def("monad.left_identity")
-                .forAll(ts, fs)
-                .suchThat((t, f) -> {
-                    final Iterable<U> term1 = unit.apply(t).flatMap((T tt) -> f.apply(tt));
-                    final Iterable<U> term2 = select(f.apply(t));
-                    //check  structural equality
-                    return Iterator.ofAll(term1).eq(term2);
-                })
-                .check();
-    }
+    // unit(t).flatMapM(f) ≡ f.apply(t)
+    default <T, U> CheckResult checkMonadLeftIdentity(Function<? super T, ? extends Monad<M, T>> unit,
+    		                                                       Arbitrary<T> ts,
+    		                                                       Arbitrary<Function<? super T, ? extends Monad<M, U>>> fs) {
+		 return Property.def("monad.left_identity")
+		         .forAll(ts, fs)
+		         .suchThat((t, f) -> unit.apply(t).flatMapM(f).equals(f.apply(t)))
+		         .check();
+		    }
 
-    // m.flatMap(unit) ≡ m
-    default <T> CheckResult checkMonadRightIdentity(Function<? super T, ? extends Monad<T>> unit,
-                                                    Arbitrary<? extends Monad<T>> ms) {
+    // m.flatMapM(unit) ≡ m
+    default <T> CheckResult checkMonadRightIdentity(Function<? super T, ? extends Monad<M, T>> unit,
+                                                    Arbitrary<? extends Monad<M, T>> ms) {
         return Property.def("monad.right_identity")
                 .forAll(ms)
-                .suchThat(m -> {
-                    final Monad<T> term = m.flatMap((T t) -> unit.apply(t));
-                    return term.equals(m);
-                })
+                .suchThat(m -> m.flatMapM(unit).equals(m))
                 .check();
     }
 
-    // m.flatMap(f).flatMap(g) ≡ m.flatMap(x -> f.apply(x).flatMap(g))
-    default <T, U, V> CheckResult checkMonadAssociativity(Arbitrary<? extends Monad<T>> ms,
-                                                          Arbitrary<Function<? super T, ? extends Iterable<U>>> fs,
-                                                          Arbitrary<Function<? super U, ? extends Iterable<V>>> gs) {
+    // m.flatMapM(f).flatMapM(g) ≡ m.flatMapM(t -> f.apply(t).flatMapM(g))
+    default <T, U, V> CheckResult checkMonadAssociativity(Arbitrary<? extends Monad<M, T>> ms,
+                                                          Arbitrary<Function<? super T, ? extends Monad<M, U>>> fs,
+                                                          Arbitrary<Function<? super U, ? extends Monad<M, V>>> gs) {
         return Property.def("monad.associativity")
                 .forAll(ms, fs, gs)
-                .suchThat((m, f, g) -> {
-                    final Monad<V> term1 = m.flatMap((T t) -> f.apply(t)).flatMap((U u) -> g.apply(u));
-                    final Monad<V> term2 = m.flatMap((T t) -> ((Monad<U>) f.apply(t)).flatMap((U u) -> g.apply(u)));
-                    return term1.equals(term2);
-                })
+                .suchThat((m, f, g) -> m.flatMapM(f).flatMapM(g).equals(m.flatMapM(t -> f.apply(t).flatMapM(g))))
                 .check();
     }
 }

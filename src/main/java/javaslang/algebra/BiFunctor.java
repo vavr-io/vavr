@@ -29,7 +29,7 @@ public interface BiFunctor<T1, T2> {
      * @return a new BiFunctor
      * @throws NullPointerException if {@code f} is null
      */
-    <U1, U2> BiFunctor<U1, U2> bimap(BiFunction<? super T1, ? super T2, ? extends Tuple2<? extends U1, ? extends U2>> f);
+    <U1, U2> BiFunctor<U1, U2> bimap(BiFunction<? super T1, ? super T2, Tuple2<U1, U2>> f);
 
     /**
      * Applies two functions {@code f1}, {@code f2} to the components of this BiFunctor.
@@ -52,6 +52,6 @@ public interface BiFunctor<T1, T2> {
      * @return a new BiFunctor
      * @throws NullPointerException if {@code f} is null
      */
-    <U1, U2> BiFunctor<U1, U2> bimap(Function<? super Tuple2<? super T1, ? super T2>, ? extends Tuple2<? extends U1, ? extends U2>> f);
+    <U1, U2> BiFunctor<U1, U2> bimap(Function<Tuple2<T1, T2>, Tuple2<U1, U2>> f);
 
 }

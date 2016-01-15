@@ -708,7 +708,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     @Override
     public <C> Map<C, Queue<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, Queue.ofAll(it)));
+        return iterator().groupBy(classifier).bimap((c, it) -> Tuple.of(c, Queue.ofAll(it)));
     }
 
     @Override

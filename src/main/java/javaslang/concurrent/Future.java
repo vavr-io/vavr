@@ -8,7 +8,7 @@ package javaslang.concurrent;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
-import javaslang.algebra.Kind;
+import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -795,7 +795,6 @@ public interface Future<T> extends Monad<Future<?>, T>, Value<T> {
 
     // -- Value & Monad implementation
 
-    @SuppressWarnings("unchecked")
     default <U> Future<U> flatMap(Function<? super T, ? extends Future<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());
@@ -808,7 +807,7 @@ public interface Future<T> extends Monad<Future<?>, T>, Value<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Future<U> flatMapM(Function<? super T, ? extends Kind<? extends Future<?>, ? extends U>> mapper) {
+    default <U> Future<U> flatMapM(Function<? super T, ? extends Kind1<Future<?>, U>> mapper) {
         return flatMap((Function<T, Future<U>>) mapper);
     }
 

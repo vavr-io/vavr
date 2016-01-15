@@ -6,7 +6,7 @@
 package javaslang.control;
 
 import javaslang.*;
-import javaslang.algebra.Kind;
+import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -567,7 +567,7 @@ public interface Match {
 
         @SuppressWarnings("unchecked")
         @Override
-        default <U> MatchMonad<U> flatMapM(Function<? super R, ? extends Kind<? extends MatchMonad<?>, ? extends U>> mapper) {
+        default <U> MatchMonad<U> flatMapM(Function<? super R, ? extends Kind1<MatchMonad<?>, U>> mapper) {
             return flatMap((Function<R, MatchMonad<U>>) mapper);
         }
 

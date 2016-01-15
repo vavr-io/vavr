@@ -613,14 +613,14 @@ public class TryTest {
 
     @Test
     public void shouldFlatMapOnIterable() {
-        final Iterable<Integer> iterable = Arrays.asList(1, 2, 3);
-        assertThat(success().flatMap(s -> iterable).get()).isEqualTo(1);
+        final Try<Integer> success = Try.success(1);
+        assertThat(success().flatMap(ignored -> success)).isEqualTo(success);
     }
 
-    @Test(expected = Try.NonFatalException.class)
+    @Test
     public void shouldFlatMapOnEmptyIterable() {
-        final Iterable<Integer> iterable = Collections.emptyList();
-        success().flatMap(s -> iterable).get();
+        final Try<Integer> failure = Try.failure(new Error());
+        assertThat(success().flatMap(ignored -> failure)).isEqualTo(failure);
     }
 
     @Test(expected = RuntimeException.class)

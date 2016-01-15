@@ -20,6 +20,13 @@ public class MonadTest {
     @Test
     public void testList1() {
         List<Integer> list = List.of(1, 2);
+
+        // XXX-TODO:
+        LiftedMonad1<T, R> l1 = Monad.lift(f1);
+        LiftedBiMonad5<T1, ..., T5, R> l2 = BiMonad.lift(f5)
+        Monad<List<?>, R> r = l1.apply(List(1, 2, 3), HashSet(1, a, 2, b));
+
+        Monad.lift(Tuple::of);
         List<Tuple1<Integer>> crossProductPower = (List<Tuple1<Integer>>) Monad
                 .lift((Function1<Integer, Tuple1<Integer>>) Tuple::of)
                 .apply(list);

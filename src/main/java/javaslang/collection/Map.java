@@ -40,7 +40,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @return a new {@code Map}
      * @throws NullPointerException if {@code mapper} is null
      */
-    <K2, V2> Map<K2, V2> bimap(BiFunction<? super K, ? super V, ? extends Tuple2<? extends K2, ? extends V2>> mapper);
+    <K2, V2> Map<K2, V2> bimap(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
 
     /**
      * Maps this {@code Map} to a new {@code Map} with different component type by applying a function to its elements.
@@ -63,7 +63,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @return a new {@code Map}
      * @throws NullPointerException if {@code mapper} is null
      */
-    <K2, V2> Map<K2, V2> bimap(Function<? super Tuple2<? super K, ? super V>, ? extends Tuple2<? extends K2, ? extends V2>> mapper);
+    <K2, V2> Map<K2, V2> bimap(Function<Tuple2<K, V>, Tuple2<K2, V2>> mapper);
 
     /**
      * Returns <code>true</code> if this map contains a mapping for the specified key.
@@ -92,7 +92,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @return A new {@code Map}.
      * @throws NullPointerException if {@code mapper} is null
      */
-    <K2, V2> Map<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends K2, ? extends V2>>> mapper);
+    <K2, V2> Map<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper);
 
     /**
      * Returns the {@code Some} of value to which the specified key
@@ -230,16 +230,15 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     Map<K, V> filterNot(Predicate<? super Tuple2<K, V>> predicate);
 
     /**
-     * Deprecated(CONDEMNED)
-     *
+     * Flat-maps this entries to a sequence of values.
+     * <p>
+     * Please use {@link #flatMap(BiFunction)} if the result should be a {@code Map}
+     * 
      * @param mapper A mapper
      * @param <U> Component type
      * @return A sequence of flat-mapped values.
-     * @deprecated Please use {@link #flatMap(BiFunction)} instead. This method is inherited from
-     *             {@link Traversable} but can't return a {@code Map<K, V>} because the method
-     *             signature has only a single resulting component type.
      */
-    @Deprecated
+    @SuppressWarnings("unchecked")
     @Override
     default <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
@@ -267,16 +266,14 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     }
 
     /**
-     * Deprecated(CONDEMNED)
+     * Maps the {@code Map} entries to a sequence of values.
+     * <p>
+     * Please use {@link #bimap(Function)} if the result has to be of type {@code Map}.
      *
      * @param mapper A mapper
      * @param <U> Component type
      * @return A sequence of mapped values.
-     * @deprecated Please use {@link #bimap(Function)} instead. This method is inherited from
-     *             {@link Traversable} but can't return a {@code Map<K, V>} because the method
-     *             signature has only a single resulting component type.
      */
-    @Deprecated
     @SuppressWarnings("unchecked")
     @Override
     default <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {

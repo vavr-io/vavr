@@ -41,7 +41,7 @@ import javaslang.*;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public interface Monad<M extends Kind<M, ?>, T> extends Kind<M, T>, Functor<T> {
+public interface Monad<M extends Kind1<M, ?>, T> extends Kind1<M, T>, Functor<T> {
 
     /**
      * Lifts a {@code Function} to a higher {@code Function1} that operates on Monads.
@@ -241,7 +241,7 @@ public interface Monad<M extends Kind<M, ?>, T> extends Kind<M, T>, Functor<T> {
      * @return a mapped {@code Monad}
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U> Monad<M, U> flatMapM(Function<? super T, ? extends Kind<? extends M, ? extends U>> mapper);
+    <U> Monad<M, U> flatMapM(Function<? super T, ? extends Kind1<M, U>> mapper);
 
     // -- adjusting return types of super interface methods
 

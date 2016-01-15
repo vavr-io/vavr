@@ -348,14 +348,14 @@ public class OptionTest {
 
     @Test
     public void shouldFlatMapNonEmptyIterable() {
-        final Iterable<Integer> iterable = Arrays.asList(2, 3, 4);
-        assertThat(Option.of(1).<Integer> flatMap(i -> iterable)).isEqualTo(Option.of(2));
+        final Option<Integer> option = Option.some(2);
+        assertThat(Option.of(1).<Integer> flatMap(i -> option)).isEqualTo(Option.of(2));
     }
 
     @Test
     public void shouldFlatMapEmptyIterable() {
-        final Iterable<Integer> iterable = Collections.emptyList();
-        assertThat(Option.of(1).<Integer> flatMap(i -> iterable)).isEqualTo(Option.<Integer> none());
+        final Option<Integer> option = Option.none();
+        assertThat(Option.of(1).<Integer> flatMap(i -> option)).isEqualTo(Option.none());
     }
 
     // -- exists

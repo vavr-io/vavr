@@ -9,7 +9,7 @@ import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
-import javaslang.algebra.Kind;
+import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.Empty;
@@ -398,7 +398,7 @@ public interface Tree<T> extends Traversable<T>, Monad<Tree<?>, T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Tree<U> flatMapM(Function<? super T, ? extends Kind<? extends Tree<?>, ? extends U>> mapper) {
+    default <U> Tree<U> flatMapM(Function<? super T, ? extends Kind1<Tree<?>, U>> mapper) {
         return flatMap((Function<T, Tree<U>>) mapper);
     }
 

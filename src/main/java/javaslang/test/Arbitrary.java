@@ -6,7 +6,7 @@
 package javaslang.test;
 
 import javaslang.Value;
-import javaslang.algebra.Kind;
+import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -90,7 +90,6 @@ public interface Arbitrary<T> extends Monad<Arbitrary<?>, T>, Value<T> {
      * @param <U>    New type of arbitrary objects
      * @return A new Arbitrary
      */
-    @SuppressWarnings("unchecked")
     default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Arbitrary<? extends U>> mapper) {
         return size -> {
             final Gen<T> gen = apply(size);
@@ -100,7 +99,7 @@ public interface Arbitrary<T> extends Monad<Arbitrary<?>, T>, Value<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Arbitrary<U> flatMapM(Function<? super T, ? extends Kind<? extends Arbitrary<?>, ? extends U>> mapper) {
+    default <U> Arbitrary<U> flatMapM(Function<? super T, ? extends Kind1<Arbitrary<?>, U>> mapper) {
         return flatMap((Function<T, Arbitrary<U>>) mapper);
     }
 
@@ -153,7 +152,7 @@ public interface Arbitrary<T> extends Monad<Arbitrary<?>, T>, Value<T> {
     }
 
     /**
-     * This is philosophical. We see an {@çode Arbitrary} as single-valued type which holds a variable random value.
+     * This is philosophical. We see an {@code Arbitrary} as single-valued type which holds a variable random value.
      *
      * @return {@code true}
      */

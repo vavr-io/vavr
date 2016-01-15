@@ -86,11 +86,6 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
         return _1;
     }
 
-    @SuppressWarnings("unchecked")
-    public <U1> Tuple1<U1> flatMap(Function<? super T1, ? extends Tuple1<? extends U1>> f) {
-        return (Tuple1<U1>) f.apply(_1);
-    }
-
     public <U1> Tuple1<U1> map(Function<? super T1, ? extends U1> f1) {
         return Tuple.of(f1.apply(_1));
     }
@@ -103,9 +98,9 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
      * @return An object of type U
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U transform(Function<? super T1, ? extends U> f) {
+    public <U> U transform(Function<Tuple1<T1>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
-        return f.apply(_1);
+        return f.apply(this);
     }
 
     @Override

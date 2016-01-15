@@ -7,7 +7,7 @@ package javaslang.control;
 
 import javaslang.CheckedFunction1;
 import javaslang.Value;
-import javaslang.algebra.Kind;
+import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -245,7 +245,7 @@ public interface Try<T> extends Monad<Try<?>, T>, Value<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Try<U> flatMapM(Function<? super T, ? extends Kind<? extends Try<?>, ? extends U>> mapper) {
+    default <U> Try<U> flatMapM(Function<? super T, ? extends Kind1<Try<?>, U>> mapper) {
         return flatMap((Function<T, Try<U>>) mapper);
     }
 

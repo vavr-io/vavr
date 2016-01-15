@@ -6,7 +6,7 @@
 package javaslang.control;
 
 import javaslang.Value;
-import javaslang.algebra.Kind;
+import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -255,7 +255,7 @@ public interface Option<T> extends Monad<Option<?>, T>, Value<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Option<U> flatMapM(Function<? super T, ? extends Kind<? extends Option<?>, ? extends U>> mapper) {
+    default <U> Option<U> flatMapM(Function<? super T, ? extends Kind1<Option<?>, U>> mapper) {
         return flatMap((Function<T, Option<U>>) mapper);
     }
 

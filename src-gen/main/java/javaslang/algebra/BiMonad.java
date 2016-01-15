@@ -34,7 +34,7 @@ public interface BiMonad<M extends Kind2<M, ?, ?>, T1, T2> extends Kind2<M, T1, 
      * @param f a Function
      * @return a new Function1 that lifts the given function f in a layer that operates on monads.
      */
-    static <M extends BiMonad<M, ?, ?>, T1, T2, R1, R2> Function1<BiMonad<M, T1, T2>, BiMonad<M, R1, R2>> lift(Function<? super Tuple2<? super T1, ? super T2>, ? extends Tuple2<? extends R1, ? extends R2>> f) {
+    static <M extends BiMonad<M, ?, ?>, T1, T2, R1, R2> Function1<BiMonad<M, T1, T2>, BiMonad<M, R1, R2>> lift(Function<Tuple2<T1, T2>, Tuple2<R1, R2>> f) {
         return mT -> mT.bimap(f);
     }
 
@@ -51,7 +51,7 @@ public interface BiMonad<M extends Kind2<M, ?, ?>, T1, T2> extends Kind2<M, T1, 
      * @param f a BiFunction
      * @return a new Function2 that lifts the given function f in a layer that operates on monads.
      */
-    static <M extends BiMonad<M, ?, ?>, T11, T12, T21, T22, R1, R2> Function2<BiMonad<M, T11, T12>, BiMonad<M, T21, T22>, BiMonad<M, R1, R2>> lift(BiFunction<? super Tuple2<? super T11, ? super T12>, ? super Tuple2<? super T21, ? super T22>, ? extends Tuple2<? extends R1, ? extends R2>> f) {
+    static <M extends BiMonad<M, ?, ?>, T11, T12, T21, T22, R1, R2> Function2<BiMonad<M, T11, T12>, BiMonad<M, T21, T22>, BiMonad<M, R1, R2>> lift(BiFunction<Tuple2<T11, T12>, Tuple2<T21, T22>, Tuple2<R1, R2>> f) {
         return (mT1, mT2) ->
                 mT1.flatMapM(t1 ->
                 mT2.bimap(t2 -> f.apply(t1, t2)));
@@ -72,7 +72,7 @@ public interface BiMonad<M extends Kind2<M, ?, ?>, T1, T2> extends Kind2<M, T1, 
      * @param f a Function3
      * @return a new Function3 that lifts the given function f in a layer that operates on monads.
      */
-    static <M extends BiMonad<M, ?, ?>, T11, T12, T21, T22, T31, T32, R1, R2> Function3<BiMonad<M, T11, T12>, BiMonad<M, T21, T22>, BiMonad<M, T31, T32>, BiMonad<M, R1, R2>> lift(Function3<? super Tuple2<? super T11, ? super T12>, ? super Tuple2<? super T21, ? super T22>, ? super Tuple2<? super T31, ? super T32>, ? extends Tuple2<? extends R1, ? extends R2>> f) {
+    static <M extends BiMonad<M, ?, ?>, T11, T12, T21, T22, T31, T32, R1, R2> Function3<BiMonad<M, T11, T12>, BiMonad<M, T21, T22>, BiMonad<M, T31, T32>, BiMonad<M, R1, R2>> lift(Function3<Tuple2<T11, T12>, Tuple2<T21, T22>, Tuple2<T31, T32>, Tuple2<R1, R2>> f) {
         return (mT1, mT2, mT3) ->
                 mT1.flatMapM(t1 ->
                 mT2.flatMapM(t2 ->
@@ -96,7 +96,7 @@ public interface BiMonad<M extends Kind2<M, ?, ?>, T1, T2> extends Kind2<M, T1, 
      * @param f a Function4
      * @return a new Function4 that lifts the given function f in a layer that operates on monads.
      */
-    static <M extends BiMonad<M, ?, ?>, T11, T12, T21, T22, T31, T32, T41, T42, R1, R2> Function4<BiMonad<M, T11, T12>, BiMonad<M, T21, T22>, BiMonad<M, T31, T32>, BiMonad<M, T41, T42>, BiMonad<M, R1, R2>> lift(Function4<? super Tuple2<? super T11, ? super T12>, ? super Tuple2<? super T21, ? super T22>, ? super Tuple2<? super T31, ? super T32>, ? super Tuple2<? super T41, ? super T42>, ? extends Tuple2<? extends R1, ? extends R2>> f) {
+    static <M extends BiMonad<M, ?, ?>, T11, T12, T21, T22, T31, T32, T41, T42, R1, R2> Function4<BiMonad<M, T11, T12>, BiMonad<M, T21, T22>, BiMonad<M, T31, T32>, BiMonad<M, T41, T42>, BiMonad<M, R1, R2>> lift(Function4<Tuple2<T11, T12>, Tuple2<T21, T22>, Tuple2<T31, T32>, Tuple2<T41, T42>, Tuple2<R1, R2>> f) {
         return (mT1, mT2, mT3, mT4) ->
                 mT1.flatMapM(t1 ->
                 mT2.flatMapM(t2 ->
@@ -123,7 +123,7 @@ public interface BiMonad<M extends Kind2<M, ?, ?>, T1, T2> extends Kind2<M, T1, 
      * @param f a Function5
      * @return a new Function5 that lifts the given function f in a layer that operates on monads.
      */
-    static <M extends BiMonad<M, ?, ?>, T11, T12, T21, T22, T31, T32, T41, T42, T51, T52, R1, R2> Function5<BiMonad<M, T11, T12>, BiMonad<M, T21, T22>, BiMonad<M, T31, T32>, BiMonad<M, T41, T42>, BiMonad<M, T51, T52>, BiMonad<M, R1, R2>> lift(Function5<? super Tuple2<? super T11, ? super T12>, ? super Tuple2<? super T21, ? super T22>, ? super Tuple2<? super T31, ? super T32>, ? super Tuple2<? super T41, ? super T42>, ? super Tuple2<? super T51, ? super T52>, ? extends Tuple2<? extends R1, ? extends R2>> f) {
+    static <M extends BiMonad<M, ?, ?>, T11, T12, T21, T22, T31, T32, T41, T42, T51, T52, R1, R2> Function5<BiMonad<M, T11, T12>, BiMonad<M, T21, T22>, BiMonad<M, T31, T32>, BiMonad<M, T41, T42>, BiMonad<M, T51, T52>, BiMonad<M, R1, R2>> lift(Function5<Tuple2<T11, T12>, Tuple2<T21, T22>, Tuple2<T31, T32>, Tuple2<T41, T42>, Tuple2<T51, T52>, Tuple2<R1, R2>> f) {
         return (mT1, mT2, mT3, mT4, mT5) ->
                 mT1.flatMapM(t1 ->
                 mT2.flatMapM(t2 ->
@@ -153,7 +153,7 @@ public interface BiMonad<M extends Kind2<M, ?, ?>, T1, T2> extends Kind2<M, T1, 
      * @param f a Function6
      * @return a new Function6 that lifts the given function f in a layer that operates on monads.
      */
-    static <M extends BiMonad<M, ?, ?>, T11, T12, T21, T22, T31, T32, T41, T42, T51, T52, T61, T62, R1, R2> Function6<BiMonad<M, T11, T12>, BiMonad<M, T21, T22>, BiMonad<M, T31, T32>, BiMonad<M, T41, T42>, BiMonad<M, T51, T52>, BiMonad<M, T61, T62>, BiMonad<M, R1, R2>> lift(Function6<? super Tuple2<? super T11, ? super T12>, ? super Tuple2<? super T21, ? super T22>, ? super Tuple2<? super T31, ? super T32>, ? super Tuple2<? super T41, ? super T42>, ? super Tuple2<? super T51, ? super T52>, ? super Tuple2<? super T61, ? super T62>, ? extends Tuple2<? extends R1, ? extends R2>> f) {
+    static <M extends BiMonad<M, ?, ?>, T11, T12, T21, T22, T31, T32, T41, T42, T51, T52, T61, T62, R1, R2> Function6<BiMonad<M, T11, T12>, BiMonad<M, T21, T22>, BiMonad<M, T31, T32>, BiMonad<M, T41, T42>, BiMonad<M, T51, T52>, BiMonad<M, T61, T62>, BiMonad<M, R1, R2>> lift(Function6<Tuple2<T11, T12>, Tuple2<T21, T22>, Tuple2<T31, T32>, Tuple2<T41, T42>, Tuple2<T51, T52>, Tuple2<T61, T62>, Tuple2<R1, R2>> f) {
         return (mT1, mT2, mT3, mT4, mT5, mT6) ->
                 mT1.flatMapM(t1 ->
                 mT2.flatMapM(t2 ->
@@ -186,7 +186,7 @@ public interface BiMonad<M extends Kind2<M, ?, ?>, T1, T2> extends Kind2<M, T1, 
      * @param f a Function7
      * @return a new Function7 that lifts the given function f in a layer that operates on monads.
      */
-    static <M extends BiMonad<M, ?, ?>, T11, T12, T21, T22, T31, T32, T41, T42, T51, T52, T61, T62, T71, T72, R1, R2> Function7<BiMonad<M, T11, T12>, BiMonad<M, T21, T22>, BiMonad<M, T31, T32>, BiMonad<M, T41, T42>, BiMonad<M, T51, T52>, BiMonad<M, T61, T62>, BiMonad<M, T71, T72>, BiMonad<M, R1, R2>> lift(Function7<? super Tuple2<? super T11, ? super T12>, ? super Tuple2<? super T21, ? super T22>, ? super Tuple2<? super T31, ? super T32>, ? super Tuple2<? super T41, ? super T42>, ? super Tuple2<? super T51, ? super T52>, ? super Tuple2<? super T61, ? super T62>, ? super Tuple2<? super T71, ? super T72>, ? extends Tuple2<? extends R1, ? extends R2>> f) {
+    static <M extends BiMonad<M, ?, ?>, T11, T12, T21, T22, T31, T32, T41, T42, T51, T52, T61, T62, T71, T72, R1, R2> Function7<BiMonad<M, T11, T12>, BiMonad<M, T21, T22>, BiMonad<M, T31, T32>, BiMonad<M, T41, T42>, BiMonad<M, T51, T52>, BiMonad<M, T61, T62>, BiMonad<M, T71, T72>, BiMonad<M, R1, R2>> lift(Function7<Tuple2<T11, T12>, Tuple2<T21, T22>, Tuple2<T31, T32>, Tuple2<T41, T42>, Tuple2<T51, T52>, Tuple2<T61, T62>, Tuple2<T71, T72>, Tuple2<R1, R2>> f) {
         return (mT1, mT2, mT3, mT4, mT5, mT6, mT7) ->
                 mT1.flatMapM(t1 ->
                 mT2.flatMapM(t2 ->
@@ -222,7 +222,7 @@ public interface BiMonad<M extends Kind2<M, ?, ?>, T1, T2> extends Kind2<M, T1, 
      * @param f a Function8
      * @return a new Function8 that lifts the given function f in a layer that operates on monads.
      */
-    static <M extends BiMonad<M, ?, ?>, T11, T12, T21, T22, T31, T32, T41, T42, T51, T52, T61, T62, T71, T72, T81, T82, R1, R2> Function8<BiMonad<M, T11, T12>, BiMonad<M, T21, T22>, BiMonad<M, T31, T32>, BiMonad<M, T41, T42>, BiMonad<M, T51, T52>, BiMonad<M, T61, T62>, BiMonad<M, T71, T72>, BiMonad<M, T81, T82>, BiMonad<M, R1, R2>> lift(Function8<? super Tuple2<? super T11, ? super T12>, ? super Tuple2<? super T21, ? super T22>, ? super Tuple2<? super T31, ? super T32>, ? super Tuple2<? super T41, ? super T42>, ? super Tuple2<? super T51, ? super T52>, ? super Tuple2<? super T61, ? super T62>, ? super Tuple2<? super T71, ? super T72>, ? super Tuple2<? super T81, ? super T82>, ? extends Tuple2<? extends R1, ? extends R2>> f) {
+    static <M extends BiMonad<M, ?, ?>, T11, T12, T21, T22, T31, T32, T41, T42, T51, T52, T61, T62, T71, T72, T81, T82, R1, R2> Function8<BiMonad<M, T11, T12>, BiMonad<M, T21, T22>, BiMonad<M, T31, T32>, BiMonad<M, T41, T42>, BiMonad<M, T51, T52>, BiMonad<M, T61, T62>, BiMonad<M, T71, T72>, BiMonad<M, T81, T82>, BiMonad<M, R1, R2>> lift(Function8<Tuple2<T11, T12>, Tuple2<T21, T22>, Tuple2<T31, T32>, Tuple2<T41, T42>, Tuple2<T51, T52>, Tuple2<T61, T62>, Tuple2<T71, T72>, Tuple2<T81, T82>, Tuple2<R1, R2>> f) {
         return (mT1, mT2, mT3, mT4, mT5, mT6, mT7, mT8) ->
                 mT1.flatMapM(t1 ->
                 mT2.flatMapM(t2 ->
@@ -243,7 +243,7 @@ public interface BiMonad<M extends Kind2<M, ?, ?>, T1, T2> extends Kind2<M, T1, 
      * @return a mapped {@code BiMonad}
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U1, U2> BiMonad<M, U1, U2> flatMapM(BiFunction<? super T1, ? super T2, ? extends Kind2<? extends M, ? extends U1, ? extends U2>> mapper);
+    <U1, U2> BiMonad<M, U1, U2> flatMapM(BiFunction<? super T1, ? super T2, ? extends Kind2<M, U1, U2>> mapper);
 
     /**
      * FlatMaps this BiMonad to a new BiMonad with different component types.
@@ -254,17 +254,17 @@ public interface BiMonad<M extends Kind2<M, ?, ?>, T1, T2> extends Kind2<M, T1, 
      * @return a mapped {@code BiMonad}
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U1, U2> BiMonad<M, U1, U2> flatMapM(Function<? super Tuple2<? super T1, ? super T2>, ? extends Kind2<? extends M, ? extends U1, ? extends U2>> mapper);
+    <U1, U2> BiMonad<M, U1, U2> flatMapM(Function<Tuple2<T1, T2>, ? extends Kind2<M, U1, U2>> mapper);
 
     // -- adjusting return types of super interface methods
 
     @Override
-    <U1, U2> BiMonad<M, U1, U2> bimap(BiFunction<? super T1, ? super T2, ? extends Tuple2<? extends U1, ? extends U2>> mapper);
+    <U1, U2> BiMonad<M, U1, U2> bimap(BiFunction<? super T1, ? super T2, Tuple2<U1, U2>> mapper);
 
     @Override
     <U1, U2> BiMonad<M, U1, U2> bimap(Function<? super T1, ? extends U1> f1, Function<? super T2, ? extends U2> f2);
 
     @Override
-    <U1, U2> BiMonad<M, U1, U2> bimap(Function<? super Tuple2<? super T1, ? super T2>, ? extends Tuple2<? extends U1, ? extends U2>> f);
+    <U1, U2> BiMonad<M, U1, U2> bimap(Function<Tuple2<T1, T2>, Tuple2<U1, U2>> f);
 
 }

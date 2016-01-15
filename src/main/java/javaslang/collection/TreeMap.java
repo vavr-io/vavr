@@ -357,13 +357,13 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, BiMonad<TreeMap<?, 
     }
 
     @Override
-    public <K2, V2> TreeMap<K2, V2> bimap(BiFunction<? super K, ? super V, ? extends Tuple2<? extends K2, ? extends V2>> mapper) {
+    public <K2, V2> TreeMap<K2, V2> bimap(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         return bimap(naturalComparator(), mapper);
     }
 
     @Override
     public <K2, V2> TreeMap<K2, V2> bimap(Comparator<? super K2> keyComparator,
-                                          BiFunction<? super K, ? super V, ? extends Tuple2<? extends K2, ? extends V2>> mapper) {
+                                          BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return createTreeMap(new EntryComparator<>(keyComparator),
                 entries.iterator().map(entry -> mapper.apply(entry._1, entry._2)));
@@ -384,13 +384,13 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, BiMonad<TreeMap<?, 
     }
 
     @Override
-    public <K2, V2> TreeMap<K2, V2> bimap(Function<? super Tuple2<? super K, ? super V>, ? extends Tuple2<? extends K2, ? extends V2>> mapper) {
+    public <K2, V2> TreeMap<K2, V2> bimap(Function<Tuple2<K, V>, Tuple2<K2, V2>> mapper) {
         return bimap(naturalComparator(), mapper);
     }
 
     @Override
     public <K2, V2> TreeMap<K2, V2> bimap(Comparator<? super K2> keyComparator,
-                                         Function<? super Tuple2<? super K, ? super V>, ? extends Tuple2<? extends K2, ? extends V2>> mapper) {
+                                         Function<Tuple2<K, V>, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return createTreeMap(new EntryComparator<>(keyComparator), entries.iterator().map(mapper));
     }
@@ -471,28 +471,27 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, BiMonad<TreeMap<?, 
     }
 
     @Override
-    public <K2, V2> TreeMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends K2, ? extends V2>>> mapper) {
+    public <K2, V2> TreeMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         return flatMap(naturalComparator(), mapper);
     }
 
     @Override
-    public <K2, V2> TreeMap<K2, V2> flatMap(Comparator<? super K2> keyComparator, BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends K2, ? extends V2>>> mapper) {
+    public <K2, V2> TreeMap<K2, V2> flatMap(Comparator<? super K2> keyComparator,
+    		                                BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return createTreeMap(new EntryComparator<>(keyComparator),
                 entries.iterator().flatMap(entry -> mapper.apply(entry._1, entry._2)));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <K2, V2> TreeMap<K2, V2> flatMapM(BiFunction<? super K, ? super V, ? extends Kind2<? extends TreeMap<?, ?>, ? extends K2, ? extends V2>> mapper) {
+    public <K2, V2> TreeMap<K2, V2> flatMapM(BiFunction<? super K, ? super V, ? extends Kind2<TreeMap<?, ?>, K2, V2>> mapper) {
         return flatMap((k, v) -> (TreeMap<K2, V2>) mapper.apply(k, v));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <K2, V2> TreeMap<K2, V2> flatMapM(Function<? super Tuple2<? super K, ? super V>, ? extends Kind2<? extends TreeMap<?, ?>, ? extends K2, ? extends V2>> mapper) {
+    public <K2, V2> TreeMap<K2, V2> flatMapM(Function<Tuple2<K, V>, ? extends Kind2<TreeMap<?, ?>, K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        final Iterator<Tuple2<K2, V2>> iterator = entries.iterator().flatMap((Function<Tuple2<K, V>, TreeMap<K2, V2>>) mapper);
+        final Iterator<Tuple2<K2, V2>> iterator = entries.iterator().flatMap(t -> (TreeMap<K2, V2>) mapper.apply(t));
         return TreeMap.of(iterator);
     }
 

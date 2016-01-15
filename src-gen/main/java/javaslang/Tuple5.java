@@ -194,9 +194,8 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
         return _5;
     }
 
-    @SuppressWarnings("unchecked")
-    public <U1, U2, U3, U4, U5> Tuple5<U1, U2, U3, U4, U5> flatMap(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends Tuple5<? extends U1, ? extends U2, ? extends U3, ? extends U4, ? extends U5>> f) {
-        return (Tuple5<U1, U2, U3, U4, U5>) f.apply(_1, _2, _3, _4, _5);
+    public <U1, U2, U3, U4, U5> Tuple5<U1, U2, U3, U4, U5> map(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Tuple5<U1, U2, U3, U4, U5>> f) {
+        return f.apply(_1, _2, _3, _4, _5);
     }
 
     public <U1, U2, U3, U4, U5> Tuple5<U1, U2, U3, U4, U5> map(Function<? super T1, ? extends U1> f1, Function<? super T2, ? extends U2> f2, Function<? super T3, ? extends U3> f3, Function<? super T4, ? extends U4> f4, Function<? super T5, ? extends U5> f5) {
@@ -211,9 +210,9 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
      * @return An object of type U
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U transform(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends U> f) {
+    public <U> U transform(Function<Tuple5<T1, T2, T3, T4, T5>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
-        return f.apply(_1, _2, _3, _4, _5);
+        return f.apply(this);
     }
 
     @Override

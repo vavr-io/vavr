@@ -8,7 +8,7 @@ package javaslang.collection;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
-import javaslang.algebra.Kind;
+import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
@@ -1328,7 +1328,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T>, Mona
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Iterator<U> flatMapM(Function<? super T, ? extends Kind<? extends Iterator<?>, ? extends U>> mapper) {
+    default <U> Iterator<U> flatMapM(Function<? super T, ? extends Kind1<Iterator<?>, U>> mapper) {
         return flatMap((Function<T, Iterator<U>>) mapper);
     }
 
@@ -1354,7 +1354,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T>, Mona
                 final Stream<T> values = map.get(key).map(entries -> entries.append(entry)).orElse(Stream.of(entry));
                 return map.put(key, values);
             });
-            return streams.map((c, ts) -> Tuple.of(c, ts.iterator()));
+            return streams.bimap((c, ts) -> Tuple.of(c, ts.iterator()));
         }
     }
 

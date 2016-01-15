@@ -221,9 +221,9 @@ public final class HashMap<K, V> implements Map<K, V>, BiMonad<HashMap<?, ?>, K,
     }
 
     @Override
-    public <K2, V2> HashMap<K2, V2> bimap(BiFunction<? super K, ? super V, ? extends Tuple2<? extends K2, ? extends V2>> mapper) {
+    public <K2, V2> HashMap<K2, V2> bimap(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(HashMap.empty(), (acc, entry) -> acc.put(entry.flatMap(mapper)));
+        return foldLeft(HashMap.empty(), (acc, entry) -> acc.put(entry.map(mapper)));
     }
 
     @Override
@@ -235,7 +235,7 @@ public final class HashMap<K, V> implements Map<K, V>, BiMonad<HashMap<?, ?>, K,
     }
 
     @Override
-    public <K2, V2> HashMap<K2, V2> bimap(Function<? super Tuple2<? super K, ? super V>, ? extends Tuple2<? extends K2, ? extends V2>> mapper) {
+    public <K2, V2> HashMap<K2, V2> bimap(Function<Tuple2<K, V>, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Iterator<Tuple2<? extends K2, ? extends V2>> entries = iterator().map(mapper);
         return HashMap.ofEntries(entries);
@@ -326,7 +326,7 @@ public final class HashMap<K, V> implements Map<K, V>, BiMonad<HashMap<?, ?>, K,
     }
 
     @Override
-    public <K2, V2> HashMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends K2, ? extends V2>>> mapper) {
+    public <K2, V2> HashMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(HashMap.<K2, V2> empty(), (acc, entry) -> {
             for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
@@ -336,16 +336,14 @@ public final class HashMap<K, V> implements Map<K, V>, BiMonad<HashMap<?, ?>, K,
         });
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <K2, V2> HashMap<K2, V2> flatMapM(BiFunction<? super K, ? super V, ? extends Kind2<? extends HashMap<?, ?>, ? extends K2, ? extends V2>> mapper) {
+    public <K2, V2> HashMap<K2, V2> flatMapM(BiFunction<? super K, ? super V, ? extends Kind2<HashMap<?, ?>, K2, V2>> mapper) {
         return flatMap((k, v) -> (HashMap<K2, V2>) mapper.apply(k, v));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <K2, V2> HashMap<K2, V2> flatMapM(Function<? super Tuple2<? super K, ? super V>, ? extends Kind2<? extends HashMap<?, ?>, ? extends K2, ? extends V2>> mapper) {
-        final Iterator<Tuple2<K2, V2>> entries = iterator().flatMap(t -> (Iterable<Tuple2<K2, V2>>) mapper.apply(t));
+    public <K2, V2> HashMap<K2, V2> flatMapM(Function<Tuple2<K, V>, ? extends Kind2<HashMap<?, ?>, K2, V2>> mapper) {
+        final Iterator<Tuple2<K2, V2>> entries = iterator().flatMap(t -> (HashMap<K2, V2>) mapper.apply(t));
         return HashMap.ofEntries(entries);
     }
 

@@ -5,7 +5,7 @@
  */
 package javaslang;
 
-import javaslang.algebra.Kind;
+import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -148,7 +148,7 @@ public interface Lazy<T> extends Monad<Lazy<?>, T>, Supplier<T>, Value<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Lazy<U> flatMapM(Function<? super T, ? extends Kind<? extends Lazy<?>, ? extends U>> mapper) {
+    default <U> Lazy<U> flatMapM(Function<? super T, ? extends Kind1<Lazy<?>, U>> mapper) {
         return flatMap((Function<T, Lazy<U>>) mapper);
     }
 

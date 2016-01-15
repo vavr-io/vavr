@@ -75,7 +75,7 @@ def generateMainClasses(): Unit = {
          * @author Daniel Dietrich
          * @since 1.1.0
          */
-        public interface Monad<M extends Kind<M, ?>, T> extends Kind<M, T>, Functor<T> {
+        public interface Monad<M extends Kind1<M, ?>, T> extends Kind1<M, T>, Functor<T> {
 
             ${(1 to N).gen(i => {
 
@@ -143,7 +143,7 @@ def generateMainClasses(): Unit = {
              * @return a mapped {@code Monad}
              * @throws NullPointerException if {@code mapper} is null
              */
-            <U> Monad<M, U> flatMapM(Function<? super T, ? extends Kind<? extends M, ? extends U>> mapper);
+            <U> Monad<M, U> flatMapM(Function<? super T, ? extends Kind1<M, U>> mapper);
 
             // -- adjusting return types of super interface methods
 
@@ -181,7 +181,7 @@ def generateMainClasses(): Unit = {
 
             ${(1 to N).gen(i => {
 
-              val genericsF = if (i == 1) "? super Tuple2<? super T1, ? super T2>" else (1 to i).gen(j => s"? super Tuple2<? super T${j}1, ? super T${j}2>")(", ")
+              val genericsF = if (i == 1) "Tuple2<T1, T2>" else (1 to i).gen(j => s"Tuple2<T${j}1, T${j}2>")(", ")
               val genericsT = if (i == 1) "T1, T2" else (1 to i).gen(j => s"T${j}1, T${j}2")(", ")
               val genericsM = if (i == 1) "BiMonad<M, T1, T2>" else (1 to i).gen(j => s"BiMonad<M, T${j}1, T${j}2>")(", ")
               val function = i match {
@@ -204,7 +204,7 @@ def generateMainClasses(): Unit = {
                  * @param f a $function
                  * @return a new Function$i that lifts the given function f in a layer that operates on monads.
                  */
-                static <M extends BiMonad<M, ?, ?>, $genericsT, R1, R2> $Function$i<$genericsM, BiMonad<M, R1, R2>> lift($function<$genericsF, ? extends Tuple2<? extends R1, ? extends R2>> f) {
+                static <M extends BiMonad<M, ?, ?>, $genericsT, R1, R2> $Function$i<$genericsM, BiMonad<M, R1, R2>> lift($function<$genericsF, Tuple2<R1, R2>> f) {
                     ${if (i == 1) {
                       "return mT -> mT.bimap(f);"
                     } else {
@@ -227,7 +227,7 @@ def generateMainClasses(): Unit = {
              * @return a mapped {@code BiMonad}
              * @throws NullPointerException if {@code mapper} is null
              */
-            <U1, U2> BiMonad<M, U1, U2> flatMapM($BiFunction<? super T1, ? super T2, ? extends Kind2<? extends M, ? extends U1, ? extends U2>> mapper);
+            <U1, U2> BiMonad<M, U1, U2> flatMapM($BiFunction<? super T1, ? super T2, ? extends Kind2<M, U1, U2>> mapper);
 
             /**
              * FlatMaps this BiMonad to a new BiMonad with different component types.
@@ -238,18 +238,18 @@ def generateMainClasses(): Unit = {
              * @return a mapped {@code BiMonad}
              * @throws NullPointerException if {@code mapper} is null
              */
-            <U1, U2> BiMonad<M, U1, U2> flatMapM(Function<? super Tuple2<? super T1, ? super T2>, ? extends Kind2<? extends M, ? extends U1, ? extends U2>> mapper);
+            <U1, U2> BiMonad<M, U1, U2> flatMapM(Function<Tuple2<T1, T2>, ? extends Kind2<M, U1, U2>> mapper);
 
             // -- adjusting return types of super interface methods
 
             @Override
-            <U1, U2> BiMonad<M, U1, U2> bimap($BiFunction<? super T1, ? super T2, ? extends $Tuple2<? extends U1, ? extends U2>> mapper);
+            <U1, U2> BiMonad<M, U1, U2> bimap($BiFunction<? super T1, ? super T2, $Tuple2<U1, U2>> mapper);
 
             @Override
             <U1, U2> BiMonad<M, U1, U2> bimap($Function<? super T1, ? extends U1> f1, $Function<? super T2, ? extends U2> f2);
 
             @Override
-            <U1, U2> BiMonad<M, U1, U2> bimap(Function<? super Tuple2<? super T1, ? super T2>, ? extends Tuple2<? extends U1, ? extends U2>> f);
+            <U1, U2> BiMonad<M, U1, U2> bimap(Function<Tuple2<T1, T2>, $Tuple2<U1, U2>> f);
 
         }
       """
@@ -861,16 +861,17 @@ def generateMainClasses(): Unit = {
       val params = (1 to i).gen(j => s"_$j")(", ")
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
       val resultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j")(", ")}>"
-      val flatMapResultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
+      val flatMapResultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j")(", ")}>"
       val comparableGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j extends Comparable<? super U$j>")(", ")}>"
       val untyped = if (i == 0) "" else s"<${(1 to i).gen(j => "?")(", ")}>"
       val functionType = i match {
-        case 0 => im.getType("java.util.function.Supplier")
+        case 0 => "none"
         case 1 => im.getType("java.util.function.Function")
         case 2 => im.getType("java.util.function.BiFunction")
         case _ => s"Function$i"
       }
       val Comparator = im.getType("java.util.Comparator")
+      val Function = im.getType("java.util.function.Function")
       val Objects = im.getType("java.util.Objects")
       val Seq = im.getType("javaslang.collection.Seq")
       val List = im.getType("javaslang.collection.List")
@@ -987,10 +988,9 @@ def generateMainClasses(): Unit = {
               }
             """)("\n\n")}
 
-            ${(i > 0).gen(xs"""
-              @SuppressWarnings("unchecked")
-              public $resultGenerics $className$resultGenerics flatMap($functionType<$paramTypes, ? extends $className$flatMapResultGenerics> f) {
-                  return ($className$resultGenerics) f.apply($params);
+            ${(i > 1).gen(xs"""
+              public $resultGenerics $className$resultGenerics map($functionType<$paramTypes, $className$flatMapResultGenerics> f) {
+                  return f.apply($params);
               }
             """)}
 
@@ -1008,9 +1008,9 @@ def generateMainClasses(): Unit = {
              * @return An object of type U
              * @throws NullPointerException if {@code f} is null
              */
-            public <U> U transform($functionType<$paramTypes${(i > 0).gen(", ")}? extends U> f) {
+            public <U> U transform($Function<$className$generics, ? extends U> f) {
                 $Objects.requireNonNull(f, "f is null");
-                return ${if (i == 0) "f.get()" else s"f.apply($params)"};
+                return f.apply(this);
             }
 
             @Override
@@ -1837,7 +1837,7 @@ def generateTestClasses(): Unit = {
               public void shouldFlatMap() {
                   final Tuple$i<$generics> tuple = createTuple();
                   final $functionType<$generics, Tuple$i<$generics>> mapper = ($functionArgTypes) -> tuple;
-                  final Tuple$i<$generics> actual = tuple.flatMap(mapper);
+                  final Tuple$i<$generics> actual = tuple.map(mapper);
                   $assertThat(actual).isEqualTo(tuple);
               }
 
@@ -1852,7 +1852,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldTransformTuple() {
                   final Tuple$i<$generics> tuple = createTuple();
-                  final Tuple0 actual = tuple.transform((${(1 to i).gen(j => s"t$j")(", ")}) -> Tuple0.instance());
+                  final Tuple0 actual = tuple.transform(ignored -> Tuple0.instance());
                   assertThat(actual).isEqualTo(Tuple0.instance());
               }
 

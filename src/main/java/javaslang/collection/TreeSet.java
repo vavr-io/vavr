@@ -94,10 +94,10 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * Returns a TreeSet containing {@code n} values of a given Function {@code f}
      * over a range of integer values from 0 to {@code n - 1}.
      *
-     * @param <T> Component type of the TreeSet
+     * @param <T>        Component type of the TreeSet
      * @param comparator The comparator used to sort the elements
-     * @param n The number of elements in the TreeSet
-     * @param f The Function computing element values
+     * @param n          The number of elements in the TreeSet
+     * @param f          The Function computing element values
      * @return A TreeSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code comparator} or {@code f} are null
      */
@@ -113,8 +113,8 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * The underlying comparator is the natural comparator of T.
      *
      * @param <T> Component type of the TreeSet
-     * @param n The number of elements in the TreeSet
-     * @param f The Function computing element values
+     * @param n   The number of elements in the TreeSet
+     * @param f   The Function computing element values
      * @return A TreeSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
@@ -126,10 +126,10 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     /**
      * Returns a TreeSet containing {@code n} values supplied by a given Supplier {@code s}.
      *
-     * @param <T> Component type of the TreeSet
+     * @param <T>        Component type of the TreeSet
      * @param comparator The comparator used to sort the elements
-     * @param n The number of elements in the TreeSet
-     * @param s The Supplier computing element values
+     * @param n          The number of elements in the TreeSet
+     * @param s          The Supplier computing element values
      * @return A TreeSet of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code comparator} or {@code s} are null
      */
@@ -144,8 +144,8 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * The underlying comparator is the natural comparator of T.
      *
      * @param <T> Component type of the TreeSet
-     * @param n The number of elements in the TreeSet
-     * @param s The Supplier computing element values
+     * @param n   The number of elements in the TreeSet
+     * @param s   The Supplier computing element values
      * @return A TreeSet of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
@@ -596,7 +596,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public <C> Map<C, TreeSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).map(
+        return iterator().groupBy(classifier).bimap(
                 (key, iterator) -> Tuple.of(key, TreeSet.ofAll(tree.comparator(), iterator)));
     }
 

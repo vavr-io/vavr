@@ -72,7 +72,7 @@ public class TreeTest extends AbstractTraversableTest {
             }
 
             private Map<?, ?> convMap(Map<?, ?> map) {
-                return map.map((k, v) -> Tuple.of(k, v instanceof Iterable ? Stream.ofAll((Iterable<?>) v) : v));
+                return map.bimap((k, v) -> Tuple.of(k, v instanceof Iterable ? Stream.ofAll((Iterable<?>) v) : v));
             }
         };
     }

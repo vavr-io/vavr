@@ -114,9 +114,8 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
         return _2;
     }
 
-    @SuppressWarnings("unchecked")
-    public <U1, U2> Tuple2<U1, U2> flatMap(BiFunction<? super T1, ? super T2, ? extends Tuple2<? extends U1, ? extends U2>> f) {
-        return (Tuple2<U1, U2>) f.apply(_1, _2);
+    public <U1, U2> Tuple2<U1, U2> map(BiFunction<? super T1, ? super T2, Tuple2<U1, U2>> f) {
+        return f.apply(_1, _2);
     }
 
     public <U1, U2> Tuple2<U1, U2> map(Function<? super T1, ? extends U1> f1, Function<? super T2, ? extends U2> f2) {
@@ -131,9 +130,9 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
      * @return An object of type U
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U transform(BiFunction<? super T1, ? super T2, ? extends U> f) {
+    public <U> U transform(Function<Tuple2<T1, T2>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
-        return f.apply(_1, _2);
+        return f.apply(this);
     }
 
     @Override

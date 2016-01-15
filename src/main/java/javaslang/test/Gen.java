@@ -8,7 +8,7 @@ package javaslang.test;
 import javaslang.Function1;
 import javaslang.Tuple2;
 import javaslang.Value;
-import javaslang.algebra.Kind;
+import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.Stream;
@@ -321,7 +321,6 @@ public interface Gen<T> extends Monad<Gen<?>, T>, Value<T>, Function1<Random, T>
      * @param <U>    Type of generated objects of the new generator
      * @return A new generator
      */
-    @SuppressWarnings("unchecked")
     default <U> Gen<U> flatMap(Function<? super T, ? extends Gen<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return random -> mapper.apply(apply(random)).apply(random);
@@ -329,7 +328,7 @@ public interface Gen<T> extends Monad<Gen<?>, T>, Value<T>, Function1<Random, T>
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Gen<U> flatMapM(Function<? super T, ? extends Kind<? extends Gen<?>, ? extends U>> mapper) {
+    default <U> Gen<U> flatMapM(Function<? super T, ? extends Kind1<Gen<?>, U>> mapper) {
         return flatMap((Function<T, Gen<U>>) mapper);
     }
 
@@ -384,7 +383,7 @@ public interface Gen<T> extends Monad<Gen<?>, T>, Value<T>, Function1<Random, T>
     }
 
     /**
-     * This is philosophical. We see a {@çode Gen} as single-valued type which holds a variable random value.
+     * This is philosophical. We see a {@code Gen} as single-valued type which holds a variable random value.
      *
      * @return {@code true}
      */
