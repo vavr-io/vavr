@@ -1151,6 +1151,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 2, 3).reduceOption((a, b) -> a + b)).isEqualTo(Option.of(6));
     }
 
+    @Test
+    public void shouldReduceOptionNonNilOfNull() {
+        assertThat(of("1", "2", "3").reduceOption((a, b) -> null)).isEqualTo(Option.some(null));
+    }
+
     // -- reduce
 
     @Test(expected = NoSuchElementException.class)
@@ -1166,6 +1171,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldReduceNonNil() {
         assertThat(of(1, 2, 3).reduce((a, b) -> a + b)).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldReduceNonNilOfNull() {
+        assertThat(of("1", "2", "3").reduce((a, b) -> null)).isEqualTo(null);
     }
 
     // -- reduceLeftOption
@@ -1185,6 +1195,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of("a", "b", "c").reduceLeftOption((xs, x) -> xs + x)).isEqualTo(Option.of("abc"));
     }
 
+    @Test
+    public void shouldReduceLeftOptionNonNilOfNull() {
+        assertThat(of("a", "b", "c").reduceLeftOption((xs, x) -> null)).isEqualTo(Option.some(null));
+    }
+
     // -- reduceLeft
 
     @Test(expected = NoSuchElementException.class)
@@ -1200,6 +1215,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldReduceLeftNonNil() {
         assertThat(of("a", "b", "c").reduceLeft((xs, x) -> xs + x)).isEqualTo("abc");
+    }
+
+    @Test
+    public void shouldReduceLeftNonNilOfNull() {
+        assertThat(of("a", "b", "c").reduceLeft((xs, x) -> null)).isEqualTo(null);
     }
 
     // -- reduceRightOption
@@ -1219,6 +1239,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of("a", "b", "c").reduceRightOption((x, xs) -> x + xs)).isEqualTo(Option.of("abc"));
     }
 
+    @Test
+    public void shouldReduceRightOptionNonNilOfNull() {
+        assertThat(of("a", "b", "c").reduceRightOption((x, xs) -> null)).isEqualTo(Option.some(null));
+    }
+
     // -- reduceRight
 
     @Test(expected = NoSuchElementException.class)
@@ -1234,6 +1259,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldReduceRightNonNil() {
         assertThat(of("a", "b", "c").reduceRight((x, xs) -> x + xs)).isEqualTo("abc");
+    }
+
+    @Test
+    public void shouldReduceRightNonNilOfNull() {
+        assertThat(of("a", "b", "c").reduceRight((x, xs) -> null)).isEqualTo(null);
     }
 
     // -- replace(curr, new)
