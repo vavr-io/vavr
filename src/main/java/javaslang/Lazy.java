@@ -5,7 +5,6 @@
  */
 package javaslang;
 
-import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -45,7 +44,7 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  * @since 1.2.1
  */
-public interface Lazy<T> extends Monad<Lazy<?>, T>, Supplier<T>, Value<T> {
+public interface Lazy<T> extends Monad<T>, Supplier<T>, Value<T> {
 
     /**
      * Creates a {@code Lazy} that requests its value from a given {@code Supplier}. The supplier is asked only once,
@@ -137,19 +136,14 @@ public interface Lazy<T> extends Monad<Lazy<?>, T>, Supplier<T>, Value<T> {
     }
 
     @SuppressWarnings("unchecked")
-    default <U> Lazy<U> flatMap(Function<? super T, ? extends Lazy<? extends U>> mapper) {
+    @Override
+    default <U> Lazy<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return (Lazy<U>) this;
         } else {
-            return (Lazy<U>) mapper.apply(get());
+            return unit(mapper.apply(get()));
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Lazy<U> flatMapM(Function<? super T, ? extends Kind1<Lazy<?>, U>> mapper) {
-        return flatMap((Function<T, Lazy<U>>) mapper);
     }
 
     /**
@@ -216,6 +210,24 @@ public interface Lazy<T> extends Monad<Lazy<?>, T>, Supplier<T>, Value<T> {
     default <U> U transform(Function<? super Lazy<? super T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
+    }
+    
+    @SuppressWarnings("unchecked")
+	@Override
+    default <U> Lazy<U> unit(Iterable<? extends U> iterable) {
+    	if (iterable instanceof Lazy) {
+    		return (Lazy<U>) iterable;
+    	} else if (iterable instanceof Value) {
+    		final Value<U> value = (Value<U>) iterable;
+    		return value.isEmpty() ? Lazy.undefined() : Lazy.of(value::get);
+    	} else {
+    		final java.util.Iterator<? extends U> iterator = iterable.iterator();
+    		if (iterator.hasNext()) {
+    			return Lazy.of(() -> iterator.next());
+    		} else {
+    			return Lazy.undefined();
+    		}
+        }
     }
 
     /**

@@ -8,8 +8,6 @@ package javaslang.collection;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.algebra.BiMonad;
-import javaslang.algebra.Kind2;
 import javaslang.control.Match;
 import javaslang.control.Option;
 
@@ -28,7 +26,7 @@ import java.util.stream.Collector;
  * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  * @since 2.0.0
  */
-public final class HashMap<K, V> implements Map<K, V>, BiMonad<HashMap<?, ?>, K, V>, Serializable {
+public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -221,23 +219,10 @@ public final class HashMap<K, V> implements Map<K, V>, BiMonad<HashMap<?, ?>, K,
     }
 
     @Override
-    public <K2, V2> HashMap<K2, V2> bimap(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(HashMap.empty(), (acc, entry) -> acc.put(entry.map(mapper)));
-    }
-
-    @Override
     public <K2, V2> HashMap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
-        return HashMap.ofEntries(entries);
-    }
-
-    @Override
-    public <K2, V2> HashMap<K2, V2> bimap(Function<Tuple2<K, V>, Tuple2<K2, V2>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        final Iterator<Tuple2<? extends K2, ? extends V2>> entries = iterator().map(mapper);
         return HashMap.ofEntries(entries);
     }
 
@@ -337,17 +322,6 @@ public final class HashMap<K, V> implements Map<K, V>, BiMonad<HashMap<?, ?>, K,
     }
 
     @Override
-    public <K2, V2> HashMap<K2, V2> flatMapM(BiFunction<? super K, ? super V, ? extends Kind2<HashMap<?, ?>, K2, V2>> mapper) {
-        return flatMap((k, v) -> (HashMap<K2, V2>) mapper.apply(k, v));
-    }
-
-    @Override
-    public <K2, V2> HashMap<K2, V2> flatMapM(Function<Tuple2<K, V>, ? extends Kind2<HashMap<?, ?>, K2, V2>> mapper) {
-        final Iterator<Tuple2<K2, V2>> entries = iterator().flatMap(t -> (HashMap<K2, V2>) mapper.apply(t));
-        return HashMap.ofEntries(entries);
-    }
-
-    @Override
     public <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return foldLeft(zero, (u, t) -> f.apply(t, u));
@@ -437,11 +411,17 @@ public final class HashMap<K, V> implements Map<K, V>, BiMonad<HashMap<?, ?>, K,
     public int length() {
         return trie.size();
     }
+    
+    @Override
+    public <K2, V2> HashMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return foldLeft(HashMap.empty(), (acc, entry) -> acc.put(entry.map(mapper)));
+    }
 
     @Override
     public <V2> HashMap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper) {
         Objects.requireNonNull(valueMapper, "valueMapper is null");
-        return bimap((k, v) -> Tuple.of(k, valueMapper.apply(v)));
+        return map((k, v) -> Tuple.of(k, valueMapper.apply(v)));
     }
 
     @Override

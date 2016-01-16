@@ -8,7 +8,6 @@ package javaslang.concurrent;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
-import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -50,7 +49,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich, Dillon Jett Callis
  * @since 2.0.0
  */
-public interface Future<T> extends Monad<Future<?>, T>, Value<T> {
+public interface Future<T> extends Monad<T>, Value<T> {
 
     /**
      * The default executor service is {@link Executors#newCachedThreadPool()}.
@@ -795,20 +794,33 @@ public interface Future<T> extends Monad<Future<?>, T>, Value<T> {
 
     // -- Value & Monad implementation
 
-    default <U> Future<U> flatMap(Function<? super T, ? extends Future<? extends U>> mapper) {
+    @Override
+    default <U> Future<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());
-        onComplete(result -> result.map(mapper)
-                .onSuccess(promise::completeWith)
-                .onFailure(promise::failure)
+        onComplete((Try<T> result) -> result.map(mapper)
+            .onSuccess(iterable -> promise.completeWith(unit(iterable)))
+            .onFailure(promise::failure)
         );
         return promise.future();
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Future<U> flatMapM(Function<? super T, ? extends Kind1<Future<?>, U>> mapper) {
-        return flatMap((Function<T, Future<U>>) mapper);
+    default <U> Future<U> unit(Iterable<? extends U> iterable) {
+    	if (iterable instanceof Future) {
+    		return (Future<U>) iterable;
+    	} else if (iterable instanceof Value) {
+    		final Value<U> value = (Value<U>) iterable;
+    		return value.isEmpty() ? Future.failed(new NoSuchElementException()) : Future.successful(value.get());
+    	} else {
+    		final java.util.Iterator<? extends U> iterator = iterable.iterator();
+    		if (iterator.hasNext()) {
+    			return Future.successful(iterator.next());
+    		} else {
+    			return Future.failed(new NoSuchElementException());
+    		}
+        }
     }
 
     /**

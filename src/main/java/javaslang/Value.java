@@ -65,6 +65,7 @@ import java.util.stream.StreamSupport;
  * <ul>
  * <li>{@link #filter(Predicate)}</li>
  * <li>{@link #filterNot(Predicate)}</li>
+ * <li>{@link #flatMap(Function)}</li>
  * <li>{@link #map(Function)}</li>
  * </ul>
  *
@@ -271,6 +272,25 @@ public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
      * @throws NullPointerException if {@code predicate} is null
      */
     Value<T> filterNot(Predicate<? super T> predicate);
+
+    /**
+     * FlatMaps this {@code Value}. The behavior depends on {@link #isSingleValued()}.
+     * <p>
+     * Examples:
+     *
+     * <pre><code>
+     * // = Option(2)
+     * Option.some(1).flatMap(i -&gt; List.of(2, 3, 4))
+     *
+     * // = List(1, 2)
+     * List.of(0, 1, 2).flatMap(i -&gt; Try.of(() -&gt; 1.0 / i))
+     * </code></pre>
+     *
+     * @param mapper A {@code Function} which maps elements to {@code Iterable}s.
+     * @param <U> Resulting component type
+     * @return A new {@code Value}
+     */
+    <U> Value<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     /**
      * Checks, if the given predicate holds for all elements.

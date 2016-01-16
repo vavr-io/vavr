@@ -8,8 +8,6 @@ package javaslang.collection;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
-import javaslang.algebra.Kind1;
-import javaslang.algebra.Monad;
 import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
 import javaslang.control.Match;
@@ -43,7 +41,7 @@ import java.util.function.*;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T>, Monad<Iterator<?>, T> {
+public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     // DEV-NOTE: we prefer returning empty() over this if !hasNext() == true in order to free memory.
 
@@ -1325,13 +1323,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T>, Mona
             };
         }
     }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Iterator<U> flatMapM(Function<? super T, ? extends Kind1<Iterator<?>, U>> mapper) {
-        return flatMap((Function<T, Iterator<U>>) mapper);
-    }
-
+    
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
@@ -1354,7 +1346,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T>, Mona
                 final Stream<T> values = map.get(key).map(entries -> entries.append(entry)).orElse(Stream.of(entry));
                 return map.put(key, values);
             });
-            return streams.bimap((c, ts) -> Tuple.of(c, ts.iterator()));
+            return streams.map((c, ts) -> Tuple.of(c, ts.iterator()));
         }
     }
 
@@ -1798,6 +1790,16 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T>, Mona
                 }
             };
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+	@Override
+    default <U> Iterator<U> unit(Iterable<? extends U> iterable) {
+    	if (iterable instanceof Iterator) {
+    		return (Iterator<U>) iterable;
+    	} else {
+    		return Iterator.ofAll(iterable.iterator());
+    	}
     }
 }
 

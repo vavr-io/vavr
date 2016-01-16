@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Function1;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
+import javaslang.algebra.BiFunctor;
 import javaslang.control.Match;
 import javaslang.control.Option;
 
@@ -22,7 +23,7 @@ import java.util.function.*;
  * @author Daniel Dietrich, Ruslan Sennov
  * @since 2.0.0
  */
-public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
+public interface Map<K, V> extends Traversable<Tuple2<K, V>>, BiFunctor<K, V>, Function1<K, V> {
 
     long serialVersionUID = 1L;
 
@@ -34,17 +35,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     /**
      * Maps this {@code Map} to a new {@code Map} with different component type by applying a function to its elements.
      *
-     * @param <K2>   key's component type of the map result
-     * @param <V2>   value's component type of the map result
-     * @param mapper a {@code Function} that maps entries of type {@code (K, V)} to entries of type {@code (K2, V2)}
-     * @return a new {@code Map}
-     * @throws NullPointerException if {@code mapper} is null
-     */
-    <K2, V2> Map<K2, V2> bimap(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
-
-    /**
-     * Maps this {@code Map} to a new {@code Map} with different component type by applying a function to its elements.
-     *
      * @param <K2>        key's component type of the map result
      * @param <V2>        value's component type of the map result
      * @param keyMapper   a {@code Function} that maps the keys of type {@code K} to keys of type {@code K2}
@@ -52,18 +42,8 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @return a new {@code Map}
      * @throws NullPointerException if {@code keyMapper} or {@code valueMapper} is null
      */
+    @Override
     <K2, V2> Map<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
-
-    /**
-     * Maps this {@code Map} to a new {@code Map} with different component type by applying a function to its elements.
-     *
-     * @param <K2>   key's component type of the map result
-     * @param <V2>   value's component type of the map result
-     * @param mapper a {@code Function} that maps entries of type {@code (K, V)} to entries of type {@code (K2, V2)}
-     * @return a new {@code Map}
-     * @throws NullPointerException if {@code mapper} is null
-     */
-    <K2, V2> Map<K2, V2> bimap(Function<Tuple2<K, V>, Tuple2<K2, V2>> mapper);
 
     /**
      * Returns <code>true</code> if this map contains a mapping for the specified key.
@@ -111,6 +91,17 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @return {@code Set} of the keys contained in this map.
      */
     Set<K> keySet();
+    
+    /**
+     * Maps the entries of this {@code Map} to form a new {@code Map}.
+     *
+     * @param <K2>   key's component type of the map result
+     * @param <V2>   value's component type of the map result
+     * @param mapper a {@code Function} that maps entries of type {@code (K, V)} to entries of type {@code (K2, V2)}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    <K2, V2> Map<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
 
     /**
      * Maps the values of this {@code Map} while preserving the corresponding keys.
@@ -178,6 +169,16 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     default <U> Seq<U> traverse(BiFunction<K, V, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(List.empty(), (acc, entry) -> acc.append(mapper.apply(entry._1, entry._2)));
+    }
+    
+    @SuppressWarnings("unchecked")
+	@Override
+    default <U> Seq<U> unit(Iterable<? extends U> iterable) {
+    	if (iterable instanceof Seq) {
+    		return (Seq<U>) iterable;
+    	} else {
+    		return Stream.ofAll(iterable);
+    	}
     }
 
     default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends T1, ? extends T2>> unzipper) {

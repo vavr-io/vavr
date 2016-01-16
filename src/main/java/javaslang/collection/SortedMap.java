@@ -29,20 +29,6 @@ public interface SortedMap<K, V> extends Map<K, V> {
     long serialVersionUID = 1L;
 
     /**
-     * Same as {@link #bimap(BiFunction)}, using a specific comparator for keys of the codomain of the given
-     * {@code mapper}.
-     *
-     * @param keyComparator A comparator for keys of type U
-     * @param <K2>          key's component type of the map result
-     * @param <V2>          value's component type of the map result
-     * @param mapper        a {@code Function} that maps entries of type {@code (K, V)} to entries of type {@code (K2, V2)}
-     * @return a new {@code SortedMap}
-     * @throws NullPointerException if {@code mapper} is null
-     */
-    <K2, V2> SortedMap<K2, V2> bimap(Comparator<? super K2> keyComparator, BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
-
-
-    /**
      * Same as {@link #bimap(Function, Function)}, using a specific comparator for keys of the codomain of the given
      * {@code keyMapper}.
      *
@@ -55,18 +41,6 @@ public interface SortedMap<K, V> extends Map<K, V> {
      */
     <K2, V2> SortedMap<K2, V2> bimap(Comparator<? super K2> keyComparator,
                                      Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
-
-    /**
-     * Same as {@link #bimap(Function)}, using a specific comparator for keys of the codomain of the given
-     * {@code mapper}.
-     *
-     * @param <K2>   key's component type of the map result
-     * @param <V2>   value's component type of the map result
-     * @param mapper a {@code Function} that maps entries of type {@code (K, V)} to entries of type {@code (K2, V2)}
-     * @return a new {@code Map}
-     * @throws NullPointerException if {@code mapper} is null
-     */
-    <K2, V2> SortedMap<K2, V2> bimap(Comparator<? super K2> keyComparator, Function<Tuple2<K, V>, Tuple2<K2, V2>> mapper);
 
     /**
      * Same as {@link #flatMap(BiFunction)} but using a specific comparator for values of the codomain of the given
@@ -86,17 +60,24 @@ public interface SortedMap<K, V> extends Map<K, V> {
      * @return This map's key-comparator.
      */
     Comparator<K> keyComparator();
+    
+    /**
+     * Same as {@link #bimap(BiFunction)}, using a specific comparator for keys of the codomain of the given
+     * {@code mapper}.
+     *
+     * @param keyComparator A comparator for keys of type U
+     * @param <K2>          key's component type of the map result
+     * @param <V2>          value's component type of the map result
+     * @param mapper        a {@code Function} that maps entries of type {@code (K, V)} to entries of type {@code (K2, V2)}
+     * @return a new {@code SortedMap}
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    <K2, V2> SortedMap<K2, V2> map(Comparator<? super K2> keyComparator, BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
 
     // -- Adjusted return types of Map methods
 
     @Override
-    <K2, V2> SortedMap<K2, V2> bimap(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
-
-    @Override
     <K2, V2> SortedMap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
-
-    @Override
-    <K2, V2> SortedMap<K2, V2> bimap(Function<Tuple2<K, V>, Tuple2<K2, V2>> mapper);
 
     @Override
     SortedMap<K, V> clear();
@@ -150,6 +131,9 @@ public interface SortedMap<K, V> extends Map<K, V> {
     default Tuple2<K, V> last() {
         return max().orElseThrow(() -> new NoSuchElementException("last on empty SortedMap"));
     }
+    
+    @Override
+    <K2, V2> SortedMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
 
     @Override
     <V2> SortedMap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper);

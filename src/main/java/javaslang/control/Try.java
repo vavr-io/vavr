@@ -7,7 +7,6 @@ package javaslang.control;
 
 import javaslang.CheckedFunction1;
 import javaslang.Value;
-import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -28,7 +27,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich
  * @since 1.0.0
  */
-public interface Try<T> extends Monad<Try<?>, T>, Value<T> {
+public interface Try<T> extends Monad<T>, Value<T> {
 
     /**
      * Creates a Try of a CheckedSupplier.
@@ -235,27 +234,21 @@ public interface Try<T> extends Monad<Try<?>, T>, Value<T> {
      * @return a new Try
      */
     @SuppressWarnings("unchecked")
-    default <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
+    default <U> Try<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         if (isFailure()) {
             return (Failure<U>) this;
         } else {
-            return flatMapTry((CheckedFunction<T, Try<? extends U>>) mapper::apply);
+            return flatMapTry((CheckedFunction<T, Iterable<? extends U>>) mapper::apply);
         }
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    default <U> Try<U> flatMapM(Function<? super T, ? extends Kind1<Try<?>, U>> mapper) {
-        return flatMap((Function<T, Try<U>>) mapper);
-    }
-
-    @SuppressWarnings("unchecked")
-    default <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Try<? extends U>> mapper) {
+    default <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Iterable<? extends U>> mapper) {
         if (isFailure()) {
             return (Failure<U>) this;
         } else {
             try {
-                return (Try<U>) mapper.apply(get());
+                return unit(mapper.apply(get()));
             } catch (Throwable t) {
                 return new Failure<>(t);
             }
@@ -492,6 +485,24 @@ public interface Try<T> extends Monad<Try<?>, T>, Value<T> {
     default <U> U transform(Function<? super Try<? super T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Try<U> unit(Iterable<? extends U> iterable) {
+    	if (iterable instanceof Try) {
+    		return (Try<U>) iterable;
+    	} else if (iterable instanceof Value) {
+    		final Value<U> value = (Value<U>) iterable;
+    		return value.isEmpty() ? Try.failure(new NoSuchElementException()) : Try.of(value::get);
+    	} else {
+    		final java.util.Iterator<? extends U> iterator = iterable.iterator();
+    		if (iterator.hasNext()) {
+    			return Try.of(() -> iterator.next());
+    		} else {
+    			return Try.failure(new NoSuchElementException());
+    		}
+        }
     }
 
     @Override
