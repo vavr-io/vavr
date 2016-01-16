@@ -124,7 +124,7 @@ public class Tuple8Test {
     }
 
     @Test
-    public void shouldFlatMap() {
+    public void shouldMap() {
         final Tuple8<Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
         final Function8<Object, Object, Object, Object, Object, Object, Object, Object, Tuple8<Object, Object, Object, Object, Object, Object, Object, Object>> mapper = (o1, o2, o3, o4, o5, o6, o7, o8) -> tuple;
         final Tuple8<Object, Object, Object, Object, Object, Object, Object, Object> actual = tuple.map(mapper);

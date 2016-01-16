@@ -70,7 +70,7 @@ public class Tuple2Test {
     }
 
     @Test
-    public void shouldFlatMap() {
+    public void shouldMap() {
         final Tuple2<Object, Object> tuple = createTuple();
         final Function2<Object, Object, Tuple2<Object, Object>> mapper = (o1, o2) -> tuple;
         final Tuple2<Object, Object> actual = tuple.map(mapper);

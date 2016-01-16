@@ -184,7 +184,7 @@ public interface Lazy<T> extends Monad<Lazy<?>, T>, Supplier<T>, Value<T> {
 
     @Override
     default <U> Lazy<U> map(Function<? super T, ? extends U> mapper) {
-        return Lazy.of(() -> mapper.apply(get()));
+        return isEmpty() ? Lazy.undefined() : Lazy.of(() -> mapper.apply(get()));
     }
 
     @Override

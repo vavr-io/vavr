@@ -239,7 +239,7 @@ public interface Try<T> extends Monad<Try<?>, T>, Value<T> {
         if (isFailure()) {
             return (Failure<U>) this;
         } else {
-            return flatMapTry((CheckedFunction<T, Try<U>>) mapper);
+            return flatMapTry((CheckedFunction<T, Try<? extends U>>) mapper::apply);
         }
     }
 

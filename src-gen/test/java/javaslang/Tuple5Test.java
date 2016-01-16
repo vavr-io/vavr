@@ -97,7 +97,7 @@ public class Tuple5Test {
     }
 
     @Test
-    public void shouldFlatMap() {
+    public void shouldMap() {
         final Tuple5<Object, Object, Object, Object, Object> tuple = createTuple();
         final Function5<Object, Object, Object, Object, Object, Tuple5<Object, Object, Object, Object, Object>> mapper = (o1, o2, o3, o4, o5) -> tuple;
         final Tuple5<Object, Object, Object, Object, Object> actual = tuple.map(mapper);
