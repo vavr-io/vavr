@@ -810,13 +810,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
         return f.apply(this);
     }
 
-    /**
-     * Creates an instance of this type of an {@code Iterable}.
-     *
-     * @param <U>      Component type
-     * @param iterable an {@code Iterable}
-     * @return A new instance of this collection containing the elements of the given {@code iterable}.
-     */
+    @Override
     <U> Seq<U> unit(Iterable<? extends U> iterable);
 
     /**

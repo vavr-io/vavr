@@ -1211,7 +1211,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public <U> Array<U> unit(Iterable<? extends U> iterable) {
-        return wrap(create(iterable));
+    	return Array.ofAll(iterable);
     }
 
     @Override

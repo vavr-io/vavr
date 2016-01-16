@@ -6,7 +6,6 @@
 package javaslang.control;
 
 import javaslang.Value;
-import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -36,7 +35,7 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  * @since 1.0.0
  */
-public interface Option<T> extends Monad<Option<?>, T>, Value<T> {
+public interface Option<T> extends Monad<T>, Value<T> {
 
     /**
      * Creates a new {@code Option} of a given value.
@@ -243,20 +242,14 @@ public interface Option<T> extends Monad<Option<?>, T>, Value<T> {
      * @param <U>    Component type of the resulting Option
      * @return a new {@code Option}
      */
-    @SuppressWarnings("unchecked")
-    default <U> Option<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
+    @Override
+    default <U> Option<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return none();
         } else {
-            return (Option<U>) mapper.apply(get());
+            return unit(mapper.apply(get()));
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Option<U> flatMapM(Function<? super T, ? extends Kind1<Option<?>, U>> mapper) {
-        return flatMap((Function<T, Option<U>>) mapper);
     }
 
     /**
@@ -307,6 +300,20 @@ public interface Option<T> extends Monad<Option<?>, T>, Value<T> {
     default <U> U transform(Function<? super Option<? super T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Option<U> unit(Iterable<? extends U> iterable) {
+        if (iterable instanceof Option) {
+            return (Option<U>) iterable;
+        } else if (iterable instanceof Value) {
+            final Value<U> value = (Value<U>) iterable;
+            return value.isEmpty() ? Option.none() : Option.some(value.get());
+        } else {
+            final java.util.Iterator<? extends U> iterator = iterable.iterator();
+            return iterator.hasNext() ? Option.none() : Option.some(iterator.next());
+        }
     }
 
     @Override

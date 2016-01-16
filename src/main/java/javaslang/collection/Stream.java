@@ -792,7 +792,7 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default <C> Map<C, Stream<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).bimap((c, it) -> Tuple.of(c, Stream.ofAll(it)));
+        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, Stream.ofAll(it)));
     }
 
     @Override

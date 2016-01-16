@@ -6,8 +6,6 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.algebra.Kind1;
-import javaslang.algebra.Monad;
 import javaslang.collection.List.Nil;
 import javaslang.collection.ListModule.Combinations;
 import javaslang.collection.ListModule.SplitAt;
@@ -82,7 +80,7 @@ import java.util.stream.Collector;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public interface List<T> extends LinearSeq<T>, Stack<T>, Monad<List<?>, T> {
+public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     long serialVersionUID = 1L;
 
@@ -645,12 +643,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T>, Monad<List<?>, T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> List<U> flatMapM(Function<? super T, ? extends Kind1<List<?>, U>> mapper) {
-        return flatMap((Function<T, List<U>>) mapper);
-    }
-
     @Override
     default void forEach(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
@@ -684,7 +676,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T>, Monad<List<?>, T> {
     @Override
     default <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).bimap((c, it) -> Tuple.of(c, List.ofAll(it)));
+        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, List.ofAll(it)));
     }
 
     @Override
@@ -1033,7 +1025,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T>, Monad<List<?>, T> {
     @Override
     default List<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final List<T> removed = List.ofAll(elements).distinct();
+        // Eclipse does need the cast
+        final List<T> removed = (List<T>) List.ofAll(elements).distinct();
         List<T> result = Nil.instance();
         boolean found = false;
         for (T element : this) {
@@ -1085,7 +1078,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T>, Monad<List<?>, T> {
     @Override
     default List<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final List<T> kept = List.ofAll(elements).distinct();
+        // Eclipse does need the cast
+        final List<T> kept = (List<T>) List.ofAll(elements).distinct();
         List<T> result = Nil.instance();
         for (T element : this) {
             if (kept.contains(element)) {

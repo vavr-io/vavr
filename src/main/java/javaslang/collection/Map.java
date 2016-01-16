@@ -269,7 +269,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, BiFunctor<K, V>, F
     /**
      * Maps the {@code Map} entries to a sequence of values.
      * <p>
-     * Please use {@link #bimap(Function)} if the result has to be of type {@code Map}.
+     * Please use {@link #map(BiFunction)} if the result has to be of type {@code Map}.
      *
      * @param mapper A mapper
      * @param <U> Component type

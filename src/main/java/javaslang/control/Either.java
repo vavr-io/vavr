@@ -6,7 +6,7 @@
 package javaslang.control;
 
 import javaslang.Value;
-import javaslang.algebra.Kind1;
+import javaslang.algebra.BiFunctor;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 
@@ -43,7 +43,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich
  * @since 1.0.0
  */
-public interface Either<L, R> extends Monad<Either<L, ?>, R>, Value<R> {
+public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
 
     /**
      * Constructs a {@link Right}
@@ -219,31 +219,17 @@ public interface Either<L, R> extends Monad<Either<L, ?>, R>, Value<R> {
      *
      * @param mapper A mapper
      * @param <U>    Component type of the mapped right value
-     * @return this as {@code Either<L, U>} if this is a Left, otherwise a the mapping result of the right value.
+     * @return this as {@code Either<L, U>} if this is a Left, otherwise {@link #unit(Iterable)} of the right mapping result
      * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
-    default <U> Either<L, U> flatMap(Function<? super R, ? extends Either<L, ? extends U>> mapper) {
+    default <U> Either<L, U> flatMap(Function<? super R, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isRight()) {
-            return (Either<L, U>) mapper.apply(get());
+            return unit(mapper.apply(get()));
         } else {
             return (Either<L, U>) this;
         }
-    }
-
-    /**
-     * Calls {@link Either#flatMap(Function)}.
-     *
-     * @param mapper A mapper
-     * @param <U>    Component type of the mapped right value
-     * @return this as {@code Either<L, U>} if this is a Left, otherwise a the mapping result of the right value.
-     * @throws NullPointerException if {@code mapper} is null
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Either<L, U> flatMapM(Function<? super R, ? extends Kind1<Either<L, ?>, U>> mapper) {
-        return flatMap((Function<R, Either<L, U>>) mapper);
     }
 
     /**
@@ -355,6 +341,21 @@ public interface Either<L, R> extends Monad<Either<L, ?>, R>, Value<R> {
         }
         return this;
     }
+    
+    
+    @SuppressWarnings("unchecked")
+	@Override
+    default <U> Either<L, U> unit(Iterable<? extends U> iterable) {
+    	if (iterable instanceof Either) {
+    		return (Either<L, U>) iterable;
+    	} else if (iterable instanceof Value) {
+    		final Value<U> value = (Value<U>) iterable;
+    		return value.isEmpty() ? Either.left(null) : Either.right(value.get());
+    	} else {
+    		final java.util.Iterator<? extends U> iterator = iterable.iterator();
+    		return iterator.hasNext() ? Either.right(iterator.next()) : Either.left(null);
+    	}
+    }
 
     // -- Object.*
 
@@ -376,7 +377,7 @@ public interface Either<L, R> extends Monad<Either<L, ?>, R>, Value<R> {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class LeftProjection<L, R> implements Monad<LeftProjection<?, R>, L>, Value<L> {
+    final class LeftProjection<L, R> implements Monad<L>, Value<L> {
 
         private final Either<L, R> either;
 
@@ -514,19 +515,14 @@ public interface Either<L, R> extends Monad<Either<L, ?>, R>, Value<R> {
          * @throws NullPointerException if {@code mapper} is null
          */
         @SuppressWarnings("unchecked")
-        public <U> LeftProjection<U, R> flatMap(Function<? super L, ? extends LeftProjection<? extends U, R>> mapper) {
+		@Override
+        public <U> LeftProjection<U, R> flatMap(Function<? super L, ? extends Iterable<? extends U>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft()) {
-                return (LeftProjection<U, R>) mapper.apply(either.getLeft());
+                return unit(mapper.apply(either.getLeft()));
             } else {
                 return (LeftProjection<U, R>) this;
             }
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public <U> LeftProjection<U, R> flatMapM(Function<? super L, ? extends Kind1<LeftProjection<?, R>, U>> mapper) {
-            return flatMap((Function<L, LeftProjection<U, R>>) mapper);
         }
 
         /**
@@ -540,7 +536,7 @@ public interface Either<L, R> extends Monad<Either<L, ?>, R>, Value<R> {
         public <U> LeftProjection<U, R> map(Function<? super L, ? extends U> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft()) {
-            	return either.mapLeft(mapper).left();
+            	return (LeftProjection<U, R>) either.mapLeft(mapper).left();
             } else {
                 return (LeftProjection<U, R>) this;
             }
@@ -577,6 +573,22 @@ public interface Either<L, R> extends Monad<Either<L, ?>, R>, Value<R> {
         public <U> U transform(Function<? super LeftProjection<? super L, ? super R>, ? extends U> f) {
             Objects.requireNonNull(f, "f is null");
             return f.apply(this);
+        }
+        
+        @SuppressWarnings("unchecked")
+    	@Override
+        public <U> LeftProjection<U, R> unit(Iterable<? extends U> iterable) {
+        	if (iterable instanceof LeftProjection) {
+        		return (LeftProjection<U, R>) iterable;
+        	} else if (iterable instanceof Value) {
+        		final Value<U> value = (Value<U>) iterable;
+        		final Either<U, R> result = value.isEmpty() ? Either.right(null) : Either.left(value.get());
+        		return result.left();
+        	} else {
+        		final java.util.Iterator<? extends U> iterator = iterable.iterator();
+        		final Either<U, R> result = iterator.hasNext() ? Either.right(null) : Either.left(iterator.next());
+        		return result.left();
+        	}
         }
 
         @Override
@@ -616,7 +628,7 @@ public interface Either<L, R> extends Monad<Either<L, ?>, R>, Value<R> {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class RightProjection<L, R> implements Monad<RightProjection<L, ?>, R>, Value<R> {
+    final class RightProjection<L, R> implements Monad<R>, Value<R> {
 
         private final Either<L, R> either;
 
@@ -739,19 +751,14 @@ public interface Either<L, R> extends Monad<Either<L, ?>, R>, Value<R> {
          * @throws NullPointerException if {@code mapper} is null
          */
         @SuppressWarnings("unchecked")
-        public <U> RightProjection<L, U> flatMap(Function<? super R, ? extends RightProjection<L, ? extends U>> mapper) {
+        @Override
+        public <U> RightProjection<L, U> flatMap(Function<? super R, ? extends Iterable<? extends U>> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight()) {
-                return (RightProjection<L, U>) mapper.apply(either.get());
+                return unit(mapper.apply(either.get()));
             } else {
                 return (RightProjection<L, U>) this;
             }
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public <U> RightProjection<L, U> flatMapM(Function<? super R, ? extends Kind1<RightProjection<L, ?>, U>> mapper) {
-            return flatMap((Function<R, RightProjection<L, U>>) mapper);
         }
 
         /**
@@ -765,7 +772,7 @@ public interface Either<L, R> extends Monad<Either<L, ?>, R>, Value<R> {
         public <U> RightProjection<L, U> map(Function<? super R, ? extends U> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight()) {
-                return either.map(mapper).right();
+                return (RightProjection<L, U>) either.map(mapper).right();
             } else {
                 return (RightProjection<L, U>) this;
             }
@@ -802,6 +809,22 @@ public interface Either<L, R> extends Monad<Either<L, ?>, R>, Value<R> {
         public <U> U transform(Function<? super RightProjection<? super L, ? super R>, ? extends U> f) {
             Objects.requireNonNull(f, "f is null");
             return f.apply(this);
+        }
+        
+        @SuppressWarnings("unchecked")
+    	@Override
+        public <U> RightProjection<L, U> unit(Iterable<? extends U> iterable) {
+        	if (iterable instanceof RightProjection) {
+        		return (RightProjection<L, U>) iterable;
+        	} else if (iterable instanceof Value) {
+        		final Value<U> value = (Value<U>) iterable;
+        		final Either<L, U> result = value.isEmpty() ? Either.left(null) : Either.right(value.get());
+        		return result.right();
+        	} else {
+        		final java.util.Iterator<? extends U> iterator = iterable.iterator();
+        		final Either<L, U> result = iterator.hasNext() ? Either.left(null) : Either.right(iterator.next());
+        		return result.right();
+        	}
         }
 
         @Override

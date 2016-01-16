@@ -416,7 +416,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public <C> Map<C, CharSeq> groupBy(Function<? super Character, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).bimap((c, it) -> Tuple.of(c, CharSeq.ofAll(it)));
+        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, CharSeq.ofAll(it)));
     }
 
     @Override
@@ -920,7 +920,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public <U> IndexedSeq<U> unit(Iterable<? extends U> iterable) {
-        Objects.requireNonNull(iterable, "iterable is null");
         return Vector.ofAll(iterable);
     }
 

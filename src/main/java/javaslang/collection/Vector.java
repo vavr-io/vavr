@@ -629,7 +629,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public <C> Map<C, Vector<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).bimap((c, it) -> Tuple.of(c, Vector.ofAll(it)));
+        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, Vector.ofAll(it)));
     }
 
     @Override
