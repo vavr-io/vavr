@@ -253,7 +253,7 @@ public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
      * Filters this {@code Value} by testing a predicate.
      * <p>
      * The semantics may vary from class to class, e.g. for single-valued types (like {@code Option})
-     * and multi-valued types (like {@link Traversable).
+     * and multi-valued types (like {@link Traversable}).
      * The commonality is that filtered.isEmpty() will return true, if no element satisfied the given predicate.
      *
      * @param predicate A predicate
