@@ -181,7 +181,7 @@ public interface Option<T> extends Monad<T>, Value<T> {
      * @param other An alternative value
      * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
      */
-    default T orElse(T other) {
+    default T getOrElse(T other) {
         return isEmpty() ? other : get();
     }
 
@@ -194,7 +194,7 @@ public interface Option<T> extends Monad<T>, Value<T> {
      * @param supplier An alternative value supplier
      * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
      */
-    default T orElseGet(Supplier<? extends T> supplier) {
+    default T getOrElse(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? supplier.get() : get();
     }

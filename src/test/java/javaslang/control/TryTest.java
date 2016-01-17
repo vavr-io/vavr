@@ -241,7 +241,7 @@ public class TryTest {
 
     @Test
     public void shouldReturnElseWhenOrElseOnFailure() {
-        assertThat(failure().orElse(OK)).isEqualTo(OK);
+        assertThat(failure().getOrElse(OK)).isEqualTo(OK);
     }
 
     @Test
@@ -532,7 +532,7 @@ public class TryTest {
 
     @Test
     public void shouldOrElseOnSuccess() {
-        assertThat(success().orElse(null)).isEqualTo(OK);
+        assertThat(success().getOrElse(null)).isEqualTo(OK);
     }
 
     @Test

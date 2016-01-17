@@ -662,7 +662,7 @@ public interface Future<T> extends Monad<T>, Value<T> {
      * @return true, if this Future completed and is a Success, false otherwise.
      */
     default boolean isSuccess() {
-        return getValue().map(Try::isSuccess).orElse(false);
+        return getValue().map(Try::isSuccess).getOrElse(false);
     }
 
     /**
@@ -671,7 +671,7 @@ public interface Future<T> extends Monad<T>, Value<T> {
      * @return true, if this Future completed and is a Failure, false otherwise.
      */
     default boolean isFailure() {
-        return getValue().map(Try::isFailure).orElse(false);
+        return getValue().map(Try::isFailure).getOrElse(false);
     }
 
     /**

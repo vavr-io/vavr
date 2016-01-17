@@ -7,7 +7,6 @@ package javaslang;
 
 import javaslang.algebra.Foldable;
 import javaslang.algebra.Functor;
-import javaslang.algebra.Monad;
 import javaslang.algebra.Monoid;
 import javaslang.collection.*;
 import javaslang.control.Either;
@@ -41,8 +40,8 @@ import java.util.stream.StreamSupport;
  * <li>{@link #ifDefined(Object, Object)}</li>
  * <li>{@link #ifEmpty(Supplier, Supplier)}</li>
  * <li>{@link #ifEmpty(Object, Object)}</li>
- * <li>{@link #orElse(Object)}</li>
- * <li>{@link #orElseGet(Supplier)}</li>
+ * <li>{@link #getOrElse(Object)}</li>
+ * <li>{@link #getOrElse(Supplier)}</li>
  * <li>{@link #orElseThrow(Supplier)}</li>
  * <li>{@link #stringPrefix()}</li>
  * </ul>
@@ -415,7 +414,7 @@ public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
      * @param other An alternative value.
      * @return A value of type {@code T}
      */
-    default T orElse(T other) {
+    default T getOrElse(T other) {
         return isEmpty() ? other : get();
     }
 
@@ -426,7 +425,7 @@ public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
      * @return A value of type {@code T}
      * @throws NullPointerException if supplier is null
      */
-    default T orElseGet(Supplier<? extends T> supplier) {
+    default T getOrElse(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? supplier.get() : get();
     }

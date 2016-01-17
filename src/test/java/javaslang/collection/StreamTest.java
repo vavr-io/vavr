@@ -447,7 +447,7 @@ public class StreamTest extends AbstractSeqTest {
         return Stream.of(vals)
                 .map(v -> Try.run(() -> func.accept(v)))
                 .find(Try::isFailure)
-                .orElseGet(() -> Try.success(null));
+                .getOrElse(() -> Try.success(null));
     }
 
     private Try<Void> flatTryWithJavaStream(Integer[] vals, Try.CheckedConsumer<Integer> func) {

@@ -429,7 +429,7 @@ public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
          * @throws NoSuchElementException if the underlying either of this LeftProjection is a Right
          */
         @Override
-        public L orElse(L other) {
+        public L getOrElse(L other) {
             return either.isLeft() ? either.getLeft() : other;
         }
 
@@ -685,8 +685,8 @@ public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
          * @throws NoSuchElementException if the underlying either of this RightProjection is a Left
          */
         @Override
-        public R orElse(R other) {
-            return either.orElse(other);
+        public R getOrElse(R other) {
+            return either.getOrElse(other);
         }
 
         /**

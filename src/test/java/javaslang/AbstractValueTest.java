@@ -216,16 +216,16 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldCalculateOrElse() {
-        assertThat(empty().orElse(1)).isEqualTo(1);
-        assertThat(of(1).orElse(2)).isEqualTo(1);
+        assertThat(empty().getOrElse(1)).isEqualTo(1);
+        assertThat(of(1).getOrElse(2)).isEqualTo(1);
     }
 
     // -- orElseGet
 
     @Test
     public void shouldCalculateOrElseGet() {
-        assertThat(empty().orElseGet(() -> 1)).isEqualTo(1);
-        assertThat(of(1).orElseGet(() -> 2)).isEqualTo(1);
+        assertThat(empty().getOrElse(() -> 1)).isEqualTo(1);
+        assertThat(of(1).getOrElse(() -> 2)).isEqualTo(1);
     }
 
     // -- orElseThrow
@@ -310,8 +310,8 @@ public abstract class AbstractValueTest {
     public void shouldConvertNonEmptyValueToMatchMonad() {
         final Value<Integer> value = of(1);
         final String actual = value.match()
-                .when((Value<Integer> v) -> v.orElse(-1) == 1).then("ok")
-                .orElse("nok");
+                .when((Value<Integer> v) -> v.getOrElse(-1) == 1).then("ok")
+                .getOrElse("nok");
         assertThat(actual).isEqualTo("ok");
     }
 
@@ -320,7 +320,7 @@ public abstract class AbstractValueTest {
         final Value<Integer> value = empty();
         final String actual = value.match()
                 .when(Value<Integer>::isEmpty).then("ok")
-                .orElse("nok");
+                .getOrElse("nok");
         assertThat(actual).isEqualTo("ok");
     }
 
@@ -329,7 +329,7 @@ public abstract class AbstractValueTest {
         Value<Character> v = of('a', 'b', 'c');
         assertThat(Match.of(v)
                 .whenTypeIn(Iterator.class).then(Iterator.of("ignore").toString())
-                .orElse(v.toString())
+                .getOrElse(v.toString())
         ).isEqualTo(v.toCharSeq().toString());
     }
 

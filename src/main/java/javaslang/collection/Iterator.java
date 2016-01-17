@@ -1347,7 +1347,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else {
             Map<C, Stream<T>> streams = foldLeft(HashMap.empty(), (map, entry) -> {
                 final C key = classifier.apply(entry);
-                final Stream<T> values = map.get(key).map(entries -> entries.append(entry)).orElse(Stream.of(entry));
+                final Stream<T> values = map.get(key).map(entries -> entries.append(entry)).getOrElse(Stream.of(entry));
                 return map.put(key, values);
             });
             return streams.map((c, ts) -> Tuple.of(c, ts.iterator()));

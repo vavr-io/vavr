@@ -24,7 +24,7 @@ public class Sieve {
                             rules.foldLeft(xs, (ss, r) -> r.apply(xy._1, xy._2)
                                     .filter(p -> p < limit)
                                     .map(p -> ss.contains(p) ? ss.remove(p) : ss.add(p))
-                                    .orElse(ss)
+                                    .getOrElse(ss)
                             )
                     ),
             (sieve, limit, root) -> Stream.rangeClosed(5, root)

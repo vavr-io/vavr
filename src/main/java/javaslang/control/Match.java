@@ -42,7 +42,7 @@ import static javaslang.control.MatchModule.*;
  *      .whenType(String.class).then(s -&gt; "String " + s)
  *      .whenType(Number.class).then(n -&gt; "Number " + n)
  *      .whenType(Integer.class).then(i -&gt; "int " + i)
- *      .orElse("unknown");
+ *      .getOrElse("unknown");
  * </code></pre>
  * {@code MatchFunction} is a {@linkplain java.util.function.Function}, obtained by one of {@code Match.whenXxx(...)}.
  * In this case a Match is terminated by applying it to an object, e.g.
@@ -373,7 +373,7 @@ public interface Match {
                 return (R) cases.reverse()
                         .find(caze -> caze.isApplicable(o))
                         .map(caze -> caze.apply(o))
-                        .orElseGet(() -> function.apply(o));
+                        .getOrElse(() -> function.apply(o));
             }
         }
 
@@ -545,7 +545,7 @@ public interface Match {
                     cases.reverse()
                             .find(caze -> caze.isApplicable(o))
                             .map(caze -> caze.apply(o))
-                            .orElseGet(() -> action.apply(o));
+                            .getOrElse(() -> action.apply(o));
                 }
             }
         }
@@ -814,17 +814,17 @@ public interface Match {
             }
 
             public Otherwise<R> otherwise(R that) {
-                return new Otherwise<>(() -> result.orElse(() -> that).get());
+                return new Otherwise<>(() -> result.getOrElse(() -> that).get());
             }
 
             public Otherwise<R> otherwise(Function<? super T, ? extends R> function) {
                 Objects.requireNonNull(function, "function is null");
-                return new Otherwise<>(() -> result.orElse(() -> function.apply(value)).get());
+                return new Otherwise<>(() -> result.getOrElse(() -> function.apply(value)).get());
             }
 
             public Otherwise<R> otherwise(Supplier<? extends R> supplier) {
                 Objects.requireNonNull(supplier, "supplier is null");
-                return new Otherwise<>(() -> result.orElse(supplier).get());
+                return new Otherwise<>(() -> result.getOrElse(supplier).get());
             }
 
             public Otherwise<R> otherwiseThrow(Supplier<? extends RuntimeException> supplier) {
@@ -842,7 +842,7 @@ public interface Match {
                     } else {
                         return new Then<>(value, Option.<Supplier<? extends R>> none());
                     }
-                }).orElse(this);
+                }).getOrElse(this);
             }
 
             @SuppressWarnings("unchecked")
@@ -884,7 +884,7 @@ public interface Match {
                 Objects.requireNonNull(mapper, "mapper is null");
                 return result
                         .map(supplier -> new Then<T, U>(value, Option.some(() -> mapper.apply(supplier.get()))))
-                        .orElseGet(() -> (Then<T, U>) this);
+                        .getOrElse(() -> (Then<T, U>) this);
             }
 
             @Override

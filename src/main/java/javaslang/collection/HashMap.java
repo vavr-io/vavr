@@ -340,7 +340,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
             final HashMap<K, V> values = map
                     .get(key)
                     .map(entries -> entries.put(entry))
-                    .orElse(HashMap.of(entry));
+                    .getOrElse(HashMap.of(entry));
             return map.put(key, values);
         });
     }

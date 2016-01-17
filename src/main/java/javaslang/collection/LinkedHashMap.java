@@ -346,7 +346,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
             final LinkedHashMap<K, V> values = map
                     .get(key)
                     .map(entries -> entries.put(entry))
-                    .orElse(LinkedHashMap.of(entry));
+                    .getOrElse(LinkedHashMap.of(entry));
             return map.put(key, values);
         });
     }

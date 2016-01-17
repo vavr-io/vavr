@@ -51,7 +51,7 @@ public class MatchMonadTest {
 
     @Test
     public void shouldMatchOrElseByValueIn() {
-        final boolean actual = Match.of(4).whenIsIn(1, 2, 3).then(false).orElse(true);
+        final boolean actual = Match.of(4).whenIsIn(1, 2, 3).then(false).getOrElse(true);
         assertThat(actual).isTrue();
     }
 
@@ -68,7 +68,7 @@ public class MatchMonadTest {
                 .of(0)
                 .when((Number i) -> i.intValue() % 2 == 0)
                 .then(() -> "even")
-                .orElse("odd");
+                .getOrElse("odd");
         assertThat(divisibility).isEqualTo("even");
     }
 
@@ -78,7 +78,7 @@ public class MatchMonadTest {
                 .of(1)
                 .when((Integer i) -> i % 2 == 0)
                 .then(() -> "even")
-                .orElse("odd");
+                .getOrElse("odd");
         assertThat(divisibility).isEqualTo("odd");
     }
 
@@ -99,7 +99,7 @@ public class MatchMonadTest {
                 .then(n -> "Number " + n)
                 .whenType(Integer.class)
                 .then(i -> "int " + i)
-                .orElse("unknown");
+                .getOrElse("unknown");
         assertThat(actual).isEqualTo("Number 1");
     }
 
@@ -111,7 +111,7 @@ public class MatchMonadTest {
                 .then(s -> "String " + s)
                 .whenType(Short.class)
                 .then(s -> "Short " + s)
-                .orElse("unknown");
+                .getOrElse("unknown");
         assertThat(actual).isEqualTo("unknown");
     }
 
@@ -129,7 +129,7 @@ public class MatchMonadTest {
                 .of(number)
                 .whenTypeIn(Byte.class, Integer.class)
                 .then(s -> "matched")
-                .orElse("unknown");
+                .getOrElse("unknown");
         assertThat(actual).isEqualTo("matched");
     }
 
@@ -140,7 +140,7 @@ public class MatchMonadTest {
                 .of(number)
                 .whenTypeIn(Byte.class, Short.class)
                 .then(s -> "matched")
-                .orElse("unknown");
+                .getOrElse("unknown");
         assertThat(actual).isEqualTo("unknown");
     }
 
@@ -159,7 +159,7 @@ public class MatchMonadTest {
 
     @Test
     public void shouldMatchOrElseByFunction() {
-        final boolean actual = Match.of(4).whenIsIn(1, 2, 3).then(false).orElse(true);
+        final boolean actual = Match.of(4).whenIsIn(1, 2, 3).then(false).getOrElse(true);
         assertThat(actual).isTrue();
     }
 
@@ -280,25 +280,25 @@ public class MatchMonadTest {
 
     @Test
     public void shouldNotApplyThenValueWhenUnmatched() {
-        final boolean actual = Match.of(0).whenIs(1).then(false).orElse(true);
+        final boolean actual = Match.of(0).whenIs(1).then(false).getOrElse(true);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldNotApplyThenSupplierWhenUnmatched() {
-        final boolean actual = Match.of(0).whenIs(1).then(() -> false).orElse(true);
+        final boolean actual = Match.of(0).whenIs(1).then(() -> false).getOrElse(true);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldNotApplyThenFunctionWhenUnmatched() {
-        final boolean actual = Match.of(true).whenIs(false).then(b -> b).orElse(true);
+        final boolean actual = Match.of(true).whenIs(false).then(b -> b).getOrElse(true);
         assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldNotApplyFunctionWhenApplicableUnmatched() {
-        final boolean actual = Match.of(true).whenApplicable((Integer i) -> false).thenApply().orElse(true);
+        final boolean actual = Match.of(true).whenApplicable((Integer i) -> false).thenApply().getOrElse(true);
         assertThat(actual).isTrue();
     }
 
@@ -321,13 +321,13 @@ public class MatchMonadTest {
 
     @Test
     public void shouldUseOrElseToReturnAlternateValueWithMatched() {
-        final double actual = Match.of(1).whenType(Number.class).then(Number::doubleValue).orElse(Double.NaN);
+        final double actual = Match.of(1).whenType(Number.class).then(Number::doubleValue).getOrElse(Double.NaN);
         assertThat(actual).isEqualTo(1.0d);
     }
 
     @Test
     public void shouldUseOrElseToReturnAlternateValueWithUnmatched() {
-        final double actual = Match.of("1").whenType(Number.class).then(Number::doubleValue).orElse(Double.NaN);
+        final double actual = Match.of("1").whenType(Number.class).then(Number::doubleValue).getOrElse(Double.NaN);
         assertThat(actual).isNaN();
     }
 
@@ -569,7 +569,7 @@ public class MatchMonadTest {
 
     @Test
     public void shouldFilterThen() {
-        final Function<Boolean, Integer> f = b -> Match.of(1).whenIs(1).then(1).filter(i -> b).orElse(2);
+        final Function<Boolean, Integer> f = b -> Match.of(1).whenIs(1).then(1).filter(i -> b).getOrElse(2);
         assertThat(f.apply(true)).isEqualTo(1);
         assertThat(f.apply(false)).isEqualTo(2);
     }
@@ -593,7 +593,7 @@ public class MatchMonadTest {
 
     @Test
     public void shouldFlatMapUnmatched() {
-        final int actual = Match.of(0).whenIs(1).then(1).flatMap(i -> Match.of(i).whenIs(1).then(1)).orElse(-1);
+        final int actual = Match.of(0).whenIs(1).then(1).flatMap(i -> Match.of(i).whenIs(1).then(1)).getOrElse(-1);
         assertThat(actual).isEqualTo(-1);
     }
 
@@ -617,7 +617,7 @@ public class MatchMonadTest {
 
     @Test
     public void shouldMapUnmatched() {
-        final int actual = Match.of(0).whenIs(1).then(1).map(i -> i + 1).orElse(-1);
+        final int actual = Match.of(0).whenIs(1).then(1).map(i -> i + 1).getOrElse(-1);
         assertThat(actual).isEqualTo(-1);
     }
 

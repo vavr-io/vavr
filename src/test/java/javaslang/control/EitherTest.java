@@ -122,13 +122,13 @@ public class EitherTest {
 
     @Test
     public void shouldReturnLeftWhenOrElseOnLeftProjectionOfLeft() {
-        final Integer actual = Either.left(1).left().orElse(2);
+        final Integer actual = Either.left(1).left().getOrElse(2);
         assertThat(actual).isEqualTo(1);
     }
 
     @Test
     public void shouldReturnOtherWhenOrElseOnLeftProjectionOfRight() {
-        final Integer actual = Either.<Integer, String>right("1").left().orElse(2);
+        final Integer actual = Either.<Integer, String>right("1").left().getOrElse(2);
         assertThat(actual).isEqualTo(2);
     }
 
@@ -492,13 +492,13 @@ public class EitherTest {
 
     @Test
     public void shouldReturnRightWhenOrElseOnRightProjectionOfRight() {
-        final Integer actual = Either.<String, Integer>right(1).right().orElse(2);
+        final Integer actual = Either.<String, Integer>right(1).right().getOrElse(2);
         assertThat(actual).isEqualTo(1);
     }
 
     @Test
     public void shouldReturnOtherWhenOrElseOnRightProjectionOfLeft() {
-        final Integer actual = Either.<String, Integer>left("1").right().orElse(2);
+        final Integer actual = Either.<String, Integer>left("1").right().getOrElse(2);
         assertThat(actual).isEqualTo(2);
     }
 

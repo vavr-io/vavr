@@ -43,7 +43,7 @@ final class Collections {
             return map2.foldLeft(map1, (map, entry) -> {
                 final K key = entry._1;
                 final U value = entry._2;
-                final V newValue = map.get(key).map(v -> (V) collisionResolution.apply(v, value)).orElse(value);
+                final V newValue = map.get(key).map(v -> (V) collisionResolution.apply(v, value)).getOrElse(value);
                 return map.put(key, newValue);
             });
         }

@@ -219,24 +219,24 @@ public class OptionTest {
 
     @Test
     public void shouldGetValueOnOrElseWhenValueIsPresent() {
-        assertThat(Option.of(1).orElse(2)).isEqualTo(1);
+        assertThat(Option.of(1).getOrElse(2)).isEqualTo(1);
     }
 
     @Test
     public void shouldGetAlternativeOnOrElseWhenValueIsNotPresent() {
-        assertThat(Option.none().orElse(2)).isEqualTo(2);
+        assertThat(Option.none().getOrElse(2)).isEqualTo(2);
     }
 
     // -- orElseGet
 
     @Test
     public void shouldGetValueOnOrElseGetWhenValueIsPresent() {
-        assertThat(Option.of(1).orElseGet(() -> 2)).isEqualTo(1);
+        assertThat(Option.of(1).getOrElse(() -> 2)).isEqualTo(1);
     }
 
     @Test
     public void shouldGetAlternativeOnOrElseGetWhenValueIsNotPresent() {
-        assertThat(Option.none().orElseGet(() -> 2)).isEqualTo(2);
+        assertThat(Option.none().getOrElse(() -> 2)).isEqualTo(2);
     }
 
     // -- orElseThrow
