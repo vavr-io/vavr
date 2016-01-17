@@ -52,13 +52,13 @@ public class IteratorTest extends AbstractTraversableTest {
             @Override
             public ObjectAssert<T> isEqualTo(Object expected) {
                 if (actual instanceof Tuple2) {
-                    final Tuple2<?, ?> t1 = ((Tuple2<?, ?>) actual).flatMap(this::toList);
-                    final Tuple2<?, ?> t2 = ((Tuple2<?, ?>) expected).flatMap(this::toList);
+                    final Tuple2<?, ?> t1 = ((Tuple2<?, ?>) actual).map(this::toList);
+                    final Tuple2<?, ?> t2 = ((Tuple2<?, ?>) expected).map(this::toList);
                     Assertions.assertThat((Object) t1).isEqualTo(t2);
                     return this;
                 } else if (actual instanceof Tuple3) {
-                    final Tuple3<?, ?, ?> t1 = ((Tuple3<?, ?, ?>) actual).flatMap(this::toList);
-                    final Tuple3<?, ?, ?> t2 = ((Tuple3<?, ?, ?>) expected).flatMap(this::toList);
+                    final Tuple3<?, ?, ?> t1 = ((Tuple3<?, ?, ?>) actual).map(this::toList);
+                    final Tuple3<?, ?, ?> t2 = ((Tuple3<?, ?, ?>) expected).map(this::toList);
                     Assertions.assertThat((Object) t1).isEqualTo(t2);
                     return this;
                 } else {
@@ -352,11 +352,10 @@ public class IteratorTest extends AbstractTraversableTest {
     public void shouldNonNilGroupByIdentity() {
         // we can't compare iterators, should map it to sequences
         final Seq<?> actual = of('a', 'b', 'c').groupBy(Function.identity()).map(e -> Tuple.of(e._1, List.ofAll(e._2)));
-        final Seq<?> expected = HashMap.empty()
-                .put('a', List.ofAll(of('a')))
-                .put('b', List.ofAll(of('b')))
-                .put('c', List.ofAll(of('c')))
-                .toList();
+        final Seq<?> expected = HashMap.of(
+                'a', List.ofAll(of('a')),
+                'b', List.ofAll(of('b')),
+                'c', List.ofAll(of('c'))).toList();
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -364,7 +363,7 @@ public class IteratorTest extends AbstractTraversableTest {
     public void shouldNonNilGroupByEqual() {
         // we can't compare iterators, should map it to sequences
         final Seq<?> actual = of('a', 'b', 'c').groupBy(c -> 1).map(e -> Tuple.of(e._1, List.ofAll(e._2)));
-        final Seq<?> expected = HashMap.empty().put(1, List.ofAll(of('a', 'b', 'c'))).toList();
+        final Seq<?> expected = HashMap.of(1, List.ofAll(of('a', 'b', 'c'))).toList();
         assertThat(actual).isEqualTo(expected);
     }
 

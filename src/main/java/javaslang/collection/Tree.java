@@ -611,6 +611,11 @@ public interface Tree<T> extends Traversable<T> {
         Objects.requireNonNull(predicate, "predicate is null");
         return traverse().takeWhile(predicate);
     }
+    
+    @Override
+    default <U> Tree<U> unit(Iterable<? extends U> iterable) {
+    	return Tree.ofAll(iterable);
+    }
 
     @SuppressWarnings("unchecked")
     @Override

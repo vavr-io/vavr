@@ -12,7 +12,7 @@ package javaslang;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 
@@ -71,9 +71,9 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
      * @return An object of type U
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U transform(Supplier<? extends U> f) {
+    public <U> U transform(Function<Tuple0, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
-        return f.get();
+        return f.apply(this);
     }
 
     @Override

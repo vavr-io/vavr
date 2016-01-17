@@ -15,7 +15,10 @@ import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -51,7 +54,7 @@ public interface Option<T> extends Monad<T>, Value<T> {
      * the Options are {@link Option.None}, then this returns {@link Option.None}.
      *
      * @param values An {@code Iterable} of {@code Option}s
-     * @param <T> type of the Options
+     * @param <T>    type of the Options
      * @return An {@code Option} of a {@link Seq} of results
      * @throws NullPointerException if {@code values} is null
      */
@@ -154,12 +157,12 @@ public interface Option<T> extends Monad<T>, Value<T> {
     }
 
     /**
-     * An option is a singleton type.
+     * An {@code Option} is single-valued.
      *
      * @return {@code true}
      */
     @Override
-    default boolean isSingletonType() {
+    default boolean isSingleValued() {
         return true;
     }
 
@@ -239,24 +242,13 @@ public interface Option<T> extends Monad<T>, Value<T> {
      * @param <U>    Component type of the resulting Option
      * @return a new {@code Option}
      */
-    @SuppressWarnings("unchecked")
     @Override
     default <U> Option<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return none();
         } else {
-            final Iterable<? extends U> iterable = mapper.apply(get());
-            if (iterable instanceof Value) {
-                return ((Value<U>) iterable).toOption();
-            } else {
-                final java.util.Iterator<? extends U> iterator = iterable.iterator();
-                if (iterator.hasNext()) {
-                    return some(iterator.next());
-                } else {
-                    return none();
-                }
-            }
+            return unit(mapper.apply(get()));
         }
     }
 
@@ -308,6 +300,20 @@ public interface Option<T> extends Monad<T>, Value<T> {
     default <U> U transform(Function<? super Option<? super T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Option<U> unit(Iterable<? extends U> iterable) {
+        if (iterable instanceof Option) {
+            return (Option<U>) iterable;
+        } else if (iterable instanceof Value) {
+            final Value<U> value = (Value<U>) iterable;
+            return value.isEmpty() ? Option.none() : Option.some(value.get());
+        } else {
+            final java.util.Iterator<? extends U> iterator = iterable.iterator();
+            return iterator.hasNext() ? Option.none() : Option.some(iterator.next());
+        }
     }
 
     @Override

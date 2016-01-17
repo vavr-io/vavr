@@ -226,127 +226,11 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public boolean containsKey(K key) {
-        return map.containsKey(key);
-    }
-
-    @Override
-    public boolean containsValue(V value) {
-        return map.containsValue(value);
-    }
-
-    @Override
-    public <U, W> LinkedHashMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(LinkedHashMap.<U, W> empty(), (acc, entry) -> {
-            for (Tuple2<? extends U, ? extends W> mappedEntry : mapper.apply(entry._1, entry._2)) {
-                acc = acc.put(mappedEntry);
-            }
-            return acc;
-        });
-    }
-
-    @Override
-    public Option<V> get(K key) {
-        return map.get(key);
-    }
-
-    @Override
-    public Set<K> keySet() {
-        return map.keySet();
-    }
-
-    @Override
-    public <U, W> LinkedHashMap<U, W> map(BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(LinkedHashMap.empty(), (acc, entry) -> acc.put(entry.flatMap((BiFunction<K, V, Tuple2<? extends U, ? extends W>>) mapper::apply)));
-    }
-
-    @Override
-    public <W> LinkedHashMap<K, W> mapValues(Function<? super V, ? extends W> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return map((k, v) -> Tuple.of(k, mapper.apply(v)));
-    }
-
-    @Override
-    public Match.MatchMonad.Of<LinkedHashMap<K, V>> match() {
-        return Match.of(this);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> put(K key, V value) {
-        Queue<Tuple2<K, V>> newList = list;
-        HashMap<K, V> newMap = map;
-        if (containsKey(key)) {
-            newList = newList.filter(t -> !t._1.equals(key));
-            newMap = newMap.remove(key);
-        }
-        newList = newList.append(Tuple.of(key, value));
-        newMap = newMap.put(key, value);
-        return new LinkedHashMap<>(newList, newMap);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
-        return put(entry._1, entry._2);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> remove(K key) {
-        if (containsKey(key)) {
-            final Queue<Tuple2<K, V>> newList = list.removeFirst(t -> t._1.equals(key));
-            final HashMap<K, V> newMap = map.remove(key);
-            return wrap(newList, newMap);
-        } else {
-            return this;
-        }
-    }
-
-    @Override
-    public LinkedHashMap<K, V> removeAll(Iterable<? extends K> keys) {
-        Objects.requireNonNull(keys, "keys is null");
-        final HashSet<K> toRemove = HashSet.ofAll(keys);
-        final Queue<Tuple2<K, V>> newList = list.filter(t -> !toRemove.contains(t._1));
-        final HashMap<K, V> newMap = map.filter(t -> !toRemove.contains(t._1));
-        return newList.size() == size() ? this : wrap(newList, newMap);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, LinkedHashMap.empty(), LinkedHashMap::put, Function.identity());
-    }
-
-    @Override
-    public <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
-    }
-
-    @Override
-    public <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
-    }
-
-    @Override
-    public int size() {
-        return map.size();
-    }
-
-    @Override
-    public Iterator<LinkedHashMap<K, V>> sliding(int size) {
-        return sliding(size, 1);
-    }
-
-    @Override
-    public Iterator<LinkedHashMap<K, V>> sliding(int size, int step) {
-        return iterator().sliding(size, step).map(LinkedHashMap::ofEntries);
-    }
-
-    @Override
-    public Seq<V> values() {
-        return map.values();
+    public <K2, V2> LinkedHashMap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
+        return LinkedHashMap.ofEntries(entries);
     }
 
     @Override
@@ -357,6 +241,16 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public boolean contains(Tuple2<K, V> element) {
         return map.contains(element);
+    }
+
+    @Override
+    public boolean containsKey(K key) {
+        return map.containsKey(key);
+    }
+
+    @Override
+    public boolean containsValue(V value) {
+        return map.containsValue(value);
     }
 
     @Override
@@ -422,18 +316,26 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         return filter(predicate.negate());
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
+    public <K2, V2> LinkedHashMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        // don't remove cast, doesn't compile in Eclipse without it
-        return (Seq<U>) list.flatMap(mapper).toStream();
+        return foldLeft(LinkedHashMap.<K2, V2> empty(), (acc, entry) -> {
+            for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
+                acc = acc.put(mappedEntry);
+            }
+            return acc;
+        });
     }
 
     @Override
     public <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return list.foldRight(zero, f);
+    }
+
+    @Override
+    public Option<V> get(K key) {
+        return map.get(key);
     }
 
     @Override
@@ -503,9 +405,25 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
+    public Set<K> keySet() {
+        return map.keySet();
+    }
+    
+    @Override
+    public <K2, V2> LinkedHashMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return list.map(mapper);
+        return foldLeft(LinkedHashMap.empty(), (acc, entry) -> acc.put(entry.map(mapper)));
+    }
+
+    @Override
+    public <W> LinkedHashMap<K, W> mapValues(Function<? super V, ? extends W> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return map((k, v) -> Tuple.of(k, mapper.apply(v)));
+    }
+
+    @Override
+    public Match.MatchMonad.Of<LinkedHashMap<K, V>> match() {
+        return Match.of(this);
     }
 
     @Override
@@ -535,6 +453,44 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public LinkedHashMap<K, V> put(K key, V value) {
+        Queue<Tuple2<K, V>> newList = list;
+        HashMap<K, V> newMap = map;
+        if (containsKey(key)) {
+            newList = newList.filter(t -> !t._1.equals(key));
+            newMap = newMap.remove(key);
+        }
+        newList = newList.append(Tuple.of(key, value));
+        newMap = newMap.put(key, value);
+        return new LinkedHashMap<>(newList, newMap);
+    }
+
+    @Override
+    public LinkedHashMap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
+        return put(entry._1, entry._2);
+    }
+
+    @Override
+    public LinkedHashMap<K, V> remove(K key) {
+        if (containsKey(key)) {
+            final Queue<Tuple2<K, V>> newList = list.removeFirst(t -> t._1.equals(key));
+            final HashMap<K, V> newMap = map.remove(key);
+            return wrap(newList, newMap);
+        } else {
+            return this;
+        }
+    }
+
+    @Override
+    public LinkedHashMap<K, V> removeAll(Iterable<? extends K> keys) {
+        Objects.requireNonNull(keys, "keys is null");
+        final HashSet<K> toRemove = HashSet.ofAll(keys);
+        final Queue<Tuple2<K, V>> newList = list.filter(t -> !toRemove.contains(t._1));
+        final HashMap<K, V> newMap = map.filter(t -> !toRemove.contains(t._1));
+        return newList.size() == size() ? this : wrap(newList, newMap);
+    }
+
+    @Override
     public LinkedHashMap<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
         Objects.requireNonNull(newElement, "newElement is null");
@@ -556,6 +512,39 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
             }
         }
         return result;
+    }
+
+    @Override
+    public LinkedHashMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Collections.scanLeft(this, zero, operation, LinkedHashMap.empty(), LinkedHashMap::put, Function.identity());
+    }
+
+    @Override
+    public <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+    }
+
+    @Override
+    public <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+    }
+
+    @Override
+    public int size() {
+        return map.size();
+    }
+
+    @Override
+    public Iterator<LinkedHashMap<K, V>> sliding(int size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<LinkedHashMap<K, V>> sliding(int size, int step) {
+        return iterator().sliding(size, step).map(LinkedHashMap::ofEntries);
     }
 
     @Override
@@ -613,6 +602,11 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         Objects.requireNonNull(predicate, "predicate is null");
         final LinkedHashMap<K, V> taken = LinkedHashMap.ofEntries(list.takeWhile(predicate));
         return taken.length() == length() ? this : taken;
+    }
+
+    @Override
+    public Seq<V> values() {
+        return map.values();
     }
 
     @Override

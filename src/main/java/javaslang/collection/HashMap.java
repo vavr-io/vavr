@@ -133,8 +133,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      *
      * @param <K> The key type
      * @param <V> The value type
-     * @param n The number of elements in the HashMap
-     * @param f The Function computing element values
+     * @param n   The number of elements in the HashMap
+     * @param f   The Function computing element values
      * @return An HashMap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
@@ -149,8 +149,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      *
      * @param <K> The key type
      * @param <V> The value type
-     * @param n The number of elements in the HashMap
-     * @param s The Supplier computing element values
+     * @param n   The number of elements in the HashMap
+     * @param s   The Supplier computing element values
      * @return An HashMap of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
@@ -216,6 +216,14 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
             }
             return wrap(trie);
         }
+    }
+
+    @Override
+    public <K2, V2> HashMap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
+        return HashMap.ofEntries(entries);
     }
 
     @Override
@@ -303,21 +311,14 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public <U, W> HashMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper) {
+    public <K2, V2> HashMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(HashMap.<U, W> empty(), (acc, entry) -> {
-            for (Tuple2<? extends U, ? extends W> mappedEntry : mapper.apply(entry._1, entry._2)) {
+        return foldLeft(HashMap.<K2, V2> empty(), (acc, entry) -> {
+            for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
                 acc = acc.put(mappedEntry);
             }
             return acc;
         });
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return (Seq<U>) iterator().flatMap(mapper).toStream();
     }
 
     @Override
@@ -410,24 +411,17 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     public int length() {
         return trie.size();
     }
-
-    @SuppressWarnings("unchecked")
+    
     @Override
-    public <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
+    public <K2, V2> HashMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return (Seq<U>) iterator().map(mapper).toStream();
+        return foldLeft(HashMap.empty(), (acc, entry) -> acc.put(entry.map(mapper)));
     }
 
     @Override
-    public <U, W> HashMap<U, W> map(BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(HashMap.empty(), (acc, entry) -> acc.put(entry.flatMap((BiFunction<K, V, Tuple2<? extends U, ? extends W>>) mapper::apply)));
-    }
-
-    @Override
-    public <W> HashMap<K, W> mapValues(Function<? super V, ? extends W> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return map((k, v) -> Tuple.of(k, mapper.apply(v)));
+    public <V2> HashMap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper) {
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return map((k, v) -> Tuple.of(k, valueMapper.apply(v)));
     }
 
     @Override

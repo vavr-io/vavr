@@ -79,10 +79,10 @@ public class Tuple3Test {
     }
 
     @Test
-    public void shouldFlatMap() {
+    public void shouldMap() {
         final Tuple3<Object, Object, Object> tuple = createTuple();
         final Function3<Object, Object, Object, Tuple3<Object, Object, Object>> mapper = (o1, o2, o3) -> tuple;
-        final Tuple3<Object, Object, Object> actual = tuple.flatMap(mapper);
+        final Tuple3<Object, Object, Object> actual = tuple.map(mapper);
         assertThat(actual).isEqualTo(tuple);
     }
 
@@ -99,7 +99,7 @@ public class Tuple3Test {
     @Test
     public void shouldTransformTuple() {
         final Tuple3<Object, Object, Object> tuple = createTuple();
-        final Tuple0 actual = tuple.transform((t1, t2, t3) -> Tuple0.instance());
+        final Tuple0 actual = tuple.transform(ignored -> Tuple0.instance());
         assertThat(actual).isEqualTo(Tuple0.instance());
     }
 

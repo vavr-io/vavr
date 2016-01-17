@@ -118,6 +118,9 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
      * @return A new set that contains all distinct elements of this and {@code that} set.
      */
     Set<T> union(Set<? extends T> that);
+    
+    @Override
+    <U> Set<U> unit(Iterable<? extends U> iterable);
 
     // -- Adjusted return types of Traversable methods
 

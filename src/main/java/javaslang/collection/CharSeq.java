@@ -924,7 +924,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public <U> IndexedSeq<U> unit(Iterable<? extends U> iterable) {
-        Objects.requireNonNull(iterable, "iterable is null");
         return Vector.ofAll(iterable);
     }
 

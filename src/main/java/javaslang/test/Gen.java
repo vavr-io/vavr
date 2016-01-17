@@ -320,18 +320,10 @@ public interface Gen<T> extends Monad<T>, Value<T>, Function1<Random, T>, Suppli
      * @param <U>    Type of generated objects of the new generator
      * @return A new generator
      */
-    @SuppressWarnings("unchecked")
     @Override
     default <U> Gen<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return random -> {
-            final Iterable<? extends U> iterable = mapper.apply(apply(random));
-            if (iterable instanceof Gen) {
-                return ((Gen<U>) iterable).apply(random);
-            } else {
-                return Value.getOption(iterable).get();
-            }
-        };
+        return random -> unit(mapper.apply(apply(random))).apply(random);
     }
 
     /**
@@ -373,6 +365,16 @@ public interface Gen<T> extends Monad<T>, Value<T>, Function1<Random, T>, Suppli
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
+    
+    @SuppressWarnings("unchecked")
+	default <U> Gen<U> unit(Iterable<? extends U> iterable) {
+    	if (iterable instanceof Gen) {
+    		return (Gen<U>) iterable;
+    	} else {
+    		final Stream<Gen<U>> generators = Stream.ofAll(iterable).map(u -> Gen.of(u));
+    		return oneOf(generators);
+    	}
+    }
 
     @Override
     default T get() {
@@ -385,13 +387,12 @@ public interface Gen<T> extends Monad<T>, Value<T>, Function1<Random, T>, Suppli
     }
 
     /**
-     * This is philosophical. A random generated value is a singleton type.
-     * However, subsequent calls may return different objects.
+     * This is philosophical. We see a {@code Gen} as single-valued type which holds a variable random value.
      *
      * @return {@code true}
      */
     @Override
-    default boolean isSingletonType() {
+    default boolean isSingleValued() {
         return true;
     }
 

@@ -45,27 +45,7 @@ def generateMainClasses(): Unit = {
 
     def genMonad(im: ImportManager, packageName: String, className: String): String = {
 
-      val ArrayType = im.getType("javaslang.collection.Array")
-      val CharSeqType = im.getType("javaslang.collection.CharSeq")
-      val ConvertibleType = im.getType("javaslang.Convertible")
-      val EitherType = im.getType("javaslang.control.Either")
-      val HashMapType = im.getType("javaslang.collection.HashMap")
-      val HashSetType = im.getType("javaslang.collection.HashSet")
-      val LazyType = im.getType("javaslang.Lazy")
-      val LeftType = im.getType("javaslang.control.Either.Left")
-      val ListType = im.getType("javaslang.collection.List")
-      val MapType = im.getType("javaslang.collection.Map")
-      val MatchType = im.getType("javaslang.control.Match")
-      val OptionType = im.getType("javaslang.control.Option")
-      val QueueType = im.getType("javaslang.collection.Queue")
-      val RightType = im.getType("javaslang.control.Either.Right")
-      val SetType = im.getType("javaslang.collection.Set")
-      val StackType = im.getType("javaslang.collection.Stack")
-      val StreamType = im.getType("javaslang.collection.Stream")
-      val SupplierType = im.getType("java.util.function.Supplier")
-      val TreeType = im.getType("javaslang.collection.Tree")
-      val TryType = im.getType("javaslang.control.Try")
-      val VectorType = im.getType("javaslang.collection.Vector")
+      val Function = im.getType("java.util.function.Function")
 
       xs"""
         /**
@@ -100,23 +80,19 @@ def generateMainClasses(): Unit = {
          * </code>
          * </pre>
          *
-         * Therefore we need to adapt the left identity law:
+         * To fix this, we change the flatMap method by adding a <em>unit</em> function:
          *
          * <pre>
-         * <code>unit(a).flatMap(f) ≡ select(f.apply(a))</code>
+         * <code>flatMap(f) := unit(map(f).flatten())</code>
          * </pre>
          *
-         * where select
+         * where <em>unit</em>
          *
          * <ul>
-         * <li>takes the first element (if present), if the underlying monad is single-value</li>
-         * <li>takes all elements (if any is present), if the underlying monad is multi-valued</li>
+         * <li>takes the first element (if present), if the underlying Monad is single-valued</li>
+         * <li>takes all elements (if any is present), if the underlying Monad is multi-valued</li>
          * </ul>
          *
-         * The {@code select} functioned mentioned is not explicitly defined. Monad implementations are responsible for
-         * implementing the correct behavior of {@code flatMap}. For single-valued types
-         * {@link javaslang.Value#getOption(Iterable)} may be used.
-         * <p>
          * To read further about monads in Java please refer to
          * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
          *
@@ -124,10 +100,9 @@ def generateMainClasses(): Unit = {
          * @author Daniel Dietrich
          * @since 1.1.0
          */
-        public interface Monad<T> extends Functor<T>, Iterable<T>, $ConvertibleType<T> {
+        public interface Monad<T> extends Functor<T>, Iterable<T> {
 
             ${(1 to N).gen(i => {
-
               val genericsF = if (i == 1) "? super T" else (1 to i).gen(j => s"? super T$j")(", ")
               val genericsT = if (i == 1) "T" else (1 to i).gen(j => s"T$j")(", ")
               val genericsM = if (i == 1) "? super Monad<T>" else (1 to i).gen(j => s"Monad<T$j>")(", ")
@@ -136,7 +111,6 @@ def generateMainClasses(): Unit = {
                 case 2 => im.getType("java.util.function.BiFunction")
                 case _ => im.getType(s"javaslang.Function$i")
               }
-
               xs"""
                 /$javadoc
                  * Lifts a {@code $function} to a higher {@code Function$i} that operates on Monads.
@@ -161,44 +135,16 @@ def generateMainClasses(): Unit = {
             })("\n\n")}
 
             /**
-             * Filters this {@code Monad} by testing a predicate.
-             * <p>
-             * The semantics may vary from class to class, e.g. for single-valued type (like Option) and multi-values types
-             * (like Traversable). The commonality is, that filtered.isEmpty() will return true, if no element satisfied
-             * the given predicate.
-             * <p>
-             * Also, an implementation may throw {@code NoSuchElementException}, if no element makes it through the filter
-             * and this state cannot be reflected. E.g. this is the case for {@link javaslang.control.Either.LeftProjection} and
-             * {@link javaslang.control.Either.RightProjection}.
-             *
-             * @param predicate A predicate
-             * @return a new Monad instance
-             * @throws NullPointerException if {@code predicate} is null
-             */
-            Monad<T> filter(${im.getType("java.util.function.Predicate")}<? super T> predicate);
-
-            /**
-             * Filters this {@code Monad} by testing the negation of a predicate.
-             * <p>
-             * Shortcut for {@code filter(predicate.negate()}.
-             *
-             * @param predicate A predicate
-             * @return a new Monad instance
-             * @throws NullPointerException if {@code predicate} is null
-             */
-            Monad<T> filterNot(${im.getType("java.util.function.Predicate")}<? super T> predicate);
-
-            /**
-             * FlatMaps this value to a new value with different component type.
+             * FlatMaps this Monad to a new Monad with different component type.
              * <p>
              * FlatMap is the sequence operation for functions and behaves like the imperative {@code ;}.
              * <p>
              * If the previous results are needed, flatMap cascades:
              * <pre>
              * <code>
-             * m1().flatMap(result1 -&gt;
-             *      m2(result1).flatMap(result2 -&gt;
-             *          m3(result1, result2).flatMap(result3 -&gt;
+             * m1().flatMapM(result1 -&gt;
+             *      m2(result1).flatMapM(result2 -&gt;
+             *          m3(result1, result2).flatMapM(result3 -&gt;
              *              ...
              *          )
              *      )
@@ -208,9 +154,9 @@ def generateMainClasses(): Unit = {
              * If only the last result is needed, flatMap may be used sequentially:
              * <pre>
              * <code>
-             * m1().flatMap(this::m2)
-             *     .flatMap(this::m3)
-             *     .flatMap(...);
+             * m1().flatMapM(this::m2)
+             *     .flatMapM(this::m3)
+             *     .flatMapM(...);
              * </code>
              * </pre>
              *
@@ -219,26 +165,23 @@ def generateMainClasses(): Unit = {
              * @return a mapped {@code Monad}
              * @throws NullPointerException if {@code mapper} is null
              */
-            <U> Monad<U> flatMap(${im.getType("java.util.function.Function")}<? super T, ? extends Iterable<? extends U>> mapper);
+            <U> Monad<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+
+            /**
+             * Creates a new instance of this Monad. If this Monad is single-valued (like Option an Try),
+             * only the first value of the given {@code iterable} is taken.
+             *
+             * @param <U> component type of the resulting Monad
+             * @param iterable an iterable
+             * @return a new {@code Monad} instance
+             * @throws NullPointerException if {@code mapper} is null
+             */
+            <U> Monad<U> unit(Iterable<? extends U> iterable);
 
             // -- adjusting return types of super interface methods
 
-            /**
-             * Maps this value to a new value with different component type.
-             *
-             * @param mapper A mapper
-             * @param <U>    Component type of the mapped {@code Monad}
-             * @return a mapped {@code Monad}
-             * @throws NullPointerException if {@code mapper} is null
-             */
             @Override
-            <U> Monad<U> map(${im.getType("java.util.function.Function")}<? super T, ? extends U> mapper);
-
-            // -- adjusting return types of Convertible methods
-
-            @Override
-            $MatchType.MatchMonad.Of<? extends Monad<T>> match();
-
+            <U> Monad<U> map($Function<? super T, ? extends U> mapper);
         }
       """
     }
@@ -849,16 +792,17 @@ def generateMainClasses(): Unit = {
       val params = (1 to i).gen(j => s"_$j")(", ")
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
       val resultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j")(", ")}>"
-      val flatMapResultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"? extends U$j")(", ")}>"
+      val flatMapResultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j")(", ")}>"
       val comparableGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j extends Comparable<? super U$j>")(", ")}>"
       val untyped = if (i == 0) "" else s"<${(1 to i).gen(j => "?")(", ")}>"
       val functionType = i match {
-        case 0 => im.getType("java.util.function.Supplier")
+        case 0 => "none"
         case 1 => im.getType("java.util.function.Function")
         case 2 => im.getType("java.util.function.BiFunction")
         case _ => s"Function$i"
       }
       val Comparator = im.getType("java.util.Comparator")
+      val Function = im.getType("java.util.function.Function")
       val Objects = im.getType("java.util.Objects")
       val Seq = im.getType("javaslang.collection.Seq")
       val List = im.getType("javaslang.collection.List")
@@ -975,10 +919,9 @@ def generateMainClasses(): Unit = {
               }
             """)("\n\n")}
 
-            ${(i > 0).gen(xs"""
-              @SuppressWarnings("unchecked")
-              public $resultGenerics $className$resultGenerics flatMap($functionType<$paramTypes, ? extends $className$flatMapResultGenerics> f) {
-                  return ($className$resultGenerics) f.apply($params);
+            ${(i > 1).gen(xs"""
+              public $resultGenerics $className$resultGenerics map($functionType<$paramTypes, $className$flatMapResultGenerics> f) {
+                  return f.apply($params);
               }
             """)}
 
@@ -996,9 +939,9 @@ def generateMainClasses(): Unit = {
              * @return An object of type U
              * @throws NullPointerException if {@code f} is null
              */
-            public <U> U transform($functionType<$paramTypes${(i > 0).gen(", ")}? extends U> f) {
+            public <U> U transform($Function<$className$generics, ? extends U> f) {
                 $Objects.requireNonNull(f, "f is null");
-                return ${if (i == 0) "f.get()" else s"f.apply($params)"};
+                return f.apply(this);
             }
 
             @Override
@@ -1822,11 +1765,15 @@ def generateTestClasses(): Unit = {
               """)}
 
               @$test
-              public void shouldFlatMap() {
-                  final Tuple$i<$generics> tuple = createTuple();
-                  final $functionType<$generics, Tuple$i<$generics>> mapper = ($functionArgTypes) -> tuple;
-                  final Tuple$i<$generics> actual = tuple.flatMap(mapper);
-                  $assertThat(actual).isEqualTo(tuple);
+              public void shouldMap() {
+                  ${if (i == 1) xs"""
+                    // will be fixed with #1027 and #1025
+                  """ else xs"""
+                    final Tuple$i<$generics> tuple = createTuple();
+                    final $functionType<$generics, Tuple$i<$generics>> mapper = ($functionArgTypes) -> tuple;
+                    final Tuple$i<$generics> actual = tuple.map(mapper);
+                    $assertThat(actual).isEqualTo(tuple);
+                  """}
               }
 
               @$test
@@ -1840,7 +1787,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldTransformTuple() {
                   final Tuple$i<$generics> tuple = createTuple();
-                  final Tuple0 actual = tuple.transform((${(1 to i).gen(j => s"t$j")(", ")}) -> Tuple0.instance());
+                  final Tuple0 actual = tuple.transform(ignored -> Tuple0.instance());
                   assertThat(actual).isEqualTo(Tuple0.instance());
               }
 

@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Function1;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
+import javaslang.algebra.BiFunctor;
 import javaslang.control.Match;
 import javaslang.control.Option;
 
@@ -22,7 +23,7 @@ import java.util.function.*;
  * @author Daniel Dietrich, Ruslan Sennov
  * @since 2.0.0
  */
-public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
+public interface Map<K, V> extends Traversable<Tuple2<K, V>>, BiFunctor<K, V>, Function1<K, V> {
 
     long serialVersionUID = 1L;
 
@@ -30,6 +31,19 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     default V apply(K key) {
         return get(key).orElseThrow(NoSuchElementException::new);
     }
+
+    /**
+     * Maps this {@code Map} to a new {@code Map} with different component type by applying a function to its elements.
+     *
+     * @param <K2>        key's component type of the map result
+     * @param <V2>        value's component type of the map result
+     * @param keyMapper   a {@code Function} that maps the keys of type {@code K} to keys of type {@code K2}
+     * @param valueMapper a {@code Function} that the values of type {@code V} to values of type {@code V2}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code keyMapper} or {@code valueMapper} is null
+     */
+    @Override
+    <K2, V2> Map<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
 
     /**
      * Returns <code>true</code> if this map contains a mapping for the specified key.
@@ -45,7 +59,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      *
      * @param value value whose presence in this map is to be tested
      * @return <code>true</code> if this map maps one or more keys to the
-     *         specified value
+     * specified value
      */
     boolean containsValue(V value);
 
@@ -53,12 +67,12 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * FlatMaps this {@code Map} to a new {@code Map} with different component type.
      *
      * @param mapper A mapper
-     * @param <U>    Keys component type of the mapped {@code Map}
-     * @param <W>    Values component type of the mapped {@code Map}
+     * @param <K2>   key's component type of the mapped {@code Map}
+     * @param <V2>   value's component type of the mapped {@code Map}
      * @return A new {@code Map}.
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U, W> Map<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper);
+    <K2, V2> Map<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper);
 
     /**
      * Returns the {@code Some} of value to which the specified key
@@ -66,44 +80,45 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      *
      * @param key the key whose associated value is to be returned
      * @return the {@code Some} of value to which the specified key
-     *         is mapped, or {@code None} if this map contains no mapping
-     *         for the key
+     * is mapped, or {@code None} if this map contains no mapping
+     * for the key
      */
     Option<V> get(K key);
 
     /**
      * Returns the keys contained in this map.
+     *
      * @return {@code Set} of the keys contained in this map.
      */
     Set<K> keySet();
-
+    
     /**
-     * Maps this {@code Map} to a new {@code Map} with different component type.
+     * Maps the entries of this {@code Map} to form a new {@code Map}.
      *
-     * @param mapper A {@code Function} that maps entries of type {@code <K, V>} to entries of type {@code <U, W>}.
-     * @param <U>    Keys component type of the mapped {@code Map}
-     * @param <W>    Values component type of the mapped {@code Map}
-     * @return A new {@code Map}.
+     * @param <K2>   key's component type of the map result
+     * @param <V2>   value's component type of the map result
+     * @param mapper a {@code Function} that maps entries of type {@code (K, V)} to entries of type {@code (K2, V2)}
+     * @return a new {@code Map}
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U, W> Map<U, W> map(BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper);
+    <K2, V2> Map<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
 
     /**
      * Maps the values of this {@code Map} while preserving the corresponding keys.
      *
-     * @param <W>    The new value type.
-     * @param mapper A {@code Function} that maps values of type {@code K} to values of type {@code W}.
-     * @return A new {@code Map}.
-     * @throws NullPointerException if {@code mapper} is null
+     * @param <V2>        the new value type
+     * @param valueMapper a {@code Function} that maps values of type {@code V} to values of type {@code V2}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code valueMapper} is null
      */
-    <W> Map<K, W> mapValues(Function<? super V, ? extends W> mapper);
+    <V2> Map<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper);
 
     /**
      * Associates the specified value with the specified key in this map.
      * If the map previously contained a mapping for the key, the old value is
      * replaced by the specified value.
      *
-     * @param key key with which the specified value is to be associated
+     * @param key   key with which the specified value is to be associated
      * @param value value to be associated with the specified key
      * @return A new Map containing these elements and that entry.
      */
@@ -122,7 +137,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      *
      * @param key key whose mapping is to be removed from the map
      * @return A new Map containing these elements without the entry
-     *         specified by that key.
+     * specified by that key.
      */
     Map<K, V> remove(K key);
 
@@ -131,7 +146,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      *
      * @param keys keys are to be removed from the map
      * @return A new Map containing these elements without the entries
-     *         specified by that keys.
+     * specified by that keys.
      */
     Map<K, V> removeAll(Iterable<? extends K> keys);
 
@@ -154,6 +169,16 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     default <U> Seq<U> traverse(BiFunction<K, V, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(List.empty(), (acc, entry) -> acc.append(mapper.apply(entry._1, entry._2)));
+    }
+    
+    @SuppressWarnings("unchecked")
+	@Override
+    default <U> Seq<U> unit(Iterable<? extends U> iterable) {
+    	if (iterable instanceof Seq) {
+    		return (Seq<U>) iterable;
+    	} else {
+    		return Stream.ofAll(iterable);
+    	}
     }
 
     default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends T1, ? extends T2>> unzipper) {
@@ -205,8 +230,21 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     @Override
     Map<K, V> filterNot(Predicate<? super Tuple2<K, V>> predicate);
 
+    /**
+     * Flat-maps this entries to a sequence of values.
+     * <p>
+     * Please use {@link #flatMap(BiFunction)} if the result should be a {@code Map}
+     * 
+     * @param mapper A mapper
+     * @param <U> Component type
+     * @return A sequence of flat-mapped values.
+     */
+    @SuppressWarnings("unchecked")
     @Override
-    <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper);
+    default <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return (Seq<U>) iterator().flatMap(mapper).toStream();
+    }
 
     @Override
     <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
@@ -228,8 +266,22 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
         return size();
     }
 
+    /**
+     * Maps the {@code Map} entries to a sequence of values.
+     * <p>
+     * Please use {@link #map(BiFunction)} if the result has to be of type {@code Map}.
+     *
+     * @param mapper A mapper
+     * @param <U> Component type
+     * @return A sequence of mapped values.
+     */
+    @SuppressWarnings("unchecked")
     @Override
-    <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper);
+    default <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        // don't remove cast, doesn't compile in Eclipse without it
+        return (Seq<U>) iterator().map(mapper).toStream();
+    }
 
     @Override
     Match.MatchMonad.Of<? extends Map<K, V>> match();

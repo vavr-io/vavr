@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
+import javaslang.algebra.MonadTestMixin;
 import javaslang.collection.Tree.Node;
 import javaslang.control.Option;
 import org.assertj.core.api.Assertions;
@@ -28,7 +29,7 @@ import static javaslang.Serializables.serialize;
 /**
  * Tests all methods defined in {@link javaslang.collection.Tree}.
  */
-public class TreeTest extends AbstractTraversableTest {
+public class TreeTest extends AbstractTraversableTest implements MonadTestMixin {
 
     /**
      * <pre><code>
@@ -625,4 +626,51 @@ public class TreeTest extends AbstractTraversableTest {
         final Object expected = tree;
         assertThat(actual).isEqualTo(expected);
     }
+    
+    // -- MonadTestMixin
+    
+	@Override
+	public <T> Tree<T> unit() {
+		return empty();
+	}
+
+	@Override
+	public <T> Tree<T> unit(T element) {
+		return of(element);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> Tree<T> unit(T... elements) {
+		return of(elements);
+	}
+
+	@Override
+	public void shouldSatisfyMonadLeftIdentity() {
+		// TODO
+		
+	}
+
+	@Override
+	public void shouldSatisfyMonadRightIdentity() {
+		// TODO
+		
+	}
+
+	@Override
+	public void shouldSatisfyMonadAssociativity() {
+		// TODO
+		
+	}
+
+	@Override
+	public void shouldSatisfyFunctorIdentity() {
+		// TODO
+		
+	}
+
+	@Override
+	public void shouldSatisfyFunctorComposition() {
+		// TODO
+	}
 }

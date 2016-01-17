@@ -67,7 +67,7 @@ public interface Try<T> extends Monad<T>, Value<T> {
      * the {@code Try}s are {@link Try.Failure}, then this returns a {@link Try.Failure}.
      *
      * @param values An {@link Iterable} of {@code Try}s
-     * @param <T> type of the Trys
+     * @param <T>    type of the Trys
      * @return A {@code Try} of a {@link Seq} of results
      * @throws NullPointerException if {@code values} is null
      */
@@ -75,7 +75,7 @@ public interface Try<T> extends Monad<T>, Value<T> {
         Objects.requireNonNull(values, "values is null");
         List<T> list = List.empty();
         for (Try<? extends T> value : values) {
-            if(value.isFailure()) {
+            if (value.isFailure()) {
                 return Try.failure(value.getCause());
             }
             list = list.prepend(value.get());
@@ -234,7 +234,6 @@ public interface Try<T> extends Monad<T>, Value<T> {
      * @return a new Try
      */
     @SuppressWarnings("unchecked")
-    @Override
     default <U> Try<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         if (isFailure()) {
             return (Failure<U>) this;
@@ -249,12 +248,7 @@ public interface Try<T> extends Monad<T>, Value<T> {
             return (Failure<U>) this;
         } else {
             try {
-                final Iterable<? extends U> iterable = mapper.apply(get());
-                if (iterable instanceof Value) {
-                    return ((Value<U>) iterable).toTry();
-                } else {
-                    return Try.of(() -> Value.getOption(iterable).get());
-                }
+                return unit(mapper.apply(get()));
             } catch (Throwable t) {
                 return new Failure<>(t);
             }
@@ -294,12 +288,12 @@ public interface Try<T> extends Monad<T>, Value<T> {
     boolean isFailure();
 
     /**
-     * A try is a singleton type.
+     * A {@code Try} is a single-valued.
      *
      * @return {@code true}
      */
     @Override
-    default boolean isSingletonType() {
+    default boolean isSingleValued() {
         return true;
     }
 
@@ -491,6 +485,24 @@ public interface Try<T> extends Monad<T>, Value<T> {
     default <U> U transform(Function<? super Try<? super T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Try<U> unit(Iterable<? extends U> iterable) {
+    	if (iterable instanceof Try) {
+    		return (Try<U>) iterable;
+    	} else if (iterable instanceof Value) {
+    		final Value<U> value = (Value<U>) iterable;
+    		return value.isEmpty() ? Try.failure(new NoSuchElementException()) : Try.of(value::get);
+    	} else {
+    		final java.util.Iterator<? extends U> iterator = iterable.iterator();
+    		if (iterator.hasNext()) {
+    			return Try.of(() -> iterator.next());
+    		} else {
+    			return Try.failure(new NoSuchElementException());
+    		}
+        }
     }
 
     @Override

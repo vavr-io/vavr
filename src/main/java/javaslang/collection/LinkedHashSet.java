@@ -817,6 +817,11 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
             }
         }
     }
+    
+    @Override
+    public <U> LinkedHashSet<U> unit(Iterable<? extends U> iterable) {
+    	return LinkedHashSet.ofAll(iterable);
+    }
 
     @Override
     public <T1, T2> Tuple2<LinkedHashSet<T1>, LinkedHashSet<T2>> unzip(

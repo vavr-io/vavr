@@ -89,19 +89,11 @@ public interface Arbitrary<T> extends Monad<T>, Value<T> {
      * @param <U>    New type of arbitrary objects
      * @return A new Arbitrary
      */
-    @SuppressWarnings("unchecked")
     @Override
     default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return size -> {
             final Gen<T> gen = apply(size);
-            return random -> {
-                final Iterable<? extends U> iterable = mapper.apply(gen.apply(random));
-                if (iterable instanceof Arbitrary) {
-                    return ((Arbitrary<U>) iterable).apply(size).apply(random);
-                } else {
-                    return Value.getOption(iterable).get();
-                }
-            };
+            return random -> unit(mapper.apply(gen.apply(random))).apply(size).apply(random);
         };
     }
 
@@ -142,6 +134,16 @@ public interface Arbitrary<T> extends Monad<T>, Value<T> {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
+    
+    @SuppressWarnings("unchecked")
+	default <U> Arbitrary<U> unit(Iterable<? extends U> iterable) {
+    	if (iterable instanceof Arbitrary) {
+    		return (Arbitrary<U>) iterable;
+    	} else {
+    		final Stream<Gen<U>> generators = Stream.ofAll(iterable).map(Gen::of);
+    		return ignored -> Gen.oneOf(generators);
+    	}
+    }
 
     @Override
     default T get() {
@@ -154,13 +156,12 @@ public interface Arbitrary<T> extends Monad<T>, Value<T> {
     }
 
     /**
-     * This is philosophical. An arbitrary value is a singleton type.
-     * However, subsequent calls may return different objects.
+     * This is philosophical. We see an {@code Arbitrary} as single-valued type which holds a variable random value.
      *
      * @return {@code true}
      */
     @Override
-    default boolean isSingletonType() {
+    default boolean isSingleValued() {
         return true;
     }
 

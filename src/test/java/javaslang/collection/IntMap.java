@@ -176,7 +176,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public <U> Traversable<U> map(Function<? super T, ? extends U> mapper) {
+    public <U> Seq<U> map(Function<? super T, ? extends U> mapper) {
         return original.map(e -> mapper.apply(e._2));
     }
 
@@ -314,6 +314,11 @@ public class IntMap<T> implements Traversable<T>, Serializable {
         return IntMap.of(original.takeWhile(p -> predicate.test(p._2)));
     }
 
+    @Override
+    public <U> Seq<U> unit(Iterable<? extends U> iterable) {
+        return original.unit(iterable);
+    }
+    
     @Override
     public <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");

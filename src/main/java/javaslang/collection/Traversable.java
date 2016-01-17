@@ -137,7 +137,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich and others
  * @since 1.1.0
  */
-public interface Traversable<T> extends Monad<T>, Value<T> {
+public interface Traversable<T> extends Value<T>, Monad<T> {
 
     /**
      * Used by collections to compute the hashCode only once.
@@ -376,6 +376,9 @@ public interface Traversable<T> extends Monad<T>, Value<T> {
      */
     @Override
     Traversable<T> filter(Predicate<? super T> predicate);
+    
+    @Override
+    Traversable<T> filterNot(Predicate<? super T> predicate);
 
     /**
      * Returns the first element of this which satisfies the given predicate.
@@ -408,6 +411,13 @@ public interface Traversable<T> extends Monad<T>, Value<T> {
         return iterator().findLast(predicate);
     }
 
+    /**
+     * FlatMaps this Traversable.
+     *
+     * @param mapper A mapper
+     * @param <U>    The resulting component type.
+     * @return A new Traversable instance.
+     */
     @Override
     <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
@@ -551,7 +561,7 @@ public interface Traversable<T> extends Monad<T>, Value<T> {
      * @return {@code false}
      */
     @Override
-    default boolean isSingletonType() {
+    default boolean isSingleValued() {
         return false;
     }
 
@@ -628,7 +638,7 @@ public interface Traversable<T> extends Monad<T>, Value<T> {
     int length();
 
     /**
-     * Maps the elements of this traversable to elements of a new type preserving their order, if any.
+     * Maps the elements of this {@code Traversable} to elements of a new type preserving their order, if any.
      *
      * @param mapper A mapper.
      * @param <U>    Component type of the target Traversable
@@ -871,23 +881,6 @@ public interface Traversable<T> extends Monad<T>, Value<T> {
     }
 
     /**
-     * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the left.
-     *
-     * @param op A BiFunction of type T
-     * @return Some of reduced value or None.
-     * @throws NullPointerException if {@code op} is null
-     */
-    @Override
-    default Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.of(tail().foldLeft(head(), op));
-        }
-    }
-
-    /**
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the right.
      *
      * @param op An operation of type T
@@ -902,23 +895,6 @@ public interface Traversable<T> extends Monad<T>, Value<T> {
             throw new NoSuchElementException("reduceRight on empty");
         } else {
             return iterator().reduceRight(op);
-        }
-    }
-
-    /**
-     * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the right.
-     *
-     * @param op An operation of type T
-     * @return Some of reduced value or None.
-     * @throws NullPointerException if {@code op} is null
-     */
-    @Override
-    default Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.of(iterator().reduceRight(op));
         }
     }
 
@@ -1145,6 +1121,9 @@ public interface Traversable<T> extends Monad<T>, Value<T> {
      * @throws NullPointerException if {@code predicate} is null
      */
     Traversable<T> takeWhile(Predicate<? super T> predicate);
+    
+    @Override
+    <U> Traversable<U> unit(Iterable<? extends U> iterable);
 
     /**
      * Unzips this elements by mapping this elements to pairs which are subsequently split into two distinct

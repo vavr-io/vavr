@@ -11,16 +11,7 @@ package javaslang.algebra;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 import javaslang.*;
-import javaslang.collection.*;
-import javaslang.control.Either;
-import javaslang.control.Either.Left;
-import javaslang.control.Either.Right;
-import javaslang.control.Match;
-import javaslang.control.Option;
-import javaslang.control.Try;
 
 /**
  * Defines a Monad by generalizing the flatMap function.
@@ -54,23 +45,19 @@ import javaslang.control.Try;
  * </code>
  * </pre>
  *
- * Therefore we need to adapt the left identity law:
+ * To fix this, we change the flatMap method by adding a <em>unit</em> function:
  *
  * <pre>
- * <code>unit(a).flatMap(f) ≡ select(f.apply(a))</code>
+ * <code>flatMap(f) := unit(map(f).flatten())</code>
  * </pre>
  *
- * where select
+ * where <em>unit</em>
  *
  * <ul>
- * <li>takes the first element (if present), if the underlying monad is single-value</li>
- * <li>takes all elements (if any is present), if the underlying monad is multi-valued</li>
+ * <li>takes the first element (if present), if the underlying Monad is single-valued</li>
+ * <li>takes all elements (if any is present), if the underlying Monad is multi-valued</li>
  * </ul>
  *
- * The {@code select} functioned mentioned is not explicitly defined. Monad implementations are responsible for
- * implementing the correct behavior of {@code flatMap}. For single-valued types
- * {@link javaslang.Value#getOption(Iterable)} may be used.
- * <p>
  * To read further about monads in Java please refer to
  * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
  *
@@ -78,7 +65,7 @@ import javaslang.control.Try;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
+public interface Monad<T> extends Functor<T>, Iterable<T> {
 
     /**
      * Lifts a {@code Function} to a higher {@code Function1} that operates on Monads.
@@ -240,44 +227,16 @@ public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
     }
 
     /**
-     * Filters this {@code Monad} by testing a predicate.
-     * <p>
-     * The semantics may vary from class to class, e.g. for single-valued type (like Option) and multi-values types
-     * (like Traversable). The commonality is, that filtered.isEmpty() will return true, if no element satisfied
-     * the given predicate.
-     * <p>
-     * Also, an implementation may throw {@code NoSuchElementException}, if no element makes it through the filter
-     * and this state cannot be reflected. E.g. this is the case for {@link javaslang.control.Either.LeftProjection} and
-     * {@link javaslang.control.Either.RightProjection}.
-     *
-     * @param predicate A predicate
-     * @return a new Monad instance
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    Monad<T> filter(Predicate<? super T> predicate);
-
-    /**
-     * Filters this {@code Monad} by testing the negation of a predicate.
-     * <p>
-     * Shortcut for {@code filter(predicate.negate()}.
-     *
-     * @param predicate A predicate
-     * @return a new Monad instance
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    Monad<T> filterNot(Predicate<? super T> predicate);
-
-    /**
-     * FlatMaps this value to a new value with different component type.
+     * FlatMaps this Monad to a new Monad with different component type.
      * <p>
      * FlatMap is the sequence operation for functions and behaves like the imperative {@code ;}.
      * <p>
      * If the previous results are needed, flatMap cascades:
      * <pre>
      * <code>
-     * m1().flatMap(result1 -&gt;
-     *      m2(result1).flatMap(result2 -&gt;
-     *          m3(result1, result2).flatMap(result3 -&gt;
+     * m1().flatMapM(result1 -&gt;
+     *      m2(result1).flatMapM(result2 -&gt;
+     *          m3(result1, result2).flatMapM(result3 -&gt;
      *              ...
      *          )
      *      )
@@ -287,9 +246,9 @@ public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
      * If only the last result is needed, flatMap may be used sequentially:
      * <pre>
      * <code>
-     * m1().flatMap(this::m2)
-     *     .flatMap(this::m3)
-     *     .flatMap(...);
+     * m1().flatMapM(this::m2)
+     *     .flatMapM(this::m3)
+     *     .flatMapM(...);
      * </code>
      * </pre>
      *
@@ -300,22 +259,19 @@ public interface Monad<T> extends Functor<T>, Iterable<T>, Convertible<T> {
      */
     <U> Monad<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
-    // -- adjusting return types of super interface methods
-
     /**
-     * Maps this value to a new value with different component type.
+     * Creates a new instance of this Monad. If this Monad is single-valued (like Option an Try),
+     * only the first value of the given {@code iterable} is taken.
      *
-     * @param mapper A mapper
-     * @param <U>    Component type of the mapped {@code Monad}
-     * @return a mapped {@code Monad}
+     * @param <U> component type of the resulting Monad
+     * @param iterable an iterable
+     * @return a new {@code Monad} instance
      * @throws NullPointerException if {@code mapper} is null
      */
+    <U> Monad<U> unit(Iterable<? extends U> iterable);
+
+    // -- adjusting return types of super interface methods
+
     @Override
     <U> Monad<U> map(Function<? super T, ? extends U> mapper);
-
-    // -- adjusting return types of Convertible methods
-
-    @Override
-    Match.MatchMonad.Of<? extends Monad<T>> match();
-
 }

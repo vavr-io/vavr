@@ -29,7 +29,7 @@ import static javaslang.collection.Comparators.naturalComparator;
  * @since 2.0.0
  */
 // DEV-NOTE: use entries.min().get() in favor of iterator().next(), it is faster!
-public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, V>>, Serializable {
+public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -182,11 +182,11 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
      * Returns a TreeMap containing {@code n} values of a given Function {@code f}
      * over a range of integer values from 0 to {@code n - 1}.
      *
-     * @param <K> The key type
-     * @param <V> The value type
+     * @param <K>           The key type
+     * @param <V>           The value type
      * @param keyComparator The comparator used to sort the entries by their key
-     * @param n The number of elements in the TreeMap
-     * @param f The Function computing element values
+     * @param n             The number of elements in the TreeMap
+     * @param f             The Function computing element values
      * @return A TreeMap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code keyComparator} or {@code f} are null
      */
@@ -204,8 +204,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
      *
      * @param <K> The key type
      * @param <V> The value type
-     * @param n The number of elements in the TreeMap
-     * @param f The Function computing element values
+     * @param n   The number of elements in the TreeMap
+     * @param f   The Function computing element values
      * @return A TreeMap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
@@ -217,11 +217,11 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     /**
      * Returns a TreeMap containing {@code n} values supplied by a given Supplier {@code s}.
      *
-     * @param <K> The key type
-     * @param <V> The value type
+     * @param <K>           The key type
+     * @param <V>           The value type
      * @param keyComparator The comparator used to sort the entries by their key
-     * @param n The number of elements in the TreeMap
-     * @param s The Supplier computing element values
+     * @param n             The number of elements in the TreeMap
+     * @param s             The Supplier computing element values
      * @return A TreeMap of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code keyComparator} or {@code s} are null
      */
@@ -238,8 +238,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
      *
      * @param <K> The key type
      * @param <V> The value type
-     * @param n The number of elements in the TreeMap
-     * @param s The Supplier computing element values
+     * @param n   The number of elements in the TreeMap
+     * @param s   The Supplier computing element values
      * @return A TreeMap of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
@@ -355,6 +355,20 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     }
 
     @Override
+    public <K2, V2> TreeMap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
+        return bimap(naturalComparator(), keyMapper, valueMapper);
+    }
+
+    @Override
+    public <K2, V2> TreeMap<K2, V2> bimap(Comparator<? super K2> keyComparator,
+                                          Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return createTreeMap(new EntryComparator<>(keyComparator),
+                entries.iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2))));
+    }
+
+    @Override
     public TreeMap<K, V> clear() {
         return isEmpty() ? this : new TreeMap<>(entries.clear());
     }
@@ -430,23 +444,16 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     }
 
     @Override
-    public <U, W> TreeMap<U, W> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper) {
+    public <K2, V2> TreeMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         return flatMap(naturalComparator(), mapper);
     }
 
     @Override
-    public <U, W> TreeMap<U, W> flatMap(Comparator<? super U> keyComparator, BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends U, ? extends W>>> mapper) {
+    public <K2, V2> TreeMap<K2, V2> flatMap(Comparator<? super K2> keyComparator,
+    		                                BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return createTreeMap(new EntryComparator<>(keyComparator),
                 entries.iterator().flatMap(entry -> mapper.apply(entry._1, entry._2)));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        // don't remove cast, doesn't compile in Eclipse without it
-        return (Seq<U>) entries.iterator().flatMap(mapper).toStream();
     }
 
     @Override
@@ -536,38 +543,30 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Iterable<Tuple2<K, 
     public SortedSet<K> keySet() {
         return TreeSet.ofAll(keyComparator(), iterator().map(Tuple2::_1));
     }
+    
 
     @Override
-    public <U, W> TreeMap<U, W> map(
-            BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper) {
+    public <K2, V2> TreeMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         return map(naturalComparator(), mapper);
     }
 
     @Override
-    public <W> TreeMap<K, W> mapValues(Function<? super V, ? extends W> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return map((k, v) -> Tuple.of(k, mapper.apply(v)));
-    }
-
-    @Override
-    public Match.MatchMonad.Of<TreeMap<K, V>> match() {
-        return Match.of(this);
-    }
-
-    @Override
-    public <U, W> TreeMap<U, W> map(Comparator<? super U> keyComparator,
-                                    BiFunction<? super K, ? super V, ? extends Tuple2<? extends U, ? extends W>> mapper) {
+    public <K2, V2> TreeMap<K2, V2> map(Comparator<? super K2> keyComparator,
+                                          BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return createTreeMap(new EntryComparator<>(keyComparator),
                 entries.iterator().map(entry -> mapper.apply(entry._1, entry._2)));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        // don't remove cast, doesn't compile in Eclipse without it
-        return (Seq<U>) entries.iterator().map(mapper).toStream();
+    public <W> TreeMap<K, W> mapValues(Function<? super V, ? extends W> valueMapper) {
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return map(keyComparator(), (k, v) -> Tuple.of(k, valueMapper.apply(v)));
+    }
+
+    @Override
+    public Match.MatchMonad.Of<TreeMap<K, V>> match() {
+        return Match.of(this);
     }
 
     @Override
