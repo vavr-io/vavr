@@ -13,7 +13,7 @@ import javaslang.control.Try;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -66,27 +66,40 @@ public abstract class AbstractValueTest {
     // returns the peek result of the specific Traversable implementation
     abstract protected int getPeekNonNilPerformingAnAction();
 
-        // -- filter
+    // -- filter
 
     @Test
     public void shouldFilterEmptyTraversable() {
-        assertThat(empty().filter(ignored -> true)).isEqualTo(empty());
+        final Value<Integer> value = empty();
+        if (value.isSingleValued()) {
+            // TODO
+        } else {
+            assertThat(value.filter(ignored -> true)).isEqualTo(empty());
+        }
     }
 
     @Test
     public void shouldFilterNonEmptyTraversable() {
-        assertThat(of(1, 2, 3, 4).filter(i -> i % 2 == 0)).isEqualTo(of(2, 4));
+        final Value<Integer> value = of(1, 2, 3, 4);
+        if (value.isSingleValued()) {
+            // TODO
+        } else {
+            assertThat(value.filter(i -> i % 2 == 0)).isEqualTo(of(2, 4));
+        }
     }
 
     @Test
     public void shouldFilterNonEmptyTraversableAllMatch() {
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            final Value<Integer> v1 = of(1, 2, 3, 4);
-            final Value<Integer> v2 = of(1, 2, 3, 4);
-            assertThat(v1.filter(i -> true)).isEqualTo(v2);
+        final Value<Integer> v = of(1, 2, 3, 4);
+        if (v.isSingleValued()) {
+            // TODO
         } else {
-            final Value<Integer> v = of(1, 2, 3, 4);
-            assertThat(v.filter(i -> true)).isSameAs(v);
+            if (useIsEqualToInsteadOfIsSameAs()) {
+                final Value<Integer> v2 = of(1, 2, 3, 4);
+                assertThat(v.filter(i -> true)).isEqualTo(v2);
+            } else {
+                assertThat(v.filter(i -> true)).isSameAs(v);
+            }
         }
     }
 
@@ -94,23 +107,36 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldFilterNotEmptyTraversable() {
-        assertThat(empty().filter(ignored -> true)).isEqualTo(empty());
+        final Value<?> value = empty();
+        if (value.isSingleValued()) {
+            // TODO
+        } else {
+            assertThat(value.filter(ignored -> true)).isEqualTo(empty());
+        }
     }
 
     @Test
     public void shouldFilterNotNonEmptyTraversable() {
-        assertThat(of(1, 2, 3, 4).filterNot(i -> i % 2 == 0)).isEqualTo(of(1, 3));
+        final Value<Integer> value = of(1, 2, 3, 4);
+        if (value.isSingleValued()) {
+            // TODO
+        } else {
+            assertThat(value.filterNot(i -> i % 2 == 0)).isEqualTo(of(1, 3));
+        }
     }
 
     @Test
     public void shouldFilterNotNonEmptyTraversableAllMatch() {
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            final Value<Integer> v1 = of(1, 2, 3, 4);
-            final Value<Integer> v2 = of(1, 2, 3, 4);
-            assertThat(v1.filterNot(i -> false)).isEqualTo(v2);
+        final Value<Integer> v = of(1, 2, 3, 4);
+        if (v.isSingleValued()) {
+            // TODO
         } else {
-            final Value<Integer> v = of(1, 2, 3, 4);
-            assertThat(v.filterNot(i -> false)).isSameAs(v);
+            if (useIsEqualToInsteadOfIsSameAs()) {
+                final Value<Integer> v2 = of(1, 2, 3, 4);
+                assertThat(v.filterNot(i -> false)).isEqualTo(v2);
+            } else {
+                assertThat(v.filterNot(i -> false)).isSameAs(v);
+            }
         }
     }
 
@@ -315,17 +341,35 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldConvertToArray() {
-        assertThat(of(1, 2, 3).toArray()).isEqualTo(Array.of(1, 2, 3));
+        final Value<Integer> value = of(1, 2, 3);
+        final Array<Integer> array = value.toArray();
+        if (value.isSingleValued()) {
+            assertThat(array).isEqualTo(Array.of(1));
+        } else {
+            assertThat(array).isEqualTo(Array.of(1, 2, 3));
+        }
     }
 
     @Test
     public void shouldConvertToList() {
-        assertThat(of(1, 2, 3).toList()).isEqualTo(List.of(1, 2, 3));
+        final Value<Integer> value = of(1, 2, 3);
+        final List<Integer> list = value.toList();
+        if (value.isSingleValued()) {
+            assertThat(list).isEqualTo(List.of(1));
+        } else {
+            assertThat(list).isEqualTo(List.of(1, 2, 3));
+        }
     }
 
     @Test
     public void shouldConvertToMap() {
-        assertThat(of(1, 2, 3).toMap(v -> Tuple.of(v, v))).isEqualTo(HashMap.empty().put(1, 1).put(2, 2).put(3, 3));
+        final Value<Integer> value = of(1, 2, 3);
+        final Map<Integer, Integer> map = value.toMap(v -> Tuple.of(v, v));
+        if (value.isSingleValued()) {
+            assertThat(map).isEqualTo(HashMap.of(1, 1));
+        } else {
+            assertThat(map).isEqualTo(HashMap.empty().put(1, 1).put(2, 2).put(3, 3));
+        }
     }
 
     @Test
@@ -336,22 +380,46 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldConvertToQueue() {
-        assertThat(of(1, 2, 3).toQueue()).isEqualTo(Queue.of(1, 2, 3));
+        final Value<Integer> value = of(1, 2, 3);
+        final Queue<Integer> queue = value.toQueue();
+        if (value.isSingleValued()) {
+            assertThat(queue).isEqualTo(Queue.of(1));
+        } else {
+            assertThat(queue).isEqualTo(Queue.of(1, 2, 3));
+        }
     }
 
     @Test
     public void shouldConvertToSet() {
-        assertThat(of(1, 2, 3).toSet()).isEqualTo(HashSet.of(1, 2, 3));
+        final Value<Integer> value = of(1, 2, 3);
+        final Set<Integer> set = value.toSet();
+        if (value.isSingleValued()) {
+            assertThat(set).isEqualTo(HashSet.of(1));
+        } else {
+            assertThat(set).isEqualTo(HashSet.of(1, 2, 3));
+        }
     }
 
     @Test
     public void shouldConvertToStack() {
-        assertThat(of(1, 2, 3).toStack()).isEqualTo(Stack.of(1, 2, 3));
+        final Value<Integer> value = of(1, 2, 3);
+        final Stack<Integer> stack = value.toStack();
+        if (value.isSingleValued()) {
+            assertThat(stack).isEqualTo(Stack.of(1));
+        } else {
+            assertThat(stack).isEqualTo(Stack.of(1, 2, 3));
+        }
     }
 
     @Test
     public void shouldConvertToStream() {
-        assertThat(of(1, 2, 3).toStream()).isEqualTo(Stream.of(1, 2, 3));
+        final Value<Integer> value = of(1, 2, 3);
+        final Stream<Integer> stream = value.toStream();
+        if (value.isSingleValued()) {
+            assertThat(stream).isEqualTo(Stream.of(1));
+        } else {
+            assertThat(stream).isEqualTo(Stream.of(1, 2, 3));
+        }
     }
 
     @Test
@@ -380,30 +448,46 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldConvertToVector() {
-        assertThat(of(1, 2, 3).toVector()).isEqualTo(Vector.of(1, 2, 3));
+        final Value<Integer> value = of(1, 2, 3);
+        final Vector<Integer> vector = value.toVector();
+        if (value.isSingleValued()) {
+            assertThat(vector).isEqualTo(Vector.of(1));
+        } else {
+            assertThat(vector).isEqualTo(Vector.of(1, 2, 3));
+        }
     }
 
     @Test
     public void shouldConvertToJavaArray() {
-        assertThat(of(1, 2, 3).toJavaArray(Integer.class)).isEqualTo(new int[] { 1, 2, 3 });
+        final Value<Integer> value = of(1, 2, 3);
+        final Integer[] ints = value.toJavaArray(Integer.class);
+        if (value.isSingleValued()) {
+            assertThat(ints).isEqualTo(new int[] { 1 });
+        } else {
+            assertThat(ints).isEqualTo(new int[] { 1, 2, 3 });
+        }
     }
 
     @Test
     public void shouldConvertToJavaList() {
-        java.util.List<Integer> list = new ArrayList<>();
-        list.add(1);
-        list.add(2);
-        list.add(3);
-        assertThat(of(1, 2, 3).toJavaList()).isEqualTo(list);
+        final Value<Integer> value = of(1, 2, 3);
+        final java.util.List<Integer> list = value.toJavaList();
+        if (value.isSingleValued()) {
+            assertThat(list).isEqualTo(Arrays.asList(1));
+        } else {
+            assertThat(list).isEqualTo(Arrays.asList(1, 2, 3));
+        }
     }
 
     @Test
     public void shouldConvertToJavaMap() {
-        java.util.Map<Integer, Integer> map = new java.util.HashMap<>();
-        map.put(1, 1);
-        map.put(2, 2);
-        map.put(3, 3);
-        assertThat(of(1, 2, 3).toJavaMap(v -> Tuple.of(v, v))).isEqualTo(map);
+        final Value<Integer> value = of(1, 2, 3);
+        final java.util.Map<Integer, Integer> map = value.toJavaMap(v -> Tuple.of(v, v));
+        if (value.isSingleValued()) {
+            assertThat(map).isEqualTo(JavaCollections.javaMap(1, 1));
+        } else {
+            assertThat(map).isEqualTo(JavaCollections.javaMap(1, 1, 2, 2, 3, 3));
+        }
     }
 
     @Test
@@ -413,18 +497,26 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldConvertToJavaSet() {
-        java.util.Set<Integer> set = new java.util.HashSet<>();
-        set.add(1);
-        set.add(2);
-        set.add(3);
-        assertThat(of(1, 2, 3).toJavaSet()).isEqualTo(set);
+        final Value<Integer> value = of(1, 2, 3);
+        final java.util.Set<Integer> set = value.toJavaSet();
+        if (value.isSingleValued()) {
+            assertThat(set).isEqualTo(JavaCollections.javaSet(1));
+        } else {
+            assertThat(set).isEqualTo(JavaCollections.javaSet(1, 2, 3));
+        }
     }
 
     @Test
     public void shouldConvertToJavaStream() {
-        java.util.stream.Stream<Integer> s1 = of(1, 2, 3).toJavaStream();
-        java.util.stream.Stream<Integer> s2 = java.util.stream.Stream.of(1, 2, 3);
-        assertThat(List.ofAll(s1::iterator)).isEqualTo(List.ofAll(s2::iterator));
+        final Value<Integer> value = of(1, 2, 3);
+        final java.util.stream.Stream<Integer> s1 = value.toJavaStream();
+        if (value.isSingleValued()) {
+            final java.util.stream.Stream<Integer> s2 = java.util.stream.Stream.of(1);
+            assertThat(List.ofAll(s1::iterator)).isEqualTo(List.ofAll(s2::iterator));
+        } else {
+            final java.util.stream.Stream<Integer> s2 = java.util.stream.Stream.of(1, 2, 3);
+            assertThat(List.ofAll(s1::iterator)).isEqualTo(List.ofAll(s2::iterator));
+        }
     }
 
     @Test
@@ -475,7 +567,13 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldBeAwareOfExistingElement() {
-        assertThat(of(1, 2).exists(i -> i == 2)).isTrue();
+        final Value<Integer> value = of(1, 2);
+        if (value.isSingleValued()) {
+            assertThat(value.exists(i -> i == 1)).isTrue();
+        } else {
+            assertThat(value.exists(i -> i == 2)).isTrue();
+        }
+
     }
 
     @Test
@@ -492,7 +590,7 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldBeAwareOfPropertyThatNotHoldsForAll() {
-        assertThat(of(2, 3).forAll(i -> i % 2 == 0)).isFalse();
+        assertThat(of(1, 2).forAll(i -> i % 2 == 0)).isFalse();
     }
 
     // ### ValueModule.Iterable ###
@@ -516,8 +614,10 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldntCorrespondsDifferentLengths() {
-        assertThat(of(1, 2, 3).corresponds(of(1, 2), (i1, i2) -> true)).isFalse();
-        assertThat(of(1, 2).corresponds(of(1, 2, 3), (i1, i2) -> true)).isFalse();
+        if (!empty().isSingleValued()) {
+            assertThat(of(1, 2, 3).corresponds(of(1, 2), (i1, i2) -> true)).isFalse();
+            assertThat(of(1, 2).corresponds(of(1, 2, 3), (i1, i2) -> true)).isFalse();
+        }
     }
 
     @Test

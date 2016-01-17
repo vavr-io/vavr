@@ -7,6 +7,7 @@ package javaslang;
 
 import javaslang.algebra.Foldable;
 import javaslang.algebra.Functor;
+import javaslang.algebra.Monad;
 import javaslang.algebra.Monoid;
 import javaslang.collection.*;
 import javaslang.control.Either;
@@ -255,12 +256,15 @@ public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
      * The semantics may vary from class to class, e.g. for single-valued types (like {@code Option})
      * and multi-valued types (like {@link Traversable}).
      * The commonality is that filtered.isEmpty() will return true, if no element satisfied the given predicate.
+     * <p>
+     * If the filtered Value is empty and there is no suitable representation, the return type is
+     * {@code Option<Value<T>>}. This is the case for {@code Either} and {@code Validation} for example.
      *
      * @param predicate A predicate
      * @return a new {@code Value} instance
      * @throws NullPointerException if {@code predicate} is null
      */
-    Value<T> filter(Predicate<? super T> predicate);
+    Value<?> filter(Predicate<? super T> predicate);
 
     /**
      * Filters this {@code Value} by testing the negation of a predicate.
@@ -271,7 +275,7 @@ public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
      * @return a new {@code Value} instance
      * @throws NullPointerException if {@code predicate} is null
      */
-    Value<T> filterNot(Predicate<? super T> predicate);
+    Value<?> filterNot(Predicate<? super T> predicate);
 
     /**
      * FlatMaps this {@code Value}. The behavior depends on {@link #isSingleValued()}.
