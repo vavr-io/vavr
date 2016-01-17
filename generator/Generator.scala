@@ -796,13 +796,12 @@ def generateMainClasses(): Unit = {
       val comparableGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j extends Comparable<? super U$j>")(", ")}>"
       val untyped = if (i == 0) "" else s"<${(1 to i).gen(j => "?")(", ")}>"
       val functionType = i match {
-        case 0 => "none"
+        case 0 => im.getType("java.util.function.Supplier")
         case 1 => im.getType("java.util.function.Function")
         case 2 => im.getType("java.util.function.BiFunction")
         case _ => s"Function$i"
       }
       val Comparator = im.getType("java.util.Comparator")
-      val Function = im.getType("java.util.function.Function")
       val Objects = im.getType("java.util.Objects")
       val Seq = im.getType("javaslang.collection.Seq")
       val List = im.getType("javaslang.collection.List")
@@ -920,29 +919,52 @@ def generateMainClasses(): Unit = {
             """)("\n\n")}
 
             ${(i > 1).gen(xs"""
-              public $resultGenerics $className$resultGenerics map($functionType<$paramTypes, $className$flatMapResultGenerics> f) {
-                  return f.apply($params);
+              /$javadoc
+               * Maps the components of this tuple using a mapper function.
+               * @param mapper the mapper function
+               ${(1 to i).gen(j => s"* @param <U$j> new type of the ${j.ordinal} component")("\n")}
+               * @return A new Tuple of same arity.
+               * @throws NullPointerException if {@code mapper} is null
+               */
+              public $resultGenerics $className$resultGenerics map($functionType<$paramTypes, $className$flatMapResultGenerics> mapper) {
+                  Objects.requireNonNull(mapper, "mapper is null");
+                  return mapper.apply($params);
               }
             """)}
 
             ${(i > 0).gen(xs"""
+              /$javadoc
+               * Maps the components of this tuple using a mapper function for each component.
+               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param f$j the mapper function of the ${j.ordinal} component")("\n")}
+               ${(1 to i).gen(j => s"* @param <U$j> new type of the ${j.ordinal} component")("\n")}
+               * @return A new Tuple of same arity.
+               * @throws NullPointerException if one of the arguments is null
+               */
               public $resultGenerics $className$resultGenerics map(${(1 to i).gen(j => s"${im.getType("java.util.function.Function")}<? super T$j, ? extends U$j> f$j")(", ")}) {
+                  ${(1 to i).gen(j => s"""Objects.requireNonNull(f$j, "f$j is null");""")("\n")}
                   return ${im.getType("javaslang.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(_$j)")(", ")});
               }
             """)}
 
             /**
-             * Transforms this tuple to an arbitrary object (which may be also a tuple of same or different arity).
+             * Transforms this tuple to an object of type U.
              *
              * @param f Transformation which creates a new object of type U based on this tuple's contents.
-             * @param <U> New type
+             * @param <U> type of the transformation result
              * @return An object of type U
              * @throws NullPointerException if {@code f} is null
              */
-            public <U> U transform($Function<$className$generics, ? extends U> f) {
-                $Objects.requireNonNull(f, "f is null");
-                return f.apply(this);
-            }
+            ${if (i == 0) xs"""
+              public <U> U transform($functionType<? extends U> f) {
+                  $Objects.requireNonNull(f, "f is null");
+                  return f.get();
+              }
+            """ else xs"""
+              public <U> U transform($functionType<$paramTypes, ? extends U> f) {
+                  $Objects.requireNonNull(f, "f is null");
+                  return f.apply($params);
+              }
+            """}
 
             @Override
             public $Seq<?> toSeq() {
@@ -1715,7 +1737,7 @@ def generateTestClasses(): Unit = {
         val functionType = s"Function$i"
         val generics = (1 to i).gen(j => s"Object")(", ")
         val intGenerics = (1 to i).gen(j => s"Integer")(", ")
-        val functionArgTypes = (1 to i).gen(j => s"o$j")(", ")
+        val functionArgs = (i > 1).gen("(") + (1 to i).gen(j => s"o$j")(", ") + (i > 1).gen(")")
         val nullArgs = (1 to i).gen(j => "null")(", ")
 
         xs"""
@@ -1754,7 +1776,7 @@ def generateTestClasses(): Unit = {
 
               ${(1 to i).gen(j => xs"""
                 @$test
-                public void shouldCompare${j}thArg() {
+                public void shouldCompare${j.ordinal}Arg() {
                     final Tuple$i<$intGenerics> t0 = createIntTuple(${genArgsForComparing(i, 0)});
                     final Tuple$i<$intGenerics> t$j = createIntTuple(${genArgsForComparing(i, j)});
                     $assertThat(t0.compareTo(t$j)).isNegative();
@@ -1762,16 +1784,16 @@ def generateTestClasses(): Unit = {
                     $assertThat(intTupleComparator.compare(t0, t$j)).isNegative();
                     $assertThat(intTupleComparator.compare(t$j, t0)).isPositive();
                 }
-              """)}
+              """)("\n\n")}
 
               @$test
               public void shouldMap() {
+                  final Tuple$i<$generics> tuple = createTuple();
                   ${if (i == 1) xs"""
-                    // will be fixed with #1027 and #1025
+                    final Tuple$i<$generics> actual = tuple.map(o -> o);
+                    $assertThat(actual).isEqualTo(tuple);
                   """ else xs"""
-                    final Tuple$i<$generics> tuple = createTuple();
-                    final $functionType<$generics, Tuple$i<$generics>> mapper = ($functionArgTypes) -> tuple;
-                    final Tuple$i<$generics> actual = tuple.map(mapper);
+                    final Tuple$i<$generics> actual = tuple.map($functionArgs -> tuple);
                     $assertThat(actual).isEqualTo(tuple);
                   """}
               }
@@ -1787,7 +1809,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldTransformTuple() {
                   final Tuple$i<$generics> tuple = createTuple();
-                  final Tuple0 actual = tuple.transform(ignored -> Tuple0.instance());
+                  final Tuple0 actual = tuple.transform($functionArgs -> Tuple0.instance());
                   assertThat(actual).isEqualTo(Tuple0.instance());
               }
 

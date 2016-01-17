@@ -12,7 +12,7 @@ package javaslang;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.Function;
+import java.util.function.Supplier;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 
@@ -64,16 +64,16 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
     }
 
     /**
-     * Transforms this tuple to an arbitrary object (which may be also a tuple of same or different arity).
+     * Transforms this tuple to an object of type U.
      *
      * @param f Transformation which creates a new object of type U based on this tuple's contents.
-     * @param <U> New type
+     * @param <U> type of the transformation result
      * @return An object of type U
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U transform(Function<Tuple0, ? extends U> f) {
+    public <U> U transform(Supplier<? extends U> f) {
         Objects.requireNonNull(f, "f is null");
-        return f.apply(this);
+        return f.get();
     }
 
     @Override

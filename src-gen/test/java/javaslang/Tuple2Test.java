@@ -52,15 +52,17 @@ public class Tuple2Test {
     }
 
     @Test
-    public void shouldCompare1thArg() {
+    public void shouldCompare1stArg() {
         final Tuple2<Integer, Integer> t0 = createIntTuple(0, 0);
         final Tuple2<Integer, Integer> t1 = createIntTuple(1, 0);
         assertThat(t0.compareTo(t1)).isNegative();
         assertThat(t1.compareTo(t0)).isPositive();
         assertThat(intTupleComparator.compare(t0, t1)).isNegative();
         assertThat(intTupleComparator.compare(t1, t0)).isPositive();
-    }@Test
-    public void shouldCompare2thArg() {
+    }
+
+    @Test
+    public void shouldCompare2ndArg() {
         final Tuple2<Integer, Integer> t0 = createIntTuple(0, 0);
         final Tuple2<Integer, Integer> t2 = createIntTuple(0, 1);
         assertThat(t0.compareTo(t2)).isNegative();
@@ -72,8 +74,7 @@ public class Tuple2Test {
     @Test
     public void shouldMap() {
         final Tuple2<Object, Object> tuple = createTuple();
-        final Function2<Object, Object, Tuple2<Object, Object>> mapper = (o1, o2) -> tuple;
-        final Tuple2<Object, Object> actual = tuple.map(mapper);
+        final Tuple2<Object, Object> actual = tuple.map((o1, o2) -> tuple);
         assertThat(actual).isEqualTo(tuple);
     }
 
@@ -89,7 +90,7 @@ public class Tuple2Test {
     @Test
     public void shouldTransformTuple() {
         final Tuple2<Object, Object> tuple = createTuple();
-        final Tuple0 actual = tuple.transform(ignored -> Tuple0.instance());
+        final Tuple0 actual = tuple.transform((o1, o2) -> Tuple0.instance());
         assertThat(actual).isEqualTo(Tuple0.instance());
     }
 
