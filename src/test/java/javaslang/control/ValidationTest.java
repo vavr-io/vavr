@@ -38,14 +38,14 @@ public class ValidationTest {
     @Test
     public void shouldConvertSuccessToU() {
         Validation<List<String>, String> validValidation = valid();
-        Integer result = validValidation.fold(List::length, String::length);
+        Integer result = validValidation.bifold(List::length, String::length);
         assertThat(result).isEqualTo(2);
     }
 
     @Test
     public void shouldConvertFailureToU() {
         Validation<List<String>, String> invalidValidation = invalid();
-        Integer result = invalidValidation.fold(List::length, String::length);
+        Integer result = invalidValidation.bifold(List::length, String::length);
         assertThat(result).isEqualTo(3);
     }
 
