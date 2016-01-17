@@ -141,7 +141,7 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     @Override
-    public void onComplete(Consumer<? super Try<T>> action) {
+    public Future<T> onComplete(Consumer<? super Try<T>> action) {
         Objects.requireNonNull(action, "action is null");
         if (isCompleted()) {
             perform(action);
@@ -154,6 +154,7 @@ final class FutureImpl<T> implements Future<T> {
                 }
             }
         }
+        return this;
     }
 
     /**
