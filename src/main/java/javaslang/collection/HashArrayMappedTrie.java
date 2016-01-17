@@ -345,7 +345,7 @@ interface HashArrayMappedTrieModule {
             if (hash != Objects.hashCode(key)) {
                 return Option.none();
             }
-            return iterator().findFirst(t -> Objects.equals(t._1, key)).map(t -> t._2);
+            return iterator().find(t -> Objects.equals(t._1, key)).map(t -> t._2);
         }
 
         @Override

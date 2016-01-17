@@ -79,7 +79,7 @@ import java.util.stream.Collector;
  * // helpers
  *
  * static long nextPrimeFrom(long num) {
- *     return Stream.from(num + 1).findFirst(PrimeNumbers::isPrime).get();
+ *     return Stream.from(num + 1).find(PrimeNumbers::isPrime).get();
  * }
  *
  * static boolean isPrime(long num) {

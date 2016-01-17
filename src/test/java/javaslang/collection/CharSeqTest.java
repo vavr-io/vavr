@@ -610,16 +610,16 @@ public class CharSeqTest {
         assertThat(t.filterNot(i -> false)).isSameAs(t);
     }
 
-    // -- findFirst
+    // -- find
 
     @Test
     public void shouldFindFirstOfNil() {
-        assertThat(empty().findFirst(ignored -> true)).isEqualTo(Option.none());
+        assertThat(empty().find(ignored -> true)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldFindFirstOfNonNil() {
-        assertThat(CharSeq.of('1', '2', '3', '4').findFirst(i -> i % 2 == 0)).isEqualTo(Option.of('2'));
+        assertThat(CharSeq.of('1', '2', '3', '4').find(i -> i % 2 == 0)).isEqualTo(Option.of('2'));
     }
 
     // -- findLast

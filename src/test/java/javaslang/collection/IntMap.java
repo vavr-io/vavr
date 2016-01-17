@@ -198,7 +198,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMap<T> replace(T currentElement, T newElement) {
-        final Option<Tuple2<Integer, T>> currentEntryOpt = original.findFirst(e -> e._2.equals(currentElement));
+        final Option<Tuple2<Integer, T>> currentEntryOpt = original.find(e -> e._2.equals(currentElement));
         if (currentEntryOpt.isDefined()) {
             final Tuple2<Integer, T> currentEntry = currentEntryOpt.get();
             return IntMap.of(original.replace(currentEntry, Tuple.of(original.size() + 1, newElement)));

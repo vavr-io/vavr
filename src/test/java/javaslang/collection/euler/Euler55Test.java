@@ -59,7 +59,7 @@ public class Euler55Test {
         return Stream.gen(String.valueOf(n), Euler55Test::next)
                 .tail()  // Surprisingly, there are palindromic numbers that are themselves Lychrel numbers
                 .take(50)
-                .findFirst(Utils::isPalindrome)
+                .find(Utils::isPalindrome)
                 .isEmpty();
     }
 

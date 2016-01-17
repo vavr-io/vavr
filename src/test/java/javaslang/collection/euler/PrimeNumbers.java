@@ -35,7 +35,7 @@ public final class PrimeNumbers {
 
     public static Stream<Long> primeFactors(long num) {
         return Stream.rangeClosed(2L, (int) Math.sqrt(num))
-                .findFirst(d -> num % d == 0)
+                .find(d -> num % d == 0)
                 .map(d -> Stream.cons(d, () -> primeFactors(num / d)))
                 .orElseGet(() -> Stream.of(num));
     }
