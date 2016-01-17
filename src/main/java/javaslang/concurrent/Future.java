@@ -678,31 +678,34 @@ public interface Future<T> extends Monad<T>, Value<T> {
      * Performs the action once the Future is complete.
      *
      * @param action An action to be performed when this future is complete.
+     * @return this Future
      * @throws NullPointerException if {@code action} is null.
      */
-    void onComplete(Consumer<? super Try<T>> action);
+    Future<T> onComplete(Consumer<? super Try<T>> action);
 
     /**
      * Performs the action once the Future is complete and the result is a {@link Try.Failure}. Please note that the
      * future is also a failure when it was cancelled.
      *
      * @param action An action to be performed when this future failed.
+     * @return this Future
      * @throws NullPointerException if {@code action} is null.
      */
-    default void onFailure(Consumer<? super Throwable> action) {
+    default Future<T> onFailure(Consumer<? super Throwable> action) {
         Objects.requireNonNull(action, "action is null");
-        onComplete(result -> result.onFailure(action));
+        return onComplete(result -> result.onFailure(action));
     }
 
     /**
      * Performs the action once the Future is complete and the result is a {@link Try.Success}.
      *
      * @param action An action to be performed when this future succeeded.
+     * @return this Future
      * @throws NullPointerException if {@code action} is null.
      */
-    default void onSuccess(Consumer<? super T> action) {
+    default Future<T> onSuccess(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
-        onComplete(result -> result.onSuccess(action));
+        return onComplete(result -> result.onSuccess(action));
     }
 
     /**
@@ -799,27 +802,27 @@ public interface Future<T> extends Monad<T>, Value<T> {
         Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());
         onComplete((Try<T> result) -> result.map(mapper)
-            .onSuccess(iterable -> promise.completeWith(unit(iterable)))
-            .onFailure(promise::failure)
+                .onSuccess(iterable -> promise.completeWith(unit(iterable)))
+                .onFailure(promise::failure)
         );
         return promise.future();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     default <U> Future<U> unit(Iterable<? extends U> iterable) {
-    	if (iterable instanceof Future) {
-    		return (Future<U>) iterable;
-    	} else if (iterable instanceof Value) {
-    		final Value<U> value = (Value<U>) iterable;
-    		return value.isEmpty() ? Future.failed(new NoSuchElementException()) : Future.successful(value.get());
-    	} else {
-    		final java.util.Iterator<? extends U> iterator = iterable.iterator();
-    		if (iterator.hasNext()) {
-    			return Future.successful(iterator.next());
-    		} else {
-    			return Future.failed(new NoSuchElementException());
-    		}
+        if (iterable instanceof Future) {
+            return (Future<U>) iterable;
+        } else if (iterable instanceof Value) {
+            final Value<U> value = (Value<U>) iterable;
+            return value.isEmpty() ? Future.failed(new NoSuchElementException()) : Future.successful(value.get());
+        } else {
+            final java.util.Iterator<? extends U> iterator = iterable.iterator();
+            if (iterator.hasNext()) {
+                return Future.successful(iterator.next());
+            } else {
+                return Future.failed(new NoSuchElementException());
+            }
         }
     }
 
