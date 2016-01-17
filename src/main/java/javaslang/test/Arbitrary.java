@@ -6,7 +6,6 @@
 package javaslang.test;
 
 import javaslang.Value;
-import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -26,7 +25,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Arbitrary<T> extends Monad<Arbitrary<?>, T>, Value<T> {
+public interface Arbitrary<T> extends Monad<T>, Value<T> {
 
     /**
      * Returns a generator for objects of type T.
@@ -90,17 +89,12 @@ public interface Arbitrary<T> extends Monad<Arbitrary<?>, T>, Value<T> {
      * @param <U>    New type of arbitrary objects
      * @return A new Arbitrary
      */
-    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Arbitrary<? extends U>> mapper) {
+    @Override
+    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return size -> {
             final Gen<T> gen = apply(size);
-            return random -> mapper.apply(gen.apply(random)).apply(size).apply(random);
+            return random -> unit(mapper.apply(gen.apply(random))).apply(size).apply(random);
         };
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Arbitrary<U> flatMapM(Function<? super T, ? extends Kind1<Arbitrary<?>, U>> mapper) {
-        return flatMap((Function<T, Arbitrary<U>>) mapper);
     }
 
     /**
@@ -139,6 +133,16 @@ public interface Arbitrary<T> extends Monad<Arbitrary<?>, T>, Value<T> {
     default <U> U transform(Function<? super Arbitrary<? super T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
+    }
+    
+    @SuppressWarnings("unchecked")
+	default <U> Arbitrary<U> unit(Iterable<? extends U> iterable) {
+    	if (iterable instanceof Arbitrary) {
+    		return (Arbitrary<U>) iterable;
+    	} else {
+    		final Stream<Gen<U>> generators = Stream.ofAll(iterable).map(Gen::of);
+    		return ignored -> Gen.oneOf(generators);
+    	}
     }
 
     @Override

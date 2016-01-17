@@ -804,6 +804,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
             }
         }
     }
+    
+    @Override
+    public <U> HashSet<U> unit(Iterable<? extends U> iterable) {
+    	return HashSet.ofAll(iterable);
+    }
 
     @Override
     public <T1, T2> Tuple2<HashSet<T1>, HashSet<T2>> unzip(

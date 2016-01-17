@@ -29,7 +29,7 @@ import static javaslang.Serializables.serialize;
 /**
  * Tests all methods defined in {@link javaslang.collection.Tree}.
  */
-public class TreeTest extends AbstractTraversableTest implements MonadTestMixin<Tree<?>> {
+public class TreeTest extends AbstractTraversableTest implements MonadTestMixin {
 
     /**
      * <pre><code>
@@ -73,7 +73,7 @@ public class TreeTest extends AbstractTraversableTest implements MonadTestMixin<
             }
 
             private Map<?, ?> convMap(Map<?, ?> map) {
-                return map.bimap((k, v) -> Tuple.of(k, v instanceof Iterable ? Stream.ofAll((Iterable<?>) v) : v));
+                return map.map((k, v) -> Tuple.of(k, v instanceof Iterable ? Stream.ofAll((Iterable<?>) v) : v));
             }
         };
     }

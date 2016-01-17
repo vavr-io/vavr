@@ -596,7 +596,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public <C> Map<C, TreeSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).bimap(
+        return iterator().groupBy(classifier).map(
                 (key, iterator) -> Tuple.of(key, TreeSet.ofAll(tree.comparator(), iterator)));
     }
 
@@ -874,6 +874,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         } else {
             return addAll(elements);
         }
+    }
+    
+    @Override
+    public <U> TreeSet<U> unit(Iterable<? extends U> iterable) {
+    	return TreeSet.ofAll(naturalComparator(), iterable);
     }
 
     @Override

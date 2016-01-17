@@ -8,7 +8,6 @@ package javaslang.test;
 import javaslang.Function1;
 import javaslang.Tuple2;
 import javaslang.Value;
-import javaslang.algebra.Kind1;
 import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.Stream;
@@ -40,7 +39,7 @@ import java.util.function.Supplier;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Gen<T> extends Monad<Gen<?>, T>, Value<T>, Function1<Random, T>, Supplier<T> {
+public interface Gen<T> extends Monad<T>, Value<T>, Function1<Random, T>, Supplier<T> {
 
     long serialVersionUID = 1L;
 
@@ -321,15 +320,10 @@ public interface Gen<T> extends Monad<Gen<?>, T>, Value<T>, Function1<Random, T>
      * @param <U>    Type of generated objects of the new generator
      * @return A new generator
      */
-    default <U> Gen<U> flatMap(Function<? super T, ? extends Gen<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return random -> mapper.apply(apply(random)).apply(random);
-    }
-
-    @SuppressWarnings("unchecked")
     @Override
-    default <U> Gen<U> flatMapM(Function<? super T, ? extends Kind1<Gen<?>, U>> mapper) {
-        return flatMap((Function<T, Gen<U>>) mapper);
+    default <U> Gen<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return random -> unit(mapper.apply(apply(random))).apply(random);
     }
 
     /**
@@ -370,6 +364,16 @@ public interface Gen<T> extends Monad<Gen<?>, T>, Value<T>, Function1<Random, T>
     default <U> U transform(Function<? super Gen<? super T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
+    }
+    
+    @SuppressWarnings("unchecked")
+	default <U> Gen<U> unit(Iterable<? extends U> iterable) {
+    	if (iterable instanceof Gen) {
+    		return (Gen<U>) iterable;
+    	} else {
+    		final Stream<Gen<U>> generators = Stream.ofAll(iterable).map(u -> Gen.of(u));
+    		return oneOf(generators);
+    	}
     }
 
     @Override

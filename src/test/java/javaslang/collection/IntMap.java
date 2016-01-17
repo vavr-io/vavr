@@ -127,7 +127,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public <C> Map<C, ? extends IntMap<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        return original.groupBy(e -> classifier.apply(e._2)).bimap((k, v) -> Tuple.of(k, IntMap.of(v)));
+        return original.groupBy(e -> classifier.apply(e._2)).map((k, v) -> Tuple.of(k, IntMap.of(v)));
     }
 
     @Override
@@ -314,6 +314,11 @@ public class IntMap<T> implements Traversable<T>, Serializable {
         return IntMap.of(original.takeWhile(p -> predicate.test(p._2)));
     }
 
+    @Override
+    public <U> Seq<U> unit(Iterable<? extends U> iterable) {
+        return original.unit(iterable);
+    }
+    
     @Override
     public <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");

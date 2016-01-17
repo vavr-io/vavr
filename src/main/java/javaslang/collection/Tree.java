@@ -9,8 +9,6 @@ import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
-import javaslang.algebra.Kind1;
-import javaslang.algebra.Monad;
 import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.Empty;
 import javaslang.collection.Tree.Node;
@@ -32,7 +30,7 @@ import static javaslang.collection.Tree.Order.PRE_ORDER;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public interface Tree<T> extends Traversable<T>, Monad<Tree<?>, T> {
+public interface Tree<T> extends Traversable<T> {
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -396,12 +394,6 @@ public interface Tree<T> extends Traversable<T>, Monad<Tree<?>, T> {
         return isEmpty() ? Empty.instance() : FlatMap.apply((Node<T>) this, mapper);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Tree<U> flatMapM(Function<? super T, ? extends Kind1<Tree<?>, U>> mapper) {
-        return flatMap((Function<T, Tree<U>>) mapper);
-    }
-
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
@@ -618,6 +610,11 @@ public interface Tree<T> extends Traversable<T>, Monad<Tree<?>, T> {
     default Seq<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return traverse().takeWhile(predicate);
+    }
+    
+    @Override
+    default <U> Tree<U> unit(Iterable<? extends U> iterable) {
+    	return Tree.ofAll(iterable);
     }
 
     @SuppressWarnings("unchecked")
