@@ -140,6 +140,23 @@ public abstract class AbstractValueTest {
         }
     }
 
+    // -- fold
+
+    @Test
+    public void shouldFoldNil() {
+        assertThat(this.<String> empty().fold("", (a, b) -> a + b)).isEqualTo("");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenFoldNullOperator() {
+        this.<String> empty().fold(null, null);
+    }
+
+    @Test
+    public void shouldFoldSingleElement() {
+        assertThat(of(1).fold(0, (a, b) -> a + b)).isEqualTo(1);
+    }
+
     // -- get()
 
     @Test(expected = NoSuchElementException.class)
@@ -162,6 +179,53 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldGetOptionNonEmpty() {
         assertThat(of(1).getOption()).isEqualTo(Option.of(1));
+    }
+
+    // -- getOrElse(T)
+
+    @Test
+    public void shouldCalculateGetOrElse() {
+        assertThat(empty().getOrElse(1)).isEqualTo(1);
+        assertThat(of(1).getOrElse(2)).isEqualTo(1);
+    }
+
+    // -- getOrElse(Supplier)
+
+    @Test
+    public void shouldCalculateGetOrElseSupplier() {
+        assertThat(empty().getOrElse(() -> 1)).isEqualTo(1);
+        assertThat(of(1).getOrElse(() -> 2)).isEqualTo(1);
+    }
+
+    // -- getOrElseThrow
+
+    @Test(expected = ArithmeticException.class)
+    public void shouldThrowOnGetOrElseThrowIfEmpty() {
+        empty().getOrElseThrow(ArithmeticException::new);
+    }
+
+    @Test
+    public void shouldNotThrowOnGetOrElseThrowIfNonEmpty() {
+        assertThat(of(1).getOrElseThrow(ArithmeticException::new)).isEqualTo(1);
+    }
+
+    // -- getOrElseTry
+
+    @Test
+    public void shouldReturnUnderlyingValueWhenCallingGetOrElseTryOnNonEmptyValue() {
+        assertThat(of(1).getOrElseTry(() -> 2)).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldReturnAlternateValueWhenCallingGetOrElseTryOnEmptyValue() {
+        assertThat(empty().getOrElseTry(() -> 2)).isEqualTo(2);
+    }
+
+    @Test(expected = Try.NonFatalException.class)
+    public void shouldThrowWhenCallingGetOrElseTryOnEmptyValueAndTryIsAFailure() {
+        empty().getOrElseTry(() -> {
+            throw new Error();
+        });
     }
 
     // -- ifDefined(trueVal, falseVal)
@@ -212,70 +276,6 @@ public abstract class AbstractValueTest {
         assertThat(of(1).isDefined()).isTrue();
     }
 
-    // -- orElse
-
-    @Test
-    public void shouldCalculateOrElse() {
-        assertThat(empty().orElse(1)).isEqualTo(1);
-        assertThat(of(1).orElse(2)).isEqualTo(1);
-    }
-
-    // -- orElseGet
-
-    @Test
-    public void shouldCalculateOrElseGet() {
-        assertThat(empty().orElseGet(() -> 1)).isEqualTo(1);
-        assertThat(of(1).orElseGet(() -> 2)).isEqualTo(1);
-    }
-
-    // -- orElseThrow
-
-    @Test(expected = ArithmeticException.class)
-    public void shouldThrowIfEmpty() {
-        empty().orElseThrow(ArithmeticException::new);
-    }
-
-    @Test
-    public void shouldNotThrowIfNonEmpty() {
-        assertThat(of(1).orElseThrow(ArithmeticException::new)).isEqualTo(1);
-    }
-
-    // -- fold
-
-    @Test
-    public void shouldFoldNil() {
-        assertThat(this.<String> empty().fold("", (a, b) -> a + b)).isEqualTo("");
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenFoldNullOperator() {
-        this.<String> empty().fold(null, null);
-    }
-
-    @Test
-    public void shouldFoldSingleElement() {
-        assertThat(of(1).fold(0, (a, b) -> a + b)).isEqualTo(1);
-    }
-
-    // -- orElseTry
-
-    @Test
-    public void shouldReturnUnderlyingValueWhenCallingOrElseTryOnNonEmptyValue() {
-        assertThat(of(1).orElseTry(() -> 2)).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldReturnAlternateValueWhenCallingOrElseTryOnEmptyValue() {
-        assertThat(empty().orElseTry(() -> 2)).isEqualTo(2);
-    }
-
-    @Test(expected = Try.NonFatalException.class)
-    public void shouldThrowWhenCallingOrElseTryOnEmptyValueAndTryIsAFailure() {
-        empty().orElseTry(() -> {
-            throw new Error();
-        });
-    }
-
     // -- peek
 
     @Test
@@ -310,8 +310,8 @@ public abstract class AbstractValueTest {
     public void shouldConvertNonEmptyValueToMatchMonad() {
         final Value<Integer> value = of(1);
         final String actual = value.match()
-                .when((Value<Integer> v) -> v.orElse(-1) == 1).then("ok")
-                .orElse("nok");
+                .when((Value<Integer> v) -> v.getOrElse(-1) == 1).then("ok")
+                .getOrElse("nok");
         assertThat(actual).isEqualTo("ok");
     }
 
@@ -320,7 +320,7 @@ public abstract class AbstractValueTest {
         final Value<Integer> value = empty();
         final String actual = value.match()
                 .when(Value<Integer>::isEmpty).then("ok")
-                .orElse("nok");
+                .getOrElse("nok");
         assertThat(actual).isEqualTo("ok");
     }
 
@@ -329,7 +329,7 @@ public abstract class AbstractValueTest {
         Value<Character> v = of('a', 'b', 'c');
         assertThat(Match.of(v)
                 .whenTypeIn(Iterator.class).then(Iterator.of("ignore").toString())
-                .orElse(v.toString())
+                .getOrElse(v.toString())
         ).isEqualTo(v.toCharSeq().toString());
     }
 

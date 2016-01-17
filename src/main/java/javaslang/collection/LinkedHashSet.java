@@ -554,7 +554,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     public <C> Map<C, LinkedHashSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return foldLeft(HashMap.empty(), (map, t) -> {
             final C key = classifier.apply(t);
-            final LinkedHashSet<T> values = map.get(key).map(ts -> ts.add(t)).orElse(LinkedHashSet.of(t));
+            final LinkedHashSet<T> values = map.get(key).map(ts -> ts.add(t)).getOrElse(LinkedHashSet.of(t));
             return map.put(key, values);
         });
     }

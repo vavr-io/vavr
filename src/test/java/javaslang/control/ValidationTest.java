@@ -182,7 +182,7 @@ public class ValidationTest extends AbstractValueTest {
         Validation<List<String>, TestValidation> result7 = v1.combine(v2).combine(v3).combine(v5).combine(v6).combine(v7).combine(v8).ap(TestValidation::new);
         Validation<List<String>, TestValidation> result8 = v1.combine(v2).combine(v3).combine(v5).combine(v6).combine(v7).combine(v8).combine(v9).ap(TestValidation::new);
 
-        Validation<List<String>, String> result9 = v1.combine(v2).combine(v3).ap((p1, p2, p3) -> p1 + ":" + p2 + ":" + p3.orElse("none"));
+        Validation<List<String>, String> result9 = v1.combine(v2).combine(v3).ap((p1, p2, p3) -> p1 + ":" + p2 + ":" + p3.getOrElse("none"));
 
         assertThat(result.isValid()).isTrue();
         assertThat(result2.isValid()).isTrue();
@@ -220,7 +220,7 @@ public class ValidationTest extends AbstractValueTest {
         Validation<List<String>, TestValidation> result7 = Validation.combine(v1, v2, v3, v5, v6, v7, v8).ap(TestValidation::new);
         Validation<List<String>, TestValidation> result8 = Validation.combine(v1, v2, v3, v5, v6, v7, v8, v9).ap(TestValidation::new);
 
-        Validation<List<String>, String> result9 = Validation.combine(v1, v2, v3).ap((p1, p2, p3) -> p1 + ":" + p2 + ":" + p3.orElse("none"));
+        Validation<List<String>, String> result9 = Validation.combine(v1, v2, v3).ap((p1, p2, p3) -> p1 + ":" + p2 + ":" + p3.getOrElse("none"));
 
         assertThat(result.isValid()).isTrue();
         assertThat(result2.isValid()).isTrue();
@@ -377,7 +377,7 @@ public class ValidationTest extends AbstractValueTest {
 
         @Override
         public String toString() {
-            return "TestValidation(" + name + "," + age + "," + address.orElse("none") + phone + "," + ")";
+            return "TestValidation(" + name + "," + age + "," + address.getOrElse("none") + phone + "," + ")";
         }
     }
 

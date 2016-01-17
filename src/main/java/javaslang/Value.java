@@ -7,7 +7,6 @@ package javaslang;
 
 import javaslang.algebra.Foldable;
 import javaslang.algebra.Functor;
-import javaslang.algebra.Monad;
 import javaslang.algebra.Monoid;
 import javaslang.collection.*;
 import javaslang.control.Either;
@@ -37,13 +36,13 @@ import java.util.stream.StreamSupport;
  * <ul>
  * <li>{@link #get()}</li>
  * <li>{@link #getOption()}</li>
+ * <li>{@link #getOrElse(Object)}</li>
+ * <li>{@link #getOrElse(Supplier)}</li>
+ * <li>{@link #getOrElseThrow(Supplier)}</li>
  * <li>{@link #ifDefined(Supplier, Supplier)}</li>
  * <li>{@link #ifDefined(Object, Object)}</li>
  * <li>{@link #ifEmpty(Supplier, Supplier)}</li>
  * <li>{@link #ifEmpty(Object, Object)}</li>
- * <li>{@link #orElse(Object)}</li>
- * <li>{@link #orElseGet(Supplier)}</li>
- * <li>{@link #orElseThrow(Supplier)}</li>
  * <li>{@link #stringPrefix()}</li>
  * </ul>
  *
@@ -415,7 +414,7 @@ public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
      * @param other An alternative value.
      * @return A value of type {@code T}
      */
-    default T orElse(T other) {
+    default T getOrElse(T other) {
         return isEmpty() ? other : get();
     }
 
@@ -426,7 +425,7 @@ public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
      * @return A value of type {@code T}
      * @throws NullPointerException if supplier is null
      */
-    default T orElseGet(Supplier<? extends T> supplier) {
+    default T getOrElse(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? supplier.get() : get();
     }
@@ -440,7 +439,7 @@ public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
      * @throws NullPointerException if supplier is null
      * @throws X                    if no value is present
      */
-    default <X extends Throwable> T orElseThrow(Supplier<X> supplier) throws X {
+    default <X extends Throwable> T getOrElseThrow(Supplier<X> supplier) throws X {
         Objects.requireNonNull(supplier, "supplier is null");
         if (isEmpty()) {
             throw supplier.get();
@@ -457,7 +456,7 @@ public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
      * @throws NullPointerException  if supplier is null
      * @throws Try.NonFatalException containing the original exception if this Value was empty and the Try failed.
      */
-    default T orElseTry(Try.CheckedSupplier<? extends T> supplier) {
+    default T getOrElseTry(Try.CheckedSupplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? Try.of(supplier).get() : get();
     }

@@ -120,7 +120,7 @@ final class FutureImpl<T> implements Future<T> {
                         actions = null;
                         job = null;
                     }
-                }).orElse(false);
+                }).getOrElse(false);
             }
         }
     }
@@ -233,6 +233,6 @@ final class FutureImpl<T> implements Future<T> {
 
     @Override
     public String toString() {
-        return stringPrefix() + "(" + value.map(String::valueOf).orElse("?") + ")";
+        return stringPrefix() + "(" + value.map(String::valueOf).getOrElse("?") + ")";
     }
 }

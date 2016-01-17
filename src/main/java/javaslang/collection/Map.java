@@ -29,7 +29,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, BiFunctor<K, V>, F
 
     @Override
     default V apply(K key) {
-        return get(key).orElseThrow(NoSuchElementException::new);
+        return get(key).getOrElseThrow(NoSuchElementException::new);
     }
 
     /**
@@ -200,7 +200,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, BiFunctor<K, V>, F
 
     @Override
     default boolean contains(Tuple2<K, V> element) {
-        return get(element._1).map(v -> Objects.equals(v, element._2)).orElse(false);
+        return get(element._1).map(v -> Objects.equals(v, element._2)).getOrElse(false);
     }
 
     @Override

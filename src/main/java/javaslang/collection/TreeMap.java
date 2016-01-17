@@ -473,7 +473,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
         Objects.requireNonNull(classifier, "classifier is null");
         return foldLeft(HashMap.empty(), (map, entry) -> {
             final C key = classifier.apply(entry);
-            final TreeMap<K, V> values = map.get(key).map(entries -> entries.put(entry._1, entry._2)).orElse(
+            final TreeMap<K, V> values = map.get(key).map(entries -> entries.put(entry._1, entry._2)).getOrElse(
                     createTreeMap(entries.comparator(), Iterator.of(entry)));
             return map.put(key, values);
         });

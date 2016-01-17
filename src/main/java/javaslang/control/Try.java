@@ -394,7 +394,7 @@ public interface Try<T> extends Monad<T>, Value<T> {
         }
     }
 
-    default T orElseGet(Function<? super Throwable, ? extends T> other) {
+    default T getOrElseGet(Function<? super Throwable, ? extends T> other) {
         if (isFailure()) {
             return other.apply(getCause());
         } else {
@@ -408,7 +408,7 @@ public interface Try<T> extends Monad<T>, Value<T> {
         }
     }
 
-    default <X extends Throwable> T orElseThrow(Function<? super Throwable, X> exceptionProvider) throws X {
+    default <X extends Throwable> T getOrElseThrow(Function<? super Throwable, X> exceptionProvider) throws X {
         if (isFailure()) {
             throw exceptionProvider.apply(getCause());
         } else {

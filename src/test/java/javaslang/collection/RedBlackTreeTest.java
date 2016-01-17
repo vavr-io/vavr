@@ -409,7 +409,7 @@ public class RedBlackTreeTest {
 
     private static boolean doesNotExceedMaximumDepth(RedBlackTree<?> tree) {
         final int n = TreeUtil.size(tree);
-        final int depth = TreeUtil.paths(tree).map(Traversable::length).max().orElse(0);
+        final int depth = TreeUtil.paths(tree).map(Traversable::length).max().getOrElse(0);
         final IntUnaryOperator log2 = i -> (int) (Math.log(i) / Math.log(2));
         return depth <= 2 * log2.applyAsInt(n + 1);
     }

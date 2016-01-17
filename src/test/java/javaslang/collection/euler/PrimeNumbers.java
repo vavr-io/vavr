@@ -29,7 +29,7 @@ public final class PrimeNumbers {
             return primeFactors(num)
                     .map(p -> HashMap.of(Tuple.of(p, 1L))
                             .merge(factorization(num / p), (a, b) -> a + b))
-                    .orElseGet(HashMap::empty);
+                    .getOrElse(HashMap::empty);
         }
     }
 
@@ -37,6 +37,6 @@ public final class PrimeNumbers {
         return Stream.rangeClosed(2L, (int) Math.sqrt(num))
                 .find(d -> num % d == 0)
                 .map(d -> Stream.cons(d, () -> primeFactors(num / d)))
-                .orElseGet(() -> Stream.of(num));
+                .getOrElse(() -> Stream.of(num));
     }
 }

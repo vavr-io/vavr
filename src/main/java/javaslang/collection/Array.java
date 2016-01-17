@@ -632,7 +632,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     public <C> Map<C, Array<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return foldLeft(HashMap.empty(), (map, t) -> {
             final C key = classifier.apply(t);
-            final Array<T> values = map.get(key).map(ts -> ts.append(t)).orElse(Array.of(t));
+            final Array<T> values = map.get(key).map(ts -> ts.append(t)).getOrElse(Array.of(t));
             return map.put(key, values);
         });
     }

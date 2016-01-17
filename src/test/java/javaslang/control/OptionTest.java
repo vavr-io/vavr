@@ -215,40 +215,40 @@ public class OptionTest {
         assertThat(Option.of(1).reduceRightOption((x, xs) -> x + xs)).isEqualTo(Option.of(1));
     }
 
-    // -- orElse
+    // -- getOrElse
 
     @Test
-    public void shouldGetValueOnOrElseWhenValueIsPresent() {
-        assertThat(Option.of(1).orElse(2)).isEqualTo(1);
+    public void shouldGetValueOnGetOrElseWhenValueIsPresent() {
+        assertThat(Option.of(1).getOrElse(2)).isEqualTo(1);
     }
 
     @Test
-    public void shouldGetAlternativeOnOrElseWhenValueIsNotPresent() {
-        assertThat(Option.none().orElse(2)).isEqualTo(2);
+    public void shouldGetAlternativeOnGetOrElseWhenValueIsNotPresent() {
+        assertThat(Option.none().getOrElse(2)).isEqualTo(2);
     }
 
-    // -- orElseGet
+    // -- getOrElse
 
     @Test
-    public void shouldGetValueOnOrElseGetWhenValueIsPresent() {
-        assertThat(Option.of(1).orElseGet(() -> 2)).isEqualTo(1);
+    public void shouldGetValueOnGetOrElseGetWhenValueIsPresent() {
+        assertThat(Option.of(1).getOrElse(() -> 2)).isEqualTo(1);
     }
 
     @Test
-    public void shouldGetAlternativeOnOrElseGetWhenValueIsNotPresent() {
-        assertThat(Option.none().orElseGet(() -> 2)).isEqualTo(2);
+    public void shouldGetAlternativeOnGetOrElseGetWhenValueIsNotPresent() {
+        assertThat(Option.none().getOrElse(() -> 2)).isEqualTo(2);
     }
 
-    // -- orElseThrow
+    // -- getOrElseThrow
 
     @Test
-    public void shouldGetValueOnOrElseThrowWhenValueIsPresent() {
-        assertThat(Option.of(1).orElseThrow(() -> new RuntimeException("none"))).isEqualTo(1);
+    public void shouldGetValueOnGetOrElseThrowWhenValueIsPresent() {
+        assertThat(Option.of(1).getOrElseThrow(() -> new RuntimeException("none"))).isEqualTo(1);
     }
 
     @Test(expected = RuntimeException.class)
-    public void shouldThrowOnOrElseThrowWhenValueIsNotPresent() {
-        Option.none().orElseThrow(() -> new RuntimeException("none"));
+    public void shouldThrowOnGetOrElseThrowWhenValueIsNotPresent() {
+        Option.none().getOrElseThrow(() -> new RuntimeException("none"));
     }
 
     // -- toJavaOptional
