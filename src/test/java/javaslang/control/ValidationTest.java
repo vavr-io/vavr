@@ -26,21 +26,11 @@ public class ValidationTest {
         assertThat(Validation.valid(1) instanceof Validation.Valid).isTrue();
     }
 
-    @Test
-    public void shouldCreateSuccessWhenCallingValidationSuccessSupplier() {
-        assertThat(Validation.valid(() -> 1) instanceof Validation.Valid).isTrue();
-    }
-
     // -- Validation.invalid
 
     @Test
     public void shouldCreateFailureWhenCallingValidationFailure() {
         assertThat(Validation.invalid("error") instanceof Validation.Invalid).isTrue();
-    }
-
-    @Test
-    public void shouldCreateFailureWhenCallingValidationFailureSupplier() {
-        assertThat(Validation.invalid(() -> "error") instanceof Validation.Invalid).isTrue();
     }
 
     // -- fold
