@@ -51,7 +51,7 @@ public class Tuple1Test {
     }
 
     @Test
-    public void shouldCompare1thArg() {
+    public void shouldCompare1stArg() {
         final Tuple1<Integer> t0 = createIntTuple(0);
         final Tuple1<Integer> t1 = createIntTuple(1);
         assertThat(t0.compareTo(t1)).isNegative();
@@ -62,7 +62,9 @@ public class Tuple1Test {
 
     @Test
     public void shouldMap() {
-        // will be fixed with #1027 and #1025
+        final Tuple1<Object> tuple = createTuple();
+        final Tuple1<Object> actual = tuple.map(o -> o);
+        assertThat(actual).isEqualTo(tuple);
     }
 
     @Test
@@ -76,7 +78,7 @@ public class Tuple1Test {
     @Test
     public void shouldTransformTuple() {
         final Tuple1<Object> tuple = createTuple();
-        final Tuple0 actual = tuple.transform(ignored -> Tuple0.instance());
+        final Tuple0 actual = tuple.transform(o1 -> Tuple0.instance());
         assertThat(actual).isEqualTo(Tuple0.instance());
     }
 

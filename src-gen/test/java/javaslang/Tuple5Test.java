@@ -55,30 +55,36 @@ public class Tuple5Test {
     }
 
     @Test
-    public void shouldCompare1thArg() {
+    public void shouldCompare1stArg() {
         final Tuple5<Integer, Integer, Integer, Integer, Integer> t0 = createIntTuple(0, 0, 0, 0, 0);
         final Tuple5<Integer, Integer, Integer, Integer, Integer> t1 = createIntTuple(1, 0, 0, 0, 0);
         assertThat(t0.compareTo(t1)).isNegative();
         assertThat(t1.compareTo(t0)).isPositive();
         assertThat(intTupleComparator.compare(t0, t1)).isNegative();
         assertThat(intTupleComparator.compare(t1, t0)).isPositive();
-    }@Test
-    public void shouldCompare2thArg() {
+    }
+
+    @Test
+    public void shouldCompare2ndArg() {
         final Tuple5<Integer, Integer, Integer, Integer, Integer> t0 = createIntTuple(0, 0, 0, 0, 0);
         final Tuple5<Integer, Integer, Integer, Integer, Integer> t2 = createIntTuple(0, 1, 0, 0, 0);
         assertThat(t0.compareTo(t2)).isNegative();
         assertThat(t2.compareTo(t0)).isPositive();
         assertThat(intTupleComparator.compare(t0, t2)).isNegative();
         assertThat(intTupleComparator.compare(t2, t0)).isPositive();
-    }@Test
-    public void shouldCompare3thArg() {
+    }
+
+    @Test
+    public void shouldCompare3rdArg() {
         final Tuple5<Integer, Integer, Integer, Integer, Integer> t0 = createIntTuple(0, 0, 0, 0, 0);
         final Tuple5<Integer, Integer, Integer, Integer, Integer> t3 = createIntTuple(0, 0, 1, 0, 0);
         assertThat(t0.compareTo(t3)).isNegative();
         assertThat(t3.compareTo(t0)).isPositive();
         assertThat(intTupleComparator.compare(t0, t3)).isNegative();
         assertThat(intTupleComparator.compare(t3, t0)).isPositive();
-    }@Test
+    }
+
+    @Test
     public void shouldCompare4thArg() {
         final Tuple5<Integer, Integer, Integer, Integer, Integer> t0 = createIntTuple(0, 0, 0, 0, 0);
         final Tuple5<Integer, Integer, Integer, Integer, Integer> t4 = createIntTuple(0, 0, 0, 1, 0);
@@ -86,7 +92,9 @@ public class Tuple5Test {
         assertThat(t4.compareTo(t0)).isPositive();
         assertThat(intTupleComparator.compare(t0, t4)).isNegative();
         assertThat(intTupleComparator.compare(t4, t0)).isPositive();
-    }@Test
+    }
+
+    @Test
     public void shouldCompare5thArg() {
         final Tuple5<Integer, Integer, Integer, Integer, Integer> t0 = createIntTuple(0, 0, 0, 0, 0);
         final Tuple5<Integer, Integer, Integer, Integer, Integer> t5 = createIntTuple(0, 0, 0, 0, 1);
@@ -99,8 +107,7 @@ public class Tuple5Test {
     @Test
     public void shouldMap() {
         final Tuple5<Object, Object, Object, Object, Object> tuple = createTuple();
-        final Function5<Object, Object, Object, Object, Object, Tuple5<Object, Object, Object, Object, Object>> mapper = (o1, o2, o3, o4, o5) -> tuple;
-        final Tuple5<Object, Object, Object, Object, Object> actual = tuple.map(mapper);
+        final Tuple5<Object, Object, Object, Object, Object> actual = tuple.map((o1, o2, o3, o4, o5) -> tuple);
         assertThat(actual).isEqualTo(tuple);
     }
 
@@ -119,7 +126,7 @@ public class Tuple5Test {
     @Test
     public void shouldTransformTuple() {
         final Tuple5<Object, Object, Object, Object, Object> tuple = createTuple();
-        final Tuple0 actual = tuple.transform(ignored -> Tuple0.instance());
+        final Tuple0 actual = tuple.transform((o1, o2, o3, o4, o5) -> Tuple0.instance());
         assertThat(actual).isEqualTo(Tuple0.instance());
     }
 

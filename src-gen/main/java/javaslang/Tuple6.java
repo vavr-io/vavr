@@ -221,25 +221,62 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
         return _6;
     }
 
-    public <U1, U2, U3, U4, U5, U6> Tuple6<U1, U2, U3, U4, U5, U6> map(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Tuple6<U1, U2, U3, U4, U5, U6>> f) {
-        return f.apply(_1, _2, _3, _4, _5, _6);
+    /**
+     * Maps the components of this tuple using a mapper function.
+     * @param mapper the mapper function
+     * @param <U1> new type of the 1st component
+     * @param <U2> new type of the 2nd component
+     * @param <U3> new type of the 3rd component
+     * @param <U4> new type of the 4th component
+     * @param <U5> new type of the 5th component
+     * @param <U6> new type of the 6th component
+     * @return A new Tuple of same arity.
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    public <U1, U2, U3, U4, U5, U6> Tuple6<U1, U2, U3, U4, U5, U6> map(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Tuple6<U1, U2, U3, U4, U5, U6>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return mapper.apply(_1, _2, _3, _4, _5, _6);
     }
 
+    /**
+     * Maps the components of this tuple using a mapper function for each component.
+     *
+     * @param f1 the mapper function of the 1st component
+     * @param f2 the mapper function of the 2nd component
+     * @param f3 the mapper function of the 3rd component
+     * @param f4 the mapper function of the 4th component
+     * @param f5 the mapper function of the 5th component
+     * @param f6 the mapper function of the 6th component
+     * @param <U1> new type of the 1st component
+     * @param <U2> new type of the 2nd component
+     * @param <U3> new type of the 3rd component
+     * @param <U4> new type of the 4th component
+     * @param <U5> new type of the 5th component
+     * @param <U6> new type of the 6th component
+     * @return A new Tuple of same arity.
+     * @throws NullPointerException if one of the arguments is null
+     */
     public <U1, U2, U3, U4, U5, U6> Tuple6<U1, U2, U3, U4, U5, U6> map(Function<? super T1, ? extends U1> f1, Function<? super T2, ? extends U2> f2, Function<? super T3, ? extends U3> f3, Function<? super T4, ? extends U4> f4, Function<? super T5, ? extends U5> f5, Function<? super T6, ? extends U6> f6) {
+        Objects.requireNonNull(f1, "f1 is null");
+        Objects.requireNonNull(f2, "f2 is null");
+        Objects.requireNonNull(f3, "f3 is null");
+        Objects.requireNonNull(f4, "f4 is null");
+        Objects.requireNonNull(f5, "f5 is null");
+        Objects.requireNonNull(f6, "f6 is null");
         return Tuple.of(f1.apply(_1), f2.apply(_2), f3.apply(_3), f4.apply(_4), f5.apply(_5), f6.apply(_6));
     }
 
     /**
-     * Transforms this tuple to an arbitrary object (which may be also a tuple of same or different arity).
+     * Transforms this tuple to an object of type U.
      *
      * @param f Transformation which creates a new object of type U based on this tuple's contents.
-     * @param <U> New type
+     * @param <U> type of the transformation result
      * @return An object of type U
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U transform(Function<Tuple6<T1, T2, T3, T4, T5, T6>, ? extends U> f) {
+    public <U> U transform(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
-        return f.apply(this);
+        return f.apply(_1, _2, _3, _4, _5, _6);
     }
 
     @Override
