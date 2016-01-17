@@ -7,6 +7,7 @@ package javaslang.control;
 
 import javaslang.*;
 import javaslang.algebra.Applicative;
+import javaslang.algebra.BiFunctor;
 import javaslang.algebra.Kind2;
 import javaslang.collection.List;
 
@@ -55,7 +56,7 @@ import java.util.function.Supplier;
  * @see <a href="https://github.com/scalaz/scalaz/blob/series/7.3.x/core/src/main/scala/scalaz/Validation.scala">Validation</a>
  * @since 2.0.0
  */
-public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T> {
+public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, BiFunctor<E, T> {
 
     /**
      * Creates a {@link Valid} that contains the given {@code value}.
@@ -418,6 +419,7 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T> {
      * @return an instance of Validation&lt;U,R&gt;
      * @throws NullPointerException if invalidMapper or validMapper is null
      */
+    @Override
     default <U, R> Validation<U, R> bimap(Function<? super E, ? extends U> invalidMapper, Function<? super T, ? extends R> validMapper) {
         Objects.requireNonNull(invalidMapper, "function invalidMapper is null");
         Objects.requireNonNull(validMapper, "function validMapper is null");

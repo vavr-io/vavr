@@ -118,6 +118,7 @@ public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
      * @param <Y>         The new right type of the resulting Either
      * @return A new Either instance
      */
+    @Override
     default <X, Y> Either<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
         Objects.requireNonNull(leftMapper, "leftMapper is null");
         Objects.requireNonNull(rightMapper, "rightMapper is null");
@@ -254,7 +255,7 @@ public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
     /**
      * Maps this right-biased Either.
      *
-     * @param mapper A mapper
+     * @param leftMapper A mapper
      * @param <U>    Component type of the mapped right value
      * @return a mapped {@code Monad}
      * @throws NullPointerException if {@code mapper} is null
@@ -377,12 +378,17 @@ public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class LeftProjection<L, R> implements Monad<L>, Value<L> {
+    final class LeftProjection<L, R> implements Value<L>, Monad<L>, BiFunctor<L, R> {
 
         private final Either<L, R> either;
 
         private LeftProjection(Either<L, R> either) {
             this.either = either;
+        }
+
+        @Override
+        public <U1, U2> BiFunctor<U1, U2> bimap(Function<? super L, ? extends U1> f1, Function<? super R, ? extends U2> f2) {
+            return either.bimap(f1, f2).left();
         }
 
         @Override
@@ -628,12 +634,17 @@ public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
      * @param <R> The type of the Right value of an Either.
      * @since 1.0.0
      */
-    final class RightProjection<L, R> implements Monad<R>, Value<R> {
+    final class RightProjection<L, R> implements Value<R>, Monad<R>, BiFunctor<L, R> {
 
         private final Either<L, R> either;
 
         private RightProjection(Either<L, R> either) {
             this.either = either;
+        }
+
+        @Override
+        public <U1, U2> BiFunctor<U1, U2> bimap(Function<? super L, ? extends U1> f1, Function<? super R, ? extends U2> f2) {
+            return either.bimap(f1, f2).right();
         }
 
         @Override
