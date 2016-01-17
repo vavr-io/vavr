@@ -92,7 +92,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
         for (T element : elements) {
             tree = tree.put(element, element);
         }
-        return new HashSet<>(tree);
+        return tree.isEmpty() ? empty() : new HashSet<>(tree);
     }
 
     /**

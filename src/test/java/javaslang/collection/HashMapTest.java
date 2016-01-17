@@ -33,14 +33,14 @@ public class HashMapTest extends AbstractMapTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> Map<K, V> mapOf(Tuple2<? extends K, ? extends V>... entries) {
+    protected final <K, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
         return HashMap.ofEntries(entries);
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> Map<K, V> mapOf(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+    protected final <K, V> Map<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         return HashMap.ofEntries(entries);
     }
 

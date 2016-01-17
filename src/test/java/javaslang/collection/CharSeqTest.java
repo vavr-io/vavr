@@ -3043,4 +3043,14 @@ public class CharSeqTest {
     public void shouldFillTheCharSeqWith0ElementsWhenNIsNegative() {
         assertThat(CharSeq.fill(-1, () -> 'a')).isEqualTo(empty());
     }
+
+    @Test
+    public void ofShouldReturnTheSingletonEmpty() {
+        assertThat(CharSeq.of()).isSameAs(empty());
+    }
+
+    @Test
+    public void ofAllShouldReturnTheSingletonEmpty() {
+        assertThat(CharSeq.ofAll(Iterator.empty())).isSameAs(empty());
+    }
 }

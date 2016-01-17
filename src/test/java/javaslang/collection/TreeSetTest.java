@@ -27,6 +27,11 @@ public class TreeSetTest extends AbstractSortedSetTest {
     }
 
     @Override
+    protected boolean emptyShouldBeSingleton() {
+        return false;
+    }
+
+    @Override
     protected <T> TreeSet<T> of(T element) {
         return TreeSet.of(toStringComparator(), element);
     }
