@@ -792,7 +792,11 @@ def generateMainClasses(): Unit = {
       val params = (1 to i).gen(j => s"_$j")(", ")
       val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
       val resultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j")(", ")}>"
-      val flatMapResultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j")(", ")}>"
+      val mapResult = i match {
+        case 0 => ""
+        case 1 => "? extends U1"
+        case _ => s"Tuple$i<${(1 to i).gen(j => s"U$j")(", ")}>"
+      }
       val comparableGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j extends Comparable<? super U$j>")(", ")}>"
       val untyped = if (i == 0) "" else s"<${(1 to i).gen(j => "?")(", ")}>"
       val functionType = i match {
@@ -918,21 +922,26 @@ def generateMainClasses(): Unit = {
               }
             """)("\n\n")}
 
-            ${(i > 1).gen(xs"""
+            ${(i > 0).gen(xs"""
               /$javadoc
                * Maps the components of this tuple using a mapper function.
+               *
                * @param mapper the mapper function
                ${(1 to i).gen(j => s"* @param <U$j> new type of the ${j.ordinal} component")("\n")}
                * @return A new Tuple of same arity.
                * @throws NullPointerException if {@code mapper} is null
                */
-              public $resultGenerics $className$resultGenerics map($functionType<$paramTypes, $className$flatMapResultGenerics> mapper) {
+              public $resultGenerics $className$resultGenerics map($functionType<$paramTypes, $mapResult> mapper) {
                   Objects.requireNonNull(mapper, "mapper is null");
-                  return mapper.apply($params);
+                  ${if (i == 1)
+                    "return Tuple.of(mapper.apply(_1));"
+                  else
+                    s"return mapper.apply($params);"
+                  }
               }
             """)}
 
-            ${(i > 0).gen(xs"""
+            ${(i > 1).gen(xs"""
               /$javadoc
                * Maps the components of this tuple using a mapper function for each component.
                ${(0 to i).gen(j => if (j == 0) "*" else s"* @param f$j the mapper function of the ${j.ordinal} component")("\n")}
@@ -945,6 +954,21 @@ def generateMainClasses(): Unit = {
                   return ${im.getType("javaslang.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(_$j)")(", ")});
               }
             """)}
+
+            ${(i > 1) gen (1 to i).gen(j => xs"""
+              /$javadoc
+               * Maps the ${j.ordinal} component of this tuple to a new value.
+               *
+               * @param <U> new type of the ${j.ordinal} component
+               * @param mapper A mapping function
+               * @return a new tuple based on this tuple and substituted ${j.ordinal} component
+               */
+              public <U> $className<${(1 to i).gen(k => if (j == k) "U" else s"T$k")(", ")}> map$j(${im.getType("java.util.function.Function")}<? super T$j, ? extends U> mapper) {
+                  Objects.requireNonNull(mapper, "mapper is null");
+                  final U u = mapper.apply(_$j);
+                  return Tuple.of(${(1 to i).gen(k => if (j == k) "u" else s"_$k")(", ")});
+              }
+            """)("\n\n")}
 
             /**
              * Transforms this tuple to an object of type U.
@@ -1805,6 +1829,20 @@ def generateTestClasses(): Unit = {
                 final Tuple$i<$generics> actual = tuple.map(${(1 to i).gen(j => s"f$j")(", ")});
                 $assertThat(actual).isEqualTo(tuple);
               }
+
+              ${(i > 1) gen (1 to i).gen(j => {
+                val substitutedResultTypes = (1 to i).gen(k => if (k == j) "String" else "Integer")(", ")
+                val ones = (1 to i).gen(_ => "1")(", ")
+                val result = (1 to i).gen(k => if (k == j) "\"X\"" else "1")(", ")
+                xs"""
+                  @$test
+                  public void shouldMap${j.ordinal}Component() {
+                    final Tuple$i<$substitutedResultTypes> actual = Tuple.of($ones).map$j(i -> "X");
+                    final Tuple$i<$substitutedResultTypes> expected = Tuple.of($result);
+                    assertThat(actual).isEqualTo(expected);
+                  }
+                """
+              })("\n\n")}
 
               @$test
               public void shouldTransformTuple() {

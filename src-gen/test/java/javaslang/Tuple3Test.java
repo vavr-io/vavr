@@ -100,6 +100,27 @@ public class Tuple3Test {
     }
 
     @Test
+    public void shouldMap1stComponent() {
+      final Tuple3<String, Integer, Integer> actual = Tuple.of(1, 1, 1).map1(i -> "X");
+      final Tuple3<String, Integer, Integer> expected = Tuple.of("X", 1, 1);
+      assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldMap2ndComponent() {
+      final Tuple3<Integer, String, Integer> actual = Tuple.of(1, 1, 1).map2(i -> "X");
+      final Tuple3<Integer, String, Integer> expected = Tuple.of(1, "X", 1);
+      assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldMap3rdComponent() {
+      final Tuple3<Integer, Integer, String> actual = Tuple.of(1, 1, 1).map3(i -> "X");
+      final Tuple3<Integer, Integer, String> expected = Tuple.of(1, 1, "X");
+      assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldTransformTuple() {
         final Tuple3<Object, Object, Object> tuple = createTuple();
         final Tuple0 actual = tuple.transform((o1, o2, o3) -> Tuple0.instance());
