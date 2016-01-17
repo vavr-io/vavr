@@ -275,7 +275,7 @@ public interface Match {
             @Override
             public R apply(Object o) {
                 return (R) cases.reverse()
-                        .findFirst(caze -> caze.isApplicable(o))
+                        .find(caze -> caze.isApplicable(o))
                         .map(caze -> caze.apply(o))
                         .orElseThrow(() -> new MatchError(o));
             }
@@ -371,7 +371,7 @@ public interface Match {
             @Override
             public R apply(Object o) {
                 return (R) cases.reverse()
-                        .findFirst(caze -> caze.isApplicable(o))
+                        .find(caze -> caze.isApplicable(o))
                         .map(caze -> caze.apply(o))
                         .orElseGet(() -> function.apply(o));
             }
@@ -445,7 +445,7 @@ public interface Match {
                 @Override
                 public void accept(Object o) {
                     cases.reverse()
-                            .findFirst(caze -> caze.isApplicable(o))
+                            .find(caze -> caze.isApplicable(o))
                             .map(caze -> caze.apply(o));
                 }
 
@@ -543,7 +543,7 @@ public interface Match {
                 @Override
                 public void accept(Object o) {
                     cases.reverse()
-                            .findFirst(caze -> caze.isApplicable(o))
+                            .find(caze -> caze.isApplicable(o))
                             .map(caze -> caze.apply(o))
                             .orElseGet(() -> action.apply(o));
                 }
@@ -1300,7 +1300,7 @@ interface MatchModule {
     @SuppressWarnings("varargs")
     @SafeVarargs
     static <T> Predicate<? super Object> isIn(T... prototypes) {
-        return value -> Iterator.of(prototypes).findFirst(prototype -> is(prototype).test(value)).isDefined();
+        return value -> Iterator.of(prototypes).find(prototype -> is(prototype).test(value)).isDefined();
     }
 
     @SuppressWarnings("unchecked")
@@ -1314,7 +1314,7 @@ interface MatchModule {
     }
 
     static <T> Predicate<Object> isTypeIn(Class<?>... types) {
-        return value -> Iterator.of(types).findFirst(type -> isType(type).test(value)).isDefined();
+        return value -> Iterator.of(types).find(type -> isType(type).test(value)).isDefined();
     }
 
     @SuppressWarnings("unchecked")

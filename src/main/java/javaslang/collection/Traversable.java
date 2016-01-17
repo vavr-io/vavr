@@ -93,7 +93,7 @@ import java.util.function.Predicate;
  * <li>{@link #dropUntil(Predicate)}</li>
  * <li>{@link #dropWhile(Predicate)}</li>
  * <li>{@link #filter(Predicate)}</li>
- * <li>{@link #findFirst(Predicate)}</li>
+ * <li>{@link #find(Predicate)}</li>
  * <li>{@link #findLast(Predicate)}</li>
  * <li>{@link #groupBy(Function)}</li>
  * <li>{@link #partition(Predicate)}</li>
@@ -259,7 +259,7 @@ public interface Traversable<T> extends Value<T>, Monad<T> {
      */
     default boolean containsAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return List.ofAll(elements).distinct().findFirst(e -> !this.contains(e)).isEmpty();
+        return List.ofAll(elements).distinct().find(e -> !this.contains(e)).isEmpty();
     }
 
     /**
@@ -384,10 +384,10 @@ public interface Traversable<T> extends Value<T>, Monad<T> {
      * Returns the first element of this which satisfies the given predicate.
      *
      * @param predicate A predicate.
-     * @return Some(element) or None, where element may be null (i.e. {@code List.of(null).findFirst(e -> e == null)}).
+     * @return Some(element) or None, where element may be null (i.e. {@code List.of(null).find(e -> e == null)}).
      * @throws NullPointerException if {@code predicate} is null
      */
-    default Option<T> findFirst(Predicate<? super T> predicate) {
+    default Option<T> find(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (T a : this) {
             if (predicate.test(a)) {
@@ -400,10 +400,10 @@ public interface Traversable<T> extends Value<T>, Monad<T> {
     /**
      * Returns the last element of this which satisfies the given predicate.
      * <p>
-     * Same as {@code reverse().findFirst(predicate)}.
+     * Same as {@code reverse().find(predicate)}.
      *
      * @param predicate A predicate.
-     * @return Some(element) or None, where element may be null (i.e. {@code List.of(null).findFirst(e -> e == null)}).
+     * @return Some(element) or None, where element may be null (i.e. {@code List.of(null).find(e -> e == null)}).
      * @throws NullPointerException if {@code predicate} is null
      */
     default Option<T> findLast(Predicate<? super T> predicate) {
