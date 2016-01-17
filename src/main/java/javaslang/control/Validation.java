@@ -521,7 +521,7 @@ public interface Validation<E, T> extends Value<T>, Applicative<Validation<?, ?>
                 return value.isEmpty() ? /*TODO(#1034)*/invalid(null) : valid(value.get());
             } else {
                 final java.util.Iterator<? extends U> iterator = iterable.iterator();
-                return iterator.hasNext() ? /*TODO(#1034)*/invalid(null) : valid(iterator.next());
+                return iterator.hasNext() ? valid(iterator.next()) : /*TODO(#1034)*/invalid(null);
             }
         }
     }
