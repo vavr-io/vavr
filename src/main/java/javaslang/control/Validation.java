@@ -7,7 +7,6 @@ package javaslang.control;
 
 import javaslang.*;
 import javaslang.algebra.Applicative;
-import javaslang.algebra.BiFoldable;
 import javaslang.algebra.BiFunctor;
 import javaslang.algebra.Kind2;
 import javaslang.collection.Iterator;
@@ -58,7 +57,7 @@ import java.util.function.Predicate;
  * @see <a href="https://github.com/scalaz/scalaz/blob/series/7.3.x/core/src/main/scala/scalaz/Validation.scala">Validation</a>
  * @since 2.0.0
  */
-public interface Validation<E, T> extends Value<T>, Applicative<Validation<?, ?>, E, T>, BiFunctor<E, T>, BiFoldable<E, T> {
+public interface Validation<E, T> extends Value<T>, Applicative<Validation<?, ?>, E, T>, BiFunctor<E, T> {
 
     /**
      * Creates a {@link Valid} that contains the given {@code value}.
@@ -371,8 +370,7 @@ public interface Validation<E, T> extends Value<T>, Applicative<Validation<?, ?>
      * @return an instance of type U
      * @throws NullPointerException if fInvalid or fValid is null
      */
-    @Override
-    default <U> U bifold(Function<? super E, ? extends U> fInvalid, Function<? super T, ? extends U> fValid) {
+    default <U> U fold(Function<? super E, ? extends U> fInvalid, Function<? super T, ? extends U> fValid) {
         Objects.requireNonNull(fInvalid, "function fInvalid null");
         Objects.requireNonNull(fValid, "function fValid null");
         if (isInvalid()) {
