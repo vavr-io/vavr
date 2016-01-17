@@ -1830,6 +1830,20 @@ def generateTestClasses(): Unit = {
                 $assertThat(actual).isEqualTo(tuple);
               }
 
+              ${(i > 1) gen (1 to i).gen(j => {
+                val substitutedResultTypes = (1 to i).gen(k => if (k == j) "String" else "Integer")(", ")
+                val ones = (1 to i).gen(_ => "1")(", ")
+                val result = (1 to i).gen(k => if (k == j) "\"X\"" else "1")(", ")
+                xs"""
+                  @$test
+                  public void shouldMap${j.ordinal}Component() {
+                    final Tuple$i<$substitutedResultTypes> actual = Tuple.of($ones).map$j(i -> "X");
+                    final Tuple$i<$substitutedResultTypes> expected = Tuple.of($result);
+                    assertThat(actual).isEqualTo(expected);
+                  }
+                """
+              })("\n\n")}
+
               @$test
               public void shouldTransformTuple() {
                   final Tuple$i<$generics> tuple = createTuple();

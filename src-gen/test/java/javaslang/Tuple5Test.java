@@ -124,6 +124,41 @@ public class Tuple5Test {
     }
 
     @Test
+    public void shouldMap1stComponent() {
+      final Tuple5<String, Integer, Integer, Integer, Integer> actual = Tuple.of(1, 1, 1, 1, 1).map1(i -> "X");
+      final Tuple5<String, Integer, Integer, Integer, Integer> expected = Tuple.of("X", 1, 1, 1, 1);
+      assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldMap2ndComponent() {
+      final Tuple5<Integer, String, Integer, Integer, Integer> actual = Tuple.of(1, 1, 1, 1, 1).map2(i -> "X");
+      final Tuple5<Integer, String, Integer, Integer, Integer> expected = Tuple.of(1, "X", 1, 1, 1);
+      assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldMap3rdComponent() {
+      final Tuple5<Integer, Integer, String, Integer, Integer> actual = Tuple.of(1, 1, 1, 1, 1).map3(i -> "X");
+      final Tuple5<Integer, Integer, String, Integer, Integer> expected = Tuple.of(1, 1, "X", 1, 1);
+      assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldMap4thComponent() {
+      final Tuple5<Integer, Integer, Integer, String, Integer> actual = Tuple.of(1, 1, 1, 1, 1).map4(i -> "X");
+      final Tuple5<Integer, Integer, Integer, String, Integer> expected = Tuple.of(1, 1, 1, "X", 1);
+      assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldMap5thComponent() {
+      final Tuple5<Integer, Integer, Integer, Integer, String> actual = Tuple.of(1, 1, 1, 1, 1).map5(i -> "X");
+      final Tuple5<Integer, Integer, Integer, Integer, String> expected = Tuple.of(1, 1, 1, 1, "X");
+      assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldTransformTuple() {
         final Tuple5<Object, Object, Object, Object, Object> tuple = createTuple();
         final Tuple0 actual = tuple.transform((o1, o2, o3, o4, o5) -> Tuple0.instance());

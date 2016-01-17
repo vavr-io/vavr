@@ -88,6 +88,20 @@ public class Tuple2Test {
     }
 
     @Test
+    public void shouldMap1stComponent() {
+      final Tuple2<String, Integer> actual = Tuple.of(1, 1).map1(i -> "X");
+      final Tuple2<String, Integer> expected = Tuple.of("X", 1);
+      assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldMap2ndComponent() {
+      final Tuple2<Integer, String> actual = Tuple.of(1, 1).map2(i -> "X");
+      final Tuple2<Integer, String> expected = Tuple.of(1, "X");
+      assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldTransformTuple() {
         final Tuple2<Object, Object> tuple = createTuple();
         final Tuple0 actual = tuple.transform((o1, o2) -> Tuple0.instance());
