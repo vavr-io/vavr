@@ -294,7 +294,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             tree = tree.insert((Tuple2<K, V>) entry);
         }
-        return new TreeMap<>(tree);
+        return tree.isEmpty() ? TreeMap.empty(keyComparator) : new TreeMap<>(tree);
     }
 
     /**
@@ -314,7 +314,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
         for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
             tree = tree.insert(Tuple.of(entry.getKey(), entry.getValue()));
         }
-        return new TreeMap<>(tree);
+        return tree.isEmpty() ? TreeMap.empty(keyComparator) : new TreeMap<>(tree);
     }
 
     /**

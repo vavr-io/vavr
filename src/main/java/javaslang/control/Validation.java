@@ -15,7 +15,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * An implementation similar to scalaz's <a href="http://eed3si9n.com/learning-scalaz/Validation.html">Validation</a> control.
@@ -73,20 +72,6 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
     }
 
     /**
-     * Creates a {@link Valid} that contains the result of the given {@code supplier}.
-     *
-     * @param <E>      type of the error
-     * @param <T>      type of the result of the given {@code supplier}
-     * @param supplier A supplier for the value
-     * @return {@code Valid(value)}
-     * @throws NullPointerException if supplier is null
-     */
-    static <E, T> Validation<E, T> valid(Supplier<? extends T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
-        return new Valid<>(supplier.get());
-    }
-
-    /**
      * Creates an {@link Invalid} that contains the given {@code error}.
      *
      * @param <E>   type of the given {@code error}
@@ -98,20 +83,6 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
     static <E, T> Validation<E, T> invalid(E error) {
         Objects.requireNonNull(error, "error is null");
         return new Invalid<>(error);
-    }
-
-    /**
-     * Creates an {@link Invalid} that contains the result of the given {@code supplier}.
-     *
-     * @param <E>      type of the result of the given {@code supplier}
-     * @param <T>      type of the value
-     * @param supplier A supplier for the error
-     * @return {@code Invalid(error)}
-     * @throws NullPointerException if supplier is null
-     */
-    static <E, T> Validation<E, T> invalid(Supplier<? extends E> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
-        return new Invalid<>(supplier.get());
     }
 
     /**
@@ -455,13 +426,12 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
     @Override
     default <U> Validation<List<E>, U> ap(Kind2<Validation<?, ?>, List<E>, ? extends Function<? super T, ? extends U>> kind) {
         Objects.requireNonNull(kind, "kind is null");
-        Validation<List<E>, ? extends Function<? super T, ? extends U>> validation = (Validation<List<E>, ? extends Function<? super T, ? extends U>>) ((Object) kind);
+        Validation<List<E>, Function<T, U>> validation = (Validation<List<E>, Function<T, U>>) (Object) kind;
 
         if (isValid() && validation.isValid()) {
-            return valid(() -> {
-                Function<? super T, ? extends U> f = validation.get();
-                return f.apply(this.get());
-            });
+            Function<? super T, ? extends U> f = validation.get();
+            U u = f.apply(this.get());
+            return valid(u);
         } else if (isValid() && validation.isInvalid()) {
             List<E> errors = validation.getError();
             return invalid(errors);
@@ -469,11 +439,9 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
             E error = this.getError();
             return invalid(List.of(error));
         } else {
-            return invalid(() -> {
-                List<E> errors = validation.getError();
-                E error = this.getError();
-                return errors.append(error);
-            });
+            List<E> errors = validation.getError();
+            E error = this.getError();
+            return invalid(errors.append(error));
         }
     }
 
@@ -488,7 +456,6 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
     default <U> Builder<E, T, U> combine(Validation<E, U> validation) {
         return new Builder<>(this, validation);
     }
-
 
     /**
      * A valid Validation
