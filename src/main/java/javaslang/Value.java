@@ -456,7 +456,7 @@ public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
      * @throws NullPointerException  if supplier is null
      * @throws Try.NonFatalException containing the original exception if this Value was empty and the Try failed.
      */
-    default T orElseTry(Try.CheckedSupplier<? extends T> supplier) {
+    default T getOrElseTry(Try.CheckedSupplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? Try.of(supplier).get() : get();
     }

@@ -212,14 +212,6 @@ public abstract class AbstractValueTest {
         assertThat(of(1).isDefined()).isTrue();
     }
 
-    // -- orElse
-
-    @Test
-    public void shouldCalculateOrElse() {
-        assertThat(empty().getOrElse(1)).isEqualTo(1);
-        assertThat(of(1).getOrElse(2)).isEqualTo(1);
-    }
-
     // -- orElseGet
 
     @Test
@@ -257,21 +249,29 @@ public abstract class AbstractValueTest {
         assertThat(of(1).fold(0, (a, b) -> a + b)).isEqualTo(1);
     }
 
-    // -- orElseTry
+    // -- getOrElse
 
     @Test
-    public void shouldReturnUnderlyingValueWhenCallingOrElseTryOnNonEmptyValue() {
-        assertThat(of(1).orElseTry(() -> 2)).isEqualTo(1);
+    public void shouldCalculateGetOrElse() {
+        assertThat(empty().getOrElse(1)).isEqualTo(1);
+        assertThat(of(1).getOrElse(2)).isEqualTo(1);
+    }
+
+    // -- getOrElseTry
+
+    @Test
+    public void shouldReturnUnderlyingValueWhenCallingGetOrElseTryOnNonEmptyValue() {
+        assertThat(of(1).getOrElseTry(() -> 2)).isEqualTo(1);
     }
 
     @Test
-    public void shouldReturnAlternateValueWhenCallingOrElseTryOnEmptyValue() {
-        assertThat(empty().orElseTry(() -> 2)).isEqualTo(2);
+    public void shouldReturnAlternateValueWhenCallingGetOrElseTryOnEmptyValue() {
+        assertThat(empty().getOrElseTry(() -> 2)).isEqualTo(2);
     }
 
     @Test(expected = Try.NonFatalException.class)
-    public void shouldThrowWhenCallingOrElseTryOnEmptyValueAndTryIsAFailure() {
-        empty().orElseTry(() -> {
+    public void shouldThrowWhenCallingGetOrElseTryOnEmptyValueAndTryIsAFailure() {
+        empty().getOrElseTry(() -> {
             throw new Error();
         });
     }

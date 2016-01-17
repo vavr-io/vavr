@@ -531,8 +531,8 @@ public class TryTest {
     }
 
     @Test
-    public void shouldOrElseOnSuccess() {
-        assertThat(success().getOrElse(null)).isEqualTo(OK);
+    public void shouldGetOrElseOnSuccess() {
+        assertThat(success().getOrElse((String) null)).isEqualTo(OK);
     }
 
     @Test
