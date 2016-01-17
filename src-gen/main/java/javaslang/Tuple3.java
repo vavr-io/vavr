@@ -142,6 +142,7 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2
 
     /**
      * Maps the components of this tuple using a mapper function.
+     *
      * @param mapper the mapper function
      * @param <U1> new type of the 1st component
      * @param <U2> new type of the 2nd component
@@ -171,6 +172,45 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2
         Objects.requireNonNull(f2, "f2 is null");
         Objects.requireNonNull(f3, "f3 is null");
         return Tuple.of(f1.apply(_1), f2.apply(_2), f3.apply(_3));
+    }
+
+    /**
+     * Maps the 1st component of this tuple to a new value.
+     *
+     * @param <U> new type of the 1st component
+     * @param mapper A mapping function
+     * @return a new tuple based on this tuple and substituted 1st component
+     */
+    public <U> Tuple3<U, T2, T3> map1(Function<? super T1, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        final U u = mapper.apply(_1);
+        return Tuple.of(u, _2, _3);
+    }
+
+    /**
+     * Maps the 2nd component of this tuple to a new value.
+     *
+     * @param <U> new type of the 2nd component
+     * @param mapper A mapping function
+     * @return a new tuple based on this tuple and substituted 2nd component
+     */
+    public <U> Tuple3<T1, U, T3> map2(Function<? super T2, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        final U u = mapper.apply(_2);
+        return Tuple.of(_1, u, _3);
+    }
+
+    /**
+     * Maps the 3rd component of this tuple to a new value.
+     *
+     * @param <U> new type of the 3rd component
+     * @param mapper A mapping function
+     * @return a new tuple based on this tuple and substituted 3rd component
+     */
+    public <U> Tuple3<T1, T2, U> map3(Function<? super T3, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        final U u = mapper.apply(_3);
+        return Tuple.of(_1, _2, u);
     }
 
     /**

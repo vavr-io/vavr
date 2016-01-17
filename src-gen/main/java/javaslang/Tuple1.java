@@ -87,16 +87,16 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
     }
 
     /**
-     * Maps the components of this tuple using a mapper function for each component.
+     * Maps the components of this tuple using a mapper function.
      *
-     * @param f1 the mapper function of the 1st component
+     * @param mapper the mapper function
      * @param <U1> new type of the 1st component
      * @return A new Tuple of same arity.
-     * @throws NullPointerException if one of the arguments is null
+     * @throws NullPointerException if {@code mapper} is null
      */
-    public <U1> Tuple1<U1> map(Function<? super T1, ? extends U1> f1) {
-        Objects.requireNonNull(f1, "f1 is null");
-        return Tuple.of(f1.apply(_1));
+    public <U1> Tuple1<U1> map(Function<? super T1, ? extends U1> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return Tuple.of(mapper.apply(_1));
     }
 
     /**

@@ -196,6 +196,7 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
 
     /**
      * Maps the components of this tuple using a mapper function.
+     *
      * @param mapper the mapper function
      * @param <U1> new type of the 1st component
      * @param <U2> new type of the 2nd component
@@ -233,6 +234,71 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
         Objects.requireNonNull(f4, "f4 is null");
         Objects.requireNonNull(f5, "f5 is null");
         return Tuple.of(f1.apply(_1), f2.apply(_2), f3.apply(_3), f4.apply(_4), f5.apply(_5));
+    }
+
+    /**
+     * Maps the 1st component of this tuple to a new value.
+     *
+     * @param <U> new type of the 1st component
+     * @param mapper A mapping function
+     * @return a new tuple based on this tuple and substituted 1st component
+     */
+    public <U> Tuple5<U, T2, T3, T4, T5> map1(Function<? super T1, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        final U u = mapper.apply(_1);
+        return Tuple.of(u, _2, _3, _4, _5);
+    }
+
+    /**
+     * Maps the 2nd component of this tuple to a new value.
+     *
+     * @param <U> new type of the 2nd component
+     * @param mapper A mapping function
+     * @return a new tuple based on this tuple and substituted 2nd component
+     */
+    public <U> Tuple5<T1, U, T3, T4, T5> map2(Function<? super T2, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        final U u = mapper.apply(_2);
+        return Tuple.of(_1, u, _3, _4, _5);
+    }
+
+    /**
+     * Maps the 3rd component of this tuple to a new value.
+     *
+     * @param <U> new type of the 3rd component
+     * @param mapper A mapping function
+     * @return a new tuple based on this tuple and substituted 3rd component
+     */
+    public <U> Tuple5<T1, T2, U, T4, T5> map3(Function<? super T3, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        final U u = mapper.apply(_3);
+        return Tuple.of(_1, _2, u, _4, _5);
+    }
+
+    /**
+     * Maps the 4th component of this tuple to a new value.
+     *
+     * @param <U> new type of the 4th component
+     * @param mapper A mapping function
+     * @return a new tuple based on this tuple and substituted 4th component
+     */
+    public <U> Tuple5<T1, T2, T3, U, T5> map4(Function<? super T4, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        final U u = mapper.apply(_4);
+        return Tuple.of(_1, _2, _3, u, _5);
+    }
+
+    /**
+     * Maps the 5th component of this tuple to a new value.
+     *
+     * @param <U> new type of the 5th component
+     * @param mapper A mapping function
+     * @return a new tuple based on this tuple and substituted 5th component
+     */
+    public <U> Tuple5<T1, T2, T3, T4, U> map5(Function<? super T5, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        final U u = mapper.apply(_5);
+        return Tuple.of(_1, _2, _3, _4, u);
     }
 
     /**
