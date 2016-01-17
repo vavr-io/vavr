@@ -351,10 +351,10 @@ public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
     		return (Either<L, U>) iterable;
     	} else if (iterable instanceof Value) {
     		final Value<U> value = (Value<U>) iterable;
-    		return value.isEmpty() ? Either.left(null) : Either.right(value.get());
+    		return value.isEmpty() ? /*TODO(#1034)*/Either.left(null) : Either.right(value.get());
     	} else {
     		final java.util.Iterator<? extends U> iterator = iterable.iterator();
-    		return iterator.hasNext() ? Either.right(iterator.next()) : Either.left(null);
+    		return iterator.hasNext() ? Either.right(iterator.next()) : /*TODO(#1034)*/Either.left(null);
     	}
     }
 
@@ -588,11 +588,11 @@ public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
         		return (LeftProjection<U, R>) iterable;
         	} else if (iterable instanceof Value) {
         		final Value<U> value = (Value<U>) iterable;
-        		final Either<U, R> result = value.isEmpty() ? Either.right(null) : Either.left(value.get());
+        		final Either<U, R> result = value.isEmpty() ? /*TODO(#1034)*/Either.right(null) : Either.left(value.get());
         		return result.left();
         	} else {
         		final java.util.Iterator<? extends U> iterator = iterable.iterator();
-        		final Either<U, R> result = iterator.hasNext() ? Either.right(null) : Either.left(iterator.next());
+        		final Either<U, R> result = iterator.hasNext() ? Either.left(iterator.next()) : /*TODO(#1034)*/Either.right(null);
         		return result.left();
         	}
         }
@@ -829,11 +829,11 @@ public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
         		return (RightProjection<L, U>) iterable;
         	} else if (iterable instanceof Value) {
         		final Value<U> value = (Value<U>) iterable;
-        		final Either<L, U> result = value.isEmpty() ? Either.left(null) : Either.right(value.get());
+        		final Either<L, U> result = value.isEmpty() ? /*TODO(#1034)*/Either.left(null) : Either.right(value.get());
         		return result.right();
         	} else {
         		final java.util.Iterator<? extends U> iterator = iterable.iterator();
-        		final Either<L, U> result = iterator.hasNext() ? Either.left(null) : Either.right(iterator.next());
+        		final Either<L, U> result = iterator.hasNext() ? Either.right(iterator.next()) : /*TODO(#1034)*/Either.left(null);
         		return result.right();
         	}
         }

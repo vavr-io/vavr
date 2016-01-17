@@ -7,14 +7,17 @@ package javaslang.control;
 
 import javaslang.*;
 import javaslang.algebra.Applicative;
+import javaslang.algebra.BiFoldable;
 import javaslang.algebra.BiFunctor;
 import javaslang.algebra.Kind2;
+import javaslang.collection.Iterator;
 import javaslang.collection.List;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * An implementation similar to scalaz's <a href="http://eed3si9n.com/learning-scalaz/Validation.html">Validation</a> control.
@@ -55,7 +58,7 @@ import java.util.function.Function;
  * @see <a href="https://github.com/scalaz/scalaz/blob/series/7.3.x/core/src/main/scala/scalaz/Validation.scala">Validation</a>
  * @since 2.0.0
  */
-public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, BiFunctor<E, T> {
+public interface Validation<E, T> extends Value<T>, Applicative<Validation<?, ?>, E, T>, BiFunctor<E, T>, BiFoldable<E, T> {
 
     /**
      * Creates a {@link Valid} that contains the given {@code value}.
@@ -281,12 +284,18 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      */
     boolean isInvalid();
 
+    @Override
+    default boolean isEmpty() {
+        return isInvalid();
+    }
+
     /**
      * Gets the value of this Validation if is a Valid or throws if this is an Invalid
      *
      * @return The value of this Validation
-     * @throws RuntimeException if this is an Invalid
+     * @throws NoSuchElementException if this is an Invalid
      */
+    @Override
     T get();
 
     /**
@@ -296,6 +305,15 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @throws RuntimeException if this is a Valid
      */
     E getError();
+
+    /**
+     * Returns this as {@code Either}.
+     *
+     * @return {@code Either.right(get())} if this is valid, otherwise {@code Either.left(getError())}.
+     */
+    default Either<E, T> toEither() {
+        return isValid() ? Either.right(get()) : Either.left(getError());
+    }
 
     @Override
     boolean equals(Object o);
@@ -313,10 +331,12 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @param action the action to be performed on the contained value
      * @throws NullPointerException if action is null
      */
+    @Override
     default void forEach(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "function f is null");
-        if (isValid())
+        Objects.requireNonNull(action, "action is null");
+        if (isValid()) {
             action.accept(get());
+        }
     }
 
     /**
@@ -337,7 +357,8 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
      * @return an instance of type U
      * @throws NullPointerException if fInvalid or fValid is null
      */
-    default <U> U fold(Function<? super E, ? extends U> fInvalid, Function<? super T, ? extends U> fValid) {
+    @Override
+    default <U> U bifold(Function<? super E, ? extends U> fInvalid, Function<? super T, ? extends U> fValid) {
         Objects.requireNonNull(fInvalid, "function fInvalid null");
         Objects.requireNonNull(fValid, "function fValid null");
         if (isInvalid()) {
@@ -457,6 +478,64 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
         return new Builder<>(this, validation);
     }
 
+    // -- Implementation of Value
+
+    @Override
+    default Option<Validation<E, T>> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return (isEmpty() || predicate.test(get())) ? Option.some(this) : Option.none();
+    }
+
+    @Override
+    default Option<Validation<E, T>> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Validation<E, U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        if (isEmpty()) {
+            return (Validation<E, U>) this;
+        } else {
+            final Iterable<? extends U> iterable = mapper.apply(get());
+            if (iterable instanceof Validation) {
+                return (Validation<E, U>) iterable;
+            } else if (iterable instanceof Value) {
+                final Value<U> value = (Value<U>) iterable;
+                return value.isEmpty() ? /*TODO(#1034)*/invalid(null) : valid(value.get());
+            } else {
+                final java.util.Iterator<? extends U> iterator = iterable.iterator();
+                return iterator.hasNext() ? /*TODO(#1034)*/invalid(null) : valid(iterator.next());
+            }
+        }
+    }
+
+
+    @Override
+    default Match.MatchMonad.Of<Validation<E, T>> match() {
+        return Match.of(this);
+    }
+
+    @Override
+    default Validation<E, T> peek(Consumer<? super T> action) {
+        if (isValid()) {
+            action.accept(get());
+        }
+        return this;
+    }
+
+    @Override
+    default boolean isSingleValued() {
+        return true;
+    }
+
+    @Override
+    default Iterator<T> iterator() {
+        return isValid() ? Iterator.of(get()) : Iterator.empty();
+    }
+
     /**
      * A valid Validation
      *
@@ -507,8 +586,13 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
         }
 
         @Override
+        public String stringPrefix() {
+            return "Valid";
+        }
+
+        @Override
         public String toString() {
-            return "Valid(" + value + ")";
+            return stringPrefix() + "(" + value + ")";
         }
 
     }
@@ -563,8 +647,13 @@ public interface Validation<E, T> extends Applicative<Validation<?, ?>, E, T>, B
         }
 
         @Override
+        public String stringPrefix() {
+            return "Invalid";
+        }
+
+        @Override
         public String toString() {
-            return "Invalid(" + error + ")";
+            return stringPrefix() + "(" + error + ")";
         }
 
     }
