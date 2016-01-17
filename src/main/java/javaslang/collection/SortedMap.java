@@ -130,7 +130,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
 
     @Override
     default Tuple2<K, V> last() {
-        return max().orElseThrow(() -> new NoSuchElementException("last on empty SortedMap"));
+        return max().getOrElseThrow(() -> new NoSuchElementException("last on empty SortedMap"));
     }
 
     @Override

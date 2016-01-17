@@ -207,7 +207,7 @@ public interface Option<T> extends Monad<T>, Value<T> {
      * @return This value, if this Option is defined, otherwise throws X
      * @throws X a throwable
      */
-    default <X extends Throwable> T orElseThrow(Supplier<X> exceptionSupplier) throws X {
+    default <X extends Throwable> T getOrElseThrow(Supplier<X> exceptionSupplier) throws X {
         Objects.requireNonNull(exceptionSupplier, "exceptionSupplier is null");
         if (isEmpty()) {
             throw exceptionSupplier.get();

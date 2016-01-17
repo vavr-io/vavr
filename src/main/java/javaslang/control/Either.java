@@ -154,7 +154,7 @@ public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
      * @return the right value, if the underlying Either is a Right or else the alternative Right value provided by
      * {@code other} by applying the Left value.
      */
-    default R orElseGet(Function<? super L, ? extends R> other) {
+    default R getOrElseGet(Function<? super L, ? extends R> other) {
         Objects.requireNonNull(other, "other is null");
         if (isRight()) {
             return get();
@@ -184,7 +184,7 @@ public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
      * {@code exceptionFunction} by applying the Left value.
      * @throws X if the projected Either is a Left
      */
-    default <X extends Throwable> R orElseThrow(Function<? super L, X> exceptionFunction) throws X {
+    default <X extends Throwable> R getOrElseThrow(Function<? super L, X> exceptionFunction) throws X {
         Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
         if (isRight()) {
             return get();
@@ -440,7 +440,7 @@ public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
          * @return the left value, if the underlying Either is a Left or else the alternative Left value provided by
          * {@code other} by applying the Right value.
          */
-        public L orElseGet(Function<? super R, ? extends L> other) {
+        public L getOrElseGet(Function<? super R, ? extends L> other) {
             Objects.requireNonNull(other, "other is null");
             if (either.isLeft()) {
                 return either.getLeft();
@@ -470,7 +470,7 @@ public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
          * {@code exceptionFunction} by applying the Right value.
          * @throws X if the projected Either is a Right
          */
-        public <X extends Throwable> L orElseThrow(Function<? super R, X> exceptionFunction) throws X {
+        public <X extends Throwable> L getOrElseThrow(Function<? super R, X> exceptionFunction) throws X {
             Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
             if (either.isLeft()) {
                 return either.getLeft();
@@ -696,9 +696,9 @@ public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
          * @return the right value, if the underlying Either is a Right or else the alternative Right value provided by
          * {@code other} by applying the Left value.
          */
-        public R orElseGet(Function<? super L, ? extends R> other) {
+        public R getOrElseGet(Function<? super L, ? extends R> other) {
             Objects.requireNonNull(other, "other is null");
-            return either.orElseGet(other);
+            return either.getOrElseGet(other);
         }
 
         /**
@@ -720,9 +720,9 @@ public interface Either<L, R> extends Value<R>, Monad<R>, BiFunctor<L, R> {
          * {@code exceptionFunction} by applying the Left value.
          * @throws X if the projected Either is a Left
          */
-        public <X extends Throwable> R orElseThrow(Function<? super L, X> exceptionFunction) throws X {
+        public <X extends Throwable> R getOrElseThrow(Function<? super L, X> exceptionFunction) throws X {
             Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
-            return either.orElseThrow(exceptionFunction);
+            return either.getOrElseThrow(exceptionFunction);
         }
 
         /**

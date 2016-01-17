@@ -140,6 +140,23 @@ public abstract class AbstractValueTest {
         }
     }
 
+    // -- fold
+
+    @Test
+    public void shouldFoldNil() {
+        assertThat(this.<String> empty().fold("", (a, b) -> a + b)).isEqualTo("");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenFoldNullOperator() {
+        this.<String> empty().fold(null, null);
+    }
+
+    @Test
+    public void shouldFoldSingleElement() {
+        assertThat(of(1).fold(0, (a, b) -> a + b)).isEqualTo(1);
+    }
+
     // -- get()
 
     @Test(expected = NoSuchElementException.class)
@@ -162,6 +179,53 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldGetOptionNonEmpty() {
         assertThat(of(1).getOption()).isEqualTo(Option.of(1));
+    }
+
+    // -- getOrElse(T)
+
+    @Test
+    public void shouldCalculateGetOrElse() {
+        assertThat(empty().getOrElse(1)).isEqualTo(1);
+        assertThat(of(1).getOrElse(2)).isEqualTo(1);
+    }
+
+    // -- getOrElse(Supplier)
+
+    @Test
+    public void shouldCalculateGetOrElseSupplier() {
+        assertThat(empty().getOrElse(() -> 1)).isEqualTo(1);
+        assertThat(of(1).getOrElse(() -> 2)).isEqualTo(1);
+    }
+
+    // -- getOrElseThrow
+
+    @Test(expected = ArithmeticException.class)
+    public void shouldThrowOnGetOrElseThrowIfEmpty() {
+        empty().getOrElseThrow(ArithmeticException::new);
+    }
+
+    @Test
+    public void shouldNotThrowOnGetOrElseThrowIfNonEmpty() {
+        assertThat(of(1).getOrElseThrow(ArithmeticException::new)).isEqualTo(1);
+    }
+
+    // -- getOrElseTry
+
+    @Test
+    public void shouldReturnUnderlyingValueWhenCallingGetOrElseTryOnNonEmptyValue() {
+        assertThat(of(1).getOrElseTry(() -> 2)).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldReturnAlternateValueWhenCallingGetOrElseTryOnEmptyValue() {
+        assertThat(empty().getOrElseTry(() -> 2)).isEqualTo(2);
+    }
+
+    @Test(expected = Try.NonFatalException.class)
+    public void shouldThrowWhenCallingGetOrElseTryOnEmptyValueAndTryIsAFailure() {
+        empty().getOrElseTry(() -> {
+            throw new Error();
+        });
     }
 
     // -- ifDefined(trueVal, falseVal)
@@ -210,70 +274,6 @@ public abstract class AbstractValueTest {
     public void shouldCalculateIsDefined() {
         assertThat(empty().isDefined()).isFalse();
         assertThat(of(1).isDefined()).isTrue();
-    }
-
-    // -- orElseGet
-
-    @Test
-    public void shouldCalculateOrElseGet() {
-        assertThat(empty().getOrElse(() -> 1)).isEqualTo(1);
-        assertThat(of(1).getOrElse(() -> 2)).isEqualTo(1);
-    }
-
-    // -- orElseThrow
-
-    @Test(expected = ArithmeticException.class)
-    public void shouldThrowIfEmpty() {
-        empty().orElseThrow(ArithmeticException::new);
-    }
-
-    @Test
-    public void shouldNotThrowIfNonEmpty() {
-        assertThat(of(1).orElseThrow(ArithmeticException::new)).isEqualTo(1);
-    }
-
-    // -- fold
-
-    @Test
-    public void shouldFoldNil() {
-        assertThat(this.<String> empty().fold("", (a, b) -> a + b)).isEqualTo("");
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenFoldNullOperator() {
-        this.<String> empty().fold(null, null);
-    }
-
-    @Test
-    public void shouldFoldSingleElement() {
-        assertThat(of(1).fold(0, (a, b) -> a + b)).isEqualTo(1);
-    }
-
-    // -- getOrElse
-
-    @Test
-    public void shouldCalculateGetOrElse() {
-        assertThat(empty().getOrElse(1)).isEqualTo(1);
-        assertThat(of(1).getOrElse(2)).isEqualTo(1);
-    }
-
-    // -- getOrElseTry
-
-    @Test
-    public void shouldReturnUnderlyingValueWhenCallingGetOrElseTryOnNonEmptyValue() {
-        assertThat(of(1).getOrElseTry(() -> 2)).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldReturnAlternateValueWhenCallingGetOrElseTryOnEmptyValue() {
-        assertThat(empty().getOrElseTry(() -> 2)).isEqualTo(2);
-    }
-
-    @Test(expected = Try.NonFatalException.class)
-    public void shouldThrowWhenCallingGetOrElseTryOnEmptyValueAndTryIsAFailure() {
-        empty().getOrElseTry(() -> {
-            throw new Error();
-        });
     }
 
     // -- peek

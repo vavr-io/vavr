@@ -29,7 +29,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, BiFunctor<K, V>, F
 
     @Override
     default V apply(K key) {
-        return get(key).orElseThrow(NoSuchElementException::new);
+        return get(key).getOrElseThrow(NoSuchElementException::new);
     }
 
     /**

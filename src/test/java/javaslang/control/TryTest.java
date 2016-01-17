@@ -246,7 +246,7 @@ public class TryTest {
 
     @Test
     public void shouldReturnElseWhenOrElseGetOnFailure() {
-        assertThat(failure().orElseGet(x -> OK)).isEqualTo(OK);
+        assertThat(failure().getOrElseGet(x -> OK)).isEqualTo(OK);
     }
 
     @Test
@@ -258,7 +258,7 @@ public class TryTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrowOtherWhenOrElseThrowOnFailure() {
-        failure().orElseThrow(x -> new IllegalStateException(OK));
+        failure().getOrElseThrow(x -> new IllegalStateException(OK));
     }
 
     @Test
@@ -537,7 +537,7 @@ public class TryTest {
 
     @Test
     public void shouldOrElseGetOnSuccess() {
-        assertThat(success().orElseGet(x -> null)).isEqualTo(OK);
+        assertThat(success().getOrElseGet(x -> null)).isEqualTo(OK);
     }
 
     @Test
@@ -549,7 +549,7 @@ public class TryTest {
 
     @Test
     public void shouldOrElseThrowOnSuccess() {
-        assertThat(success().orElseThrow(x -> null)).isEqualTo(OK);
+        assertThat(success().getOrElseThrow(x -> null)).isEqualTo(OK);
     }
 
     @Test

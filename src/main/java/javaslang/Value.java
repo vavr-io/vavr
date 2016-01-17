@@ -36,13 +36,13 @@ import java.util.stream.StreamSupport;
  * <ul>
  * <li>{@link #get()}</li>
  * <li>{@link #getOption()}</li>
+ * <li>{@link #getOrElse(Object)}</li>
+ * <li>{@link #getOrElse(Supplier)}</li>
+ * <li>{@link #getOrElseThrow(Supplier)}</li>
  * <li>{@link #ifDefined(Supplier, Supplier)}</li>
  * <li>{@link #ifDefined(Object, Object)}</li>
  * <li>{@link #ifEmpty(Supplier, Supplier)}</li>
  * <li>{@link #ifEmpty(Object, Object)}</li>
- * <li>{@link #getOrElse(Object)}</li>
- * <li>{@link #getOrElse(Supplier)}</li>
- * <li>{@link #orElseThrow(Supplier)}</li>
  * <li>{@link #stringPrefix()}</li>
  * </ul>
  *
@@ -439,7 +439,7 @@ public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
      * @throws NullPointerException if supplier is null
      * @throws X                    if no value is present
      */
-    default <X extends Throwable> T orElseThrow(Supplier<X> supplier) throws X {
+    default <X extends Throwable> T getOrElseThrow(Supplier<X> supplier) throws X {
         Objects.requireNonNull(supplier, "supplier is null");
         if (isEmpty()) {
             throw supplier.get();

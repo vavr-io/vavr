@@ -37,7 +37,7 @@ import static javaslang.control.MatchModule.*;
  * The Match API comes in two flavors, the {@code MatchMonad} and the {@code MatchFunction}.
  * <p>
  * {@code MatchMonad} is a {@linkplain javaslang.Value}, obtained by {@code Match.of(someValue)}. In this case a Match
- * is terminated {@code get()}, {@code orElse()}, etc.
+ * is terminated {@code get()}, {@code getOrElse()}, etc.
  * <pre><code>Match.of(1)
  *      .whenType(String.class).then(s -&gt; "String " + s)
  *      .whenType(Number.class).then(n -&gt; "Number " + n)
@@ -277,7 +277,7 @@ public interface Match {
                 return (R) cases.reverse()
                         .find(caze -> caze.isApplicable(o))
                         .map(caze -> caze.apply(o))
-                        .orElseThrow(() -> new MatchError(o));
+                        .getOrElseThrow(() -> new MatchError(o));
             }
 
             public <T> When<T, R> when(SerializablePredicate<? super T> predicate) {
@@ -829,7 +829,7 @@ public interface Match {
 
             public Otherwise<R> otherwiseThrow(Supplier<? extends RuntimeException> supplier) {
                 Objects.requireNonNull(supplier, "supplier is null");
-                return new Otherwise<>(() -> result.orElseThrow(supplier).get());
+                return new Otherwise<>(() -> result.getOrElseThrow(supplier).get());
             }
 
             @Override
@@ -896,7 +896,7 @@ public interface Match {
 
             @Override
             public R get() {
-                return result.orElseThrow(() -> new MatchError(value)).get();
+                return result.getOrElseThrow(() -> new MatchError(value)).get();
             }
 
             @Override

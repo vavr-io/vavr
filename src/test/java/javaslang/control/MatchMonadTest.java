@@ -302,7 +302,7 @@ public class MatchMonadTest {
         assertThat(actual).isTrue();
     }
 
-    // otherwise() vs. orElse()
+    // otherwise() vs. getOrElse()
 
     @Test
     public void shouldUseOtherwiseToEnableMonadicOperationsWithMatched() {
