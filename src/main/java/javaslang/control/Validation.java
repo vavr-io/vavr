@@ -89,6 +89,20 @@ public interface Validation<E, T> extends Value<T>, Applicative<Validation<?, ?>
     }
 
     /**
+     * Creates a {@code Validation} of an {@code Either}.
+     *
+     * @param either An {@code Either}
+     * @param <E>    type of the given {@code error}
+     * @param <T>    type of the value
+     * @return A {@code Valid(either.get())} if either is a Right, otherwise {@code Invalid(either.getLeft())}.
+     * @throws NullPointerException if either is null
+     */
+    static <E, T> Validation<E, T> from(Either<E, T> either) {
+        Objects.requireNonNull(either, "either is null");
+        return either.isRight() ? valid(either.get()) : invalid(either.getLeft());
+    }
+
+    /**
      * Combines two {@code Validation}s into a {@link Builder}.
      *
      * @param <E>         type of error

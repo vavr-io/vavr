@@ -5,6 +5,8 @@
  */
 package javaslang.control;
 
+import javaslang.AbstractValueTest;
+import javaslang.Value;
 import javaslang.collection.CharSeq;
 import javaslang.collection.List;
 import org.junit.Test;
@@ -12,12 +14,38 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class ValidationTest {
+public class ValidationTest extends AbstractValueTest {
 
     public static final String OK = "ok";
     public static final List<String> ERRORS = List.of("error1", "error2", "error3");
+
+    // -- AbstractValueTest
+
+    @Override
+    protected <T> Validation<String, T> empty() {
+        return Validation.invalid("empty");
+    }
+
+    @Override
+    protected <T> Validation<String, T> of(T element) {
+        return Validation.valid(element);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected <T> Value<T> of(T... elements) {
+        return Validation.valid(elements[0]);
+    }
+
+    @Override
+    protected boolean useIsEqualToInsteadOfIsSameAs() {
+        return false;
+    }
+
+    @Override
+    protected int getPeekNonNilPerformingAnAction() {
+        return 1;
+    }
 
     // -- Validation.valid
 
