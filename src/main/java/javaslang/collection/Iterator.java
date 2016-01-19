@@ -1795,16 +1795,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             };
         }
     }
-    
-    @SuppressWarnings("unchecked")
-	@Override
-    default <U> Iterator<U> unit(Iterable<? extends U> iterable) {
-    	if (iterable instanceof Iterator) {
-    		return (Iterator<U>) iterable;
-    	} else {
-    		return Iterator.ofAll(iterable.iterator());
-    	}
-    }
 }
 
 interface IteratorModule {

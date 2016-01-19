@@ -20,7 +20,7 @@ public class ArbitraryTest {
 
     @Test
     public void shouldApplyIntegerObject() {
-        final Gen<BinaryTree<Integer>> gen = new ArbitraryBinaryTree(0, 0).apply(Integer.valueOf(0));
+        final Gen<BinaryTree<Integer>> gen = new ArbitraryBinaryTree(0, 0).apply(0);
         assertThat(gen).isNotNull();
     }
 
@@ -51,29 +51,6 @@ public class ArbitraryTest {
         assertThat(evenInts.apply(10).apply(new Random())).isNotNull();
     }
 
-    // -- exists
-
-    @Test
-    public void shouldThrowOnExists() {
-        Arbitrary.integer().exists(i -> true);
-    }
-
-    // -- forAll
-
-    @Test
-    public void shouldThrowOnForAll() {
-        Arbitrary.integer().forAll(i -> false);
-    }
-
-    // -- forEach
-
-    @Test(expected = RuntimeException.class)
-    public void shouldThrowOnForEach() {
-        Arbitrary.integer().forEach(i -> {
-            throw new RuntimeException("OK");
-        });
-    }
-
     // -- peek
 
     @Test
@@ -81,13 +58,6 @@ public class ArbitraryTest {
         final int[] actual = new int[] { Integer.MIN_VALUE };
         final int expected = Arbitrary.integer().peek(i -> actual[0] = i).apply(10).apply(new Random());
         assertThat(actual[0]).isEqualTo(expected);
-    }
-
-    // -- isEmpty
-
-    @Test
-    public void shouldNotBeEmpty() {
-        assertThat(Arbitrary.integer().isEmpty()).isFalse();
     }
 
     // factory methods

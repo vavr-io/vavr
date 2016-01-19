@@ -313,11 +313,6 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     public IntMap<T> takeWhile(Predicate<? super T> predicate) {
         return IntMap.of(original.takeWhile(p -> predicate.test(p._2)));
     }
-
-    @Override
-    public <U> Seq<U> unit(Iterable<? extends U> iterable) {
-        return original.unit(iterable);
-    }
     
     @Override
     public <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {

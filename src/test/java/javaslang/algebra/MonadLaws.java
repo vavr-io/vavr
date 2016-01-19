@@ -5,6 +5,7 @@
  */
 package javaslang.algebra;
 
+import javaslang.Kind1;
 import javaslang.test.Arbitrary;
 import javaslang.test.CheckResult;
 import javaslang.test.Property;
@@ -12,7 +13,7 @@ import javaslang.test.Property;
 import java.util.function.Function;
 
 @SuppressWarnings("Convert2MethodRef")
-public interface MonadLaws extends FunctorLaws {
+public interface MonadLaws<M extends Kind1<M, ?>> extends FunctorLaws {
 
     void shouldSatisfyMonadLeftIdentity();
 
@@ -21,9 +22,9 @@ public interface MonadLaws extends FunctorLaws {
     void shouldSatisfyMonadAssociativity();
 
     // unit(t).flatMap(f) ≡ f.apply(t)
-    default <T, U> CheckResult checkMonadLeftIdentity(Function<? super T, ? extends Monad<T>> unit,
+    default <T, U> CheckResult checkMonadLeftIdentity(Function<? super T, ? extends Monad<M, T>> unit,
                                                       Arbitrary<T> ts,
-                                                      Arbitrary<Function<? super T, ? extends Monad<U>>> fs) {
+                                                      Arbitrary<Function<? super T, ? extends Monad<M, U>>> fs) {
         return Property.def("monad.left_identity")
                 .forAll(ts, fs)
                 .suchThat((t, f) -> unit.apply(t).flatMap(f).equals(f.apply(t)))
@@ -31,8 +32,8 @@ public interface MonadLaws extends FunctorLaws {
     }
 
     // m.flatMap(unit) ≡ m
-    default <T> CheckResult checkMonadRightIdentity(Function<? super T, ? extends Monad<T>> unit,
-                                                    Arbitrary<? extends Monad<T>> ms) {
+    default <T> CheckResult checkMonadRightIdentity(Function<? super T, ? extends Monad<M, T>> unit,
+                                                    Arbitrary<? extends Monad<M, T>> ms) {
         return Property.def("monad.right_identity")
                 .forAll(ms)
                 .suchThat(m -> m.flatMap(unit).equals(m))
@@ -40,9 +41,9 @@ public interface MonadLaws extends FunctorLaws {
     }
 
     // m.flatMap(f).flatMap(g) ≡ m.flatMap(t -> f.apply(t).flatMap(g))
-    default <T, U, V> CheckResult checkMonadAssociativity(Arbitrary<? extends Monad<T>> ms,
-                                                          Arbitrary<Function<? super T, ? extends Monad<U>>> fs,
-                                                          Arbitrary<Function<? super U, ? extends Monad<V>>> gs) {
+    default <T, U, V> CheckResult checkMonadAssociativity(Arbitrary<? extends Monad<M, T>> ms,
+                                                          Arbitrary<Function<? super T, ? extends Monad<M, U>>> fs,
+                                                          Arbitrary<Function<? super U, ? extends Monad<M, V>>> gs) {
         return Property.def("monad.associativity")
                 .forAll(ms, fs, gs)
                 .suchThat((m, f, g) -> m.flatMap(f).flatMap(g).equals(m.flatMap(t -> f.apply(t).flatMap(g))))

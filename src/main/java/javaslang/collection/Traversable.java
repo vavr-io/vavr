@@ -8,7 +8,6 @@ package javaslang.collection;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.Value;
-import javaslang.algebra.Monad;
 import javaslang.control.Match;
 import javaslang.control.Option;
 
@@ -137,7 +136,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich and others
  * @since 1.1.0
  */
-public interface Traversable<T> extends Value<T>, Monad<T> {
+public interface Traversable<T> extends Value<T> {
 
     /**
      * Used by collections to compute the hashCode only once.
@@ -374,10 +373,8 @@ public interface Traversable<T> extends Value<T>, Monad<T> {
      * @return a new traversable
      * @throws NullPointerException if {@code predicate} is null
      */
-    @Override
     Traversable<T> filter(Predicate<? super T> predicate);
     
-    @Override
     Traversable<T> filterNot(Predicate<? super T> predicate);
 
     /**
@@ -418,7 +415,6 @@ public interface Traversable<T> extends Value<T>, Monad<T> {
      * @param <U>    The resulting component type.
      * @return A new Traversable instance.
      */
-    @Override
     <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     /**
@@ -645,7 +641,6 @@ public interface Traversable<T> extends Value<T>, Monad<T> {
      * @return a mapped Traversable
      * @throws NullPointerException if {@code mapper} is null
      */
-    @Override
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
@@ -1122,9 +1117,6 @@ public interface Traversable<T> extends Value<T>, Monad<T> {
      */
     Traversable<T> takeWhile(Predicate<? super T> predicate);
     
-    @Override
-    <U> Traversable<U> unit(Iterable<? extends U> iterable);
-
     /**
      * Unzips this elements by mapping this elements to pairs which are subsequently split into two distinct
      * sets.

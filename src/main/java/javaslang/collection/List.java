@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
+import javaslang.Kind1;
 import javaslang.collection.List.Nil;
 import javaslang.collection.ListModule.Combinations;
 import javaslang.collection.ListModule.SplitAt;
@@ -80,7 +81,7 @@ import java.util.stream.Collector;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public interface List<T> extends LinearSeq<T>, Stack<T> {
+public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     long serialVersionUID = 1L;
 

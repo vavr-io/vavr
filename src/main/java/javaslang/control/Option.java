@@ -6,7 +6,6 @@
 package javaslang.control;
 
 import javaslang.Value;
-import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
@@ -35,7 +34,7 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  * @since 1.0.0
  */
-public interface Option<T> extends Monad<T>, Value<T> {
+public interface Option<T> extends Value<T> {
 
     /**
      * Creates a new {@code Option} of a given value.
@@ -223,13 +222,11 @@ public interface Option<T> extends Monad<T>, Value<T> {
      * @param predicate A predicate which is used to test an optional value
      * @return {@code Some(value)} or {@code None} as specified
      */
-    @Override
     default Option<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return (isEmpty() || predicate.test(get())) ? this : none();
+        return isEmpty() || predicate.test(get()) ? this : none();
     }
 
-    @Override
     default Option<T> filterNot(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
@@ -242,14 +239,10 @@ public interface Option<T> extends Monad<T>, Value<T> {
      * @param <U>    Component type of the resulting Option
      * @return a new {@code Option}
      */
-    @Override
-    default <U> Option<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    @SuppressWarnings("unchecked")
+    default <U> Option<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return none();
-        } else {
-            return unit(mapper.apply(get()));
-        }
+        return isEmpty() ? none() : (Option<U>) mapper.apply(get());
     }
 
     /**
@@ -259,14 +252,9 @@ public interface Option<T> extends Monad<T>, Value<T> {
      * @param <U>    The new value type
      * @return a new {@code Some} containing the mapped value if this Option is defined, otherwise {@code None}, if this is empty.
      */
-    @Override
     default <U> Option<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return none();
-        } else {
-            return some(mapper.apply(get()));
-        }
+        return isEmpty() ? none() : some(mapper.apply(get()));
     }
 
     @Override
@@ -300,20 +288,6 @@ public interface Option<T> extends Monad<T>, Value<T> {
     default <U> U transform(Function<? super Option<? super T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Option<U> unit(Iterable<? extends U> iterable) {
-        if (iterable instanceof Option) {
-            return (Option<U>) iterable;
-        } else if (iterable instanceof Value) {
-            final Value<U> value = (Value<U>) iterable;
-            return value.isEmpty() ? Option.none() : Option.some(value.get());
-        } else {
-            final java.util.Iterator<? extends U> iterator = iterable.iterator();
-            return iterator.hasNext() ? Option.none() : Option.some(iterator.next());
-        }
     }
 
     @Override

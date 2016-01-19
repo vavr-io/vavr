@@ -877,11 +877,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
     
     @Override
-    public <U> TreeSet<U> unit(Iterable<? extends U> iterable) {
-    	return TreeSet.ofAll(naturalComparator(), iterable);
-    }
-
-    @Override
     public <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");

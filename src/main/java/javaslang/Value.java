@@ -6,7 +6,6 @@
 package javaslang;
 
 import javaslang.algebra.Foldable;
-import javaslang.algebra.Functor;
 import javaslang.algebra.Monoid;
 import javaslang.collection.*;
 import javaslang.control.Either;
@@ -59,14 +58,6 @@ import java.util.stream.StreamSupport;
  * <ul>
  * <li>{@link #corresponds(Iterable, BiPredicate)}</li>
  * <li>{@link #eq(Object)}</li>
- * </ul>
- *
- * Filtering and transformation:
- * <ul>
- * <li>{@link #filter(Predicate)}</li>
- * <li>{@link #filterNot(Predicate)}</li>
- * <li>{@link #flatMap(Function)}</li>
- * <li>{@link #map(Function)}</li>
  * </ul>
  *
  * Folding:
@@ -149,7 +140,7 @@ import java.util.stream.StreamSupport;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
+public interface Value<T> extends Foldable<T>, Iterable<T> {
 
     /**
      * Shortcut for {@code exists(e -> Objects.equals(e, element))}, tests if the given {@code element} is contained.
@@ -248,52 +239,6 @@ public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
         }
         return false;
     }
-
-    /**
-     * Filters this {@code Value} by testing a predicate.
-     * <p>
-     * The semantics may vary from class to class, e.g. for single-valued types (like {@code Option})
-     * and multi-valued types (like {@link Traversable}).
-     * The commonality is that filtered.isEmpty() will return true, if no element satisfied the given predicate.
-     * <p>
-     * If the filtered Value is empty and there is no suitable representation, the return type is
-     * {@code Option<Value<T>>}. This is the case for {@code Either} and {@code Validation} for example.
-     *
-     * @param predicate A predicate
-     * @return a new {@code Value} instance
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    Value<?> filter(Predicate<? super T> predicate);
-
-    /**
-     * Filters this {@code Value} by testing the negation of a predicate.
-     * <p>
-     * Shortcut for {@code filter(predicate.negate()}.
-     *
-     * @param predicate A predicate
-     * @return a new {@code Value} instance
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    Value<?> filterNot(Predicate<? super T> predicate);
-
-    /**
-     * FlatMaps this {@code Value}. The behavior depends on {@link #isSingleValued()}.
-     * <p>
-     * Examples:
-     *
-     * <pre><code>
-     * // = Option(2)
-     * Option.some(1).flatMap(i -&gt; List.of(2, 3, 4))
-     *
-     * // = List(1, 2)
-     * List.of(0, 1, 2).flatMap(i -&gt; Try.of(() -&gt; 1.0 / i))
-     * </code></pre>
-     *
-     * @param mapper A {@code Function} which maps elements to {@code Iterable}s.
-     * @param <U> Resulting component type
-     * @return A new {@code Value}
-     */
-    <U> Value<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     /**
      * Checks, if the given predicate holds for all elements.
@@ -608,11 +553,6 @@ public interface Value<T> extends Foldable<T>, Functor<T>, Iterable<T> {
         Objects.requireNonNull(op, "op is null");
         return isEmpty() ? Option.none() : Option.some(reduceRight(op));
     }
-
-    // -- Adjusted return types of Functor
-
-    @Override
-    <U> Value<U> map(Function<? super T, ? extends U> mapper);
 
     // -- conversion methods
 

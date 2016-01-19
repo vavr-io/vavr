@@ -331,12 +331,8 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
             }
 
             private boolean checkPrefix(Seq<T> t, Seq<T> prefix) {
-                if (prefix.isEmpty()) {
-                    return true;
-                } else {
-                    return !t.isEmpty() && java.util.Objects.equals(t.head(), prefix.head())
-                            && checkPrefix(t.tail(), prefix.tail());
-                }
+                return prefix.isEmpty() ||
+                        (!t.isEmpty() && Objects.equals(t.head(), prefix.head()) && checkPrefix(t.tail(), prefix.tail()));
             }
         }
 
@@ -810,7 +806,6 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
         return f.apply(this);
     }
 
-    @Override
     <U> Seq<U> unit(Iterable<? extends U> iterable);
 
     /**

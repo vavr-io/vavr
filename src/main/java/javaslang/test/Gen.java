@@ -5,20 +5,15 @@
  */
 package javaslang.test;
 
-import javaslang.Function1;
 import javaslang.Tuple2;
-import javaslang.Value;
-import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.Stream;
-import javaslang.control.Match;
 
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * Generators are the building blocks for providing arbitrary objects.
@@ -39,7 +34,7 @@ import java.util.function.Supplier;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Gen<T> extends Monad<T>, Value<T>, Function1<Random, T>, Supplier<T> {
+public interface Gen<T> {
 
     long serialVersionUID = 1L;
 
@@ -51,7 +46,6 @@ public interface Gen<T> extends Monad<T>, Value<T>, Function1<Random, T>, Suppli
      * @param random a random number generator
      * @return A generated value of type T.
      */
-    @Override
     T apply(Random random);
 
     /**
@@ -291,7 +285,6 @@ public interface Gen<T> extends Monad<T>, Value<T>, Function1<Random, T>, Suppli
      * @param predicate A predicate
      * @return A new generator
      */
-    @Override
     default Gen<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return random -> {
@@ -307,7 +300,6 @@ public interface Gen<T> extends Monad<T>, Value<T>, Function1<Random, T>, Suppli
         };
     }
 
-    @Override
     default Gen<T> filterNot(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
@@ -320,10 +312,9 @@ public interface Gen<T> extends Monad<T>, Value<T>, Function1<Random, T>, Suppli
      * @param <U>    Type of generated objects of the new generator
      * @return A new generator
      */
-    @Override
-    default <U> Gen<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U> Gen<U> flatMap(Function<? super T, ? extends Gen<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return random -> unit(mapper.apply(apply(random))).apply(random);
+        return random -> mapper.apply(apply(random)).apply(random);
     }
 
     /**
@@ -333,18 +324,11 @@ public interface Gen<T> extends Monad<T>, Value<T>, Function1<Random, T>, Suppli
      * @param <U>    Type of the mapped object
      * @return A new generator
      */
-    @Override
     default <U> Gen<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return random -> mapper.apply(apply(random));
     }
 
-    @Override
-    default Match.MatchMonad.Of<Gen<T>> match() {
-        return Match.of(this);
-    }
-
-    @Override
     default Gen<T> peek(Consumer<? super T> action) {
         return random -> {
             final T t = apply(random);
@@ -364,50 +348,5 @@ public interface Gen<T> extends Monad<T>, Value<T>, Function1<Random, T>, Suppli
     default <U> U transform(Function<? super Gen<? super T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
-    }
-    
-    @SuppressWarnings("unchecked")
-	default <U> Gen<U> unit(Iterable<? extends U> iterable) {
-    	if (iterable instanceof Gen) {
-    		return (Gen<U>) iterable;
-    	} else {
-    		final Stream<Gen<U>> generators = Stream.ofAll(iterable).map(u -> Gen.of(u));
-    		return oneOf(generators);
-    	}
-    }
-
-    @Override
-    default T get() {
-        return apply(Checkable.RNG.get());
-    }
-
-    @Override
-    default boolean isEmpty() {
-        return false;
-    }
-
-    /**
-     * This is philosophical. We see a {@code Gen} as single-valued type which holds a variable random value.
-     *
-     * @return {@code true}
-     */
-    @Override
-    default boolean isSingleValued() {
-        return true;
-    }
-
-    /**
-     * Iterator of <em>one</em> generated value using the default random generator {@link Checkable#RNG}.
-     *
-     * @return A new Iterator having one value.
-     */
-    @Override
-    default Iterator<T> iterator() {
-        return Iterator.of(get());
-    }
-
-    @Override
-    default String stringPrefix() {
-        return "Gen";
     }
 }
