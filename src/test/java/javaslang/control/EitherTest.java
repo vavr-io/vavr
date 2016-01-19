@@ -230,14 +230,14 @@ public class EitherTest {
 
     @Test
     public void shouldFilterSomeOnLeftProjectionOfRightIfPredicateMatches() {
-        final boolean actual = Either.right("1").left().filter(i -> true).toOption().isDefined();
-        assertThat(actual).isFalse();
+        final boolean actual = Either.right("1").left().filter(i -> true).isDefined();
+        assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldFilterNoneOnLeftProjectionOfRightIfPredicateNotMatches() {
-        final boolean actual = Either.right("1").left().filter(i -> false).toOption().isDefined();
-        assertThat(actual).isFalse();
+        final boolean actual = Either.right("1").left().filter(i -> false).isDefined();
+        assertThat(actual).isTrue();
     }
 
     // flatMap
@@ -602,14 +602,14 @@ public class EitherTest {
 
     @Test
     public void shouldFilterSomeOnRightProjectionOfLeftIfPredicateMatches() {
-        final boolean actual = Either.<String, Integer>left("1").right().filter(i -> true).toOption().isDefined();
-        assertThat(actual).isFalse();
+        final boolean actual = Either.<String, Integer>left("1").right().filter(i -> true).isDefined();
+        assertThat(actual).isTrue();
     }
 
     @Test
     public void shouldFilterNoneOnRightProjectionOfLeftIfPredicateNotMatches() {
-        final boolean actual = Either.<String, Integer>left("1").right().filter(i -> false).toOption().isDefined();
-        assertThat(actual).isFalse();
+        final boolean actual = Either.<String, Integer>left("1").right().filter(i -> false).isDefined();
+        assertThat(actual).isTrue();
     }
 
     // flatMap

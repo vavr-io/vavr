@@ -5,12 +5,9 @@
  */
 package javaslang.test;
 
-import javaslang.Value;
-import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
-import javaslang.control.Match;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -25,7 +22,7 @@ import java.util.function.Predicate;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Arbitrary<T> extends Monad<T>, Value<T> {
+public interface Arbitrary<T> {
 
     /**
      * Returns a generator for objects of type T.
@@ -71,12 +68,10 @@ public interface Arbitrary<T> extends Monad<T>, Value<T> {
      * @param predicate A predicate
      * @return A new generator
      */
-    @Override
     default Arbitrary<T> filter(Predicate<? super T> predicate) {
         return size -> apply(size).filter(predicate);
     }
 
-    @Override
     default Arbitrary<T> filterNot(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
@@ -89,11 +84,10 @@ public interface Arbitrary<T> extends Monad<T>, Value<T> {
      * @param <U>    New type of arbitrary objects
      * @return A new Arbitrary
      */
-    @Override
-    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U> Arbitrary<U> flatMap(Function<? super T, ? extends Arbitrary<? extends U>> mapper) {
         return size -> {
             final Gen<T> gen = apply(size);
-            return random -> unit(mapper.apply(gen.apply(random))).apply(size).apply(random);
+            return random -> mapper.apply(gen.apply(random)).apply(size).apply(random);
         };
     }
 
@@ -112,12 +106,6 @@ public interface Arbitrary<T> extends Monad<T>, Value<T> {
         };
     }
 
-    @Override
-    default Match.MatchMonad.Of<Arbitrary<T>> match() {
-        return Match.of(this);
-    }
-
-    @Override
     default Arbitrary<T> peek(Consumer<? super T> action) {
         return size -> apply(size).peek(action);
     }
@@ -143,42 +131,6 @@ public interface Arbitrary<T> extends Monad<T>, Value<T> {
     		final Stream<Gen<U>> generators = Stream.ofAll(iterable).map(Gen::of);
     		return ignored -> Gen.oneOf(generators);
     	}
-    }
-
-    @Override
-    default T get() {
-        return apply(Checkable.DEFAULT_SIZE).get();
-    }
-
-    @Override
-    default boolean isEmpty() {
-        return false;
-    }
-
-    /**
-     * This is philosophical. We see an {@code Arbitrary} as single-valued type which holds a variable random value.
-     *
-     * @return {@code true}
-     */
-    @Override
-    default boolean isSingleValued() {
-        return true;
-    }
-
-    /**
-     * Iterator of <em>one</em> arbitrary value using the default size {@link Checkable#DEFAULT_SIZE}
-     * and the default random generator {@link Checkable#RNG}.
-     *
-     * @return A new Iterator having one value.
-     */
-    @Override
-    default Iterator<T> iterator() {
-        return apply(Checkable.DEFAULT_SIZE).iterator();
-    }
-
-    @Override
-    default String stringPrefix() {
-        return "Arbitrary";
     }
 
     /**

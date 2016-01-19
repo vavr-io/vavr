@@ -612,11 +612,6 @@ public interface Tree<T> extends Traversable<T> {
         return traverse().takeWhile(predicate);
     }
     
-    @Override
-    default <U> Tree<U> unit(Iterable<? extends U> iterable) {
-    	return Tree.ofAll(iterable);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     default <T1, T2> Tuple2<Tree<T1>, Tree<T2>> unzip(

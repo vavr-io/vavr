@@ -6,9 +6,6 @@
 package javaslang.control;
 
 import javaslang.*;
-import javaslang.algebra.Applicative;
-import javaslang.algebra.BiFunctor;
-import javaslang.algebra.Kind2;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 
@@ -57,7 +54,7 @@ import java.util.function.Predicate;
  * @see <a href="https://github.com/scalaz/scalaz/blob/series/7.3.x/core/src/main/scala/scalaz/Validation.scala">Validation</a>
  * @since 2.0.0
  */
-public interface Validation<E, T> extends Value<T>, Applicative<Validation<?, ?>, E, T>, BiFunctor<E, T> {
+public interface Validation<E, T> extends Value<T> {
 
     /**
      * Creates a {@link Valid} that contains the given {@code value}.
@@ -398,7 +395,6 @@ public interface Validation<E, T> extends Value<T>, Applicative<Validation<?, ?>
         }
     }
 
-    @Override
     default <U> Validation<E, U> map(Function<? super T, ? extends U> f) {
         Objects.requireNonNull(f, "function f is null");
         if (isInvalid()) {
@@ -416,23 +412,22 @@ public interface Validation<E, T> extends Value<T>, Applicative<Validation<?, ?>
      *
      * validation.map(...).leftMap(...);
      *
-     * @param <U>           type of the mapping result if this is an invalid
-     * @param <R>           type of the mapping result if this is a valid
-     * @param invalidMapper the invalid mapping operation
-     * @param validMapper   the valid mapping operation
+     * @param <E2>        type of the mapping result if this is an invalid
+     * @param <T2>        type of the mapping result if this is a valid
+     * @param errorMapper the invalid mapping operation
+     * @param valueMapper the valid mapping operation
      * @return an instance of Validation&lt;U,R&gt;
      * @throws NullPointerException if invalidMapper or validMapper is null
      */
-    @Override
-    default <U, R> Validation<U, R> bimap(Function<? super E, ? extends U> invalidMapper, Function<? super T, ? extends R> validMapper) {
-        Objects.requireNonNull(invalidMapper, "function invalidMapper is null");
-        Objects.requireNonNull(validMapper, "function validMapper is null");
+    default <E2, T2> Validation<E2, T2> bimap(Function<? super E, ? extends E2> errorMapper, Function<? super T, ? extends T2> valueMapper) {
+        Objects.requireNonNull(errorMapper, "errorMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
         if (isInvalid()) {
             E error = this.getError();
-            return Validation.invalid(invalidMapper.apply(error));
+            return Validation.invalid(errorMapper.apply(error));
         } else {
             T value = this.get();
-            return Validation.valid(validMapper.apply(value));
+            return Validation.valid(valueMapper.apply(value));
         }
     }
 
@@ -456,11 +451,8 @@ public interface Validation<E, T> extends Value<T>, Applicative<Validation<?, ?>
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    default <U> Validation<List<E>, U> ap(Kind2<Validation<?, ?>, List<E>, ? extends Function<? super T, ? extends U>> kind) {
-        Objects.requireNonNull(kind, "kind is null");
-        Validation<List<E>, Function<T, U>> validation = (Validation<List<E>, Function<T, U>>) (Object) kind;
-
+    default <U> Validation<List<E>, U> ap(Validation<List<E>, ? extends Function<? super T, ? extends U>> validation) {
+        Objects.requireNonNull(validation, "kind is null");
         if (isValid() && validation.isValid()) {
             Function<? super T, ? extends U> f = validation.get();
             U u = f.apply(this.get());
@@ -492,38 +484,21 @@ public interface Validation<E, T> extends Value<T>, Applicative<Validation<?, ?>
 
     // -- Implementation of Value
 
-    @Override
     default Option<Validation<E, T>> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return (isEmpty() || predicate.test(get())) ? Option.some(this) : Option.none();
+        return isInvalid() || predicate.test(get()) ? Option.some(this) : Option.none();
     }
 
-    @Override
     default Option<Validation<E, T>> filterNot(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    default <U> Validation<E, U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U> Validation<E, U> flatMap(Function<? super T, ? extends Validation<E, ? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return (Validation<E, U>) this;
-        } else {
-            final Iterable<? extends U> iterable = mapper.apply(get());
-            if (iterable instanceof Validation) {
-                return (Validation<E, U>) iterable;
-            } else if (iterable instanceof Value) {
-                final Value<U> value = (Value<U>) iterable;
-                return value.isEmpty() ? /*TODO(#1034)*/invalid(null) : valid(value.get());
-            } else {
-                final java.util.Iterator<? extends U> iterator = iterable.iterator();
-                return iterator.hasNext() ? valid(iterator.next()) : /*TODO(#1034)*/invalid(null);
-            }
-        }
+        return isInvalid() ? (Validation<E, U>) this : (Validation<E, U>) mapper.apply(get());
     }
-
 
     @Override
     default Match.MatchMonad.Of<Validation<E, T>> match() {

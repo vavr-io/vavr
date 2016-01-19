@@ -5,6 +5,7 @@
  */
 package javaslang.algebra;
 
+import javaslang.Kind1;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,14 +15,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 /* TODO: we need a similar test mixin
  *       interface BiMonadTestMixings<M extends BiMonad<?, ?>> extends BiMonadLaws<M>, BiFunctorLaws
  */
-public interface MonadTestMixin extends MonadLaws, FunctorLaws {
-    
-    <T> Monad<T> unit();
+public interface MonadTestMixin<M extends Kind1<M, ?>> extends MonadLaws<M>, FunctorLaws {
 
-    <T> Monad<T> unit(T element);
+    <T> Monad<M, T> unit();
+
+    <T> Monad<M, T> unit(T element);
 
     @SuppressWarnings("unchecked")
-	<T> Monad<T> unit(T... elements);
+    <T> Monad<M, T> unit(T... elements);
 
     // -- flatMap
 
@@ -51,9 +52,9 @@ public interface MonadTestMixin extends MonadLaws, FunctorLaws {
     @Test
     default void shouldFlatMapNonEmptyInTheRightOrder() {
         final AtomicInteger seq = new AtomicInteger(0);
-        final Monad<Integer> actualInts = unit(0, 1, 2)
+        final Monad<M, Integer> actualInts = unit(0, 1, 2)
                 .flatMap(ignored -> unit(seq.getAndIncrement(), seq.getAndIncrement()));
-        final Monad<Integer> expectedInts = unit(0, 1, 2, 3, 4, 5);
+        final Monad<M, Integer> expectedInts = unit(0, 1, 2, 3, 4, 5);
         assertThat(actualInts).isEqualTo(expectedInts);
     }
 
@@ -72,8 +73,8 @@ public interface MonadTestMixin extends MonadLaws, FunctorLaws {
     @Test
     default void shouldMapInTheRightOrder() {
         final AtomicInteger seq = new AtomicInteger(0);
-        final Monad<Integer> expectedInts = unit(0, 1, 2, 3, 4);
-        final Monad<Integer> actualInts = unit(0, 1, 2, 3, 4).map(ignored -> seq.getAndIncrement());
+        final Monad<M, Integer> expectedInts = unit(0, 1, 2, 3, 4);
+        final Monad<M, Integer> actualInts = unit(0, 1, 2, 3, 4).map(ignored -> seq.getAndIncrement());
         assertThat(actualInts).isEqualTo(expectedInts);
     }
 }

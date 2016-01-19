@@ -260,28 +260,6 @@ public class GenTest {
         Gen.of(1).filter(ignored -> false).apply(RANDOM);
     }
 
-    // -- exists
-
-    @Test
-    public void shouldThrowOnExists() {
-        Gen.of(1).exists(i -> true);
-    }
-
-    // -- forAll
-
-    @Test
-    public void shouldThrowOnForAll() {
-        Gen.of(1).forAll(i -> false);
-    }
-
-    // -- forEach
-
-    public void shouldThrowOnForEach() {
-        final int[] count = { 0 };
-        Gen.of(1).forEach(i -> count[0]++);
-        assertThat(count[0]).isEqualTo(1);
-    }
-
     // -- peek
 
     @Test
@@ -289,13 +267,6 @@ public class GenTest {
         final int[] actual = new int[] { -1 };
         final int expected = Gen.of(1).peek(i -> actual[0] = i).apply(new Random());
         assertThat(actual[0]).isEqualTo(expected);
-    }
-
-    // -- isEmpty
-
-    @Test
-    public void shouldNotBeEmpty() {
-        assertThat(Gen.of(1).isEmpty()).isFalse();
     }
 
     // helpers

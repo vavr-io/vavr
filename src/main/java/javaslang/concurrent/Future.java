@@ -8,7 +8,6 @@ package javaslang.concurrent;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
-import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
@@ -49,7 +48,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich, Dillon Jett Callis
  * @since 2.0.0
  */
-public interface Future<T> extends Monad<T>, Value<T> {
+public interface Future<T> extends Value<T> {
 
     /**
      * The default executor service is {@link Executors#newCachedThreadPool()}.
@@ -618,7 +617,6 @@ public interface Future<T> extends Monad<T>, Value<T> {
         return promise.future();
     }
 
-    @Override
     default Future<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Promise<T> promise = Promise.make(executorService());
@@ -626,7 +624,6 @@ public interface Future<T> extends Monad<T>, Value<T> {
         return promise.future();
     }
 
-    @Override
     default Future<T> filterNot(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
@@ -797,33 +794,14 @@ public interface Future<T> extends Monad<T>, Value<T> {
 
     // -- Value & Monad implementation
 
-    @Override
-    default <U> Future<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U> Future<U> flatMap(Function<? super T, ? extends Future<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());
         onComplete((Try<T> result) -> result.map(mapper)
-                .onSuccess(iterable -> promise.completeWith(unit(iterable)))
+                .onSuccess(promise::completeWith)
                 .onFailure(promise::failure)
         );
         return promise.future();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Future<U> unit(Iterable<? extends U> iterable) {
-        if (iterable instanceof Future) {
-            return (Future<U>) iterable;
-        } else if (iterable instanceof Value) {
-            final Value<U> value = (Value<U>) iterable;
-            return value.isEmpty() ? Future.failed(new NoSuchElementException()) : Future.successful(value.get());
-        } else {
-            final java.util.Iterator<? extends U> iterator = iterable.iterator();
-            if (iterator.hasNext()) {
-                return Future.successful(iterator.next());
-            } else {
-                return Future.failed(new NoSuchElementException());
-            }
-        }
     }
 
     /**
@@ -885,7 +863,6 @@ public interface Future<T> extends Monad<T>, Value<T> {
         return isEmpty() ? Iterator.empty() : Iterator.of(get());
     }
 
-    @Override
     default <U> Future<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());

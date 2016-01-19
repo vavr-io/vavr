@@ -119,9 +119,6 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
      */
     Set<T> union(Set<? extends T> that);
     
-    @Override
-    <U> Set<U> unit(Iterable<? extends U> iterable);
-
     // -- Adjusted return types of Traversable methods
 
     @Override

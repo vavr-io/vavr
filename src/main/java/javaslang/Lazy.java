@@ -44,7 +44,7 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  * @since 1.2.1
  */
-public interface Lazy<T> extends Monad<T>, Supplier<T>, Value<T> {
+public interface Lazy<T> extends Supplier<T>, Value<T> {
 
     /**
      * Creates a {@code Lazy} that requests its value from a given {@code Supplier}. The supplier is asked only once,
@@ -119,7 +119,7 @@ public interface Lazy<T> extends Monad<T>, Supplier<T>, Value<T> {
      * @return A new Option instance
      * @throws NullPointerException if {@code predicate} is null.
      */
-    @Override
+    // TODO(#1044): return Option<Lazy<T>> and delete Undefined. Also remove flatMap - Lazy should be a Functor and no Monad
     default Lazy<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
@@ -129,15 +129,13 @@ public interface Lazy<T> extends Monad<T>, Supplier<T>, Value<T> {
         }
     }
 
-    @Override
     default Lazy<T> filterNot(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    default <U> Lazy<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U> Lazy<U> flatMap(Function<? super T, ? extends Lazy<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return (Lazy<U>) this;
@@ -176,7 +174,6 @@ public interface Lazy<T> extends Monad<T>, Supplier<T>, Value<T> {
         return true;
     }
 
-    @Override
     default <U> Lazy<U> map(Function<? super T, ? extends U> mapper) {
         return isEmpty() ? Lazy.undefined() : Lazy.of(() -> mapper.apply(get()));
     }
@@ -213,7 +210,6 @@ public interface Lazy<T> extends Monad<T>, Supplier<T>, Value<T> {
     }
     
     @SuppressWarnings("unchecked")
-	@Override
     default <U> Lazy<U> unit(Iterable<? extends U> iterable) {
     	if (iterable instanceof Lazy) {
     		return (Lazy<U>) iterable;

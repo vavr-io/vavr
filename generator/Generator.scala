@@ -46,6 +46,7 @@ def generateMainClasses(): Unit = {
     def genMonad(im: ImportManager, packageName: String, className: String): String = {
 
       val Function = im.getType("java.util.function.Function")
+      val Kind1 = im.getType("javaslang.Kind1")
 
       xs"""
         /**
@@ -69,70 +70,15 @@ def generateMainClasses(): Unit = {
          * <li><strong>Associativity:</strong> {@code m.flatMap(f).flatMap(g) ≡ m.flatMap(x -> f.apply(x).flatMap(g))}</li>
          * </ul>
          *
-         * <strong>The left identity `unit(a).flatMap(f) ≡ f.apply(a)` can't be satisfied for single-valued monads.</strong>
-         * <p>
-         * Example:
-         *
-         * <pre>
-         * <code>
-         * // = Try(1)
-         * Try.success(20).flatMap(i -&gt; List.of(1, 2, 3));
-         * </code>
-         * </pre>
-         *
-         * To fix this, we change the flatMap method by adding a <em>unit</em> function:
-         *
-         * <pre>
-         * <code>flatMap(f) := unit(map(f).flatten())</code>
-         * </pre>
-         *
-         * where <em>unit</em>
-         *
-         * <ul>
-         * <li>takes the first element (if present), if the underlying Monad is single-valued</li>
-         * <li>takes all elements (if any is present), if the underlying Monad is multi-valued</li>
-         * </ul>
-         *
          * To read further about monads in Java please refer to
          * <a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iv">What's Wrong in Java 8, Part IV: Monads</a>.
          *
+         * @param <M> Type M&lt;?&gt; of a monadic instance, which is covered by this Monad
          * @param <T> component type of this monad
          * @author Daniel Dietrich
          * @since 1.1.0
          */
-        public interface Monad<T> extends Functor<T>, Iterable<T> {
-
-            ${(1 to N).gen(i => {
-              val genericsF = if (i == 1) "? super T" else (1 to i).gen(j => s"? super T$j")(", ")
-              val genericsT = if (i == 1) "T" else (1 to i).gen(j => s"T$j")(", ")
-              val genericsM = if (i == 1) "? super Monad<T>" else (1 to i).gen(j => s"Monad<T$j>")(", ")
-              val function = i match {
-                case 1 => im.getType("java.util.function.Function")
-                case 2 => im.getType("java.util.function.BiFunction")
-                case _ => im.getType(s"javaslang.Function$i")
-              }
-              xs"""
-                /$javadoc
-                 * Lifts a {@code $function} to a higher {@code Function$i} that operates on Monads.
-                 *
-                 ${(1 to i).gen(j => s"* @param <${if (i == 1) "T" else s"T$j"}> ${j.ordinal} argument type of f")("\n")}
-                 * @param <R> result type of f
-                 * @param f a $function
-                 * @return a new Function$i that lifts the given function f in a layer that operates on monads.
-                 */
-                static <$genericsT, R> Function$i<$genericsM, Monad<R>> lift($function<$genericsF, ? extends R> f) {
-                    ${if (i == 1) {
-                      "return mT -> mT.map(f::apply);"
-                    } else {
-                      xs"""
-                        return (${(1 to i).gen(j => s"mT$j")(", ")}) ->
-                                ${(1 to i - 1).gen(j => s"mT$j.flatMap(t$j ->")("\n")}
-                                mT$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")})${")" * i};
-                      """
-                    }}
-                }
-              """
-            })("\n\n")}
+        public interface Monad<M extends $Kind1<M, ?>, T> extends Functor<T> {
 
             /**
              * FlatMaps this Monad to a new Monad with different component type.
@@ -142,9 +88,9 @@ def generateMainClasses(): Unit = {
              * If the previous results are needed, flatMap cascades:
              * <pre>
              * <code>
-             * m1().flatMapM(result1 -&gt;
-             *      m2(result1).flatMapM(result2 -&gt;
-             *          m3(result1, result2).flatMapM(result3 -&gt;
+             * m1().flatMap(result1 -&gt;
+             *      m2(result1).flatMap(result2 -&gt;
+             *          m3(result1, result2).flatMap(result3 -&gt;
              *              ...
              *          )
              *      )
@@ -154,9 +100,9 @@ def generateMainClasses(): Unit = {
              * If only the last result is needed, flatMap may be used sequentially:
              * <pre>
              * <code>
-             * m1().flatMapM(this::m2)
-             *     .flatMapM(this::m3)
-             *     .flatMapM(...);
+             * m1().flatMap(this::m2)
+             *     .flatMap(this::m3)
+             *     .flatMap(...);
              * </code>
              * </pre>
              *
@@ -165,23 +111,104 @@ def generateMainClasses(): Unit = {
              * @return a mapped {@code Monad}
              * @throws NullPointerException if {@code mapper} is null
              */
-            <U> Monad<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
-
-            /**
-             * Creates a new instance of this Monad. If this Monad is single-valued (like Option an Try),
-             * only the first value of the given {@code iterable} is taken.
-             *
-             * @param <U> component type of the resulting Monad
-             * @param iterable an iterable
-             * @return a new {@code Monad} instance
-             * @throws NullPointerException if {@code mapper} is null
-             */
-            <U> Monad<U> unit(Iterable<? extends U> iterable);
-
-            // -- adjusting return types of super interface methods
+            <U> Monad<M, U> flatMap(Function<? super T, ? extends Monad<M, U>> mapper);
 
             @Override
-            <U> Monad<U> map($Function<? super T, ? extends U> mapper);
+            <U> Monad<M, U> map($Function<? super T, ? extends U> mapper);
+
+            /**
+             * Pulls the monadic instance of type M&lt;?&gt; out of this Monad view.
+             * This instance can be safely casted to type M&lt;T&gt;.
+             *
+             * @return the monadic instance wrapped by this Monad
+             */
+            $Kind1<M, T> narrow();
+
+            // static factory methods
+
+            ${Seq(im.getType("javaslang.collection.List")).gen(s => xs"""
+              static <T> Monad<List<?>, T> of(List<T> list) {
+                  return new Monad<List<?>, T>() {
+                      @Override
+                      public <U> Monad<List<?>, U> flatMap(Function<? super T, ? extends Monad<List<?>, U>> f) {
+                          return Monad.of(list.flatMap((T t) -> (List<U>) f.apply(t).narrow()));
+                      }
+                      @Override
+                      public <U> Monad<List<?>, U> map(Function<? super T, ? extends U> f) {
+                          return Monad.of(list.map(f));
+                      }
+                      @Override
+                      public List<T> narrow() {
+                          return list;
+                      }
+                  };
+              }
+            """)("\n\n")}
+
+            // lifting functions
+
+            ${(1 to N).gen(i => {
+
+              val genericsF = if (i == 1) "? super T" else (1 to i).gen(j => s"? super T$j")(", ")
+              val genericsT = if (i == 1) "T" else (1 to i).gen(j => s"T$j")(", ")
+              val args = if (i == 1) "Monad<M, T> m" else (1 to i).gen(j => s"Monad<M, T$j> m$j")(", ")
+              val function = i match {
+                case 1 => im.getType("java.util.function.Function")
+                case 2 => im.getType("java.util.function.BiFunction")
+                case _ => im.getType(s"javaslang.Function$i")
+              }
+
+              xs"""
+                /$javadoc
+                 * Lifts a {@code $function} to a higher {@code Lifted$i} function that operates on Monads.
+                 *
+                 ${(1 to i).gen(j => s"* @param <${if (i == 1) "T" else s"T$j"}> ${j.ordinal} argument type of f")("\n")}
+                 * @param <R> result type of f
+                 * @param f a $function
+                 * @return a new Lifted$i function that lifts the given function f in a layer that operates on monads.
+                 */
+                static <$genericsT, R> Lifted$i<$genericsT, R> lift($function<$genericsF, ? extends R> f) {
+                    return new Lifted$i<$genericsT, R>() {
+                        @Override
+                        public <M extends $Kind1<M, ?>> Monad<M, R> apply($args) {
+                            ${if (i == 1) {
+                              "return m.map(f);"
+                            } else {
+                              xs"""
+                                return
+                                    ${(1 until i).gen(j => s"m$j.flatMap(t$j ->")("\n")}
+                                    m$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")})${")" * i};
+                                """
+                            }}
+                        }
+                    };
+                }
+              """
+            })("\n\n")}
+
+            // -- lifted types
+
+            ${(1 to N).gen(i => {
+
+              val paramsM = if (i == 1) "M<T>" else "(" + (1 to i).gen(j => s"M<T$j>")(", ") + ")"
+              val paramsT = if (i == 1) "T" else "(" + (1 to i).gen(j => s"T$j")(", ") + ")"
+              val genericsT = if (i == 1) "T" else (1 to i).gen(j => s"T$j")(", ")
+              val args = if (i == 1) "Monad<M, T> m" else (1 to i).gen(j => s"Monad<M, T$j> m$j")(", ")
+
+              xs"""
+                /$javadoc
+                 * Represents a function {@code $paramsT -> R}
+                 * lifted to {@code $paramsM -> M<R>}.
+                 *
+                 ${(1 to i).gen(j => s"* @param <${if (i == 1) "T" else s"T$j"}> ${j.ordinal} argument type")("\n")}
+                 * @param <R> result type
+                 */
+                // DEV-NOTE: intentionally not a @FunctionalInterface
+                interface Lifted$i<$genericsT, R> {
+                    <M extends $Kind1<M, ?>> Monad<M, R> apply($args);
+                }
+              """
+            })("\n\n")}
         }
       """
     }
@@ -1386,10 +1413,10 @@ def generateTestClasses(): Unit = {
 
                 @$test
                 public void testList$i() {
-                    $list<Integer> list = List.of(1, 2);
+                    Monad<$list<?>, Integer> list = Monad.of($list.of(1, 2));
                     $list<$tupleN<$generics>> crossProductPower = ($list<$tupleN<$generics>>) Monad
                             .lift((Function$i<$generics, $tupleN<$generics>>) $tuple::of)
-                            .apply(${(1 to i).gen(j => "list")(", ")});
+                            .apply(${(1 to i).gen(j => "list")(", ")}).narrow();
                     $assertThat(crossProductPower.size()).isEqualTo(1 << $i);
                 }
 
@@ -1758,7 +1785,6 @@ def generateTestClasses(): Unit = {
         val list = im.getType("javaslang.collection.List")
         val comparator = im.getType("java.util.Comparator")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
-        val functionType = s"Function$i"
         val generics = (1 to i).gen(j => s"Object")(", ")
         val intGenerics = (1 to i).gen(j => s"Integer")(", ")
         val functionArgs = (i > 1).gen("(") + (1 to i).gen(j => s"o$j")(", ") + (i > 1).gen(")")

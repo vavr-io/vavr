@@ -7,7 +7,6 @@ package javaslang.control;
 
 import javaslang.CheckedFunction1;
 import javaslang.Value;
-import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
@@ -27,7 +26,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich
  * @since 1.0.0
  */
-public interface Try<T> extends Monad<T>, Value<T> {
+public interface Try<T> extends Value<T> {
 
     /**
      * Creates a Try of a CheckedSupplier.
@@ -190,7 +189,7 @@ public interface Try<T> extends Monad<T>, Value<T> {
      * @param predicate A predicate
      * @return a new Try
      */
-    @Override
+    // TODO(#1044, #865): Now that we don't extend Monad take a CheckedPredicate here and remove the filter*Try methods
     default Try<T> filter(Predicate<? super T> predicate) {
         if (isFailure()) {
             return this;
@@ -207,7 +206,6 @@ public interface Try<T> extends Monad<T>, Value<T> {
         }
     }
 
-    @Override
     default Try<T> filterNot(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
@@ -234,21 +232,21 @@ public interface Try<T> extends Monad<T>, Value<T> {
      * @return a new Try
      */
     @SuppressWarnings("unchecked")
-    default <U> Try<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
         if (isFailure()) {
             return (Failure<U>) this;
         } else {
-            return flatMapTry((CheckedFunction<T, Iterable<? extends U>>) mapper::apply);
+            return flatMapTry((CheckedFunction<T, Try<? extends U>>) mapper::apply);
         }
     }
 
     @SuppressWarnings("unchecked")
-    default <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Try<? extends U>> mapper) {
         if (isFailure()) {
             return (Failure<U>) this;
         } else {
             try {
-                return unit(mapper.apply(get()));
+                return (Try<U>) mapper.apply(get());
             } catch (Throwable t) {
                 return new Failure<>(t);
             }
@@ -316,7 +314,6 @@ public interface Try<T> extends Monad<T>, Value<T> {
      * @param mapper A mapper
      * @return a new Try
      */
-    @Override
     default <U> Try<U> map(Function<? super T, ? extends U> mapper) {
         return mapTry(mapper::apply);
     }
@@ -487,24 +484,6 @@ public interface Try<T> extends Monad<T>, Value<T> {
         return f.apply(this);
     }
     
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Try<U> unit(Iterable<? extends U> iterable) {
-    	if (iterable instanceof Try) {
-    		return (Try<U>) iterable;
-    	} else if (iterable instanceof Value) {
-    		final Value<U> value = (Value<U>) iterable;
-    		return value.isEmpty() ? Try.failure(new NoSuchElementException()) : Try.of(value::get);
-    	} else {
-    		final java.util.Iterator<? extends U> iterator = iterable.iterator();
-    		if (iterator.hasNext()) {
-    			return Try.of(() -> iterator.next());
-    		} else {
-    			return Try.failure(new NoSuchElementException());
-    		}
-        }
-    }
-
     @Override
     boolean equals(Object o);
 

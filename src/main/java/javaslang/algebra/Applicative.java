@@ -5,6 +5,7 @@
  */
 package javaslang.algebra;
 
+import javaslang.Kind2;
 import javaslang.collection.List;
 
 import java.util.function.Function;

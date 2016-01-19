@@ -6,7 +6,6 @@
 package javaslang.control;
 
 import javaslang.*;
-import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.control.Match.SerializablePredicate;
@@ -551,19 +550,16 @@ public interface Match {
         }
     }
 
-    interface MatchMonad<R> extends Monad<R>, Supplier<R>, Value<R> {
+    interface MatchMonad<R> extends Supplier<R>, Value<R> {
 
-        @Override
         MatchMonad<R> filter(Predicate<? super R> predicate);
 
-        @Override
         default MatchMonad<R> filterNot(Predicate<? super R> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             return filter(predicate.negate());
         }
 
-        @Override
-        <U> MatchMonad<U> flatMap(Function<? super R, ? extends Iterable<? extends U>> mapper);
+        <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper);
 
         /**
          * A {@code MatchMonad} is single-valued.
@@ -575,7 +571,6 @@ public interface Match {
             return true;
         }
 
-        @Override
         <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper);
 
         @Override
@@ -847,37 +842,15 @@ public interface Match {
 
             @SuppressWarnings("unchecked")
             @Override
-            public <U> MatchMonad<U> flatMap(Function<? super R, ? extends Iterable<? extends U>> mapper) {
+            public <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper) {
                 Objects.requireNonNull(mapper, "mapper is null");
                 if (result.isEmpty()) {
                     return (MatchMonad<U>) this;
                 } else {
-                    return unit(mapper.apply(result.get().get()));
+                    return (MatchMonad<U>) mapper.apply(result.get().get());
                 }
             }
             
-            @SuppressWarnings("unchecked")
-			@Override
-            public <U> MatchMonad<U> unit(Iterable<? extends U> iterable) {
-            	if (iterable instanceof MatchMonad) {
-            		return (MatchMonad<U>) iterable;
-            	} else if (iterable instanceof Value) {
-            		final Value<U> v = ((Value<U>) iterable);
-            		final Option<Supplier<? extends U>> result = v.isEmpty() ? Option.none() : Option.some(v::get);
-            		return new Then<>(value, result);
-            	} else {
-            		final java.util.Iterator<? extends U> iterator = iterable.iterator();
-            		final Option<Supplier<? extends U>> result;
-            		if (iterator.hasNext()) {
-            			final U v = iterator.next();
-            			result = Option.some(() -> v);
-            		} else {
-            			result = Option.none();
-            		}
-            		return new Then<>(value, result);
-            	}
-            }
-
             @SuppressWarnings("unchecked")
             @Override
             public <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper) {
@@ -959,36 +932,17 @@ public interface Match {
 
             @SuppressWarnings("unchecked")
 			@Override
-            public <U> MatchMonad<U> flatMap(Function<? super R, ? extends Iterable<? extends U>> mapper) {
+            public <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper) {
                 Objects.requireNonNull(mapper, "mapper is null");
                 // lazy result could be undefined
                 if (result.isEmpty()) {
                 	return (MatchMonad<U>) this;
                 } else {
                 	// does this need to be lazy?
-                	return unit(mapper.apply(result.get()));
+                	return (MatchMonad<U>) mapper.apply(result.get());
                 }
             }
             
-            @SuppressWarnings("unchecked")
-			@Override
-            public <U> MatchMonad<U> unit(Iterable<? extends U> iterable) {
-            	if (iterable instanceof MatchMonad) {
-            		return (MatchMonad<U>) iterable;
-            	} else if (iterable instanceof Value) {
-            		final Value<U> value = ((Value<U>) iterable);
-            		return value.isEmpty() ? new Otherwise<>(Lazy.undefined()) : new Otherwise<>(Lazy.of(value::get));
-            	} else {
-            		final java.util.Iterator<? extends U> iterator = iterable.iterator();
-            		if (iterator.hasNext()) {
-            			final U value = iterator.next();
-            			return new Otherwise<>(() -> value);
-            		} else {
-            			return new Otherwise<>(Lazy.undefined());
-            		}
-            	}
-            }
-
             @SuppressWarnings("unchecked")
 			@Override
             public <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper) {
