@@ -185,6 +185,28 @@ public interface Option<T> extends Value<T> {
     }
 
     /**
+     * Returns this {@code Option} if it is nonempty, otherwise return the alternative.
+     * @param other An alternative {@code Option}
+     * @return this {@code Option} if it is nonempty, otherwise return the alternative.
+     */
+    @SuppressWarnings("unchecked")
+    default Option<T> orElse(Option<? extends T> other) {
+        Objects.requireNonNull(other, "other is null");
+        return isEmpty() ? (Option<T>) other : this;
+    }
+
+    /**
+     * Returns this {@code Option} if it is nonempty, otherwise return the result of evaluating supplier.
+     * @param supplier An alternative {@code Option} supplier
+     * @return this {@code Option} if it is nonempty, otherwise return the result of evaluating supplier.
+     */
+    @SuppressWarnings("unchecked")
+    default Option<T> orElse(Supplier<? extends Option<? extends T>> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return isEmpty() ? (Option<T>) supplier.get() : this;
+    }
+
+    /**
      * Returns the value if this is a {@code Some}, otherwise the {@code other} value is returned,
      * if this is a {@code None}.
      * <p>

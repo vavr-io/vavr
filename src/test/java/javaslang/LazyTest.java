@@ -161,6 +161,32 @@ public class LazyTest {
         Lazy.undefined().get();
     }
 
+    // -- orElse
+
+    @Test
+    public void shouldReturnSelfOnOrElseIfValueIsPresent() {
+        Lazy<Integer> lazy = Lazy.of(() -> 42);
+        assertThat(lazy.orElse(Lazy.of(() -> (0)))).isSameAs(lazy);
+    }
+
+    @Test
+    public void shouldReturnSelfOnOrElseSupplierIfValueIsPresent() {
+        Lazy<Integer> lazy = Lazy.of(() -> 42);
+        assertThat(lazy.orElse(() -> Lazy.of(() -> 0))).isSameAs(lazy);
+    }
+
+    @Test
+    public void shouldReturnAlternativeOnOrElseIfValueIsNotPresent() {
+        Lazy<Integer> lazy = Lazy.of(() -> 42);
+        assertThat(Lazy.undefined().orElse(lazy)).isSameAs(lazy);
+    }
+
+    @Test
+    public void shouldReturnAlternativeOnOrElseSupplierIfValueIsNotPresent() {
+        Lazy<Integer> lazy = Lazy.of(() -> 42);
+        assertThat(Lazy.undefined().orElse(() -> lazy)).isSameAs(lazy);
+    }
+
     // -- filter
 
     @Test

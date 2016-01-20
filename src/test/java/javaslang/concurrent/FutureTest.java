@@ -325,6 +325,40 @@ public class FutureTest extends AbstractValueTest {
         assertThat(sideEffect[0]).isEqualTo(42);
     }
 
+    // -- orElse
+
+    @Test
+    public void shouldReturnSelfResultOnOrElseIfSuccess() {
+        final Future<String> f1 = Future.of(() -> "f1");
+        final Future<String> f2 = f1.orElse(Future.of(() -> "f2"));
+        waitUntil(f2::isCompleted);
+        assertThat(f2.get()).isEqualTo("f1");
+    }
+
+    @Test
+    public void shouldReturnSelfResultOnOrElseSupplierIfSuccess() {
+        final Future<String> f1 = Future.of(() -> "f1");
+        final Future<String> f2 = f1.orElse(() -> Future.of(() -> "f2"));
+        waitUntil(f2::isCompleted);
+        assertThat(f2.get()).isEqualTo("f1");
+    }
+
+    @Test
+    public void shouldReturnOtherResultOnOrElseIfFailure() {
+        final Future<String> f1 = Future.failed(new RuntimeException());
+        final Future<String> f2 = f1.orElse(Future.of(() -> "f2"));
+        waitUntil(f2::isCompleted);
+        assertThat(f2.get()).isEqualTo("f2");
+    }
+
+    @Test
+    public void shouldReturnOtherResultOnOrElseSupplierIfFailure() {
+        final Future<String> f1 = Future.failed(new RuntimeException());
+        final Future<String> f2 = f1.orElse(() -> Future.of(() -> "f2"));
+        waitUntil(f2::isCompleted);
+        assertThat(f2.get()).isEqualTo("f2");
+    }
+
     // -- await
 
     @Test
