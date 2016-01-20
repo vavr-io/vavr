@@ -880,7 +880,7 @@ public interface Future<T> extends Value<T> {
         return promise.future();
     }
 
-    default Future<T> orElse(Supplier<Future<? extends T>> supplier) {
+    default Future<T> orElse(Supplier<? extends Future<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         final Promise<T> promise = Promise.make(executorService());
         onComplete(result -> {
