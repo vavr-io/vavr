@@ -5,7 +5,6 @@
  */
 package javaslang.control;
 
-import javaslang.CheckedFunction1;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -17,7 +16,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * An implementation similar to Scala's Try control.
@@ -190,7 +188,7 @@ public interface Try<T> extends Value<T> {
      * @return a new Try
      */
     // TODO(#1044, #865): Now that we don't extend Monad take a CheckedPredicate here and remove the filter*Try methods
-    default Try<T> filter(Predicate<? super T> predicate) {
+    default Try<T> filter(CheckedPredicate<? super T> predicate) {
         if (isFailure()) {
             return this;
         } else {
@@ -206,22 +204,9 @@ public interface Try<T> extends Value<T> {
         }
     }
 
-    default Try<T> filterNot(Predicate<? super T> predicate) {
+    default Try<T> filterNot(CheckedPredicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
-    }
-
-    default Try<T> filterTry(CheckedPredicate<? super T> predicate) {
-        if (isFailure()) {
-            return this;
-        } else {
-            return Try.of(() -> predicate.test(get())).flatMap(b -> filter(ignored -> b));
-        }
-    }
-
-    default Try<T> filterNotTry(CheckedPredicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filterTry(predicate.negate());
     }
 
     /**
@@ -232,16 +217,7 @@ public interface Try<T> extends Value<T> {
      * @return a new Try
      */
     @SuppressWarnings("unchecked")
-    default <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
-        if (isFailure()) {
-            return (Failure<U>) this;
-        } else {
-            return flatMapTry((CheckedFunction<T, Try<? extends U>>) mapper::apply);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    default <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Try<? extends U>> mapper) {
+    default <U> Try<U> flatMap(CheckedFunction<? super T, ? extends Try<? extends U>> mapper) {
         if (isFailure()) {
             return (Failure<U>) this;
         } else {
@@ -308,17 +284,6 @@ public interface Try<T> extends Value<T> {
     }
 
     /**
-     * Maps the value of a Success or returns a Failure.
-     *
-     * @param <U>    The new component type
-     * @param mapper A mapper
-     * @return a new Try
-     */
-    default <U> Try<U> map(Function<? super T, ? extends U> mapper) {
-        return mapTry(mapper::apply);
-    }
-
-    /**
      * Runs the given checked function if this is a {@code Success},
      * passing the result of the current expression to it.
      * If this expression is a {@code Failure} then it'll return a new
@@ -329,7 +294,7 @@ public interface Try<T> extends Value<T> {
      * <pre>
      * <code>
      * Try.of(() -&gt; 0)
-     *    .mapTry(x -&gt; 1 / x); // division by zero
+     *    .map(x -&gt; 1 / x); // division by zero
      * </code>
      * </pre>
      *
@@ -338,7 +303,7 @@ public interface Try<T> extends Value<T> {
      * @return a new {@code Try}
      */
     @SuppressWarnings("unchecked")
-    default <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
+    default <U> Try<U> map(CheckedFunction<? super T, ? extends U> mapper) {
         if (isFailure()) {
             return (Failure<U>) this;
         } else {
@@ -358,7 +323,7 @@ public interface Try<T> extends Value<T> {
      * @return a new Failure, if this is a Failure and the consumer throws, otherwise this, which may be a Success or
      * a Failure.
      */
-    default Try<T> onFailure(Consumer<? super Throwable> action) {
+    default Try<T> onFailure(CheckedConsumer<? super Throwable> action) {
         if (isFailure()) {
             try {
                 action.accept(getCause());
@@ -378,7 +343,7 @@ public interface Try<T> extends Value<T> {
      * @return a new Failure, if this is a Success and the consumer throws, otherwise this, which may be a Success or
      * a Failure.
      */
-    default Try<T> onSuccess(Consumer<? super T> action) {
+    default Try<T> onSuccess(CheckedConsumer<? super T> action) {
         if (isSuccess()) {
             try {
                 action.accept(get());

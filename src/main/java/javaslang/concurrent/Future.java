@@ -15,8 +15,7 @@ import javaslang.collection.Stream;
 import javaslang.control.Match;
 import javaslang.control.Option;
 import javaslang.control.Try;
-import javaslang.control.Try.CheckedRunnable;
-import javaslang.control.Try.CheckedSupplier;
+import javaslang.control.Try.*;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -26,7 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * A Future is a computation result that becomes available at some point. All operations provided are non-blocking.
@@ -95,7 +93,7 @@ public interface Future<T> extends Value<T> {
      * @return A Future of an {@link Option} of the first result of the given {@code futures} that satisfies the given {@code predicate}.
      * @throws NullPointerException if one of the arguments is null
      */
-    static <T> Future<Option<T>> find(Iterable<? extends Future<? extends T>> futures, Predicate<? super T> predicate) {
+    static <T> Future<Option<T>> find(Iterable<? extends Future<? extends T>> futures, CheckedPredicate<? super T> predicate) {
         return find(DEFAULT_EXECUTOR_SERVICE, futures, predicate);
     }
 
@@ -112,7 +110,7 @@ public interface Future<T> extends Value<T> {
      * @return A Future of an {@link Option} of the first result of the given {@code futures} that satisfies the given {@code predicate}.
      * @throws NullPointerException if one of the arguments is null
      */
-    static <T> Future<Option<T>> find(ExecutorService executorService, Iterable<? extends Future<? extends T>> futures, Predicate<? super T> predicate) {
+    static <T> Future<Option<T>> find(ExecutorService executorService, Iterable<? extends Future<? extends T>> futures, CheckedPredicate<? super T> predicate) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(futures, "futures is null");
         Objects.requireNonNull(predicate, "predicate is null");
@@ -271,7 +269,7 @@ public interface Future<T> extends Value<T> {
     static <T> Future<T> fromTry(ExecutorService executorService, Try<? extends T> result) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(result, "result is null");
-        return Promise.<T> fromTry(executorService, result).future();
+        return Promise.fromTry(executorService, result).future();
     }
 
     /**
@@ -339,7 +337,7 @@ public interface Future<T> extends Value<T> {
         if (!futures.iterator().hasNext()) {
             throw new NoSuchElementException("Future.reduce on empty futures");
         } else {
-            return Future.<T> sequence(futures).map(seq -> seq.reduceLeft(f));
+            return Future.sequence(futures).map(seq -> seq.reduceLeft(f));
         }
     }
 
@@ -617,14 +615,14 @@ public interface Future<T> extends Value<T> {
         return promise.future();
     }
 
-    default Future<T> filter(Predicate<? super T> predicate) {
+    default Future<T> filter(CheckedPredicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Promise<T> promise = Promise.make(executorService());
         onComplete(result -> promise.complete(result.filter(predicate)));
         return promise.future();
     }
 
-    default Future<T> filterNot(Predicate<? super T> predicate) {
+    default Future<T> filterNot(CheckedPredicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
@@ -688,7 +686,7 @@ public interface Future<T> extends Value<T> {
      * @return this Future
      * @throws NullPointerException if {@code action} is null.
      */
-    default Future<T> onFailure(Consumer<? super Throwable> action) {
+    default Future<T> onFailure(CheckedConsumer<? super Throwable> action) {
         Objects.requireNonNull(action, "action is null");
         return onComplete(result -> result.onFailure(action));
     }
@@ -700,7 +698,7 @@ public interface Future<T> extends Value<T> {
      * @return this Future
      * @throws NullPointerException if {@code action} is null.
      */
-    default Future<T> onSuccess(Consumer<? super T> action) {
+    default Future<T> onSuccess(CheckedConsumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         return onComplete(result -> result.onSuccess(action));
     }
@@ -794,7 +792,7 @@ public interface Future<T> extends Value<T> {
 
     // -- Value & Monad implementation
 
-    default <U> Future<U> flatMap(Function<? super T, ? extends Future<? extends U>> mapper) {
+    default <U> Future<U> flatMap(CheckedFunction<? super T, ? extends Future<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());
         onComplete((Try<T> result) -> result.map(mapper)
@@ -863,7 +861,7 @@ public interface Future<T> extends Value<T> {
         return isEmpty() ? Iterator.empty() : Iterator.of(get());
     }
 
-    default <U> Future<U> map(Function<? super T, ? extends U> mapper) {
+    default <U> Future<U> map(CheckedFunction<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());
         onComplete(result -> promise.complete(result.map(mapper)));
@@ -878,7 +876,7 @@ public interface Future<T> extends Value<T> {
     @Override
     default Future<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
-        onSuccess(action);
+        onSuccess(action::accept);
         return this;
     }
 

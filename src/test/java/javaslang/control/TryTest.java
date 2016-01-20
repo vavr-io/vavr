@@ -328,9 +328,9 @@ public class TryTest {
     }
 
     @Test
-    public void shouldReturnIdentityWhenFilterTryOnFailure() {
+    public void shouldReturnIdentityWhenFilterOnFailure() {
         final Try<String> identity = failure();
-        assertThat(identity.filterTry(s -> true)).isEqualTo(identity);
+        assertThat(identity.filter(s -> true)).isEqualTo(identity);
     }
 
     @Test
@@ -343,12 +343,6 @@ public class TryTest {
     public void shouldFlatMapWithExceptionOnFailure() {
         final Try<String> actual = failure();
         assertThat(actual.flatMap(this::flatMap)).isEqualTo(actual);
-    }
-
-    @Test
-    public void shouldFlatMapTryOnFailure() {
-        final Try<String> actual = failure();
-        assertThat(actual.flatMapTry(s -> Try.of(() -> s + "!"))).isEqualTo(actual);
     }
 
     @Test
@@ -386,21 +380,21 @@ public class TryTest {
     }
 
     @Test
-    public void shouldChainSuccessWithMapTry() {
+    public void shouldChainSuccessWithMap() {
         final Try<Integer> actual = Try.of(() -> 100)
-                .mapTry(x -> x + 100)
-                .mapTry(x -> x + 50);
+                .map(x -> x + 100)
+                .map(x -> x + 50);
 
         final Try<Integer> expected = Try.success(250);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void shouldChainFailureWithMapTry() {
+    public void shouldChainFailureWithMap() {
         final Try<Integer> actual = Try.of(() -> 100)
-                .mapTry(x -> x + 100)
-                .mapTry(x -> Integer.parseInt("aaa") + x)   //Throws exception.
-                .mapTry(x -> x / 2);
+                .map(x -> x + 100)
+                .map(x -> Integer.parseInt("aaa") + x)   //Throws exception.
+                .map(x -> x / 2);
         assertThat(actual.toString()).isEqualTo("Failure(java.lang.NumberFormatException: For input string: \"aaa\")");
     }
 
@@ -410,7 +404,7 @@ public class TryTest {
                 .andThen(arr -> arr.add(10))
                 .andThen(arr -> arr.add(30))
                 .andThen(arr -> arr.add(20))
-                .mapTry(arr -> arr.get(1));
+                .map(arr -> arr.get(1));
 
         final Try<Integer> expected = Try.success(30);
         assertThat(actual).isEqualTo(expected);
@@ -422,7 +416,7 @@ public class TryTest {
                 .andThen(arr -> arr.add(10))
                 .andThen(arr -> arr.add(Integer.parseInt("aaa"))) //Throws exception.
                 .andThen(arr -> arr.add(20))
-                .mapTry(arr -> arr.get(1));
+                .map(arr -> arr.get(1));
         assertThat(actual.toString()).isEqualTo("Failure(java.lang.NumberFormatException: For input string: \"aaa\")");
     }
 
@@ -582,11 +576,6 @@ public class TryTest {
     @Test
     public void shouldConvertSuccessToJavaOptional() {
         assertThat(success().toJavaOptional().get()).isEqualTo(OK);
-    }
-
-    @Test
-    public void shouldFilterTryMatchingPredicateOnSuccess() {
-        assertThat(success().filterTry(s -> true).get()).isEqualTo(OK);
     }
 
     @Test
