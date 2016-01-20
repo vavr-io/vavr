@@ -55,6 +55,14 @@ public class EitherTest {
         assertThat(Either.right(1).swap()).isEqualTo(Either.left(1));
     }
 
+    // orElse
+
+    @Test
+    public void shouldEitherOrElseEither() {
+        assertThat(Either.right(1).orElse(Either.right(2)).get()).isEqualTo(1);
+        assertThat(Either.left(1).orElse(Either.right(2)).get()).isEqualTo(2);
+    }
+
     // -- Left
 
     @Test
@@ -116,6 +124,14 @@ public class EitherTest {
     @Test
     public void shouldGetOnLeftProjectionOfLeft() {
         assertThat(Either.left(1).left().get()).isEqualTo(1);
+    }
+
+    // orElse
+
+    @Test
+    public void shouldLeftProjectionOrElseLeftProjection() {
+        assertThat(Either.left(1).left().orElse(Either.left(2).left()).get()).isEqualTo(1);
+        assertThat(Either.<Integer, Integer>right(1).left().orElse(Either.<Integer, Integer>left(2).left()).get()).isEqualTo(2);
     }
 
     // getOrElse
@@ -486,6 +502,14 @@ public class EitherTest {
     @Test
     public void shouldGetOnRightProjectionOfRight() {
         assertThat(Either.right(1).right().get()).isEqualTo(1);
+    }
+
+    // orElse
+
+    @Test
+    public void shouldRightProjectionOrElseRightProjection() {
+        assertThat(Either.right(1).right().orElse(Either.right(2).right()).get()).isEqualTo(1);
+        assertThat(Either.<Integer, Integer>left(1).right().orElse(Either.<Integer, Integer>right(2).right()).get()).isEqualTo(2);
     }
 
     // getOrElse
