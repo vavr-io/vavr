@@ -70,18 +70,22 @@ import java.util.function.Predicate;
  * <li>{@link #sum()}</li>
  * </ul>
  *
- * Reduction:
+ * Reduction/Folding:
  *
  * <ul>
  * <li>{@link #count(Predicate)}</li>
+ * <li>{@link #fold(Object, BiFunction)}</li>
  * <li>{@link #foldLeft(Object, BiFunction)}</li>
  * <li>{@link #foldRight(Object, BiFunction)}</li>
  * <li>{@link #mkString()}</li>
  * <li>{@link #mkString(CharSequence)}</li>
  * <li>{@link #mkString(CharSequence, CharSequence, CharSequence)}</li>
  * <li>{@link #reduce(BiFunction)}</li>
+ * <li>{@link #reduceOption(BiFunction)}</li>
  * <li>{@link #reduceLeft(BiFunction)}</li>
+ * <li>{@link #reduceLeftOption(BiFunction)}</li>
  * <li>{@link #reduceRight(BiFunction)}</li>
+ * <li>{@link #reduceRightOption(BiFunction)}</li>
  * </ul>
  *
  * Selection:
@@ -136,7 +140,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich and others
  * @since 1.1.0
  */
-public interface Traversable<T> extends Value<T> {
+public interface Traversable<T> extends Foldable<T>, Value<T> {
 
     /**
      * Used by collections to compute the hashCode only once.
@@ -374,7 +378,7 @@ public interface Traversable<T> extends Value<T> {
      * @throws NullPointerException if {@code predicate} is null
      */
     Traversable<T> filter(Predicate<? super T> predicate);
-    
+
     Traversable<T> filterNot(Predicate<? super T> predicate);
 
     /**
@@ -876,6 +880,19 @@ public interface Traversable<T> extends Value<T> {
     }
 
     /**
+     * Shortcut for {@code isEmpty() ? Option.none() : Option.some(reduceLeft(op))}.
+     *
+     * @param op A BiFunction of type T
+     * @return a reduced value
+     * @throws NullPointerException if {@code op} is null
+     */
+    @Override
+    default Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
+        return isEmpty() ? Option.none() : Option.some(reduceLeft(op));
+    }
+
+    /**
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the right.
      *
      * @param op An operation of type T
@@ -891,6 +908,19 @@ public interface Traversable<T> extends Value<T> {
         } else {
             return iterator().reduceRight(op);
         }
+    }
+
+    /**
+     * Shortcut for {@code isEmpty() ? Option.none() : Option.some(reduceRight(op))}.
+     *
+     * @param op An operation of type T
+     * @return a reduced value
+     * @throws NullPointerException if {@code op} is null
+     */
+    @Override
+    default Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
+        return isEmpty() ? Option.none() : Option.some(reduceRight(op));
     }
 
     /**
@@ -1116,7 +1146,7 @@ public interface Traversable<T> extends Value<T> {
      * @throws NullPointerException if {@code predicate} is null
      */
     Traversable<T> takeWhile(Predicate<? super T> predicate);
-    
+
     /**
      * Unzips this elements by mapping this elements to pairs which are subsequently split into two distinct
      * sets.
