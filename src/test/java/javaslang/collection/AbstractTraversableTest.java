@@ -8,7 +8,6 @@ package javaslang.collection;
 import javaslang.AbstractValueTest;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.algebra.Monoid;
 import javaslang.control.Option;
 import org.junit.Test;
 
@@ -524,8 +523,22 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     // -- fold
 
     @Test
+    public void shouldFoldNil() {
+        assertThat(this.<String> empty().fold("", (a, b) -> a + b)).isEqualTo("");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenFoldNullOperator() {
+        this.<String> empty().fold(null, null);
+    }
+
+    @Test
+    public void shouldFoldSingleElement() {
+        assertThat(of(1).fold(0, (a, b) -> a + b)).isEqualTo(1);
+    }
+
+    @Test
     public void shouldFoldMultipleElements() {
-        assertThat(of(1, 2, 3).fold(Monoid.of(0, (a, b) -> a + b))).isEqualTo(6);
         assertThat(of(1, 2, 3).fold(0, (a, b) -> a + b)).isEqualTo(6);
     }
 
@@ -533,7 +546,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldFoldLeftNil() {
-        assertThat(this.<String> empty().foldLeft(Monoid.of("", (xs, x) -> xs + x))).isEqualTo("");
         assertThat(this.<String> empty().foldLeft("", (xs, x) -> xs + x)).isEqualTo("");
     }
 
@@ -544,7 +556,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldFoldLeftNonNil() {
-        assertThat(of("a", "b", "c").foldLeft(Monoid.of("", (xs, x) -> xs + x))).isEqualTo("abc");
         assertThat(of("a", "b", "c").foldLeft("", (xs, x) -> xs + x)).isEqualTo("abc");
     }
 
@@ -552,7 +563,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldFoldRightNil() {
-        assertThat(this.<String> empty().foldRight(Monoid.of("", (x, xs) -> x + xs))).isEqualTo("");
         assertThat(this.<String> empty().foldRight("", (x, xs) -> x + xs)).isEqualTo("");
     }
 
@@ -563,30 +573,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldFoldRightNonNil() {
-        assertThat(of("a", "b", "c").foldRight(Monoid.of("", (x, xs) -> x + xs))).isEqualTo("abc");
         assertThat(of("a", "b", "c").foldRight("", (x, xs) -> x + xs)).isEqualTo("abc");
-    }
-
-    // -- foldMap
-
-    @Test
-    public void shouldFoldMapNil() {
-        assertThat(empty().foldMap(Monoid.of("", (x, xs) -> x + xs), String::valueOf)).isEqualTo("");
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldFoldMapFailNullMonoid() {
-        empty().foldMap(null, String::valueOf);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldFoldMapFailNullMapper() {
-        empty().foldMap(Monoid.of("", (x, xs) -> x + xs), null);
-    }
-
-    @Test
-    public void shouldFoldMapNonNil() {
-        assertThat(of(1, 2, 3).foldMap(Monoid.of("", (x, xs) -> x + xs), String::valueOf)).isEqualTo("123");
     }
 
     // -- hasDefiniteSize

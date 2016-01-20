@@ -5,8 +5,6 @@
  */
 package javaslang;
 
-import javaslang.algebra.Foldable;
-import javaslang.algebra.Monoid;
 import javaslang.collection.*;
 import javaslang.control.Either;
 import javaslang.control.Match;
@@ -58,23 +56,6 @@ import java.util.stream.StreamSupport;
  * <ul>
  * <li>{@link #corresponds(Iterable, BiPredicate)}</li>
  * <li>{@link #eq(Object)}</li>
- * </ul>
- *
- * Folding:
- * <ul>
- * <li>{@link #fold(Monoid)}</li>
- * <li>{@link #fold(Object, BiFunction)}</li>
- * <li>{@link #foldLeft(Monoid)}</li>
- * <li>{@link #foldLeft(Object, BiFunction)}</li>
- * <li>{@link #foldMap(Monoid, Function)}</li>
- * <li>{@link #foldRight(Object, BiFunction)}</li>
- * <li>{@link #foldRight(Monoid)}</li>
- * <li>{@link #reduce(BiFunction)}</li>
- * <li>{@link #reduceOption(BiFunction)}</li>
- * <li>{@link #reduceLeft(BiFunction)}</li>
- * <li>{@link #reduceLeftOption(BiFunction)}</li>
- * <li>{@link #reduceRight(BiFunction)}</li>
- * <li>{@link #reduceRightOption(BiFunction)}</li>
  * </ul>
  *
  * Iterable extensions:
@@ -140,7 +121,7 @@ import java.util.stream.StreamSupport;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Value<T> extends Foldable<T>, Iterable<T> {
+public interface Value<T> extends Iterable<T> {
 
     /**
      * Shortcut for {@code exists(e -> Objects.equals(e, element))}, tests if the given {@code element} is contained.
@@ -463,96 +444,6 @@ public interface Value<T> extends Foldable<T>, Iterable<T> {
      */
     @Override
     Iterator<T> iterator();
-
-    // -- Default implementation of Foldable
-
-    /**
-     * Default implementation of {@link Foldable#foldLeft(Object, BiFunction)}
-     * <strong>for single-valued types only</strong>, needs to be overridden for multi-valued types.
-     *
-     * @param <U>     the type to fold over
-     * @param zero    A zero element to start with.
-     * @param combine A function which combines elements.
-     * @return a folded value
-     * @throws NullPointerException if {@code combine} is null
-     */
-    @Override
-    default <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> combine) {
-        Objects.requireNonNull(combine, "combine is null");
-        return isEmpty() ? zero : combine.apply(zero, get());
-    }
-
-    /**
-     * Default implementation of {@link Foldable#foldRight(Object, BiFunction)}
-     * <strong>for single-valued types only</strong>, needs to be overridden for multi-valued types.
-     *
-     * @param zero    A zero element to start with.
-     * @param combine A function which combines elements.
-     * @param <U>     the  type to fold over
-     * @return a folded value
-     * @throws NullPointerException if {@code combine} is null
-     */
-    @Override
-    default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> combine) {
-        Objects.requireNonNull(combine, "combine is null");
-        return isEmpty() ? zero : combine.apply(get(), zero);
-    }
-
-    /**
-     * Default implementation of {@link Foldable#reduceLeft(BiFunction)}
-     * <strong>for single-valued types only</strong>, needs to be overridden for multi-valued types.
-     *
-     * @param op A BiFunction of type T
-     * @return a reduced value
-     * @throws NullPointerException if {@code op} is null
-     */
-    @Override
-    default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        return get();
-    }
-
-    /**
-     * Shortcut for {@code isEmpty() ? Option.none() : Option.some(reduceLeft(op))}, does not need to be
-     * overridden by subclasses.
-     *
-     * @param op A BiFunction of type T
-     * @return a reduced value
-     * @throws NullPointerException if {@code op} is null
-     */
-    @Override
-    default Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        return isEmpty() ? Option.none() : Option.some(reduceLeft(op));
-    }
-
-    /**
-     * Default implementation of {@link Foldable#reduceRight(BiFunction)}
-     * <strong>for single-valued types only</strong>, needs to be overridden for multi-valued types.
-     *
-     * @param op A BiFunction of type T
-     * @return a reduced value
-     * @throws NullPointerException if {@code op} is null
-     */
-    @Override
-    default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        return get();
-    }
-
-    /**
-     * Shortcut for {@code isEmpty() ? Option.none() : Option.some(reduceRight(op))}, does not need to be
-     * overridden by subclasses.
-     *
-     * @param op An operation of type T
-     * @return a reduced value
-     * @throws NullPointerException if {@code op} is null
-     */
-    @Override
-    default Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
-        return isEmpty() ? Option.none() : Option.some(reduceRight(op));
-    }
 
     // -- conversion methods
 

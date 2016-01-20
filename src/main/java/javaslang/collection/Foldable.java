@@ -3,28 +3,21 @@
  *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/  \__/  /   Copyright 2014-now Daniel Dietrich
  * /___/\_/  \_/\____/\_/  \_/\__\/__/___\_/  \_//  \__/_____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.algebra;
+package javaslang.collection;
 
 import javaslang.control.Option;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
- * Folding is an application of {@code Monoid}s.
+ * Interface of folable data structures.
  * <p>
  * <strong>Example:</strong>
  *
  * <pre><code>
- * Monoid&lt;String&gt; concat = Monoid.of("", (a1, a2) -&gt; a1 + a2);
- * Stream.of("1", "2", "3").fold(concat);
- * </code></pre>
- *
- * is the same as
- *
- * <pre><code>
+ * // = "123"
  * Stream.of("1", "2", "3").fold("", (a1, a2) -&gt; a1 + a2);
  * </code></pre>
  *
@@ -33,18 +26,6 @@ import java.util.function.Function;
  * @since 2.0.0
  */
 public interface Foldable<T> {
-
-    /**
-     * Folds this elements from the left, starting with {@code monoid.zero()} and successively calling {@code monoid::combine}.
-     *
-     * @param monoid A monoid, providing a {@code zero} and a {@code combine} function.
-     * @return a folded value
-     * @throws NullPointerException if {@code monoid} is null
-     */
-    default T fold(Monoid<T> monoid) {
-        Objects.requireNonNull(monoid, "fold monoid is null");
-        return foldLeft(monoid.zero(), monoid::combine);
-    }
 
     /**
      * Folds this elements from the left, starting with {@code zero} and successively calling {@code combine}.
@@ -60,18 +41,6 @@ public interface Foldable<T> {
     }
 
     /**
-     * Folds this elements from the left, starting with {@code monoid.zero()} and successively calling {@code monoid::combine}.
-     *
-     * @param monoid A monoid, providing a {@code zero} and a {@code combine} function.
-     * @return a folded value
-     * @throws NullPointerException if {@code monoid} is null
-     */
-    default T foldLeft(Monoid<T> monoid) {
-        Objects.requireNonNull(monoid, "foldLeft monoid is null");
-        return foldLeft(monoid.zero(), monoid::combine);
-    }
-
-    /**
      * Folds this elements from the left, starting with {@code zero} and successively calling {@code combine}.
      *
      * @param <U>     the type to fold over
@@ -81,36 +50,6 @@ public interface Foldable<T> {
      * @throws NullPointerException if {@code combine} is null
      */
     <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> combine);
-
-    /**
-     * Maps this elements to a {@code Monoid} and applies {@code foldLeft}, starting with {@code monoid.zero()}:
-     * <pre><code>
-     *  foldLeft(monoid.zero(), (ys, x) -&gt; monoid.combine(ys, mapper.apply(x)));
-     * </code></pre>
-     *
-     * @param monoid A Monoid
-     * @param mapper A mapper
-     * @param <U>    Component type of the given monoid.
-     * @return the folded monoid value.
-     * @throws NullPointerException if {@code monoid} or {@code mapper} is null
-     */
-    default <U> U foldMap(Monoid<U> monoid, Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(monoid, "monoid is null");
-        Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(monoid.zero(), (ys, x) -> monoid.combine(ys, mapper.apply(x)));
-    }
-
-    /**
-     * Folds this elements from the right, starting with {@code monoid.zero()} and successively calling {@code monoid::combine}.
-     *
-     * @param monoid A monoid, providing a {@code zero} and a {@code combine} function.
-     * @return a folded value
-     * @throws NullPointerException if {@code monoid} is null
-     */
-    default T foldRight(Monoid<T> monoid) {
-        Objects.requireNonNull(monoid, "foldRight monoid is null");
-        return foldRight(monoid.zero(), monoid::combine);
-    }
 
     /**
      * Folds this elements from the right, starting with {@code zero} and successively calling {@code combine}.

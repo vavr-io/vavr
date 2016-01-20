@@ -5,6 +5,8 @@
  */
 package javaslang.algebra;
 
+import javaslang.collection.Foldable;
+
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -21,6 +23,15 @@ import java.util.function.Function;
  * {@code +} as combine operation.</p>
  * <p>Please note that some types can be viewed as a monoid in more than one way, e.g. both addition and multiplication
  * on numbers.</p>
+ *
+ * Folding:
+ *
+ * <ul>
+ * <li>{@link #fold(Monoid, Foldable)}</li>
+ * <li>{@link #foldLeft(Monoid, Foldable)}</li>
+ * <li>{@link #foldMap(Monoid, Foldable, Function)}</li>
+ * <li>{@link #foldRight(Monoid, Foldable)}</li>
+ * </ul>
  *
  * @param <A> A type.
  * @author Daniel Dietrich
@@ -69,5 +80,75 @@ public interface Monoid<A> extends Semigroup<A> {
      * @return The zero element of this Monoid
      */
     A zero();
+
+    // -- Fold operations
+
+    /**
+     * Folds the elements of {@code Foldable} from the left, starting with {@code monoid.zero()}
+     * and successively calling {@code monoid::combine}.
+     *
+     * @param monoid A monoid, providing a {@code zero} and a {@code combine} function.
+     * @param foldable A foldable
+     * @param <T> type of the foldable elements
+     * @return a folded value
+     * @throws NullPointerException if {@code monoid} or {@code foldable} is null
+     */
+    static <T> T fold(Monoid<T> monoid, Foldable<T> foldable) {
+        Objects.requireNonNull(monoid, "monoid is null");
+        Objects.requireNonNull(foldable, "foldable is null");
+        return foldable.foldLeft(monoid.zero(), monoid::combine);
+    }
+
+    /**
+     * Folds the elements of {@code Foldable} from the left, starting with {@code monoid.zero()}
+     * and successively calling {@code monoid::combine}.
+     *
+     * @param monoid A monoid, providing a {@code zero} and a {@code combine} function.
+     * @param foldable A foldable
+     * @param <T> type of the foldable elements
+     * @return a folded value
+     * @throws NullPointerException if {@code monoid} is null
+     */
+    static <T> T foldLeft(Monoid<T> monoid, Foldable<T> foldable) {
+        Objects.requireNonNull(monoid, "monoid is null");
+        Objects.requireNonNull(foldable, "foldable is null");
+        return foldable.foldLeft(monoid.zero(), monoid::combine);
+    }
+
+    /**
+     * Maps this elements to a {@code Monoid} and applies {@code foldLeft}, starting with {@code monoid.zero()}:
+     * <pre><code>
+     *  foldLeft(monoid.zero(), (ys, x) -&gt; monoid.combine(ys, mapper.apply(x)));
+     * </code></pre>
+     *
+     * @param monoid A Monoid
+     * @param foldable A foldable
+     * @param mapper A mapper
+     * @param <T> type of the foldable elements
+     * @param <U>    Component type of the given monoid.
+     * @return the folded monoid value.
+     * @throws NullPointerException if {@code monoid} or {@code mapper} is null
+     */
+    static<T, U> U foldMap(Monoid<U> monoid, Foldable<T> foldable, Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(monoid, "monoid is null");
+        Objects.requireNonNull(foldable, "foldable is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+        return foldable.foldLeft(monoid.zero(), (ys, x) -> monoid.combine(ys, mapper.apply(x)));
+    }
+
+    /**
+     * Folds this elements from the right, starting with {@code monoid.zero()} and successively calling {@code monoid::combine}.
+     *
+     * @param monoid A monoid, providing a {@code zero} and a {@code combine} function.
+     * @param foldable A foldable
+     * @param <T> type of the foldable elements
+     * @return a folded value
+     * @throws NullPointerException if {@code monoid} is null
+     */
+    static <T> T foldRight(Monoid<T> monoid, Foldable<T> foldable) {
+        Objects.requireNonNull(monoid, "monoid is null");
+        Objects.requireNonNull(foldable, "foldable is null");
+        return foldable.foldRight(monoid.zero(), monoid::combine);
+    }
 
 }
