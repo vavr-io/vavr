@@ -113,6 +113,32 @@ public class OptionTest {
         Option.none().get();
     }
 
+    // -- orElse
+
+    @Test
+    public void shouldReturnSelfOnOrElseIfValueIsPresent() {
+        Option<Integer> opt = Option.of(42);
+        assertThat(opt.orElse(Option.of(0))).isSameAs(opt);
+    }
+
+    @Test
+    public void shouldReturnSelfOnOrElseSupplierIfValueIsPresent() {
+        Option<Integer> opt = Option.of(42);
+        assertThat(opt.orElse(() -> Option.of(0))).isSameAs(opt);
+    }
+
+    @Test
+    public void shouldReturnAlternativeOnOrElseIfValueIsNotPresent() {
+        Option<Integer> opt = Option.of(42);
+        assertThat(Option.none().orElse(opt)).isSameAs(opt);
+    }
+
+    @Test
+    public void shouldReturnAlternativeOnOrElseSupplierIfValueIsNotPresent() {
+        Option<Integer> opt = Option.of(42);
+        assertThat(Option.none().orElse(() -> opt)).isSameAs(opt);
+    }
+
     // -- getOrElse
 
     @Test

@@ -70,6 +70,32 @@ public class TryTest {
         });
     }
 
+    // -- orElse
+
+    @Test
+    public void shouldReturnSelfOnOrElseIfSuccess() {
+        Try<Integer> success = Try.success(42);
+        assertThat(success.orElse(Try.success(0))).isSameAs(success);
+    }
+
+    @Test
+    public void shouldReturnSelfOnOrElseSupplierIfSuccess() {
+        Try<Integer> success = Try.success(42);
+        assertThat(success.orElse(() -> Try.success(0))).isSameAs(success);
+    }
+
+    @Test
+    public void shouldReturnAlternativeOnOrElseIfFailure() {
+        Try<Integer> success = Try.success(42);
+        assertThat(Try.failure(new RuntimeException()).orElse(success)).isSameAs(success);
+    }
+
+    @Test
+    public void shouldReturnAlternativeOnOrElseSupplierIfFailure() {
+        Try<Integer> success = Try.success(42);
+        assertThat(Try.failure(new RuntimeException()).orElse(() -> success)).isSameAs(success);
+    }
+
     // -- iterator
 
     @Test

@@ -61,6 +61,32 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(Validation.invalid("error") instanceof Validation.Invalid).isTrue();
     }
 
+    // -- orElse
+
+    @Test
+    public void shouldReturnSelfOnOrElseIfValid() {
+        Validation<List<String>, String> validValidation = valid();
+        assertThat(validValidation.orElse(invalid())).isSameAs(validValidation);
+    }
+
+    @Test
+    public void shouldReturnSelfOnOrElseSupplierIfValid() {
+        Validation<List<String>, String> validValidation = valid();
+        assertThat(validValidation.orElse(() -> invalid())).isSameAs(validValidation);
+    }
+
+    @Test
+    public void shouldReturnAlternativeOnOrElseIfValid() {
+        Validation<List<String>, String> validValidation = valid();
+        assertThat(invalid().orElse(validValidation)).isSameAs(validValidation);
+    }
+
+    @Test
+    public void shouldReturnAlternativeOnOrElseSupplierIfValid() {
+        Validation<List<String>, String> validValidation = valid();
+        assertThat(invalid().orElse(() -> validValidation)).isSameAs(validValidation);
+    }
+
     // -- fold
 
     @Test

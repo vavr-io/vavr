@@ -573,6 +573,10 @@ public interface Match {
 
         <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper);
 
+        MatchMonad<R> orElse(MatchMonad<? extends R> other);
+
+        MatchMonad<R> orElse(Supplier<? extends MatchMonad<? extends R>> supplier);
+
         @Override
         default MatchMonad.Of<MatchMonad<R>> match() {
             return Match.of(this);
@@ -860,6 +864,20 @@ public interface Match {
                         .getOrElse(() -> (Then<T, U>) this);
             }
 
+            @SuppressWarnings("unchecked")
+            @Override
+            public MatchMonad<R> orElse(MatchMonad<? extends R> other) {
+                Objects.requireNonNull(other, "other is null");
+                return result.isEmpty() ? (MatchMonad<R>) other : this;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public MatchMonad<R> orElse(Supplier<? extends MatchMonad<? extends R>> supplier) {
+                Objects.requireNonNull(supplier, "supplier is null");
+                return result.isEmpty() ? (MatchMonad<R>) supplier.get() : this;
+            }
+
             @Override
             public MatchMonad<R> peek(Consumer<? super R> action) {
                 Objects.requireNonNull(action, "action is null");
@@ -952,6 +970,20 @@ public interface Match {
                 } else {
                 	return new Otherwise<>(() -> mapper.apply(result.get()));
                 }
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public MatchMonad<R> orElse(MatchMonad<? extends R> other) {
+                Objects.requireNonNull(other, "other is null");
+                return result.isEmpty() ?(MatchMonad<R>) other : this;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public MatchMonad<R> orElse(Supplier<? extends MatchMonad<? extends R>> supplier) {
+                Objects.requireNonNull(supplier, "supplier is null");
+                return result.isEmpty() ?(MatchMonad<R>) supplier.get() : this;
             }
 
             @Override

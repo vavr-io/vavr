@@ -23,10 +23,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * A Future is a computation result that becomes available at some point. All operations provided are non-blocking.
@@ -867,6 +864,32 @@ public interface Future<T> extends Value<T> {
         Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());
         onComplete(result -> promise.complete(result.map(mapper)));
+        return promise.future();
+    }
+
+    default Future<T> orElse(Future<? extends T> other) {
+        Objects.requireNonNull(other, "other is null");
+        final Promise<T> promise = Promise.make(executorService());
+        onComplete(result -> {
+            if(result.isSuccess()) {
+                promise.complete(result);
+            } else {
+                other.onComplete(promise::complete);
+            }
+        });
+        return promise.future();
+    }
+
+    default Future<T> orElse(Supplier<? extends Future<? extends T>> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        final Promise<T> promise = Promise.make(executorService());
+        onComplete(result -> {
+            if(result.isSuccess()) {
+                promise.complete(result);
+            } else {
+                supplier.get().onComplete(promise::complete);
+            }
+        });
         return promise.future();
     }
 

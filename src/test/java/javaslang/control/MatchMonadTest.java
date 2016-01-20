@@ -163,6 +163,36 @@ public class MatchMonadTest {
         assertThat(actual).isTrue();
     }
 
+    // -- orElse
+
+    @Test
+    public void shouldReturnSelfOnOrElseIfSuccess() {
+        Match.MatchMonad<String> success = Match.of(1).whenIsIn(1, 2, 3).then("+");
+        Match.MatchMonad<String> fail = Match.of(0).whenIsIn(1, 2, 3).then("-");
+        assertThat(success.orElse(fail).getOrElse("?")).isEqualTo("+");
+    }
+
+    @Test
+    public void shouldReturnSelfOnOrElseSupplierIfSuccess() {
+        Match.MatchMonad<String> success = Match.of(1).whenIsIn(1, 2, 3).then("+");
+        Match.MatchMonad<String> fail = Match.of(0).whenIsIn(1, 2, 3).then("-");
+        assertThat(success.orElse(() -> fail).getOrElse("?")).isEqualTo("+");
+    }
+
+    @Test
+    public void shouldReturnAlternativeOnOrElseIfFailure() {
+        Match.MatchMonad<String> success = Match.of(1).whenIsIn(1, 2, 3).then("+");
+        Match.MatchMonad<String> fail = Match.of(0).whenIsIn(1, 2, 3).then("-");
+        assertThat(fail.orElse(success).getOrElse("?")).isEqualTo("+");
+    }
+
+    @Test
+    public void shouldReturnAlternativeOnOrElseSupplierIfFailure() {
+        Match.MatchMonad<String> success = Match.of(1).whenIsIn(1, 2, 3).then("+");
+        Match.MatchMonad<String> fail = Match.of(0).whenIsIn(1, 2, 3).then("-");
+        assertThat(fail.orElse(() -> success).getOrElse("?")).isEqualTo("+");
+    }
+
     // match by super-type
 
     @Test
