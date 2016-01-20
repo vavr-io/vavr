@@ -727,7 +727,6 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(mapOfEntries()).isSameAs(emptyMap());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void mapOfPairsShouldReturnTheSingletonEmpty() {
         if (!emptyMapShouldBeSingleton()) return;
