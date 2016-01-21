@@ -5,7 +5,6 @@
  */
 package javaslang;
 
-import javaslang.algebra.Monad;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;

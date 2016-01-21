@@ -5,7 +5,6 @@
  */
 package javaslang.control;
 
-import javaslang.CheckedFunction1;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -107,11 +106,21 @@ public interface Try<T> extends Value<T> {
     }
 
     /**
-     * Runs the given checked consumer if this is a {@code Success},
-     * passing the result of the current expression to it.
-     * If this expression is a {@code Failure} then it'll return a new
-     * {@code Failure} of type T with the original exception.
+     * Shortcut for {@code andThenTry(consumer::accept)}, see {@link #andThenTry(CheckedConsumer)}.
      *
+     * @param consumer A consumer
+     * @return this {@code Try} if this is a {@code Failure} or the consumer succeeded, otherwise the
+     * {@code Failure} of the consumption.
+     * @throws NullPointerException if {@code consumer} is null
+     */
+    default Try<T> andThen(Consumer<? super T> consumer) {
+        Objects.requireNonNull(consumer, "consumer is null");
+        return andThenTry(consumer::accept);
+    }
+
+    /**
+     * Passes the result to the given {@code consumer} if this is a {@code Success}.
+     * <p>
      * The main use case is chaining checked functions using method references:
      *
      * <pre>
@@ -122,20 +131,41 @@ public interface Try<T> extends Value<T> {
      * </code>
      * </pre>
      *
-     * @param consumer A checked consumer taking a single argument.
-     * @return a new {@code Try}
+     * @param consumer A checked consumer
+     * @return this {@code Try} if this is a {@code Failure} or the consumer succeeded, otherwise the
+     * {@code Failure} of the consumption.
+     * @throws NullPointerException if {@code consumer} is null
      */
-    default Try<T> andThen(CheckedConsumer<? super T> consumer) {
+    default Try<T> andThenTry(CheckedConsumer<? super T> consumer) {
+        Objects.requireNonNull(consumer, "consumer is null");
         if (isFailure()) {
             return this;
         } else {
-            return Try.run(() -> consumer.accept(get())).flatMap(ignored -> this);
+            try {
+                consumer.accept(get());
+                return this;
+            } catch (Throwable t) {
+                return new Failure<>(t);
+            }
         }
     }
 
     /**
+     * Shortcut for {@code andThenTry(runnable::run)}, see {@link #andThenTry(CheckedRunnable)}.
+     *
+     * @param runnable A runnable
+     * @return this {@code Try} if this is a {@code Failure} or the runnable succeeded, otherwise the
+     * {@code Failure} of the run.
+     * @throws NullPointerException if {@code runnable} is null
+     */
+    default Try<T> andThen(Runnable runnable) {
+        Objects.requireNonNull(runnable, "runnable is null");
+        return andThenTry(runnable::run);
+    }
+
+    /**
      * Runs the given runnable if this is a {@code Success}, otherwise returns this {@code Failure}.
-     * Shorthand for {@code flatMap(ignored -> Try.run(runnable))}.
+     * <p>
      * The main use case is chaining runnables using method references:
      *
      * <pre>
@@ -148,9 +178,9 @@ public interface Try<T> extends Value<T> {
      *
      * <pre>
      * <code>
-     * Try.run(() -&gt; { doStuff(); })
-     *    .andThen(() -&gt; { doMoreStuff(); })
-     *    .andThen(() -&gt; { doEvenMoreStuff(); });
+     * Try.run(this::doStuff)
+     *    .andThen(this::doMoreStuff)
+     *    .andThen(this::doEvenMoreStuff);
      *
      * Try.run(() -&gt; {
      *     doStuff();
@@ -161,10 +191,22 @@ public interface Try<T> extends Value<T> {
      * </pre>
      *
      * @param runnable A checked runnable
-     * @return a new {@code Try}
+     * @return this {@code Try} if this is a {@code Failure} or the runnable succeeded, otherwise the
+     * {@code Failure} of the run.
+     * @throws NullPointerException if {@code runnable} is null
      */
-    default Try<Void> andThen(CheckedRunnable runnable) {
-        return flatMap(ignored -> Try.run(runnable));
+    default Try<T> andThenTry(CheckedRunnable runnable) {
+        Objects.requireNonNull(runnable, "runnable is null");
+        if (isFailure()) {
+            return this;
+        } else {
+            try {
+                runnable.run();
+                return this;
+            } catch (Throwable t) {
+                return new Failure<>(t);
+            }
+        }
     }
 
     /**
@@ -182,16 +224,29 @@ public interface Try<T> extends Value<T> {
     }
 
     /**
+     * Shortcut for {@code filterTry(predicate::test)}, see {@link #filterTry(CheckedPredicate)}}.
+     *
+     * @param predicate A predicate
+     * @return a {@code Try} instance
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    default Try<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filterTry(predicate::test);
+    }
+
+    /**
      * Returns {@code this} if this is a Failure or this is a Success and the value satisfies the predicate.
      * <p>
      * Returns a new Failure, if this is a Success and the value does not satisfy the Predicate or an exception
      * occurs testing the predicate.
      *
-     * @param predicate A predicate
-     * @return a new Try
+     * @param predicate A checked predicate
+     * @return a {@code Try} instance
+     * @throws NullPointerException if {@code predicate} is null
      */
-    // TODO(#1044, #865): Now that we don't extend Monad take a CheckedPredicate here and remove the filter*Try methods
-    default Try<T> filter(Predicate<? super T> predicate) {
+    default Try<T> filterTry(CheckedPredicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         if (isFailure()) {
             return this;
         } else {
@@ -207,22 +262,41 @@ public interface Try<T> extends Value<T> {
         }
     }
 
+    /**
+     * Shortcut for {@code filter(predicate.negate())}, see {@link #filter(Predicate)}.
+     *
+     * @param predicate A predicate
+     * @return A {@code Try}
+     * @throws NullPointerException if {@code predicate} is null
+     */
     default Try<T> filterNot(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
 
-    default Try<T> filterTry(CheckedPredicate<? super T> predicate) {
-        if (isFailure()) {
-            return this;
-        } else {
-            return Try.of(() -> predicate.test(get())).flatMap(b -> filter(ignored -> b));
-        }
-    }
-
+    /**
+     * Shortcut for {@code filterTry(predicate.negate())}, see {@link #filterTry(CheckedPredicate)}.
+     *
+     * @param predicate A checked predicate
+     * @return A {@code Try}
+     * @throws NullPointerException if {@code predicate} is null
+     */
     default Try<T> filterNotTry(CheckedPredicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filterTry(predicate.negate());
+    }
+
+    /**
+     * Shortcut for {@code flatMapTry(mapper::apply)}, see {@link #flatMapTry(CheckedFunction)}.
+     *
+     * @param mapper A mapper
+     * @param <U>    The new component type
+     * @return a {@code Try}
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    default <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return flatMapTry((CheckedFunction<T, Try<? extends U>>) mapper::apply);
     }
 
     /**
@@ -230,19 +304,12 @@ public interface Try<T> extends Value<T> {
      *
      * @param mapper A mapper
      * @param <U>    The new component type
-     * @return a new Try
+     * @return a {@code Try}
+     * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
-    default <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
-        if (isFailure()) {
-            return (Failure<U>) this;
-        } else {
-            return flatMapTry((CheckedFunction<T, Try<? extends U>>) mapper::apply);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
     default <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Try<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         if (isFailure()) {
             return (Failure<U>) this;
         } else {
@@ -309,13 +376,16 @@ public interface Try<T> extends Value<T> {
     }
 
     /**
-     * Maps the value of a Success or returns a Failure.
+     * Shortcut for {@code mapTry(mapper::apply)}, see {@link #mapTry(CheckedFunction)}.
      *
      * @param <U>    The new component type
-     * @param mapper A mapper
-     * @return a new Try
+     * @param mapper A checked function
+     * @return a {@code Try}
+     * @throws NullPointerException if {@code mapper} is null
      */
+    @SuppressWarnings("unchecked")
     default <U> Try<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         return mapTry(mapper::apply);
     }
 
@@ -330,20 +400,26 @@ public interface Try<T> extends Value<T> {
      * <pre>
      * <code>
      * Try.of(() -&gt; 0)
-     *    .mapTry(x -&gt; 1 / x); // division by zero
+     *    .map(x -&gt; 1 / x); // division by zero
      * </code>
      * </pre>
      *
      * @param <U>    The new component type
      * @param mapper A checked function
-     * @return a new {@code Try}
+     * @return a {@code Try}
+     * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
-    default <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
+    default <U> Try<U> mapTry(CheckedFunction<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         if (isFailure()) {
             return (Failure<U>) this;
         } else {
-            return Try.of(() -> mapper.apply(get()));
+            try {
+                return new Success<>(mapper.apply(get()));
+            } catch (Throwable t) {
+                return new Failure<>(t);
+            }
         }
     }
 
@@ -356,40 +432,30 @@ public interface Try<T> extends Value<T> {
      * Consumes the throwable if this is a Failure.
      *
      * @param action An exception consumer
-     * @return a new Failure, if this is a Failure and the consumer throws, otherwise this, which may be a Success or
-     * a Failure.
+     * @return this
+     * @throws NullPointerException if {@code action} is null
      */
     default Try<T> onFailure(Consumer<? super Throwable> action) {
+        Objects.requireNonNull(action, "action is null");
         if (isFailure()) {
-            try {
-                action.accept(getCause());
-                return this;
-            } catch (Throwable t) {
-                return new Failure<>(t);
-            }
-        } else {
-            return this;
+            action.accept(getCause());
         }
+        return this;
     }
 
     /**
      * Consumes the value if this is a Success.
      *
      * @param action A value consumer
-     * @return a new Failure, if this is a Success and the consumer throws, otherwise this, which may be a Success or
-     * a Failure.
+     * @return this
+     * @throws NullPointerException if {@code action} is null
      */
     default Try<T> onSuccess(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
         if (isSuccess()) {
-            try {
-                action.accept(get());
-                return this;
-            } catch (Throwable t) {
-                return new Failure<>(t);
-            }
-        } else {
-            return this;
+            action.accept(get());
         }
+        return this;
     }
 
     @SuppressWarnings("unchecked")
@@ -405,6 +471,7 @@ public interface Try<T> extends Value<T> {
     }
 
     default T getOrElseGet(Function<? super Throwable, ? extends T> other) {
+        Objects.requireNonNull(other, "other is null");
         if (isFailure()) {
             return other.apply(getCause());
         } else {
@@ -413,12 +480,14 @@ public interface Try<T> extends Value<T> {
     }
 
     default void orElseRun(Consumer<? super Throwable> action) {
+        Objects.requireNonNull(action, "action is null");
         if (isFailure()) {
             action.accept(getCause());
         }
     }
 
     default <X extends Throwable> T getOrElseThrow(Function<? super Throwable, X> exceptionProvider) throws X {
+        Objects.requireNonNull(exceptionProvider, "exceptionProvider is null");
         if (isFailure()) {
             throw exceptionProvider.apply(getCause());
         } else {
@@ -430,10 +499,12 @@ public interface Try<T> extends Value<T> {
      * Applies the action to the value of a Success or does nothing in the case of a Failure.
      *
      * @param action A Consumer
-     * @return this Try
+     * @return this {@code Try}
+     * @throws NullPointerException if {@code action} is null
      */
     @Override
     default Try<T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
         if (isSuccess()) {
             action.accept(get());
         }
@@ -445,9 +516,11 @@ public interface Try<T> extends Value<T> {
      * i.e. calling {@code Try.of(() -> f.apply(throwable))}.
      *
      * @param f A recovery function taking a Throwable
-     * @return a new Try
+     * @return a {@code Try}
+     * @throws NullPointerException if {@code f} is null
      */
     default Try<T> recover(Function<? super Throwable, ? extends T> f) {
+        Objects.requireNonNull(f, "f is null");
         if (isFailure()) {
             return Try.of(() -> f.apply(getCause()));
         } else {
@@ -461,10 +534,12 @@ public interface Try<T> extends Value<T> {
      * returned.
      *
      * @param f A recovery function taking a Throwable
-     * @return a new Try
+     * @return a {@code Try}
+     * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
     default Try<T> recoverWith(Function<? super Throwable, ? extends Try<? extends T>> f) {
+        Objects.requireNonNull(f, "f is null");
         if (isFailure()) {
             try {
                 return (Try<T>) f.apply(getCause());
@@ -476,6 +551,11 @@ public interface Try<T> extends Value<T> {
         }
     }
 
+    /**
+     * Converts this {@code Try} to an {@link Either}.
+     *
+     * @return A new {@code Either}
+     */
     default Either<Throwable, T> toEither() {
         if (isFailure()) {
             return Either.left(getCause());
@@ -496,7 +576,7 @@ public interface Try<T> extends Value<T> {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
-    
+
     @Override
     boolean equals(Object o);
 

@@ -1022,11 +1022,10 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         return found ? result.reverse() : this;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     default List<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final List<T> removed = List.ofAll(elements).distinct();
+        final List<T> removed = List.<T> ofAll(elements).distinct();
         List<T> result = Nil.instance();
         boolean found = false;
         for (T element : this) {
@@ -1074,11 +1073,10 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         return changed ? result.reverse() : this;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     default List<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final List<T> kept = List.ofAll(elements).distinct();
+        final List<T> kept = List.<T> ofAll(elements).distinct();
         List<T> result = Nil.instance();
         for (T element : this) {
             if (kept.contains(element)) {

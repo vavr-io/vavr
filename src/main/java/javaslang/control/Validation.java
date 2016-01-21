@@ -474,9 +474,8 @@ public interface Validation<E, T> extends Value<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
     default <U> Validation<List<E>, U> ap(Validation<List<E>, ? extends Function<? super T, ? extends U>> validation) {
-        Objects.requireNonNull(validation, "kind is null");
+        Objects.requireNonNull(validation, "validation is null");
         if (isValid() && validation.isValid()) {
             Function<? super T, ? extends U> f = validation.get();
             U u = f.apply(this.get());

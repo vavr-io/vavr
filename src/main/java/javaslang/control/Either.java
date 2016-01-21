@@ -379,7 +379,7 @@ public interface Either<L, R> extends Value<R> {
         }
 
         public <L2, R2> LeftProjection<L2, R2> bimap(Function<? super L, ? extends L2> leftMapper, Function<? super R, ? extends R2> rightMapper) {
-            return either.bimap(leftMapper, rightMapper).left();
+            return either.<L2, R2> bimap(leftMapper, rightMapper).left();
         }
 
         @Override
@@ -622,7 +622,7 @@ public interface Either<L, R> extends Value<R> {
         }
 
         public <L2, R2> RightProjection<L2, R2> bimap(Function<? super L, ? extends L2> leftMapper, Function<? super R, ? extends R2> rightMapper) {
-            return either.bimap(leftMapper, rightMapper).right();
+            return either.<L2, R2> bimap(leftMapper, rightMapper).right();
         }
 
         @Override
