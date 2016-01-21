@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * An implementation similar to Scala's Try control.
@@ -455,6 +456,18 @@ public interface Try<T> extends Value<T> {
             action.accept(get());
         }
         return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    default Try<T> orElse(Try<? extends T> other) {
+        Objects.requireNonNull(other, "other is null");
+        return isSuccess() ? this : (Try<T>) other;
+    }
+
+    @SuppressWarnings("unchecked")
+    default Try<T> orElse(Supplier<? extends Try<? extends T>> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return isSuccess() ? this : (Try<T>) supplier.get();
     }
 
     default T getOrElseGet(Function<? super Throwable, ? extends T> other) {

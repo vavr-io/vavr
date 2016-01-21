@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * An implementation similar to scalaz's <a href="http://eed3si9n.com/learning-scalaz/Validation.html">Validation</a> control.
@@ -294,6 +295,28 @@ public interface Validation<E, T> extends Value<T> {
      */
     boolean isInvalid();
 
+    /**
+     * Returns this {@code Validation} if it is valid, otherwise return the alternative.
+     * @param other An alternative {@code Validation}
+     * @return this {@code Validation} if it is valid, otherwise return the alternative.
+     */
+    @SuppressWarnings("unchecked")
+    default Validation<E, T> orElse(Validation<? extends E, ? extends T> other) {
+        Objects.requireNonNull(other, "other is null");
+        return isValid() ? this : (Validation<E, T>) other;
+    }
+
+    /**
+     * Returns this {@code Validation} if it is valid, otherwise return the result of evaluating supplier.
+     * @param supplier An alternative {@code Validation} supplier
+     * @return this {@code Validation} if it is valid, otherwise return the result of evaluating supplier.
+     */
+    @SuppressWarnings("unchecked")
+    default Validation<E, T> orElse(Supplier<Validation<? extends E, ? extends T>> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return isValid() ? this : (Validation<E, T>) supplier.get();
+    }
+
     @Override
     default boolean isEmpty() {
         return isInvalid();
@@ -350,8 +373,9 @@ public interface Validation<E, T> extends Value<T> {
     }
 
     /**
-     * Performs the action in fInvalid on error if this is an Invalid, or fValid on value if
-     * this is a Valid. Returns an object of type U.
+     * Performs the action in {@code fInvalid} on {@code error} if this is an {@code Invalid},
+     * or {@code fValid} on {@code value} if this is a {@code Valid}.
+     * Returns an object of type U.
      *
      * <p>
      * <code>

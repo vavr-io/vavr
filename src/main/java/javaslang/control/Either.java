@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Either represents a value of two possible types. An Either is either a {@link Left} or a
@@ -309,6 +310,18 @@ public interface Either<L, R> extends Value<R> {
         return isLeft();
     }
 
+    @SuppressWarnings("unchecked")
+    default Either<L, R> orElse(Either<? extends L, ? extends R> other) {
+        Objects.requireNonNull(other, "other is null");
+        return isRight() ? this : (Either<L, R>) other;
+    }
+
+    @SuppressWarnings("unchecked")
+    default Either<L, R> orElse(Supplier<? extends Either<? extends L, ? extends R>> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return isRight() ? this : (Either<L, R>) supplier.get();
+    }
+
     /**
      * A right-biased {@code Either} is single-valued.
      *
@@ -397,6 +410,18 @@ public interface Either<L, R> extends Value<R> {
             } else {
                 throw new NoSuchElementException("LeftProjection.get() on Right");
             }
+        }
+
+        @SuppressWarnings("unchecked")
+        public LeftProjection<L, R> orElse(LeftProjection<? extends L, ? extends R> other) {
+            Objects.requireNonNull(other, "other is null");
+            return either.isLeft() ? this : (LeftProjection<L, R>) other;
+        }
+
+        @SuppressWarnings("unchecked")
+        public LeftProjection<L, R> orElse(Supplier<? extends LeftProjection<? extends L, ? extends R>> supplier) {
+            Objects.requireNonNull(supplier, "supplier is null");
+            return either.isLeft() ? this : (LeftProjection<L, R>) supplier.get();
         }
 
         /**
@@ -628,6 +653,18 @@ public interface Either<L, R> extends Value<R> {
             } else {
                 throw new NoSuchElementException("RightProjection.get() on Left");
             }
+        }
+
+        @SuppressWarnings("unchecked")
+        public RightProjection<L, R> orElse(RightProjection<? extends L, ? extends R> other) {
+            Objects.requireNonNull(other, "other is null");
+            return either.isRight() ? this : (RightProjection<L, R>) other;
+        }
+
+        @SuppressWarnings("unchecked")
+        public RightProjection<L, R> orElse(Supplier<? extends RightProjection<? extends L, ? extends R>> supplier) {
+            Objects.requireNonNull(supplier, "supplier is null");
+            return either.isRight() ? this : (RightProjection<L, R>) supplier.get();
         }
 
         /**

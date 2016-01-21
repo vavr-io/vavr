@@ -190,6 +190,28 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
         return this;
     }
 
+    /**
+     * Returns this {@code Lazy} if it is defined, otherwise return the alternative.
+     * @param other An alternative {@code Lazy}
+     * @return this {@code Lazy} if it is defined, otherwise return the alternative.
+     */
+    @SuppressWarnings("unchecked")
+    default Lazy<T> orElse(Lazy<? extends T> other) {
+        Objects.requireNonNull(other, "other is null");
+        return isDefined() ? this : (Lazy<T>) other;
+    }
+
+    /**
+     * Returns this {@code Lazy} if it is defined, otherwise return the result of evaluating supplier.
+     * @param supplier An alternative {@code Lazy} supplier
+     * @return this {@code Lazy} if it is defined, otherwise return the result of evaluating supplier.
+     */
+    @SuppressWarnings("unchecked")
+    default Lazy<T> orElse(Supplier<? extends Lazy<? extends T>> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return isDefined() ? this : (Lazy<T>) supplier.get();
+    }
+
     @Override
     default String stringPrefix() {
         return "Lazy";
