@@ -7,6 +7,7 @@ package javaslang.concurrent;
 
 import javaslang.collection.Queue;
 import javaslang.control.*;
+import javaslang.control.Try.CheckedSupplier;
 
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
@@ -84,7 +85,7 @@ final class FutureImpl<T> implements Future<T> {
     private java.util.concurrent.Future<Try<T>> job = null;
 
     /**
-     * Creates a Future, {@link #run(Try.CheckedSupplier)} has to be called separately.
+     * Creates a Future, {@link #run(CheckedSupplier)} has to be called separately.
      *
      * @param executorService An {@link ExecutorService} to run and control the computation and to perform the actions.
      */
@@ -165,7 +166,7 @@ final class FutureImpl<T> implements Future<T> {
      * @throws IllegalStateException if the Future is pending, completed or cancelled
      * @throws NullPointerException  if {@code computation} is null.
      */
-    void run(Try.CheckedSupplier<? extends T> computation) {
+    void run(CheckedSupplier<? extends T> computation) {
         Objects.requireNonNull(computation, "computation is null");
         synchronized (lock) {
             if (job != null) {

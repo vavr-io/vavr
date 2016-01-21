@@ -15,7 +15,10 @@ import javaslang.collection.Stream;
 import javaslang.control.Match;
 import javaslang.control.Option;
 import javaslang.control.Try;
-import javaslang.control.Try.*;
+import javaslang.control.Try.CheckedFunction;
+import javaslang.control.Try.CheckedPredicate;
+import javaslang.control.Try.CheckedRunnable;
+import javaslang.control.Try.CheckedSupplier;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -25,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * A Future is a computation result that becomes available at some point. All operations provided are non-blocking.
@@ -50,6 +54,7 @@ public interface Future<T> extends Value<T> {
 
     /**
      * The default executor service is {@link Executors#newCachedThreadPool()}.
+     * Please note that it may prevent the VM from shutdown.}
      */
     ExecutorService DEFAULT_EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
@@ -93,7 +98,7 @@ public interface Future<T> extends Value<T> {
      * @return A Future of an {@link Option} of the first result of the given {@code futures} that satisfies the given {@code predicate}.
      * @throws NullPointerException if one of the arguments is null
      */
-    static <T> Future<Option<T>> find(Iterable<? extends Future<? extends T>> futures, CheckedPredicate<? super T> predicate) {
+    static <T> Future<Option<T>> find(Iterable<? extends Future<? extends T>> futures, Predicate<? super T> predicate) {
         return find(DEFAULT_EXECUTOR_SERVICE, futures, predicate);
     }
 
@@ -110,7 +115,7 @@ public interface Future<T> extends Value<T> {
      * @return A Future of an {@link Option} of the first result of the given {@code futures} that satisfies the given {@code predicate}.
      * @throws NullPointerException if one of the arguments is null
      */
-    static <T> Future<Option<T>> find(ExecutorService executorService, Iterable<? extends Future<? extends T>> futures, CheckedPredicate<? super T> predicate) {
+    static <T> Future<Option<T>> find(ExecutorService executorService, Iterable<? extends Future<? extends T>> futures, Predicate<? super T> predicate) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(futures, "futures is null");
         Objects.requireNonNull(predicate, "predicate is null");
@@ -615,16 +620,30 @@ public interface Future<T> extends Value<T> {
         return promise.future();
     }
 
-    default Future<T> filter(CheckedPredicate<? super T> predicate) {
+    /**
+     * Shortcut for {@code filterTry(predicate::test}, see {@link #filterTry(CheckedPredicate)}.
+     *
+     * @param predicate A predicate
+     * @return A new {@code Future}
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    default Future<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final Promise<T> promise = Promise.make(executorService());
-        onComplete(result -> promise.complete(result.filter(predicate)));
-        return promise.future();
+        return filterTry(predicate::test);
     }
 
-    default Future<T> filterNot(CheckedPredicate<? super T> predicate) {
+    /**
+     * Filters the result of this {@code Future} by calling {@link Try#filterTry(CheckedPredicate)}.
+     *
+     * @param predicate A checked predicate
+     * @return A new {@code Future}
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    default Future<T> filterTry(CheckedPredicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
+        final Promise<T> promise = Promise.make(executorService());
+        onComplete(result -> promise.complete(result.filterTry(predicate)));
+        return promise.future();
     }
 
     /**
@@ -686,7 +705,7 @@ public interface Future<T> extends Value<T> {
      * @return this Future
      * @throws NullPointerException if {@code action} is null.
      */
-    default Future<T> onFailure(CheckedConsumer<? super Throwable> action) {
+    default Future<T> onFailure(Consumer<? super Throwable> action) {
         Objects.requireNonNull(action, "action is null");
         return onComplete(result -> result.onFailure(action));
     }
@@ -698,7 +717,7 @@ public interface Future<T> extends Value<T> {
      * @return this Future
      * @throws NullPointerException if {@code action} is null.
      */
-    default Future<T> onSuccess(CheckedConsumer<? super T> action) {
+    default Future<T> onSuccess(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         return onComplete(result -> result.onSuccess(action));
     }
@@ -792,10 +811,15 @@ public interface Future<T> extends Value<T> {
 
     // -- Value & Monad implementation
 
-    default <U> Future<U> flatMap(CheckedFunction<? super T, ? extends Future<? extends U>> mapper) {
+    default <U> Future<U> flatMap(Function<? super T, ? extends Future<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return flatMapTry((CheckedFunction<T, Future<? extends U>>) mapper::apply);
+    }
+
+    default <U> Future<U> flatMapTry(CheckedFunction<? super T, ? extends Future<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());
-        onComplete((Try<T> result) -> result.map(mapper)
+        onComplete((Try<T> result) -> result.mapTry(mapper)
                 .onSuccess(promise::completeWith)
                 .onFailure(promise::failure)
         );
@@ -861,10 +885,15 @@ public interface Future<T> extends Value<T> {
         return isEmpty() ? Iterator.empty() : Iterator.of(get());
     }
 
-    default <U> Future<U> map(CheckedFunction<? super T, ? extends U> mapper) {
+    default <U> Future<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return mapTry(mapper::apply);
+    }
+
+    default <U> Future<U> mapTry(CheckedFunction<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());
-        onComplete(result -> promise.complete(result.map(mapper)));
+        onComplete(result -> promise.complete(result.mapTry(mapper)));
         return promise.future();
     }
 

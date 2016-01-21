@@ -287,14 +287,6 @@ public class TryTest {
     }
 
     @Test
-    public void shouldReturnNewFailureWhenCallingOnFailureAndThrowingGivenFailure() {
-        final Try<Throwable> actual = failure().onFailure(x -> {
-            throw new Error(OK);
-        }).failed();
-        assertThat(actual.get().getMessage()).isEqualTo(OK);
-    }
-
-    @Test
     public void shouldConvertFailureToOption() {
         assertThat(failure().toOption().isDefined()).isFalse();
     }
