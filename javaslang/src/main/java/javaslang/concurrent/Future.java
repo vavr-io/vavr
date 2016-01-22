@@ -618,7 +618,7 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
-     * Shortcut for {@code filterTry(predicate::test}, see {@link #filterTry(CheckedPredicate)}.
+     * Shortcut for {@code filterTry(predicate::test}.
      *
      * @param predicate A predicate
      * @return A new {@code Future}

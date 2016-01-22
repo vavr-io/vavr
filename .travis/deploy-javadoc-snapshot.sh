@@ -4,7 +4,7 @@ if [ "$TRAVIS_REPO_SLUG" == "javaslang/javaslang" ] && [ "$TRAVIS_JDK_VERSION" =
 
   echo -e "Publishing javadoc...\n"
 
-  cp -R target/site/apidocs $HOME/javadoc-snapshot
+  cp -R javaslang/target/site/apidocs $HOME/javadoc-snapshot
 
   cd $HOME
   git config --global user.email "travis@travis-ci.org"
