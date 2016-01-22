@@ -249,11 +249,6 @@ public interface Option<T> extends Value<T> {
         return isEmpty() || predicate.test(get()) ? this : none();
     }
 
-    default Option<T> filterNot(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
-    }
-
     /**
      * Maps the value to a new {@code Option} if this is a {@code Some}, otherwise returns {@code None}.
      *

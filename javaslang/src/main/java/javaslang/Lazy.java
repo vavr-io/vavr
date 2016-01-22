@@ -128,11 +128,6 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
         }
     }
 
-    default Lazy<T> filterNot(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
-    }
-
     @SuppressWarnings("unchecked")
     default <U> Lazy<U> flatMap(Function<? super T, ? extends Lazy<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");

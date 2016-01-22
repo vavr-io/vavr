@@ -565,9 +565,6 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> filter(Predicate<? super T> predicate);
 
     @Override
-    Stack<T> filterNot(Predicate<? super T> predicate);
-
-    @Override
     <U> Stack<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override

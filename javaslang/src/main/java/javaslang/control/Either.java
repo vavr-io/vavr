@@ -283,20 +283,6 @@ public interface Either<L, R> extends Value<R> {
     }
 
     /**
-     * Filters this right-biased {@code Either} by testing the negation of a predicate.
-     * <p>
-     * Shortcut for {@code filter(predicate.negate()}.
-     *
-     * @param predicate A predicate
-     * @return a new {@code Option} instance
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    default Option<Either<L, R>> filterNot(Predicate<? super R> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
-    }
-
-    /**
      * Gets the right value if this is a {@code Right} or throws if this is a {@code Left}.
      *
      * @return the right value
@@ -501,11 +487,6 @@ public interface Either<L, R> extends Value<R> {
         public Option<LeftProjection<L, R>> filter(Predicate<? super L> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             return either.isRight() || predicate.test(either.getLeft()) ? Option.some(this) : Option.none();
-        }
-
-        public Option<LeftProjection<L, R>> filterNot(Predicate<? super L> predicate) {
-            Objects.requireNonNull(predicate, "predicate is null");
-            return filter(predicate.negate());
         }
 
         /**
@@ -734,11 +715,6 @@ public interface Either<L, R> extends Value<R> {
         public Option<RightProjection<L, R>> filter(Predicate<? super R> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             return either.isLeft() || predicate.test(either.get()) ? Option.some(this) : Option.none();
-        }
-
-        public Option<RightProjection<L, R>> filterNot(Predicate<? super R> predicate) {
-            Objects.requireNonNull(predicate, "predicate is null");
-            return filter(predicate.negate());
         }
 
         /**

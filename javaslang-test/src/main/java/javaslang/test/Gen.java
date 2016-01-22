@@ -300,11 +300,6 @@ public interface Gen<T> {
         };
     }
 
-    default Gen<T> filterNot(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
-    }
-
     /**
      * Maps generated Ts to Us.
      *

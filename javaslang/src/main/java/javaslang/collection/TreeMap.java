@@ -438,12 +438,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public TreeMap<K, V> filterNot(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
-    }
-
-    @Override
     public <K2, V2> TreeMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         return flatMap(naturalComparator(), mapper);
     }

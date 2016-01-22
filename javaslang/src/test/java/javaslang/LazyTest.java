@@ -208,27 +208,6 @@ public class LazyTest {
         assertThat(actual == testee).isTrue();
     }
 
-    // -- filterNot
-
-    @Test
-    public void shouldThrowFilterNotEmptyLazy() {
-        final Lazy<Integer> testee = Lazy.undefined();
-        final Lazy<Integer> actual = testee.filterNot(i -> false);
-        assertThat(actual == testee).isTrue();
-    }
-
-    @Test(expected = NoSuchElementException.class)
-    public void shouldThrowEmptyFilterNotNonEmptyLazy() {
-        Lazy.of(() -> 1).filterNot(i -> true).get();
-    }
-
-    @Test
-    public void shouldFilterNotNonEmptyLazy() {
-        final Lazy<Integer> testee = Lazy.of(() -> 1);
-        final Lazy<Integer> actual = testee.filterNot(i -> false);
-        assertThat(actual == testee).isTrue();
-    }
-
     // -- flatMap
 
     @Test(expected = NoSuchElementException.class)

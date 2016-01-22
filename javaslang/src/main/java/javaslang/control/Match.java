@@ -554,11 +554,6 @@ public interface Match {
 
         MatchMonad<R> filter(Predicate<? super R> predicate);
 
-        default MatchMonad<R> filterNot(Predicate<? super R> predicate) {
-            Objects.requireNonNull(predicate, "predicate is null");
-            return filter(predicate.negate());
-        }
-
         <U> MatchMonad<U> flatMap(Function<? super R, ? extends MatchMonad<? extends U>> mapper);
 
         /**

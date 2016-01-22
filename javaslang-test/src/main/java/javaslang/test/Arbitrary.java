@@ -72,11 +72,6 @@ public interface Arbitrary<T> {
         return size -> apply(size).filter(predicate);
     }
 
-    default Arbitrary<T> filterNot(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
-    }
-
     /**
      * Maps arbitrary objects T to arbitrary object U.
      *

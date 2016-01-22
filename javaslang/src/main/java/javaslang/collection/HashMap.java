@@ -305,12 +305,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public HashMap<K, V> filterNot(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
-    }
-
-    @Override
     public <K2, V2> HashMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(HashMap.<K2, V2> empty(), (acc, entry) -> {
