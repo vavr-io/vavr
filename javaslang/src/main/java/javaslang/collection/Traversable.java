@@ -379,8 +379,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     Traversable<T> filter(Predicate<? super T> predicate);
 
-    Traversable<T> filterNot(Predicate<? super T> predicate);
-
     /**
      * Returns the first element of this which satisfies the given predicate.
      *

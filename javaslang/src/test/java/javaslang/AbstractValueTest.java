@@ -104,43 +104,6 @@ public abstract class AbstractValueTest {
 //        }
 //    }
 //
-//    // -- filterNot
-//
-//    @Test
-//    public void shouldFilterNotEmptyTraversable() {
-//        final Value<?> value = empty();
-//        if (value.isSingleValued()) {
-//            // TODO
-//        } else {
-//            assertThat(value.filter(ignored -> true)).isEqualTo(empty());
-//        }
-//    }
-//
-//    @Test
-//    public void shouldFilterNotNonEmptyTraversable() {
-//        final Value<Integer> value = of(1, 2, 3, 4);
-//        if (value.isSingleValued()) {
-//            // TODO
-//        } else {
-//            assertThat(value.filterNot(i -> i % 2 == 0)).isEqualTo(of(1, 3));
-//        }
-//    }
-//
-//    @Test
-//    public void shouldFilterNotNonEmptyTraversableAllMatch() {
-//        final Value<Integer> v = of(1, 2, 3, 4);
-//        if (v.isSingleValued()) {
-//            // TODO
-//        } else {
-//            if (useIsEqualToInsteadOfIsSameAs()) {
-//                final Value<Integer> v2 = of(1, 2, 3, 4);
-//                assertThat(v.filterNot(i -> false)).isEqualTo(v2);
-//            } else {
-//                assertThat(v.filterNot(i -> false)).isSameAs(v);
-//            }
-//        }
-//    }
-
     // -- get()
 
     @Test(expected = NoSuchElementException.class)

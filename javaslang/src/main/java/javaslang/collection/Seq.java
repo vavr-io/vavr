@@ -848,9 +848,6 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     Seq<T> filter(Predicate<? super T> predicate);
 
     @Override
-    Seq<T> filterNot(Predicate<? super T> predicate);
-
-    @Override
     <U> Seq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override

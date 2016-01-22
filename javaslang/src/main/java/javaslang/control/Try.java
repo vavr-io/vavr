@@ -263,30 +263,6 @@ public interface Try<T> extends Value<T> {
     }
 
     /**
-     * Shortcut for {@code filter(predicate.negate())}, see {@link #filter(Predicate)}.
-     *
-     * @param predicate A predicate
-     * @return A {@code Try}
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    default Try<T> filterNot(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
-    }
-
-    /**
-     * Shortcut for {@code filterTry(predicate.negate())}, see {@link #filterTry(CheckedPredicate)}.
-     *
-     * @param predicate A checked predicate
-     * @return A {@code Try}
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    default Try<T> filterNotTry(CheckedPredicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filterTry(predicate.negate());
-    }
-
-    /**
      * Shortcut for {@code flatMapTry(mapper::apply)}, see {@link #flatMapTry(CheckedFunction)}.
      *
      * @param mapper A mapper

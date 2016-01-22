@@ -110,11 +110,6 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public IntMap<T> filterNot(Predicate<? super T> predicate) {
-        return IntMap.of(original.filterNot(p -> predicate.test(p._2)));
-    }
-
-    @Override
     public <U> Seq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return original.flatMap(e -> mapper.apply(e._2));
     }

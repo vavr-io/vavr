@@ -108,9 +108,6 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    SortedMap<K, V> filterNot(Predicate<? super Tuple2<K, V>> predicate);
-
-    @Override
     <K2, V2> SortedMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper);
 
     @Override

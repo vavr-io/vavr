@@ -512,11 +512,6 @@ public interface Validation<E, T> extends Value<T> {
         return isInvalid() || predicate.test(get()) ? Option.some(this) : Option.none();
     }
 
-    default Option<Validation<E, T>> filterNot(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
-    }
-
     @SuppressWarnings("unchecked")
     default <U> Validation<E, U> flatMap(Function<? super T, ? extends Validation<E, ? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
