@@ -1,16 +1,16 @@
 # -- Maven
-/target
-/*.versionsBackup
+target
+*.versionsBackup
 
 # -- Eclipse
-/.classpath
-/.project
-/.settings
-/bin
+.classpath
+.project
+.settings
+bin
 
 # -- IntelliJ IDEA
-/.idea
-/*.iml
+.idea
+*.iml
 
 # -- Mac OS
 .DS_Store
