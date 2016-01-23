@@ -1052,13 +1052,13 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Iterator<Tuple2<T, Integer>> zipWithIndex() {
+    default Iterator<Tuple2<T, Long>> zipWithIndex() {
         if (isEmpty()) {
             return empty();
         } else {
             final Iterator<T> it1 = this;
-            return new AbstractIterator<Tuple2<T, Integer>>() {
-                private int index = 0;
+            return new AbstractIterator<Tuple2<T, Long>>() {
+                private long index = 0;
 
                 @Override
                 public boolean hasNext() {
@@ -1066,7 +1066,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public Tuple2<T, Integer> getNext() {
+                public Tuple2<T, Long> getNext() {
                     return Tuple.of(it1.next(), index++);
                 }
             };
@@ -1140,7 +1140,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return The empty iterator, if {@code n <= 0} or this is empty, otherwise a new iterator without the first n elements.
      */
     @Override
-    default Iterator<T> drop(int n) {
+    default Iterator<T> drop(long n) {
         if (n <= 0) {
             return this;
         } else if (!hasNext()) {
@@ -1149,7 +1149,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             final Iterator<T> that = this;
             return new AbstractIterator<T>() {
 
-                int count = n;
+                long count = n;
 
                 @Override
                 public boolean hasNext() {
@@ -1169,7 +1169,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Iterator<T> dropRight(int n) {
+    default Iterator<T> dropRight(long n) {
         if (n <= 0) {
             return this;
         } else if (!hasNext()) {
@@ -1349,7 +1349,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Iterator<Seq<T>> grouped(int size) {
+    default Iterator<Seq<T>> grouped(long size) {
         return sliding(size, size);
     }
 
@@ -1608,12 +1608,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Iterator<Seq<T>> sliding(int size) {
+    default Iterator<Seq<T>> sliding(long size) {
         return sliding(size, 1);
     }
 
     @Override
-    default Iterator<Seq<T>> sliding(int size, int step) {
+    default Iterator<Seq<T>> sliding(long size, long step) {
         if (size <= 0 || step <= 0) {
             throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
         }
@@ -1696,14 +1696,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return The empty iterator, if {@code n <= 0} or this is empty, otherwise a new iterator without the first n elements.
      */
     @Override
-    default Iterator<T> take(int n) {
+    default Iterator<T> take(long n) {
         if (n <= 0 || !hasNext()) {
             return empty();
         } else {
             final Iterator<T> that = this;
             return new AbstractIterator<T>() {
 
-                int count = n;
+                long count = n;
 
                 @Override
                 public boolean hasNext() {
@@ -1720,7 +1720,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Iterator<T> takeRight(int n) {
+    default Iterator<T> takeRight(long n) {
         if (n <= 0) {
             return empty();
         } else {

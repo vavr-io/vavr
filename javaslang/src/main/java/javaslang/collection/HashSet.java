@@ -492,7 +492,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> drop(int n) {
+    public HashSet<T> drop(long n) {
         if (n <= 0) {
             return this;
         } else {
@@ -501,7 +501,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> dropRight(int n) {
+    public HashSet<T> dropRight(long n) {
         return drop(n);
     }
 
@@ -552,7 +552,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Iterator<HashSet<T>> grouped(int size) {
+    public Iterator<HashSet<T>> grouped(long size) {
         return sliding(size, size);
     }
 
@@ -718,12 +718,12 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Iterator<HashSet<T>> sliding(int size) {
+    public Iterator<HashSet<T>> sliding(long size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<HashSet<T>> sliding(int size, int step) {
+    public Iterator<HashSet<T>> sliding(long size, long step) {
         return iterator().sliding(size, step).map(HashSet::ofAll);
     }
 
@@ -752,7 +752,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> take(int n) {
+    public HashSet<T> take(long n) {
         if (tree.size() <= n) {
             return this;
         }
@@ -760,7 +760,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> takeRight(int n) {
+    public HashSet<T> takeRight(long n) {
         return take(n);
     }
 
@@ -828,7 +828,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<Tuple2<T, Integer>> zipWithIndex() {
+    public HashSet<Tuple2<T, Long>> zipWithIndex() {
         return HashSet.ofAll(iterator().zipWithIndex());
     }
 

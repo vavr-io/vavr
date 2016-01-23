@@ -391,7 +391,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public TreeMap<K, V> drop(int n) {
+    public TreeMap<K, V> drop(long n) {
         if (n <= 0) {
             return this;
         } else {
@@ -400,7 +400,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public TreeMap<K, V> dropRight(int n) {
+    public TreeMap<K, V> dropRight(long n) {
         if (n <= 0) {
             return this;
         } else {
@@ -474,7 +474,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public Iterator<TreeMap<K, V>> grouped(int size) {
+    public Iterator<TreeMap<K, V>> grouped(long size) {
         return sliding(size, size);
     }
 
@@ -690,12 +690,12 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public Iterator<TreeMap<K, V>> sliding(int size) {
+    public Iterator<TreeMap<K, V>> sliding(long size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<TreeMap<K, V>> sliding(int size, int step) {
+    public Iterator<TreeMap<K, V>> sliding(long size, long step) {
         return iterator().sliding(size, step).map(seq -> createTreeMap(entries.comparator(), seq));
     }
 
@@ -724,12 +724,12 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public TreeMap<K, V> take(int n) {
+    public TreeMap<K, V> take(long n) {
         return createTreeMap(entries.comparator(), entries.iterator().take(n));
     }
 
     @Override
-    public TreeMap<K, V> takeRight(int n) {
+    public TreeMap<K, V> takeRight(long n) {
         return createTreeMap(entries.comparator(), entries.iterator().takeRight(n));
     }
 

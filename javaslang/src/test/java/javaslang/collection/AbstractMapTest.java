@@ -79,7 +79,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 final ArrayList<Tuple2<Integer, T>> result = new ArrayList<>();
                 Stream.ofAll(list)
                         .zipWithIndex()
-                        .map(tu -> Tuple.of(tu._2, tu._1))
+                        .map(tu -> Tuple.of(tu._2.intValue(), tu._1))
                         .forEach(result::add);
                 return result;
             }
@@ -525,13 +525,13 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipNonNilWithIndex() {
-        final Seq<Tuple2<Tuple2<Integer, Integer>, Integer>> actual = emptyIntInt()
+        final Seq<Tuple2<Tuple2<Integer, Integer>, Long>> actual = emptyIntInt()
                 .put(0, 0)
                 .put(1, 1)
                 .put(2, 2)
                 .zipWithIndex();
         assertThat(actual).isEqualTo(
-                Stream.of(Tuple.of(Tuple.of(0, 0), 0), Tuple.of(Tuple.of(1, 1), 1), Tuple.of(Tuple.of(2, 2), 2)));
+                Stream.of(Tuple.of(Tuple.of(0, 0), 0L), Tuple.of(Tuple.of(1, 1), 1L), Tuple.of(Tuple.of(2, 2), 2L)));
     }
 
     // -- zipAll

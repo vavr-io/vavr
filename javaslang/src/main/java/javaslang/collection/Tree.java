@@ -339,7 +339,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Seq<T> drop(int n) {
+    default Seq<T> drop(long n) {
         if (n >= length()) {
             return Stream.empty();
         } else {
@@ -348,7 +348,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Seq<T> dropRight(int n) {
+    default Seq<T> dropRight(long n) {
         if (n >= length()) {
             return Stream.empty();
         } else {
@@ -410,7 +410,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Iterator<Seq<T>> grouped(int size) {
+    default Iterator<Seq<T>> grouped(long size) {
         return sliding(size, size);
     }
 
@@ -531,12 +531,12 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Iterator<Seq<T>> sliding(int size) {
+    default Iterator<Seq<T>> sliding(long size) {
         return sliding(size, 1);
     }
 
     @Override
-    default Iterator<Seq<T>> sliding(int size, int step) {
+    default Iterator<Seq<T>> sliding(long size, long step) {
         return iterator().sliding(size, step);
     }
 
@@ -577,7 +577,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Seq<T> take(int n) {
+    default Seq<T> take(long n) {
         if (isEmpty()) {
             return Stream.empty();
         } else {
@@ -586,7 +586,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Seq<T> takeRight(int n) {
+    default Seq<T> takeRight(long n) {
         if (isEmpty()) {
             return Stream.empty();
         } else {
@@ -660,8 +660,8 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Tree<Tuple2<T, Integer>> zipWithIndex() {
-        return zip(Iterator.from(0));
+    default Tree<Tuple2<T, Long>> zipWithIndex() {
+        return zip(Iterator.from(0L));
     }
 
     @Override

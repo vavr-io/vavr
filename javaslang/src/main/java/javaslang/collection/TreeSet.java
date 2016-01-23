@@ -528,7 +528,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public TreeSet<T> drop(int n) {
+    public TreeSet<T> drop(long n) {
         if (n <= 0) {
             return this;
         } else if (n >= length()) {
@@ -539,7 +539,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public TreeSet<T> dropRight(int n) {
+    public TreeSet<T> dropRight(long n) {
         if (n <= 0) {
             return this;
         } else if (n >= length()) {
@@ -595,7 +595,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public Iterator<TreeSet<T>> grouped(int size) {
+    public Iterator<TreeSet<T>> grouped(long size) {
         return sliding(size, size);
     }
 
@@ -792,12 +792,12 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public Iterator<TreeSet<T>> sliding(int size) {
+    public Iterator<TreeSet<T>> sliding(long size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<TreeSet<T>> sliding(int size, int step) {
+    public Iterator<TreeSet<T>> sliding(long size, long step) {
         return iterator().sliding(size, step).map(seq -> TreeSet.ofAll(tree.comparator(), seq));
     }
 
@@ -823,7 +823,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public TreeSet<T> take(int n) {
+    public TreeSet<T> take(long n) {
         if (n <= 0) {
             return empty(tree.comparator());
         } else if (n >= length()) {
@@ -834,7 +834,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public TreeSet<T> takeRight(int n) {
+    public TreeSet<T> takeRight(long n) {
         if (n <= 0) {
             return empty(tree.comparator());
         } else if (n >= length()) {
@@ -903,9 +903,9 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public TreeSet<Tuple2<T, Integer>> zipWithIndex() {
+    public TreeSet<Tuple2<T, Long>> zipWithIndex() {
         final Comparator<? super T> component1Comparator = tree.comparator();
-        final Comparator<Tuple2<T, Integer>> tuple2Comparator = (t1, t2) -> component1Comparator.compare(t1._1, t2._1);
+        final Comparator<Tuple2<T, Long>> tuple2Comparator = (t1, t2) -> component1Comparator.compare(t1._1, t2._1);
         return TreeSet.ofAll(tuple2Comparator, iterator().zipWithIndex());
     }
 

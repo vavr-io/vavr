@@ -1950,9 +1950,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldZipNonNilWithIndex() {
-        final Traversable<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex();
+        final Traversable<Tuple2<String, Long>> actual = of("a", "b", "c").zipWithIndex();
         @SuppressWarnings("unchecked")
-        final Traversable<Tuple2<String, Integer>> expected = of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
+        final Traversable<Tuple2<String, Long>> expected = of(Tuple.of("a", 0L), Tuple.of("b", 1L), Tuple.of("c", 2L));
         assertThat(actual).isEqualTo(expected);
     }
 

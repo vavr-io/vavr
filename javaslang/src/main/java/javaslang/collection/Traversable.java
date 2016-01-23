@@ -50,10 +50,10 @@ import java.util.function.Predicate;
  * Iteration:
  *
  * <ul>
- * <li>{@link #grouped(int)}</li>
+ * <li>{@link #grouped(long)}</li>
  * <li>{@link #iterator()}</li>
- * <li>{@link #sliding(int)}</li>
- * <li>{@link #sliding(int, int)}</li>
+ * <li>{@link #sliding(long)}</li>
+ * <li>{@link #sliding(long, long)}</li>
  * </ul>
  *
  * Numeric operations:
@@ -91,8 +91,8 @@ import java.util.function.Predicate;
  * Selection:
  *
  * <ul>
- * <li>{@link #drop(int)}</li>
- * <li>{@link #dropRight(int)}</li>
+ * <li>{@link #drop(long)}</li>
+ * <li>{@link #dropRight(long)}</li>
  * <li>{@link #dropUntil(Predicate)}</li>
  * <li>{@link #dropWhile(Predicate)}</li>
  * <li>{@link #filter(Predicate)}</li>
@@ -101,8 +101,8 @@ import java.util.function.Predicate;
  * <li>{@link #groupBy(Function)}</li>
  * <li>{@link #partition(Predicate)}</li>
  * <li>{@link #retainAll(Iterable)}</li>
- * <li>{@link #take(int)}</li>
- * <li>{@link #takeRight(int)}</li>
+ * <li>{@link #take(long)}</li>
+ * <li>{@link #takeRight(long)}</li>
  * <li>{@link #takeUntil(Predicate)}</li>
  * <li>{@link #takeWhile(Predicate)}</li>
  * </ul>
@@ -314,7 +314,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new instance consisting of all elements of this except the first n ones, or else the empty instance,
      * if this has less than n elements.
      */
-    Traversable<T> drop(int n);
+    Traversable<T> drop(long n);
 
     /**
      * Drops the last n elements of this or all elements, if this length &lt; n.
@@ -323,7 +323,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new instance consisting of all elements of this except the last n ones, or else the empty instance,
      * if this has less than n elements.
      */
-    Traversable<T> dropRight(int n);
+    Traversable<T> dropRight(long n);
 
     /**
      * Drops elements until the predicate holds for the current element.
@@ -497,14 +497,14 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * </code>
      * </pre>
      *
-     * Please note that {@code grouped(int)} is a special case of {@linkplain #sliding(int, int)}, i.e.
+     * Please note that {@code grouped(int)} is a special case of {@linkplain #sliding(long, long)}, i.e.
      * {@code grouped(size)} is the same as {@code sliding(size, size)}.
      *
      * @param size a positive block size
      * @return A new Iterator of grouped blocks of the given size
      * @throws IllegalArgumentException if {@code size} is negative or zero
      */
-    Iterator<? extends Traversable<T>> grouped(int size);
+    Iterator<? extends Traversable<T>> grouped(long size);
 
     /**
      * Checks if this Traversable is known to have a finite size.
@@ -1008,13 +1008,13 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
 
     /**
      * Slides a window of a specific {@code size} and step size 1 over this {@code Traversable} by calling
-     * {@link #sliding(int, int)}.
+     * {@link #sliding(long, long)}.
      *
      * @param size a positive window size
      * @return a new Iterator of windows of a specific size using step size 1
      * @throws IllegalArgumentException if {@code size} is negative or zero
      */
-    Iterator<? extends Traversable<T>> sliding(int size);
+    Iterator<? extends Traversable<T>> sliding(long size);
 
     /**
      * Slides a window of a specific {@code size} and {@code step} size over this {@code Traversable}.
@@ -1035,7 +1035,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new Iterator of windows of a specific size using a specific step size
      * @throws IllegalArgumentException if {@code size} or {@code step} are negative or zero
      */
-    Iterator<? extends Traversable<T>> sliding(int size, int step);
+    Iterator<? extends Traversable<T>> sliding(long size, long step);
 
     /**
      * Returns a tuple where the first element is the longest prefix of elements that satisfy the given
@@ -1109,7 +1109,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @param n The number of elements to take.
      * @return A new instance consisting the first n elements of this or all elements, if this has less than n elements.
      */
-    Traversable<T> take(int n);
+    Traversable<T> take(long n);
 
     /**
      * Takes the last n elements of this or all elements, if this length &lt; n.
@@ -1122,7 +1122,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @param n The number of elements to take.
      * @return A new instance consisting the first n elements of this or all elements, if this has less than n elements.
      */
-    Traversable<T> takeRight(int n);
+    Traversable<T> takeRight(long n);
 
     /**
      * Takes elements until the predicate holds for the current element.
@@ -1216,5 +1216,5 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      *
      * @return A new traversable containing all elements of this traversable paired with their index, starting with 0.
      */
-    Traversable<Tuple2<T, Integer>> zipWithIndex();
+    Traversable<Tuple2<T, Long>> zipWithIndex();
 }

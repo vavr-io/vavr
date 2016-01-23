@@ -334,24 +334,24 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq drop(int n) {
+    public CharSeq drop(long n) {
         if (n <= 0) {
             return this;
         } else if (n >= length()) {
             return EMPTY;
         } else {
-            return of(back.substring(n));
+            return of(back.substring((int) n));
         }
     }
 
     @Override
-    public CharSeq dropRight(int n) {
+    public CharSeq dropRight(long n) {
         if (n <= 0) {
             return this;
         } else if (n >= length()) {
             return EMPTY;
         } else {
-            return of(back.substring(0, length() - n));
+            return of(back.substring(0, length() - (int) n));
         }
     }
 
@@ -418,7 +418,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public Iterator<CharSeq> grouped(int size) {
+    public Iterator<CharSeq> grouped(long size) {
         return sliding(size, size);
     }
 
@@ -776,25 +776,25 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq slice(int beginIndex, int endIndex) {
-        final int from = beginIndex < 0 ? 0 : beginIndex;
-        final int to = endIndex > length() ? length() : endIndex;
+    public CharSeq slice(long beginIndex, long endIndex) {
+        final long from = beginIndex < 0 ? 0 : beginIndex;
+        final long to = endIndex > length() ? length() : endIndex;
         if (from >= to) {
             return EMPTY;
         }
         if (from <= 0 && to >= length()) {
             return this;
         }
-        return CharSeq.of(back.substring(from, to));
+        return CharSeq.of(back.substring((int) from, (int) to));
     }
 
     @Override
-    public Iterator<CharSeq> sliding(int size) {
+    public Iterator<CharSeq> sliding(long size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<CharSeq> sliding(int size, int step) {
+    public Iterator<CharSeq> sliding(long size, long step) {
         return iterator().sliding(size, step).map(CharSeq::ofAll);
     }
 
@@ -875,24 +875,24 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq take(int n) {
+    public CharSeq take(long n) {
         if (n <= 0) {
             return EMPTY;
         } else if (n >= length()) {
             return this;
         } else {
-            return CharSeq.of(back.substring(0, n));
+            return CharSeq.of(back.substring(0, (int) n));
         }
     }
 
     @Override
-    public CharSeq takeRight(int n) {
+    public CharSeq takeRight(long n) {
         if (n <= 0) {
             return EMPTY;
         } else if (n >= length()) {
             return this;
         } else {
-            return CharSeq.of(back.substring(length() - n));
+            return CharSeq.of(back.substring(length() - (int) n));
         }
     }
 
@@ -989,10 +989,10 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public IndexedSeq<Tuple2<Character, Integer>> zipWithIndex() {
-        IndexedSeq<Tuple2<Character, Integer>> result = Vector.empty();
+    public IndexedSeq<Tuple2<Character, Long>> zipWithIndex() {
+        IndexedSeq<Tuple2<Character, Long>> result = Vector.empty();
         for (int i = 0; i < length(); i++) {
-            result = result.append(Tuple.of(get(i), i));
+            result = result.append(Tuple.of(get(i), (long) i));
         }
         return result;
     }
@@ -1013,13 +1013,13 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public Tuple2<CharSeq, CharSeq> splitAt(int n) {
+    public Tuple2<CharSeq, CharSeq> splitAt(long n) {
         if (n <= 0) {
             return Tuple.of(EMPTY, this);
         } else if (n >= length()) {
             return Tuple.of(this, EMPTY);
         } else {
-            return Tuple.of(of(back.substring(0, n)), of(back.substring(n)));
+            return Tuple.of(of(back.substring(0, (int) n)), of(back.substring((int) n)));
         }
     }
 
@@ -2389,7 +2389,7 @@ interface CharSeqModule {
                 return Vector.of(CharSeq.empty());
             } else {
                 return elements.zipWithIndex().flatMap(
-                        t -> apply(elements.drop(t._2 + 1), (k - 1)).map((CharSeq c) -> c.prepend(t._1))
+                        t -> apply(elements.drop(t._2.intValue() + 1), (k - 1)).map((CharSeq c) -> c.prepend(t._1))
                 );
             }
         }

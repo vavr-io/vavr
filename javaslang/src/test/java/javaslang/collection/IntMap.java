@@ -83,13 +83,13 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public IntMap<T> drop(int n) {
+    public IntMap<T> drop(long n) {
         final Map<Integer, T> dropped = original.drop(n);
         return dropped == original ? this : IntMap.of(dropped);
     }
 
     @Override
-    public IntMap<T> dropRight(int n) {
+    public IntMap<T> dropRight(long n) {
         final Map<Integer, T> dropped = original.dropRight(n);
         return dropped == original ? this : IntMap.of(dropped);
     }
@@ -126,7 +126,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Iterator<IntMap<T>> grouped(int size) {
+    public Iterator<IntMap<T>> grouped(long size) {
         return original.grouped(size).map(IntMap::of);
     }
 
@@ -234,12 +234,12 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Iterator<IntMap<T>> sliding(int size) {
+    public Iterator<IntMap<T>> sliding(long size) {
         return original.sliding(size).map(IntMap::of);
     }
 
     @Override
-    public Iterator<IntMap<T>> sliding(int size, int step) {
+    public Iterator<IntMap<T>> sliding(long size, long step) {
         return original.sliding(size, step).map(IntMap::of);
     }
 
@@ -290,12 +290,12 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public IntMap<T> take(int n) {
+    public IntMap<T> take(long n) {
         return IntMap.of(original.take(n));
     }
 
     @Override
-    public IntMap<T> takeRight(int n) {
+    public IntMap<T> takeRight(long n) {
         return IntMap.of(original.takeRight(n));
     }
 
@@ -334,7 +334,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Seq<Tuple2<T, Integer>> zipWithIndex() {
+    public Seq<Tuple2<T, Long>> zipWithIndex() {
         return Stream.ofAll(iterator().zipWithIndex());
     }
 }
