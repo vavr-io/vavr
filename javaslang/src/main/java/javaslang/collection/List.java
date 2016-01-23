@@ -792,7 +792,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Match.MatchMonad.Of<List<T>> match() {
+    default Match.MatchValue.Of<List<T>> match() {
         return Match.of(this);
     }
 

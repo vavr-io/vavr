@@ -401,7 +401,7 @@ public interface Try<T> extends Value<T> {
     }
 
     @Override
-    default Match.MatchMonad.Of<Try<T>> match() {
+    default Match.MatchValue.Of<Try<T>> match() {
         return Match.of(this);
     }
 

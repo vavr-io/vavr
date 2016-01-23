@@ -121,7 +121,7 @@ public interface SortedSet<T> extends Set<T> {
     <U> SortedSet<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    Match.MatchMonad.Of<? extends SortedSet<T>> match();
+    Match.MatchValue.Of<? extends SortedSet<T>> match();
 
     @Override
     Tuple2<? extends SortedSet<T>, ? extends SortedSet<T>> partition(Predicate<? super T> predicate);

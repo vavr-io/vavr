@@ -906,7 +906,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Match.MatchMonad.Of<Stream<T>> match() {
+    default Match.MatchValue.Of<Stream<T>> match() {
         return Match.of(this);
     }
 

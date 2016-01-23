@@ -520,7 +520,7 @@ public interface Validation<E, T> extends Value<T> {
     }
 
     @Override
-    default Match.MatchMonad.Of<Validation<E, T>> match() {
+    default Match.MatchValue.Of<Validation<E, T>> match() {
         return Match.of(this);
     }
 

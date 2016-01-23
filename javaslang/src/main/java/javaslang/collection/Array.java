@@ -769,7 +769,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Match.MatchMonad.Of<Array<T>> match() {
+    public Match.MatchValue.Of<Array<T>> match() {
         return Match.of(this);
     }
 

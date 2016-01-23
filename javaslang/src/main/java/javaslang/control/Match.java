@@ -33,9 +33,9 @@ import static javaslang.control.MatchModule.*;
  * <li>results may be obtained <em>lazily</em>, i.e. {@code then(() -> value)}</li>
  * <li>results may be derived from the <em>context</em>, i.e. {@code then(object -> f(object)}</li>
  * </ul>
- * The Match API comes in two flavors, the {@code MatchMonad} and the {@code MatchFunction}.
+ * The Match API comes in two flavors, the {@code MatchValue} and the {@code MatchFunction}.
  * <p>
- * {@code MatchMonad} is a {@linkplain javaslang.Value}, obtained by {@code Match.of(someValue)}. In this case a Match
+ * {@code MatchValue} is a {@linkplain javaslang.Value}, obtained by {@code Match.of(someValue)}. In this case a Match
  * is terminated {@code get()}, {@code getOrElse()}, etc.
  * <pre><code>Match.of(1)
  *      .whenType(String.class).then(s -&gt; "String " + s)
@@ -74,8 +74,8 @@ public interface Match {
      * @param value the value to be matched
      * @return a new type-safe match builder
      */
-    static <T> MatchMonad.Of<T> of(T value) {
-        return new MatchMonad.Of<>(value);
+    static <T> MatchValue.Of<T> of(T value) {
+        return new MatchValue.Of<>(value);
     }
 
     /**
@@ -552,12 +552,12 @@ public interface Match {
 
     // DEV-NOTE: No flatMap and orElse because this more like a Functor than a Monad.
     //           It represents a value rather than capturing a specific state.
-    interface MatchMonad<R> extends Value<R>, Supplier<R> {
+    interface MatchValue<R> extends Value<R>, Supplier<R> {
 
-        MatchMonad<R> filter(Predicate<? super R> predicate);
+        MatchValue<R> filter(Predicate<? super R> predicate);
 
         /**
-         * A {@code MatchMonad} is single-valued.
+         * A {@code MatchValue} is single-valued.
          *
          * @return {@code true}
          */
@@ -567,15 +567,15 @@ public interface Match {
         }
 
         @Override
-        <U> MatchMonad<U> map(Function<? super R, ? extends U> mapper);
+        <U> MatchValue<U> map(Function<? super R, ? extends U> mapper);
 
         @Override
-        default MatchMonad.Of<MatchMonad<R>> match() {
+        default MatchValue.Of<MatchValue<R>> match() {
             return Match.of(this);
         }
 
         @Override
-        MatchMonad<R> peek(Consumer<? super R> action);
+        MatchValue<R> peek(Consumer<? super R> action);
 
         @Override
         default String stringPrefix() {
@@ -583,14 +583,14 @@ public interface Match {
         }
 
         /**
-         * Transforms this {@code MatchMonad}.
+         * Transforms this {@code MatchValue}.
          *
          * @param f   A transformation
          * @param <U> Type of transformation result
          * @return An instance of type {@code U}
          * @throws NullPointerException if {@code f} is null
          */
-        default <U> U transform(Function<? super MatchMonad<? super R>, ? extends U> f) {
+        default <U> U transform(Function<? super MatchValue<? super R>, ? extends U> f) {
             Objects.requireNonNull(f, "f is null");
             return f.apply(this);
         }
@@ -756,7 +756,7 @@ public interface Match {
             }
         }
 
-        final class Then<T, R> implements MatchMonad<R> {
+        final class Then<T, R> implements MatchValue<R> {
 
             private final T value;
             private final Option<R> result;
@@ -892,7 +892,7 @@ public interface Match {
             }
         }
 
-        final class Otherwise<R> implements MatchMonad<R> {
+        final class Otherwise<R> implements MatchValue<R> {
 
             // we need to ensure referential transparency of Otherwise.get()
             private final Option<R> result;
@@ -1237,8 +1237,8 @@ interface MatchModule {
 
     @SuppressWarnings("unchecked")
     static <T, U, R> Option<R> computeResult(T value,
-                                          Option<R> result, boolean isMatching,
-                                          Function<? super U, ? extends R> function) {
+                                             Option<R> result, boolean isMatching,
+                                             Function<? super U, ? extends R> function) {
         return result.isEmpty() && isMatching ? Option.of(function.apply((U) value)) : result;
     }
 }

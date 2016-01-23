@@ -629,7 +629,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Match.MatchMonad.Of<HashSet<T>> match() {
+    public Match.MatchValue.Of<HashSet<T>> match() {
         return Match.of(this);
     }
 

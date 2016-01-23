@@ -207,7 +207,7 @@ public interface Either<L, R> extends Value<R> {
     // -- Adjusted return types of Convertible methods
 
     @Override
-    default Match.MatchMonad.Of<Either<L, R>> match() {
+    default Match.MatchValue.Of<Either<L, R>> match() {
         return Match.of(this);
     }
 
@@ -527,7 +527,7 @@ public interface Either<L, R> extends Value<R> {
         }
 
         @Override
-        public Match.MatchMonad.Of<LeftProjection<L, R>> match() {
+        public Match.MatchValue.Of<LeftProjection<L, R>> match() {
             return Match.of(this);
         }
 
@@ -756,7 +756,7 @@ public interface Either<L, R> extends Value<R> {
         }
 
         @Override
-        public Match.MatchMonad.Of<RightProjection<L, R>> match() {
+        public Match.MatchValue.Of<RightProjection<L, R>> match() {
             return Match.of(this);
         }
 

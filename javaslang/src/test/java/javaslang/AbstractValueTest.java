@@ -222,7 +222,7 @@ public abstract class AbstractValueTest {
     // -- Conversions match(), toXxx()
 
     @Test
-    public void shouldConvertNonEmptyValueToMatchMonad() {
+    public void shouldConvertNonEmptyValueToMatchValue() {
         final Value<Integer> value = of(1);
         final String actual = value.match()
                 .when((Value<Integer> v) -> v.getOrElse(-1) == 1).then("ok")
@@ -231,7 +231,7 @@ public abstract class AbstractValueTest {
     }
 
     @Test
-    public void shouldConvertEmptyValueToMatchMonad() {
+    public void shouldConvertEmptyValueToMatchValue() {
         final Value<Integer> value = empty();
         final String actual = value.match()
                 .when(Value<Integer>::isEmpty).then("ok")

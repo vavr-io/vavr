@@ -169,7 +169,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     @Override
-    public Match.MatchMonad.Of<Lazy<T>> match() {
+    public Match.MatchValue.Of<Lazy<T>> match() {
         return Match.of(this);
     }
 

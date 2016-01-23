@@ -144,7 +144,7 @@ public interface LinearSeq<T> extends Seq<T> {
     <U> LinearSeq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    Match.MatchMonad.Of<? extends LinearSeq<T>> match();
+    Match.MatchValue.Of<? extends LinearSeq<T>> match();
 
     @Override
     LinearSeq<T> padTo(int length, T element);

@@ -559,7 +559,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public Match.MatchMonad.Of<TreeMap<K, V>> match() {
+    public Match.MatchValue.Of<TreeMap<K, V>> match() {
         return Match.of(this);
     }
 

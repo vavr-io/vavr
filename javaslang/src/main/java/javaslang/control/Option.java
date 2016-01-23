@@ -276,7 +276,7 @@ public interface Option<T> extends Value<T> {
     }
 
     @Override
-    default Match.MatchMonad.Of<Option<T>> match() {
+    default Match.MatchValue.Of<Option<T>> match() {
         return Match.of(this);
     }
 

@@ -922,7 +922,7 @@ public interface Future<T> extends Value<T> {
     }
 
     @Override
-    default Match.MatchMonad.Of<Future<T>> match() {
+    default Match.MatchValue.Of<Future<T>> match() {
         return Match.of(this);
     }
 

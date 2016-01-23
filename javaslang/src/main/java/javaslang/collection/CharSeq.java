@@ -555,7 +555,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public Match.MatchMonad.Of<CharSeq> match() {
+    public Match.MatchValue.Of<CharSeq> match() {
         return Match.of(this);
     }
 

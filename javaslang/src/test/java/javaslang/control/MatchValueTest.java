@@ -13,7 +13,7 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MatchMonadTest {
+public class MatchValueTest {
 
     // when(Object)
 
