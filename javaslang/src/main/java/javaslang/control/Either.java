@@ -240,6 +240,7 @@ public interface Either<L, R> extends Value<R> {
      * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
+    @Override
     default <U> Either<L, U> map(Function<? super R, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isRight()) {
@@ -515,6 +516,7 @@ public interface Either<L, R> extends Value<R> {
          * @return A new LeftProjection
          */
         @SuppressWarnings("unchecked")
+        @Override
         public <U> LeftProjection<U, R> map(Function<? super L, ? extends U> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft()) {
@@ -743,6 +745,7 @@ public interface Either<L, R> extends Value<R> {
          * @return A new RightProjection
          */
         @SuppressWarnings("unchecked")
+        @Override
         public <U> RightProjection<L, U> map(Function<? super R, ? extends U> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight()) {

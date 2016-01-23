@@ -36,19 +36,11 @@ import java.util.stream.StreamSupport;
  * <li>{@link #getOrElse(Object)}</li>
  * <li>{@link #getOrElse(Supplier)}</li>
  * <li>{@link #getOrElseThrow(Supplier)}</li>
- * <li>{@link #ifDefined(Supplier, Supplier)}</li>
- * <li>{@link #ifDefined(Object, Object)}</li>
- * <li>{@link #ifEmpty(Supplier, Supplier)}</li>
- * <li>{@link #ifEmpty(Object, Object)}</li>
- * <li>{@link #stringPrefix()}</li>
- * </ul>
- *
- * Checks:
- *
- * <ul>
  * <li>{@link #isDefined()}</li>
  * <li>{@link #isEmpty()}</li>
  * <li>{@link #isSingleValued()}</li>
+ * <li>{@link #map(Function)}</li>
+ * <li>{@link #stringPrefix()}</li>
  * </ul>
  *
  * Equality checks:
@@ -78,12 +70,6 @@ import java.util.stream.StreamSupport;
  * <li>{@link #stdout()}</li>
  * </ul>
  *
- * Tests:
- *
- * <ul>
- * <li>{@link #isSingleValued()}</li>
- * </ul>
- *
  * Type conversion:
  *
  * <ul>
@@ -96,7 +82,6 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toJavaOptional()}</li>
  * <li>{@link #toJavaSet()}</li>
  * <li>{@link #toJavaStream()}</li>
- * <li>{@link #toLazy()}</li>
  * <li>{@link #toLeft(Object)}</li>
  * <li>{@link #toLeft(Supplier)}</li>
  * <li>{@link #toList()}</li>
@@ -264,77 +249,6 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * A fluent if-expression for this value. If this is defined (i.e. not empty) trueVal is returned,
-     * otherwise falseVal is returned.
-     *
-     * @param trueVal  The result, if this is defined.
-     * @param falseVal The result, if this is not defined.
-     * @return trueVal if this.isDefined(), otherwise falseVal.
-     */
-    default T ifDefined(T trueVal, T falseVal) {
-        return isDefined() ? trueVal : falseVal;
-    }
-
-    /**
-     * A fluent if-expression for this value. If this is defined (i.e. not empty) trueSupplier.get() is returned,
-     * otherwise falseSupplier.get() is returned.
-     *
-     * @param trueSupplier  The result, if this is defined.
-     * @param falseSupplier The result, if this is not defined.
-     * @return trueSupplier.get() if this.isDefined(), otherwise falseSupplier.get().
-     */
-    default T ifDefined(Supplier<? extends T> trueSupplier, Supplier<? extends T> falseSupplier) {
-        return isDefined() ? trueSupplier.get() : falseSupplier.get();
-    }
-
-    /**
-     * A fluent if-expression for this value. If this is empty (i.e. not defined) trueVal is returned,
-     * otherwise falseVal is returned.
-     *
-     * @param trueVal  The result, if this is empty.
-     * @param falseVal The result, if this is not empty.
-     * @return trueVal if this.isEmpty(), otherwise falseVal.
-     */
-    default T ifEmpty(T trueVal, T falseVal) {
-        return isEmpty() ? trueVal : falseVal;
-    }
-
-    /**
-     * A fluent if-expression for this value. If this is empty (i.e. not defined) trueSupplier.get() is returned,
-     * otherwise falseSupplier.get() is returned.
-     *
-     * @param trueSupplier  The result, if this is defined.
-     * @param falseSupplier The result, if this is not defined.
-     * @return trueSupplier.get() if this.isEmpty(), otherwise falseSupplier.get().
-     */
-    default T ifEmpty(Supplier<? extends T> trueSupplier, Supplier<? extends T> falseSupplier) {
-        return isEmpty() ? trueSupplier.get() : falseSupplier.get();
-    }
-
-    /**
-     * Checks, this {@code Value} is empty, i.e. if the underlying value is absent.
-     *
-     * @return false, if no underlying value is present, true otherwise.
-     */
-    boolean isEmpty();
-
-    /**
-     * Checks, this {@code Value} is defined, i.e. if the underlying value is present.
-     *
-     * @return true, if an underlying value is present, false otherwise.
-     */
-    default boolean isDefined() {
-        return !isEmpty();
-    }
-
-    /**
-     * States, if this {@code Value} may contain (at most) one element or more than one element, like collections.
-     *
-     * @return {@code true} if this is single-valued, otherwise {@code false}.
-     */
-    boolean isSingleValued();
-
-    /**
      * Returns the underlying value if present, otherwise {@code other}.
      *
      * @param other An alternative value.
@@ -388,6 +302,38 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
+     * Checks, this {@code Value} is defined, i.e. if the underlying value is present.
+     *
+     * @return true, if an underlying value is present, false otherwise.
+     */
+    default boolean isDefined() {
+        return !isEmpty();
+    }
+
+    /**
+     * Checks, this {@code Value} is empty, i.e. if the underlying value is absent.
+     *
+     * @return false, if no underlying value is present, true otherwise.
+     */
+    boolean isEmpty();
+
+    /**
+     * States whether this is a single-valued type.
+     *
+     * @return {@code true} if this is single-valued, {@code false} otherwise.
+     */
+    boolean isSingleValued();
+
+    /**
+     * Maps the underlying value to a different component type.
+     *
+     * @param mapper A mapper
+     * @param <U>    The new component type
+     * @return A new value
+     */
+    <U> Value<U> map(Function<? super T, ? extends U> mapper);
+
+    /**
      * Performs the given {@code action} on the first element if this is an <em>eager</em> implementation.
      * Performs the given {@code action} on all elements (the first immediately, successive deferred),
      * if this is a <em>lazy</em> implementation.
@@ -404,36 +350,59 @@ public interface Value<T> extends Iterable<T> {
      */
     String stringPrefix();
 
-    /**
-     * Clarifies that values have a proper equals() method implemented.
-     * <p>
-     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals-java.lang.Object-">Object.equals(Object)</a>.
-     *
-     * @param o An object
-     * @return true, if this equals o, false otherwise
-     */
-    @Override
-    boolean equals(Object o);
+    // -- output
 
     /**
-     * Clarifies that values have a proper hashCode() method implemented.
-     * <p>
-     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode--">Object.hashCode()</a>.
+     * Sends the string representations of this value to the {@link PrintStream}.
+     * If this value consists of multiple elements, each element is displayed in a new line.
      *
-     * @return The hashcode of this object
+     * @param out The PrintStream to write to
+     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stream.
      */
-    @Override
-    int hashCode();
+    default void out(PrintStream out) {
+        for (T t : this) {
+            out.println(String.valueOf(t));
+            if (out.checkError()) {
+                throw new IllegalStateException("Error writing to PrintStream");
+            }
+        }
+    }
 
     /**
-     * Clarifies that values have a proper toString() method implemented.
-     * <p>
-     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#toString--">Object.toString()</a>.
+     * Sends the string representations of this value to the {@link PrintWriter}.
+     * If this value consists of multiple elements, each element is displayed in a new line.
      *
-     * @return A String representation of this object
+     * @param writer The PrintWriter to write to
+     * @throws IllegalStateException if {@code PrintWriter.checkError()} is true after writing to writer.
      */
-    @Override
-    String toString();
+    default void out(PrintWriter writer) {
+        for (T t : this) {
+            writer.println(String.valueOf(t));
+            if (writer.checkError()) {
+                throw new IllegalStateException("Error writing to PrintWriter");
+            }
+        }
+    }
+
+    /**
+     * Sends the string representations of this value to the standard error stream {@linkplain System#err}.
+     * If this value consists of multiple elements, each element is displayed in a new line.
+     *
+     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
+     */
+    default void stderr() {
+        out(System.err);
+    }
+
+    /**
+     * Sends the string representations of this value to the standard output stream {@linkplain System#out}.
+     * If this value consists of multiple elements, each element is displayed in a new line.
+     *
+     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
+     */
+    default void stdout() {
+        out(System.out);
+    }
 
     // -- Adjusted return types of Iterable
 
@@ -570,19 +539,6 @@ public interface Value<T> extends Iterable<T> {
      */
     default java.util.stream.Stream<T> toJavaStream() {
         return StreamSupport.stream(spliterator(), false);
-    }
-
-    /**
-     * Converts this value to a {@link Lazy}.
-     *
-     * @return A new {@link Lazy}.
-     */
-    default Lazy<T> toLazy() {
-        if (this instanceof Lazy) {
-            return (Lazy<T>) this;
-        } else {
-            return isEmpty() ? Lazy.undefined() : Lazy.of(this::get);
-        }
     }
 
     /**
@@ -764,59 +720,39 @@ public interface Value<T> extends Iterable<T> {
         return ValueModule.toTraversable(this, Vector.empty(), Vector::of, Vector::ofAll);
     }
 
-    // -- output
+    // -- Object
 
     /**
-     * Sends the string representations of this value to the {@link PrintStream}.
-     * If this value consists of multiple elements, each element is displayed in a new line.
+     * Clarifies that values have a proper equals() method implemented.
+     * <p>
+     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#equals-java.lang.Object-">Object.equals(Object)</a>.
      *
-     * @param out The PrintStream to write to
-     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stream.
+     * @param o An object
+     * @return true, if this equals o, false otherwise
      */
-    default void out(PrintStream out) {
-        for (T t : this) {
-            out.println(String.valueOf(t));
-            if (out.checkError()) {
-                throw new IllegalStateException("Error writing to PrintStream");
-            }
-        }
-    }
+    @Override
+    boolean equals(Object o);
 
     /**
-     * Sends the string representations of this value to the {@link PrintWriter}.
-     * If this value consists of multiple elements, each element is displayed in a new line.
+     * Clarifies that values have a proper hashCode() method implemented.
+     * <p>
+     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#hashCode--">Object.hashCode()</a>.
      *
-     * @param writer The PrintWriter to write to
-     * @throws IllegalStateException if {@code PrintWriter.checkError()} is true after writing to writer.
+     * @return The hashcode of this object
      */
-    default void out(PrintWriter writer) {
-        for (T t : this) {
-            writer.println(String.valueOf(t));
-            if (writer.checkError()) {
-                throw new IllegalStateException("Error writing to PrintWriter");
-            }
-        }
-    }
+    @Override
+    int hashCode();
 
     /**
-     * Sends the string representations of this value to the standard error stream {@linkplain System#err}.
-     * If this value consists of multiple elements, each element is displayed in a new line.
+     * Clarifies that values have a proper toString() method implemented.
+     * <p>
+     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#toString--">Object.toString()</a>.
      *
-     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
+     * @return A String representation of this object
      */
-    default void stderr() {
-        out(System.err);
-    }
+    @Override
+    String toString();
 
-    /**
-     * Sends the string representations of this value to the standard output stream {@linkplain System#out}.
-     * If this value consists of multiple elements, each element is displayed in a new line.
-     *
-     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
-     */
-    default void stdout() {
-        out(System.out);
-    }
 }
 
 interface ValueModule {

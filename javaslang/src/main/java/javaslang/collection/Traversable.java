@@ -643,6 +643,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a mapped Traversable
      * @throws NullPointerException if {@code mapper} is null
      */
+    @Override
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
     @Override

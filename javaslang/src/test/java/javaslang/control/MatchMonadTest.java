@@ -12,7 +12,6 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 public class MatchMonadTest {
 
@@ -161,36 +160,6 @@ public class MatchMonadTest {
     public void shouldMatchOrElseByFunction() {
         final boolean actual = Match.of(4).whenIsIn(1, 2, 3).then(false).getOrElse(true);
         assertThat(actual).isTrue();
-    }
-
-    // -- orElse
-
-    @Test
-    public void shouldReturnSelfOnOrElseIfSuccess() {
-        Match.MatchMonad<String> success = Match.of(1).whenIsIn(1, 2, 3).then("+");
-        Match.MatchMonad<String> fail = Match.of(0).whenIsIn(1, 2, 3).then("-");
-        assertThat(success.orElse(fail).getOrElse("?")).isEqualTo("+");
-    }
-
-    @Test
-    public void shouldReturnSelfOnOrElseSupplierIfSuccess() {
-        Match.MatchMonad<String> success = Match.of(1).whenIsIn(1, 2, 3).then("+");
-        Match.MatchMonad<String> fail = Match.of(0).whenIsIn(1, 2, 3).then("-");
-        assertThat(success.orElse(() -> fail).getOrElse("?")).isEqualTo("+");
-    }
-
-    @Test
-    public void shouldReturnAlternativeOnOrElseIfFailure() {
-        Match.MatchMonad<String> success = Match.of(1).whenIsIn(1, 2, 3).then("+");
-        Match.MatchMonad<String> fail = Match.of(0).whenIsIn(1, 2, 3).then("-");
-        assertThat(fail.orElse(success).getOrElse("?")).isEqualTo("+");
-    }
-
-    @Test
-    public void shouldReturnAlternativeOnOrElseSupplierIfFailure() {
-        Match.MatchMonad<String> success = Match.of(1).whenIsIn(1, 2, 3).then("+");
-        Match.MatchMonad<String> fail = Match.of(0).whenIsIn(1, 2, 3).then("-");
-        assertThat(fail.orElse(() -> success).getOrElse("?")).isEqualTo("+");
     }
 
     // match by super-type
@@ -606,37 +575,17 @@ public class MatchMonadTest {
 
     @Test
     public void shouldSuccessFilterOtherwise() {
-        final int actual = Match.of(0).whenIs(1).then(1).otherwise(2).filter(i -> true).get();
+        final int actual = Match.of(0)
+                .whenIs(1).then(1)
+                .otherwise(2)
+                .filter(i -> true)
+                .get();
         assertThat(actual).isEqualTo(2);
     }
 
     @Test(expected = NoSuchElementException.class)
     public void shouldFailFilterOtherwise() {
         Match.of(0).whenIs(1).then(1).otherwise(2).filter(i -> false).get();
-    }
-
-    @Test
-    public void shouldFlatMapMatched() {
-        final int actual = Match.of(1).whenIs(1).then(1).flatMap(i -> Match.of(i).whenIs(1).then(2)).get();
-        assertThat(actual).isEqualTo(2);
-    }
-
-    @Test
-    public void shouldFlatMapUnmatched() {
-        final int actual = Match.of(0).whenIs(1).then(1).flatMap(i -> Match.of(i).whenIs(1).then(1)).getOrElse(-1);
-        assertThat(actual).isEqualTo(-1);
-    }
-
-    @Test
-    public void shouldFlatMapOtherwise() {
-        final int actual = Match
-                .of(0)
-                .whenIs(1)
-                .then(1)
-                .otherwise(-1)
-                .flatMap(i -> Match.of(i).whenIs(-1).then(2))
-                .get();
-        assertThat(actual).isEqualTo(2);
     }
 
     @Test
@@ -653,7 +602,11 @@ public class MatchMonadTest {
 
     @Test
     public void shouldMapOtherwise() {
-        final int actual = Match.of(0).whenIs(1).then(1).otherwise(-1).map(i -> i + 1).get();
+        final int actual = Match.of(0)
+                .whenIs(1).then(1)
+                .otherwise(-1)
+                .map(i -> i + 1)
+                .get();
         assertThat(actual).isEqualTo(0);
     }
 
@@ -681,32 +634,18 @@ public class MatchMonadTest {
 
     // thenThrow
 
-    @Test
-    public void shouldThrowLate() {
-        final Match.MatchMonad<?> match = Match.of(null).whenIs(null).thenThrow(RuntimeException::new);
-        try {
-            match.get();
-            fail("nothing thrown");
-        } catch (RuntimeException x) {
-            // ok
-        }
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowEarly() {
+        Match.of(null)
+                .whenIs(null).thenThrow(RuntimeException::new);
     }
 
-    @Test
+    @Test(expected = RuntimeException.class)
     public void shouldThrowLateWhenMultipleCases() {
-        final Match.MatchMonad<?> match = Match
-                .of(null)
-                .whenIs(0)
-                .then(0)
-                .whenIs(null)
-                .thenThrow(RuntimeException::new)
+        Match.of(null)
+                .whenIs(0).then(0)
+                .whenIs(null).thenThrow(RuntimeException::new)
                 .otherwise(0);
-        try {
-            match.get();
-            fail("nothing thrown");
-        } catch (RuntimeException x) {
-            // ok
-        }
     }
 
     @Test

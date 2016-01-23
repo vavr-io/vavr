@@ -118,16 +118,6 @@ public interface Arbitrary<T> {
         return f.apply(this);
     }
     
-    @SuppressWarnings("unchecked")
-	default <U> Arbitrary<U> unit(Iterable<? extends U> iterable) {
-    	if (iterable instanceof Arbitrary) {
-    		return (Arbitrary<U>) iterable;
-    	} else {
-    		final Stream<Gen<U>> generators = Stream.ofAll(iterable).map(Gen::of);
-    		return ignored -> Gen.oneOf(generators);
-    	}
-    }
-
     /**
      * Generates arbitrary integer values.
      *
