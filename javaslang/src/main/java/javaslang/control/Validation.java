@@ -419,6 +419,7 @@ public interface Validation<E, T> extends Value<T> {
         }
     }
 
+    @Override
     default <U> Validation<E, U> map(Function<? super T, ? extends U> f) {
         Objects.requireNonNull(f, "function f is null");
         if (isInvalid()) {
@@ -519,7 +520,7 @@ public interface Validation<E, T> extends Value<T> {
     }
 
     @Override
-    default Match.MatchMonad.Of<Validation<E, T>> match() {
+    default Match.MatchValue.Of<Validation<E, T>> match() {
         return Match.of(this);
     }
 

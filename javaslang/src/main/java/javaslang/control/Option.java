@@ -269,13 +269,14 @@ public interface Option<T> extends Value<T> {
      * @param <U>    The new value type
      * @return a new {@code Some} containing the mapped value if this Option is defined, otherwise {@code None}, if this is empty.
      */
+    @Override
     default <U> Option<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? none() : some(mapper.apply(get()));
     }
 
     @Override
-    default Match.MatchMonad.Of<Option<T>> match() {
+    default Match.MatchValue.Of<Option<T>> match() {
         return Match.of(this);
     }
 

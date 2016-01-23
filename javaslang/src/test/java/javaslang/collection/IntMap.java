@@ -176,7 +176,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Match.MatchMonad.Of<IntMap<T>> match() {
+    public Match.MatchValue.Of<IntMap<T>> match() {
         return Match.of(this);
     }
 

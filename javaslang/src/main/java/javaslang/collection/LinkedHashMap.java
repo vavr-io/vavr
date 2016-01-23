@@ -416,7 +416,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public Match.MatchMonad.Of<LinkedHashMap<K, V>> match() {
+    public Match.MatchValue.Of<LinkedHashMap<K, V>> match() {
         return Match.of(this);
     }
 

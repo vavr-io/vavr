@@ -9,6 +9,7 @@ import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 import javaslang.control.Match;
+import javaslang.control.Option;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -43,7 +44,20 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  * @since 1.2.1
  */
-public interface Lazy<T> extends Supplier<T>, Value<T> {
+// DEV-NOTE: No flatMap and orElse because this more like a Functor than a Monad.
+//           It represents a value rather than capturing a specific state.
+public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    // read http://javarevisited.blogspot.de/2014/05/double-checked-locking-on-singleton-in-java.html
+    private transient volatile Supplier<? extends T> supplier;
+    private volatile T value;
+
+    // should not be called directly
+    private Lazy(Supplier<? extends T> supplier) {
+        this.supplier = supplier;
+    }
 
     /**
      * Creates a {@code Lazy} that requests its value from a given {@code Supplier}. The supplier is asked only once,
@@ -54,12 +68,12 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
      * @return A new instance of Lazy
      */
     @SuppressWarnings("unchecked")
-    static <T> Lazy<T> of(Supplier<? extends T> supplier) {
+    public static <T> Lazy<T> of(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         if (supplier instanceof Lazy) {
             return (Lazy<T>) supplier;
         } else {
-            return new Defined<>(supplier);
+            return new Lazy<>(supplier);
         }
     }
 
@@ -72,21 +86,9 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
      * @return A lazy sequence of values.
      * @throws NullPointerException if values is null
      */
-    static <T> Lazy<Seq<T>> sequence(Iterable<? extends Lazy<? extends T>> values) {
+    public static <T> Lazy<Seq<T>> sequence(Iterable<? extends Lazy<? extends T>> values) {
         Objects.requireNonNull(values, "values is null");
         return Lazy.of(() -> List.ofAll(values).map(Lazy::get));
-    }
-
-    /**
-     * Returns the singleton {@code undefined} lazy value.
-     * <p>
-     * The undefined lazy value is by definition empty and throws a {@code NoSuchElementException} on {@code get()}.
-     *
-     * @param <T> Component type
-     * @return The undefined lazy value.
-     */
-    static <T> Lazy<T> undefined() {
-        return Undefined.instance();
     }
 
     /**
@@ -99,7 +101,7 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
      * @return A new instance of T
      */
     @SuppressWarnings("unchecked")
-    static <T> T val(Supplier<? extends T> supplier, Class<T> type) {
+    public static <T> T val(Supplier<? extends T> supplier, Class<T> type) {
         Objects.requireNonNull(supplier, "supplier is null");
         Objects.requireNonNull(type, "type is null");
         if (!type.isInterface()) {
@@ -110,32 +112,8 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
         return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] { type }, handler);
     }
 
-    /**
-     * Filters this value. If the filter result is empty, {@code None} is returned, otherwise Some of this lazy value
-     * is returned.
-     *
-     * @param predicate A predicate
-     * @return A new Option instance
-     * @throws NullPointerException if {@code predicate} is null.
-     */
-    // TODO(#1044): return Option<Lazy<T>> and delete Undefined. Also remove flatMap - Lazy should be a Functor and no Monad
-    default Lazy<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        if (isEmpty()) {
-            return this;
-        } else {
-            return predicate.test(get()) ? this : Undefined.instance();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    default <U> Lazy<U> flatMap(Function<? super T, ? extends Lazy<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return (Lazy<U>) this;
-        } else {
-            return unit(mapper.apply(get()));
-        }
+    public Option<T> filter(Predicate<? super T> predicate) {
+        return predicate.test(value) ? Option.some(value) : Option.none();
     }
 
     /**
@@ -146,7 +124,22 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
      * @throws NoSuchElementException if this value is undefined
      */
     @Override
-    T get();
+    public T get() {
+        if (!isEvaluated()) {
+            synchronized (this) {
+                if (!isEvaluated()) {
+                    value = supplier.get();
+                    supplier = null; // free mem
+                }
+            }
+        }
+        return value;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
 
     /**
      * Checks, if this lazy value is evaluated.
@@ -156,60 +149,34 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
      * @return true, if the value is evaluated, false otherwise.
      * @throws UnsupportedOperationException if this value is undefined
      */
-    boolean isEvaluated();
+    public boolean isEvaluated() {
+        return supplier == null;
+    }
 
-    /**
-     * A {@code Lazy} is single-valued.
-     *
-     * @return {@code true}
-     */
     @Override
-    default boolean isSingleValued() {
+    public boolean isSingleValued() {
         return true;
     }
 
-    default <U> Lazy<U> map(Function<? super T, ? extends U> mapper) {
-        return isEmpty() ? Lazy.undefined() : Lazy.of(() -> mapper.apply(get()));
+    @Override
+    public Iterator<T> iterator() {
+        return Iterator.of(get());
     }
 
     @Override
-    default Match.MatchMonad.Of<Lazy<T>> match() {
+    public <U> Lazy<U> map(Function<? super T, ? extends U> mapper) {
+        return Lazy.of(() -> mapper.apply(get()));
+    }
+
+    @Override
+    public Match.MatchValue.Of<Lazy<T>> match() {
         return Match.of(this);
     }
 
     @Override
-    default Lazy<T> peek(Consumer<? super T> action) {
-        if (!isEmpty()) {
-            action.accept(get());
-        }
+    public Lazy<T> peek(Consumer<? super T> action) {
+        action.accept(get());
         return this;
-    }
-
-    /**
-     * Returns this {@code Lazy} if it is defined, otherwise return the alternative.
-     * @param other An alternative {@code Lazy}
-     * @return this {@code Lazy} if it is defined, otherwise return the alternative.
-     */
-    @SuppressWarnings("unchecked")
-    default Lazy<T> orElse(Lazy<? extends T> other) {
-        Objects.requireNonNull(other, "other is null");
-        return isDefined() ? this : (Lazy<T>) other;
-    }
-
-    /**
-     * Returns this {@code Lazy} if it is defined, otherwise return the result of evaluating supplier.
-     * @param supplier An alternative {@code Lazy} supplier
-     * @return this {@code Lazy} if it is defined, otherwise return the result of evaluating supplier.
-     */
-    @SuppressWarnings("unchecked")
-    default Lazy<T> orElse(Supplier<? extends Lazy<? extends T>> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
-        return isDefined() ? this : (Lazy<T>) supplier.get();
-    }
-
-    @Override
-    default String stringPrefix() {
-        return "Lazy";
     }
 
     /**
@@ -220,164 +187,38 @@ public interface Lazy<T> extends Supplier<T>, Value<T> {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> U transform(Function<? super Lazy<? super T>, ? extends U> f) {
+    public <U> U transform(Function<? super Lazy<? super T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
-    
-    @SuppressWarnings("unchecked")
-    default <U> Lazy<U> unit(Iterable<? extends U> iterable) {
-    	if (iterable instanceof Lazy) {
-    		return (Lazy<U>) iterable;
-    	} else if (iterable instanceof Value) {
-    		final Value<U> value = (Value<U>) iterable;
-    		return value.isEmpty() ? Lazy.undefined() : Lazy.of(value::get);
-    	} else {
-    		final java.util.Iterator<? extends U> iterator = iterable.iterator();
-    		if (iterator.hasNext()) {
-    			return Lazy.of(() -> iterator.next());
-    		} else {
-    			return Lazy.undefined();
-    		}
-        }
+
+    public String stringPrefix() {
+        return "Lazy";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return (o == this) || (o instanceof Lazy && Objects.equals(((Lazy<?>) o).get(), get()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(get());
+    }
+
+    @Override
+    public String toString() {
+        return stringPrefix() + "(" + (!isEvaluated() ? "?" : value) + ")";
     }
 
     /**
-     * Lazy value implementation.
+     * Ensures that the value is evaluated before serialization.
      *
-     * @param <T> Type of the value.
+     * @param s An object serialization stream.
+     * @throws java.io.IOException If an error occurs writing to the stream.
      */
-    final class Defined<T> implements Lazy<T>, Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        // read http://javarevisited.blogspot.de/2014/05/double-checked-locking-on-singleton-in-java.html
-        private transient volatile Supplier<? extends T> supplier;
-        private volatile T value;
-
-        // should not be called directly
-        private Defined(Supplier<? extends T> supplier) {
-            this.supplier = supplier;
-        }
-
-        @Override
-        public T get() {
-            if (!isEvaluated()) {
-                synchronized (this) {
-                    if (!isEvaluated()) {
-                        value = supplier.get();
-                        supplier = null; // free mem
-                    }
-                }
-            }
-            return value;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean isEvaluated() {
-            return supplier == null;
-        }
-
-        @Override
-        public Iterator<T> iterator() {
-            return Iterator.of(get());
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            return (o == this) || (o instanceof Lazy && Objects.equals(((Lazy<?>) o).get(), get()));
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(get());
-        }
-
-        @Override
-        public String toString() {
-            return stringPrefix() + "(" + (!isEvaluated() ? "?" : value) + ")";
-        }
-
-        /**
-         * Ensures that the value is evaluated before serialization.
-         *
-         * @param s An object serialization stream.
-         * @throws java.io.IOException If an error occurs writing to the stream.
-         */
-        private void writeObject(ObjectOutputStream s) throws IOException {
-            get(); // evaluates the lazy value if it isn't evaluated yet!
-            s.defaultWriteObject();
-        }
-    }
-
-    /**
-     * The singleton undefined lazy value.
-     *
-     * @param <T> Type of the value.
-     */
-    final class Undefined<T> implements Lazy<T>, Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        private static final Undefined<?> INSTANCE = new Undefined<>();
-
-        // hidden
-        private Undefined() {
-        }
-
-        @SuppressWarnings("unchecked")
-        static <T> Undefined<T> instance() {
-            return (Undefined<T>) INSTANCE;
-        }
-
-        @Override
-        public T get() {
-            throw new NoSuchElementException("get on Undefined");
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return true;
-        }
-
-        @Override
-        public boolean isEvaluated() {
-            throw new UnsupportedOperationException("isEvaluated on Undefined");
-        }
-
-        @Override
-        public Iterator<T> iterator() {
-            return Iterator.empty();
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            return o == this;
-        }
-
-        @Override
-        public int hashCode() {
-            return -13;
-        }
-
-        @Override
-        public String toString() {
-            return stringPrefix() + "()";
-        }
-
-        /**
-         * Instance control for object serialization.
-         *
-         * @return The singleton instance of Nil.
-         * @see java.io.Serializable
-         */
-        private Object readResolve() {
-            return INSTANCE;
-        }
+    private void writeObject(ObjectOutputStream s) throws IOException {
+        get(); // evaluates the lazy value if it isn't evaluated yet!
+        s.defaultWriteObject();
     }
 }

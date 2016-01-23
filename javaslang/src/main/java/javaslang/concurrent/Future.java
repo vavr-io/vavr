@@ -882,6 +882,7 @@ public interface Future<T> extends Value<T> {
         return isEmpty() ? Iterator.empty() : Iterator.of(get());
     }
 
+    @Override
     default <U> Future<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return mapTry(mapper::apply);
@@ -921,7 +922,7 @@ public interface Future<T> extends Value<T> {
     }
 
     @Override
-    default Match.MatchMonad.Of<Future<T>> match() {
+    default Match.MatchValue.Of<Future<T>> match() {
         return Match.of(this);
     }
 

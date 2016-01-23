@@ -840,7 +840,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Match.MatchMonad.Of<Queue<T>> match() {
+    public Match.MatchValue.Of<Queue<T>> match() {
         return Match.of(this);
     }
 

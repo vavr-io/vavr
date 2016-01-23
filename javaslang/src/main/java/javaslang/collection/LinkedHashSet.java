@@ -639,7 +639,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Match.MatchMonad.Of<LinkedHashSet<T>> match() {
+    public Match.MatchValue.Of<LinkedHashSet<T>> match() {
         return Match.of(this);
     }
 

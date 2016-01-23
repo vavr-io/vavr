@@ -176,7 +176,7 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
     <U> Set<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    Match.MatchMonad.Of<? extends Set<T>> match();
+    Match.MatchValue.Of<? extends Set<T>> match();
 
     @Override
     Tuple2<? extends Set<T>, ? extends Set<T>> partition(Predicate<? super T> predicate);

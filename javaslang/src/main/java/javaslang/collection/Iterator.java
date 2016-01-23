@@ -1435,7 +1435,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Match.MatchMonad.Of<Iterator<T>> match() {
+    default Match.MatchValue.Of<Iterator<T>> match() {
         return Match.of(this);
     }
 

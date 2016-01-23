@@ -771,7 +771,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Match.MatchMonad.Of<Vector<T>> match() {
+    public Match.MatchValue.Of<Vector<T>> match() {
         return Match.of(this);
     }
 

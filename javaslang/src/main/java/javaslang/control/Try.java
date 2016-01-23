@@ -360,6 +360,7 @@ public interface Try<T> extends Value<T> {
      * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
+    @Override
     default <U> Try<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return mapTry(mapper::apply);
@@ -400,7 +401,7 @@ public interface Try<T> extends Value<T> {
     }
 
     @Override
-    default Match.MatchMonad.Of<Try<T>> match() {
+    default Match.MatchValue.Of<Try<T>> match() {
         return Match.of(this);
     }
 

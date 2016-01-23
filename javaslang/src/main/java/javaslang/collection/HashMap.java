@@ -419,7 +419,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public Match.MatchMonad.Of<HashMap<K, V>> match() {
+    public Match.MatchValue.Of<HashMap<K, V>> match() {
         return Match.of(this);
     }
 

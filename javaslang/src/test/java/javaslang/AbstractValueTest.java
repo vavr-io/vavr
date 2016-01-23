@@ -175,38 +175,6 @@ public abstract class AbstractValueTest {
         });
     }
 
-    // -- ifDefined(trueVal, falseVal)
-
-    @Test
-    public void shouldCalculateValIfDefined() {
-        assertThat(empty().ifDefined(1, 2)).isEqualTo(2);
-        assertThat(of(1).ifDefined(1, 2)).isEqualTo(1);
-    }
-
-    // -- ifDefined(Supplier)
-
-    @Test
-    public void shouldCalculateSupplierIfDefined() {
-        assertThat(empty().ifDefined(() -> 1, () -> 2)).isEqualTo(2);
-        assertThat(of(1).ifDefined(() -> 1, () -> 2)).isEqualTo(1);
-    }
-
-    // -- ifEmpty(trueVal, falseVal)
-
-    @Test
-    public void shouldCalculateValIfEmpty() {
-        assertThat(empty().ifEmpty(1, 2)).isEqualTo(1);
-        assertThat(of(1).ifEmpty(1, 2)).isEqualTo(2);
-    }
-
-    // -- ifEmpty(Supplier)
-
-    @Test
-    public void shouldCalculateSupplierIfEmpty() {
-        assertThat(empty().ifEmpty(() -> 1, () -> 2)).isEqualTo(1);
-        assertThat(of(1).ifEmpty(() -> 1, () -> 2)).isEqualTo(2);
-    }
-
     // -- isEmpty
 
     @Test
@@ -254,7 +222,7 @@ public abstract class AbstractValueTest {
     // -- Conversions match(), toXxx()
 
     @Test
-    public void shouldConvertNonEmptyValueToMatchMonad() {
+    public void shouldConvertNonEmptyValueToMatchValue() {
         final Value<Integer> value = of(1);
         final String actual = value.match()
                 .when((Value<Integer> v) -> v.getOrElse(-1) == 1).then("ok")
@@ -263,7 +231,7 @@ public abstract class AbstractValueTest {
     }
 
     @Test
-    public void shouldConvertEmptyValueToMatchMonad() {
+    public void shouldConvertEmptyValueToMatchValue() {
         final Value<Integer> value = empty();
         final String actual = value.match()
                 .when(Value<Integer>::isEmpty).then("ok")
@@ -278,12 +246,6 @@ public abstract class AbstractValueTest {
                 .whenTypeIn(Iterator.class).then(Iterator.of("ignore").toString())
                 .getOrElse(v.toString())
         ).isEqualTo(v.toCharSeq().toString());
-    }
-
-    @Test
-    public void shouldConvertToLazy() {
-        assertThat(empty().toLazy().isEmpty()).isTrue();
-        assertThat(of(1).toLazy()).isEqualTo(Lazy.of(() -> 1));
     }
 
     @Test

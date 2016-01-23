@@ -676,7 +676,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public Match.MatchMonad.Of<TreeSet<T>> match() {
+    public Match.MatchValue.Of<TreeSet<T>> match() {
         return Match.of(this);
     }
 

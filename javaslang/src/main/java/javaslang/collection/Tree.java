@@ -469,7 +469,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Match.MatchMonad.Of<Tree<T>> match() {
+    default Match.MatchValue.Of<Tree<T>> match() {
         return Match.of(this);
     }
 
