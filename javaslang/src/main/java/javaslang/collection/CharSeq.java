@@ -2389,7 +2389,7 @@ interface CharSeqModule {
                 return Vector.of(CharSeq.empty());
             } else {
                 return elements.zipWithIndex().flatMap(
-                        t -> apply(elements.drop(t._2.intValue() + 1), (k - 1)).map((CharSeq c) -> c.prepend(t._1))
+                        t -> apply(elements.drop(t._2 + 1), (k - 1)).map((CharSeq c) -> c.prepend(t._1))
                 );
             }
         }
