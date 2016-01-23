@@ -10,6 +10,7 @@ import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.control.Match.SerializablePredicate;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -844,9 +845,23 @@ public interface Match {
                 return this;
             }
 
+            /**
+             * Returns the match result.
+             * <p>
+             * <strong>Note:</strong> This implementation differs from the contract of {@link Value#get()} in the manner
+             * that it throws a {@code MatchError} instead of a {@code NoSuchElementException}.
+             *
+             * @return the match result
+             * @throws MatchError if the value don't matched
+             */
             @Override
             public R get() {
                 return result.getOrElseThrow(() -> new MatchError(value));
+            }
+
+            @Override
+            public Option<R> getOption() {
+                return result;
             }
 
             @Override
@@ -857,6 +872,28 @@ public interface Match {
             @Override
             public Iterator<R> iterator() {
                 return result.isEmpty() ? Iterator.empty() : Iterator.of(get());
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (o == this) {
+                    return true;
+                } else if (o instanceof MatchValue) {
+                    final MatchValue<?> that = (MatchValue<?>) o;
+                    return Objects.equals(result, that.getOption());
+                } else {
+                    return false;
+                }
+            }
+
+            @Override
+            public int hashCode() {
+                return result.hashCode();
+            }
+
+            @Override
+            public String toString() {
+                return stringPrefix() + "(" + result.map(String::valueOf).getOrElse("") + ")";
             }
 
             private boolean isMatching(Supplier<Predicate<? super Object>> predicate) {
@@ -894,7 +931,6 @@ public interface Match {
 
         final class Otherwise<R> implements MatchValue<R> {
 
-            // we need to ensure referential transparency of Otherwise.get()
             private final Option<R> result;
 
             private Otherwise(Option<R> result) {
@@ -925,19 +961,57 @@ public interface Match {
                 return this;
             }
 
+            /**
+             * Returns the match result.
+             * <p>
+             * <strong>Note:</strong> The {@code otherwise} branch of Match should always return a result.
+             * Here the result may only be empty when it was filtered with {@link #filter(Predicate)}.
+             * Therefore it is no {@code MatchError} if the result is empty and we throw a
+             * {@code NoSuchElementException} in such a case.
+             *
+             * @return the match result
+             * @throws NoSuchElementException if there is no result
+             */
             @Override
             public R get() {
                 return result.get();
             }
 
             @Override
+            public Option<R> getOption() {
+                return result;
+            }
+
+            @Override
             public boolean isEmpty() {
-                return false;
+                return result.isEmpty();
             }
 
             @Override
             public Iterator<R> iterator() {
-                return Iterator.of(get());
+                return result.isEmpty() ? Iterator.empty() : Iterator.of(get());
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (o == this) {
+                    return true;
+                } else if (o instanceof MatchValue) {
+                    final MatchValue<?> that = (MatchValue<?>) o;
+                    return Objects.equals(result, that.getOption());
+                } else {
+                    return false;
+                }
+            }
+
+            @Override
+            public int hashCode() {
+                return result.hashCode();
+            }
+
+            @Override
+            public String toString() {
+                return stringPrefix() + "(" + result.map(String::valueOf).getOrElse("") + ")";
             }
         }
 

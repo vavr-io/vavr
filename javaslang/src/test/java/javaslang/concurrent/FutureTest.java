@@ -5,13 +5,14 @@
  */
 package javaslang.concurrent;
 
+import javaslang.AbstractValueTest;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.AbstractValueTest;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 import javaslang.collection.Stream;
-import javaslang.control.*;
+import javaslang.control.Option;
+import javaslang.control.Try;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
@@ -53,10 +54,10 @@ public class FutureTest extends AbstractValueTest {
         return Future.of(TrivialExecutorService.instance(), () -> element);
     }
 
-    @SuppressWarnings("unchecked")
+    @SafeVarargs
     @Override
-    protected <T> Seq<T> of(T... elements) {
-        return List.of(elements);
+    protected final <T> Future<T> of(T... elements) {
+        return of(elements[0]);
     }
 
     @Override
@@ -220,7 +221,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldFailReduceEmptySequence() {
-        Future.<Integer>reduce(List.empty(), (i1, i2) -> i1 + i2);
+        Future.<Integer> reduce(List.empty(), (i1, i2) -> i1 + i2);
     }
 
     @Test
@@ -296,7 +297,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldCompleteWithErrorIfFailAndThenFail() {
-        final Future<Integer> future = Future.<Integer>of(zZz(new Error("fail!")))
+        final Future<Integer> future = Future.<Integer> of(zZz(new Error("fail!")))
                 .andThen(t -> zZz(new Error("and then fail!")));
         waitUntil(future::isCompleted);
         assertFailed(future, Error.class);
@@ -314,7 +315,7 @@ public class FutureTest extends AbstractValueTest {
     public void shouldCompleteWithSpecificOrderIfSuccessAndThenSuccess() {
         final boolean[] lock = new boolean[] { true };
         final int[] sideEffect = new int[] { 0 };
-        final Future<Void> future = Future.<Void>of(() -> {
+        final Future<Void> future = Future.<Void> of(() -> {
             waitUntil(() -> !lock[0]);
             return null;
         }).andThen(t -> sideEffect[0] = 42);
@@ -613,7 +614,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldRecoverFailedFuture() {
-        final Future<Integer> recovered = Future.<Integer>of(zZz(new Error())).recover(t -> 42);
+        final Future<Integer> recovered = Future.<Integer> of(zZz(new Error())).recover(t -> 42);
         waitUntil(recovered::isCompleted);
         assertThat(recovered.isSuccess()).isTrue();
         assertThat(recovered.get()).isEqualTo(42);
@@ -623,7 +624,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldRecoverFailedFutureWithFuture() {
-        final Future<String> recovered = Future.<String>of(() -> { throw new Error("oh!"); })
+        final Future<String> recovered = Future.<String> of(() -> { throw new Error("oh!"); })
                 .recoverWith(x -> Future.of(x::getMessage));
         waitUntil(recovered::isCompleted);
         assertThat(recovered.isSuccess()).isTrue();
@@ -659,7 +660,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldZipFailure() {
-        Future<Tuple2<Integer, Integer>> future = Future.<Integer>of(zZz(new Error())).zip(Future.of(zZz(2)));
+        Future<Tuple2<Integer, Integer>> future = Future.<Integer> of(zZz(new Error())).zip(Future.of(zZz(2)));
         waitUntil(future::isCompleted);
         waitUntil(future::isFailure);
         assertThat(future.getCause().get().getClass()).isEqualTo(Error.class);
