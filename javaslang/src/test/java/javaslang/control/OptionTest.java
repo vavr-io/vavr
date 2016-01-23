@@ -5,15 +5,44 @@
  */
 package javaslang.control;
 
+import javaslang.AbstractValueTest;
 import javaslang.Serializables;
 import javaslang.collection.Seq;
 import org.junit.Test;
 
 import java.util.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
+public class OptionTest extends AbstractValueTest {
 
-public class OptionTest {
+    // -- AbstractValueTest
+
+    @Override
+    protected <T> Option<T> empty() {
+        return Option.none();
+    }
+
+    @Override
+    protected <T> Option<T> of(T element) {
+        return Option.some(element);
+    }
+
+    @SafeVarargs
+    @Override
+    protected final <T> Option<T> of(T... elements) {
+        return of(elements[0]);
+    }
+
+    @Override
+    protected boolean useIsEqualToInsteadOfIsSameAs() {
+        return true;
+    }
+
+    @Override
+    protected int getPeekNonNilPerformingAnAction() {
+        return 1;
+    }
+
+    // -- Option
 
     // -- construction
 

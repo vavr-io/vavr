@@ -31,9 +31,9 @@ public class ValidationTest extends AbstractValueTest {
         return Validation.valid(element);
     }
 
-    @SuppressWarnings("unchecked")
+    @SafeVarargs
     @Override
-    protected <T> Value<T> of(T... elements) {
+    protected final <T> Value<T> of(T... elements) {
         return Validation.valid(elements[0]);
     }
 

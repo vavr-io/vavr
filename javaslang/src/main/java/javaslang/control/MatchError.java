@@ -5,13 +5,15 @@
  */
 package javaslang.control;
 
+import java.util.NoSuchElementException;
+
 /**
  * A {@link Match} throws a MatchError if no case matches the applied object.
  *
  * @author Daniel Dietrich
  * @since 1.0.0
  */
-public class MatchError extends RuntimeException {
+public class MatchError extends NoSuchElementException {
 
     private static final long serialVersionUID = 1L;
 

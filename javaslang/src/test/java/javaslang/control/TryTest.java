@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.AbstractValueTest;
 import javaslang.Serializables;
 import javaslang.collection.Seq;
 import org.assertj.core.api.Assertions;
@@ -14,13 +15,48 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-public class TryTest {
+public class TryTest extends AbstractValueTest {
 
     private static final String OK = "ok";
     private static final String FAILURE = "failure";
+
+    // -- AbstractValueTest
+
+    @Override
+    protected <T> Try<T> empty() {
+        return Try.failure(new NoSuchElementException());
+    }
+
+    @Override
+    protected <T> Try<T> of(T element) {
+        return Try.success(element);
+    }
+
+    @SafeVarargs
+    @Override
+    protected final <T> Try<T> of(T... elements) {
+        return of(elements[0]);
+    }
+
+    @Override
+    protected boolean useIsEqualToInsteadOfIsSameAs() {
+        return true;
+    }
+
+    @Override
+    protected int getPeekNonNilPerformingAnAction() {
+        return 1;
+    }
+
+    @Override
+    @Test(expected = Try.NonFatalException.class)
+    public void shouldGetEmpty() {
+        empty().get();
+    }
+
+    // -- Try
 
     // -- exists
 

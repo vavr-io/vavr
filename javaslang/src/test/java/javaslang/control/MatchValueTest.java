@@ -5,6 +5,9 @@
  */
 package javaslang.control;
 
+import javaslang.AbstractValueTest;
+import javaslang.control.Match.MatchValue;
+import javaslang.control.Match.MatchValue.Then;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -13,7 +16,37 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MatchValueTest {
+public class MatchValueTest extends AbstractValueTest {
+
+    // -- AbstractValueTest
+
+    @Override
+    protected <R> Then<?, R> empty() {
+        return Match.of(null).whenIs(1).then((R) null);
+    }
+
+    @Override
+    protected <R> Then<?, R> of(R element) {
+        return Match.of(null).whenIs(null).then(element);
+    }
+
+    @SafeVarargs
+    @Override
+    protected final <R> Then<?, R> of(R... elements) {
+        return of(elements[0]);
+    }
+
+    @Override
+    protected boolean useIsEqualToInsteadOfIsSameAs() {
+        return true;
+    }
+
+    @Override
+    protected int getPeekNonNilPerformingAnAction() {
+        return 1;
+    }
+
+    // -- MatchValue
 
     // when(Object)
 

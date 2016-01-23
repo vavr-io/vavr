@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.AbstractValueTest;
 import javaslang.control.Match.MatchFunction;
 import javaslang.control.Match.SerializablePredicate;
 import org.junit.Test;
