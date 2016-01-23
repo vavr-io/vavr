@@ -580,16 +580,16 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> drop(int n) {
+    default List<T> drop(long n) {
         List<T> list = this;
-        for (int i = n; i > 0 && !list.isEmpty(); i--) {
+        for (long i = n; i > 0 && !list.isEmpty(); i--) {
             list = list.tail();
         }
         return list;
     }
 
     @Override
-    default List<T> dropRight(int n) {
+    default List<T> dropRight(long n) {
         if (n <= 0) {
             return this;
         }
@@ -675,7 +675,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Iterator<List<T>> grouped(int size) {
+    default Iterator<List<T>> grouped(long size) {
         return sliding(size, size);
     }
 
@@ -1103,14 +1103,14 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> slice(int beginIndex, int endIndex) {
+    default List<T> slice(long beginIndex, long endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
             return empty();
         } else {
             List<T> result = Nil.instance();
             List<T> list = this;
-            final int lowerBound = Math.max(beginIndex, 0);
-            final int upperBound = Math.min(endIndex, length());
+            final long lowerBound = Math.max(beginIndex, 0);
+            final long upperBound = Math.min(endIndex, length());
             for (int i = 0; i < upperBound; i++) {
                 if (i >= lowerBound) {
                     result = result.prepend(list.head());
@@ -1122,12 +1122,12 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Iterator<List<T>> sliding(int size) {
+    default Iterator<List<T>> sliding(long size) {
         return sliding(size, 1);
     }
 
     @Override
-    default Iterator<List<T>> sliding(int size, int step) {
+    default Iterator<List<T>> sliding(long size, long step) {
         return iterator().sliding(size, step).map(List::ofAll);
     }
 
@@ -1163,7 +1163,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> splitAt(int n) {
+    default Tuple2<List<T>, List<T>> splitAt(long n) {
         if (isEmpty()) {
             return Tuple.of(empty(), empty());
         } else {
@@ -1260,7 +1260,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> take(int n) {
+    default List<T> take(long n) {
         if (n >= length()) {
             return this;
         }
@@ -1276,7 +1276,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> takeRight(int n) {
+    default List<T> takeRight(long n) {
         if (n >= length()) {
             return this;
         }
@@ -1377,7 +1377,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<Tuple2<T, Integer>> zipWithIndex() {
+    default List<Tuple2<T, Long>> zipWithIndex() {
         return List.ofAll(iterator().zipWithIndex());
     }
 

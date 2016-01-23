@@ -67,10 +67,10 @@ public interface IndexedSeq<T> extends Seq<T> {
     <U> IndexedSeq<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
-    IndexedSeq<T> drop(int n);
+    IndexedSeq<T> drop(long n);
 
     @Override
-    IndexedSeq<T> dropRight(int n);
+    IndexedSeq<T> dropRight(long n);
 
     @Override
     IndexedSeq<T> dropUntil(Predicate<? super T> predicate);
@@ -119,7 +119,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     }
 
     @Override
-    Iterator<? extends IndexedSeq<T>> grouped(int size);
+    Iterator<? extends IndexedSeq<T>> grouped(long size);
 
     @Override
     IndexedSeq<T> init();
@@ -255,13 +255,13 @@ public interface IndexedSeq<T> extends Seq<T> {
     }
 
     @Override
-    IndexedSeq<T> slice(int beginIndex, int endIndex);
+    IndexedSeq<T> slice(long beginIndex, long endIndex);
 
     @Override
-    Iterator<? extends IndexedSeq<T>> sliding(int size);
+    Iterator<? extends IndexedSeq<T>> sliding(long size);
 
     @Override
-    Iterator<? extends IndexedSeq<T>> sliding(int size, int step);
+    Iterator<? extends IndexedSeq<T>> sliding(long size, long step);
 
     @Override
     IndexedSeq<T> sort();
@@ -320,10 +320,10 @@ public interface IndexedSeq<T> extends Seq<T> {
     Option<? extends IndexedSeq<T>> tailOption();
 
     @Override
-    IndexedSeq<T> take(int n);
+    IndexedSeq<T> take(long n);
 
     @Override
-    IndexedSeq<T> takeRight(int n);
+    IndexedSeq<T> takeRight(long n);
 
     @Override
     IndexedSeq<T> takeUntil(Predicate<? super T> predicate);
@@ -350,7 +350,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     <U> IndexedSeq<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     @Override
-    IndexedSeq<Tuple2<T, Integer>> zipWithIndex();
+    IndexedSeq<Tuple2<T, Long>> zipWithIndex();
 
 }
 

@@ -516,7 +516,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> drop(int n) {
+    public Vector<T> drop(long n) {
         if (n <= 0) {
             return this;
         }
@@ -524,14 +524,14 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             return empty();
         }
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = n; i < length(); i++) {
-            trie = trie.put(i - n, get(i));
+        for (int i = (int) n; i < length(); i++) {
+            trie = trie.put(i - (int) n, get(i));
         }
         return wrap(trie);
     }
 
     @Override
-    public Vector<T> dropRight(int n) {
+    public Vector<T> dropRight(long n) {
         if (n <= 0) {
             return this;
         }
@@ -627,7 +627,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Iterator<Vector<T>> grouped(int size) {
+    public Iterator<Vector<T>> grouped(long size) {
         return sliding(size, size);
     }
 
@@ -1028,29 +1028,29 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> slice(int beginIndex, int endIndex) {
+    public Vector<T> slice(long beginIndex, long endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
             return Vector.empty();
         }
         if (beginIndex <= 0 && endIndex >= length()) {
             return this;
         }
-        final int index = Math.max(beginIndex, 0);
-        final int length = Math.min(endIndex, length());
+        final long index = Math.max(beginIndex, 0);
+        final long length = Math.min(endIndex, length());
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = index; i < length; i++) {
+        for (int i = (int) index; i < length; i++) {
             trie = trie.put(trie.size(), get(i));
         }
         return wrap(trie);
     }
 
     @Override
-    public Iterator<Vector<T>> sliding(int size) {
+    public Iterator<Vector<T>> sliding(long size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<Vector<T>> sliding(int size, int step) {
+    public Iterator<Vector<T>> sliding(long size, long step) {
         return iterator().sliding(size, step).map(Vector::ofAll);
     }
 
@@ -1085,7 +1085,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Tuple2<Vector<T>, Vector<T>> splitAt(int n) {
+    public Tuple2<Vector<T>, Vector<T>> splitAt(long n) {
         return Tuple.of(take(n), drop(n));
     }
 
@@ -1168,7 +1168,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> take(int n) {
+    public Vector<T> take(long n) {
         if (n >= length()) {
             return this;
         }
@@ -1183,7 +1183,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> takeRight(int n) {
+    public Vector<T> takeRight(long n) {
         if (n >= length()) {
             return this;
         }
@@ -1192,7 +1192,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         }
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = 0; i < n; i++) {
-            trie = trie.put(i, get(length() - n + i));
+            trie = trie.put(i, get(length() - (int) n + i));
         }
         return new Vector<>(trie);
     }
@@ -1275,7 +1275,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<Tuple2<T, Integer>> zipWithIndex() {
+    public Vector<Tuple2<T, Long>> zipWithIndex() {
         return Vector.ofAll(iterator().zipWithIndex());
     }
 

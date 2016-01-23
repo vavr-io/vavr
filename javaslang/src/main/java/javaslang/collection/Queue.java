@@ -631,7 +631,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> drop(int n) {
+    public Queue<T> drop(long n) {
         if (n <= 0) {
             return this;
         }
@@ -642,7 +642,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> dropRight(int n) {
+    public Queue<T> dropRight(long n) {
         if (n <= 0) {
             return this;
         }
@@ -708,7 +708,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Iterator<Queue<T>> grouped(int size) {
+    public Iterator<Queue<T>> grouped(long size) {
         return sliding(size, size);
     }
 
@@ -984,17 +984,17 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> slice(int beginIndex, int endIndex) {
+    public Queue<T> slice(long beginIndex, long endIndex) {
         return toList().slice(beginIndex, endIndex).toQueue();
     }
 
     @Override
-    public Iterator<Queue<T>> sliding(int size) {
+    public Iterator<Queue<T>> sliding(long size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<Queue<T>> sliding(int size, int step) {
+    public Iterator<Queue<T>> sliding(long size, long step) {
         return iterator().sliding(size, step).map(Queue::ofAll);
     }
 
@@ -1029,7 +1029,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Tuple2<Queue<T>, Queue<T>> splitAt(int n) {
+    public Tuple2<Queue<T>, Queue<T>> splitAt(long n) {
         return toList().splitAt(n).map(List::toQueue, List::toQueue);
     }
 
@@ -1078,7 +1078,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> take(int n) {
+    public Queue<T> take(long n) {
         if (n <= 0) {
             return empty();
         }
@@ -1096,7 +1096,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> takeRight(int n) {
+    public Queue<T> takeRight(long n) {
         if (n <= 0) {
             return empty();
         }
@@ -1162,7 +1162,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<Tuple2<T, Integer>> zipWithIndex() {
+    public Queue<Tuple2<T, Long>> zipWithIndex() {
         return toList().zipWithIndex().toQueue();
     }
 

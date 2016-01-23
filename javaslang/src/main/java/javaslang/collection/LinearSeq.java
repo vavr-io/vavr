@@ -66,10 +66,10 @@ public interface LinearSeq<T> extends Seq<T> {
     <U> LinearSeq<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
-    LinearSeq<T> drop(int n);
+    LinearSeq<T> drop(long n);
 
     @Override
-    LinearSeq<T> dropRight(int n);
+    LinearSeq<T> dropRight(long n);
 
     @Override
     LinearSeq<T> dropUntil(Predicate<? super T> predicate);
@@ -87,7 +87,7 @@ public interface LinearSeq<T> extends Seq<T> {
     <C> Map<C, ? extends LinearSeq<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
-    Iterator<? extends LinearSeq<T>> grouped(int size);
+    Iterator<? extends LinearSeq<T>> grouped(long size);
 
     @Override
     default int indexWhere(Predicate<? super T> predicate, int from) {
@@ -224,13 +224,13 @@ public interface LinearSeq<T> extends Seq<T> {
     }
 
     @Override
-    LinearSeq<T> slice(int beginIndex, int endIndex);
+    LinearSeq<T> slice(long beginIndex, long endIndex);
 
     @Override
-    Iterator<? extends LinearSeq<T>> sliding(int size);
+    Iterator<? extends LinearSeq<T>> sliding(long size);
 
     @Override
-    Iterator<? extends LinearSeq<T>> sliding(int size, int step);
+    Iterator<? extends LinearSeq<T>> sliding(long size, long step);
 
     @Override
     LinearSeq<T> sort();
@@ -260,10 +260,10 @@ public interface LinearSeq<T> extends Seq<T> {
     Option<? extends LinearSeq<T>> tailOption();
 
     @Override
-    LinearSeq<T> take(int n);
+    LinearSeq<T> take(long n);
 
     @Override
-    LinearSeq<T> takeRight(int n);
+    LinearSeq<T> takeRight(long n);
 
     @Override
     LinearSeq<T> takeUntil(Predicate<? super T> predicate);
@@ -287,7 +287,7 @@ public interface LinearSeq<T> extends Seq<T> {
     <U> LinearSeq<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     @Override
-    LinearSeq<Tuple2<T, Integer>> zipWithIndex();
+    LinearSeq<Tuple2<T, Long>> zipWithIndex();
 
 }
 

@@ -2918,8 +2918,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldZipNonNilWithIndex() {
-        final IndexedSeq<Tuple2<Character, Integer>> actual = CharSeq.of("abc").zipWithIndex();
-        final IndexedSeq<Tuple2<Character, Integer>> expected = Vector.of(Tuple.of('a', 0), Tuple.of('b', 1), Tuple.of('c', 2));
+        final IndexedSeq<Tuple2<Character, Long>> actual = CharSeq.of("abc").zipWithIndex();
+        final IndexedSeq<Tuple2<Character, Long>> expected = Vector.of(Tuple.of('a', 0L), Tuple.of('b', 1L), Tuple.of('c', 2L));
         assertThat(actual).isEqualTo(expected);
     }
 

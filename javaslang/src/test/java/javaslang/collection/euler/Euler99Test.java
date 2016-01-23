@@ -34,7 +34,7 @@ public class Euler99Test {
         assertThat(solve()).isEqualTo(709);
     }
 
-    private static int solve() {
+    private static long solve() {
         return readLines(file("p099_base_exp.txt"))
                 .flatMap(s -> Arrays.asList(s.split(",")))
                 .map(Integer::parseInt)

@@ -697,7 +697,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> drop(int n) {
+    default Stream<T> drop(long n) {
         Stream<T> stream = this;
         while (n-- > 0 && !stream.isEmpty()) {
             stream = stream.tail();
@@ -706,7 +706,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> dropRight(int n) {
+    default Stream<T> dropRight(long n) {
         if (n <= 0) {
             return this;
         } else {
@@ -790,7 +790,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Iterator<Stream<T>> grouped(int size) {
+    default Iterator<Stream<T>> grouped(long size) {
         return sliding(size, size);
     }
 
@@ -1093,11 +1093,11 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> slice(int beginIndex, int endIndex) {
+    default Stream<T> slice(long beginIndex, long endIndex) {
         if (beginIndex >= endIndex || isEmpty()) {
             return empty();
         } else {
-            final int lowerBound = Math.max(beginIndex, 0);
+            final long lowerBound = Math.max(beginIndex, 0);
             if (lowerBound == 0) {
                 return new Cons<>(head(), () -> tail().slice(0, endIndex - 1));
             } else {
@@ -1107,12 +1107,12 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Iterator<Stream<T>> sliding(int size) {
+    default Iterator<Stream<T>> sliding(long size) {
         return sliding(size, 1);
     }
 
     @Override
-    default Iterator<Stream<T>> sliding(int size, int step) {
+    default Iterator<Stream<T>> sliding(long size, long step) {
         return iterator().sliding(size, step).map(Stream::ofAll);
     }
 
@@ -1147,7 +1147,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Tuple2<Stream<T>, Stream<T>> splitAt(int n) {
+    default Tuple2<Stream<T>, Stream<T>> splitAt(long n) {
         return Tuple.of(take(n), drop(n));
     }
 
@@ -1218,7 +1218,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> take(int n) {
+    default Stream<T> take(long n) {
         if (n < 1 || isEmpty()) {
             return Empty.instance();
         } else {
@@ -1227,7 +1227,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> takeRight(int n) {
+    default Stream<T> takeRight(long n) {
         Stream<T> right = this;
         Stream<T> remaining = drop(n);
         while (!remaining.isEmpty()) {
@@ -1320,7 +1320,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<Tuple2<T, Integer>> zipWithIndex() {
+    default Stream<Tuple2<T, Long>> zipWithIndex() {
         return Stream.ofAll(iterator().zipWithIndex());
     }
 

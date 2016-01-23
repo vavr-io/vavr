@@ -80,10 +80,10 @@ public interface SortedSet<T> extends Set<T> {
     <U> SortedSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
-    SortedSet<T> drop(int n);
+    SortedSet<T> drop(long n);
 
     @Override
-    SortedSet<T> dropRight(int n);
+    SortedSet<T> dropRight(long n);
 
     @Override
     SortedSet<T> dropUntil(Predicate<? super T> predicate);
@@ -101,7 +101,7 @@ public interface SortedSet<T> extends Set<T> {
     <C> Map<C, ? extends SortedSet<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
-    Iterator<? extends SortedSet<T>> grouped(int size);
+    Iterator<? extends SortedSet<T>> grouped(long size);
 
     @Override
     SortedSet<T> init();
@@ -156,10 +156,10 @@ public interface SortedSet<T> extends Set<T> {
     <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
-    Iterator<? extends SortedSet<T>> sliding(int size);
+    Iterator<? extends SortedSet<T>> sliding(long size);
 
     @Override
-    Iterator<? extends SortedSet<T>> sliding(int size, int step);
+    Iterator<? extends SortedSet<T>> sliding(long size, long step);
 
     @Override
     Tuple2<? extends SortedSet<T>, ? extends SortedSet<T>> span(Predicate<? super T> predicate);
@@ -171,10 +171,10 @@ public interface SortedSet<T> extends Set<T> {
     Option<? extends SortedSet<T>> tailOption();
 
     @Override
-    SortedSet<T> take(int n);
+    SortedSet<T> take(long n);
 
     @Override
-    SortedSet<T> takeRight(int n);
+    SortedSet<T> takeRight(long n);
 
     @Override
     SortedSet<T> takeUntil(Predicate<? super T> predicate);
@@ -195,6 +195,6 @@ public interface SortedSet<T> extends Set<T> {
     <U> SortedSet<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     @Override
-    SortedSet<Tuple2<T, Integer>> zipWithIndex();
+    SortedSet<Tuple2<T, Long>> zipWithIndex();
 
 }

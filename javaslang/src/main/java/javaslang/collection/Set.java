@@ -137,10 +137,10 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
     <U> Set<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
-    Set<T> drop(int n);
+    Set<T> drop(long n);
 
     @Override
-    Set<T> dropRight(int n);
+    Set<T> dropRight(long n);
 
     @Override
     Set<T> dropUntil(Predicate<? super T> predicate);
@@ -158,7 +158,7 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
     <C> Map<C, ? extends Set<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
-    Iterator<? extends Set<T>> grouped(int size);
+    Iterator<? extends Set<T>> grouped(long size);
 
     @Override
     Set<T> init();
@@ -203,10 +203,10 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
     <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
-    Iterator<? extends Set<T>> sliding(int size);
+    Iterator<? extends Set<T>> sliding(long size);
 
     @Override
-    Iterator<? extends Set<T>> sliding(int size, int step);
+    Iterator<? extends Set<T>> sliding(long size, long step);
 
     @Override
     Tuple2<? extends Set<T>, ? extends Set<T>> span(Predicate<? super T> predicate);
@@ -223,10 +223,10 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
     Option<? extends Set<T>> tailOption();
 
     @Override
-    Set<T> take(int n);
+    Set<T> take(long n);
 
     @Override
-    Set<T> takeRight(int n);
+    Set<T> takeRight(long n);
 
     @Override
     Set<T> takeUntil(Predicate<? super T> predicate);
@@ -247,6 +247,6 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
     <U> Set<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     @Override
-    Set<Tuple2<T, Integer>> zipWithIndex();
+    Set<Tuple2<T, Long>> zipWithIndex();
 
 }

@@ -201,10 +201,10 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     <U> Map<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor);
 
     @Override
-    Map<K, V> drop(int n);
+    Map<K, V> drop(long n);
 
     @Override
-    Map<K, V> dropRight(int n);
+    Map<K, V> dropRight(long n);
 
     @Override
     Map<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate);
@@ -235,7 +235,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
 
     @Override
-    Iterator<? extends Map<K, V>> grouped(int size);
+    Iterator<? extends Map<K, V>> grouped(long size);
 
     @Override
     Map<K, V> init();
@@ -323,10 +323,10 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation);
 
     @Override
-    Iterator<? extends Map<K, V>> sliding(int size);
+    Iterator<? extends Map<K, V>> sliding(long size);
 
     @Override
-    Iterator<? extends Map<K, V>> sliding(int size, int step);
+    Iterator<? extends Map<K, V>> sliding(long size, long step);
 
     @Override
     Tuple2<? extends Map<K, V>, ? extends Map<K, V>> span(Predicate<? super Tuple2<K, V>> predicate);
@@ -343,10 +343,10 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     Option<? extends Map<K, V>> tailOption();
 
     @Override
-    Map<K, V> take(int n);
+    Map<K, V> take(long n);
 
     @Override
-    Map<K, V> takeRight(int n);
+    Map<K, V> takeRight(long n);
 
     @Override
     Map<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate);
@@ -380,7 +380,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     }
 
     @Override
-    default Seq<Tuple2<Tuple2<K, V>, Integer>> zipWithIndex() {
+    default Seq<Tuple2<Tuple2<K, V>, Long>> zipWithIndex() {
         return Stream.ofAll(iterator().zipWithIndex());
     }
 

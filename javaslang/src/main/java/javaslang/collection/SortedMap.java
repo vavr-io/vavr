@@ -93,10 +93,10 @@ public interface SortedMap<K, V> extends Map<K, V> {
     <U> SortedMap<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor);
 
     @Override
-    SortedMap<K, V> drop(int n);
+    SortedMap<K, V> drop(long n);
 
     @Override
-    SortedMap<K, V> dropRight(int n);
+    SortedMap<K, V> dropRight(long n);
 
     @Override
     SortedMap<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate);
@@ -114,7 +114,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
     <C> Map<C, ? extends SortedMap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
 
     @Override
-    Iterator<? extends SortedMap<K, V>> grouped(int size);
+    Iterator<? extends SortedMap<K, V>> grouped(long size);
 
     @Override
     SortedMap<K, V> init();
@@ -176,10 +176,10 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
 
     @Override
-    Iterator<? extends SortedMap<K, V>> sliding(int size);
+    Iterator<? extends SortedMap<K, V>> sliding(long size);
 
     @Override
-    Iterator<? extends SortedMap<K, V>> sliding(int size, int step);
+    Iterator<? extends SortedMap<K, V>> sliding(long size, long step);
 
     @Override
     Tuple2<? extends SortedMap<K, V>, ? extends SortedMap<K, V>> span(Predicate<? super Tuple2<K, V>> predicate);
@@ -191,10 +191,10 @@ public interface SortedMap<K, V> extends Map<K, V> {
     Option<? extends SortedMap<K, V>> tailOption();
 
     @Override
-    SortedMap<K, V> take(int n);
+    SortedMap<K, V> take(long n);
 
     @Override
-    SortedMap<K, V> takeRight(int n);
+    SortedMap<K, V> takeRight(long n);
 
     @Override
     SortedMap<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate);

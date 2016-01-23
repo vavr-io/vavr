@@ -550,10 +550,10 @@ public interface Stack<T> extends LinearSeq<T> {
     <U> Stack<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
-    Stack<T> drop(int n);
+    Stack<T> drop(long n);
 
     @Override
-    Stack<T> dropRight(int n);
+    Stack<T> dropRight(long n);
 
     @Override
     Stack<T> dropUntil(Predicate<? super T> predicate);
@@ -571,7 +571,7 @@ public interface Stack<T> extends LinearSeq<T> {
     <C> Map<C, ? extends Stack<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
-    Iterator<? extends Stack<T>> grouped(int size);
+    Iterator<? extends Stack<T>> grouped(long size);
 
     @Override
     Stack<T> init();
@@ -655,13 +655,13 @@ public interface Stack<T> extends LinearSeq<T> {
     <U> Stack<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
-    Stack<T> slice(int beginIndex, int endIndex);
+    Stack<T> slice(long beginIndex, long endIndex);
 
     @Override
-    Iterator<? extends Stack<T>> sliding(int size);
+    Iterator<? extends Stack<T>> sliding(long size);
 
     @Override
-    Iterator<? extends Stack<T>> sliding(int size, int step);
+    Iterator<? extends Stack<T>> sliding(long size, long step);
 
     @Override
     Stack<T> sort();
@@ -679,7 +679,7 @@ public interface Stack<T> extends LinearSeq<T> {
     Tuple2<? extends Stack<T>, ? extends Stack<T>> span(Predicate<? super T> predicate);
 
     @Override
-    Tuple2<? extends Stack<T>, ? extends Stack<T>> splitAt(int n);
+    Tuple2<? extends Stack<T>, ? extends Stack<T>> splitAt(long n);
 
     @Override
     Tuple2<? extends Stack<T>, ? extends Stack<T>> splitAt(Predicate<? super T> predicate);
@@ -700,10 +700,10 @@ public interface Stack<T> extends LinearSeq<T> {
     Option<? extends Stack<T>> tailOption();
 
     @Override
-    Stack<T> take(int n);
+    Stack<T> take(long n);
 
     @Override
-    Stack<T> takeRight(int n);
+    Stack<T> takeRight(long n);
 
     @Override
     Stack<T> takeUntil(Predicate<? super T> predicate);
@@ -728,5 +728,5 @@ public interface Stack<T> extends LinearSeq<T> {
     <U> Stack<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     @Override
-    Stack<Tuple2<T, Integer>> zipWithIndex();
+    Stack<Tuple2<T, Long>> zipWithIndex();
 }

@@ -550,27 +550,27 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> drop(int n) {
+    public Array<T> drop(long n) {
         if (n <= 0) {
             return this;
         }
         if (n >= length()) {
             return empty();
         }
-        final Object[] arr = new Object[back.length - n];
-        System.arraycopy(back, n, arr, 0, arr.length);
+        final Object[] arr = new Object[back.length - (int) n];
+        System.arraycopy(back, (int) n, arr, 0, arr.length);
         return wrap(arr);
     }
 
     @Override
-    public Array<T> dropRight(int n) {
+    public Array<T> dropRight(long n) {
         if (n <= 0) {
             return this;
         }
         if (n >= length()) {
             return empty();
         }
-        return wrap(Arrays.copyOf(back, back.length - n));
+        return wrap(Arrays.copyOf(back, back.length - (int) n));
     }
 
     @Override
@@ -632,7 +632,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Iterator<Array<T>> grouped(int size) {
+    public Iterator<Array<T>> grouped(long size) {
         return sliding(size, size);
     }
 
@@ -1030,27 +1030,27 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> slice(int beginIndex, int endIndex) {
+    public Array<T> slice(long beginIndex, long endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
             return Array.empty();
         }
         if (beginIndex <= 0 && endIndex >= length()) {
             return this;
         }
-        final int index = Math.max(beginIndex, 0);
-        final int length = Math.min(endIndex, length()) - index;
-        final Object[] arr = new Object[length];
-        System.arraycopy(back, index, arr, 0, length);
+        final long index = Math.max(beginIndex, 0);
+        final long length = Math.min(endIndex, length()) - index;
+        final Object[] arr = new Object[(int) length];
+        System.arraycopy(back, (int) index, arr, 0, (int) length);
         return wrap(arr);
     }
 
     @Override
-    public Iterator<Array<T>> sliding(int size) {
+    public Iterator<Array<T>> sliding(long size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<Array<T>> sliding(int size, int step) {
+    public Iterator<Array<T>> sliding(long size, long step) {
         return iterator().sliding(size, step).map(Array::ofAll);
     }
 
@@ -1083,7 +1083,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Tuple2<Array<T>, Array<T>> splitAt(int n) {
+    public Tuple2<Array<T>, Array<T>> splitAt(long n) {
         return Tuple.of(take(n), drop(n));
     }
 
@@ -1162,26 +1162,26 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> take(int n) {
+    public Array<T> take(long n) {
         if (n >= length()) {
             return this;
         }
         if (n <= 0) {
             return empty();
         }
-        return wrap(Arrays.copyOf(back, n));
+        return wrap(Arrays.copyOf(back, (int) n));
     }
 
     @Override
-    public Array<T> takeRight(int n) {
+    public Array<T> takeRight(long n) {
         if (n >= length()) {
             return this;
         }
         if (n <= 0) {
             return empty();
         }
-        final Object[] arr = new Object[n];
-        System.arraycopy(back, back.length - n, arr, 0, n);
+        final Object[] arr = new Object[(int) n];
+        System.arraycopy(back, back.length - (int) n, arr, 0, (int) n);
         return wrap(arr);
     }
 
@@ -1271,7 +1271,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<Tuple2<T, Integer>> zipWithIndex() {
+    public Array<Tuple2<T, Long>> zipWithIndex() {
         return Array.ofAll(iterator().zipWithIndex());
     }
 

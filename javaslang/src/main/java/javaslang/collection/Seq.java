@@ -56,7 +56,7 @@ import java.util.function.*;
  * <li>{@link #indexOf(Object, int)}</li>
  * <li>{@link #lastIndexOf(Object)}</li>
  * <li>{@link #lastIndexOf(Object, int)}</li>
- * <li>{@link #slice(int, int)}</li>
+ * <li>{@link #slice(long, long)}</li>
  * <li>{@link #subSequence(int)}</li>
  * <li>{@link #subSequence(int, int)}</li>
  * </ul>
@@ -75,7 +75,7 @@ import java.util.function.*;
  * <li>{@link #reverse()}</li>
  * <li>{@link #sort()}</li>
  * <li>{@link #sort(Comparator)}</li>
- * <li>{@link #splitAt(int)}</li>
+ * <li>{@link #splitAt(long)}</li>
  * <li>{@link #unzip(Function)}</li>
  * <li>{@link #zip(Iterable)}</li>
  * <li>{@link #zipAll(Iterable, Object, Object)}</li>
@@ -644,7 +644,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @param endIndex   the end index, exclusive
      * @return the specified slice
      */
-    Seq<T> slice(int beginIndex, int endIndex);
+    Seq<T> slice(long beginIndex, long endIndex);
 
     /**
      * Sorts this elements according to their natural order. If this elements are not
@@ -690,7 +690,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @param n An index.
      * @return A Tuple containing the first n and the remaining elements.
      */
-    Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(int n);
+    Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(long n);
 
     /**
      * Splits a sequence at the first element which satisfies the {@link Predicate}, e.g. Tuple(init, element+tail).
@@ -756,7 +756,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * </code>
      * </pre>
      *
-     * See also {@link #drop(int)} which is similar but does not throw.
+     * See also {@link #drop(long)} which is similar but does not throw.
      *
      * @param beginIndex the beginning index, inclusive
      * @return the specified subsequence
@@ -782,7 +782,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * </code>
      * </pre>
      *
-     * See also {@link #slice(int, int)} which returns an empty sequence instead of throwing.
+     * See also {@link #slice(long, long)} which returns an empty sequence instead of throwing.
      *
      * @param beginIndex the beginning index, inclusive
      * @param endIndex   the end index, exclusive
@@ -833,10 +833,10 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     <U> Seq<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
-    Seq<T> drop(int n);
+    Seq<T> drop(long n);
 
     @Override
-    Seq<T> dropRight(int n);
+    Seq<T> dropRight(long n);
 
     @Override
     Seq<T> dropUntil(Predicate<? super T> predicate);
@@ -860,7 +860,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     <C> Map<C, ? extends Seq<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
-    Iterator<? extends Seq<T>> grouped(int size);
+    Iterator<? extends Seq<T>> grouped(long size);
 
     @Override
     Seq<T> init();
@@ -899,10 +899,10 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
-    Iterator<? extends Seq<T>> sliding(int size);
+    Iterator<? extends Seq<T>> sliding(long size);
 
     @Override
-    Iterator<? extends Seq<T>> sliding(int size, int step);
+    Iterator<? extends Seq<T>> sliding(long size, long step);
 
     @Override
     Tuple2<? extends Seq<T>, ? extends Seq<T>> span(Predicate<? super T> predicate);
@@ -914,10 +914,10 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     Option<? extends Seq<T>> tailOption();
 
     @Override
-    Seq<T> take(int n);
+    Seq<T> take(long n);
 
     @Override
-    Seq<T> takeRight(int n);
+    Seq<T> takeRight(long n);
 
     @Override
     Seq<T> takeUntil(Predicate<? super T> predicate);
@@ -938,6 +938,6 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     <U> Seq<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
 
     @Override
-    Seq<Tuple2<T, Integer>> zipWithIndex();
+    Seq<Tuple2<T, Long>> zipWithIndex();
 
 }

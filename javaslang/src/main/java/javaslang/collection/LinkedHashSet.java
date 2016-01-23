@@ -489,7 +489,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public LinkedHashSet<T> drop(int n) {
+    public LinkedHashSet<T> drop(long n) {
         if (n <= 0) {
             return this;
         } else {
@@ -498,7 +498,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public LinkedHashSet<T> dropRight(int n) {
+    public LinkedHashSet<T> dropRight(long n) {
         if (n <= 0) {
             return this;
         } else {
@@ -554,7 +554,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Iterator<LinkedHashSet<T>> grouped(int size) {
+    public Iterator<LinkedHashSet<T>> grouped(long size) {
         return sliding(size, size);
     }
 
@@ -728,12 +728,12 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Iterator<LinkedHashSet<T>> sliding(int size) {
+    public Iterator<LinkedHashSet<T>> sliding(long size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<LinkedHashSet<T>> sliding(int size, int step) {
+    public Iterator<LinkedHashSet<T>> sliding(long size, long step) {
         return iterator().sliding(size, step).map(LinkedHashSet::ofAll);
     }
 
@@ -762,7 +762,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public LinkedHashSet<T> take(int n) {
+    public LinkedHashSet<T> take(long n) {
         if (map.size() <= n) {
             return this;
         }
@@ -770,7 +770,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public LinkedHashSet<T> takeRight(int n) {
+    public LinkedHashSet<T> takeRight(long n) {
         if (map.size() <= n) {
             return this;
         }
@@ -841,7 +841,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public LinkedHashSet<Tuple2<T, Integer>> zipWithIndex() {
+    public LinkedHashSet<Tuple2<T, Long>> zipWithIndex() {
         return LinkedHashSet.ofAll(iterator().zipWithIndex());
     }
 

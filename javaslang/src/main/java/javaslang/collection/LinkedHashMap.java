@@ -271,7 +271,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public LinkedHashMap<K, V> drop(int n) {
+    public LinkedHashMap<K, V> drop(long n) {
         if (n <= 0) {
             return this;
         }
@@ -282,7 +282,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public LinkedHashMap<K, V> dropRight(int n) {
+    public LinkedHashMap<K, V> dropRight(long n) {
         if (n <= 0) {
             return this;
         }
@@ -346,7 +346,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public Iterator<LinkedHashMap<K, V>> grouped(int size) {
+    public Iterator<LinkedHashMap<K, V>> grouped(long size) {
         return sliding(size, size);
     }
 
@@ -532,12 +532,12 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public Iterator<LinkedHashMap<K, V>> sliding(int size) {
+    public Iterator<LinkedHashMap<K, V>> sliding(long size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<LinkedHashMap<K, V>> sliding(int size, int step) {
+    public Iterator<LinkedHashMap<K, V>> sliding(long size, long step) {
         return iterator().sliding(size, step).map(LinkedHashMap::ofEntries);
     }
 
@@ -567,7 +567,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public LinkedHashMap<K, V> take(int n) {
+    public LinkedHashMap<K, V> take(long n) {
         if (size() <= n) {
             return this;
         } else {
@@ -576,7 +576,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public LinkedHashMap<K, V> takeRight(int n) {
+    public LinkedHashMap<K, V> takeRight(long n) {
         if (size() <= n) {
             return this;
         } else {

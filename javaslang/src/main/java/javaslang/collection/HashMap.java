@@ -259,7 +259,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public HashMap<K, V> drop(int n) {
+    public HashMap<K, V> drop(long n) {
         if (n <= 0) {
             return this;
         }
@@ -270,7 +270,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public HashMap<K, V> dropRight(int n) {
+    public HashMap<K, V> dropRight(long n) {
         if (n <= 0) {
             return this;
         }
@@ -340,7 +340,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public Iterator<HashMap<K, V>> grouped(int size) {
+    public Iterator<HashMap<K, V>> grouped(long size) {
         return sliding(size, size);
     }
 
@@ -524,12 +524,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public Iterator<HashMap<K, V>> sliding(int size) {
+    public Iterator<HashMap<K, V>> sliding(long size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<HashMap<K, V>> sliding(int size, int step) {
+    public Iterator<HashMap<K, V>> sliding(long size, long step) {
         return iterator().sliding(size, step).map(HashMap::ofEntries);
     }
 
@@ -559,7 +559,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public HashMap<K, V> take(int n) {
+    public HashMap<K, V> take(long n) {
         if (trie.size() <= n) {
             return this;
         } else {
@@ -568,7 +568,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public HashMap<K, V> takeRight(int n) {
+    public HashMap<K, V> takeRight(long n) {
         if (trie.size() <= n) {
             return this;
         } else {

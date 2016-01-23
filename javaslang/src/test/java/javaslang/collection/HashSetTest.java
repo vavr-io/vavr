@@ -264,8 +264,8 @@ public class HashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldZipNonNilWithIndex() {
-        final HashSet<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex();
-        final HashSet<Tuple2<String, Integer>> expected = of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
+        final HashSet<Tuple2<String, Long>> actual = of("a", "b", "c").zipWithIndex();
+        final HashSet<Tuple2<String, Long>> expected = of(Tuple.of("a", 0L), Tuple.of("b", 1L), Tuple.of("c", 2L));
         assertThat(actual).isEqualTo(expected);
     }
 
