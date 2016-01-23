@@ -8,6 +8,7 @@ package javaslang.control;
 import javaslang.*;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
+import javaslang.collection.Seq;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -94,9 +95,34 @@ public interface Validation<E, T> extends Value<T> {
      * @return A {@code Valid(either.get())} if either is a Right, otherwise {@code Invalid(either.getLeft())}.
      * @throws NullPointerException if either is null
      */
-    static <E, T> Validation<E, T> from(Either<E, T> either) {
+    static <E, T> Validation<E, T> fromEither(Either<E, T> either) {
         Objects.requireNonNull(either, "either is null");
         return either.isRight() ? valid(either.get()) : invalid(either.getLeft());
+    }
+
+    /**
+     * Reduces many {@code Validation} instances into a single {@code Validation} by transforming an
+     * {@code Iterable<Validation<? extends T>>} into a {@code Validation<Seq<T>>}.
+     *
+     * @param <E>    value type in the case of invalid
+     * @param <T>    value type in the case of valid
+     * @param values An iterable of Validation instances.
+     * @return A valid Validation of a sequence of values if all Validation instances are valid
+     * or an invalid Validation containing an accumulated List of errors.
+     * @throws NullPointerException if values is null
+     */
+    static <E, T> Validation<List<E>, Seq<T>> sequence(Iterable<? extends Validation<List<? extends E>, ? extends T>> values) {
+        Objects.requireNonNull(values, "values is null");
+        List<E> errors = List.empty();
+        List<T> list = List.empty();
+        for (Validation<List<? extends E>, ? extends T> value : values) {
+            if (value.isInvalid()) {
+                errors = errors.prependAll(value.getError().reverse());
+            } else if (errors.isEmpty()) {
+                list = list.prepend(value.get());
+            }
+        }
+        return errors.isEmpty() ? valid(list.reverse()) : invalid(errors.reverse());
     }
 
     /**
@@ -297,6 +323,7 @@ public interface Validation<E, T> extends Value<T> {
 
     /**
      * Returns this {@code Validation} if it is valid, otherwise return the alternative.
+     *
      * @param other An alternative {@code Validation}
      * @return this {@code Validation} if it is valid, otherwise return the alternative.
      */
@@ -308,6 +335,7 @@ public interface Validation<E, T> extends Value<T> {
 
     /**
      * Returns this {@code Validation} if it is valid, otherwise return the result of evaluating supplier.
+     *
      * @param supplier An alternative {@code Validation} supplier
      * @return this {@code Validation} if it is valid, otherwise return the result of evaluating supplier.
      */

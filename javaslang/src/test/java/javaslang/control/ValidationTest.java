@@ -9,6 +9,7 @@ import javaslang.AbstractValueTest;
 import javaslang.Value;
 import javaslang.collection.CharSeq;
 import javaslang.collection.List;
+import javaslang.collection.Seq;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -59,6 +60,33 @@ public class ValidationTest extends AbstractValueTest {
     @Test
     public void shouldCreateFailureWhenCallingValidationFailure() {
         assertThat(Validation.invalid("error") instanceof Validation.Invalid).isTrue();
+    }
+
+    // -- Validation.sequence
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenSequencingNull() {
+        Validation.sequence(null);
+    }
+
+    @Test
+    public void shouldCreateValidWhenSequencingValids() {
+        final Validation<List<String>, Seq<Integer>> actual = Validation.sequence(List.of(
+                Validation.valid(1),
+                Validation.valid(2)
+        ));
+        assertThat(actual).isEqualTo(Validation.valid(List.of(1, 2)));
+    }
+
+    @Test
+    public void shouldCreateInvalidWhenSequencingAnInvalid() {
+        final Validation<List<String>, Seq<Integer>> actual = Validation.sequence(List.of(
+                Validation.valid(1),
+                Validation.invalid(List.of("error1", "error2")),
+                Validation.valid(2),
+                Validation.invalid(List.of("error3", "error4"))
+        ));
+        assertThat(actual).isEqualTo(Validation.invalid(List.of("error1", "error2", "error3", "error4")));
     }
 
     // -- orElse

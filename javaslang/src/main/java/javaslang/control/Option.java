@@ -66,7 +66,6 @@ public interface Option<T> extends Value<T> {
             }
             list = list.prepend(value.get());
         }
-
         return Option.some(list.reverse());
     }
 
