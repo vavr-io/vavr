@@ -16,6 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ArbitraryTest {
 
+    // equally distributed random number generator
+    static final Random RANDOM = new Random();
+
     // -- apply
 
     @Test
@@ -30,7 +33,7 @@ public class ArbitraryTest {
     public void shouldFlatMapArbitrary() {
         final Arbitrary<Integer> arbitraryInt = size -> Gen.choose(-size, size);
         final Arbitrary<BinaryTree<Integer>> arbitraryTree = arbitraryInt.flatMap(i -> new ArbitraryBinaryTree(-i, i));
-        assertThat(arbitraryTree.apply(0).apply(new Random())).isNotNull();
+        assertThat(arbitraryTree.apply(0).apply(RANDOM)).isNotNull();
     }
 
     // -- map
@@ -39,7 +42,7 @@ public class ArbitraryTest {
     public void shouldMapArbitrary() {
         final Arbitrary<Integer> arbitraryInt = size -> Gen.choose(-size, size);
         final Arbitrary<BinaryTree<Integer>> arbitraryTree = arbitraryInt.map(BinaryTree::leaf);
-        assertThat(arbitraryTree.apply(0).apply(new Random())).isNotNull();
+        assertThat(arbitraryTree.apply(0).apply(RANDOM)).isNotNull();
     }
 
     // -- filter
@@ -48,7 +51,7 @@ public class ArbitraryTest {
     public void shouldFilterArbitrary() {
         final Arbitrary<Integer> ints = Arbitrary.integer();
         final Arbitrary<Integer> evenInts = ints.filter(i -> i % 2 == 0);
-        assertThat(evenInts.apply(10).apply(new Random())).isNotNull();
+        assertThat(evenInts.apply(10).apply(RANDOM)).isNotNull();
     }
 
     // -- peek
@@ -56,7 +59,7 @@ public class ArbitraryTest {
     @Test
     public void shouldPeekArbitrary() {
         final int[] actual = new int[] { Integer.MIN_VALUE };
-        final int expected = Arbitrary.integer().peek(i -> actual[0] = i).apply(10).apply(new Random());
+        final int expected = Arbitrary.integer().peek(i -> actual[0] = i).apply(10).apply(RANDOM);
         assertThat(actual[0]).isEqualTo(expected);
     }
 
@@ -65,29 +68,51 @@ public class ArbitraryTest {
     @Test
     public void shouldCreateArbitraryInteger() {
         final Arbitrary<Integer> arbitrary = Arbitrary.integer();
-        final Integer actual = arbitrary.apply(10).apply(new Random());
+        final Integer actual = arbitrary.apply(10).apply(RANDOM);
         assertThat(actual).isNotNull();
     }
 
     @Test
     public void shouldCreateArbitraryString() {
         final Arbitrary<String> arbitrary = Arbitrary.string(Gen.choose('a', 'z'));
-        final String actual = arbitrary.apply(10).apply(new Random());
+        final String actual = arbitrary.apply(10).apply(RANDOM);
         assertThat(actual).isNotNull();
     }
 
     @Test
     public void shouldCreateArbitraryList() {
         final Arbitrary<List<Integer>> arbitrary = Arbitrary.list(Arbitrary.integer());
-        final List<Integer> actual = arbitrary.apply(10).apply(new Random());
+        final List<Integer> actual = arbitrary.apply(10).apply(RANDOM);
         assertThat(actual).isNotNull();
     }
 
     @Test
     public void shouldCreateArbitraryStream() {
         final Arbitrary<Stream<Integer>> arbitrary = Arbitrary.stream(Arbitrary.integer());
-        final Stream<Integer> actual = arbitrary.apply(10).apply(new Random());
+        final Stream<Integer> actual = arbitrary.apply(10).apply(RANDOM);
         assertThat(actual).isNotNull();
+    }
+
+    @Test
+    public void shouldCreateArbitraryStreamAndEvaluateAllElements() {
+        final Arbitrary<Stream<Integer>> arbitrary = Arbitrary.stream(Arbitrary.integer());
+        final Stream<Integer> actual = arbitrary.apply(10).apply(new Random() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public int nextInt(int bound) {
+                return bound - 1;
+            }
+        });
+        assertThat(actual.length()).isEqualTo(10);
+    }
+
+    // -- transform
+
+    @Test
+    public void shouldTransformArbitrary() {
+        final Arbitrary<Integer> arbitrary = ignored -> Gen.of(1);
+        final String s = arbitrary.transform(a -> a.apply(0).apply(RANDOM).toString());
+        assertThat(s).isEqualTo("1");
     }
 
     // helpers
