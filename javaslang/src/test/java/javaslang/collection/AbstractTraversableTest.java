@@ -496,6 +496,32 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 1, 2).existsUnique(i -> i == 1)).isFalse();
     }
 
+    // -- filter
+
+    @Test
+    public void shouldFilterExistingElements() {
+        assertThat(of(1, 2, 3).filter(i -> i == 1)).isEqualTo(of(1));
+        assertThat(of(1, 2, 3).filter(i -> i == 2)).isEqualTo(of(2));
+        assertThat(of(1, 2, 3).filter(i -> i == 3)).isEqualTo(of(3));
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 3).filter(ignore -> true)).isEqualTo(of(1, 2, 3));
+        } else {
+            Traversable<Integer> t = of(1, 2, 3);
+            assertThat(t.filter(ignore -> true)).isSameAs(t);
+        }
+    }
+
+    @Test
+    public void shouldFilterNonExistingElements() {
+        if(useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(this.<Integer> empty().filter(i -> i == 0)).isEqualTo(empty());
+            assertThat(of(1, 2, 3).filter(i -> i == 0)).isEqualTo(empty());
+        } else {
+            assertThat(this.<Integer> empty().filter(i -> i == 0)).isSameAs(empty());
+            assertThat(of(1, 2, 3).filter(i -> i == 0)).isSameAs(empty());
+        }
+    }
+
     // -- find
 
     @Test
