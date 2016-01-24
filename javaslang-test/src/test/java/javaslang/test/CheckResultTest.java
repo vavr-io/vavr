@@ -7,6 +7,9 @@ package javaslang.test;
 
 import javaslang.Tuple;
 import javaslang.control.Option;
+import javaslang.test.CheckResult.Erroneous;
+import javaslang.test.CheckResult.Falsified;
+import javaslang.test.CheckResult.Satisfied;
 import org.junit.Test;
 
 import java.util.Objects;
@@ -15,9 +18,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CheckResultTest {
 
-    static final CheckResult.Satisfied SATISFIED = new CheckResult.Satisfied("test", 0, false);
-    static final CheckResult.Falsified FALSIFIED = new CheckResult.Falsified("test", 0, Tuple.of(1));
-    static final CheckResult.Erroneous ERRONEOUS = new CheckResult.Erroneous("test", 0, new Error("test"), Option.none());
+    static final Satisfied SATISFIED = new Satisfied("test", 0, false);
+    static final Falsified FALSIFIED = new Falsified("test", 0, Tuple.of(1));
+    static final Erroneous ERRONEOUS = new Erroneous("test", 0, new Error("test"), Option.none());
 
     // -- Satisfied
 
@@ -38,7 +41,7 @@ public class CheckResultTest {
 
     @Test
     public void shouldBeExhaustedWhenIsSatisfiedAndExhausted() {
-        assertThat(new CheckResult.Satisfied("test", 0, true).isExhausted()).isTrue();
+        assertThat(new Satisfied("test", 0, true).isExhausted()).isTrue();
     }
 
     @Test
@@ -68,29 +71,30 @@ public class CheckResultTest {
 
     @Test
     public void shouldIdentififyEqualSatisfiedObjectsWhenObjectsAreIdentical() {
-        final CheckResult.Satisfied satisfied = SATISFIED;
+        final Satisfied satisfied = SATISFIED;
         //noinspection EqualsWithItself
         assertThat(satisfied.equals(satisfied)).isTrue();
     }
 
     @Test
     public void shouldIdentififyEqualSatisfiedObjectsWhenObjectsHaveSameTypeAndEqualValues() {
-        final CheckResult.Satisfied satisfied1 = SATISFIED;
-        final CheckResult.Satisfied satisfied2 = new CheckResult.Satisfied("test", 0, false);
+        final Satisfied satisfied1 = SATISFIED;
+        final Satisfied satisfied2 = new Satisfied("test", 0, false);
         assertThat(satisfied1.equals(satisfied2)).isTrue();
     }
 
     @Test
     public void shouldIdentififyUnequalSatisfiedObjectsWhenTypesAreUnequal() {
-        final CheckResult.Satisfied satisfied = SATISFIED;
+        final Satisfied satisfied = SATISFIED;
         assertThat(satisfied.equals(new Object())).isFalse();
     }
 
     @Test
     public void shouldIdentififyUnequalSatisfiedObjectsWhenValuesAreUnequal() {
-        final CheckResult.Satisfied satisfied1 = SATISFIED;
-        final CheckResult.Satisfied satisfied2 = new CheckResult.Satisfied("test", 1, true);
-        assertThat(satisfied1.equals(satisfied2)).isFalse();
+        final Satisfied satisfied = new Satisfied("test", 1, true);
+        assertThat(satisfied.equals(new Satisfied("x", 1, true))).isFalse();
+        assertThat(satisfied.equals(new Satisfied("test", -1, true))).isFalse();
+        assertThat(satisfied.equals(new Satisfied("test", 1, false))).isFalse();
     }
 
     @Test
@@ -147,29 +151,30 @@ public class CheckResultTest {
 
     @Test
     public void shouldIdentififyEqualFalsifiedObjectsWhenObjectsAreIdentical() {
-        final CheckResult.Falsified falsified = FALSIFIED;
+        final Falsified falsified = FALSIFIED;
         //noinspection EqualsWithItself
         assertThat(falsified.equals(falsified)).isTrue();
     }
 
     @Test
     public void shouldIdentififyEqualFalsifiedObjectsWhenObjectsHaveSameTypeAndEqualValues() {
-        final CheckResult.Falsified falsified1 = FALSIFIED;
-        final CheckResult.Falsified falsified2 = new CheckResult.Falsified("test", 0, Tuple.of(1));
+        final Falsified falsified1 = FALSIFIED;
+        final Falsified falsified2 = new Falsified("test", 0, Tuple.of(1));
         assertThat(falsified1.equals(falsified2)).isTrue();
     }
 
     @Test
     public void shouldIdentififyUnequalFalsifiedObjectsWhenTypesAreUnequal() {
-        final CheckResult.Falsified falsified = FALSIFIED;
+        final Falsified falsified = FALSIFIED;
         assertThat(falsified.equals(new Object())).isFalse();
     }
 
     @Test
     public void shouldIdentififyUnequalFalsifiedObjectsWhenValuesAreUnequal() {
-        final CheckResult.Falsified falsified1 = FALSIFIED;
-        final CheckResult.Falsified falsified2 = new CheckResult.Falsified("test", 1, Tuple.of(2));
-        assertThat(falsified1.equals(falsified2)).isFalse();
+        final Falsified falsified = new Falsified("test", 1, Tuple.of(2));
+        assertThat(falsified.equals(new Falsified("x", 1, Tuple.of(2)))).isFalse();
+        assertThat(falsified.equals(new Falsified("test", -1, Tuple.of(2)))).isFalse();
+        assertThat(falsified.equals(new Falsified("test", 1, Tuple.of(-1)))).isFalse();
     }
 
     @Test
@@ -221,7 +226,7 @@ public class CheckResultTest {
 
     @Test
     public void shouldHaveSampleWhenIsErroneousWithSample() {
-        final CheckResult.Erroneous erroneous = new CheckResult.Erroneous("test", 1, new Error("test"), Option.of(Tuple.of(1)));
+        final Erroneous erroneous = new Erroneous("test", 1, new Error("test"), Option.of(Tuple.of(1)));
         assertThat(erroneous.sample().get()).isEqualTo(Tuple.of(1));
     }
 
@@ -232,29 +237,42 @@ public class CheckResultTest {
 
     @Test
     public void shouldIdentififyEqualErroneousObjectsWhenObjectsAreIdentical() {
-        final CheckResult.Erroneous erroneous = ERRONEOUS;
+        final Erroneous erroneous = ERRONEOUS;
         //noinspection EqualsWithItself
         assertThat(erroneous.equals(erroneous)).isTrue();
     }
 
     @Test
     public void shouldIdentififyEqualErroneousObjectsWhenObjectsHaveSameTypeAndEqualValues() {
-        final CheckResult.Erroneous erroneous1 = ERRONEOUS;
-        final CheckResult.Erroneous erroneous2 = new CheckResult.Erroneous("test", 0, new Error("test"), Option.none());
+        final Erroneous erroneous1 = ERRONEOUS;
+        final Erroneous erroneous2 = new Erroneous("test", 0, new Error("test"), Option.none());
         assertThat(erroneous1.equals(erroneous2)).isTrue();
     }
 
     @Test
     public void shouldIdentififyUnequalErroneousObjectsWhenTypesAreUnequal() {
-        final CheckResult.Erroneous erroneous = ERRONEOUS;
+        final Erroneous erroneous = ERRONEOUS;
         assertThat(erroneous.equals(new Object())).isFalse();
     }
 
     @Test
     public void shouldIdentififyUnequalErroneousObjectsWhenValuesAreUnequal() {
-        final CheckResult.Erroneous erroneous1 = ERRONEOUS;
-        final CheckResult.Erroneous erroneous2 = new CheckResult.Erroneous("test", 1, new Error("error"), Option.none());
-        assertThat(erroneous1.equals(erroneous2)).isFalse();
+        final Erroneous erroneous = new Erroneous("test", 1, new Error("error"), Option.none());
+        assertThat(erroneous.equals(new Erroneous("x", 1, new Error("error"), Option.none()))).isFalse();
+        assertThat(erroneous.equals(new Erroneous("test", -1, new Error("error"), Option.none()))).isFalse();
+        assertThat(erroneous.equals(new Erroneous("test", 1, new Error("x"), Option.none()))).isFalse();
+        assertThat(erroneous.equals(new Erroneous("test", 1, new Error("error"), Option.some(Tuple.of(1))))).isFalse();
+    }
+
+    @Test
+    public void shouldCheckDeepEqualityOfErroneousErrors() {
+        assertThat(new Erroneous("test", 1, null, Option.none())).isEqualTo(new Erroneous("test", 1, null, Option.none()));
+        assertThat(new Erroneous("test", 1, null, Option.none())).isEqualTo(new Erroneous("test", 1, null, Option.none()));
+        assertThat(new Erroneous("test", 1, new Error("test"), Option.none())).isEqualTo(new Erroneous("test", 1, new Error("test"), Option.none()));
+        assertThat(new Erroneous("test", 1, new Error("test"), Option.none())).isNotEqualTo(new Erroneous("test", 1, new Error("x"), Option.none()));
+        assertThat(new Erroneous("test", 1, new Error("test", new Error("test2")), Option.none())).isEqualTo(new Erroneous("test", 1, new Error("test", new Error("test2")), Option.none()));
+        assertThat(new Erroneous("test", 1, new Error("test", new Error("test2")), Option.none())).isNotEqualTo(new Erroneous("test", 1, new Error("test"), Option.none()));
+        assertThat(new Erroneous("test", 1, new Error("test", new Error("test2")), Option.none())).isNotEqualTo(new Erroneous("test", 1, new Error("test", new Error("x")), Option.none()));
     }
 
     @Test
@@ -273,68 +291,68 @@ public class CheckResultTest {
 
     @Test
     public void shouldAssertThatCheckResultIsSatisfied() {
-        new CheckResult.Satisfied("test", 0, false).assertIsSatisfied();
+        new Satisfied("test", 0, false).assertIsSatisfied();
     }
 
     @Test(expected = AssertionError.class)
     public void shouldThrowWhenAssertThatNonSatisfiedCheckResultIsSatisfied() {
-        new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsSatisfied();
+        new Falsified("test", 0, Tuple.empty()).assertIsSatisfied();
     }
 
     // -- satisfiedWithExhaustion
 
     @Test
     public void shouldAssertThatCheckResultIsSatisfiedWithExhaustionTrue() {
-        new CheckResult.Satisfied("test", 0, true).assertIsSatisfiedWithExhaustion(true);
+        new Satisfied("test", 0, true).assertIsSatisfiedWithExhaustion(true);
     }
 
     @Test
     public void shouldAssertThatCheckResultIsSatisfiedWithExhaustionFalse() {
-        new CheckResult.Satisfied("test", 0, false).assertIsSatisfiedWithExhaustion(false);
+        new Satisfied("test", 0, false).assertIsSatisfiedWithExhaustion(false);
     }
 
     @Test(expected = AssertionError.class)
     public void shouldThrowWhenAssertThatNonSatisfiedCheckResultIsSatisfiedWithExhaustionTrue() {
-        new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsSatisfiedWithExhaustion(true);
+        new Falsified("test", 0, Tuple.empty()).assertIsSatisfiedWithExhaustion(true);
     }
 
     @Test(expected = AssertionError.class)
     public void shouldThrowWhenAssertThatNonSatisfiedCheckResultIsSatisfiedWithExhaustionFalse() {
-        new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsSatisfiedWithExhaustion(false);
+        new Falsified("test", 0, Tuple.empty()).assertIsSatisfiedWithExhaustion(false);
     }
 
     @Test(expected = AssertionError.class)
     public void shouldThrowWhenAssertThatSatisfiedNonExhaustedCheckResultIsSatisfiedWithExhaustionTrue() {
-        new CheckResult.Satisfied("test", 0, false).assertIsSatisfiedWithExhaustion(true);
+        new Satisfied("test", 0, false).assertIsSatisfiedWithExhaustion(true);
     }
 
     @Test(expected = AssertionError.class)
     public void shouldThrowWhenAssertThatSatisfiedExhaustedCheckResultIsSatisfiedWithExhaustionFalse() {
-        new CheckResult.Satisfied("test", 0, true).assertIsSatisfiedWithExhaustion(false);
+        new Satisfied("test", 0, true).assertIsSatisfiedWithExhaustion(false);
     }
 
     // -- falsified
 
     @Test
     public void shouldAssertThatCheckResultIsFalsified() {
-        new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsFalsified();
+        new Falsified("test", 0, Tuple.empty()).assertIsFalsified();
     }
 
     @Test(expected = AssertionError.class)
     public void shouldThrowWhenAssertThatNonFalsifiedCheckResultIsFalsified() {
-        new CheckResult.Satisfied("test", 0, false).assertIsFalsified();
+        new Satisfied("test", 0, false).assertIsFalsified();
     }
 
     // -- erroneous
 
     @Test
     public void shouldAssertThatCheckResultIsErroneous() {
-        new CheckResult.Erroneous("test", 0, new Error(), Option.none()).assertIsErroneous();
+        new Erroneous("test", 0, new Error(), Option.none()).assertIsErroneous();
     }
 
     @Test(expected = AssertionError.class)
     public void shouldThrowWhenAssertThatNonErroneousCheckResultIsErroneous() {
-        new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsErroneous();
+        new Falsified("test", 0, Tuple.empty()).assertIsErroneous();
     }
 
 }

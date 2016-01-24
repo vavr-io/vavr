@@ -25,6 +25,24 @@ public class GenTest {
     // number of tries to assert a property
     static final int TRIES = 1000;
 
+    // -- of
+
+    @Test
+    public void shouldCreateConstantGenOfElement() {
+        final Gen<Integer> gen = Gen.of(1);
+        assertThat(gen.apply(RANDOM)).isEqualTo(1);
+        assertThat(gen.apply(RANDOM)).isEqualTo(1);
+        assertThat(gen.apply(RANDOM)).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldCreateGenOfSeedAndFunction() {
+        final Gen<Integer> gen = Gen.of(1, i -> i + 1);
+        assertThat(gen.apply(RANDOM)).isEqualTo(1);
+        assertThat(gen.apply(RANDOM)).isEqualTo(2);
+        assertThat(gen.apply(RANDOM)).isEqualTo(3);
+    }
+
     // -- random number generator (rng)
 
     @Test
@@ -267,6 +285,14 @@ public class GenTest {
         final int[] actual = new int[] { -1 };
         final int expected = Gen.of(1).peek(i -> actual[0] = i).apply(new Random());
         assertThat(actual[0]).isEqualTo(expected);
+    }
+
+    // -- transform
+
+    @Test
+    public void shouldTransformGen() {
+        final String s = Gen.of(1).transform(gen -> gen.apply(RANDOM).toString());
+        assertThat(s).isEqualTo("1");
     }
 
     // helpers
