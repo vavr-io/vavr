@@ -66,44 +66,6 @@ public abstract class AbstractValueTest {
     // returns the peek result of the specific Traversable implementation
     abstract protected int getPeekNonNilPerformingAnAction();
 
-// TODO: filter went from Value into the subclasses
-//    // -- filter
-//
-//    @Test
-//    public void shouldFilterEmptyTraversable() {
-//        final Value<Integer> value = empty();
-//        if (value.isSingleValued()) {
-//            // TODO
-//        } else {
-//            assertThat(value.filter(ignored -> true)).isEqualTo(empty());
-//        }
-//    }
-//
-//    @Test
-//    public void shouldFilterNonEmptyTraversable() {
-//        final Value<Integer> value = of(1, 2, 3, 4);
-//        if (value.isSingleValued()) {
-//            // TODO
-//        } else {
-//            assertThat(value.filter(i -> i % 2 == 0)).isEqualTo(of(2, 4));
-//        }
-//    }
-//
-//    @Test
-//    public void shouldFilterNonEmptyTraversableAllMatch() {
-//        final Value<Integer> v = of(1, 2, 3, 4);
-//        if (v.isSingleValued()) {
-//            // TODO
-//        } else {
-//            if (useIsEqualToInsteadOfIsSameAs()) {
-//                final Value<Integer> v2 = of(1, 2, 3, 4);
-//                assertThat(v.filter(i -> true)).isEqualTo(v2);
-//            } else {
-//                assertThat(v.filter(i -> true)).isSameAs(v);
-//            }
-//        }
-//    }
-//
     // -- get()
 
     @Test(expected = NoSuchElementException.class)
