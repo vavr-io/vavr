@@ -89,6 +89,8 @@
                     <artifactId>maven-release-plugin</artifactId>
                     <version>${maven.release.version}</version>
                     <configuration>
+                        <!-- Simple tag names -->
+                        <tagNameFormat>v@{project.version}</tagNameFormat>
                         <!-- Circumvent maven-gpg-plugin bug -->
                         <mavenExecutorId>forked-path</mavenExecutorId>
                         <useReleaseProfile>false</useReleaseProfile>
