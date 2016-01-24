@@ -267,7 +267,8 @@ public class CheckResultTest {
     @Test
     public void shouldCheckDeepEqualityOfErroneousErrors() {
         assertThat(new Erroneous("test", 1, null, Option.none())).isEqualTo(new Erroneous("test", 1, null, Option.none()));
-        assertThat(new Erroneous("test", 1, null, Option.none())).isEqualTo(new Erroneous("test", 1, null, Option.none()));
+        assertThat(new Erroneous("test", 1, new Error("test"), Option.none())).isNotEqualTo(new Erroneous("test", 1, null, Option.none()));
+        assertThat(new Erroneous("test", 1, null, Option.none())).isNotEqualTo(new Erroneous("test", 1, new Error("test"), Option.none()));
         assertThat(new Erroneous("test", 1, new Error("test"), Option.none())).isEqualTo(new Erroneous("test", 1, new Error("test"), Option.none()));
         assertThat(new Erroneous("test", 1, new Error("test"), Option.none())).isNotEqualTo(new Erroneous("test", 1, new Error("x"), Option.none()));
         assertThat(new Erroneous("test", 1, new Error("test", new Error("test2")), Option.none())).isEqualTo(new Erroneous("test", 1, new Error("test", new Error("test2")), Option.none()));
