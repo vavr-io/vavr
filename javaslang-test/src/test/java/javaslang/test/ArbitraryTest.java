@@ -97,6 +97,7 @@ public class ArbitraryTest {
     public void shouldCreateArbitraryStreamAndEvaluateAllElements() {
         final Arbitrary<Stream<Integer>> arbitrary = Arbitrary.stream(Arbitrary.integer());
         final Stream<Integer> actual = arbitrary.apply(10).apply(new Random() {
+            private static final long serialVersionUID = 1L;
             @Override
             public int nextInt(int bound) {
                 return bound - 1;
