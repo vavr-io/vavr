@@ -678,21 +678,85 @@ public class MatchFunctionTest {
     @Test
     public void shouldConsumeFirstMatchingCase() {
         final IntegerConsumer integerConsumer = new IntegerConsumer();
-        Match.whenIs(2).thenRun(integerConsumer)
-                .when(String::isEmpty).thenRun(i -> {integerConsumer.accept(-1);})
-                .otherwiseRun(i -> {integerConsumer.accept(3);})
-                .accept("");
-        assertThat(integerConsumer.value).isEqualTo(-1);
+        Consumer<Object> match = Match
+                .when(String::isEmpty).thenRun(i -> {integerConsumer.accept(1);})
+                .whenApplicable((Double i) -> {integerConsumer.accept(2);}).thenRun()
+                .whenIs(3).thenRun(integerConsumer)
+                .whenIsIn(4, 5).thenRun(integerConsumer)
+                .whenType(Float.class).thenRun(i -> {integerConsumer.accept(6);})
+                .whenTypeIn(Boolean.class, Long.class).thenRun(i -> {integerConsumer.accept(7);})
+                .otherwiseRun(i -> {integerConsumer.accept(8);});
+        match.accept("");
+        assertThat(integerConsumer.value).isEqualTo(1);
+        match.accept(1d);
+        assertThat(integerConsumer.value).isEqualTo(2);
+        match.accept(3);
+        assertThat(integerConsumer.value).isEqualTo(3);
+        match.accept(5);
+        assertThat(integerConsumer.value).isEqualTo(5);
+        match.accept(1f);
+        assertThat(integerConsumer.value).isEqualTo(6);
+        match.accept(false);
+        assertThat(integerConsumer.value).isEqualTo(7);
+        match.accept("javaslang");
+        assertThat(integerConsumer.value).isEqualTo(8);
     }
 
     @Test
-    public void shouldNotConsumeWhenNoMatchFoundAnoNoDefaultCase() {
+    public void shouldRunFirstMatchingCase() {
+        final int[] integerConsumer = new int[] { -1 };
+        Consumer<Object> match = Match
+                .when(String::isEmpty).thenRun(() -> integerConsumer[0] = 1)
+                .whenIs(3).thenRun(() -> integerConsumer[0] = 3)
+                .whenIsIn(4, 5).thenRun(() -> integerConsumer[0] = 5)
+                .whenType(Float.class).thenRun(() -> integerConsumer[0] = 6)
+                .whenTypeIn(Boolean.class, Long.class).thenRun(() -> integerConsumer[0] = 7)
+                .otherwiseRun(() -> integerConsumer[0] = 8);
+        match.accept("");
+        assertThat(integerConsumer[0]).isEqualTo(1);
+        match.accept(3);
+        assertThat(integerConsumer[0]).isEqualTo(3);
+        match.accept(5);
+        assertThat(integerConsumer[0]).isEqualTo(5);
+        match.accept(1f);
+        assertThat(integerConsumer[0]).isEqualTo(6);
+        match.accept(false);
+        assertThat(integerConsumer[0]).isEqualTo(7);
+        match.accept("javaslang");
+        assertThat(integerConsumer[0]).isEqualTo(8);
+    }
+
+    @Test
+    public void shouldThrowWhenApplicable() {
+        final SimpleRunnable simpleRunnable = new SimpleRunnable();
+        final Consumer<Object> match = Match
+                .whenIs(1).thenRun(simpleRunnable)
+                .whenApplicable((Double d) -> {}).thenThrow(() -> new IllegalStateException("runnable not consumed"));
+        assertThatThrownBy(() -> match.accept(3d))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("runnable not consumed");
+    }
+
+    @Test
+    public void shouldNotConsumeWhenNoMatchFoundAndNoDefaultCase() {
         final IntegerConsumer integerConsumer = new IntegerConsumer();
         Match.whenIs(1).thenRun(integerConsumer)
                 .whenIs(2).thenRun(integerConsumer)
                 .whenType(String.class).thenRun(i -> integerConsumer.accept(3))
                 .accept(10);
         assertThat(integerConsumer.value).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldOtherwiseThrowWhenNoMatchFoundAndNoDefaultCase() {
+        final SimpleRunnable simpleRunnable = new SimpleRunnable();
+        final Consumer<Object> match = Match
+                .whenIs(1).thenRun(simpleRunnable)
+                .whenIs(2).thenRun(simpleRunnable)
+                .otherwiseThrow(() -> new IllegalStateException("runnable not consumed"));
+        assertThatThrownBy(() -> match.accept(3))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("runnable not consumed");
     }
 
     @Test
