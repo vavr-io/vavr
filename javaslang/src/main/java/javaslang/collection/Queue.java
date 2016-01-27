@@ -999,14 +999,14 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> sort() {
-        return toList().sort().toQueue();
+    public Queue<T> sorted() {
+        return toList().sorted().toQueue();
     }
 
     @Override
-    public Queue<T> sort(Comparator<? super T> comparator) {
+    public Queue<T> sorted(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return toList().sort(comparator).toQueue();
+        return toList().sorted(comparator).toQueue();
     }
 
     @Override

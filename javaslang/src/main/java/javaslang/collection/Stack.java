@@ -664,10 +664,10 @@ public interface Stack<T> extends LinearSeq<T> {
     Iterator<? extends Stack<T>> sliding(long size, long step);
 
     @Override
-    Stack<T> sort();
+    Stack<T> sorted();
 
     @Override
-    Stack<T> sort(Comparator<? super T> comparator);
+    Stack<T> sorted(Comparator<? super T> comparator);
 
     @Override
     <U extends Comparable<? super U>> Stack<T> sortBy(Function<? super T, ? extends U> mapper);

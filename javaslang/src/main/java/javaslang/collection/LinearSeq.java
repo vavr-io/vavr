@@ -233,10 +233,10 @@ public interface LinearSeq<T> extends Seq<T> {
     Iterator<? extends LinearSeq<T>> sliding(long size, long step);
 
     @Override
-    LinearSeq<T> sort();
+    LinearSeq<T> sorted();
 
     @Override
-    LinearSeq<T> sort(Comparator<? super T> comparator);
+    LinearSeq<T> sorted(Comparator<? super T> comparator);
 
     @Override
     <U extends Comparable<? super U>> LinearSeq<T> sortBy(Function<? super T, ? extends U> mapper);

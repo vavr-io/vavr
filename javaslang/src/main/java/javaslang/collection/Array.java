@@ -1055,7 +1055,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> sort() {
+    public Array<T> sorted() {
         final Object[] arr = Arrays.copyOf(back, back.length);
         Arrays.sort(arr);
         return wrap(arr);
@@ -1063,7 +1063,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Array<T> sort(Comparator<? super T> comparator) {
+    public Array<T> sorted(Comparator<? super T> comparator) {
         final Object[] arr = Arrays.copyOf(back, back.length);
         Arrays.sort(arr, (o1, o2) -> comparator.compare((T) o1, (T) o2));
         return wrap(arr);
