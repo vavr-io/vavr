@@ -264,10 +264,10 @@ public interface IndexedSeq<T> extends Seq<T> {
     Iterator<? extends IndexedSeq<T>> sliding(long size, long step);
 
     @Override
-    IndexedSeq<T> sort();
+    IndexedSeq<T> sorted();
 
     @Override
-    IndexedSeq<T> sort(Comparator<? super T> comparator);
+    IndexedSeq<T> sorted(Comparator<? super T> comparator);
 
     @Override
     <U extends Comparable<? super U>> IndexedSeq<T> sortBy(Function<? super T, ? extends U> mapper);

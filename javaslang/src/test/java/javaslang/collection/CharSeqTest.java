@@ -2475,28 +2475,28 @@ public class CharSeqTest {
         assertThat(CharSeq.of("123").slice(1, 4)).isEqualTo(CharSeq.of("23"));
     }
 
-    // -- sort()
+    // -- sorted()
 
     @Test
     public void shouldSortNil() {
-        assertThat(empty().sort()).isSameAs(empty());
+        assertThat(empty().sorted()).isSameAs(empty());
     }
 
     @Test
     public void shouldSortNonNil() {
-        assertThat(CharSeq.of('3', '4', '1', '2').sort()).isEqualTo(CharSeq.of('1', '2', '3', '4'));
+        assertThat(CharSeq.of('3', '4', '1', '2').sorted()).isEqualTo(CharSeq.of('1', '2', '3', '4'));
     }
 
-    // -- sort(Comparator)
+    // -- sorted(Comparator)
 
     @Test
     public void shouldSortNilUsingComparator() {
-        assertThat(empty().sort((i, j) -> j - i)).isSameAs(empty());
+        assertThat(empty().sorted((i, j) -> j - i)).isSameAs(empty());
     }
 
     @Test
     public void shouldSortNonNilUsingComparator() {
-        assertThat(CharSeq.of('3', '4', '1', '2').sort((i, j) -> j - i)).isEqualTo(CharSeq.of('4', '3', '2', '1'));
+        assertThat(CharSeq.of('3', '4', '1', '2').sorted((i, j) -> j - i)).isEqualTo(CharSeq.of('4', '3', '2', '1'));
     }
 
     // -- sortBy()

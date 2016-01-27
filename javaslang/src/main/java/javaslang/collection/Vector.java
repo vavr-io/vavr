@@ -1055,12 +1055,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> sort() {
+    public Vector<T> sorted() {
         return isEmpty() ? this : toJavaStream().sorted().collect(Vector.collector());
     }
 
     @Override
-    public Vector<T> sort(Comparator<? super T> comparator) {
+    public Vector<T> sorted(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return isEmpty() ? this : toJavaStream().sorted(comparator).collect(Vector.collector());
     }

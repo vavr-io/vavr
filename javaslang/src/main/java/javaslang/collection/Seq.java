@@ -73,8 +73,8 @@ import java.util.function.*;
  * <li>{@link #padTo(int, Object)}</li>
  * <li>{@link #permutations()}</li>
  * <li>{@link #reverse()}</li>
- * <li>{@link #sort()}</li>
- * <li>{@link #sort(Comparator)}</li>
+ * <li>{@link #sorted()}</li>
+ * <li>{@link #sorted(Comparator)}</li>
  * <li>{@link #splitAt(long)}</li>
  * <li>{@link #unzip(Function)}</li>
  * <li>{@link #zip(Iterable)}</li>
@@ -653,7 +653,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @return A sorted version of this
      * @throws ClassCastException if this elements are not {@code Comparable}
      */
-    Seq<T> sort();
+    Seq<T> sorted();
 
     /**
      * Sorts this elements according to the provided {@code Comparator}. If this elements are not
@@ -662,7 +662,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @param comparator A comparator
      * @return a sorted version of this
      */
-    Seq<T> sort(Comparator<? super T> comparator);
+    Seq<T> sorted(Comparator<? super T> comparator);
 
     /**
      * Sorts this elements by comparing the elements in a different domain, using the given {@code mapper}.

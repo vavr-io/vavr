@@ -1117,12 +1117,12 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> sort() {
+    default Stream<T> sorted() {
         return isEmpty() ? this : toJavaStream().sorted().collect(Stream.collector());
     }
 
     @Override
-    default Stream<T> sort(Comparator<? super T> comparator) {
+    default Stream<T> sorted(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return isEmpty() ? this : toJavaStream().sorted(comparator).collect(Stream.collector());
     }

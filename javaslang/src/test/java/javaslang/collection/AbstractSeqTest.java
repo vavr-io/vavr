@@ -1135,28 +1135,28 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3).slice(-10, 10)).isEqualTo(of(1, 2, 3));
     }
 
-    // -- sort()
+    // -- sorted()
 
     @Test
     public void shouldSortNil() {
-        assertThat(empty().sort()).isEmpty();
+        assertThat(empty().sorted()).isEmpty();
     }
 
     @Test
     public void shouldSortNonNil() {
-        assertThat(of(3, 4, 1, 2).sort()).isEqualTo(of(1, 2, 3, 4));
+        assertThat(of(3, 4, 1, 2).sorted()).isEqualTo(of(1, 2, 3, 4));
     }
 
-    // -- sort(Comparator)
+    // -- sorted(Comparator)
 
     @Test
     public void shouldSortNilUsingComparator() {
-        assertThat(this.<Integer> empty().sort((i, j) -> j - i)).isEmpty();
+        assertThat(this.<Integer> empty().sorted((i, j) -> j - i)).isEmpty();
     }
 
     @Test
     public void shouldSortNonNilUsingComparator() {
-        assertThat(of(3, 4, 1, 2).sort((i, j) -> j - i)).isEqualTo(of(4, 3, 2, 1));
+        assertThat(of(3, 4, 1, 2).sorted((i, j) -> j - i)).isEqualTo(of(4, 3, 2, 1));
     }
 
     // -- sortBy(Function)

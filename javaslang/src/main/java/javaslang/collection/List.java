@@ -1132,12 +1132,12 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> sort() {
+    default List<T> sorted() {
         return isEmpty() ? this : toJavaStream().sorted().collect(List.collector());
     }
 
     @Override
-    default List<T> sort(Comparator<? super T> comparator) {
+    default List<T> sorted(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return isEmpty() ? this : toJavaStream().sorted(comparator).collect(List.collector());
     }

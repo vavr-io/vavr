@@ -799,12 +799,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq sort() {
+    public CharSeq sorted() {
         return isEmpty() ? this : toJavaStream().sorted().collect(CharSeq.collector());
     }
 
     @Override
-    public CharSeq sort(Comparator<? super Character> comparator) {
+    public CharSeq sorted(Comparator<? super Character> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return isEmpty() ? this : toJavaStream().sorted(comparator).collect(CharSeq.collector());
     }
