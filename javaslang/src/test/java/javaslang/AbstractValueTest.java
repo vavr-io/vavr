@@ -137,6 +137,16 @@ public abstract class AbstractValueTest {
         });
     }
 
+    // -- forEach
+
+    @Test
+    public void shouldPerformsActionOnEachElement() {
+        final int[] consumer = new int[1];
+        final Value<Integer> value = of(1, 2, 3);
+        value.forEach(i -> consumer[0] += i);
+        assertThat(consumer[0]).isEqualTo(value.isSingleValued() ? 1 : 6);
+    }
+
     // -- isEmpty
 
     @Test
