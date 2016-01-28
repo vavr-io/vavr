@@ -8,6 +8,7 @@ package javaslang.concurrent;
 import javaslang.AbstractValueTest;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 import javaslang.collection.Stream;
@@ -668,9 +669,46 @@ public class FutureTest extends AbstractValueTest {
 
     // -- Value implementation
 
-    // TODO: filter, flatten, flatMap, get, isEmpty, iterator, map, peek
+    @Test
+    public void shouldFilterFuture() {
+        final Future<Integer> future = Future.successful(42);
+        assertThat(future.filter(i -> i == 42).get()).isEqualTo(42);
+        assertThat(future.filter(i -> i == 43).isEmpty()).isTrue();
+    }
 
-    // TODO: also test what happens an exception occurs within one of these method calls and compare it with Scala
+    @Test
+    public void shouldFlatMapFuture() {
+        final Future<Integer> future = Future.of(zZz(42)).flatMap(i -> Future.of(zZz(i * 2)));
+        waitUntil(future::isCompleted);
+        assertThat(future.get()).isEqualTo(84);
+    }
+
+    @Test
+    public void shouldMapFuture() {
+        final Future<Integer> future = Future.of(zZz(42)).map(i -> i * 2);
+        waitUntil(future::isCompleted);
+        assertThat(future.get()).isEqualTo(84);
+    }
+
+    @Test
+    public void shouldPeekFuture() {
+        final int[] consumer = new int[] { -1 };
+        Future.of(zZz(42)).peek(i -> consumer[0] = i);
+        waitUntil(() -> consumer[0] > 0);
+        assertThat(consumer[0]).isEqualTo(42);
+    }
+
+    @Test
+    public void shouldReturnIterator() {
+        final Iterator<Integer> it = Future.successful(42).iterator();
+        assertThat(it.hasNext()).isTrue();
+        assertThat(it.next()).isEqualTo(42);
+        assertThat(it.hasNext()).isFalse();
+    }
+
+    // TODO: also test what happens an exception occurs within one of these
+    // TODO: { filter, flatten, flatMap, get, isEmpty, iterator, map, peek }
+    // TODO: method calls and compare it with Scala
 
     // -- map()
 
