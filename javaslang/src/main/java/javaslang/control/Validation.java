@@ -111,11 +111,11 @@ public interface Validation<E, T> extends Value<T> {
      * or an invalid Validation containing an accumulated List of errors.
      * @throws NullPointerException if values is null
      */
-    static <E, T> Validation<List<E>, Seq<T>> sequence(Iterable<? extends Validation<List<? extends E>, ? extends T>> values) {
+    static <E, T> Validation<List<E>, Seq<T>> sequence(Iterable<? extends Validation<List<E>, T>> values) {
         Objects.requireNonNull(values, "values is null");
         List<E> errors = List.empty();
         List<T> list = List.empty();
-        for (Validation<List<? extends E>, ? extends T> value : values) {
+        for (Validation<List<E>, T> value : values) {
             if (value.isInvalid()) {
                 errors = errors.prependAll(value.getError().reverse());
             } else if (errors.isEmpty()) {
