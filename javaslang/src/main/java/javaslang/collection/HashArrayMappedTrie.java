@@ -34,13 +34,13 @@ interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
 
     int size();
 
-    Option<V> get(K key);
+    Option<V> get(Object key);
 
-    boolean containsKey(K key);
+    boolean containsKey(Object key);
 
     HashArrayMappedTrie<K, V> put(K key, V value);
 
-    HashArrayMappedTrie<K, V> remove(K key);
+    HashArrayMappedTrie<K, V> remove(Object key);
 
     // this is a javaslang.collection.Iterator!
     @Override
@@ -117,13 +117,14 @@ interface HashArrayMappedTrieModule {
 
         abstract AbstractNode<K, V> modify(int shift, int keyHashCode, K key, V value, Action action);
 
+        @SuppressWarnings("unchecked")
         @Override
-        public Option<V> get(K key) {
-            return lookup(0, Objects.hashCode(key), key);
+        public Option<V> get(Object key) {
+            return lookup(0, Objects.hashCode(key), (K) key);
         }
 
         @Override
-        public boolean containsKey(K key) {
+        public boolean containsKey(Object key) {
             return get(key).isDefined();
         }
 
@@ -132,9 +133,10 @@ interface HashArrayMappedTrieModule {
             return modify(0, Objects.hashCode(key), key, value, PUT);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public HashArrayMappedTrie<K, V> remove(K key) {
-            return modify(0, Objects.hashCode(key), key, null, REMOVE);
+        public HashArrayMappedTrie<K, V> remove(Object key) {
+            return modify(0, Objects.hashCode(key), (K) key, null, REMOVE);
         }
 
         @Override

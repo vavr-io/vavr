@@ -250,6 +250,16 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     Traversable<T> clear();
 
     /**
+     * Shortcut for {@code exists(e -> Objects.equals(e, element))}, tests if the given {@code element} is contained.
+     *
+     * @param object An Object, may be null.
+     * @return true, if element is contained, false otherwise.
+     */
+    default boolean contains(Object object) {
+        return exists(e -> Objects.equals(e, object));
+    }
+
+    /**
      * Tests if this Traversable contains all given elements.
      * <p>
      * The result is equivalent to

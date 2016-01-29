@@ -232,12 +232,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public boolean containsKey(K key) {
+    public boolean containsKey(Object key) {
         return trie.containsKey(key);
     }
 
     @Override
-    public boolean containsValue(V value) {
+    public boolean containsValue(Object value) {
         return iterator().map(entry -> entry._2).contains(value);
     }
 
@@ -322,7 +322,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public Option<V> get(K key) {
+    public Option<V> get(Object key) {
         return trie.get(key);
     }
 

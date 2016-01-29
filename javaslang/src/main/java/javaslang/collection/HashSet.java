@@ -460,8 +460,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public boolean contains(T element) {
-        return tree.get(element).isDefined();
+    public boolean contains(Object object) {
+        return tree.get(object).isDefined();
     }
 
     @Override

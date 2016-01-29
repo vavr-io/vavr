@@ -276,7 +276,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @param element an element
      * @return the index of the first occurrence of the given element
      */
-    default int indexOf(T element) {
+    default int indexOf(Object element) {
         return indexOf(element, 0);
     }
 
@@ -288,7 +288,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @param from    start index
      * @return the index of the first occurrence of the given element
      */
-    int indexOf(T element, int from);
+    int indexOf(Object element, int from);
 
     /**
      * Finds first index where this sequence contains a given sequence as a slice.

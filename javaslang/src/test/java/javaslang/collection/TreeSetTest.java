@@ -10,6 +10,7 @@ import org.junit.Test;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -144,17 +145,25 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     private static <T> Comparator<T> toDoubleComparator() {
         return (Comparator<T> & Serializable) (o1, o2) -> {
-            Double n1 = ((Number) o1).doubleValue();
-            Double n2 = ((Number) o2).doubleValue();
-            return n1.compareTo(n2);
+            if(o1 instanceof Number && o2 instanceof Number) {
+                Double n1 = ((Number) o1).doubleValue();
+                Double n2 = ((Number) o2).doubleValue();
+                return n1.compareTo(n2);
+            } else {
+                return Integer.compare(Objects.hashCode(o1), Objects.hashCode(o2));
+            }
         };
     }
 
     private static <T> Comparator<T> toLongComparator() {
         return (Comparator<T> & Serializable) (o1, o2) -> {
-            Long n1 = ((Number) o1).longValue();
-            Long n2 = ((Number) o2).longValue();
-            return n1.compareTo(n2);
+            if(o1 instanceof Number && o2 instanceof Number) {
+                Long n1 = ((Number) o1).longValue();
+                Long n2 = ((Number) o2).longValue();
+                return n1.compareTo(n2);
+            } else {
+                return Integer.compare(Objects.hashCode(o1), Objects.hashCode(o2));
+            }
         };
     }
 

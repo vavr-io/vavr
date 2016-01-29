@@ -637,7 +637,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public int indexOf(T element, int from) {
+    public int indexOf(Object element, int from) {
         for (int i = from; i < length(); i++) {
             if (Objects.equals(get(i), element)) {
                 return i;

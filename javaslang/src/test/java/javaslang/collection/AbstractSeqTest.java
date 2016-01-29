@@ -313,6 +313,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     // -- indexOf
 
     @Test
+    public void shouldNotFindOtherType() {
+        assertThat(of(1, 2, 3).indexOf("42")).isEqualTo(-1);
+    }
+
+    @Test
     public void shouldNotFindIndexOfElementWhenSeqIsEmpty() {
         assertThat(empty().indexOf(1)).isEqualTo(-1);
     }
