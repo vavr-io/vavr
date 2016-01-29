@@ -505,9 +505,10 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public boolean contains(T element) {
-        return tree.contains(element);
+    public boolean contains(Object element) {
+        return tree.contains((T) element);
     }
 
     @Override

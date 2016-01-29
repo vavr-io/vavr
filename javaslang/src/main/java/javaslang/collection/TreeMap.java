@@ -420,14 +420,15 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
         return createTreeMap(entries.comparator(), iterator().dropWhile(predicate));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public boolean containsKey(K key) {
+    public boolean containsKey(Object key) {
         final V ignored = null;
-        return entries.contains(new Tuple2<>(key, ignored));
+        return entries.contains(new Tuple2<>((K) key, ignored));
     }
 
     @Override
-    public boolean containsValue(V value) {
+    public boolean containsValue(Object value) {
         return iterator().map(Tuple2::_2).contains(value);
     }
 
@@ -456,10 +457,11 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
         return iterator().foldRight(zero, f);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Option<V> get(K key) {
+    public Option<V> get(Object key) {
         final V ignored = null;
-        return entries.find(new Tuple2<>(key, ignored)).map(Tuple2::_2);
+        return entries.find(new Tuple2<>((K) key, ignored)).map(Tuple2::_2);
     }
 
     @Override

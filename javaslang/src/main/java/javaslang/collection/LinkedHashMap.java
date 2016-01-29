@@ -239,17 +239,17 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public boolean contains(Tuple2<K, V> element) {
+    public boolean contains(Object element) {
         return map.contains(element);
     }
 
     @Override
-    public boolean containsKey(K key) {
+    public boolean containsKey(Object key) {
         return map.containsKey(key);
     }
 
     @Override
-    public boolean containsValue(V value) {
+    public boolean containsValue(Object value) {
         return map.containsValue(value);
     }
 
@@ -328,7 +328,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public Option<V> get(K key) {
+    public Option<V> get(Object key) {
         return map.get(key);
     }
 

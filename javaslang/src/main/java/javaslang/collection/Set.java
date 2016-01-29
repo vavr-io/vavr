@@ -125,7 +125,7 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
     Set<T> clear();
 
     @Override
-    boolean contains(T element);
+    boolean contains(Object element);
 
     @Override
     Set<T> distinct();

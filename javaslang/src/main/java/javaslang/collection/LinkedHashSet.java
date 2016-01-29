@@ -457,7 +457,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public boolean contains(T element) {
+    public boolean contains(Object element) {
         return map.get(element).isDefined();
     }
 

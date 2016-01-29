@@ -1003,8 +1003,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public int indexOf(Character element, int from) {
-        return back.indexOf(element, from);
+    public int indexOf(Object element, int from) {
+        return back.indexOf((Character) element, from);
     }
 
     @Override

@@ -253,6 +253,26 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(actual).isTrue();
     }
 
+    // -- contains
+
+    @Test
+    public void shouldRecognizeNilNotContainsElement() {
+        final boolean actual = empty().contains(1);
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void shouldRecognizeNonNilContainsSelf() {
+        final boolean actual = of(1, 2, 3).contains(1);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeNonNilContainsOtherTypes() {
+        final boolean actual = of(1, 2, 3).contains("1");
+        assertThat(actual).isFalse();
+    }
+
     // -- containsAll
 
     @Test

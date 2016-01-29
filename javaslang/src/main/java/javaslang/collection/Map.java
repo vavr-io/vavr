@@ -49,7 +49,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @param key key whose presence in this map is to be tested
      * @return <code>true</code> if this map contains a mapping for the specified key
      */
-    boolean containsKey(K key);
+    boolean containsKey(Object key);
 
     /**
      * Returns <code>true</code> if this map maps one or more keys to the
@@ -59,7 +59,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @return <code>true</code> if this map maps one or more keys to the
      * specified value
      */
-    boolean containsValue(V value);
+    boolean containsValue(Object value);
 
     /**
      * FlatMaps this {@code Map} to a new {@code Map} with different component type.
@@ -81,7 +81,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * is mapped, or {@code None} if this map contains no mapping
      * for the key
      */
-    Option<V> get(K key);
+    Option<V> get(Object key);
 
     /**
      * Returns the keys contained in this map.
@@ -186,9 +186,11 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     @Override
     Map<K, V> clear();
 
+    @SuppressWarnings("unchecked")
     @Override
-    default boolean contains(Tuple2<K, V> element) {
-        return get(element._1).map(v -> Objects.equals(v, element._2)).getOrElse(false);
+    default boolean contains(Object element) {
+        Tuple2<K, V> tuple = (Tuple2<K, V>) element;
+        return get(tuple._1).map(v -> Objects.equals(v, tuple._2)).getOrElse(false);
     }
 
     @Override

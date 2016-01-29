@@ -109,16 +109,6 @@ import java.util.stream.StreamSupport;
 public interface Value<T> extends Iterable<T> {
 
     /**
-     * Shortcut for {@code exists(e -> Objects.equals(e, element))}, tests if the given {@code element} is contained.
-     *
-     * @param element An Object of type A, may be null.
-     * @return true, if element is contained, false otherwise.
-     */
-    default boolean contains(T element) {
-        return exists(e -> Objects.equals(e, element));
-    }
-
-    /**
      * Tests whether every element of this iterable relates to the corresponding element of another iterable by
      * satisfying a test predicate.
      *

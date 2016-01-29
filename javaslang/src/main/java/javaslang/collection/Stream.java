@@ -805,7 +805,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default int indexOf(T element, int from) {
+    default int indexOf(Object element, int from) {
         int index = 0;
         for (Stream<T> stream = this; !stream.isEmpty(); stream = stream.tail(), index++) {
             if (index >= from && Objects.equals(stream.head(), element)) {

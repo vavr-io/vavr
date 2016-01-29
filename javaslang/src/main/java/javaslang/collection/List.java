@@ -690,7 +690,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default int indexOf(T element, int from) {
+    default int indexOf(Object element, int from) {
         int index = 0;
         for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
             if (index >= from && Objects.equals(list.head(), element)) {

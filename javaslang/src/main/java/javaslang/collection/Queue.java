@@ -732,7 +732,7 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public int indexOf(T element, int from) {
+    public int indexOf(Object element, int from) {
         final int frontIndex = front.indexOf(element, from);
         if (frontIndex != -1) {
             return frontIndex;
