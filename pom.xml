@@ -1,4 +1,19 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<!--
+
+Before creating a pull request, the following goals should be executed locally:
+
+* Executing tests: `mvn clean test`
+* Executing doclint: `mvn javadoc:javadoc`
+* Executing code coverage report: `mvn -P ci clean test jacoco:report`
+
+We use these goals frequently to keep the dependencies and plugins up-to-date:
+
+* Update version properties: `mvn versions:update-properties`
+* Check for new plugin version: `mvn versions:display-plugin-updates`
+
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <prerequisites>
         <maven>3.0.4</maven>
@@ -42,7 +57,7 @@
     </developers>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <assertj.core.version>3.2.0</assertj.core.version>
+        <assertj.core.version>3.3.0</assertj.core.version>
         <eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
         <java.version>1.8</java.version>
         <junit.version>4.12</junit.version>
@@ -53,6 +68,7 @@
         <maven.gpg.version>1.5</maven.gpg.version>
         <maven.jacoco.version>0.7.2.201409121644</maven.jacoco.version>
         <maven.jar.version>2.6</maven.jar.version>
+        <maven.javadoc.version>2.10.3</maven.javadoc.version>
         <maven.release.version>2.5.1</maven.release.version>
         <maven.versions.version>2.1</maven.versions.version>
         <scala.maven.version>3.2.2</scala.maven.version>
@@ -168,7 +184,6 @@
                             </configuration>
                         </execution>
                     </executions>
-
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -193,6 +208,16 @@
                         <archive>
                             <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                         </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven.javadoc.version}</version>
+                    <configuration>
+                        <links>
+                            <link>https://docs.oracle.com/javase/8/docs/api/</link>
+                        </links>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -304,7 +329,7 @@
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
-                                                <ignore />
+                                                <ignore/>
                                             </action>
                                         </pluginExecution>
                                         <pluginExecution>
@@ -317,7 +342,7 @@
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
-                                                <ignore />
+                                                <ignore/>
                                             </action>
                                         </pluginExecution>
                                         <pluginExecution>
@@ -330,7 +355,7 @@
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
-                                                <ignore />
+                                                <ignore/>
                                             </action>
                                         </pluginExecution>
                                         <pluginExecution>
@@ -343,7 +368,7 @@
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
-                                                <ignore />
+                                                <ignore/>
                                             </action>
                                         </pluginExecution>
                                     </pluginExecutions>
