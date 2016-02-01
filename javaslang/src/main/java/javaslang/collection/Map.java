@@ -167,6 +167,14 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     int size();
 
     /**
+     * Converts this Javaslang {@code Map} to a {@code java.util.Map} while preserving characteristics
+     * like insertion order ({@code LinkedHashMap}) and sort order ({@code SortedMap}).
+     *
+     * @return a new {@code java.util.Map} instance
+     */
+    java.util.Map<K, V> toJavaMap();
+
+    /**
      * Transforms this {@code Map}.
      *
      * @param f   A transformation

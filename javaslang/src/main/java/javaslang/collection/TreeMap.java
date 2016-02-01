@@ -763,6 +763,11 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
+    public java.util.TreeMap<K, V> toJavaMap() {
+        return toJavaMap(java.util.TreeMap::new, t -> t);
+    }
+
+    @Override
     public Seq<V> values() {
         return iterator().map(Tuple2::_2).toStream();
     }

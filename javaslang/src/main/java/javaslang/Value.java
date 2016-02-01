@@ -77,10 +77,14 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toCharSeq()}</li>
  * <li>{@link #toJavaArray()}</li>
  * <li>{@link #toJavaArray(Class)}</li>
+ * <li>{@link #toJavaCollection(Supplier)}</li>
  * <li>{@link #toJavaList()}</li>
+ * <li>{@link #toJavaList(Supplier)}</li>
  * <li>{@link #toJavaMap(Function)}</li>
+ * <li>{@link #toJavaMap(Supplier, Function)}</li>
  * <li>{@link #toJavaOptional()}</li>
  * <li>{@link #toJavaSet()}</li>
+ * <li>{@link #toJavaSet(Supplier)}</li>
  * <li>{@link #toJavaStream()}</li>
  * <li>{@link #toLeft(Object)}</li>
  * <li>{@link #toLeft(Supplier)}</li>
@@ -353,7 +357,7 @@ public interface Value<T> extends Iterable<T> {
     // -- output
 
     /**
-     * Sends the string representations of this value to the {@link PrintStream}.
+     * Sends the string representations of this to the {@link PrintStream}.
      * If this value consists of multiple elements, each element is displayed in a new line.
      *
      * @param out The PrintStream to write to
@@ -369,7 +373,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Sends the string representations of this value to the {@link PrintWriter}.
+     * Sends the string representations of this to the {@link PrintWriter}.
      * If this value consists of multiple elements, each element is displayed in a new line.
      *
      * @param writer The PrintWriter to write to
@@ -385,7 +389,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Sends the string representations of this value to the standard error stream {@linkplain System#err}.
+     * Sends the string representations of this to the standard error stream {@linkplain System#err}.
      * If this value consists of multiple elements, each element is displayed in a new line.
      *
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
@@ -395,7 +399,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Sends the string representations of this value to the standard output stream {@linkplain System#out}.
+     * Sends the string representations of this to the standard output stream {@linkplain System#out}.
      * If this value consists of multiple elements, each element is displayed in a new line.
      *
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
@@ -440,7 +444,7 @@ public interface Value<T> extends Iterable<T> {
     Match.MatchValue.Of<? extends Value<T>> match();
 
     /**
-     * Converts this value to a {@link Array}.
+     * Converts this to a {@link Array}.
      *
      * @return A new {@link Array}.
      */
@@ -449,7 +453,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link CharSeq}.
+     * Converts this to a {@link CharSeq}.
      *
      * @return A new {@link CharSeq}.
      */
@@ -458,7 +462,18 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to an untyped Java array.
+     * Converts this to a specific {@link java.util.Collection}.
+     *
+     * @param factory A {@code java.util.Collection} factory
+     * @param <C>     a sub-type of {@code java.util.Collection}
+     * @return a new {@code java.util.Collection} of type {@code C}
+     */
+    default <C extends java.util.Collection<T>> C toJavaCollection(Supplier<C> factory) {
+        return ValueModule.toJavaCollection(this, factory.get());
+    }
+
+    /**
+     * Converts this to an untyped Java array.
      *
      * @return A new Java array.
      */
@@ -467,7 +482,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a typed Java array.
+     * Converts this to a typed Java array.
      *
      * @param componentType Component type of the array
      * @return A new Java array.
@@ -481,7 +496,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to an {@link java.util.List}.
+     * Converts this to an {@link java.util.List}.
      *
      * @return A new {@link java.util.ArrayList}.
      */
@@ -490,7 +505,18 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link java.util.Map}.
+     * Converts this to a specific {@link java.util.List}.
+     *
+     * @param factory A {@code java.util.List} factory
+     * @param <LIST>  a sub-type of {@code java.util.List}
+     * @return a new {@code java.util.List} of type {@code LIST}
+     */
+    default <LIST extends java.util.List<T>> LIST toJavaList(Supplier<LIST> factory) {
+        return ValueModule.toJavaCollection(this, factory.get());
+    }
+
+    /**
+     * Converts this to a {@link java.util.Map}.
      *
      * @param f   A function that maps an element to a key/value pair represented by Tuple2
      * @param <K> The key type
@@ -498,8 +524,22 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link java.util.HashMap}.
      */
     default <K, V> java.util.Map<K, V> toJavaMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+        return toJavaMap(java.util.HashMap::new, f);
+    }
+
+    /**
+     * Converts this to a specific {@link java.util.Map}.
+     *
+     * @param factory A {@code java.util.Map} factory
+     * @param f       A function that maps an element to a key/value pair represented by Tuple2
+     * @param <K>     The key type
+     * @param <V>     The value type
+     * @param <MAP>   a sub-type of {@code java.util.Map}
+     * @return a new {@code java.util.Map} of type {@code MAP}
+     */
+    default <K, V, MAP extends java.util.Map<K, V>> MAP toJavaMap(Supplier<MAP> factory, Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
-        final java.util.Map<K, V> map = new java.util.HashMap<>();
+        final MAP map = factory.get();
         if (isDefined()) {
             if (isSingleValued()) {
                 final Tuple2<? extends K, ? extends V> entry = f.apply(get());
@@ -515,7 +555,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to an {@link java.util.Optional}.
+     * Converts this to an {@link java.util.Optional}.
      *
      * @return A new {@link java.util.Optional}.
      */
@@ -524,7 +564,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link java.util.Set}.
+     * Converts this to a {@link java.util.Set}.
      *
      * @return A new {@link java.util.HashSet}.
      */
@@ -533,7 +573,18 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link java.util.stream.Stream}.
+     * Converts this to a specific {@link java.util.Set}.
+     *
+     * @param factory A {@code java.util.Set} factory
+     * @param <SET>   a sub-type of {@code java.util.Set}
+     * @return a new {@code java.util.Set} of type {@code SET}
+     */
+    default <SET extends java.util.Set<T>> SET toJavaSet(Supplier<SET> factory) {
+        return ValueModule.toJavaCollection(this, factory.get());
+    }
+
+    /**
+     * Converts this to a {@link java.util.stream.Stream}.
      *
      * @return A new {@link java.util.stream.Stream}.
      */
@@ -542,7 +593,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link Either}.
+     * Converts this to a {@link Either}.
      *
      * @param <R>   right type
      * @param right A supplier of a right value
@@ -556,7 +607,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link Either}.
+     * Converts this to a {@link Either}.
      *
      * @param <R>   right type
      * @param right An instance of a right value
@@ -569,7 +620,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link List}.
+     * Converts this to a {@link List}.
      *
      * @return A new {@link List}.
      */
@@ -578,7 +629,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link Map}.
+     * Converts this to a {@link Map}.
      *
      * @param f   A function that maps an element to a key/value pair represented by Tuple2
      * @param <K> The key type
@@ -597,7 +648,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to an {@link Option}.
+     * Converts this to an {@link Option}.
      *
      * @return A new {@link Option}.
      */
@@ -610,7 +661,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link Queue}.
+     * Converts this to a {@link Queue}.
      *
      * @return A new {@link Queue}.
      */
@@ -619,7 +670,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link Either}.
+     * Converts this to a {@link Either}.
      *
      * @param <L>  left type
      * @param left A supplier of a left value
@@ -633,7 +684,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link Either}.
+     * Converts this to a {@link Either}.
      *
      * @param <L>  left type
      * @param left An instance of a left value
@@ -646,7 +697,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link Set}.
+     * Converts this to a {@link Set}.
      *
      * @return A new {@link HashSet}.
      */
@@ -655,7 +706,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link Stack}.
+     * Converts this to a {@link Stack}.
      *
      * @return A new {@link List}, which is a {@link Stack}.
      */
@@ -664,7 +715,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link Stream}.
+     * Converts this to a {@link Stream}.
      *
      * @return A new {@link Stream}.
      */
@@ -673,7 +724,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link Try}.
+     * Converts this to a {@link Try}.
      * <p>
      * If this value is undefined, i.e. empty, then a new {@code Failure(NoSuchElementException)} is returned,
      * otherwise a new {@code Success(value)} is returned.
@@ -689,7 +740,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link Try}.
+     * Converts this to a {@link Try}.
      * <p>
      * If this value is undefined, i.e. empty, then a new {@code Failure(ifEmpty.get())} is returned,
      * otherwise a new {@code Success(value)} is returned.
@@ -703,7 +754,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link Tree}.
+     * Converts this to a {@link Tree}.
      *
      * @return A new {@link Tree}.
      */
@@ -712,7 +763,7 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this value to a {@link Vector}.
+     * Converts this to a {@link Vector}.
      *
      * @return A new {@link Vector}.
      */

@@ -874,6 +874,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return (treeSet.length() == length()) ? this : treeSet;
     }
 
+    @Override
+    public java.util.TreeSet<T> toJavaSet() {
+        return toJavaSet(java.util.TreeSet::new);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public TreeSet<T> union(Set<? extends T> elements) {

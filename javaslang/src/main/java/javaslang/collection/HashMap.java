@@ -605,6 +605,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public java.util.HashMap<K, V> toJavaMap() {
+        return toJavaMap(java.util.HashMap::new, t -> t);
+    }
+
+    @Override
     public Seq<V> values() {
         return map(Tuple2::_2);
     }

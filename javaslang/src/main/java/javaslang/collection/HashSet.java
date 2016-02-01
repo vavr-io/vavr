@@ -791,6 +791,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return taken.length() == length() ? this : taken;
     }
 
+    @Override
+    public java.util.HashSet<T> toJavaSet() {
+        return toJavaSet(java.util.HashSet::new);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public HashSet<T> union(Set<? extends T> elements) {
