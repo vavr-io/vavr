@@ -764,7 +764,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
     @Override
     public java.util.TreeMap<K, V> toJavaMap() {
-        return toJavaMap(java.util.TreeMap::new, t -> t);
+        return toJavaMap(() -> new java.util.TreeMap<>(keyComparator()), t -> t);
     }
 
     @Override

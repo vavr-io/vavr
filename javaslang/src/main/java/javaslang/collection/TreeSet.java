@@ -876,7 +876,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public java.util.TreeSet<T> toJavaSet() {
-        return toJavaSet(java.util.TreeSet::new);
+        return toJavaSet(() -> new java.util.TreeSet<>(comparator()));
     }
 
     @SuppressWarnings("unchecked")
