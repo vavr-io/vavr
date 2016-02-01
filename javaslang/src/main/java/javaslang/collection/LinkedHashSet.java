@@ -804,6 +804,11 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return taken.length() == length() ? this : taken;
     }
 
+    @Override
+    public java.util.LinkedHashSet<T> toJavaSet() {
+        return toJavaSet(java.util.LinkedHashSet::new);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public LinkedHashSet<T> union(Set<? extends T> elements) {

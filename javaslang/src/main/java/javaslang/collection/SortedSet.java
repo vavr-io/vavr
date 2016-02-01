@@ -199,6 +199,9 @@ public interface SortedSet<T> extends Set<T> {
     SortedSet<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
+    java.util.SortedSet<T> toJavaSet();
+
+    @Override
     SortedSet<T> union(Set<? extends T> elements);
 
     @Override

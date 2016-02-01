@@ -111,6 +111,15 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
     Set<T> removeAll(Iterable<? extends T> elements);
 
     /**
+     * Converts this Javaslang {@code Set} to a {@code java.util.Set} while preserving characteristics
+     * like insertion order ({@code LinkedHashSet}) and sort order ({@code SortedSet}).
+     *
+     * @return a new {@code java.util.Set} instance
+     */
+    @Override
+    java.util.Set<T> toJavaSet();
+
+    /**
      * Transforms this {@code Set}.
      *
      * @param f   A transformation

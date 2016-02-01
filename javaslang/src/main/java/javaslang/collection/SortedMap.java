@@ -219,4 +219,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
     @Override
     SortedMap<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate);
 
+    @Override
+    java.util.SortedMap<K, V> toJavaMap();
+
 }
