@@ -14,7 +14,10 @@ import javaslang.control.Option;
 
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Interface for immutable sequential data structures.
@@ -97,25 +100,17 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     long serialVersionUID = 1L;
 
     /**
-     * Creates a Seq of the given elements.
-     * <p>
-     * The resulting sequence has the same iteration order as the given iterable of elements
-     * if the iteration order of the elements is stable.
+     * Narrows a widened {@code Seq<? extends T>} to {@code Seq<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
      *
-     * @param <T>      Component type of the Seq.
-     * @param elements An Iterable of elements.
-     * @return A sequence containing the given elements in the same order or the
-     * given argument if it is already an instance of Seq.
-     * @throws NullPointerException if {@code elements} is null
+     * @param seq A {@code Seq}.
+     * @param <T> Component type of the {@code Seq}.
+     * @return the given {@code seq} instance as narrowed type {@code Seq<T>}.
      */
     @SuppressWarnings("unchecked")
-    static <T> Seq<T> ofAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (elements instanceof Seq) {
-            return (Seq<T>) elements;
-        } else {
-            return List.ofAll(elements);
-        }
+    static <T> Seq<T> narrow(Seq<? extends T> seq) {
+        return (Seq<T>) seq;
     }
 
     /**

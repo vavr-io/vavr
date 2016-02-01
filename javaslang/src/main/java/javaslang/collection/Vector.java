@@ -72,6 +72,20 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     /**
+     * Narrows a widened {@code Vector<? extends T>} to {@code Vector<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param vector An {@code Vector}.
+     * @param <T>    Component type of the {@code Vector}.
+     * @return the given {@code vector} instance as narrowed type {@code Vector<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Vector<T> narrow(Vector<? extends T> vector) {
+        return (Vector<T>) vector;
+    }
+
+    /**
      * Returns a singleton {@code Vector}, i.e. a {@code Vector} of one element.
      *
      * @param element An element.
@@ -105,8 +119,8 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * over a range of integer values from 0 to {@code n - 1}.
      *
      * @param <T> Component type of the Vector
-     * @param n The number of elements in the Vector
-     * @param f The Function computing element values
+     * @param n   The number of elements in the Vector
+     * @param f   The Function computing element values
      * @return A Vector consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
@@ -119,8 +133,8 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * Returns a Vector containing {@code n} values supplied by a given Supplier {@code s}.
      *
      * @param <T> Component type of the Vector
-     * @param n The number of elements in the Vector
-     * @param s The Supplier computing element values
+     * @param n   The number of elements in the Vector
+     * @param s   The Supplier computing element values
      * @return A Vector of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */

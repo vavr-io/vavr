@@ -65,6 +65,20 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     /**
+     * Narrows a widened {@code HashSet<? extends T>} to {@code HashSet<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param hashSet A {@code HashSet}.
+     * @param <T>     Component type of the {@code HashSet}.
+     * @return the given {@code hashSet} instance as narrowed type {@code HashSet<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> HashSet<T> narrow(HashSet<? extends T> hashSet) {
+        return (HashSet<T>) hashSet;
+    }
+
+    /**
      * Returns a singleton {@code HashSet}, i.e. a {@code HashSet} of one element.
      *
      * @param element An element.
@@ -100,8 +114,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * over a range of integer values from 0 to {@code n - 1}.
      *
      * @param <T> Component type of the HashSet
-     * @param n The number of elements in the HashSet
-     * @param f The Function computing element values
+     * @param n   The number of elements in the HashSet
+     * @param f   The Function computing element values
      * @return An HashSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
@@ -114,8 +128,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * Returns an HashSet containing {@code n} values supplied by a given Supplier {@code s}.
      *
      * @param <T> Component type of the HashSet
-     * @param n The number of elements in the HashSet
-     * @param s The Supplier computing element values
+     * @param n   The number of elements in the HashSet
+     * @param s   The Supplier computing element values
      * @return An HashSet of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
@@ -798,7 +812,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
             }
         }
     }
-    
+
     @Override
     public <T1, T2> Tuple2<HashSet<T1>, HashSet<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {

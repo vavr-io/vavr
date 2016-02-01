@@ -31,6 +31,20 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     long serialVersionUID = 1L;
 
+    /**
+     * Narrows a widened {@code IndexedSeq<? extends T>} to {@code IndexedSeq<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param indexedSeq An {@code IndexedSeq}.
+     * @param <T>        Component type of the {@code IndexedSeq}.
+     * @return the given {@code indexedSeq} instance as narrowed type {@code IndexedSeq<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> IndexedSeq<T> narrow(IndexedSeq<? extends T> indexedSeq) {
+        return (IndexedSeq<T>) indexedSeq;
+    }
+
     // -- Adjusted return types of Seq methods
 
     @Override

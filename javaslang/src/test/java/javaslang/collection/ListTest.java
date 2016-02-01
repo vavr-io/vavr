@@ -11,13 +11,14 @@ import javaslang.control.Option;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-public class ListTest extends AbstractSeqTest {
+public class ListTest extends AbstractLinearSeqTest {
 
     // -- construction
 
@@ -171,6 +172,16 @@ public class ListTest extends AbstractSeqTest {
     @Override
     protected int getPeekNonNilPerformingAnAction() {
         return 1;
+    }
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowList() {
+        final List<Double> doubles = of(1.0d);
+        final List<Number> numbers = List.narrow(doubles);
+        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
+        assertThat(actual).isEqualTo(3);
     }
 
     // -- ofAll(NavigableSet)

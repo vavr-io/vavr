@@ -85,6 +85,23 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     /**
+     * Narrows a widened {@code TreeMap<? extends K, ? extends V>} to {@code TreeMap<K, V>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     * <p>
+     * CAUTION: If {@code K} is narrowed, the underlying {@code Comparator} might fail!
+     *
+     * @param treeMap A {@code TreeMap}.
+     * @param <K>     Key type
+     * @param <V>     Value type
+     * @return the given {@code treeMap} instance as narrowed type {@code TreeMap<K, V>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <K, V> TreeMap<K, V> narrow(TreeMap<? extends K, ? extends V> treeMap) {
+        return (TreeMap<K, V>) treeMap;
+    }
+
+    /**
      * Returns a singleton {@code TreeMap}, i.e. a {@code TreeMap} of one entry.
      * The underlying key comparator is the natural comparator of K.
      *
@@ -444,7 +461,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
     @Override
     public <K2, V2> TreeMap<K2, V2> flatMap(Comparator<? super K2> keyComparator,
-    		                                BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
+                                            BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return createTreeMap(new EntryComparator<>(keyComparator),
                 entries.iterator().flatMap(entry -> mapper.apply(entry._1, entry._2)));
@@ -537,7 +554,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     public SortedSet<K> keySet() {
         return TreeSet.ofAll(keyComparator(), iterator().map(Tuple2::_1));
     }
-    
+
 
     @Override
     public <K2, V2> TreeMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
@@ -546,7 +563,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
     @Override
     public <K2, V2> TreeMap<K2, V2> map(Comparator<? super K2> keyComparator,
-                                          BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
+                                        BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return createTreeMap(new EntryComparator<>(keyComparator),
                 entries.iterator().map(entry -> mapper.apply(entry._1, entry._2)));

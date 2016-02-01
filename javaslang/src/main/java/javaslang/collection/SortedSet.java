@@ -28,6 +28,22 @@ public interface SortedSet<T> extends Set<T> {
     long serialVersionUID = 1L;
 
     /**
+     * Narrows a widened {@code SortedSet<? extends T>} to {@code SortedSet<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     * <p>
+     * CAUTION: The underlying {@code Comparator} might fail!
+     *
+     * @param sortedSet A {@code SortedSet}.
+     * @param <T>       Component type of the {@code SortedSet}.
+     * @return the given {@code sortedSet} instance as narrowed type {@code SortedSet<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> SortedSet<T> narrow(SortedSet<? extends T> sortedSet) {
+        return (SortedSet<T>) sortedSet;
+    }
+
+    /**
      * Returns the underlying comparator which defines the order of the elements contained in this set.
      *
      * @return This set's comparator.
@@ -184,7 +200,7 @@ public interface SortedSet<T> extends Set<T> {
 
     @Override
     SortedSet<T> union(Set<? extends T> elements);
-    
+
     @Override
     <T1, T2> Tuple2<? extends SortedSet<T1>, ? extends SortedSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 

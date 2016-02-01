@@ -66,7 +66,7 @@ final class Collections {
             Iterable<? extends T> elements,
             U zero, BiFunction<? super T, ? super U, ? extends U> operation,
             C cumulativeResult, BiFunction<C, U, C> combiner, Function<C, R> finisher) {
-        final Iterator<? extends T> reversedElements = Seq.ofAll(elements).reverseIterator();
+        final Iterator<? extends T> reversedElements = seq(elements).reverseIterator();
         return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), cumulativeResult, combiner, finisher);
     }
 
@@ -128,5 +128,14 @@ final class Collections {
     static <T> Iterator<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return tabulate(n, anything -> s.get());
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Seq<T> seq(Iterable<? extends T> iterable) {
+        if (iterable instanceof Seq) {
+            return (Seq<T>) iterable;
+        } else {
+            return List.ofAll(iterable);
+        }
     }
 }

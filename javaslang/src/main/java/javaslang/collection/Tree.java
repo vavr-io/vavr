@@ -61,6 +61,20 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     /**
+     * Narrows a widened {@code Tree<? extends T>} to {@code Tree<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param tree An {@code Tree}.
+     * @param <T>  Component type of the {@code Tree}.
+     * @return the given {@code tree} instance as narrowed type {@code Tree<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Tree<T> narrow(Tree<? extends T> tree) {
+        return (Tree<T>) tree;
+    }
+
+    /**
      * Returns a new Node containing the given value and having no children.
      *
      * @param value A value
@@ -102,7 +116,7 @@ public interface Tree<T> extends Traversable<T> {
     /**
      * Creates a Tree of the given elements.
      *
-     * @param <T> Component type of the List.
+     * @param <T>    Component type of the List.
      * @param values Zero or more values.
      * @return A Tree containing the given values.
      * @throws NullPointerException if {@code values} is null
@@ -142,8 +156,8 @@ public interface Tree<T> extends Traversable<T> {
      * over a range of integer values from 0 to {@code n - 1}.
      *
      * @param <T> Component type of the Tree
-     * @param n The number of elements in the Tree
-     * @param f The Function computing element values
+     * @param n   The number of elements in the Tree
+     * @param f   The Function computing element values
      * @return A Tree consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
@@ -156,8 +170,8 @@ public interface Tree<T> extends Traversable<T> {
      * Returns a Tree containing {@code n} values supplied by a given Supplier {@code s}.
      *
      * @param <T> Component type of the Tree
-     * @param n The number of elements in the Tree
-     * @param s The Supplier computing element values
+     * @param n   The number of elements in the Tree
+     * @param s   The Supplier computing element values
      * @return A Tree of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
@@ -605,7 +619,7 @@ public interface Tree<T> extends Traversable<T> {
         Objects.requireNonNull(predicate, "predicate is null");
         return traverse().takeWhile(predicate);
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     default <T1, T2> Tuple2<Tree<T1>, Tree<T2>> unzip(

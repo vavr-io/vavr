@@ -9,12 +9,13 @@ import javaslang.Serializables;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-public class VectorTest extends AbstractSeqTest {
+public class VectorTest extends AbstractIndexedSeqTest {
     @Override
     protected <T> Collector<T, ArrayList<T>, Vector<T>> collector() {
         return Vector.collector();
@@ -170,6 +171,16 @@ public class VectorTest extends AbstractSeqTest {
     @Override
     protected Vector<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return Vector.rangeClosedBy(from, toInclusive, step);
+    }
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowVector() {
+        final Vector<Double> doubles = of(1.0d);
+        final Vector<Number> numbers = Vector.narrow(doubles);
+        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
+        assertThat(actual).isEqualTo(3);
     }
 
     // -- toString

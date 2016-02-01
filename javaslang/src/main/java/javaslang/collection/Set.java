@@ -32,6 +32,20 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
     long serialVersionUID = 1L;
 
     /**
+     * Narrows a widened {@code Set<? extends T>} to {@code Set<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param set A {@code Set}.
+     * @param <T> Component type of the {@code Set}.
+     * @return the given {@code set} instance as narrowed type {@code Set<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Set<T> narrow(Set<? extends T> set) {
+        return (Set<T>) set;
+    }
+
+    /**
      * Add the given element to this set, if it is not already contained.
      *
      * @param element The element to be added.
@@ -118,7 +132,7 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
      * @return A new set that contains all distinct elements of this and {@code that} set.
      */
     Set<T> union(Set<? extends T> that);
-    
+
     // -- Adjusted return types of Traversable methods
 
     @Override

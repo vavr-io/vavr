@@ -62,6 +62,20 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     /**
+     * Narrows a widened {@code LinkedHashSet<? extends T>} to {@code LinkedHashSet<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param linkedHashSet A {@code LinkedHashSet}.
+     * @param <T>           Component type of the {@code linkedHashSet}.
+     * @return the given {@code linkedHashSet} instance as narrowed type {@code LinkedHashSet<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> LinkedHashSet<T> narrow(LinkedHashSet<? extends T> linkedHashSet) {
+        return (LinkedHashSet<T>) linkedHashSet;
+    }
+
+    /**
      * Returns a singleton {@code LinkedHashSet}, i.e. a {@code LinkedHashSet} of one element.
      *
      * @param element An element.
@@ -97,8 +111,8 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * over a range of integer values from 0 to {@code n - 1}.
      *
      * @param <T> Component type of the LinkedHashSet
-     * @param n The number of elements in the LinkedHashSet
-     * @param f The Function computing element values
+     * @param n   The number of elements in the LinkedHashSet
+     * @param f   The Function computing element values
      * @return A LinkedHashSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
@@ -111,8 +125,8 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * Returns a LinkedHashSet containing {@code n} values supplied by a given Supplier {@code s}.
      *
      * @param <T> Component type of the LinkedHashSet
-     * @param n The number of elements in the LinkedHashSet
-     * @param s The Supplier computing element values
+     * @param n   The number of elements in the LinkedHashSet
+     * @param s   The Supplier computing element values
      * @return A LinkedHashSet of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
@@ -811,7 +825,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
             }
         }
     }
-    
+
     @Override
     public <T1, T2> Tuple2<LinkedHashSet<T1>, LinkedHashSet<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {

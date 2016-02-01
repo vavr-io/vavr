@@ -5,12 +5,15 @@
  */
 package javaslang.collection;
 
+import org.junit.Test;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-public class StackTest extends AbstractSeqTest {
+public class StackTest extends AbstractLinearSeqTest {
 
     // -- construction
 
@@ -159,6 +162,16 @@ public class StackTest extends AbstractSeqTest {
     @Override
     protected Stack<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return Stack.rangeClosedBy(from, toInclusive, step);
+    }
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowStack() {
+        final Stack<Double> doubles = of(1.0d);
+        final Stack<Number> numbers = Stack.narrow(doubles);
+        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
+        assertThat(actual).isEqualTo(3);
     }
 
     // -- other

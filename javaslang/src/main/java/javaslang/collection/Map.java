@@ -26,6 +26,21 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
 
     long serialVersionUID = 1L;
 
+    /**
+     * Narrows a widened {@code Map<? extends K, ? extends V>} to {@code Map<K, V>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param map A {@code Map}.
+     * @param <K> Key type
+     * @param <V> Value type
+     * @return the given {@code map} instance as narrowed type {@code Map<K, V>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <K, V> Map<K, V> narrow(Map<? extends K, ? extends V> map) {
+        return (Map<K, V>) map;
+    }
+
     @Override
     default V apply(K key) {
         return get(key).getOrElseThrow(NoSuchElementException::new);

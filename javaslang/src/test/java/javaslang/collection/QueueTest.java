@@ -9,13 +9,14 @@ import javaslang.Tuple;
 import javaslang.control.Option;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-public class QueueTest extends AbstractSeqTest {
+public class QueueTest extends AbstractLinearSeqTest {
 
     // -- construction
 
@@ -174,6 +175,16 @@ public class QueueTest extends AbstractSeqTest {
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
+    }
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowQueue() {
+        final Queue<Double> doubles = of(1.0d);
+        final Queue<Number> numbers = Queue.narrow(doubles);
+        final int actual = numbers.enqueue(new BigDecimal("2.0")).sum().intValue();
+        assertThat(actual).isEqualTo(3);
     }
 
     // -- peek

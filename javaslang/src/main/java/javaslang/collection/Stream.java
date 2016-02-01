@@ -194,6 +194,20 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     /**
+     * Narrows a widened {@code Stream<? extends T>} to {@code Stream<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param stream A {@code Stream}.
+     * @param <T>    Component type of the {@code Stream}.
+     * @return the given {@code stream} instance as narrowed type {@code Stream<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Stream<T> narrow(Stream<? extends T> stream) {
+        return (Stream<T>) stream;
+    }
+
+    /**
      * Returns a singleton {@code Stream}, i.e. a {@code Stream} of one element.
      *
      * @param element An element.
@@ -238,8 +252,8 @@ public interface Stream<T> extends LinearSeq<T> {
      * over a range of integer values from 0 to {@code n - 1}.
      *
      * @param <T> Component type of the Stream
-     * @param n The number of elements in the Stream
-     * @param f The Function computing element values
+     * @param n   The number of elements in the Stream
+     * @param f   The Function computing element values
      * @return A Stream consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
@@ -252,8 +266,8 @@ public interface Stream<T> extends LinearSeq<T> {
      * Returns a Stream containing {@code n} values supplied by a given Supplier {@code s}.
      *
      * @param <T> Component type of the Stream
-     * @param n The number of elements in the Stream
-     * @param s The Supplier computing element values
+     * @param n   The number of elements in the Stream
+     * @param s   The Supplier computing element values
      * @return A Stream of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */

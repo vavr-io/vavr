@@ -8,6 +8,7 @@ package javaslang.collection;
 import org.junit.Test;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.function.Function;
@@ -122,6 +123,16 @@ public class TreeSetTest extends AbstractSortedSetTest {
     @Override
     protected int getPeekNonNilPerformingAnAction() {
         return 1;
+    }
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowTreeSet() {
+        final TreeSet<Double> doubles = of(1.0d);
+        final TreeSet<Number> numbers = TreeSet.narrow(doubles);
+        final int actual = numbers.add(new BigDecimal("2.0")).sum().intValue();
+        assertThat(actual).isEqualTo(3);
     }
 
     // -- addAll

@@ -7,10 +7,22 @@ package javaslang.collection;
 
 import org.junit.Test;
 
+import java.math.BigDecimal;
+
 public abstract class AbstractSortedSetTest extends AbstractSetTest {
 
     @Override
     abstract protected <T> SortedSet<T> of(T element);
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowSortedSet() {
+        final SortedSet<Double> doubles = of(1.0d);
+        final SortedSet<Number> numbers = SortedSet.narrow(doubles);
+        final int actual = numbers.add(new BigDecimal("2.0")).sum().intValue();
+        assertThat(actual).isEqualTo(3);
+    }
 
     @Test
     public void shouldReturnComparator() {
@@ -22,4 +34,5 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
     public void shouldPreserveSingletonInstanceOnDeserialization() {
         // not possible, because the empty instance stores information about the underlying comparator
     }
+
 }
