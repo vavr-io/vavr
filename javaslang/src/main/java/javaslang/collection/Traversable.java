@@ -192,6 +192,20 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
+     * Narrows a widened {@code Traversable<? extends T>} to {@code Traversable<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param traversable An {@code Traversable}.
+     * @param <T>         Component type of the {@code Traversable}.
+     * @return the given {@code traversable} instance as narrowed type {@code Traversable<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Traversable<T> narrow(Traversable<? extends T> traversable) {
+        return (Traversable<T>) traversable;
+    }
+
+    /**
      * Calculates the average of this elements. Returns {@code None} if this is empty, otherwise {@code Some(average)}.
      * Supported component types are {@code Byte}, {@code Double}, {@code Float}, {@code Integer}, {@code Long},
      * {@code Short}, {@code BigInteger} and {@code BigDecimal}.

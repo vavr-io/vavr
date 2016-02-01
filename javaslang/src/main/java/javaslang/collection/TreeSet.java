@@ -66,6 +66,20 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return new TreeSet<>(RedBlackTree.empty(comparator));
     }
 
+    /**
+     * Narrows a widened {@code TreeSet<? extends T>} to {@code TreeSet<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param treeSet A {@code TreeSet}.
+     * @param <T>     Component type of the {@code TreeSet}.
+     * @return the given {@code treeSet} instance as narrowed type {@code TreeSet<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> TreeSet<T> narrow(TreeSet<? extends T> treeSet) {
+        return (TreeSet<T>) treeSet;
+    }
+
     public static <T extends Comparable<? super T>> TreeSet<T> of(T value) {
         return new TreeSet<>(RedBlackTree.of(value));
     }
@@ -869,7 +883,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
             return addAll(elements);
         }
     }
-    
+
     @Override
     public <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {

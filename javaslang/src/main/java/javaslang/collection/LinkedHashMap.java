@@ -62,6 +62,21 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     /**
+     * Narrows a widened {@code LinkedHashMap<? extends K, ? extends V>} to {@code LinkedHashMap<K, V>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param linkedHashMap A {@code LinkedHashMap}.
+     * @param <K>           Key type
+     * @param <V>           Value type
+     * @return the given {@code linkedHashMap} instance as narrowed type {@code LinkedHashMap<K, V>}.
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> LinkedHashMap<K, V> narrow(LinkedHashMap<? extends K, ? extends V> linkedHashMap) {
+        return (LinkedHashMap<K, V>) linkedHashMap;
+    }
+
+    /**
      * Returns a singleton {@code LinkedHashMap}, i.e. a {@code LinkedHashMap} of one element.
      *
      * @param entry A map entry.
@@ -139,8 +154,8 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      *
      * @param <K> The key type
      * @param <V> The value type
-     * @param n The number of elements in the LinkedHashMap
-     * @param f The Function computing element values
+     * @param n   The number of elements in the LinkedHashMap
+     * @param f   The Function computing element values
      * @return A LinkedHashMap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
@@ -155,8 +170,8 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      *
      * @param <K> The key type
      * @param <V> The value type
-     * @param n The number of elements in the LinkedHashMap
-     * @param s The Supplier computing element values
+     * @param n   The number of elements in the LinkedHashMap
+     * @param s   The Supplier computing element values
      * @return A LinkedHashMap of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
@@ -402,7 +417,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     public Set<K> keySet() {
         return map.keySet();
     }
-    
+
     @Override
     public <K2, V2> LinkedHashMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");

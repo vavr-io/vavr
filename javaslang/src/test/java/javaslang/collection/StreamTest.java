@@ -11,12 +11,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-public class StreamTest extends AbstractSeqTest {
+public class StreamTest extends AbstractLinearSeqTest {
 
     // -- construction
 
@@ -220,6 +221,16 @@ public class StreamTest extends AbstractSeqTest {
     @Test
     public void shouldBuildStreamBasedOnHeadAndTailSupplierWithAccessToHead() {
         assertThat(Stream.cons(1, () -> Stream.cons(2, Stream::empty))).isEqualTo(Stream.of(1, 2));
+    }
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowStream() {
+        final Stream<Double> doubles = of(1.0d);
+        final Stream<Number> numbers = Stream.narrow(doubles);
+        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
+        assertThat(actual).isEqualTo(3);
     }
 
     // -- combinations

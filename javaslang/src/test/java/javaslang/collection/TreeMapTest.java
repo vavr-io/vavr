@@ -11,6 +11,7 @@ import javaslang.Tuple2;
 import org.junit.Test;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public class TreeMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <T1, T2> Map<T1, T2> emptyMap() {
+    protected <T1, T2> TreeMap<T1, T2> emptyMap() {
         return TreeMap.empty(naturalComparator());
     }
 
@@ -50,24 +51,24 @@ public class TreeMapTest extends AbstractMapTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
+    protected final <K, V> TreeMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
         return TreeMap.ofEntries(naturalComparator(), entries);
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> Map<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+    protected final <K, V> TreeMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         return TreeMap.ofEntries(naturalComparator(), entries);
     }
 
     @Override
-    protected <K, V> Map<K, V> mapOfPairs(Object... pairs) {
+    protected <K, V> TreeMap<K, V> mapOfPairs(Object... pairs) {
         return TreeMap.of(pairs);
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value) {
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K key, V value) {
         return TreeMap.of(key, value);
     }
 
@@ -79,6 +80,16 @@ public class TreeMapTest extends AbstractMapTest {
     @Override
     protected <K, V> TreeMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
         return TreeMap.fill(toStringComparator(), n, s);
+    }
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowTreeMap() {
+        final TreeMap<Integer, Double> int2doubleMap = mapOf(1, 1.0d);
+        final TreeMap<Number, Number> number2numberMap = TreeMap.narrow(int2doubleMap);
+        final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
+        assertThat(actual).isEqualTo(3);
     }
 
     @Test

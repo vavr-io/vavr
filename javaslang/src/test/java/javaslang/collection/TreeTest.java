@@ -17,6 +17,7 @@ import org.assertj.core.api.ObjectAssert;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -189,6 +190,16 @@ public class TreeTest extends AbstractTraversableTest {
     @SafeVarargs
     protected final <T> Node<T> $(T value, Node<T>... children) {
         return Tree.of(value, children);
+    }
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowTree() {
+        final Tree<Double> doubles = of(1.0d);
+        final Tree<Number> numbers = Tree.narrow(doubles);
+        final boolean actual = numbers.contains(new BigDecimal("2.0"));
+        assertThat(actual).isFalse();
     }
 
     // -- Tree test

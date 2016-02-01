@@ -72,6 +72,20 @@ public interface Stack<T> extends LinearSeq<T> {
     }
 
     /**
+     * Narrows a widened {@code Stack<? extends T>} to {@code Stack<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param stack A {@code Stack}.
+     * @param <T>   Component type of the {@code Stack}.
+     * @return the given {@code stack} instance as narrowed type {@code Stack<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Stack<T> narrow(Stack<? extends T> stack) {
+        return (Stack<T>) stack;
+    }
+
+    /**
      * Returns a singleton {@code Stack}, i.e. a {@code Stack} of one element.
      *
      * @param element An element.
@@ -208,8 +222,8 @@ public interface Stack<T> extends LinearSeq<T> {
      * over a range of integer values from 0 to {@code n - 1}.
      *
      * @param <T> Component type of the Stack
-     * @param n The number of elements in the Stack
-     * @param f The Function computing element values
+     * @param n   The number of elements in the Stack
+     * @param f   The Function computing element values
      * @return A Stack consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
@@ -222,8 +236,8 @@ public interface Stack<T> extends LinearSeq<T> {
      * Returns a Stack containing {@code n} values supplied by a given Supplier {@code s}.
      *
      * @param <T> Component type of the Stack
-     * @param n The number of elements in the Stack
-     * @param s The Supplier computing element values
+     * @param n   The number of elements in the Stack
+     * @param s   The Supplier computing element values
      * @return A Stack of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */

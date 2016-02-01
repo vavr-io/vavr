@@ -30,6 +30,20 @@ public interface LinearSeq<T> extends Seq<T> {
 
     long serialVersionUID = 1L;
 
+    /**
+     * Narrows a widened {@code LinearSeq<? extends T>} to {@code LinearSeq<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param linearSeq A {@code LinearSeq}.
+     * @param <T>       Component type of the {@code LinearSeq}.
+     * @return the given {@code linearSeq} instance as narrowed type {@code LinearSeq<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> LinearSeq<T> narrow(LinearSeq<? extends T> linearSeq) {
+        return (LinearSeq<T>) linearSeq;
+    }
+
     // -- Adjusted return types of Seq methods
 
     @Override

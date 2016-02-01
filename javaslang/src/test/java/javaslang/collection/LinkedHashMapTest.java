@@ -4,6 +4,7 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -29,24 +30,24 @@ public class LinkedHashMapTest extends AbstractMapTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
+    protected final <K, V> LinkedHashMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
         return LinkedHashMap.ofEntries(entries);
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> Map<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+    protected final <K, V> LinkedHashMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         return LinkedHashMap.ofEntries(entries);
     }
 
     @Override
-    protected <K, V> Map<K, V> mapOfPairs(Object... pairs) {
+    protected <K, V> LinkedHashMap<K, V> mapOfPairs(Object... pairs) {
         return LinkedHashMap.of(pairs);
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value) {
+    protected <K extends Comparable<? super K>, V> LinkedHashMap<K, V> mapOf(K key, V value) {
         return LinkedHashMap.of(key, value);
     }
 
@@ -64,6 +65,16 @@ public class LinkedHashMapTest extends AbstractMapTest {
     public void shouldKeepOrder() {
         CharSeq actual = LinkedHashMap.<Integer, Character> empty().put(3, 'a').put(2, 'b').put(1, 'c').foldLeft(CharSeq.empty(), (s, t) -> s.append(t._2));
         assertThat(actual).isEqualTo(CharSeq.of("abc"));
+    }
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowLinkedHashMap() {
+        final LinkedHashMap<Integer, Double> int2doubleMap = mapOf(1, 1.0d);
+        final LinkedHashMap<Number, Number> number2numberMap = LinkedHashMap.narrow(int2doubleMap);
+        final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
+        assertThat(actual).isEqualTo(3);
     }
 
     // -- scan, scanLeft, scanRight

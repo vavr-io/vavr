@@ -107,6 +107,20 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
+     * Narrows a widened {@code Iterator<? extends T>} to {@code Iterator<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param iterator An {@code Iterator}.
+     * @param <T>      Component type of the {@code Iterator}.
+     * @return the given {@code iterator} instance as narrowed type {@code Iterator<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Iterator<T> narrow(Iterator<? extends T> iterator) {
+        return (Iterator<T>) iterator;
+    }
+
+    /**
      * Creates an Iterator which traverses one element.
      *
      * @param element An element
@@ -397,8 +411,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * over a range of integer values from 0 to {@code n - 1}.
      *
      * @param <T> Component type of the Iterator
-     * @param n The number of elements
-     * @param f The Function computing element values
+     * @param n   The number of elements
+     * @param f   The Function computing element values
      * @return An Iterator on a sequence of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
@@ -411,8 +425,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * Returns an Iterator on a sequence of {@code n} values supplied by a given Supplier {@code s}.
      *
      * @param <T> Component type of the Iterator
-     * @param n The number of elements
-     * @param s The Supplier computing element values
+     * @param n   The number of elements
+     * @param s   The Supplier computing element values
      * @return An iterator on a sequence of {@code n} elements, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
@@ -1321,7 +1335,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             };
         }
     }
-    
+
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");

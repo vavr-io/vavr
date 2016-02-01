@@ -2,6 +2,7 @@ package javaslang.collection;
 
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -171,4 +172,15 @@ public class LinkedHashSetTest extends AbstractSetTest {
         List<Integer> actual = LinkedHashSet.<Integer> empty().add(3).add(2).add(1).toList();
         assertThat(actual).isEqualTo(List.of(3, 2, 1));
     }
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowLinkedHashSet() {
+        final LinkedHashSet<Double> doubles = of(1.0d);
+        final LinkedHashSet<Number> numbers = LinkedHashSet.narrow(doubles);
+        final int actual = numbers.add(new BigDecimal("2.0")).sum().intValue();
+        assertThat(actual).isEqualTo(3);
+    }
+
 }

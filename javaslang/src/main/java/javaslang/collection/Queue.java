@@ -98,6 +98,20 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     /**
+     * Narrows a widened {@code Queue<? extends T>} to {@code Queue<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param queue An {@code Queue}.
+     * @param <T>   Component type of the {@code Queue}.
+     * @return the given {@code queue} instance as narrowed type {@code Queue<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Queue<T> narrow(Queue<? extends T> queue) {
+        return (Queue<T>) queue;
+    }
+
+    /**
      * Returns a singleton {@code Queue}, i.e. a {@code Queue} of one element.
      *
      * @param element An element.
@@ -246,8 +260,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * over a range of integer values from 0 to {@code n - 1}.
      *
      * @param <T> Component type of the Queue
-     * @param n The number of elements in the Queue
-     * @param f The Function computing element values
+     * @param n   The number of elements in the Queue
+     * @param f   The Function computing element values
      * @return A Queue consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
@@ -260,8 +274,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
      * Returns a Queue containing {@code n} values supplied by a given Supplier {@code s}.
      *
      * @param <T> Component type of the Queue
-     * @param n The number of elements in the Queue
-     * @param s The Supplier computing element values
+     * @param n   The number of elements in the Queue
+     * @param s   The Supplier computing element values
      * @return An Queue of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */

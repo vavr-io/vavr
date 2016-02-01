@@ -7,12 +7,13 @@ package javaslang.collection;
 
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-public class ArrayTest extends AbstractSeqTest {
+public class ArrayTest extends AbstractIndexedSeqTest {
 
     @Override
     protected <T> Collector<T, ArrayList<T>, ? extends Seq<T>> collector() {
@@ -169,6 +170,16 @@ public class ArrayTest extends AbstractSeqTest {
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
+    }
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowArray() {
+        final Array<Double> doubles = of(1.0d);
+        final Array<Number> numbers = Array.narrow(doubles);
+        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
+        assertThat(actual).isEqualTo(3);
     }
 
     // -- toString

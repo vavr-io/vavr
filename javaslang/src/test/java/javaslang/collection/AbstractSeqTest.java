@@ -9,6 +9,7 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.stream.Collector;
 
@@ -100,6 +101,16 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Override
     abstract protected Seq<Long> rangeClosedBy(long from, long toInclusive, long step);
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowSeq() {
+        final Seq<Double> doubles = of(1.0d);
+        final Seq<Number> numbers = Seq.narrow(doubles);
+        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
+        assertThat(actual).isEqualTo(3);
+    }
 
     // -- append
 
@@ -1007,17 +1018,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldCreateReverseIteratorOfEmpty() {
-        assertThat(Seq.ofAll(empty()).reverseIterator()).isEmpty();
+        assertThat(ofAll(empty()).reverseIterator()).isEmpty();
     }
 
     @Test
     public void shouldCreateReverseIteratorOfSingle() {
-        assertThat(Seq.ofAll(this.of("a")).reverseIterator().toList()).isEqualTo(Iterator.of("a").toList());
+        assertThat(ofAll(this.of("a")).reverseIterator().toList()).isEqualTo(Iterator.of("a").toList());
     }
 
     @Test
     public void shouldCreateReverseIteratorOfNonEmpty() {
-        assertThat(Seq.ofAll(of("a", "b", "c")).reverseIterator().toList()).isEqualTo(Iterator.of("c", "b", "a").toList());
+        assertThat(ofAll(of("a", "b", "c")).reverseIterator().toList()).isEqualTo(Iterator.of("c", "b", "a").toList());
     }
 
     // -- set

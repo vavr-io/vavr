@@ -14,6 +14,7 @@ import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
@@ -177,6 +178,16 @@ public class IteratorTest extends AbstractTraversableTest {
         return 3;
     }
 
+    // -- static narrow()
+
+    @Test
+    public void shouldNarrowIterator() {
+        final Iterator<Double> doubles = of(1.0d);
+        final Iterator<Number> numbers = Iterator.narrow(doubles);
+        final int actual = numbers.concat(Iterator.of(new BigDecimal("2.0"))).sum().intValue();
+        assertThat(actual).isEqualTo(3);
+    }
+
     // -- static ofAll()
 
     @Test(expected = NoSuchElementException.class)
@@ -257,13 +268,13 @@ public class IteratorTest extends AbstractTraversableTest {
     @Test
     public void shouldConcatThisNonEmptyWithEmpty() {
         Iterator<Integer> it = Iterator.of(1);
-        assertThat(it.concat(Iterator.<Integer>empty())).isSameAs(it);
+        assertThat(it.concat(Iterator.<Integer> empty())).isSameAs(it);
     }
 
     @Test
     public void shouldConcatThisEmptyWithNonEmpty() {
         Iterator<Integer> it = Iterator.of(1);
-        assertThat(Iterator.<Integer>empty().concat(it)).isSameAs(it);
+        assertThat(Iterator.<Integer> empty().concat(it)).isSameAs(it);
     }
 
     @Test

@@ -11,6 +11,7 @@ import javaslang.control.Option;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -21,6 +22,7 @@ import java.util.stream.Collector;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractMapTest extends AbstractTraversableTest {
 
@@ -228,6 +230,16 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Override
     protected <T> IntMap<T> fill(int n, Supplier<? extends T> s) {
         return tabulate(n, anything -> s.get());
+    }
+
+    // -- narrow
+
+    @Test
+    public void shouldNarrowMap() {
+        final Map<Integer, Double> int2doubleMap = mapOf(1, 1.0d);
+        final Map<Number, Number> number2numberMap = Map.narrow(int2doubleMap);
+        final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
+        assertThat(actual).isEqualTo(3);
     }
 
     // -- construction

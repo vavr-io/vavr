@@ -10,6 +10,7 @@ import javaslang.Tuple2;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -159,6 +160,16 @@ public class HashSetTest extends AbstractSetTest {
     @Override
     protected int getPeekNonNilPerformingAnAction() {
         return 1;
+    }
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowHashSet() {
+        final HashSet<Double> doubles = of(1.0d);
+        final HashSet<Number> numbers = HashSet.narrow(doubles);
+        final int actual = numbers.add(new BigDecimal("2.0")).sum().intValue();
+        assertThat(actual).isEqualTo(3);
     }
 
     // TODO move to traversable

@@ -7,6 +7,8 @@ package javaslang.collection;
 
 import org.junit.Test;
 
+import java.math.BigDecimal;
+
 public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
 
     @Override
@@ -18,6 +20,16 @@ public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
     @SuppressWarnings("unchecked")
     @Override
     abstract protected <T> Set<T> of(T... elements);
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowSet() {
+        final Set<Double> doubles = of(1.0d);
+        final Set<Number> numbers = Set.narrow(doubles);
+        final int actual = numbers.add(new BigDecimal("2.0")).sum().intValue();
+        assertThat(actual).isEqualTo(3);
+    }
 
     @Test
     public void shouldAddAllOfIterable() {

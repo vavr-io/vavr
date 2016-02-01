@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Tuple2;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -21,7 +22,7 @@ public class HashMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <T1, T2> Map<T1, T2> emptyMap() {
+    protected <T1, T2> HashMap<T1, T2> emptyMap() {
         return HashMap.empty();
     }
 
@@ -33,32 +34,25 @@ public class HashMapTest extends AbstractMapTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
+    protected final <K, V> HashMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
         return HashMap.ofEntries(entries);
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> Map<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+    protected final <K, V> HashMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         return HashMap.ofEntries(entries);
     }
 
     @Override
-    protected <K, V> Map<K, V> mapOfPairs(Object... pairs) {
+    protected <K, V> HashMap<K, V> mapOfPairs(Object... pairs) {
         return HashMap.of(pairs);
     }
 
-    @Test
-    public void shouldWrapMap() {
-        java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
-        source.put(1, 2);
-        source.put(3, 4);
-        assertThat(HashMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
-    }
 
     @Override
-    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value) {
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOf(K key, V value) {
         return HashMap.of(key, value);
     }
 
@@ -72,4 +66,21 @@ public class HashMapTest extends AbstractMapTest {
         return HashMap.fill(n, s);
     }
 
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowHashMap() {
+        final HashMap<Integer, Double> int2doubleMap = mapOf(1, 1.0d);
+        final HashMap<Number, Number> number2numberMap = HashMap.narrow(int2doubleMap);
+        final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
+        assertThat(actual).isEqualTo(3);
+    }
+
+    @Test
+    public void shouldWrapMap() {
+        java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
+        source.put(1, 2);
+        source.put(3, 4);
+        assertThat(HashMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
+    }
 }

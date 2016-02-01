@@ -6,7 +6,6 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.Kind1;
 import javaslang.collection.List.Nil;
 import javaslang.collection.ListModule.Combinations;
 import javaslang.collection.ListModule.SplitAt;
@@ -114,6 +113,20 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      */
     static <T> List<T> empty() {
         return Nil.instance();
+    }
+
+    /**
+     * Narrows a widened {@code List<? extends T>} to {@code List<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param list A {@code List}.
+     * @param <T>  Component type of the {@code List}.
+     * @return the given {@code list} instance as narrowed type {@code List<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> List<T> narrow(List<? extends T> list) {
+        return (List<T>) list;
     }
 
     /**
@@ -285,8 +298,8 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * over a range of integer values from 0 to {@code n - 1}.
      *
      * @param <T> Component type of the List
-     * @param n The number of elements in the List
-     * @param f The Function computing element values
+     * @param n   The number of elements in the List
+     * @param f   The Function computing element values
      * @return A List consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
@@ -299,8 +312,8 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * Returns a List containing {@code n} values supplied by a given Supplier {@code s}.
      *
      * @param <T> Component type of the List
-     * @param n The number of elements in the List
-     * @param s The Supplier computing element values
+     * @param n   The number of elements in the List
+     * @param s   The Supplier computing element values
      * @return A List of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
@@ -827,7 +840,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default T peek() {
-        if(isEmpty()) {
+        if (isEmpty()) {
             throw new NoSuchElementException("peek of empty list");
         }
         return head();
@@ -873,7 +886,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> pop() {
-        if(isEmpty()) {
+        if (isEmpty()) {
             throw new NoSuchElementException("pop of empty list");
         }
         return tail();
@@ -886,7 +899,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default Tuple2<T, List<T>> pop2() {
-        if(isEmpty()) {
+        if (isEmpty()) {
             throw new NoSuchElementException("pop2 of empty list");
         }
         return Tuple.of(head(), tail());
@@ -1057,7 +1070,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         boolean changed = false;
         for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
             final T head = list.head();
-            if(Objects.equals(head, currentElement)) {
+            if (Objects.equals(head, currentElement)) {
                 result = result.prepend(newElement);
                 changed = true;
             } else {

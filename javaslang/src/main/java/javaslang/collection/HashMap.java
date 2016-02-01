@@ -65,6 +65,21 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     /**
+     * Narrows a widened {@code HashMap<? extends K, ? extends V>} to {@code HashMap<K, V>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param hashMap A {@code HashMap}.
+     * @param <K>     Key type
+     * @param <V>     Value type
+     * @return the given {@code hashMap} instance as narrowed type {@code HashMap<K, V>}.
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> HashMap<K, V> narrow(HashMap<? extends K, ? extends V> hashMap) {
+        return (HashMap<K, V>) hashMap;
+    }
+
+    /**
      * Returns a singleton {@code HashMap}, i.e. a {@code HashMap} of one element.
      *
      * @param entry A map entry.
@@ -405,7 +420,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     public int length() {
         return trie.size();
     }
-    
+
     @Override
     public <K2, V2> HashMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
