@@ -83,7 +83,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     public void shouldNarrowTraversable() {
         final Traversable<Double> doubles = of(1.0d);
         final Traversable<Number> numbers = Traversable.narrow(doubles);
-        final boolean actual = numbers.contains(new BigDecimal("1.0"));
+        final boolean actual = numbers.contains(new BigDecimal("2.0"));
         assertThat(actual).isFalse();
     }
 

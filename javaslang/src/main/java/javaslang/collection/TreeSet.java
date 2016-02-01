@@ -70,6 +70,8 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * Narrows a widened {@code TreeSet<? extends T>} to {@code TreeSet<T>}
      * by performing a type safe-cast. This is eligible because immutable/read-only
      * collections are covariant.
+     * <p>
+     * CAUTION: The underlying {@code Comparator} might fail!
      *
      * @param treeSet A {@code TreeSet}.
      * @param <T>     Component type of the {@code TreeSet}.

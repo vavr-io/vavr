@@ -29,6 +29,23 @@ public interface SortedMap<K, V> extends Map<K, V> {
     long serialVersionUID = 1L;
 
     /**
+     * Narrows a widened {@code SortedMap<? extends K, ? extends V>} to {@code SortedMap<K, V>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     * <p>
+     * CAUTION: If {@code K} is narrowed, the underlying {@code Comparator} might fail!
+     *
+     * @param sortedMap A {@code SortedMap}.
+     * @param <K>       Key type
+     * @param <V>       Value type
+     * @return the given {@code sortedMap} instance as narrowed type {@code SortedMap<K, V>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <K, V> SortedMap<K, V> narrow(SortedMap<? extends K, ? extends V> sortedMap) {
+        return (SortedMap<K, V>) sortedMap;
+    }
+
+    /**
      * Same as {@link #bimap(Function, Function)}, using a specific comparator for keys of the codomain of the given
      * {@code keyMapper}.
      *

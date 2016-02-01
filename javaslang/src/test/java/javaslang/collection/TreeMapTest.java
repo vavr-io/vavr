@@ -21,7 +21,7 @@ import java.util.stream.Collector;
 
 import static javaslang.collection.Comparators.naturalComparator;
 
-public class TreeMapTest extends AbstractMapTest {
+public class TreeMapTest extends AbstractSortedMapTest {
 
     @Override
     protected String className() {
@@ -87,8 +87,8 @@ public class TreeMapTest extends AbstractMapTest {
     @Test
     public void shouldNarrowTreeMap() {
         final TreeMap<Integer, Double> int2doubleMap = mapOf(1, 1.0d);
-        final TreeMap<Number, Number> number2numberMap = TreeMap.narrow(int2doubleMap);
-        final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
+        final TreeMap<Integer, Number> number2numberMap = TreeMap.narrow(int2doubleMap);
+        final int actual = number2numberMap.put(2, new BigDecimal("2.0")).values().sum().intValue();
         assertThat(actual).isEqualTo(3);
     }
 
