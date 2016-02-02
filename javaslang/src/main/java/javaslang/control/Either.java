@@ -69,6 +69,21 @@ public interface Either<L, R> extends Value<R> {
     }
 
     /**
+     * Narrows a widened {@code Either<? extends L, ? extends R>} to {@code Either<L, R>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param either A {@code Either}.
+     * @param <L>    Type of left value.
+     * @param <R>    Type of right value.
+     * @return the given {@code either} instance as narrowed type {@code Either<L, R>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <L, R> Either<L, R> narrow(Either<? extends L, ? extends R> either) {
+        return (Either<L, R>) either;
+    }
+
+    /**
      * Returns the left value.
      *
      * @return The left value.

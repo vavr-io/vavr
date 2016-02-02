@@ -113,6 +113,20 @@ import java.util.stream.StreamSupport;
 public interface Value<T> extends Iterable<T> {
 
     /**
+     * Narrows a widened {@code Value<? extends T>} to {@code Value<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param value A {@code Value}.
+     * @param <T>  Component type of the {@code Value}.
+     * @return the given {@code value} instance as narrowed type {@code Value<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Value<T> narrow(Value<? extends T> value) {
+        return (Value<T>) value;
+    }
+
+    /**
      * Shortcut for {@code exists(e -> Objects.equals(e, element))}, tests if the given {@code element} is contained.
      *
      * @param element An Object of type A, may be null.

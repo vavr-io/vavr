@@ -110,6 +110,20 @@ public interface Option<T> extends Value<T> {
     }
 
     /**
+     * Narrows a widened {@code Option<? extends T>} to {@code Option<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param option A {@code Option}.
+     * @param <T>    Component type of the {@code Option}.
+     * @return the given {@code option} instance as narrowed type {@code Option<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Option<T> narrow(Option<? extends T> option) {
+        return (Option<T>) option;
+    }
+
+    /**
      * Creates {@code Some} of suppliers value if condition is true, or {@code None} in other case
      *
      * @param <T>       type of the optional value
@@ -185,6 +199,7 @@ public interface Option<T> extends Value<T> {
 
     /**
      * Returns this {@code Option} if it is nonempty, otherwise return the alternative.
+     *
      * @param other An alternative {@code Option}
      * @return this {@code Option} if it is nonempty, otherwise return the alternative.
      */
@@ -196,6 +211,7 @@ public interface Option<T> extends Value<T> {
 
     /**
      * Returns this {@code Option} if it is nonempty, otherwise return the result of evaluating supplier.
+     *
      * @param supplier An alternative {@code Option} supplier
      * @return this {@code Option} if it is nonempty, otherwise return the result of evaluating supplier.
      */
