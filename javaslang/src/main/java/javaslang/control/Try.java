@@ -106,6 +106,20 @@ public interface Try<T> extends Value<T> {
     }
 
     /**
+     * Narrows a widened {@code Try<? extends T>} to {@code Try<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param t   A {@code Try}.
+     * @param <T> Component type of the {@code Try}.
+     * @return the given {@code t} instance as narrowed type {@code Try<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Try<T> narrow(Try<? extends T> t) {
+        return (Try<T>) t;
+    }
+
+    /**
      * Shortcut for {@code andThenTry(consumer::accept)}, see {@link #andThenTry(CheckedConsumer)}.
      *
      * @param consumer A consumer

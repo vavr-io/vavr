@@ -144,6 +144,20 @@ public interface Promise<T> {
     }
 
     /**
+     * Narrows a widened {@code Promise<? extends T>} to {@code Promise<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param promise A {@code Promise}.
+     * @param <T>     Component type of the {@code Promise}.
+     * @return the given {@code promise} instance as narrowed type {@code Promise<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Promise<T> narrow(Promise<? extends T> promise) {
+        return (Promise<T>) promise;
+    }
+
+    /**
      * Creates a succeeded {@code Promise}, backed by the {@link Future#DEFAULT_EXECUTOR_SERVICE}.
      *
      * @param result The result.

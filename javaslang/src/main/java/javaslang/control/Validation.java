@@ -126,6 +126,21 @@ public interface Validation<E, T> extends Value<T> {
     }
 
     /**
+     * Narrows a widened {@code Validation<? extends E, ? extends T>} to {@code Validation<E, T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param validation A {@code Validation}.
+     * @param <E>        type of error
+     * @param <T>        type of valid value
+     * @return the given {@code validation} instance as narrowed type {@code Validation<E, T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <E, T> Validation<E, T> narrow(Validation<? extends E, ? extends T> validation) {
+        return (Validation<E, T>) validation;
+    }
+
+    /**
      * Combines two {@code Validation}s into a {@link Builder}.
      *
      * @param <E>         type of error

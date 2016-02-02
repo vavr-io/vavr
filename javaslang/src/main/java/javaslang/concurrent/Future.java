@@ -275,6 +275,20 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
+     * Narrows a widened {@code Future<? extends T>} to {@code Future<T>}
+     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param future A {@code Future}.
+     * @param <T>    Component type of the {@code Future}.
+     * @return the given {@code future} instance as narrowed type {@code Future<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Future<T> narrow(Future<? extends T> future) {
+        return (Future<T>) future;
+    }
+
+    /**
      * Starts an asynchronous computation, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
      *
      * @param computation A computation.
@@ -899,7 +913,7 @@ public interface Future<T> extends Value<T> {
         Objects.requireNonNull(other, "other is null");
         final Promise<T> promise = Promise.make(executorService());
         onComplete(result -> {
-            if(result.isSuccess()) {
+            if (result.isSuccess()) {
                 promise.complete(result);
             } else {
                 other.onComplete(promise::complete);
@@ -912,7 +926,7 @@ public interface Future<T> extends Value<T> {
         Objects.requireNonNull(supplier, "supplier is null");
         final Promise<T> promise = Promise.make(executorService());
         onComplete(result -> {
-            if(result.isSuccess()) {
+            if (result.isSuccess()) {
                 promise.complete(result);
             } else {
                 supplier.get().onComplete(promise::complete);
