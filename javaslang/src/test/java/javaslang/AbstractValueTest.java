@@ -6,6 +6,15 @@
 package javaslang;
 
 import javaslang.collection.*;
+import javaslang.collection.HashMap;
+import javaslang.collection.HashSet;
+import javaslang.collection.Iterator;
+import javaslang.collection.List;
+import javaslang.collection.Map;
+import javaslang.collection.Queue;
+import javaslang.collection.Set;
+import javaslang.collection.Stack;
+import javaslang.collection.Vector;
 import javaslang.control.Either;
 import javaslang.control.Match;
 import javaslang.control.Option;
@@ -13,9 +22,8 @@ import javaslang.control.Try;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.Collections;
 
 public abstract class AbstractValueTest {
 
@@ -350,6 +358,17 @@ public abstract class AbstractValueTest {
     }
 
     @Test
+    public void shouldConvertToJavaCollectionUsingSupplier() {
+        final Value<Integer> value = of(1, 2, 3);
+        final java.util.List<Integer> ints = value.toJavaCollection(ArrayList::new);
+        if (value.isSingleValued()) {
+            assertThat(ints).isEqualTo(Collections.singletonList(1));
+        } else {
+            assertThat(ints).isEqualTo(Arrays.asList(1, 2, 3));
+        }
+    }
+
+    @Test
     public void shouldConvertToJavaList() {
         final Value<Integer> value = of(1, 2, 3);
         final java.util.List<Integer> list = value.toJavaList();
@@ -361,9 +380,31 @@ public abstract class AbstractValueTest {
     }
 
     @Test
-    public void shouldConvertToJavaMap() {
+    public void shouldConvertToJavaListUsingSupplier() {
+        final Value<Integer> value = of(1, 2, 3);
+        final java.util.List<Integer> ints = value.toJavaList(ArrayList::new);
+        if (value.isSingleValued()) {
+            assertThat(ints).isEqualTo(Collections.singletonList(1));
+        } else {
+            assertThat(ints).isEqualTo(Arrays.asList(1, 2, 3));
+        }
+    }
+
+    @Test
+    public void shouldConvertToJavaMapUsingFunction() {
         final Value<Integer> value = of(1, 2, 3);
         final java.util.Map<Integer, Integer> map = value.toJavaMap(v -> Tuple.of(v, v));
+        if (value.isSingleValued()) {
+            assertThat(map).isEqualTo(JavaCollections.javaMap(1, 1));
+        } else {
+            assertThat(map).isEqualTo(JavaCollections.javaMap(1, 1, 2, 2, 3, 3));
+        }
+    }
+
+    @Test
+    public void shouldConvertToJavaMapUsingSupplierAndFunction() {
+        final Value<Integer> value = of(1, 2, 3);
+        final java.util.Map<Integer, Integer> map = value.toJavaMap(java.util.HashMap::new, i -> Tuple.of(i ,i));
         if (value.isSingleValued()) {
             assertThat(map).isEqualTo(JavaCollections.javaMap(1, 1));
         } else {
@@ -380,6 +421,17 @@ public abstract class AbstractValueTest {
     public void shouldConvertToJavaSet() {
         final Value<Integer> value = of(1, 2, 3);
         final java.util.Set<Integer> set = value.toJavaSet();
+        if (value.isSingleValued()) {
+            assertThat(set).isEqualTo(JavaCollections.javaSet(1));
+        } else {
+            assertThat(set).isEqualTo(JavaCollections.javaSet(1, 2, 3));
+        }
+    }
+
+    @Test
+    public void shouldConvertToJavaSetUsingSupplier() {
+        final Value<Integer> value = of(1, 2, 3);
+        final java.util.Set<Integer> set = value.toJavaSet(java.util.HashSet::new);
         if (value.isSingleValued()) {
             assertThat(set).isEqualTo(JavaCollections.javaSet(1));
         } else {
