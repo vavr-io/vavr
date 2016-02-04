@@ -50,10 +50,24 @@ public class EitherTest extends AbstractValueTest {
     }
 
     @Test
+    public void shouldBimapLeftProjection() {
+        final Either.LeftProjection<Integer, String> actual = Either.<Integer, String>left(1).left().bimap(i -> i + 1, s -> s + "1");
+        final Either<Integer, String> expected = Either.left(2);
+        assertThat(actual.get()).isEqualTo(expected.getLeft());
+    }
+
+    @Test
     public void shouldBimapRight() {
         final Either<Integer, String> actual = Either.<Integer, String>right("1").bimap(i -> i + 1, s -> s + "1");
         final Either<Integer, String> expected = Either.right("11");
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldBimapRightProjection() {
+        final Either.RightProjection<Integer, String> actual = Either.<Integer, String>right("1").right().bimap(i -> i + 1, s -> s + "1");
+        final Either<Integer, String> expected = Either.right("11");
+        assertThat(actual.get()).isEqualTo(expected.get());
     }
 
     @Test
@@ -78,12 +92,34 @@ public class EitherTest extends AbstractValueTest {
         assertThat(Either.right(1).swap()).isEqualTo(Either.left(1));
     }
 
+    // -- Either.narrow
+
+    @Test
+    public void shouldNarrowRightEither() {
+        Either<String, Integer> either = Either.right(42);
+        Either<CharSequence, Number> narrow = Either.narrow(either);
+        assertThat(narrow.get()).isEqualTo(42);
+    }
+
+    @Test
+    public void shouldNarrowLeftEither() {
+        Either<String, Integer> either = Either.left("javaslang");
+        Either<CharSequence, Number> narrow = Either.narrow(either);
+        assertThat(narrow.getLeft()).isEqualTo("javaslang");
+    }
+
     // orElse
 
     @Test
     public void shouldEitherOrElseEither() {
         assertThat(Either.right(1).orElse(Either.right(2)).get()).isEqualTo(1);
         assertThat(Either.left(1).orElse(Either.right(2)).get()).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldEitherOrElseSupplier() {
+        assertThat(Either.right(1).orElse(() -> Either.right(2)).get()).isEqualTo(1);
+        assertThat(Either.left(1).orElse(() -> Either.right(2)).get()).isEqualTo(2);
     }
 
     // -- Left
@@ -96,6 +132,36 @@ public class EitherTest extends AbstractValueTest {
     @Test
     public void shouldReturnFalseWhenCallingIsRightOnLeft() {
         assertThat(Either.left(1).isRight()).isFalse();
+    }
+
+    // -- filter
+
+    @Test
+    public void shouldFilterRight() {
+        Either<String, Integer> either = Either.right(42);
+        assertThat(either.filter(i -> true).get()).isSameAs(either);
+        assertThat(either.filter(i -> false)).isSameAs(Option.none());
+    }
+
+    @Test
+    public void shouldFilterLeft() {
+        Either<String, Integer> either = Either.left("javaslang");
+        assertThat(either.filter(i -> true).get()).isSameAs(either);
+        assertThat(either.filter(i -> false).get()).isSameAs(either);
+    }
+
+    // -- flatMap
+
+    @Test
+    public void shouldFlatMapRight() {
+        Either<String, Integer> either = Either.right(42);
+        assertThat(either.flatMap(v -> Either.right("ok")).get()).isEqualTo("ok");
+    }
+
+    @Test
+    public void shouldFlatMapLeft() {
+        Either<String, Integer> either = Either.left("javaslang");
+        assertThat(either.flatMap(v -> Either.right("ok"))).isSameAs(either);
     }
 
     // equals
