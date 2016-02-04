@@ -520,20 +520,24 @@ public interface Validation<E, T> extends Value<T> {
 
     default <U> Validation<List<E>, U> ap(Validation<List<E>, ? extends Function<? super T, ? extends U>> validation) {
         Objects.requireNonNull(validation, "validation is null");
-        if (isValid() && validation.isValid()) {
-            Function<? super T, ? extends U> f = validation.get();
-            U u = f.apply(this.get());
-            return valid(u);
-        } else if (isValid() && validation.isInvalid()) {
-            List<E> errors = validation.getError();
-            return invalid(errors);
-        } else if (isInvalid() && validation.isValid()) {
-            E error = this.getError();
-            return invalid(List.of(error));
+        if (isValid()) {
+            if (validation.isValid()) {
+                Function<? super T, ? extends U> f = validation.get();
+                U u = f.apply(this.get());
+                return valid(u);
+            } else {
+                List<E> errors = validation.getError();
+                return invalid(errors);
+            }
         } else {
-            List<E> errors = validation.getError();
-            E error = this.getError();
-            return invalid(errors.append(error));
+            if (validation.isValid()) {
+                E error = this.getError();
+                return invalid(List.of(error));
+            } else {
+                List<E> errors = validation.getError();
+                E error = this.getError();
+                return invalid(errors.append(error));
+            }
         }
     }
 
