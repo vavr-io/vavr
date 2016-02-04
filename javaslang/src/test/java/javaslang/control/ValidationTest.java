@@ -62,6 +62,38 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(Validation.invalid("error") instanceof Validation.Invalid).isTrue();
     }
 
+    // -- Validation.fromEither
+
+    @Test
+    public void shouldCreateFromRightEither() {
+        Validation<String, Integer> validation = Validation.fromEither(Either.right(42));
+        assertThat(validation.isValid()).isTrue();
+        assertThat(validation.get()).isEqualTo(42);
+    }
+
+    @Test
+    public void shouldCreateFromLeftEither() {
+        Validation<String, Integer> validation = Validation.fromEither(Either.left("javaslang"));
+        assertThat(validation.isValid()).isFalse();
+        assertThat(validation.getError()).isEqualTo("javaslang");
+    }
+
+    // -- Validation.narrow
+
+    @Test
+    public void shouldNarrowValid() {
+        Validation<String, Integer> validation = Validation.valid(42);
+        Validation<CharSequence, Number> narrow = Validation.narrow(validation);
+        assertThat(narrow.get()).isEqualTo(42);
+    }
+
+    @Test
+    public void shouldNarrowInvalid() {
+        Validation<String, Integer> validation = Validation.invalid("javaslang");
+        Validation<CharSequence, Number> narrow = Validation.narrow(validation);
+        assertThat(narrow.getError()).isEqualTo("javaslang");
+    }
+
     // -- Validation.sequence
 
     @Test(expected = NullPointerException.class)
@@ -87,6 +119,52 @@ public class ValidationTest extends AbstractValueTest {
                 Validation.invalid(List.of("error3", "error4"))
         ));
         assertThat(actual).isEqualTo(Validation.invalid(List.of("error1", "error2", "error3", "error4")));
+    }
+
+    // -- toEither
+
+    @Test
+    public void shouldConvertToRightEither() {
+        Either<?, Integer> either = Validation.valid(42).toEither();
+        assertThat(either.isRight()).isTrue();
+        assertThat(either.get()).isEqualTo(42);
+    }
+
+    @Test
+    public void shouldConvertToLeftEither() {
+        Either<String, ?> either = Validation.invalid("javaslang").toEither();
+        assertThat(either.isLeft()).isTrue();
+        assertThat(either.getLeft()).isEqualTo("javaslang");
+    }
+
+    // -- filter
+
+    @Test
+    public void shouldFilterValid() {
+        Validation<String, Integer> valid = Validation.valid(42);
+        assertThat(valid.filter(i -> true).get()).isSameAs(valid);
+        assertThat(valid.filter(i -> false)).isSameAs(Option.none());
+    }
+
+    @Test
+    public void shouldFilterInvalid() {
+        Validation<String, Integer> invalid = Validation.invalid("javaslang");
+        assertThat(invalid.filter(i -> true).get()).isSameAs(invalid);
+        assertThat(invalid.filter(i -> false).get()).isSameAs(invalid);
+    }
+
+    // -- flatMap
+
+    @Test
+    public void shouldFlatMapValid() {
+        Validation<String, Integer> valid = Validation.valid(42);
+        assertThat(valid.flatMap(v -> Validation.valid("ok")).get()).isEqualTo("ok");
+    }
+
+    @Test
+    public void shouldFlatMapInvalid() {
+        Validation<String, Integer> invalid = Validation.invalid("javaslang");
+        assertThat(invalid.flatMap(v -> Validation.valid("ok"))).isSameAs(invalid);
     }
 
     // -- orElse
