@@ -23,13 +23,6 @@
         </license>
     </licenses>
     <dependencies>
-        <!-- The match module is a stringly-typed code generator. We don't need dependencies at runtime. -->
-        <dependency>
-            <groupId>com.javaslang</groupId>
-            <artifactId>javaslang-matchable-annotation</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
