@@ -13,7 +13,7 @@
     <artifactId>javaslang-pure</artifactId>
     <packaging>jar</packaging>
     <name>Javaslang Pure</name>
-    <description>An purely functional layer for javaslang.</description>
+    <description>A purely functional layer above Javaslang.</description>
     <url>http://javaslang.com</url>
     <licenses>
         <license>
