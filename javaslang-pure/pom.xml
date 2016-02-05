@@ -8,11 +8,12 @@
         <groupId>com.javaslang</groupId>
         <artifactId>javaslang-parent</artifactId>
         <version>2.0.0-RC4-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>javaslang-algebra</artifactId>
+    <artifactId>javaslang-pure</artifactId>
     <packaging>jar</packaging>
-    <name>Javaslang Algebra</name>
-    <description>An algebraic layer for javaslang.r</description>
+    <name>Javaslang Pure</name>
+    <description>A purely functional layer above Javaslang.</description>
     <url>http://javaslang.com</url>
     <licenses>
         <license>

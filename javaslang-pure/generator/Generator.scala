@@ -11,8 +11,8 @@ import JavaGenerator._
 import scala.language.implicitConversions
 
 val N = 8
-val TARGET_MAIN = "javaslang-algebra/src-gen/main/java"
-val TARGET_TEST = "javaslang-algebra/src-gen/test/java"
+val TARGET_MAIN = "javaslang-pure/src-gen/main/java"
+val TARGET_TEST = "javaslang-pure/src-gen/test/java"
 val CHARSET = java.nio.charset.StandardCharsets.UTF_8
 
 /**
