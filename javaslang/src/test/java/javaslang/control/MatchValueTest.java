@@ -48,6 +48,18 @@ public class MatchValueTest extends AbstractValueTest {
 
     // -- MatchValue
 
+    // transform
+
+    @Test
+    public void shouldTransform() {
+        final Function<Integer, String> transform = x -> Match.of(x)
+                .whenIs(2).then(3)
+                .otherwise(42)
+                .transform(m -> String.valueOf(m.get()));
+        assertThat(transform.apply(1)).isEqualTo("42");
+        assertThat(transform.apply(2)).isEqualTo("3");
+    }
+
     // when(Object)
 
     @Test
@@ -298,14 +310,19 @@ public class MatchValueTest extends AbstractValueTest {
 
     @Test
     public void shouldApplyThenFunctionWhenMatched() {
-        final boolean actual = Match.of(true).whenIs(true).then(b -> b).get();
-        assertThat(actual).isTrue();
+        final boolean actual = Match.of(true).whenIs(true).then(b -> !b).get();
+        assertThat(actual).isFalse();
     }
 
     @Test
     public void shouldApplyFunctionWhenApplicableMatched() {
-        final boolean actual = Match.of(true).whenApplicable((Boolean b) -> b).thenApply().get();
-        assertThat(actual).isTrue();
+        final boolean actual = Match.of(true).whenApplicable((Boolean b) -> !b).thenApply().get();
+        assertThat(actual).isFalse();
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowWhenApplicableMatched() {
+        Match.of(true).whenApplicable((Boolean b) -> !b).thenThrow(RuntimeException::new).get();
     }
 
     // should not apply then() when unmatched (honoring When, WhenApplicable)
@@ -331,6 +348,12 @@ public class MatchValueTest extends AbstractValueTest {
     @Test
     public void shouldNotApplyFunctionWhenApplicableUnmatched() {
         final boolean actual = Match.of(true).whenApplicable((Integer i) -> false).thenApply().getOrElse(true);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void shouldThrowWhenApplicableUnmatched() {
+        final boolean actual = Match.of(true).whenApplicable((Integer b) -> false).thenThrow(RuntimeException::new).getOrElse(true);
         assertThat(actual).isTrue();
     }
 
@@ -580,6 +603,12 @@ public class MatchValueTest extends AbstractValueTest {
     }
 
     @Test
+    public void shouldHandleOtherwiseThrowOfUnmatched() {
+        final boolean actual = Match.of(1).whenIs(1).then(true).otherwiseThrow(RuntimeException::new).get();
+        assertThat(actual).isTrue();
+    }
+
+    @Test
     public void shouldHandleOtherwiseSupplierOfUnmatched() {
         final boolean actual = Match.of(1).whenIs(0).then(false).otherwise(() -> true).get();
         assertThat(actual).isTrue();
@@ -682,6 +711,15 @@ public class MatchValueTest extends AbstractValueTest {
     }
 
     @Test
+    public void shouldRunLateWhenMultipleCases() {
+        int actual = Match.of(null)
+                .whenIs(0).then(0)
+                .whenIs(null).then(() -> 42)
+                .get();
+        assertThat(actual).isEqualTo(42);
+    }
+
+    @Test
     public void shouldConsumeWhenOnlyOtherwiseCase() {
         final IntegerConsumer integerConsumer = new IntegerConsumer();
         Match.of(1).otherwiseRun(integerConsumer);
@@ -745,7 +783,10 @@ public class MatchValueTest extends AbstractValueTest {
         Match.of(-1)
                 .whenIs(3).thenRun(integerConsumer)
                 .whenIs(4).thenRun(integerConsumer)
+                .whenIsIn(5, 6).thenRun(integerConsumer)
                 .whenType(Integer.class).thenRun(integerConsumer)
+                .whenTypeIn(String.class, Boolean.class).thenRun(integerConsumer)
+                .whenApplicable((Float f) -> {}).thenRun()
                 .otherwiseRun(i -> integerConsumer.accept(666));
         assertThat(integerConsumer.value).isEqualTo(-1);
     }
