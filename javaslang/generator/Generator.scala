@@ -28,11 +28,185 @@ def run(): Unit = {
  */
 def generateMainClasses(): Unit = {
 
-  // Workaround: Use /$** instead of /** in a StringContext when IntelliJ IDEA otherwise shows up errors in the editor
+  // Workaround: Use /$javadoc instead of /** in a StringContext when IntelliJ IDEA otherwise shows up errors in the editor
   val javadoc = "**"
 
+  genMatch()
   genFunctions()
   genTuples()
+
+  /**
+   * Generator of Match
+   */
+  def genMatch(): Unit = {
+
+    genJavaslangFile("javaslang", "Match")(genMatch)
+
+    def genMatch(im: ImportManager, packageName: String, className: String): String = {
+
+      val Objects = im.getType("java.util.Objects")
+      val OptionType = im.getType("javaslang.control.Option")
+      val SupplierType = im.getType("java.util.function.Supplier")
+      val FunctionType = im.getType("java.util.function.Function")
+      val BiFunctionType = im.getType("java.util.function.BiFunction")
+
+      xs"""
+        public interface Match<R> {
+
+            /**
+             * Entry point of the match API.
+             */
+            static <T> When<T> of(T value) {
+                return new When<>(value); /*TODO: WhenUntyped*/
+            }
+
+            // -- Atomic matchers $$_, $$(), $$(val)
+
+            Pattern0 $$_ = new Pattern0() {
+                @Override
+                public Option<Void> apply(Object any) {
+                    return Option.nothing();
+                }
+            };
+
+            static <T, T1> Pattern1<T, T1> $$(T1 t) {
+                return new Pattern1<T, T1>() {
+                    @Override
+                    public Option<T1> apply(Object o) {
+                        return Objects.equals(o, t) ? Option.some(t) : Option.none();
+                    }
+                };
+            }
+
+            @SuppressWarnings("unchecked")
+            static <T1> InversePattern1<T1> $$() {
+                return new InversePattern1<T1>() {
+                    @Override
+                    public Option<T1> apply(Object o) {
+                        return Option.some((T1) o);
+                    }
+                };
+            }
+
+            // -- Match DSL
+
+            final class When<T> /*TODO: implements Match<R>*/ {
+
+                private T value;
+
+                private When(T value) {
+                    this.value = value;
+                }
+
+                /*TODO: <T1> Then1<T, T1> when(T value) { ... }*/
+
+                public Then0<T> when(Pattern0 pattern) {
+                    $Objects.requireNonNull(pattern, "pattern is null");
+                    return new Then0<>(this, pattern.apply(value));
+                }
+
+                ${(1 to N).gen(i => {
+                  val generics = (1 to i).gen(j => s"T$j")(", ")
+                  xs"""
+                    public <$generics> Then$i<T, $generics> when(Pattern$i<T, $generics> pattern) {
+                        $Objects.requireNonNull(pattern, "pattern is null");
+                        return new Then$i<>(this, pattern.apply(value));
+                    }
+                  """
+                })("\n\n")}
+            }
+
+            final class Then0<T> {
+
+                private final When<T> when;
+                private final Option<Void> option;
+
+                private Then0(When<T> when, Option<Void> option) {
+                    this.when = when;
+                    this.option = option;
+                }
+
+                public <R> When<T> then($SupplierType<? extends R> f) {
+                    $Objects.requireNonNull(f, "f is null");
+                    option.map(ingnored -> f.get());
+                    return when;
+                }
+            }
+
+            final class Then1<T, T1> {
+
+                private final When<T> when;
+                private final Option<T1> option;
+
+                private Then1(When<T> when, Option<T1> option) {
+                    this.when = when;
+                    this.option = option;
+                }
+
+                public <R> When<T> then($FunctionType<? super T1, ? extends R> f) {
+                    $Objects.requireNonNull(f, "f is null");
+                    option.map(f::apply);
+                    return when;
+                }
+            }
+
+            ${(2 to N).gen(i => {
+              val generics = (1 to i).gen(j => s"T$j")(", ")
+              val functionType = i match {
+                case 1 => ""
+                case 2 => BiFunctionType
+                case _ => s"Function$i"
+              }
+              val argTypes = (1 to i).gen(j => s"? super T$j")(", ")
+              xs"""
+                final class Then$i<T, $generics> {
+
+                    final When<T> when;
+                    final Option<Tuple$i<$generics>> option;
+
+                    Then$i(When<T> when, Option<Tuple$i<$generics>> option) {
+                        this.when = when;
+                        this.option = option;
+                    }
+
+                    <R> When<T> then($functionType<$argTypes, ? extends R> f) {
+                        option.map(tuple -> f.apply(tuple._1, tuple._2));
+                        return when;
+                    }
+                }
+              """
+            })("\n\n")}
+
+            // -- Match Patterns
+            //    These can't be @FunctionalInterfaces because of ambiguities.
+            //    For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
+
+            // Used by any-match $$() to inject a type into the pattern.
+            abstract class InversePattern1<T1> {
+                public abstract Option<T1> apply(T1 t);
+            }
+
+            // TODO: I don't think we need a <T> here (like for all other Patterns)
+            abstract class Pattern0 {
+                public abstract Option<Void> apply(Object o);
+            }
+
+            abstract class Pattern1<T, T1> {
+                public abstract Option<T1> apply(Object o);
+            }
+
+            ${(2 to N).gen(i => {
+              val generics = (1 to i).gen(j => s"T$j")(", ")
+              xs"""
+                abstract class Pattern$i<T, $generics> {
+                    public abstract Option<Tuple$i<$generics>> apply(Object o);
+                }
+              """
+            })("\n\n")}
+        }
+      """
+    }
+  }
 
   /**
    * Generator of Functions
@@ -93,7 +267,7 @@ def generateMainClasses(): Unit = {
         }
 
         xs"""
-          /$javadoc
+          /**
            * Represents a function with ${arguments(i)}.
            ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> argument $j of the function")("\n")}
            * @param <R> return type of the function
@@ -103,12 +277,12 @@ def generateMainClasses(): Unit = {
           @FunctionalInterface
           public interface $className$fullGenerics extends λ<R>$additionalExtends {
 
-              /**
+              /$javadoc
                * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
                */
               long serialVersionUID = 1L;
 
-              /**
+              /$javadoc
                * Creates a {@code $className} based on
                * <ul>
                * <li><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method reference</a></li>
@@ -145,7 +319,7 @@ def generateMainClasses(): Unit = {
                   return methodReference;
               }
 
-              /**
+              /$javadoc
                * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
                *
                * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
@@ -315,7 +489,7 @@ def generateMainClasses(): Unit = {
                   return new Type<>(this);
               }
 
-              /**
+              /$javadoc
                * Represents the type of a {@code $className} which consists of ${i.numerus("parameter type")}
                * and a return type.
                *
@@ -630,7 +804,7 @@ def generateMainClasses(): Unit = {
         val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
         val params = (1 to i).gen(j => s"t$j")(", ")
         xs"""
-          /$javadoc
+          /**
            * Creates a tuple of ${i.numerus("element")}.
            ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
            ${(1 to i).gen(j => s"* @param t$j the ${j.ordinal} element")("\n")}
@@ -643,7 +817,7 @@ def generateMainClasses(): Unit = {
       }
 
       xs"""
-        /$javadoc
+        /**
          * The base interface of all tuples.
          *
          * @author Daniel Dietrich
@@ -1102,7 +1276,8 @@ def generateTestClasses(): Unit = {
 
 /**
  * Adds the Javaslang header to generated classes.
- * @param packageName Java package name
+  *
+  * @param packageName Java package name
  * @param className Simple java class name
  * @param gen A generator which produces a String.
  */
@@ -1127,7 +1302,8 @@ object JavaGenerator {
 
   /**
    * Generates a Java file.
-   * @param packageName Java package name
+    *
+    * @param packageName Java package name
    * @param className Simple java class name
    * @param classHeader A class file header
    * @param gen A generator which produces a String.
@@ -1156,7 +1332,8 @@ object JavaGenerator {
 
   /**
    * A <em>stateful</em> ImportManager which generates an import section of a Java class file.
-   * @param packageNameOfClass package name of the generated class
+    *
+    * @param packageNameOfClass package name of the generated class
    * @param knownSimpleClassNames a list of class names which may not be imported from other packages
    */
   class ImportManager(packageNameOfClass: String, knownSimpleClassNames: List[String], wildcardThreshold: Int = 5) {
@@ -1291,7 +1468,8 @@ object Generator {
    * (1 to 3).gen(i => s"x$i")(", ") // x1, x2, x3
    * (1 to 3).reverse.gen(i -> s"x$i")(", ") // x3, x2, x1
    * }}}
-   * @param range A Range
+    *
+    * @param range A Range
    */
   implicit class RangeExtensions(range: Range) {
     def gen(f: Int => String = String.valueOf)(implicit delimiter: String = ""): String =
@@ -1306,7 +1484,8 @@ object Generator {
    * // val c = "C"
    * Seq("a", "b", "c").gen(s => raw"""val $s = "${s.toUpperCase}"""")("\n")
    * }}}
-   * @param seq A Seq
+    *
+    * @param seq A Seq
    */
   implicit class SeqExtensions(seq: Seq[Any]) {
     def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
@@ -1329,7 +1508,8 @@ object Generator {
    * // val seq = Seq("a", "1", "true")
    * s"val seq = Seq(${("a", 1, true).gen(s => s""""$s"""")(", ")})"
    * }}}
-   * @param tuple A Tuple
+    *
+    * @param tuple A Tuple
    */
   implicit class Tuple3Extensions(tuple: (Any, Any, Any)) {
     def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
@@ -1433,7 +1613,8 @@ object Generator {
 
   /**
    * Provides StringContext extensions, e.g. indentation of cascaded rich strings.
-   * @param sc Current StringContext
+    *
+    * @param sc Current StringContext
    * @see <a href="https://gist.github.com/danieldietrich/5174348">this gist</a>
    */
   implicit class StringContextExtensions(sc: StringContext) {
@@ -1442,14 +1623,16 @@ object Generator {
 
     /**
      * Formats escaped strings.
-     * @param args StringContext parts
+      *
+      * @param args StringContext parts
      * @return An aligned String
      */
     def xs(args: Any*): String = align(sc.s, args)
 
     /**
      * Formats raw/unescaped strings.
-     * @param args StringContext parts
+      *
+      * @param args StringContext parts
      * @return An aligned String
      */
     def xraw(args: Any*): String = align(sc.raw, args)
