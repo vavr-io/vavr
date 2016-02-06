@@ -1477,6 +1477,32 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         of(1, 2, 3).subSequence(2, 1).mkString(); // force computation of last element, e.g. because Stream is lazy
     }
 
+    // -- search(element)
+
+    @Test
+    public void shouldSearchIndexForPresentElements() {
+        assertThat(of(1, 2, 3, 4, 5, 6).search(3)).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldSearchNegatedInsertionPointMinusOneForAbsentElements() {
+        assertThat(empty().search(42)).isEqualTo(-1);
+        assertThat(of(10, 20, 30).search(25)).isEqualTo(-3);
+    }
+
+    // -- search(element,comparator)
+
+    @Test
+    public void shouldSearchIndexForPresentElementsUsingComparator() {
+        assertThat(of(1, 2, 3, 4, 5, 6).search(3, Integer::compareTo)).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldSearchNegatedInsertionPointMinusOneForAbsentElementsUsingComparator() {
+        assertThat(this.<Integer> empty().search(42, Integer::compareTo)).isEqualTo(-1);
+        assertThat(of(10, 20, 30).search(25, Integer::compareTo)).isEqualTo(-3);
+    }
+
     // -- IndexedSeq special cases
 
     @Test
