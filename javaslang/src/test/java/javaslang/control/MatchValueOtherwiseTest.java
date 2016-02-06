@@ -7,6 +7,7 @@ package javaslang.control;
 
 import javaslang.AbstractValueTest;
 import javaslang.control.Match.MatchValue.Otherwise;
+import org.junit.Test;
 
 public class MatchValueOtherwiseTest extends AbstractValueTest {
 
@@ -40,6 +41,19 @@ public class MatchValueOtherwiseTest extends AbstractValueTest {
 
     // -- MatchValue.Otherwise
 
-    // currently no special tests
+    @Test
+    public void shouldAcceptSupplier() {
+        assertThat(Match.of(null).otherwise(() -> 42).get()).isEqualTo(42);
+    }
+
+    @Test
+    public void shouldAcceptFunction() {
+        assertThat(Match.of(null).otherwise(x -> 42).get()).isEqualTo(42);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowOtherwise() {
+        assertThat(Match.of(null).otherwiseThrow(RuntimeException::new).get()).isEqualTo(42);
+    }
 
 }
