@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Function1;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Match;
@@ -366,6 +367,23 @@ public interface IndexedSeq<T> extends Seq<T> {
     @Override
     IndexedSeq<Tuple2<T, Long>> zipWithIndex();
 
+    @SuppressWarnings("unchecked")
+    default int search(T key) {
+        Function1<Integer, Integer> midToCmp = mid -> {
+            Comparable<? super T> midVal = (Comparable<? super T>) get(mid);
+            return midVal.compareTo(key);
+        };
+        return IndexedSeqModule.Search.binarySearch(this, midToCmp);
+    }
+
+    default int search(T key, Comparator<? super T> comparator) {
+        Function1<Integer, Integer> midToCmp = mid -> {
+            T midVal = get(mid);
+            return comparator.compare(midVal, key);
+        };
+        return IndexedSeqModule.Search.binarySearch(this, midToCmp);
+    }
+
 }
 
 interface IndexedSeqModule {
@@ -407,6 +425,25 @@ interface IndexedSeqModule {
                 p++;
             }
             return -1;
+        }
+    }
+    interface Search {
+        static <T> int binarySearch(IndexedSeq<T> t, Function1<Integer, Integer> midToCmp) {
+            int low = 0;
+            int high = t.size() - 1;
+
+            while (low <= high) {
+                int mid = (low + high) >>> 1;
+                int cmp = midToCmp.apply(mid);
+
+                if (cmp < 0)
+                    low = mid + 1;
+                else if (cmp > 0)
+                    high = mid - 1;
+                else
+                    return mid; // key found
+            }
+            return -(low + 1);  // key not found
         }
     }
 }
