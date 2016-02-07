@@ -56,8 +56,8 @@ def generateMainClasses(): Unit = {
             /**
              * Entry point of the match API.
              */
-            static <T> Case<T> match(T value) {
-                return new Case<>(value); /*TODO: CaseUntyped*/
+            static <T> MatchBuilder<T> match(T value) {
+                return new MatchBuilder<>(value); /*TODO: Untyped*/
             }
 
             // -- Atomic matchers $$_, $$(), $$(val)
@@ -91,63 +91,63 @@ def generateMainClasses(): Unit = {
 
             // -- Match DSL
 
-            final class Case<T> /*TODO: implements Match<R>*/ {
+            final class MatchBuilder<T> {
 
                 private T value;
 
-                private Case(T value) {
+                private MatchBuilder(T value) {
                     this.value = value;
                 }
 
-                /*TODO: <T1> Then1<T, T1> _case(T value) { ... }*/
+                /*TODO: <T1> Case1<T, T1> _case(T value) { ... }*/
 
-                public Then0<T> _case(Pattern0 pattern) {
+                public Case0<T> _case(Pattern0 pattern) {
                     $Objects.requireNonNull(pattern, "pattern is null");
-                    return new Then0<>(this, pattern.apply(value));
+                    return new Case0<>(this, pattern.apply(value));
                 }
 
                 ${(1 to N).gen(i => {
                   val generics = (1 to i).gen(j => s"T$j")(", ")
                   xs"""
-                    public <$generics> Then$i<T, $generics> _case(Pattern$i<T, $generics> pattern) {
+                    public <$generics> Case$i<T, $generics> _case(Pattern$i<T, $generics> pattern) {
                         $Objects.requireNonNull(pattern, "pattern is null");
-                        return new Then$i<>(this, pattern.apply(value));
+                        return new Case$i<>(this, pattern.apply(value));
                     }
                   """
                 })("\n\n")}
             }
 
-            final class Then0<T> {
+            final class Case0<T> {
 
-                private final Case<T> _case;
+                private final MatchBuilder<T> builder;
                 private final Option<Void> option;
 
-                private Then0(Case<T> _case, Option<Void> option) {
-                    this._case = _case;
+                private Case0(MatchBuilder<T> builder, Option<Void> option) {
+                    this.builder = builder;
                     this.option = option;
                 }
 
-                public <R> Case<T> then($SupplierType<? extends R> f) {
+                public <R> MatchBuilder<T> then($SupplierType<? extends R> f) {
                     $Objects.requireNonNull(f, "f is null");
                     option.map(ingnored -> f.get());
-                    return _case;
+                    return builder;
                 }
             }
 
-            final class Then1<T, T1> {
+            final class Case1<T, T1> {
 
-                private final Case<T> _case;
+                private final MatchBuilder<T> builder;
                 private final Option<T1> option;
 
-                private Then1(Case<T> _case, Option<T1> option) {
-                    this._case = _case;
+                private Case1(MatchBuilder<T> builder, Option<T1> option) {
+                    this.builder = builder;
                     this.option = option;
                 }
 
-                public <R> Case<T> then($FunctionType<? super T1, ? extends R> f) {
+                public <R> MatchBuilder<T> then($FunctionType<? super T1, ? extends R> f) {
                     $Objects.requireNonNull(f, "f is null");
                     option.map(f::apply);
-                    return _case;
+                    return builder;
                 }
             }
 
@@ -160,19 +160,19 @@ def generateMainClasses(): Unit = {
               }
               val argTypes = (1 to i).gen(j => s"? super T$j")(", ")
               xs"""
-                final class Then$i<T, $generics> {
+                final class Case$i<T, $generics> {
 
-                    final Case<T> _case;
+                    final MatchBuilder<T> builder;
                     final Option<Tuple$i<$generics>> option;
 
-                    Then$i(Case<T> _case, Option<Tuple$i<$generics>> option) {
-                        this._case = _case;
+                    Case$i(MatchBuilder<T> builder, Option<Tuple$i<$generics>> option) {
+                        this.builder = builder;
                         this.option = option;
                     }
 
-                    <R> Case<T> then($functionType<$argTypes, ? extends R> f) {
+                    <R> MatchBuilder<T> then($functionType<$argTypes, ? extends R> f) {
                         option.map(tuple -> f.apply(tuple._1, tuple._2));
-                        return _case;
+                        return builder;
                     }
                 }
               """

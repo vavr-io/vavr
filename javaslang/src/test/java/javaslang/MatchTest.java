@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import static javaslang.Match.*;
 import static javaslang.MatchTest.Patterns.*;
-import static javaslang.MatchTest.Patterns.Tuple3;
 
 public class MatchTest {
 
@@ -29,88 +28,77 @@ public class MatchTest {
     @Test
     public void shouldMatch() {
 
-        Match.match(TUPLE2_OPTION)
-                ._case($_)
-                .then(() -> "good!");
+        match(TUPLE2_OPTION)
+                ._case($_).then(() -> "good!");
 
-        Match.match(TUPLE2_OPTION)
-                ._case(Option($()))
-                .then(value -> {
+        match(TUPLE2_OPTION)
+                ._case(Option($())).then(value -> {
                     Tuple2<String, Integer> tuple2 = value;
                     System.out.printf("Option($()) = Option(%s)\n", value);
                     return null;
                 });
 
-        Match.match(TUPLE2_OPTION_OPTION)
-                ._case(Option(Option($(Tuple.of("Test", 123)))))
-                .then(value -> {
+        match(TUPLE2_OPTION_OPTION)
+                ._case(Option(Option($(Tuple.of("Test", 123))))).then(value -> {
                     Tuple2<String, Integer> i = value;
                     System.out.printf("Option(Option($(Tuple.of(\"Test\", 123)))) = Option(Option(%s))\n", value);
                     return null;
                 });
 
-        Match.match(INT_OPTION_LIST)
-                ._case(List(Option($(1)), $_))
-                .then(value -> {
+        match(INT_OPTION_LIST)
+                ._case(List(Option($(1)), $_)).then(value -> {
                     int i = value;
                     System.out.printf("List(Option($(1)), _) = List(Option(%d), _)\n", i);
                     return null;
                 });
 
-        Match.match(TUPLE3_LIST)
-                ._case(List($(), $()))
-                .then((x, xs) -> {
+        match(TUPLE3_LIST)
+                ._case(List($(), $())).then((x, xs) -> {
                     Tuple3<String, Integer, Double> head = x;
                     List<Tuple3<String, Integer, Double>> tail = xs;
                     System.out.printf("List($(), $()) = List(%s, %s)\n", head, tail);
                     return null;
                 });
 
-        Match.match(TUPLE3_LIST)
-                ._case(List($(), $_))
-                .then(x -> {
+        match(TUPLE3_LIST)
+                ._case(List($(), $_)).then(x -> {
                     Tuple3<String, Integer, Double> head = x;
                     System.out.printf("List($(), _) = List(%s, ?)\n", head);
                     return null;
                 });
 
 //        // CORRECT: Does not compile because List(Tuple3, ...) is not of List(Option, ...)
-//        Match.match(TUPLE3_LIST)
-//                ._case(List(Option($(1)), List($(2), $_)))
-//                .then((i1, i2) -> {
+//        match(TUPLE3_LIST)
+//                ._case(List(Option($(1)), List($(2), $_))).then((i1, i2) -> {
 //                    int j1 = i1;
 //                    int j2 = i2;
 //                    System.out.printf("List(Option($(1)), List($(2), _)) = List(%s, %s)\n", j1, j2);
 //                    return null;
 //                });
 
-        Match.match(TUPLE3_LIST)
-                ._case(List(Tuple3($("begin"), $_, $_), $_))
-                .then(s -> {
+        match(TUPLE3_LIST)
+                ._case(List(Tuple3($("begin"), $_, $_), $_)).then(s -> {
                     System.out.printf("List(Tuple3($(\"begin\"), _, _), _) = List(Tuple3(%s, _, _), _)\n", s);
                     return null;
                 });
 
-        Match.match(TUPLE3_LIST)
-                ._case(List(Tuple3($_, $_, $_), $_))
-                .then(() -> {
+        match(TUPLE3_LIST)
+                ._case(List(Tuple3($_, $_, $_), $_)).then(() -> {
                     System.out.printf("List(Tuple3($_, _, _), _) = List(Tuple3(_, _, _), _)\n");
                     return null;
                 });
 
         // CORRECT: Does not compile because $(1) is not of type String
 //        // changed String to int
-//        Match.match(TUPLE3_LIST)
-//                ._case(List(Tuple3($(1), $_, $_), $_))
-//                .then(s -> {
+//        match(TUPLE3_LIST)
+//                ._case(List(Tuple3($(1), $_, $_), $_)).then(s -> {
 //                    System.out.printf("List(Tuple3($(\"begin\"), _, _), _) = List(Tuple3(%s, _, _), _)\n", s);
 //                    return null;
 //                });
 
 //        // SHOULD NOT COMPILE!
-//        Match.match(TUPLE3_LIST)
-//                ._case(Tuple3($(1), $_, $_))
-//                .then(s -> {
+//        match(TUPLE3_LIST)
+//                ._case(Tuple3($(1), $_, $_)).then(s -> {
 //                    System.out.printf("List(Tuple3($(\"begin\"), _, _), _) = List(Tuple3(%s, _, _), _)\n", s);
 //                    return null;
 //                });

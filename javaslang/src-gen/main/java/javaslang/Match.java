@@ -20,8 +20,8 @@ public interface Match<R> {
     /**
      * Entry point of the match API.
      */
-    static <T> Case<T> match(T value) {
-        return new Case<>(value); /*TODO: CaseUntyped*/
+    static <T> MatchBuilder<T> match(T value) {
+        return new MatchBuilder<>(value); /*TODO: Untyped*/
     }
 
     // -- Atomic matchers $_, $(), $(val)
@@ -55,205 +55,205 @@ public interface Match<R> {
 
     // -- Match DSL
 
-    final class Case<T> /*TODO: implements Match<R>*/ {
+    final class MatchBuilder<T> {
 
         private T value;
 
-        private Case(T value) {
+        private MatchBuilder(T value) {
             this.value = value;
         }
 
-        /*TODO: <T1> Then1<T, T1> _case(T value) { ... }*/
+        /*TODO: <T1> Case1<T, T1> _case(T value) { ... }*/
 
-        public Then0<T> _case(Pattern0 pattern) {
+        public Case0<T> _case(Pattern0 pattern) {
             Objects.requireNonNull(pattern, "pattern is null");
-            return new Then0<>(this, pattern.apply(value));
+            return new Case0<>(this, pattern.apply(value));
         }
 
-        public <T1> Then1<T, T1> _case(Pattern1<T, T1> pattern) {
+        public <T1> Case1<T, T1> _case(Pattern1<T, T1> pattern) {
             Objects.requireNonNull(pattern, "pattern is null");
-            return new Then1<>(this, pattern.apply(value));
+            return new Case1<>(this, pattern.apply(value));
         }
 
-        public <T1, T2> Then2<T, T1, T2> _case(Pattern2<T, T1, T2> pattern) {
+        public <T1, T2> Case2<T, T1, T2> _case(Pattern2<T, T1, T2> pattern) {
             Objects.requireNonNull(pattern, "pattern is null");
-            return new Then2<>(this, pattern.apply(value));
+            return new Case2<>(this, pattern.apply(value));
         }
 
-        public <T1, T2, T3> Then3<T, T1, T2, T3> _case(Pattern3<T, T1, T2, T3> pattern) {
+        public <T1, T2, T3> Case3<T, T1, T2, T3> _case(Pattern3<T, T1, T2, T3> pattern) {
             Objects.requireNonNull(pattern, "pattern is null");
-            return new Then3<>(this, pattern.apply(value));
+            return new Case3<>(this, pattern.apply(value));
         }
 
-        public <T1, T2, T3, T4> Then4<T, T1, T2, T3, T4> _case(Pattern4<T, T1, T2, T3, T4> pattern) {
+        public <T1, T2, T3, T4> Case4<T, T1, T2, T3, T4> _case(Pattern4<T, T1, T2, T3, T4> pattern) {
             Objects.requireNonNull(pattern, "pattern is null");
-            return new Then4<>(this, pattern.apply(value));
+            return new Case4<>(this, pattern.apply(value));
         }
 
-        public <T1, T2, T3, T4, T5> Then5<T, T1, T2, T3, T4, T5> _case(Pattern5<T, T1, T2, T3, T4, T5> pattern) {
+        public <T1, T2, T3, T4, T5> Case5<T, T1, T2, T3, T4, T5> _case(Pattern5<T, T1, T2, T3, T4, T5> pattern) {
             Objects.requireNonNull(pattern, "pattern is null");
-            return new Then5<>(this, pattern.apply(value));
+            return new Case5<>(this, pattern.apply(value));
         }
 
-        public <T1, T2, T3, T4, T5, T6> Then6<T, T1, T2, T3, T4, T5, T6> _case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern) {
+        public <T1, T2, T3, T4, T5, T6> Case6<T, T1, T2, T3, T4, T5, T6> _case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern) {
             Objects.requireNonNull(pattern, "pattern is null");
-            return new Then6<>(this, pattern.apply(value));
+            return new Case6<>(this, pattern.apply(value));
         }
 
-        public <T1, T2, T3, T4, T5, T6, T7> Then7<T, T1, T2, T3, T4, T5, T6, T7> _case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern) {
+        public <T1, T2, T3, T4, T5, T6, T7> Case7<T, T1, T2, T3, T4, T5, T6, T7> _case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern) {
             Objects.requireNonNull(pattern, "pattern is null");
-            return new Then7<>(this, pattern.apply(value));
+            return new Case7<>(this, pattern.apply(value));
         }
 
-        public <T1, T2, T3, T4, T5, T6, T7, T8> Then8<T, T1, T2, T3, T4, T5, T6, T7, T8> _case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern) {
+        public <T1, T2, T3, T4, T5, T6, T7, T8> Case8<T, T1, T2, T3, T4, T5, T6, T7, T8> _case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern) {
             Objects.requireNonNull(pattern, "pattern is null");
-            return new Then8<>(this, pattern.apply(value));
+            return new Case8<>(this, pattern.apply(value));
         }
     }
 
-    final class Then0<T> {
+    final class Case0<T> {
 
-        private final Case<T> _case;
+        private final MatchBuilder<T> builder;
         private final Option<Void> option;
 
-        private Then0(Case<T> _case, Option<Void> option) {
-            this._case = _case;
+        private Case0(MatchBuilder<T> builder, Option<Void> option) {
+            this.builder = builder;
             this.option = option;
         }
 
-        public <R> Case<T> then(Supplier<? extends R> f) {
+        public <R> MatchBuilder<T> then(Supplier<? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             option.map(ingnored -> f.get());
-            return _case;
+            return builder;
         }
     }
 
-    final class Then1<T, T1> {
+    final class Case1<T, T1> {
 
-        private final Case<T> _case;
+        private final MatchBuilder<T> builder;
         private final Option<T1> option;
 
-        private Then1(Case<T> _case, Option<T1> option) {
-            this._case = _case;
+        private Case1(MatchBuilder<T> builder, Option<T1> option) {
+            this.builder = builder;
             this.option = option;
         }
 
-        public <R> Case<T> then(Function<? super T1, ? extends R> f) {
+        public <R> MatchBuilder<T> then(Function<? super T1, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             option.map(f::apply);
-            return _case;
+            return builder;
         }
     }
 
-    final class Then2<T, T1, T2> {
+    final class Case2<T, T1, T2> {
 
-        final Case<T> _case;
+        final MatchBuilder<T> builder;
         final Option<Tuple2<T1, T2>> option;
 
-        Then2(Case<T> _case, Option<Tuple2<T1, T2>> option) {
-            this._case = _case;
+        Case2(MatchBuilder<T> builder, Option<Tuple2<T1, T2>> option) {
+            this.builder = builder;
             this.option = option;
         }
 
-        <R> Case<T> then(BiFunction<? super T1, ? super T2, ? extends R> f) {
+        <R> MatchBuilder<T> then(BiFunction<? super T1, ? super T2, ? extends R> f) {
             option.map(tuple -> f.apply(tuple._1, tuple._2));
-            return _case;
+            return builder;
         }
     }
 
-    final class Then3<T, T1, T2, T3> {
+    final class Case3<T, T1, T2, T3> {
 
-        final Case<T> _case;
+        final MatchBuilder<T> builder;
         final Option<Tuple3<T1, T2, T3>> option;
 
-        Then3(Case<T> _case, Option<Tuple3<T1, T2, T3>> option) {
-            this._case = _case;
+        Case3(MatchBuilder<T> builder, Option<Tuple3<T1, T2, T3>> option) {
+            this.builder = builder;
             this.option = option;
         }
 
-        <R> Case<T> then(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+        <R> MatchBuilder<T> then(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
             option.map(tuple -> f.apply(tuple._1, tuple._2));
-            return _case;
+            return builder;
         }
     }
 
-    final class Then4<T, T1, T2, T3, T4> {
+    final class Case4<T, T1, T2, T3, T4> {
 
-        final Case<T> _case;
+        final MatchBuilder<T> builder;
         final Option<Tuple4<T1, T2, T3, T4>> option;
 
-        Then4(Case<T> _case, Option<Tuple4<T1, T2, T3, T4>> option) {
-            this._case = _case;
+        Case4(MatchBuilder<T> builder, Option<Tuple4<T1, T2, T3, T4>> option) {
+            this.builder = builder;
             this.option = option;
         }
 
-        <R> Case<T> then(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+        <R> MatchBuilder<T> then(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             option.map(tuple -> f.apply(tuple._1, tuple._2));
-            return _case;
+            return builder;
         }
     }
 
-    final class Then5<T, T1, T2, T3, T4, T5> {
+    final class Case5<T, T1, T2, T3, T4, T5> {
 
-        final Case<T> _case;
+        final MatchBuilder<T> builder;
         final Option<Tuple5<T1, T2, T3, T4, T5>> option;
 
-        Then5(Case<T> _case, Option<Tuple5<T1, T2, T3, T4, T5>> option) {
-            this._case = _case;
+        Case5(MatchBuilder<T> builder, Option<Tuple5<T1, T2, T3, T4, T5>> option) {
+            this.builder = builder;
             this.option = option;
         }
 
-        <R> Case<T> then(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+        <R> MatchBuilder<T> then(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
             option.map(tuple -> f.apply(tuple._1, tuple._2));
-            return _case;
+            return builder;
         }
     }
 
-    final class Then6<T, T1, T2, T3, T4, T5, T6> {
+    final class Case6<T, T1, T2, T3, T4, T5, T6> {
 
-        final Case<T> _case;
+        final MatchBuilder<T> builder;
         final Option<Tuple6<T1, T2, T3, T4, T5, T6>> option;
 
-        Then6(Case<T> _case, Option<Tuple6<T1, T2, T3, T4, T5, T6>> option) {
-            this._case = _case;
+        Case6(MatchBuilder<T> builder, Option<Tuple6<T1, T2, T3, T4, T5, T6>> option) {
+            this.builder = builder;
             this.option = option;
         }
 
-        <R> Case<T> then(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+        <R> MatchBuilder<T> then(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
             option.map(tuple -> f.apply(tuple._1, tuple._2));
-            return _case;
+            return builder;
         }
     }
 
-    final class Then7<T, T1, T2, T3, T4, T5, T6, T7> {
+    final class Case7<T, T1, T2, T3, T4, T5, T6, T7> {
 
-        final Case<T> _case;
+        final MatchBuilder<T> builder;
         final Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> option;
 
-        Then7(Case<T> _case, Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> option) {
-            this._case = _case;
+        Case7(MatchBuilder<T> builder, Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> option) {
+            this.builder = builder;
             this.option = option;
         }
 
-        <R> Case<T> then(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+        <R> MatchBuilder<T> then(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
             option.map(tuple -> f.apply(tuple._1, tuple._2));
-            return _case;
+            return builder;
         }
     }
 
-    final class Then8<T, T1, T2, T3, T4, T5, T6, T7, T8> {
+    final class Case8<T, T1, T2, T3, T4, T5, T6, T7, T8> {
 
-        final Case<T> _case;
+        final MatchBuilder<T> builder;
         final Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> option;
 
-        Then8(Case<T> _case, Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> option) {
-            this._case = _case;
+        Case8(MatchBuilder<T> builder, Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> option) {
+            this.builder = builder;
             this.option = option;
         }
 
-        <R> Case<T> then(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+        <R> MatchBuilder<T> then(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
             option.map(tuple -> f.apply(tuple._1, tuple._2));
-            return _case;
+            return builder;
         }
     }
 
