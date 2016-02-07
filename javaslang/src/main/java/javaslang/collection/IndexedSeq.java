@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Match;
@@ -14,10 +13,7 @@ import javaslang.control.Option;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * Interface for immutable, indexed sequences.
@@ -381,7 +377,7 @@ public interface IndexedSeq<T> extends Seq<T> {
      */
     @SuppressWarnings("unchecked")
     default int search(T element) {
-        Function1<Integer, Integer> comparison = midIndex -> {
+        IntUnaryOperator comparison = midIndex -> {
             Comparable<? super T> midVal = (Comparable<? super T>) get(midIndex);
             return midVal.compareTo(element);
         };
@@ -402,7 +398,7 @@ public interface IndexedSeq<T> extends Seq<T> {
      */
     default int search(T element, Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        Function1<Integer, Integer> comparison = midIndex -> {
+        IntUnaryOperator comparison = midIndex -> {
             T midVal = get(midIndex);
             return comparator.compare(midVal, element);
         };
@@ -454,12 +450,12 @@ interface IndexedSeqModule {
     }
 
     interface Search {
-        static <T> int binarySearch(IndexedSeq<T> seq, Function1<Integer, Integer> comparison) {
+        static <T> int binarySearch(IndexedSeq<T> seq, IntUnaryOperator comparison) {
             int low = 0;
             int high = seq.size() - 1;
             while (low <= high) {
                 int mid = (low + high) >>> 1;
-                int cmp = comparison.apply(mid);
+                int cmp = comparison.applyAsInt(mid);
 
                 if (cmp < 0) {
                     low = mid + 1;
