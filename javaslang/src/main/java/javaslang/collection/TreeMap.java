@@ -5,9 +5,9 @@
  */
 package javaslang.collection;
 
+import javaslang.Match;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+import static javaslang.Match.Match;
 import static javaslang.collection.Comparators.naturalComparator;
 
 /**
@@ -576,8 +577,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public Match.MatchValue.Of<TreeMap<K, V>> match() {
-        return Match.of(this);
+    public Match<TreeMap<K, V>> match() {
+        return Match(this);
     }
 
     @Override

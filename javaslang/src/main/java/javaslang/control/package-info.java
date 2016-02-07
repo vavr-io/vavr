@@ -1,11 +1,6 @@
 /**
- * Control structures like {@linkplain javaslang.control.Match}, the disjoint union type {@linkplain javaslang.control.Either}, the optional value type
+ * Control structures like the disjoint union type {@linkplain javaslang.control.Either}, the optional value type
  * {@linkplain javaslang.control.Option} and {@linkplain javaslang.control.Try} for exception handling.
- * The {@linkplain javaslang.control.Match} provides pattern matching.
- * <p>
- * <strong>Match</strong>
- * <p>
- * The match control is a more mature switch expression with pattern matching capabilities.
  * <p>
  * <strong>Either</strong>
  * <p>

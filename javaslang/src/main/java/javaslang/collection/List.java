@@ -9,13 +9,14 @@ import javaslang.*;
 import javaslang.collection.List.Nil;
 import javaslang.collection.ListModule.Combinations;
 import javaslang.collection.ListModule.SplitAt;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
+
+import static javaslang.Match.Match;
 
 /**
  * An immutable {@code List} is an eager sequence of elements. Its immutability makes it suitable for concurrent programming.
@@ -805,8 +806,8 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Match.MatchValue.Of<List<T>> match() {
-        return Match.of(this);
+    default Match<List<T>> match() {
+        return Match(this);
     }
 
     @Override

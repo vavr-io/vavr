@@ -7,7 +7,6 @@ package javaslang;
 
 import javaslang.collection.*;
 import javaslang.control.Either;
-import javaslang.control.Match;
 import javaslang.control.Option;
 import javaslang.control.Try;
 
@@ -435,27 +434,27 @@ public interface Value<T> extends Iterable<T> {
     // -- conversion methods
 
     /**
-     * Provides syntactic sugar for {@link Match.MatchValue.Of}.
+     * Provides syntactic sugar for {@link Match#Match(Object)}.
      * <p>
      * We write
      *
      * <pre><code>
-     * value.match()
-     *      .when(...).then(...)
-     *      .get();
+     * value.match().of(
+     *      Case(pattern, f)
+     * );
      * </code></pre>
      *
      * instead of
      *
      * <pre><code>
-     * Match.of(value)
-     *      .when(...).then(...)
-     *      .get();
+     * Match(value).of(
+     *      Case(pattern, f)
+     * );
      * </code></pre>
      *
      * @return a new type-safe match builder.
      */
-    Match.MatchValue.Of<? extends Value<T>> match();
+    Match<? extends Value<T>> match();
 
     /**
      * Converts this to a {@link Array}.

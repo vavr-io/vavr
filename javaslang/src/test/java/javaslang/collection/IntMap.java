@@ -5,10 +5,10 @@
  */
 package javaslang.collection;
 
+import javaslang.Match;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -19,6 +19,8 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import static javaslang.Match.Match;
 
 public class IntMap<T> implements Traversable<T>, Serializable {
 
@@ -176,8 +178,8 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Match.MatchValue.Of<IntMap<T>> match() {
-        return Match.of(this);
+    public Match<IntMap<T>> match() {
+        return Match(this);
     }
 
     @Override
@@ -308,7 +310,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     public IntMap<T> takeWhile(Predicate<? super T> predicate) {
         return IntMap.of(original.takeWhile(p -> predicate.test(p._2)));
     }
-    
+
     @Override
     public <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");

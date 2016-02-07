@@ -51,17 +51,68 @@ def generateMainClasses(): Unit = {
       val BiFunctionType = im.getType("java.util.function.BiFunction")
 
       xs"""
-        public final class Match {
+        /**
+         * Scala-like structural pattern matching for Java.
+         *
+         * <pre><code>
+         * // Match API
+         * import static javaslang.Match.*;
+         *
+         * // Match Patterns for Javaslang types
+         * import static javaslang.Patterns.*;
+         *
+         * // Example
+         * Match(list).of(
+         *         Case(List($$(), $$()), (x, xs) -&gt; "head: " + x + ", tail: " + xs),
+         *         Case($$_, -&gt; "Nil")
+         * );
+         *
+         * // Syntactic sugar
+         * list.match(
+         *         Case(List($$(), $$()), (x, xs) -&gt; "head: " + x + ", tail: " + xs),
+         *         Case($$_, -&gt; "Nil")
+         * );
+         * </code></pre>
+         */
+        public final class Match<T> {
 
-            private Match() {
+            private final T value;
+
+            private Match(T value) {
+                this.value = value;
             }
+
+            @SuppressWarnings({ "unchecked", "varargs" })
+            @SafeVarargs
+            public final <SUP extends R, R> R of(Case<? extends T, ? extends R>... cases) {
+                return safe(cases).getOrElseThrow(() -> new MatchError(value));
+            }
+
+            @SuppressWarnings({ "unchecked", "varargs" })
+            @SafeVarargs
+            public final <SUP extends R, R> Option<R> safe(Case<? extends T, ? extends R>... cases) {
+                Objects.requireNonNull(cases, "cases is null");
+                for (Case<? extends T, ? extends R> _case : cases) {
+                    final Option<? extends R> it = _case.apply(value);
+                    if (it.isDefined()) {
+                        return Option.narrow(it);
+                    }
+                }
+                return Option.none();
+            }
+
+            // -- static Match API
 
             /**
              * Entry point of the match API.
+             *
+             * @param value a value to be matched
+             * @param <T> type of the value
+             * @return a new {@code Match} instance
              */
             @SuppressWarnings("MethodNameSameAsClassName")
-            public static <T> MatchBuilder<T> Match(T value) {
-                return new MatchBuilder<>(value);
+            public static <T> Match<T> Match(T value) {
+                return new Match<>(value);
             }
 
             // TODO(values):
@@ -74,7 +125,7 @@ def generateMainClasses(): Unit = {
             //        return ...;
             //    }
 
-            public static <T, R> Case<T, R> Case(Pattern0 pattern, Supplier<? extends R> f) {
+            public static <T, R> Case<T, R> Case(Pattern0 pattern, $SupplierType<? extends R> f) {
                 return new Case0<>(pattern, f);
             }
 
@@ -123,36 +174,6 @@ def generateMainClasses(): Unit = {
                 };
             }
 
-            // -- Match DSL
-
-            public static final class MatchBuilder<T> {
-
-                private final T value;
-
-                private MatchBuilder(T value) {
-                    this.value = value;
-                }
-
-                @SuppressWarnings({ "unchecked", "varargs" })
-                @SafeVarargs
-                public final <SUP extends R, R> R of(Case<? extends T, ? extends R>... cases) {
-                    return safe(cases).getOrElseThrow(() -> new MatchError(value));
-                }
-
-                @SuppressWarnings({ "unchecked", "varargs" })
-                @SafeVarargs
-                public final <SUP extends R, R> Option<R> safe(Case<? extends T, ? extends R>... cases) {
-                    Objects.requireNonNull(cases, "cases is null");
-                    for (Case<? extends T, ? extends R> _case : cases) {
-                        final Option<? extends R> it = _case.apply(value);
-                        if (it.isDefined()) {
-                            return Option.narrow(it);
-                        }
-                    }
-                    return Option.none();
-                }
-            }
-
             // -- Match Cases
 
             public interface Case<T, R> extends Function<Object, Option<R>> {
@@ -161,9 +182,9 @@ def generateMainClasses(): Unit = {
             public static final class Case0<T, R> implements Case<T, R> {
 
                 private final Pattern0 pattern;
-                private final Supplier<? extends R> f;
+                private final $SupplierType<? extends R> f;
 
-                private Case0(Pattern0 pattern, Supplier<? extends R> f) {
+                private Case0(Pattern0 pattern, $SupplierType<? extends R> f) {
                     this.pattern = pattern;
                     this.f = f;
                 }

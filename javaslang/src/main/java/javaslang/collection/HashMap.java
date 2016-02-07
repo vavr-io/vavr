@@ -6,9 +6,9 @@
 package javaslang.collection;
 
 import javaslang.Lazy;
+import javaslang.Match;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -18,6 +18,8 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
+
+import static javaslang.Match.Match;
 
 /**
  * An immutable {@code HashMap} implementation based on a
@@ -434,8 +436,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public Match.MatchValue.Of<HashMap<K, V>> match() {
-        return Match.of(this);
+    public Match<HashMap<K, V>> match() {
+        return Match(this);
     }
 
     @Override

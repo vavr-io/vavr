@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.Match;
 import javaslang.Tuple2;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.util.ArrayList;
@@ -606,7 +606,7 @@ public interface Stack<T> extends LinearSeq<T> {
     <U> Stack<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    Match.MatchValue.Of<? extends Stack<T>> match();
+    Match<? extends Stack<T>> match();
 
     @Override
     Stack<T> padTo(int length, T element);

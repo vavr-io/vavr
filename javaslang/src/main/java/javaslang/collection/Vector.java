@@ -7,13 +7,14 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.collection.VectorModule.Combinations;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
+
+import static javaslang.Match.Match;
 
 /**
  * Vector is the default Seq implementation. It provides the best performance in between Array (with constant time element access)
@@ -785,8 +786,8 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Match.MatchValue.Of<Vector<T>> match() {
-        return Match.of(this);
+    public Match<Vector<T>> match() {
+        return Match(this);
     }
 
     @Override

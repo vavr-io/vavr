@@ -5,9 +5,9 @@
  */
 package javaslang.collection;
 
+import javaslang.Match;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -16,6 +16,8 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
+
+import static javaslang.Match.Match;
 
 /**
  * An immutable {@code LinkedHashMap} implementation.
@@ -431,8 +433,8 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public Match.MatchValue.Of<LinkedHashMap<K, V>> match() {
-        return Match.of(this);
+    public Match<LinkedHashMap<K, V>> match() {
+        return Match(this);
     }
 
     @Override

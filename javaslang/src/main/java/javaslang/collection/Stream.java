@@ -9,13 +9,14 @@ import javaslang.*;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Empty;
 import javaslang.collection.StreamModule.*;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
+
+import static javaslang.Match.Match;
 
 /**
  * An immutable {@code Stream} is lazy sequence of elements which may be infinitely long.
@@ -920,8 +921,8 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Match.MatchValue.Of<Stream<T>> match() {
-        return Match.of(this);
+    default Match<Stream<T>> match() {
+        return Match(this);
     }
 
     @Override
