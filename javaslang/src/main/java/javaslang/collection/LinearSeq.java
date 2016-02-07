@@ -310,7 +310,7 @@ public interface LinearSeq<T> extends Seq<T> {
      *         <i>insertion point</i> is defined as the point at which the
      *         element would be inserted into the sequence. Note that this guarantees that
      *         the return value will be &gt;= 0 if and only if the element is found.
-     * @throws ClassCastException if T cannot be cast to `Comparable<T>`
+     * @throws ClassCastException if T cannot be cast to {@code Comparable<? super T>}
      */
     @SuppressWarnings("unchecked")
     default int search(T element) {
