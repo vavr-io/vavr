@@ -15,36 +15,94 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import javaslang.control.Option;
 
-public interface Match<R> {
+public final class Match {
+
+    private Match() {
+    }
 
     /**
      * Entry point of the match API.
      */
-    static <T> MatchBuilder<T> match(T value) {
-        return new MatchBuilder<>(value); /*TODO: Untyped*/
+    @SuppressWarnings("MethodNameSameAsClassName")
+    public static <T> MatchBuilder<T> Match(T value) {
+        return new MatchBuilder<>(value);
+    }
+
+    // TODO(values):
+    //    public static <T, R> Case<T, R> Case(T value, Function<? super T, ? extends R> f) {
+    //        return ...;
+    //    }
+
+    // TODO(named values):
+    //    public static <T, R> Case<T, R> Case(InversePattern<T> pattern, Function<? super T, ? extends R> f) {
+    //        return ...;
+    //    }
+
+    public static <T, R> Case<T, R> Case(Pattern0 pattern, Supplier<? extends R> f) {
+        return new Case0<>(pattern, f);
+    }
+
+    public static <T, T1, R> Case<T, R> Case(Pattern1<T, T1> pattern, Function<? super T1, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case1<>(pattern, f);
+    }
+
+    public static <T, T1, T2, R> Case<T, R> Case(Pattern2<T, T1, T2> pattern, BiFunction<? super T1, ? super T2, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case2<>(pattern, f);
+    }
+
+    public static <T, T1, T2, T3, R> Case<T, R> Case(Pattern3<T, T1, T2, T3> pattern, Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case3<>(pattern, f);
+    }
+
+    public static <T, T1, T2, T3, T4, R> Case<T, R> Case(Pattern4<T, T1, T2, T3, T4> pattern, Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case4<>(pattern, f);
+    }
+
+    public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(Pattern5<T, T1, T2, T3, T4, T5> pattern, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case5<>(pattern, f);
+    }
+
+    public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case6<>(pattern, f);
+    }
+
+    public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case7<>(pattern, f);
+    }
+
+    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case8<>(pattern, f);
     }
 
     // -- Atomic matchers $_, $(), $(val)
 
-    Pattern0 $_ = new Pattern0() {
+    public static Pattern0 $_ = new Pattern0() {
         @Override
         public Option<Void> apply(Object any) {
             return Option.nothing();
         }
     };
 
-    static <T1> Pattern1<T1, T1> $(T1 prototype) {
-      return new Pattern1<T1, T1>() {
-                  @SuppressWarnings("unchecked")
-                  @Override
-                  public Option<T1> apply(Object that) {
-                      // 'that' is of type T1 because T1 is injected from the outside
-                      return Objects.equals(that, prototype) ? Option.some((T1) that) : Option.none();
-                  }
-              };
+    public static <T1> Pattern1<T1, T1> $(T1 prototype) {
+        return new Pattern1<T1, T1>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Option<T1> apply(Object that) {
+                // 'that' is of type T1 when injected by a type-safe pattern
+                return Objects.equals(that, prototype) ? Option.some((T1) that) : Option.none();
+            }
+        };
     }
 
-    static <T> InversePattern<T> $() {
+    public static <T> InversePattern<T> $() {
         return new InversePattern<T>() {
             @Override
             public Option<T> apply(T t) {
@@ -55,205 +113,180 @@ public interface Match<R> {
 
     // -- Match DSL
 
-    final class MatchBuilder<T> {
+    public static final class MatchBuilder<T> {
 
-        private T value;
+        private final T value;
 
         private MatchBuilder(T value) {
             this.value = value;
         }
 
-        /*TODO: <T1> Case1<T, T1> _case(T value) { ... }*/
-
-        public Case0<T> _case(Pattern0 pattern) {
-            Objects.requireNonNull(pattern, "pattern is null");
-            return new Case0<>(this, pattern.apply(value));
+        @SuppressWarnings({ "unchecked", "varargs" })
+        @SafeVarargs
+        public final <SUP extends R, R> R of(Case<? extends T, ? extends R>... cases) {
+            return safe(cases).getOrElseThrow(() -> new MatchError(value));
         }
 
-        public <T1> Case1<T, T1> _case(Pattern1<T, T1> pattern) {
-            Objects.requireNonNull(pattern, "pattern is null");
-            return new Case1<>(this, pattern.apply(value));
-        }
-
-        public <T1, T2> Case2<T, T1, T2> _case(Pattern2<T, T1, T2> pattern) {
-            Objects.requireNonNull(pattern, "pattern is null");
-            return new Case2<>(this, pattern.apply(value));
-        }
-
-        public <T1, T2, T3> Case3<T, T1, T2, T3> _case(Pattern3<T, T1, T2, T3> pattern) {
-            Objects.requireNonNull(pattern, "pattern is null");
-            return new Case3<>(this, pattern.apply(value));
-        }
-
-        public <T1, T2, T3, T4> Case4<T, T1, T2, T3, T4> _case(Pattern4<T, T1, T2, T3, T4> pattern) {
-            Objects.requireNonNull(pattern, "pattern is null");
-            return new Case4<>(this, pattern.apply(value));
-        }
-
-        public <T1, T2, T3, T4, T5> Case5<T, T1, T2, T3, T4, T5> _case(Pattern5<T, T1, T2, T3, T4, T5> pattern) {
-            Objects.requireNonNull(pattern, "pattern is null");
-            return new Case5<>(this, pattern.apply(value));
-        }
-
-        public <T1, T2, T3, T4, T5, T6> Case6<T, T1, T2, T3, T4, T5, T6> _case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern) {
-            Objects.requireNonNull(pattern, "pattern is null");
-            return new Case6<>(this, pattern.apply(value));
-        }
-
-        public <T1, T2, T3, T4, T5, T6, T7> Case7<T, T1, T2, T3, T4, T5, T6, T7> _case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern) {
-            Objects.requireNonNull(pattern, "pattern is null");
-            return new Case7<>(this, pattern.apply(value));
-        }
-
-        public <T1, T2, T3, T4, T5, T6, T7, T8> Case8<T, T1, T2, T3, T4, T5, T6, T7, T8> _case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern) {
-            Objects.requireNonNull(pattern, "pattern is null");
-            return new Case8<>(this, pattern.apply(value));
+        @SuppressWarnings({ "unchecked", "varargs" })
+        @SafeVarargs
+        public final <SUP extends R, R> Option<R> safe(Case<? extends T, ? extends R>... cases) {
+            Objects.requireNonNull(cases, "cases is null");
+            for (Case<? extends T, ? extends R> _case : cases) {
+                final Option<? extends R> it = _case.apply(value);
+                if (it.isDefined()) {
+                    return Option.narrow(it);
+                }
+            }
+            return Option.none();
         }
     }
 
-    final class Case0<T> {
+    // -- Match Cases
 
-        private final MatchBuilder<T> builder;
-        private final Option<Void> option;
+    public interface Case<T, R> extends Function<Object, Option<R>> {
+    }
 
-        private Case0(MatchBuilder<T> builder, Option<Void> option) {
-            this.builder = builder;
-            this.option = option;
+    public static final class Case0<T, R> implements Case<T, R> {
+
+        private final Pattern0 pattern;
+        private final Supplier<? extends R> f;
+
+        private Case0(Pattern0 pattern, Supplier<? extends R> f) {
+            this.pattern = pattern;
+            this.f = f;
         }
 
-        public <R> MatchBuilder<T> then(Supplier<? extends R> f) {
-            Objects.requireNonNull(f, "f is null");
-            option.map(ingnored -> f.get());
-            return builder;
+        @Override
+        public Option<R> apply(Object o) {
+            return pattern.apply(o).map(ignored -> f.get());
         }
     }
 
-    final class Case1<T, T1> {
+    public static final class Case1<T, T1, R> implements Case<T, R> {
 
-        private final MatchBuilder<T> builder;
-        private final Option<T1> option;
+        private final Pattern1<T, T1> pattern;
+        private final Function<? super T1, ? extends R> f;
 
-        private Case1(MatchBuilder<T> builder, Option<T1> option) {
-            this.builder = builder;
-            this.option = option;
+        private Case1(Pattern1<T, T1> pattern, Function<? super T1, ? extends R> f) {
+            this.pattern = pattern;
+            this.f = f;
         }
 
-        public <R> MatchBuilder<T> then(Function<? super T1, ? extends R> f) {
-            Objects.requireNonNull(f, "f is null");
-            option.map(f::apply);
-            return builder;
-        }
-    }
-
-    final class Case2<T, T1, T2> {
-
-        final MatchBuilder<T> builder;
-        final Option<Tuple2<T1, T2>> option;
-
-        Case2(MatchBuilder<T> builder, Option<Tuple2<T1, T2>> option) {
-            this.builder = builder;
-            this.option = option;
-        }
-
-        <R> MatchBuilder<T> then(BiFunction<? super T1, ? super T2, ? extends R> f) {
-            option.map(tuple -> f.apply(tuple._1, tuple._2));
-            return builder;
+        @Override
+        public Option<R> apply(Object o) {
+            return pattern.apply(o).map(f::apply);
         }
     }
 
-    final class Case3<T, T1, T2, T3> {
+    public static final class Case2<T, T1, T2, R> implements Case<T, R> {
 
-        final MatchBuilder<T> builder;
-        final Option<Tuple3<T1, T2, T3>> option;
+        private final Pattern2<T, T1, T2> pattern;
+        private final BiFunction<? super T1, ? super T2, ? extends R> f;
 
-        Case3(MatchBuilder<T> builder, Option<Tuple3<T1, T2, T3>> option) {
-            this.builder = builder;
-            this.option = option;
+        private Case2(Pattern2<T, T1, T2> pattern, BiFunction<? super T1, ? super T2, ? extends R> f) {
+            this.pattern = pattern;
+            this.f = f;
         }
 
-        <R> MatchBuilder<T> then(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
-            option.map(tuple -> f.apply(tuple._1, tuple._2));
-            return builder;
-        }
-    }
-
-    final class Case4<T, T1, T2, T3, T4> {
-
-        final MatchBuilder<T> builder;
-        final Option<Tuple4<T1, T2, T3, T4>> option;
-
-        Case4(MatchBuilder<T> builder, Option<Tuple4<T1, T2, T3, T4>> option) {
-            this.builder = builder;
-            this.option = option;
-        }
-
-        <R> MatchBuilder<T> then(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
-            option.map(tuple -> f.apply(tuple._1, tuple._2));
-            return builder;
+        @Override
+        public Option<R> apply(Object o) {
+            return pattern.apply(o).map(t -> f.apply(t._1, t._2));
         }
     }
 
-    final class Case5<T, T1, T2, T3, T4, T5> {
+    public static final class Case3<T, T1, T2, T3, R> implements Case<T, R> {
 
-        final MatchBuilder<T> builder;
-        final Option<Tuple5<T1, T2, T3, T4, T5>> option;
+        private final Pattern3<T, T1, T2, T3> pattern;
+        private final Function3<? super T1, ? super T2, ? super T3, ? extends R> f;
 
-        Case5(MatchBuilder<T> builder, Option<Tuple5<T1, T2, T3, T4, T5>> option) {
-            this.builder = builder;
-            this.option = option;
+        private Case3(Pattern3<T, T1, T2, T3> pattern, Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+            this.pattern = pattern;
+            this.f = f;
         }
 
-        <R> MatchBuilder<T> then(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
-            option.map(tuple -> f.apply(tuple._1, tuple._2));
-            return builder;
-        }
-    }
-
-    final class Case6<T, T1, T2, T3, T4, T5, T6> {
-
-        final MatchBuilder<T> builder;
-        final Option<Tuple6<T1, T2, T3, T4, T5, T6>> option;
-
-        Case6(MatchBuilder<T> builder, Option<Tuple6<T1, T2, T3, T4, T5, T6>> option) {
-            this.builder = builder;
-            this.option = option;
-        }
-
-        <R> MatchBuilder<T> then(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
-            option.map(tuple -> f.apply(tuple._1, tuple._2));
-            return builder;
+        @Override
+        public Option<R> apply(Object o) {
+            return pattern.apply(o).map(t -> f.apply(t._1, t._2, t._3));
         }
     }
 
-    final class Case7<T, T1, T2, T3, T4, T5, T6, T7> {
+    public static final class Case4<T, T1, T2, T3, T4, R> implements Case<T, R> {
 
-        final MatchBuilder<T> builder;
-        final Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> option;
+        private final Pattern4<T, T1, T2, T3, T4> pattern;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f;
 
-        Case7(MatchBuilder<T> builder, Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> option) {
-            this.builder = builder;
-            this.option = option;
+        private Case4(Pattern4<T, T1, T2, T3, T4> pattern, Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+            this.pattern = pattern;
+            this.f = f;
         }
 
-        <R> MatchBuilder<T> then(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
-            option.map(tuple -> f.apply(tuple._1, tuple._2));
-            return builder;
+        @Override
+        public Option<R> apply(Object o) {
+            return pattern.apply(o).map(t -> f.apply(t._1, t._2, t._3, t._4));
         }
     }
 
-    final class Case8<T, T1, T2, T3, T4, T5, T6, T7, T8> {
+    public static final class Case5<T, T1, T2, T3, T4, T5, R> implements Case<T, R> {
 
-        final MatchBuilder<T> builder;
-        final Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> option;
+        private final Pattern5<T, T1, T2, T3, T4, T5> pattern;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f;
 
-        Case8(MatchBuilder<T> builder, Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> option) {
-            this.builder = builder;
-            this.option = option;
+        private Case5(Pattern5<T, T1, T2, T3, T4, T5> pattern, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+            this.pattern = pattern;
+            this.f = f;
         }
 
-        <R> MatchBuilder<T> then(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
-            option.map(tuple -> f.apply(tuple._1, tuple._2));
-            return builder;
+        @Override
+        public Option<R> apply(Object o) {
+            return pattern.apply(o).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5));
+        }
+    }
+
+    public static final class Case6<T, T1, T2, T3, T4, T5, T6, R> implements Case<T, R> {
+
+        private final Pattern6<T, T1, T2, T3, T4, T5, T6> pattern;
+        private final Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f;
+
+        private Case6(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+            this.pattern = pattern;
+            this.f = f;
+        }
+
+        @Override
+        public Option<R> apply(Object o) {
+            return pattern.apply(o).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5, t._6));
+        }
+    }
+
+    public static final class Case7<T, T1, T2, T3, T4, T5, T6, T7, R> implements Case<T, R> {
+
+        private final Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern;
+        private final Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f;
+
+        private Case7(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+            this.pattern = pattern;
+            this.f = f;
+        }
+
+        @Override
+        public Option<R> apply(Object o) {
+            return pattern.apply(o).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7));
+        }
+    }
+
+    public static final class Case8<T, T1, T2, T3, T4, T5, T6, T7, T8, R> implements Case<T, R> {
+
+        private final Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern;
+        private final Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f;
+
+        private Case8(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+            this.pattern = pattern;
+            this.f = f;
+        }
+
+        @Override
+        public Option<R> apply(Object o) {
+            return pattern.apply(o).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8));
         }
     }
 
@@ -261,44 +294,45 @@ public interface Match<R> {
     //    These can't be @FunctionalInterfaces because of ambiguities.
     //    For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
 
-    // Used by any-match $() to inject a type into the pattern.
-    abstract class InversePattern<T> {
+    // used by any-match $() to inject a type into the pattern
+    public static abstract class InversePattern<T> {
         public abstract Option<T> apply(T t);
     }
 
-    abstract class Pattern0 {
+    // no type forwarding via T here, type ignored
+    public static abstract class Pattern0 {
         public abstract Option<Void> apply(Object o);
     }
 
-    abstract class Pattern1<T, T1> {
+    public static abstract class Pattern1<T, T1> {
         public abstract Option<T1> apply(Object o);
     }
 
-    abstract class Pattern2<T, T1, T2> {
+    public static abstract class Pattern2<T, T1, T2> {
         public abstract Option<Tuple2<T1, T2>> apply(Object o);
     }
 
-    abstract class Pattern3<T, T1, T2, T3> {
+    public static abstract class Pattern3<T, T1, T2, T3> {
         public abstract Option<Tuple3<T1, T2, T3>> apply(Object o);
     }
 
-    abstract class Pattern4<T, T1, T2, T3, T4> {
+    public static abstract class Pattern4<T, T1, T2, T3, T4> {
         public abstract Option<Tuple4<T1, T2, T3, T4>> apply(Object o);
     }
 
-    abstract class Pattern5<T, T1, T2, T3, T4, T5> {
+    public static abstract class Pattern5<T, T1, T2, T3, T4, T5> {
         public abstract Option<Tuple5<T1, T2, T3, T4, T5>> apply(Object o);
     }
 
-    abstract class Pattern6<T, T1, T2, T3, T4, T5, T6> {
+    public static abstract class Pattern6<T, T1, T2, T3, T4, T5, T6> {
         public abstract Option<Tuple6<T1, T2, T3, T4, T5, T6>> apply(Object o);
     }
 
-    abstract class Pattern7<T, T1, T2, T3, T4, T5, T6, T7> {
+    public static abstract class Pattern7<T, T1, T2, T3, T4, T5, T6, T7> {
         public abstract Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> apply(Object o);
     }
 
-    abstract class Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> {
+    public static abstract class Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> {
         public abstract Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> apply(Object o);
     }
 }

@@ -10,7 +10,9 @@ import javaslang.control.Option;
 import org.junit.Test;
 
 import static javaslang.Match.*;
+import static javaslang.Match.Match;
 import static javaslang.MatchTest.Patterns.*;
+import static javaslang.MatchTest.Patterns.Tuple3;
 
 public class MatchTest {
 
@@ -25,87 +27,169 @@ public class MatchTest {
 
     static final Option<Option<Tuple2<String, Integer>>> TUPLE2_OPTION_OPTION = Option.of(Option.of(Tuple.of("Test", 123)));
 
+    static final Person PERSON = new Developer("Daniel", true);
+
     @Test
     public void shouldMatch() {
 
-        match(TUPLE2_OPTION)
-                ._case($_).then(() -> "good!");
+        Match(TUPLE2_OPTION).of(
+                Case($_, () -> "good!")
+        );
 
-        match(TUPLE2_OPTION)
-                ._case(Option($())).then(value -> {
+        Match(TUPLE2_OPTION).of(
+                Case(Option($()), value -> {
                     Tuple2<String, Integer> tuple2 = value;
                     System.out.printf("Option($()) = Option(%s)\n", value);
                     return null;
-                });
+                })
+        );
 
-        match(TUPLE2_OPTION_OPTION)
-                ._case(Option(Option($(Tuple.of("Test", 123))))).then(value -> {
+        Match(TUPLE2_OPTION_OPTION).of(
+                Case(Option(Option($(Tuple.of("Test", 123)))), value -> {
                     Tuple2<String, Integer> i = value;
                     System.out.printf("Option(Option($(Tuple.of(\"Test\", 123)))) = Option(Option(%s))\n", value);
                     return null;
-                });
+                })
+        );
 
-        match(INT_OPTION_LIST)
-                ._case(List(Option($(1)), $_)).then(value -> {
+        Match(INT_OPTION_LIST).of(
+                Case(List(Option($(1)), $_), value -> {
                     int i = value;
                     System.out.printf("List(Option($(1)), _) = List(Option(%d), _)\n", i);
                     return null;
-                });
+                })
+        );
 
-        match(TUPLE3_LIST)
-                ._case(List($(), $())).then((x, xs) -> {
+        Match(TUPLE3_LIST).of(
+                Case(List($(), $()), (x, xs) -> {
                     Tuple3<String, Integer, Double> head = x;
                     List<Tuple3<String, Integer, Double>> tail = xs;
                     System.out.printf("List($(), $()) = List(%s, %s)\n", head, tail);
                     return null;
-                });
+                })
+        );
 
-        match(TUPLE3_LIST)
-                ._case(List($(), $_)).then(x -> {
+        Match(TUPLE3_LIST).of(
+                Case(List($(), $_), x -> {
                     Tuple3<String, Integer, Double> head = x;
                     System.out.printf("List($(), _) = List(%s, ?)\n", head);
                     return null;
-                });
+                })
+        );
 
-//        // CORRECT: Does not compile because List(Tuple3, ...) is not of List(Option, ...)
-//        match(TUPLE3_LIST)
-//                ._case(List(Option($(1)), List($(2), $_))).then((i1, i2) -> {
+        Match(TUPLE3_LIST).of(
+                Case(List(Tuple3($("begin"), $_, $_), $_), s -> {
+                    System.out.printf("List(Tuple3($(\"begin\"), _, _), _) = List(Tuple3(%s, _, _), _)\n", s);
+                    return null;
+                })
+        );
+
+        Match(TUPLE3_LIST).of(
+                Case(List(Tuple3($_, $_, $_), $_), () -> {
+                    System.out.printf("List(Tuple3($_, _, _), _) = List(Tuple3(_, _, _), _)\n");
+                    return null;
+                })
+        );
+
+        // = Daniel is caffeinated
+        final String msg1 = Match(PERSON).of(
+                Case(Developer($("Daniel"), $(true)), Util::devInfo),
+                Case($_, () -> "Unknown Person type")
+        );
+
+        // = Some(Daniel is caffeinated)
+        final Option<String> msg2 = Match(PERSON).safe(
+                Case(Developer($("Daniel"), $(true)), Util::devInfo)
+        );
+
+        // --
+        // -- EXAMPLES THAT CORRECTLY DO NOT COMPILE BECAUSE OF WRONG TYPES
+        // --
+
+//        // Does not compile because List(Tuple3, ...) is not of List(Option, ...)
+//        Match(TUPLE3_LIST).of(
+//                Case(List(Option($(1)), List($(2), $_)), (i1, i2) -> {
 //                    int j1 = i1;
 //                    int j2 = i2;
 //                    System.out.printf("List(Option($(1)), List($(2), _)) = List(%s, %s)\n", j1, j2);
 //                    return null;
-//                });
+//                })
+//        );
 
-        match(TUPLE3_LIST)
-                ._case(List(Tuple3($("begin"), $_, $_), $_)).then(s -> {
-                    System.out.printf("List(Tuple3($(\"begin\"), _, _), _) = List(Tuple3(%s, _, _), _)\n", s);
-                    return null;
-                });
-
-        match(TUPLE3_LIST)
-                ._case(List(Tuple3($_, $_, $_), $_)).then(() -> {
-                    System.out.printf("List(Tuple3($_, _, _), _) = List(Tuple3(_, _, _), _)\n");
-                    return null;
-                });
-
-        // CORRECT: Does not compile because $(1) is not of type String
-//        // changed String to int
-//        match(TUPLE3_LIST)
-//                ._case(List(Tuple3($(1), $_, $_), $_)).then(s -> {
+//        // Does not compile because $(1) is not of type String
+//        Match(TUPLE3_LIST).of(
+//                Case(List(Tuple3($(1), $_, $_), $_), s -> {
 //                    System.out.printf("List(Tuple3($(\"begin\"), _, _), _) = List(Tuple3(%s, _, _), _)\n", s);
 //                    return null;
-//                });
+//                })
+//        );
 
-//        // SHOULD NOT COMPILE!
-//        match(TUPLE3_LIST)
-//                ._case(Tuple3($(1), $_, $_)).then(s -> {
+//        // Does not compile because Tuple3-Pattern does not match List
+//        Match(TUPLE3_LIST).of(
+//                Case(Tuple3($(1), $_, $_), s -> {
 //                    System.out.printf("List(Tuple3($(\"begin\"), _, _), _) = List(Tuple3(%s, _, _), _)\n", s);
 //                    return null;
-//                });
+//                })
+//        );
 
     }
 
+    static class Util {
+        static String devInfo(String name, boolean isCaffeinated) {
+            return name + " is " + (isCaffeinated ? "" : "not ") + "caffeinated.";
+        }
+    }
+
+    interface Person {
+        String getName();
+    }
+
+    static final class Developer implements Person {
+        private final String name;
+        private final boolean isCaffeinated;
+
+        Developer(String name, boolean isCaffeinated) {
+            this.name = name;
+            this.isCaffeinated = isCaffeinated;
+        }
+
+        public String getName() { return name; }
+
+        public boolean isCaffeinated() { return isCaffeinated; }
+    }
+
+
     interface Patterns {
+
+        static <T1, T2> Pattern2<Developer, T1, T2> Developer(Pattern1<String, T1> p1, Pattern1<Boolean, T2> p2) {
+            return new Pattern2<Developer, T1, T2>() {
+                @Override
+                public Option<Tuple2<T1, T2>> apply(Object o) {
+                    if (o instanceof Developer) {
+                        final Developer dev = (Developer) o;
+                        return p1.apply(dev.getName()).flatMap(v1 ->
+                                p2.apply(dev.isCaffeinated()).map(v2 -> Tuple.of(v1, v2)));
+                    } else {
+                        return Option.none();
+                    }
+                }
+            };
+        }
+
+        static Pattern2<Developer, String, Boolean> Developer(InversePattern<String> p1, InversePattern<Boolean> p2) {
+            return new Pattern2<Developer, String, Boolean>() {
+                @Override
+                public Option<Tuple2<String, Boolean>> apply(Object o) {
+                    if (o instanceof Developer) {
+                        final Developer dev = (Developer) o;
+                        return p1.apply(dev.getName()).flatMap(v1 ->
+                                p2.apply(dev.isCaffeinated()).map(v2 -> Tuple.of(v1, v2)));
+                    } else {
+                        return Option.none();
+                    }
+                }
+            };
+        }
 
         static <T extends Option<U>, U, T1> Pattern1<Option<U>, T1> Option(Pattern1<U, T1> p1) {
             return new Pattern1<Option<U>, T1>() {
@@ -198,16 +282,16 @@ public class MatchTest {
         }
 
         @SuppressWarnings("unchecked")
-        static <T extends List<U>, U> Pattern1<T, U> List(InversePattern<U> head, Pattern0 tail) {
-            return new Pattern1<T, U>() {
+        static <T extends List<U>, U> Pattern1<List<U>, U> List(InversePattern<U> head, Pattern0 tail) {
+            return new Pattern1<List<U>, U>() {
                 @Override
                 public Option<U> apply(Object o) {
                     if (o instanceof List) {
-                        final List<?> list = (List<?>) o;
+                        final List<U> list = (List<U>) o;
                         if (list.isEmpty()) {
                             return Option.none();
                         } else {
-                            return head.apply((U) list.head()).flatMap(v1 ->
+                            return head.apply(list.head()).flatMap(v1 ->
                                     tail.apply(list.tail()).map(any -> v1));
                         }
                     } else {
@@ -217,19 +301,18 @@ public class MatchTest {
             };
         }
 
-        // TODO: check if cast to (U) and (List<U>) always succeeds
         @SuppressWarnings("unchecked")
-        static <T extends List<U>, U> Pattern2<T, U, List<U>> List(InversePattern<U> head, InversePattern<List<U>> tail) {
-            return new Pattern2<T, U, List<U>>() {
+        static <T extends List<U>, U> Pattern2<List<U>, U, List<U>> List(InversePattern<U> head, InversePattern<List<U>> tail) {
+            return new Pattern2<List<U>, U, List<U>>() {
                 @Override
                 public Option<Tuple2<U, List<U>>> apply(Object o) {
                     if (o instanceof List) {
-                        final List<?> list = (List<?>) o;
+                        final List<U> list = (List<U>) o;
                         if (list.isEmpty()) {
                             return Option.none();
                         } else {
-                            return head.apply((U) list.head()).flatMap(v1 ->
-                                    tail.apply((List<U>) list.tail()).map(v2 -> Tuple.of(v1, v2)));
+                            return head.apply(list.head()).flatMap(v1 ->
+                                    tail.apply(list.tail()).map(v2 -> Tuple.of(v1, v2)));
                         }
                     } else {
                         return Option.none();
