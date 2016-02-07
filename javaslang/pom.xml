@@ -24,7 +24,7 @@
     </licenses>
     <dependencies>
         <dependency>
-            <groupId>com.javaslang</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>javaslang-matchable-annotation</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>

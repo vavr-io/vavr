@@ -24,7 +24,7 @@
     </licenses>
     <dependencies>
         <dependency>
-            <groupId>com.javaslang</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>javaslang</artifactId>
             <version>${project.version}</version>
         </dependency>

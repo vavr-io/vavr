@@ -56,8 +56,8 @@ def generateMainClasses(): Unit = {
             /**
              * Entry point of the match API.
              */
-            static <T> When<T> of(T value) {
-                return new When<>(value); /*TODO: WhenUntyped*/
+            static <T> Case<T> match(T value) {
+                return new Case<>(value); /*TODO: CaseUntyped*/
             }
 
             // -- Atomic matchers $$_, $$(), $$(val)
@@ -78,29 +78,28 @@ def generateMainClasses(): Unit = {
                 };
             }
 
-            @SuppressWarnings("unchecked")
-            static <T1> InversePattern1<T1> $$() {
-                return new InversePattern1<T1>() {
+            static <T> InversePattern<T> $$() {
+                return new InversePattern<T>() {
                     @Override
-                    public Option<T1> apply(Object o) {
-                        return Option.some((T1) o);
+                    public Option<T> apply(T t) {
+                        return Option.some(t);
                     }
                 };
             }
 
             // -- Match DSL
 
-            final class When<T> /*TODO: implements Match<R>*/ {
+            final class Case<T> /*TODO: implements Match<R>*/ {
 
                 private T value;
 
-                private When(T value) {
+                private Case(T value) {
                     this.value = value;
                 }
 
-                /*TODO: <T1> Then1<T, T1> when(T value) { ... }*/
+                /*TODO: <T1> Then1<T, T1> _case(T value) { ... }*/
 
-                public Then0<T> when(Pattern0 pattern) {
+                public Then0<T> _case(Pattern0 pattern) {
                     $Objects.requireNonNull(pattern, "pattern is null");
                     return new Then0<>(this, pattern.apply(value));
                 }
@@ -108,7 +107,7 @@ def generateMainClasses(): Unit = {
                 ${(1 to N).gen(i => {
                   val generics = (1 to i).gen(j => s"T$j")(", ")
                   xs"""
-                    public <$generics> Then$i<T, $generics> when(Pattern$i<T, $generics> pattern) {
+                    public <$generics> Then$i<T, $generics> _case(Pattern$i<T, $generics> pattern) {
                         $Objects.requireNonNull(pattern, "pattern is null");
                         return new Then$i<>(this, pattern.apply(value));
                     }
@@ -118,35 +117,35 @@ def generateMainClasses(): Unit = {
 
             final class Then0<T> {
 
-                private final When<T> when;
+                private final Case<T> _case;
                 private final Option<Void> option;
 
-                private Then0(When<T> when, Option<Void> option) {
-                    this.when = when;
+                private Then0(Case<T> _case, Option<Void> option) {
+                    this._case = _case;
                     this.option = option;
                 }
 
-                public <R> When<T> then($SupplierType<? extends R> f) {
+                public <R> Case<T> then($SupplierType<? extends R> f) {
                     $Objects.requireNonNull(f, "f is null");
                     option.map(ingnored -> f.get());
-                    return when;
+                    return _case;
                 }
             }
 
             final class Then1<T, T1> {
 
-                private final When<T> when;
+                private final Case<T> _case;
                 private final Option<T1> option;
 
-                private Then1(When<T> when, Option<T1> option) {
-                    this.when = when;
+                private Then1(Case<T> _case, Option<T1> option) {
+                    this._case = _case;
                     this.option = option;
                 }
 
-                public <R> When<T> then($FunctionType<? super T1, ? extends R> f) {
+                public <R> Case<T> then($FunctionType<? super T1, ? extends R> f) {
                     $Objects.requireNonNull(f, "f is null");
                     option.map(f::apply);
-                    return when;
+                    return _case;
                 }
             }
 
@@ -161,17 +160,17 @@ def generateMainClasses(): Unit = {
               xs"""
                 final class Then$i<T, $generics> {
 
-                    final When<T> when;
+                    final Case<T> _case;
                     final Option<Tuple$i<$generics>> option;
 
-                    Then$i(When<T> when, Option<Tuple$i<$generics>> option) {
-                        this.when = when;
+                    Then$i(Case<T> _case, Option<Tuple$i<$generics>> option) {
+                        this._case = _case;
                         this.option = option;
                     }
 
-                    <R> When<T> then($functionType<$argTypes, ? extends R> f) {
+                    <R> Case<T> then($functionType<$argTypes, ? extends R> f) {
                         option.map(tuple -> f.apply(tuple._1, tuple._2));
-                        return when;
+                        return _case;
                     }
                 }
               """
@@ -182,11 +181,10 @@ def generateMainClasses(): Unit = {
             //    For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
 
             // Used by any-match $$() to inject a type into the pattern.
-            abstract class InversePattern1<T1> {
-                public abstract Option<T1> apply(T1 t);
+            abstract class InversePattern<T> {
+                public abstract Option<T> apply(T t);
             }
 
-            // TODO: I don't think we need a <T> here (like for all other Patterns)
             abstract class Pattern0 {
                 public abstract Option<Void> apply(Object o);
             }
