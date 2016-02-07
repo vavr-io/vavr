@@ -13,10 +13,7 @@ import javaslang.control.Option;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * Interface for immutable, indexed sequences.
@@ -292,17 +289,18 @@ public interface IndexedSeq<T> extends Seq<T> {
     @Override
     Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> span(Predicate<? super T> predicate);
 
+    @SuppressWarnings("unchecked")
     @Override
     default boolean startsWith(Iterable<? extends T> that, int offset) {
         Objects.requireNonNull(that, "that is null");
         if (offset < 0) return false;
         if (that instanceof IndexedSeq) {
-            IndexedSeq<? extends T> dhat = (IndexedSeq<? extends T>) that;
+            IndexedSeq<? extends T> thatIndexedSeq = (IndexedSeq<? extends T>) that;
             int i = offset;
             int j = 0;
             int thisLen = length();
-            int thatLen = dhat.length();
-            while (i < thisLen && j < thatLen && Objects.equals(this.get(i), dhat.get(j))) {
+            int thatLen = thatIndexedSeq.length();
+            while (i < thisLen && j < thatLen && Objects.equals(this.get(i), thatIndexedSeq.get(j))) {
                 i++;
                 j++;
             }
@@ -366,6 +364,48 @@ public interface IndexedSeq<T> extends Seq<T> {
     @Override
     IndexedSeq<Tuple2<T, Long>> zipWithIndex();
 
+    /**
+     * Searches this sequence for a specific element using a binary search. The sequence must already be sorted into
+     * ascending natural order. If it is not sorted, the results are undefined.
+     *
+     * @param element the element to find
+     * @return the index of the search element, if it is contained in the sequence;
+     * otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>. The
+     * <i>insertion point</i> is defined as the point at which the
+     * element would be inserted into the sequence. Note that this guarantees that
+     * the return value will be &gt;= 0 if and only if the element is found.
+     * @throws ClassCastException if T cannot be cast to `Comparable<T>`
+     */
+    @SuppressWarnings("unchecked")
+    default int search(T element) {
+        IntUnaryOperator comparison = midIndex -> {
+            Comparable<? super T> midVal = (Comparable<? super T>) get(midIndex);
+            return midVal.compareTo(element);
+        };
+        return IndexedSeqModule.Search.binarySearch(this, comparison);
+    }
+
+    /**
+     * Searches this sequence for a specific element using a binary search. The sequence must already be sorted into
+     * ascending order according to the specified comparator. If it is not sorted, the results are undefined.
+     *
+     * @param element    the element to find
+     * @param comparator the comparator by which this sequence is ordered
+     * @return the index of the search element, if it is contained in the sequence;
+     * otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>. The
+     * <i>insertion point</i> is defined as the point at which the
+     * element would be inserted into the sequence. Note that this guarantees that
+     * the return value will be &gt;= 0 if and only if the element is found.
+     */
+    default int search(T element, Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        IntUnaryOperator comparison = midIndex -> {
+            T midVal = get(midIndex);
+            return comparator.compare(midVal, element);
+        };
+        return IndexedSeqModule.Search.binarySearch(this, comparison);
+    }
+
 }
 
 interface IndexedSeqModule {
@@ -407,6 +447,26 @@ interface IndexedSeqModule {
                 p++;
             }
             return -1;
+        }
+    }
+
+    interface Search {
+        static <T> int binarySearch(IndexedSeq<T> seq, IntUnaryOperator comparison) {
+            int low = 0;
+            int high = seq.size() - 1;
+            while (low <= high) {
+                int mid = (low + high) >>> 1;
+                int cmp = comparison.applyAsInt(mid);
+
+                if (cmp < 0) {
+                    low = mid + 1;
+                } else if (cmp > 0) {
+                    high = mid - 1;
+                } else {
+                    return mid;
+                }
+            }
+            return -(low + 1);
         }
     }
 }

@@ -813,6 +813,38 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      */
     Seq<T> update(int index, T element);
 
+    /**
+     * Searches this sequence for a specific element. The sequence must already be sorted into ascending natural
+     * order. If it is not sorted, the results are undefined.
+     * <p>
+     * If this sequence is an `IndexedSeq`, a binary search is used. Otherwise, a linear search is used.
+     *
+     * @param element the element to find
+     * @return the index of the search element, if it is contained in the sequence;
+     *         otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>. The
+     *         <i>insertion point</i> is defined as the point at which the
+     *         element would be inserted into the sequence. Note that this guarantees that
+     *         the return value will be &gt;= 0 if and only if the element is found.
+     * @throws ClassCastException if T cannot be cast to `Comparable<T>`
+     */
+    int search(T element);
+
+    /**
+     * Searches this sequence for a specific element. The sequence must already be sorted into ascending order
+     * according to the specified comparator. If it is not sorted, the results are undefined.
+     * <p>
+     * If this sequence is an `IndexedSeq`, a binary search is used. Otherwise, a linear search is used.
+     *
+     * @param element the element to find
+     * @param comparator the comparator by which this sequence is ordered
+     * @return the index of the search element, if it is contained in the sequence;
+     *         otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>. The
+     *         <i>insertion point</i> is defined as the point at which the
+     *         element would be inserted into the sequence. Note that this guarantees that
+     *         the return value will be &gt;= 0 if and only if the element is found.
+     */
+    int search(T element, Comparator<? super T> comparator);
+
     // -- Adjusted return types of Traversable methods
 
     @Override
