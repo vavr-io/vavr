@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Match;
@@ -13,10 +12,7 @@ import javaslang.control.Option;
 
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * Interface for immutable, linear sequences.
@@ -318,7 +314,7 @@ public interface LinearSeq<T> extends Seq<T> {
      */
     @SuppressWarnings("unchecked")
     default int search(T element) {
-        Function1<T, Integer> comparison =  current -> {
+        ToIntFunction<T> comparison =  current -> {
             Comparable<T> comparable = (Comparable<T>) element;
             return comparable.compareTo(current);
         };
@@ -339,7 +335,7 @@ public interface LinearSeq<T> extends Seq<T> {
      */
     default int search(T element, Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        Function1<T, Integer> comparison = current -> comparator.compare(element, current);
+        ToIntFunction<T> comparison = current -> comparator.compare(element, current);
         return LinearSeqModule.Search.linearSearch(this, comparison);
     }
 
@@ -389,10 +385,10 @@ interface LinearSeqModule {
         }
     }
     interface Search {
-        static <T> int linearSearch(LinearSeq<T> seq, Function1<T, Integer> comparison) {
+        static <T> int linearSearch(LinearSeq<T> seq, ToIntFunction<T> comparison) {
             int idx = 0;
             for (T current : seq) {
-                int cmp = comparison.apply(current);
+                int cmp = comparison.applyAsInt(current);
                 if (cmp == 0) {
                     return idx;
                 } else if (cmp < 0) {
