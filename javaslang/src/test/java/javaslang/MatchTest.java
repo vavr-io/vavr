@@ -98,13 +98,14 @@ public class MatchTest {
                     return null;
                 });
 
-        // changed String to int
-        Match.match(TUPLE3_LIST)
-                ._case(List(Tuple3($(1), $_, $_), $_))
-                .then(s -> {
-                    System.out.printf("List(Tuple3($(\"begin\"), _, _), _) = List(Tuple3(%s, _, _), _)\n", s);
-                    return null;
-                });
+        // CORRECT: Does not compile because $(1) is not of type String
+//        // changed String to int
+//        Match.match(TUPLE3_LIST)
+//                ._case(List(Tuple3($(1), $_, $_), $_))
+//                .then(s -> {
+//                    System.out.printf("List(Tuple3($(\"begin\"), _, _), _) = List(Tuple3(%s, _, _), _)\n", s);
+//                    return null;
+//                });
 
 //        // SHOULD NOT COMPILE!
 //        Match.match(TUPLE3_LIST)

@@ -69,13 +69,15 @@ def generateMainClasses(): Unit = {
                 }
             };
 
-            static <T, T1> Pattern1<T, T1> $$(T1 t) {
-                return new Pattern1<T, T1>() {
-                    @Override
-                    public Option<T1> apply(Object o) {
-                        return Objects.equals(o, t) ? Option.some(t) : Option.none();
-                    }
-                };
+            static <T1> Pattern1<T1, T1> $$(T1 prototype) {
+              return new Pattern1<T1, T1>() {
+                          @SuppressWarnings("unchecked")
+                          @Override
+                          public Option<T1> apply(Object that) {
+                              // 'that' is of type T1 because T1 is injected from the outside
+                              return Objects.equals(that, prototype) ? Option.some((T1) that) : Option.none();
+                          }
+                      };
             }
 
             static <T> InversePattern<T> $$() {
