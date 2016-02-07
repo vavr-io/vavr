@@ -289,17 +289,18 @@ public interface IndexedSeq<T> extends Seq<T> {
     @Override
     Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> span(Predicate<? super T> predicate);
 
+    @SuppressWarnings("unchecked")
     @Override
     default boolean startsWith(Iterable<? extends T> that, int offset) {
         Objects.requireNonNull(that, "that is null");
         if (offset < 0) return false;
         if (that instanceof IndexedSeq) {
-            IndexedSeq<? extends T> dhat = (IndexedSeq<? extends T>) that;
+            IndexedSeq<? extends T> thatIndexedSeq = (IndexedSeq<? extends T>) that;
             int i = offset;
             int j = 0;
             int thisLen = length();
-            int thatLen = dhat.length();
-            while (i < thisLen && j < thatLen && Objects.equals(this.get(i), dhat.get(j))) {
+            int thatLen = thatIndexedSeq.length();
+            while (i < thisLen && j < thatLen && Objects.equals(this.get(i), thatIndexedSeq.get(j))) {
                 i++;
                 j++;
             }

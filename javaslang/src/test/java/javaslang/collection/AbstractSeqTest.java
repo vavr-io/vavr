@@ -1506,14 +1506,14 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     // -- IndexedSeq special cases
 
     @Test
-    public void shouldTestIdexedSeqStartsWithNonIndexedSeq() {
+    public void shouldTestIndexedSeqStartsWithNonIndexedSeq() {
         assertThat(of(1, 3, 4).startsWith(Stream.of(1, 3))).isTrue();
         assertThat(of(1, 2, 3, 4).startsWith(Stream.of(1, 2, 4))).isFalse();
         assertThat(of(1, 2).startsWith(Stream.of(1, 2, 4))).isFalse();
     }
 
     @Test
-    public void shouldTestIdexedSeqEndsWithNonIndexedSeq() {
+    public void shouldTestIndexedSeqEndsWithNonIndexedSeq() {
         assertThat(of(1, 3, 4).endsWith(Stream.of(3, 4))).isTrue();
         assertThat(of(1, 2, 3, 4).endsWith(Stream.of(2, 3, 5))).isFalse();
     }
