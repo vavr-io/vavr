@@ -13,8 +13,8 @@
  * // 1, 2, 3
  * range(1, 3).gen(function(j) j)(", ")
  *
- * // >1<>0<>-1<
- * range(1, -1).gen(function(j) ">${j}<")()
+ * // (1)(0)(-1)
+ * range(1, -1).gen(function(j) "(${j})")()
  *
  * // {1, 0, -1}
  * // {2, 1, 0, -1, -2}
@@ -52,6 +52,7 @@ Array.prototype.gen = function(f) {
  *
  * // (empty string)
  * s.isEmpty().gen(s + "!")
+ *
  */
 Boolean.prototype.gen = function(code) { return this.valueOf() ? code : "" }
 String.prototype.isDefined = function() { return this.length > 0 }
@@ -62,6 +63,11 @@ String.prototype.isEmpty = function() { return this.length == 0 }
  *
  * Examples:
  *
+ * // = [1, 2, 3]
+ * range(1, 3)
+ *
+ * // = [1, 0, -1]
+ * range(1, -1)
  *
  */
 var range = function(from, to) {
