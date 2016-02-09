@@ -9,10 +9,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
@@ -20,7 +17,6 @@ import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,12 +32,13 @@ import java.util.stream.Collectors;
  */
 //
 // DEV-NOTE:
-// In order to keep the Javaslang maven module dependency graph simple, the javaslang-match-processor
+// In order to keep the Javaslang maven module dependency graph simple, the javaslang-matchable-annotation
 // is stringly-typed and does not have any dependencies to other Javaslang modules containing core classes
 // like Functions and Tuples.
 //
 public class MatchableProcessor extends AbstractProcessor {
 
+    private static final String CODE_GEN_JS = "javaslang/code_gen.js";
     private static final String PATTERN_GENERATOR_JS = "javaslang/pattern_generator.js";
 
     @Override
@@ -82,7 +79,7 @@ public class MatchableProcessor extends AbstractProcessor {
 
         log("Processing types: " + types);
 
-        final JS generator = JS.create("-scripting").load(PATTERN_GENERATOR_JS);
+        final JS generator = JS.create("-scripting").load(CODE_GEN_JS, PATTERN_GENERATOR_JS);
 
         final Elements elementUtils = processingEnv.getElementUtils();
         final Filer filer = processingEnv.getFiler();

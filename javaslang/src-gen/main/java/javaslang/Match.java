@@ -31,7 +31,7 @@ import javaslang.control.Option;
  *         Case($_, -&gt; "Nil")
  * );
  *
- * // syntactic sugar
+ * // Syntactic sugar
  * list.match(
  *         Case(List($(), $()), (x, xs) -&gt; "head: " + x + ", tail: " + xs),
  *         Case($_, -&gt; "Nil")

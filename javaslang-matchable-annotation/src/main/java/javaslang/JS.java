@@ -13,6 +13,7 @@ import javax.script.ScriptException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * A JavaScript / Nashorn interface for Java.
@@ -21,7 +22,7 @@ import java.util.Arrays;
  *
  * <pre><code>
  * // enables scripting mode / syntax extensions
- * JS js = JS.create("-scripting").load("myscript1.js", "some/dir/myscript2.js");
+ * JS js = JS.create("-scripting").load("myscript1.js", "some/package/myscript2.js");
  * String msg = js.invoke("sayHello", "Javaslang");
  * </code></pre>
  *
@@ -110,7 +111,9 @@ final class JSImpl implements JS {
         try {
             return (R) result;
         } catch (ClassCastException x) {
-            throw new Error("Unexpected result type of function " + name + Arrays.toString(args), x);
+            final String type = Optional.of(result).map(o -> o.getClass().getName()).orElse("null");
+            final String msg = String.format("Unexpected result type %s of function call %s%s", type, name, Arrays.toString(args));
+            throw new Error(msg, x);
         }
     }
 

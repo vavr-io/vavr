@@ -3,9 +3,14 @@
  *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/  \__/  /   Copyright 2014-now Daniel Dietrich
  * /___/\_/  \_/\____/\_/  \_/\__\/__/___\_/  \_//  \__/_____/    Licensed under the Apache License, Version 2.0
  */
-// ${package ? "package ${package};" : ""}
 
-var generate = function(package, _class) { return <<STR
+var letters = ["a", "bc", "def"]
+
+function test(elem) {
+    return ">" + elem + "<"
+}
+
+var generate = function(package, _class) { return <<CODE
 ${gen(package)("package ${package};")}
 
 public final class ${_class} {
@@ -14,18 +19,23 @@ public final class ${_class} {
     private ${_class}() {
     }
 
+    ----
+
+    ${forAll(letters)(test)()}
+
+    ----
+
+
+
     public static <...> Pattern...<...> List(...) {
         ...
     }
 
 }
-STR
+CODE
 }
 
-// code generator
-
-var gen = function(condition) {
-    return function(code) {
-        return condition ? code : ""
-    }
-}
+//var genLetter = function(letter) { return <<CODE
+//test>${letter}<test
+//CODE
+//}
