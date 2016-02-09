@@ -13,10 +13,5 @@ public final class ${_class} {
     private ${_class}() {
     }
 
-    public static <...> Pattern...<...> List(...) {
-        ...
-    }
-
 }
-CODE
-}
+CODE}

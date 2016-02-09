@@ -2,13 +2,33 @@
  *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  / /  _  \   Javaslang
  *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/  \__/  /   Copyright 2014-now Daniel Dietrich
  * /___/\_/  \_/\____/\_/  \_/\__\/__/___\_/  \_//  \__/_____/    Licensed under the Apache License, Version 2.0
+ *
+ *
+ * code-gen.js, a code generator written in javascript.
+ *
+ * Note
+ * ====
+ *
+ * In general javascript applications should avoid extending base objects like String or Array,
+ * see http://stackoverflow.com/questions/21945675/extending-array-prototype-in-javascript.
+ *
+ * In the case of this code generator it makes absolutely sense anyway. Code generators have a
+ * very restricted scope. They run, typically at compile time, for the only purpose of generating
+ * code. After that the job is done. They should therefore not infer with other libraries (when
+ * used standalone).
+ *
+ * The Java ScriptEngine works well with code generation because the ScriptEngineFactory returns
+ * new ScriptEngine instances which each initialize their scripts in an enclosed environment.
+ * Different ScriptEngines do not infer with each other.
+ *
  */
 
 /*
  * Expands a given Array using a function `f` and optional
  * `delimiter`, `prefix` and `suffix`.
  *
- * Examples:
+ * Examples
+ * ========
  *
  * // 1, 2, 3
  * range(1, 3).gen(function(j) j)(", ")
@@ -40,7 +60,8 @@ Array.prototype.gen = function(f) {
 /*
  * Results in `code`, if `condition` is true, otherwise returns the empty string.
  *
- * Examples:
+ * Examples
+ * ========
  *
  * var s = "Hi"
  *
@@ -61,7 +82,8 @@ String.prototype.isEmpty = function() { return this.length == 0 }
 /*
  * Range (inclusive), returns an array containing [from, ..., to]
  *
- * Examples:
+ * Examples
+ * ========
  *
  * // = [1, 2, 3]
  * range(1, 3)

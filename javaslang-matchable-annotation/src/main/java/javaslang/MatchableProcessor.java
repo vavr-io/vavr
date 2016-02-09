@@ -38,9 +38,6 @@ import java.util.stream.Collectors;
 //
 public class MatchableProcessor extends AbstractProcessor {
 
-    private static final String CODE_GEN_JS = "javaslang/code_gen.js";
-    private static final String PATTERN_GENERATOR_JS = "javaslang/pattern_generator.js";
-
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
@@ -79,7 +76,10 @@ public class MatchableProcessor extends AbstractProcessor {
 
         log("Processing types: " + types);
 
-        final JS generator = JS.create("-scripting").load(CODE_GEN_JS, PATTERN_GENERATOR_JS);
+        final JS generator = JS.create("-scripting").load(
+                "javaslang/code-gen.js",
+                "javaslang/pattern-generator.js"
+        );
 
         final Elements elementUtils = processingEnv.getElementUtils();
         final Filer filer = processingEnv.getFiler();
@@ -98,7 +98,7 @@ public class MatchableProcessor extends AbstractProcessor {
                 writer.write(result);
                 writer.flush();
                 writer.close();
-            } catch(IOException x) {
+            } catch (IOException x) {
                 throw new Error("Error creating file: " + _class);
             }
 
