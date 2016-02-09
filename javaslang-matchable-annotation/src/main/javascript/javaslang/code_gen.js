@@ -5,52 +5,64 @@
  */
 
 /*
- * Expands the given `array` using a function `f` and optional
+ * Expands a given Array using a function `f` and optional
  * `delimiter`, `prefix` and `suffix`.
  *
  * Examples:
  *
  * // 1, 2, 3
- * forAll(range(1, 3))(function(j) j)(", ")
+ * range(1, 3).gen(function(j) j)(", ")
  *
  * // >1<>0<>-1<
- * forAll(range(1, -1))(function(j) ">${j}<")()
+ * range(1, -1).gen(function(j) ">${j}<")()
  *
  * // {1, 0, -1}
  * // {2, 1, 0, -1, -2}
  * // {3, 2, 1, 0, -1, -2, -3}
- * forAll(range(1, 3))(function(i)
- *     forAll(range(i, -i))(function(j) j)(", ", "{", "}")
+ * range(1, 3).gen(function(i)
+ *     range(i, -i).gen(function(j) j)(", ", "{", "}")
  * )("\n")
  *
  */
-var forAll = function(array) {
-    return function(f) {
-        return function(delimiter, prefix, suffix) {
-            var result = (prefix === undefined ? "" : prefix)
-            var last = array.length - 1;
-            for (var index = 0; index <= last; index++) {
-                var elem = array[index]
-                result = result + f(elem) + (index == last || delimiter === undefined ? "" : delimiter)
-            }
-            return result + (suffix === undefined ? "" : suffix)
+Array.prototype.gen = function(f) {
+    var array = this
+    return function(delimiter, prefix, suffix) {
+        var result = (prefix === undefined ? "" : prefix)
+        var last = array.length - 1;
+        for (var index = 0; index <= last; index++) {
+            var elem = array[index]
+            result = result + f(elem) + (index == last || delimiter === undefined ? "" : delimiter)
         }
+        return result + (suffix === undefined ? "" : suffix)
     }
 }
 
 /*
- * Results in `code`, if `condition` is true,
- * otherwise returns the empty string.
+ * Results in `code`, if `condition` is true, otherwise returns the empty string.
+ *
+ * Examples:
+ *
+ * var s = "Hi"
+ *
+ * // = even length
+ * (s.length % 2 == 0).gen("even length")
+ *
+ * // = Hi!
+ * s.isDefined().gen(s + "!)
+ *
+ * // (empty string)
+ * s.isEmpty().gen(s + "!")
  */
-var gen = function(condition) {
-    return function(code) {
-        return condition ? code : ""
-    }
-}
+Boolean.prototype.gen = function(code) { return this.valueOf() ? code : "" }
+String.prototype.isDefined = function() { return this.length > 0 }
+String.prototype.isEmpty = function() { return this.length == 0 }
 
 /*
- * Range (inclusive),
- * returns an array containing [from, ..., to]
+ * Range (inclusive), returns an array containing [from, ..., to]
+ *
+ * Examples:
+ *
+ *
  */
 var range = function(from, to) {
     array = []

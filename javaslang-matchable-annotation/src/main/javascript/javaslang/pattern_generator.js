@@ -4,28 +4,14 @@
  * /___/\_/  \_/\____/\_/  \_/\__\/__/___\_/  \_//  \__/_____/    Licensed under the Apache License, Version 2.0
  */
 
-var letters = ["a", "bc", "def"]
-
-function test(elem) {
-    return ">" + elem + "<"
-}
-
 var generate = function(package, _class) { return <<CODE
-${gen(package)("package ${package};")}
+${package.isDefined().gen("package ${package};")}
 
 public final class ${_class} {
 
     // hidden
     private ${_class}() {
     }
-
-    ----
-
-    ${forAll(letters)(test)()}
-
-    ----
-
-
 
     public static <...> Pattern...<...> List(...) {
         ...
@@ -34,8 +20,3 @@ public final class ${_class} {
 }
 CODE
 }
-
-//var genLetter = function(letter) { return <<CODE
-//test>${letter}<test
-//CODE
-//}
