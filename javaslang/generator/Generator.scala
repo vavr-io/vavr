@@ -93,9 +93,9 @@ def generateMainClasses(): Unit = {
             public final <SUP extends R, R> Option<R> safe(Case<? extends T, ? extends R>... cases) {
                 Objects.requireNonNull(cases, "cases is null");
                 for (Case<? extends T, ? extends R> _case : cases) {
-                    final Option<? extends R> it = _case.apply(value);
+                    final Option<R> it = ((Case<T, R>) _case).apply(value);
                     if (it.isDefined()) {
-                        return Option.narrow(it);
+                        return it;
                     }
                 }
                 return Option.none();

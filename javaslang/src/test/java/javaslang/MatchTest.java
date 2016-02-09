@@ -176,8 +176,8 @@ public class MatchTest {
                 public Option<Tuple2<T1, T2>> apply(Object o) {
                     if (o instanceof Developer) {
                         final Developer dev = (Developer) o;
-                        return p1.apply(dev.getName()).flatMap(v1 ->
-                                p2.apply(dev.isCaffeinated()).map(v2 -> Tuple.of(v1, v2)));
+                        final Tuple2<String, Boolean> t = My.dev(dev); // <-- DECOMPOSITION
+                        return p1.apply(t._1).flatMap(v1 -> p2.apply(t._2).map(v2 -> Tuple.of(v1, v2)));
                     } else {
                         return Option.none();
                     }
@@ -191,6 +191,7 @@ public class MatchTest {
                 public Option<Tuple2<String, Boolean>> apply(Object o) {
                     if (o instanceof Developer) {
                         final Developer dev = (Developer) o;
+                        final Tuple2<String, Boolean> t = My.dev(dev); // <-- DECOMPOSITION
                         return p1.apply(dev.getName()).flatMap(v1 ->
                                 p2.apply(dev.isCaffeinated()).map(v2 -> Tuple.of(v1, v2)));
                     } else {
@@ -204,12 +205,16 @@ public class MatchTest {
         class My {
 
             // Option
-            @Unapply <T> Tuple1<T> some(Option.Some<T> some) { return Tuple.of(some.get()); }
-            @Unapply Tuple0 none(Option.None<?> none) { return Tuple.empty(); }
+            @Unapply static <T> Tuple1<T> some(Option.Some<T> some) { return Tuple.of(some.get()); }
+            @Unapply static Tuple0 none(Option.None<?> none) { return Tuple.empty(); }
 
             // List
-            @Unapply <T> Tuple2<T, List<T>> cons(List.Cons<T> cons) { return Tuple.of(cons.head(), cons.tail()); }
-            @Unapply Tuple0 nil(List.Nil<?> nil) { return Tuple.empty(); }
+            @Unapply static <T> Tuple2<T, List<T>> cons(List.Cons<T> cons) { return Tuple.of(cons.head(), cons.tail()); }
+            @Unapply static Tuple0 nil(List.Nil<?> nil) { return Tuple.empty(); }
+
+            // Developer
+            @Unapply static Tuple2<String, Boolean> dev(Developer dev) { return Tuple.of(dev.getName(), dev.isCaffeinated()); }
+
         }
 
         static <T extends Some<U>, U, T1> Pattern1<Some<U>, T1> Some(Pattern1<? extends U, T1> p1) {
