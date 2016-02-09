@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 // is stringly-typed and does not have any dependencies to other Javaslang modules containing core classes
 // like Functions and Tuples.
 //
-public class MatchableProcessor extends AbstractProcessor {
+public class PatternsProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -44,7 +44,7 @@ public class MatchableProcessor extends AbstractProcessor {
         log("Processing annotations: " + annotations);
 
         if (!annotations.isEmpty()) {
-            final Set<TypeElement> types = roundEnv.getElementsAnnotatedWith(Matchable.class).stream()
+            final Set<TypeElement> types = roundEnv.getElementsAnnotatedWith(Patterns.class).stream()
                     .filter(element -> element instanceof TypeElement)
                     .map(element -> (TypeElement) element)
                     .collect(Collectors.toSet());
@@ -63,7 +63,7 @@ public class MatchableProcessor extends AbstractProcessor {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         // we do not use @SupportedAnnotationTypes in order to be type-safe
-        return Collections.singleton(Matchable.class.getName());
+        return Collections.singleton(Patterns.class.getName());
     }
 
     @Override
