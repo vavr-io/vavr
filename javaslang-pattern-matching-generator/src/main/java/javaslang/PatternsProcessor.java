@@ -9,9 +9,13 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
@@ -97,20 +101,43 @@ public class PatternsProcessor extends AbstractProcessor {
             // - ...
 
             // TODO: which order is returned? - if none, use Set instead
+            // TODO: executable elements should not be constructors or default methods
+            // TODO: modifiers should be only static! (no public, private, protected, final, ...). allow synchronized?
             final List<ExecutableElement> executableElements = type.getEnclosedElements().stream()
                     .filter(element -> element instanceof ExecutableElement)
                     .map(element -> (ExecutableElement) element)
+                    .filter(element -> element.getAnnotationsByType(Unapply.class).length > 0)
                     .collect(Collectors.toList());
 
             for (ExecutableElement executableElement : executableElements) {
+
                 System.out.println("METHOD: " + executableElement);
-                final Unapply[] annotations = executableElement.getAnnotationsByType(Unapply.class);
-                System.out.println("ANNOTATIONS: " + Arrays.toString(annotations));
                 final List<? extends TypeParameterElement> typeParameters = executableElement.getTypeParameters();
+
+                final TypeMirror typeMirror = executableElement.asType();
+                System.out.println("  TYPE MIRROR: " + typeMirror);
+
+                final TypeMirror returnType = executableElement.getReturnType();
+                System.out.println("  RETURN TYPE: " + returnType);
+
+                final TypeKind kind = returnType.getKind();
+                System.out.println("    KIND: " + returnType.getKind());
+                if (kind == TypeKind.DECLARED) {
+                    final DeclaredType declaredType = (DeclaredType) returnType;
+                    System.out.println("    DECLARED TYPE: " + declaredType);
+                    System.out.println("      TYPE ARGS: " + declaredType.getTypeArguments());
+                } else {
+                    System.out.println("    KIND HANDLER: none");
+                }
+
                 for (TypeParameterElement typeParameter : typeParameters) {
+
                     System.out.println("  TYPE PARAMETER:");
-                    System.out.println("    BOUNDS: " + typeParameter.getBounds());
-                    System.out.println("    GENERIC: " + typeParameter.getGenericElement());
+                    final Element paramGenericElement = typeParameter.getGenericElement();
+                    System.out.println("    GENERIC: " + paramGenericElement);
+
+                    final TypeMirror paramTypeMirror = typeParameter.asType();
+                    System.out.println("    TYPE MIRROR: " + paramTypeMirror);
                 }
             }
 
