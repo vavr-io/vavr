@@ -9,14 +9,18 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -86,6 +90,29 @@ public class PatternsProcessor extends AbstractProcessor {
         final Types typeUtils = processingEnv.getTypeUtils();
 
         for (TypeElement type : types) {
+
+            // TOOD: ensure that the @Pattern-annotated type is
+            // - package-private
+            // - no inner class(?)
+            // - ...
+
+            // TODO: which order is returned? - if none, use Set instead
+            final List<ExecutableElement> executableElements = type.getEnclosedElements().stream()
+                    .filter(element -> element instanceof ExecutableElement)
+                    .map(element -> (ExecutableElement) element)
+                    .collect(Collectors.toList());
+
+            for (ExecutableElement executableElement : executableElements) {
+                System.out.println("METHOD: " + executableElement);
+                final Unapply[] annotations = executableElement.getAnnotationsByType(Unapply.class);
+                System.out.println("ANNOTATIONS: " + Arrays.toString(annotations));
+                final List<? extends TypeParameterElement> typeParameters = executableElement.getTypeParameters();
+                for (TypeParameterElement typeParameter : typeParameters) {
+                    System.out.println("  TYPE PARAMETER:");
+                    System.out.println("    BOUNDS: " + typeParameter.getBounds());
+                    System.out.println("    GENERIC: " + typeParameter.getGenericElement());
+                }
+            }
 
             final String _package = elementUtils.getPackageOf(type).getQualifiedName().toString();
             final String _class = type.getSimpleName().toString() + "s";
