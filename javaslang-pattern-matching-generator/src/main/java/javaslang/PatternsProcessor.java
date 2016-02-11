@@ -91,6 +91,30 @@ public class PatternsProcessor extends AbstractProcessor {
         return true;
     }
 
+    enum Param {
+
+        InversePattern(1),
+        Pattern0(0),
+        Pattern1(1),
+        Pattern2(2),
+        Pattern3(3),
+        Pattern4(4),
+        Pattern5(5),
+        Pattern6(6),
+        Pattern7(7),
+        Pattern8(8);
+
+        final int arity;
+
+        Param(int arity) {
+            this.arity = arity;
+        }
+
+        int arity() {
+            return arity;
+        }
+    }
+
     private String generate(Set<TypeElement> typeElements) {
         for (TypeElement typeElement : typeElements) {
             if (isTypeDeclarationValid(typeElement, processingEnv.getMessager())) {
@@ -105,7 +129,20 @@ public class PatternsProcessor extends AbstractProcessor {
 
                         // TODO:DELME
                         System.out.printf("[%d] " + executableElement + "\n", arity);
+                        if (arity == 0) {
 
+                            // TODO
+
+                        } else {
+                            Lists
+                                    .crossProduct(Arrays.asList(Param.values()), arity)
+                                    .stream()
+                                    .filter(params -> params.stream().map(Param::arity).reduce((a, b) -> a + b).get() <= 8)
+                                    .collect(Collectors.toList())
+                                    .forEach(System.out::println);
+
+
+                        }
                     }
                 }
 
