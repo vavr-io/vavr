@@ -10,9 +10,11 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
@@ -50,26 +52,13 @@ import static javax.lang.model.element.Modifier.*;
 //
 public class PatternsProcessor extends AbstractProcessor {
 
-    @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    private final JS generator;
 
-        log("Processing annotations: " + annotations);
-
-        if (!annotations.isEmpty()) {
-            final Set<TypeElement> types = roundEnv.getElementsAnnotatedWith(Patterns.class).stream()
-                    .filter(element -> element instanceof TypeElement)
-                    .map(element -> (TypeElement) element)
-                    .collect(Collectors.toSet());
-            if (types.size() > 0) {
-                if (roundEnv.processingOver()) {
-                    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Processing over.");
-                } else {
-                    generate(types);
-                }
-            }
-        }
-
-        return true;
+    public PatternsProcessor() {
+        this.generator = JS.create("-scripting").load(
+                "javaslang/code-gen.js",
+                "javaslang/pattern-generator.js"
+        );
     }
 
     @Override
@@ -84,167 +73,220 @@ public class PatternsProcessor extends AbstractProcessor {
         return SourceVersion.latestSupported();
     }
 
-    private String generate(Set<TypeElement> types) {
-
-        log("Processing types: " + types);
-
-        final JS generator = JS.create("-scripting").load(
-                "javaslang/code-gen.js",
-                "javaslang/pattern-generator.js"
-        );
-
-        // TODO: ensure that the @Patterns-annotated type is
-        // - package-private
-        // - no inner class(?)
-        // - ...
-        // TODO: ensure
-
-        final Elements elementUtils = processingEnv.getElementUtils();
-        final Filer filer = processingEnv.getFiler();
-        final Types typeUtils = processingEnv.getTypeUtils();
-
-        for (TypeElement type : types) {
-
-            final List<ExecutableElement> executableElements = type.getEnclosedElements().stream()
-                    .filter(element -> element instanceof ExecutableElement && element.getAnnotationsByType(Unapply.class).length == 1)
-                    .map(element -> (ExecutableElement) element)
-                    .collect(Collectors.toList());
-
-            for (ExecutableElement executableElement : executableElements) {
-
-                final Elem elem = new Elem(executableElement, processingEnv.getMessager());
-
-                final boolean isValidDeclaration = elem.ensure(Elem::isMethod, () -> "Annotation " + Unapply.class.getName() + " only allowed for methods.") &&
-                        elem.ensure(Elem::doesNotThrow, () -> "@" + "Unapply method should not throw (checked) exceptions.") &&
-                        elem.ensure(e -> !e.elem.isDefault(), () -> "@" + "Unapply method needs to be declared in a class, not an interface.") &&
-                        elem.ensure(e -> !e.elem.isVarArgs(), () -> "@" + "Unapply method has varargs.") &&
-                        elem.ensure(e -> e.elem.getParameters().size() == 1, () -> "Unapply method must have exactly one parameter of the object to be deconstructed.") &&
-                        elem.ensure(e -> e.elem.getReturnType().toString().startsWith("javaslang.Tuple"), () -> "Return type of unapply method must be a Tuple.") &&
-                        elem.ensure(e -> e.hasAll(STATIC), () -> "Unapply method needs to be static.") &&
-                        elem.ensure(e -> e.hasNone(PRIVATE, PROTECTED, ABSTRACT), () -> "Unapply method may not be private or protected.");
-
-//                System.out.println("METHOD: " + executableElement);
-//                final List<? extends TypeParameterElement> typeParameters = executableElement.getTypeParameters();
-//
-//                final TypeMirror typeMirror = executableElement.asType();
-//                System.out.println("  TYPE MIRROR: " + typeMirror);
-//
-//                final TypeMirror returnType = executableElement.getReturnType();
-//                System.out.println("  RETURN TYPE: " + returnType);
-//
-//                final TypeKind kind = returnType.getKind();
-//                System.out.println("    KIND: " + returnType.getKind());
-//                if (kind == TypeKind.DECLARED) {
-//                    final DeclaredType declaredType = (DeclaredType) returnType;
-//                    System.out.println("    DECLARED TYPE: " + declaredType);
-//                    System.out.println("      TYPE ARGS: " + declaredType.getTypeArguments());
-//                } else {
-//                    System.out.println("    KIND HANDLER: none");
-//                }
-//
-//                for (TypeParameterElement typeParameter : typeParameters) {
-//
-//                    System.out.println("  TYPE PARAMETER:");
-//                    final Element paramGenericElement = typeParameter.getGenericElement();
-//                    System.out.println("    GENERIC: " + paramGenericElement);
-//
-//                    final TypeMirror paramTypeMirror = typeParameter.asType();
-//                    System.out.println("    TYPE MIRROR: " + paramTypeMirror);
-//                }
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        if (!annotations.isEmpty()) {
+            final Set<TypeElement> types = roundEnv.getElementsAnnotatedWith(Patterns.class).stream()
+                    .filter(element -> element instanceof TypeElement)
+                    .map(element -> (TypeElement) element)
+                    .collect(Collectors.toSet());
+            if (types.size() > 0) {
+                if (roundEnv.processingOver()) {
+                    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Processing over.");
+                } else {
+                    generate(types);
+                }
             }
+        }
+        return true;
+    }
 
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    private String generate(Set<TypeElement> typeElements) {
+        for (TypeElement typeElement : typeElements) {
+            if (isTypeDeclarationValid(typeElement, processingEnv.getMessager())) {
+                final List<ExecutableElement> executableElements = typeElement.getEnclosedElements().stream()
+                        .filter(element -> element instanceof ExecutableElement && element.getAnnotationsByType(Unapply.class).length == 1)
+                        .map(element -> (ExecutableElement) element)
+                        .collect(Collectors.toList());
+                for (ExecutableElement executableElement : executableElements) {
+                    if (isMethodDeclarationValid(executableElement, processingEnv.getMessager())) {
+                        final UnapplyReflector reflector = new UnapplyReflector(executableElement);
+                        final int arity = reflector.getArity();
 
-            // @Unapply static <T> Tuple2<T, List<T>> Cons(List.Cons<T> cons)
+                        // TODO:DELME
+                        System.out.printf("[%d] " + executableElement + "\n", arity);
 
-            // @Unapply static <T> Tuple2<T, List<T>> Cons(List.Cons<T> cons)
-            // @Unapply static     Tuple0    Nil(List.Nil<?> nil)
+                    }
+                }
 
-            // static Pattern0 Nil = new Pattern0() {
-            //     @Override
-            //     public Option<Void> apply(Object o) {
-            //         return (o instanceof List.Nil) ? Option.nothing() : Option.none();
-            //     }
-            // };
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-            // static                                Pattern0                      List(Pattern0 p1, Pattern0 p2)
-            // static                                Pattern1                      List(Pattern0 p1, Pattern1<? extends List<U>> p2)
-            // static                                Pattern1                      List(Pattern0 p1, InversePattern<? extends List<U>> p2)
-            // static <T extends List<U>, U, T1>     Pattern1<List<U>, T1>         List(Pattern1<? extends U, T1> p1, Pattern0 p2)
-            // static <T extends List<U>, U, T1, T2> Pattern2<List<U>, T1, T2>     List(Pattern1<? extends U, T1> p1, Pattern1<? extends List<U>, T2> p2)
-            // static <T extends List<U>, U>         Pattern1<List<U>, U>          List(InversePattern<? extends U> head, Pattern0 tail) {
-            // static <T extends List<U>, U>         Pattern2<List<U>, U, List<U>> List(InversePattern<? extends U> head, Pattern1<? extends List<U>> tail)
-            // static <T extends List<U>, U>         Pattern2<List<U>, U, List<U>> List(InversePattern<? extends U> head, InversePattern<List<U>> tail)
-            // ...
+                // @Unapply static <T> Tuple2<T, List<T>> Cons(List.Cons<T> cons)
 
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // @Unapply static <T> Tuple2<T, List<T>> Cons(List.Cons<T> cons)
+                // @Unapply static     Tuple0    Nil(List.Nil<?> nil)
 
-            final String _package = elementUtils.getPackageOf(type).getQualifiedName().toString();
-            final String _class = type.getSimpleName().toString() + "s";
+                // static Pattern0 Nil = new Pattern0() {
+                //     @Override
+                //     public Option<Void> apply(Object o) {
+                //         return (o instanceof List.Nil) ? Option.nothing() : Option.none();
+                //     }
+                // };
 
-            String result = generator.invoke("generate", _package, _class);
+                // static                                Pattern0                      List(Pattern0 p1, Pattern0 p2)
+                // static                                Pattern1                      List(Pattern0 p1, Pattern1<? extends List<U>> p2)
+                // static                                Pattern1                      List(Pattern0 p1, InversePattern<? extends List<U>> p2)
+                // static <T extends List<U>, U, T1>     Pattern1<List<U>, T1>         List(Pattern1<? extends U, T1> p1, Pattern0 p2)
+                // static <T extends List<U>, U, T1, T2> Pattern2<List<U>, T1, T2>     List(Pattern1<? extends U, T1> p1, Pattern1<? extends List<U>, T2> p2)
+                // static <T extends List<U>, U>         Pattern1<List<U>, U>          List(InversePattern<? extends U> head, Pattern0 tail) {
+                // static <T extends List<U>, U>         Pattern2<List<U>, U, List<U>> List(InversePattern<? extends U> head, Pattern1<? extends List<U>> tail)
+                // static <T extends List<U>, U>         Pattern2<List<U>, U, List<U>> List(InversePattern<? extends U> head, InversePattern<List<U>> tail)
+                // ...
 
-            try {
-                final JavaFileObject javaFileObject = filer.createSourceFile(type.getQualifiedName() + "s", type);
-                final Writer writer = javaFileObject.openWriter();
-                writer.write(result);
-                writer.flush();
-                writer.close();
-            } catch (IOException x) {
-                throw new Error("Error creating file: " + _class);
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+                final Elements elementUtils = processingEnv.getElementUtils();
+                final Filer filer = processingEnv.getFiler();
+                final Types typeUtils = processingEnv.getTypeUtils();
+
+                final String _package = elementUtils.getPackageOf(typeElement).getQualifiedName().toString();
+                final String _class = typeElement.getSimpleName().toString() + "s";
+
+                String result = generator.invoke("generate", _package, _class);
+
+                try {
+                    final JavaFileObject javaFileObject = filer.createSourceFile(typeElement.getQualifiedName() + "s", typeElement);
+                    final Writer writer = javaFileObject.openWriter();
+                    writer.write(result);
+                    writer.flush();
+                    writer.close();
+                } catch (IOException x) {
+                    throw new Error("Error creating file: " + _class);
+                }
+
+                // TODO: DELME
+                System.out.println(result);
             }
-
-            log(result);
         }
 
         // TODO
         return null;
     }
 
-    static void log(String message) {
-        System.out.println("[ANNOTATION-PROCESSOR] " + message);
-    }
-}
+    private static boolean isTypeDeclarationValid(TypeElement typeElement, Messager messager) {
 
-class Elem {
+        class TypeElemChecker extends ElemChecker<TypeElemChecker, TypeElement> {
 
-    final ExecutableElement elem;
-    final Messager messager;
+            TypeElemChecker(TypeElement elem, Messager messager) {
+                super(elem, messager);
+            }
 
-    Elem(ExecutableElement elem, Messager messager) {
-        this.elem = elem;
-        this.messager = messager;
-    }
-
-    boolean ensure(Predicate<Elem> condition, Supplier<String> msg) {
-        final boolean result = condition.test(this);
-        if (!result) {
-            messager.printMessage(Diagnostic.Kind.ERROR, msg.get(), elem);
-        }
-        return result;
-    }
-
-    boolean hasAll(Modifier... modifiers) {
-        return elem.getModifiers().containsAll(Arrays.asList(modifiers));
-    }
-
-    boolean hasNone(Modifier... modifiers) {
-        final Set<Modifier> set = elem.getModifiers();
-        for (Modifier modifier : modifiers) {
-            if (set.contains(modifier)) {
-                return false;
+            boolean isNested() {
+                return elem.getNestingKind().isNested();
             }
         }
-        return true;
+
+        final TypeElemChecker typeChecker = new TypeElemChecker(typeElement, messager);
+
+        return typeChecker.ensure(e -> !e.isNested(), () -> "Patterns need to be defined in top-level classes.");
     }
 
-    static boolean isMethod(Elem elem) {
-        final String name = elem.elem.getSimpleName().toString();
-        return !name.isEmpty() && !"<init>".equals(name) && !"<clinit>".equals(name);
+    private static boolean isMethodDeclarationValid(ExecutableElement executableElement, Messager messager) {
+
+        class ExecElemChecker extends ElemChecker<ExecElemChecker, ExecutableElement> {
+
+            ExecElemChecker(ExecutableElement elem, Messager messager) {
+                super(elem, messager);
+            }
+
+            boolean isMethod() {
+                final String name = elem.getSimpleName().toString();
+                return !name.isEmpty() && !"<init>".equals(name) && !"<clinit>".equals(name);
+            }
+
+            boolean doesNotThrow() {
+                return elem.getThrownTypes().isEmpty();
+            }
+        }
+
+        final ExecElemChecker methodChecker = new ExecElemChecker(executableElement, messager);
+
+        return methodChecker.ensure(ExecElemChecker::isMethod, () -> "Annotation " + Unapply.class.getName() + " only allowed for methods.") &&
+                methodChecker.ensure(ExecElemChecker::doesNotThrow, () -> "@" + "Unapply method should not throw (checked) exceptions.") &&
+                methodChecker.ensure(e -> !e.elem.isDefault(), () -> "@" + "Unapply method needs to be declared in a class, not an interface.") &&
+                methodChecker.ensure(e -> !e.elem.isVarArgs(), () -> "@" + "Unapply method has varargs.") &&
+                methodChecker.ensure(e -> e.elem.getParameters().size() == 1, () -> "Unapply method must have exactly one parameter of the object to be deconstructed.") &&
+                methodChecker.ensure(e -> e.elem.getReturnType().toString().startsWith("javaslang.Tuple"), () -> "Return type of unapply method must be a Tuple.") &&
+                methodChecker.ensure(e -> e.hasAll(STATIC), () -> "Unapply method needs to be static.") &&
+                methodChecker.ensure(e -> e.hasNone(PRIVATE, PROTECTED, ABSTRACT), () -> "Unapply method may not be private or protected.");
     }
 
-    static boolean doesNotThrow(Elem elem) {
-        return elem.elem.getThrownTypes().isEmpty();
+    private static abstract class ElemChecker<SELF extends ElemChecker<SELF, E>, E extends Element> {
+
+        final E elem;
+        final Messager messager;
+
+        ElemChecker(E elem, Messager messager) {
+            this.elem = elem;
+            this.messager = messager;
+        }
+
+        boolean ensure(Predicate<? super SELF> condition, Supplier<String> msg) {
+            @SuppressWarnings("unchecked")
+            final boolean result = condition.test((SELF) this);
+            if (!result) {
+                messager.printMessage(Diagnostic.Kind.ERROR, msg.get(), elem);
+            }
+            return result;
+        }
+
+        boolean hasAll(Modifier... modifiers) {
+            return elem.getModifiers().containsAll(Arrays.asList(modifiers));
+        }
+
+        boolean hasNone(Modifier... modifiers) {
+            final Set<Modifier> set = elem.getModifiers();
+            for (Modifier modifier : modifiers) {
+                if (set.contains(modifier)) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
+    private static class UnapplyReflector {
+
+        final ExecutableElement elem;
+
+        UnapplyReflector(ExecutableElement elem) {
+            this.elem = elem;
+        }
+
+        public int getArity() {
+            final DeclaredType returnType = (DeclaredType) elem.getReturnType();
+            final String simpleName = returnType.asElement().getSimpleName().toString();
+            return Integer.parseInt(simpleName.substring("Tuple".length()));
+        }
+
+        // TODO
+        //                System.out.println("METHOD: " + executableElement);
+        //                final List<? extends TypeParameterElement> typeParameters = executableElement.getTypeParameters();
+        //
+        //                final TypeMirror typeMirror = executableElement.asType();
+        //                System.out.println("  TYPE MIRROR: " + typeMirror);
+        //
+        //                final TypeMirror returnType = executableElement.getReturnType();
+        //                System.out.println("  RETURN TYPE: " + returnType);
+        //
+        //                final TypeKind kind = returnType.getKind();
+        //                System.out.println("    KIND: " + returnType.getKind());
+        //                if (kind == TypeKind.DECLARED) {
+        //                    final DeclaredType declaredType = (DeclaredType) returnType;
+        //                    System.out.println("    DECLARED TYPE: " + declaredType);
+        //                    System.out.println("      TYPE ARGS: " + declaredType.getTypeArguments());
+        //                } else {
+        //                    System.out.println("    KIND HANDLER: none");
+        //                }
+        //
+        //                for (TypeParameterElement typeParameter : typeParameters) {
+        //
+        //                    System.out.println("  TYPE PARAMETER:");
+        //                    final Element paramGenericElement = typeParameter.getGenericElement();
+        //                    System.out.println("    GENERIC: " + paramGenericElement);
+        //
+        //                    final TypeMirror paramTypeMirror = typeParameter.asType();
+        //                    System.out.println("    TYPE MIRROR: " + paramTypeMirror);
+        //                }
+    }
 }

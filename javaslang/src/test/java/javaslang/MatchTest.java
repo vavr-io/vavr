@@ -169,7 +169,6 @@ public class MatchTest {
         public boolean isCaffeinated() { return isCaffeinated; }
     }
 
-
     interface StandardPatterns {
 
         static <T1, T2> Pattern2<Developer, T1, T2> Developer(Pattern1<String, T1> p1, Pattern1<Boolean, T2> p2) {
@@ -211,22 +210,6 @@ public class MatchTest {
                     }
                 }
             };
-        }
-
-        @Patterns
-        class My {
-
-            // Option
-            @Unapply static <T> Tuple1<T> Some(Option.Some<T> some) { return Tuple.of(some.get()); }
-            @Unapply static Tuple0 None(Option.None<?> none) { return Tuple.empty(); }
-
-            // List
-            @Unapply static <T> Tuple2<T, List<T>> Cons(List.Cons<T> cons) { return Tuple.of(cons.head(), cons.tail()); }
-            @Unapply static Tuple0 Nil(List.Nil<?> nil) { return Tuple.empty(); }
-
-            // Developer
-            @Unapply static Tuple2<String, Boolean> Developer(Developer dev) { return Tuple.of(dev.getName(), dev.isCaffeinated()); }
-
         }
 
         static <T extends Some<U>, U, T1> Pattern1<Some<U>, T1> Some(Pattern1<? extends U, T1> p1) {
