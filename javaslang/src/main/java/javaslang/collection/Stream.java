@@ -1475,7 +1475,7 @@ public interface Stream<T> extends LinearSeq<T> {
                 final Cons<T> cons = (Cons<T>) stream;
                 builder.append(cons.head);
                 if (cons.tail.isEvaluated()) {
-                    stream = cons.tail.get();
+                    stream = stream.tail();
                     if (!stream.isEmpty()) {
                         builder.append(", ");
                     }
@@ -1544,10 +1544,10 @@ interface StreamModule {
             } else {
                 if(t instanceof ConsImpl) {
                     ConsImpl<T> c = (ConsImpl<T>) t;
-                    return new AppendElements<>(t.head(), queue, c.tail);
+                    return new AppendElements<>(c.head(), queue, c.tail);
                 } else {
                     AppendElements<T> a = (AppendElements<T>) t;
-                    return new AppendElements<>(t.head(), queue, a.tail);
+                    return new AppendElements<>(a.head(), a.queue.appendAll(queue), a.tail);
                 }
             }
         }

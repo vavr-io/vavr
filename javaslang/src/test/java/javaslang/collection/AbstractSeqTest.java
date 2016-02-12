@@ -135,6 +135,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    public void shouldMixAppendAndPrepend() {
+        assertThat(of(1).append(2).prepend(0).append(3)).isEqualTo(of(0, 1, 2, 3));
+    }
+
     // -- appendAll
 
     @Test(expected = NullPointerException.class)
