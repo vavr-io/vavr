@@ -6,6 +6,7 @@
 package javaslang;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ class Lists {
         if (power < 0) {
             throw new IllegalArgumentException("negative power");
         }
-        return IntStream
+        return list.isEmpty() ? Collections.emptyList() : IntStream
                 .range(1, power)
                 .boxed()
                 .reduce(list.stream().map(Lists::unit).collect(Collectors.toList()),

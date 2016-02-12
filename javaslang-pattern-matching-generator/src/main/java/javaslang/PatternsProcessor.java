@@ -93,10 +93,11 @@ public class PatternsProcessor extends AbstractProcessor {
 
     enum Param {
 
-        InversePattern(1),
-        Pattern0(0),
-        Pattern1(1),
-        Pattern2(2),
+        T(0),               // value
+        InversePattern(1),  // $()
+        Pattern0(0),        // $_
+        Pattern1(1),        // $("test")
+        Pattern2(2),        // combinations of the above...
         Pattern3(3),
         Pattern4(4),
         Pattern5(5),
@@ -131,16 +132,17 @@ public class PatternsProcessor extends AbstractProcessor {
                         System.out.printf("[%d] " + executableElement + "\n", arity);
                         if (arity == 0) {
 
-                            // TODO
+                            // Tuple0 Nil(List.Nil<?> nil)
 
                         } else {
-                            Lists
-                                    .crossProduct(Arrays.asList(Param.values()), arity)
+
+                            Lists.crossProduct(Arrays.asList(Param.values()), arity)
                                     .stream()
                                     .filter(params -> params.stream().map(Param::arity).reduce((a, b) -> a + b).get() <= 8)
                                     .collect(Collectors.toList())
                                     .forEach(System.out::println);
 
+                            // <T> Tuple2<T, List<T>> Cons(List.Cons<T> cons)
 
                         }
                     }
