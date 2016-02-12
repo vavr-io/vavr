@@ -233,6 +233,14 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(actual).isEqualTo(3);
     }
 
+    // -- append
+
+    @Test
+    public void shouldAppendMillionTimes() {
+        final int bigNum = 1_000_000;
+        assertThat(Stream.range(0, bigNum).foldLeft(Stream.empty(), Stream::append).length()).isEqualTo(bigNum);
+    }
+
     // -- combinations
 
     @Test

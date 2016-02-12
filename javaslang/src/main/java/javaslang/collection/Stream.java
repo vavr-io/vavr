@@ -178,7 +178,7 @@ public interface Stream<T> extends LinearSeq<T> {
     @SuppressWarnings("unchecked")
     static <T> Stream<T> cons(T head, Supplier<? extends Stream<? extends T>> tailSupplier) {
         Objects.requireNonNull(tailSupplier, "tailSupplier is null");
-        return new Cons<>(head, (Supplier<Stream<T>>) tailSupplier);
+        return new ConsImpl<>(head, (Supplier<Stream<T>>) tailSupplier);
     }
 
     /**
@@ -216,7 +216,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream instance containing the given element
      */
     static <T> Stream<T> of(T element) {
-        return new Cons<>(element, Empty::instance);
+        return cons(element, Empty::instance);
     }
 
     /**
@@ -603,19 +603,13 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> append(T element) {
-        if (isEmpty()) {
-            return Stream.of(element);
-        } else {
-            // decoupling tail from `this`, see https://github.com/javaslang/javaslang/issues/824#issuecomment-158690009
-            final Lazy<Stream<T>> tail = ((Cons<T>) this).tail;
-            return new Cons<>(head(), () -> tail.get().append(element));
-        }
+        return isEmpty()? Stream.of(element): new AppendElements<>(head(), Queue.of(element), this::tail);
     }
 
     @Override
     default Stream<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return isEmpty() ? Stream.ofAll(elements) : new Cons<>(head(), () -> tail().appendAll(elements));
+        return isEmpty() ? Stream.ofAll(elements) : new AppendElements<>(head(), Queue.ofAll(elements), this::tail);
     }
 
     /**
@@ -753,7 +747,7 @@ public interface Stream<T> extends LinearSeq<T> {
             stream = stream.tail();
         }
         final Stream<T> finalStream = stream;
-        return stream.isEmpty() ? stream : new Cons<>(stream.head(), () -> finalStream.tail().filter(predicate));
+        return stream.isEmpty() ? stream : cons(stream.head(), () -> finalStream.tail().filter(predicate));
     }
 
     @Override
@@ -839,7 +833,7 @@ public interface Stream<T> extends LinearSeq<T> {
             if (tail.isEmpty()) {
                 return Empty.instance();
             } else {
-                return new Cons<>(head(), tail::init);
+                return cons(head(), tail::init);
             }
         }
     }
@@ -854,11 +848,11 @@ public interface Stream<T> extends LinearSeq<T> {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e)");
         } else if (index == 0) {
-            return new Cons<>(element, () -> this);
+            return cons(element, () -> this);
         } else if (isEmpty()) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e) on Nil");
         } else {
-            return new Cons<>(head(), () -> tail().insert(index - 1, element));
+            return cons(head(), () -> tail().insert(index - 1, element));
         }
     }
 
@@ -873,7 +867,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else if (isEmpty()) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on Nil");
         } else {
-            return new Cons<>(head(), () -> tail().insertAll(index - 1, elements));
+            return cons(head(), () -> tail().insertAll(index - 1, elements));
         }
     }
 
@@ -882,9 +876,9 @@ public interface Stream<T> extends LinearSeq<T> {
         if (isEmpty()) {
             return this;
         } else {
-            return new Cons<>(head(), () -> {
+            return cons(head(), () -> {
                 final Stream<T> tail = tail();
-                return tail.isEmpty() ? tail : new Cons<>(element, () -> tail.intersperse(element));
+                return tail.isEmpty() ? tail : cons(element, () -> tail.intersperse(element));
             });
         }
     }
@@ -916,7 +910,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (isEmpty()) {
             return Empty.instance();
         } else {
-            return new Cons<>(mapper.apply(head()), () -> tail().map(mapper));
+            return cons(mapper.apply(head()), () -> tail().map(mapper));
         }
     }
 
@@ -932,7 +926,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else if (isEmpty()) {
             return Stream.ofAll(Iterator.gen(() -> element).take(length));
         } else {
-            return new Cons<>(head(), () -> tail().padTo(length - 1, element));
+            return cons(head(), () -> tail().padTo(length - 1, element));
         }
     }
 
@@ -960,7 +954,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else {
             final T head = head();
             action.accept(head);
-            return new Cons<>(head, () -> tail().peek(action));
+            return cons(head, () -> tail().peek(action));
         }
     }
 
@@ -984,7 +978,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> prepend(T element) {
-        return new Cons<>(element, () -> this);
+        return cons(element, () -> this);
     }
 
     @SuppressWarnings("unchecked")
@@ -1000,7 +994,7 @@ public interface Stream<T> extends LinearSeq<T> {
             return this;
         } else {
             final T head = head();
-            return Objects.equals(head, element) ? tail() : new Cons<>(head, () -> tail().remove(element));
+            return Objects.equals(head, element) ? tail() : cons(head, () -> tail().remove(element));
         }
     }
 
@@ -1011,7 +1005,7 @@ public interface Stream<T> extends LinearSeq<T> {
             return this;
         } else {
             final T head = head();
-            return predicate.test(head) ? tail() : new Cons<>(head, () -> tail().removeFirst(predicate));
+            return predicate.test(head) ? tail() : cons(head, () -> tail().removeFirst(predicate));
         }
     }
 
@@ -1029,7 +1023,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else if (isEmpty()) {
             throw new IndexOutOfBoundsException("removeAt() on Nil");
         } else {
-            return new Cons<>(head(), () -> tail().removeAt(index - 1));
+            return cons(head(), () -> tail().removeAt(index - 1));
         }
     }
 
@@ -1053,9 +1047,9 @@ public interface Stream<T> extends LinearSeq<T> {
         } else {
             final T head = head();
             if (Objects.equals(head, currentElement)) {
-                return new Cons<>(newElement, this::tail);
+                return cons(newElement, this::tail);
             } else {
-                return new Cons<>(head, () -> tail().replace(currentElement, newElement));
+                return cons(head, () -> tail().replace(currentElement, newElement));
             }
         }
     }
@@ -1067,7 +1061,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else {
             final T head = head();
             final T newHead = Objects.equals(head, currentElement) ? newElement : head;
-            return new Cons<>(newHead, () -> tail().replaceAll(currentElement, newElement));
+            return cons(newHead, () -> tail().replaceAll(currentElement, newElement));
         }
     }
 
@@ -1114,7 +1108,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else {
             final long lowerBound = Math.max(beginIndex, 0);
             if (lowerBound == 0) {
-                return new Cons<>(head(), () -> tail().slice(0, endIndex - 1));
+                return cons(head(), () -> tail().slice(0, endIndex - 1));
             } else {
                 return tail().slice(lowerBound - 1, endIndex - 1);
             }
@@ -1218,7 +1212,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else if (isEmpty()) {
             throw new IndexOutOfBoundsException("subSequence of Nil");
         } else if (beginIndex == 0) {
-            return new Cons<>(head(), () -> tail().subSequence(0, endIndex - 1));
+            return cons(head(), () -> tail().subSequence(0, endIndex - 1));
         } else {
             return tail().subSequence(beginIndex - 1, endIndex - 1);
         }
@@ -1237,7 +1231,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (n < 1 || isEmpty()) {
             return Empty.instance();
         } else {
-            return new Cons<>(head(), () -> tail().take(n - 1));
+            return cons(head(), () -> tail().take(n - 1));
         }
     }
 
@@ -1266,7 +1260,7 @@ public interface Stream<T> extends LinearSeq<T> {
         } else {
             final T head = head();
             if (predicate.test(head)) {
-                return new Cons<>(head, () -> tail().takeWhile(predicate));
+                return cons(head, () -> tail().takeWhile(predicate));
             } else {
                 return Empty.instance();
             }
@@ -1415,28 +1409,19 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     /**
-     * Non-empty {@code Stream}, consisting of a {@code head}, a {@code tail} and an optional
-     * {@link java.lang.AutoCloseable}.
+     * Non-empty {@code Stream}, consisting of a {@code head}, and {@code tail}.
      *
      * @param <T> Component type of the Stream.
      * @since 1.1.0
      */
-    // DEV NOTE: class declared final because of serialization proxy pattern.
-    // (see Effective Java, 2nd ed., p. 315)
-    final class Cons<T> implements Stream<T>, Serializable {
+    abstract class Cons<T> implements Stream<T> {
 
         private static final long serialVersionUID = 1L;
 
-        private final T head;
-        private final Lazy<Stream<T>> tail;
+        final T head;
+        final Lazy<Stream<T>> tail;
 
-        /**
-         * Creates a new {@code Stream} consisting of a head element and a lazy trailing {@code Stream}.
-         *
-         * @param head A head element
-         * @param tail A tail {@code Stream} supplier, {@linkplain Empty} denotes the end of the {@code Stream}
-         */
-        private Cons(T head, Supplier<Stream<T>> tail) {
+        Cons(T head, Supplier<Stream<T>> tail) {
             Objects.requireNonNull(tail, "tail is null");
             this.head = head;
             this.tail = Lazy.of(tail);
@@ -1455,11 +1440,6 @@ public interface Stream<T> extends LinearSeq<T> {
         @Override
         public Iterator<T> iterator() {
             return new StreamIterator<>(this);
-        }
-
-        @Override
-        public Stream<T> tail() {
-            return tail.get();
         }
 
         @Override
@@ -1507,113 +1487,160 @@ public interface Stream<T> extends LinearSeq<T> {
             }
             return builder.append(")").toString();
         }
-
-        /**
-         * {@code writeReplace} method for the serialization proxy pattern.
-         * <p>
-         * The presence of this method causes the serialization system to emit a SerializationProxy instance instead of
-         * an instance of the enclosing class.
-         *
-         * @return A SerialiationProxy for this enclosing class.
-         */
-        private Object writeReplace() {
-            return new SerializationProxy<>(this);
-        }
-
-        /**
-         * {@code readObject} method for the serialization proxy pattern.
-         * <p>
-         * Guarantees that the serialization system will never generate a serialized instance of the enclosing class.
-         *
-         * @param stream An object serialization stream.
-         * @throws java.io.InvalidObjectException This method will throw with the message "Proxy required".
-         */
-        private void readObject(ObjectInputStream stream) throws InvalidObjectException {
-            throw new InvalidObjectException("Proxy required");
-        }
-
-        /**
-         * A serialization proxy which, in this context, is used to deserialize immutable, linked Streams with final
-         * instance fields.
-         *
-         * @param <T> The component type of the underlying stream.
-         */
-        // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
-        // classes. Also, it may not be compatible with circular object graphs.
-        private static final class SerializationProxy<T> implements Serializable {
-
-            private static final long serialVersionUID = 1L;
-
-            // the instance to be serialized/deserialized
-            private transient Cons<T> stream;
-
-            /**
-             * Constructor for the case of serialization, called by {@link Cons#writeReplace()}.
-             * <p>
-             * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
-             * an instance of the enclosing class.
-             *
-             * @param stream a Cons
-             */
-            SerializationProxy(Cons<T> stream) {
-                this.stream = stream;
-            }
-
-            /**
-             * Write an object to a serialization stream.
-             *
-             * @param s An object serialization stream.
-             * @throws java.io.IOException If an error occurs writing to the stream.
-             */
-            private void writeObject(ObjectOutputStream s) throws IOException {
-                s.defaultWriteObject();
-                s.writeInt(stream.length());
-                for (Stream<T> l = stream; !l.isEmpty(); l = l.tail()) {
-                    s.writeObject(l.head());
-                }
-            }
-
-            /**
-             * Read an object from a deserialization stream.
-             *
-             * @param s An object deserialization stream.
-             * @throws ClassNotFoundException If the object's class read from the stream cannot be found.
-             * @throws InvalidObjectException If the stream contains no stream elements.
-             * @throws IOException            If an error occurs reading from the stream.
-             */
-            private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
-                s.defaultReadObject();
-                final int size = s.readInt();
-                if (size <= 0) {
-                    throw new InvalidObjectException("No elements");
-                }
-                Stream<T> temp = Empty.instance();
-                for (int i = 0; i < size; i++) {
-                    @SuppressWarnings("unchecked")
-                    final T element = (T) s.readObject();
-                    temp = temp.append(element);
-                }
-                // DEV-NOTE: Cons is deserialized
-                stream = (Cons<T>) temp;
-            }
-
-            /**
-             * {@code readResolve} method for the serialization proxy pattern.
-             * <p>
-             * Returns a logically equivalent instance of the enclosing class. The presence of this method causes the
-             * serialization system to translate the serialization proxy back into an instance of the enclosing class
-             * upon deserialization.
-             *
-             * @return A deserialized instance of the enclosing class.
-             */
-            private Object readResolve() {
-                return stream;
-            }
-        }
     }
 }
 
 interface StreamModule {
+
+    final class ConsImpl<T> extends Cons<T> implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        ConsImpl(T head, Supplier<Stream<T>> tail) {
+            super(head, tail);
+        }
+
+        @Override
+        public Stream<T> tail() {
+            return tail.get();
+        }
+
+        private Object writeReplace() {
+            return new SerializationProxy<>(this);
+        }
+
+        private void readObject(ObjectInputStream stream) throws InvalidObjectException {
+            throw new InvalidObjectException("Proxy required");
+        }
+
+    }
+
+    final class AppendElements<T> extends Cons<T> implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final Queue<T> queue;
+
+        AppendElements(T head, Queue<T> queue, Supplier<Stream<T>> tail) {
+            super(head, tail);
+            this.queue = queue;
+        }
+
+        @Override
+        public Stream<T> append(T element) {
+            return new AppendElements<>(head, queue.append(element), tail);
+        }
+
+        @Override
+        public Stream<T> appendAll(Iterable<? extends T> elements) {
+            Objects.requireNonNull(queue, "elements is null");
+            return isEmpty() ? Stream.ofAll(queue) : new AppendElements<>(head, queue.appendAll(elements), tail);
+        }
+
+        @Override
+        public Stream<T> tail() {
+            Stream<T> t = tail.get();
+            if(t.isEmpty()) {
+                return Stream.ofAll(queue);
+            } else {
+                if(t instanceof ConsImpl) {
+                    ConsImpl<T> c = (ConsImpl<T>) t;
+                    return new AppendElements<>(t.head(), queue, c.tail);
+                } else {
+                    AppendElements<T> a = (AppendElements<T>) t;
+                    return new AppendElements<>(t.head(), queue, a.tail);
+                }
+            }
+        }
+
+        private Object writeReplace() {
+            return new SerializationProxy<>(this);
+        }
+
+        private void readObject(ObjectInputStream stream) throws InvalidObjectException {
+            throw new InvalidObjectException("Proxy required");
+        }
+
+    }
+
+    /**
+     * A serialization proxy which, in this context, is used to deserialize immutable, linked Streams with final
+     * instance fields.
+     *
+     * @param <T> The component type of the underlying stream.
+     */
+    // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
+    // classes. Also, it may not be compatible with circular object graphs.
+    final class SerializationProxy<T> implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        // the instance to be serialized/deserialized
+        private transient Cons<T> stream;
+
+        /**
+         * Constructor for the case of serialization.
+         * <p>
+         * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
+         * an instance of the enclosing class.
+         *
+         * @param stream a Cons
+         */
+        SerializationProxy(Cons<T> stream) {
+            this.stream = stream;
+        }
+
+        /**
+         * Write an object to a serialization stream.
+         *
+         * @param s An object serialization stream.
+         * @throws java.io.IOException If an error occurs writing to the stream.
+         */
+        private void writeObject(ObjectOutputStream s) throws IOException {
+            s.defaultWriteObject();
+            s.writeInt(stream.length());
+            for (Stream<T> l = stream; !l.isEmpty(); l = l.tail()) {
+                s.writeObject(l.head());
+            }
+        }
+
+        /**
+         * Read an object from a deserialization stream.
+         *
+         * @param s An object deserialization stream.
+         * @throws ClassNotFoundException If the object's class read from the stream cannot be found.
+         * @throws InvalidObjectException If the stream contains no stream elements.
+         * @throws IOException            If an error occurs reading from the stream.
+         */
+        private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
+            s.defaultReadObject();
+            final int size = s.readInt();
+            if (size <= 0) {
+                throw new InvalidObjectException("No elements");
+            }
+            Stream<T> temp = Empty.instance();
+            for (int i = 0; i < size; i++) {
+                @SuppressWarnings("unchecked")
+                final T element = (T) s.readObject();
+                temp = temp.append(element);
+            }
+            // DEV-NOTE: Cons is deserialized
+            stream = (Cons<T>) temp;
+        }
+
+        /**
+         * {@code readResolve} method for the serialization proxy pattern.
+         * <p>
+         * Returns a logically equivalent instance of the enclosing class. The presence of this method causes the
+         * serialization system to translate the serialization proxy back into an instance of the enclosing class
+         * upon deserialization.
+         *
+         * @return A deserialized instance of the enclosing class.
+         */
+        private Object readResolve() {
+            return stream;
+        }
+    }
 
     final class AppendSelf<T> {
 
