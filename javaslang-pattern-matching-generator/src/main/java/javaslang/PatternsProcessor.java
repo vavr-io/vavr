@@ -70,6 +70,13 @@ public class PatternsProcessor extends AbstractProcessor {
         return SourceVersion.latestSupported();
     }
 
+    /**
+     * Gathers annotated elements, transforms elements to a generator model and generates the model to code.
+     *
+     * @param annotations the annotation types requested to be processed
+     * @param roundEnv    environment for information about the current and prior round
+     * @return whether or not the set of annotation types are claimed by this processor
+     */
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (!annotations.isEmpty()) {
