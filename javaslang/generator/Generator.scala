@@ -266,34 +266,19 @@ def generateMainClasses(): Unit = {
             ${(1 to N).gen(i => {
               val generics = (1 to i).gen(j => s"T$j")(", ")
               val resultType = if (i == 1) "T1" else s"Tuple$i<$generics>"
-              val patternTypes = (1 to i).gen(j => s"A$j")(", ")
-              val patterns = (1 to i).gen(j => s"Pattern1<A$j, T$j> p$j")(", ")
+              val FunctionType = im.getType("java.util.function.Function")
               xs"""
                 public static abstract class Pattern$i<T, $generics> {
 
                     public abstract Option<$resultType> apply(Object o);
 
-                    public static <TYPE, $patternTypes, $generics> Pattern$i<TYPE, $generics> create(
-                            Class<TYPE> matchableType,
-                            Function<TYPE, Tuple$i<$patternTypes>> unapply,
-                            $patterns) {
-                        return new Pattern$i<TYPE, $generics>() {
+                    public static <T, $generics> Pattern$i<T, $generics> create(Class<? super T> c, $FunctionType<T, Option<$resultType>> unapply) {
+                        return new Pattern$i<T, $generics>() {
+                            @SuppressWarnings("unchecked")
                             @Override
                             public Option<$resultType> apply(Object o) {
-                                if (o != null && matchableType.isAssignableFrom(o.getClass())) {
-                                    @SuppressWarnings("unchecked")
-                                    final TYPE matchable = (TYPE) o;
-                                    final Tuple$i<$patternTypes> t = unapply.apply(matchable);
-                                    return
-                                            ${if (i == 1) xs"""
-                                              p1.apply(t._1);
-                                            """ else xs"""
-                                              ${(1 to i).gen(j => if (j == i) xs"""
-                                                p$j.apply(t._$j).map(v$j -> Tuple.of(${(1 to i).gen(k => s"v$k")(", ")})${")" * i}
-                                              """ else xs"""
-                                                p$j.apply(t._$j).flatMap(v$j ->
-                                              """)("\n")};
-                                            """}
+                                if (o != null && c.isAssignableFrom(o.getClass())) {
+                                    return unapply.apply(((T) o));
                                 } else {
                                     return Option.none();
                                 }

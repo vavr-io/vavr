@@ -129,7 +129,7 @@ public class PatternsProcessor extends AbstractProcessor {
     }
 
     private void generate(TypeElement type, ExecutableElement elem, StringBuilder builder) {
-        final String typeName = Elements.getFullQualifiedName(type);
+        final String typeName = Elements.getRawParameterType(elem, 0);
         final String name = elem.getSimpleName().toString();
         int arity = getArity(elem);
         if (arity == 0) {
