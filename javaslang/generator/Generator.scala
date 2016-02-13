@@ -244,6 +244,7 @@ def generateMainClasses(): Unit = {
 
             // used by any-match $$() to inject a type into the pattern
             public static abstract class InversePattern<T> {
+
                 public abstract $OptionType<T> apply(T t);
             }
 

@@ -317,6 +317,7 @@ public final class Match<T> {
 
     // used by any-match $() to inject a type into the pattern
     public static abstract class InversePattern<T> {
+
         public abstract Option<T> apply(T t);
     }
 
@@ -325,6 +326,7 @@ public final class Match<T> {
 
         public abstract Option<Void> apply(Object o);
 
+        // for @Unapply result type Tuple0
         public static <T> Pattern0 create(Class<? super T> c) {
             return new Pattern0() {
                 @SuppressWarnings("unchecked")
@@ -335,6 +337,7 @@ public final class Match<T> {
             };
         }
 
+        // should have been Class<T> instead of Class<? super T> but it does not work for complex generic types
         public static <T> Pattern0 create(Class<? super T> c, Function<T, Option<Void>> unapply) {
             return new Pattern0() {
                 @SuppressWarnings("unchecked")

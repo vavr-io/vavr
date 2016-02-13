@@ -245,6 +245,7 @@ public class PatternsProcessor extends AbstractProcessor {
         final String annotatedType = type.getSimpleName().toString();
         final String methodName = elem.getSimpleName().toString();
         final String typeHint = (resultArity == 0) ? "<" + Elements.getParameterType(elem, 0) + ">" : "";
+        final String[] tupleArgTypes = Elements.getReturnTypeArgs(elem);
         builder.append("Pattern" + resultArity + "." + typeHint + "create(" + matchableType + ".class, t -> " + annotatedType + "." + methodName + "(t).transform(");
         if (unapplyArity == 1) {
             builder.append("t1");
@@ -252,17 +253,20 @@ public class PatternsProcessor extends AbstractProcessor {
             builder.append("(" + IntStream.rangeClosed(1, unapplyArity).boxed().map(i -> "t" + i).collect(joining(", ")) + ")");
         }
         builder.append(" -> ");
+        int j = 1;
+        int ignored = 1;
         for (int i = 1; i <= variation.size(); i++) {
             Param param = variation.get(i - 1);
             if (param == Param.T) {
                 builder.append("Pattern0.equals(t" + i + ", p" + i + ")");
             } else if (param == Param.InversePattern) {
-                builder.append("((InversePattern<T>) p" + i + ").apply(t" + i + ")");
+                builder.append("((InversePattern<" + tupleArgTypes[i - 1] + ">) p" + i + ").apply(t" + i + ")");
             } else {
                 builder.append("p"+ i + ".apply(t" + i + ")");
             }
             if (i < variation.size()) {
-                builder.append(".flatMap(v" + i + " -> ");
+                String v = (param == Param.T || param == Param.Pattern0) ? "_" + (ignored++) : "v" + (j++);
+                builder.append(".flatMap(" + v + " -> ");
             }
         }
         for (int i = 1; i <= variation.size(); i++) {
