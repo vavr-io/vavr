@@ -12,6 +12,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+
 class Lists {
 
     @SuppressWarnings("unchecked")
@@ -20,14 +23,18 @@ class Lists {
         if (power < 0) {
             throw new IllegalArgumentException("negative power");
         }
-        return list.isEmpty() ? Collections.emptyList() : IntStream
-                .range(1, power)
-                .boxed()
-                .reduce(list.stream().map(Lists::unit).collect(Collectors.toList()),
-                        (acc, ignored) -> acc.stream()
-                                .flatMap(seq -> list.stream().map(t -> append(seq, t)))
-                                .collect(Collectors.toList()),
-                        Lists::combine);
+        if (power == 0) {
+            return singletonList(emptyList());
+        } else {
+            return list.isEmpty() ? emptyList() : IntStream
+                    .range(1, power)
+                    .boxed()
+                    .reduce(list.stream().map(Lists::unit).collect(Collectors.toList()),
+                            (acc, ignored) -> acc.stream()
+                                    .flatMap(seq -> list.stream().map(t -> append(seq, t)))
+                                    .collect(Collectors.toList()),
+                            Lists::combine);
+        }
     }
 
     static <U> List<U> unit(U element) {

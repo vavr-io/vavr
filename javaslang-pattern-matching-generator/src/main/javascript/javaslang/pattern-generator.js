@@ -18,28 +18,22 @@ CODE}
 
 // TODO:
 
-    // Tuple0 Nil(List.Nil<?> nil)
-    // if (arity == 0) {
-    // static Pattern0 ${model.name} = new Pattern0() {
-    //     @Override
-    //     public Option<Void> apply(Object o) {
-    //         return (o instanceof model.paramType) ? Option.nothing() : Option.none();
-    //     }
-    // };
-
-// <T> Tuple2<T, List<T>> Cons(List.Cons<T> cons)
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-// @Unapply static <T> Tuple2<T, List<T>> Cons(List.Cons<T> cons)
-// @Unapply static     Tuple0    Nil(List.Nil<?> nil)
+// Tuple0 Nil(List.Nil<?> nil)
 
-// static Pattern0 Nil = new Pattern0() {
-//     @Override
-//     public Option<Void> apply(Object o) {
-//         return (o instanceof List.Nil) ? Option.nothing() : Option.none();
-//     }
-// };
+// if (arity == 0) {
+
+//   static Pattern0 ${model.name} = new Pattern0() {
+//       @Override
+//       public Option<Void> apply(Object o) {
+//           return (o instanceof model.paramType) ? Option.nothing() : Option.none();
+//       }
+//   };
+
+// } else {
+
+// <T> Tuple2<T, List<T>> Cons(List.Cons<T> cons)
 
 // static                                Pattern0                      List(Pattern0 p1, Pattern0 p2)
 // static                                Pattern1                      List(Pattern0 p1, Pattern1<? extends List<U>> p2)

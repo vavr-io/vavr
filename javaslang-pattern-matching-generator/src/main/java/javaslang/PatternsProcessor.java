@@ -23,7 +23,9 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.joining;
 import static javax.lang.model.element.Modifier.*;
 
 /**
@@ -47,7 +49,8 @@ import static javax.lang.model.element.Modifier.*;
 //
 public class PatternsProcessor extends AbstractProcessor {
 
-    private int ARITY = 8;
+    // corresponds to the number of Javaslang Tuples.
+    private static final int ARITY = 8;
 
     private final JS generator;
 
@@ -116,11 +119,6 @@ public class PatternsProcessor extends AbstractProcessor {
                 final List<UnapplyModel> unapplyModels = new ArrayList<>();
                 for (ExecutableElement executableElement : executableElements) {
                     if (isMethodDeclarationValid(executableElement, processingEnv.getMessager())) {
-                        // TODO: compute variations and store them in model
-//                        Lists.crossProduct(Arrays.asList(Param.values()), arity)
-//                                .stream()
-//                                .filter(params -> params.stream().map(Param::arity).reduce((a, b) -> a + b).get() <= ARITY)
-//                                .collect(Collectors.toList());
                         unapplyModels.add(new UnapplyModel(executableElement));
                     }
                 }
@@ -239,7 +237,7 @@ public class PatternsProcessor extends AbstractProcessor {
                     pkg +
                     ", name=" +
                     name +
-                    unapplys.stream().map(Object::toString).collect(Collectors.joining(",\n    ", ",\n    ", "\n")) +
+                    unapplys.stream().map(Object::toString).collect(joining(",\n    ", ",\n    ", "\n")) +
                     ")";
         }
 
@@ -257,6 +255,90 @@ public class PatternsProcessor extends AbstractProcessor {
                 this.generics = getTypeParameters(elem);
                 this.paramType = getParamType(elem);
                 this.returnType = getReturnType(elem);
+
+                // DEBUG
+                System.out.println("@Unapply " + name);
+                if (arity == 0) {
+                    System.out.println("trivial...");
+                } else {
+                    final List<List<Param>> variations = Lists.crossProduct(Arrays.asList(Param.values()), arity)
+                            .stream()
+                            .filter(params -> params.stream().map(Param::arity).reduce((a, b) -> a + b).get() <= ARITY)
+                            .collect(Collectors.toList());
+                    for (List<Param> variation : variations) {
+                        final int returnPatternArity = variation.stream().mapToInt(Param::arity).sum();
+                        if (returnPatternArity == 0) {
+                            // TODO
+                            System.out.println("returnArity 0");
+                        } else {
+                            final String method = Stream.of(getGenerics(variation), getReturnType(variation, returnPatternArity), name, getParams(variation), "{", "...", "}")
+                                    .collect(joining(" "));
+                        /*DEBUG*/
+                            System.out.println(method);
+                        }
+                    }
+                }
+            }
+
+            String getGenerics(List<Param> variation) {
+                List<String> result = new ArrayList<>();
+                result.add("__ extends " + paramType.name);
+                result.addAll(generics.stream().map(generic -> generic.name).collect(Collectors.toList()));
+                int i = 1;
+                for (Param param : variation) {
+                    if (param == Param.T) {
+                        // TODO
+                    } else if (param == Param.InversePattern) {
+                        // uses pre-defined result tuple type parameter
+                    } else {
+                        for (int j = 1; j <= param.arity; j++) {
+                            result.add("T" + (i++));
+                        }
+                    }
+                }
+                return result.stream().collect(joining(", ", "<", ">"));
+            }
+
+            String getReturnType(List<Param> variation, int returnTypeArtiy) {
+                if (arity == 0) {
+                    return "Pattern0";
+                } else {
+                    final String[] tupleArgTypes;
+                    {
+                        int start = returnType.name.indexOf('<') + 1;
+                        int end = returnType.name.lastIndexOf('>');
+                        tupleArgTypes = returnType.name.substring(start, end).split(",");
+                        assert tupleArgTypes.length == variation.size();
+                    }
+                    final List<String> resultTypes = new ArrayList<>();
+                    resultTypes.add(paramType.name);
+                    for (int i = 0; i < variation.size(); i++) {
+                        Param param = variation.get(i);
+                        if (param == Param.T) {
+                            // TODO
+                        } else if (param == Param.InversePattern) {
+                            resultTypes.add(tupleArgTypes[i]);
+                        } else {
+                            resultTypes.add(tupleArgTypes[i]);
+                        }
+                    }
+                    return "Pattern" + returnTypeArtiy + "<" + resultTypes.stream().collect(joining(", ")) + ">";
+                }
+            }
+
+            String getParams(List<Param> variation) {
+                StringBuilder builder = new StringBuilder("(");
+                for (int i = 0; i < variation.size(); i++) {
+                    Param param = variation.get(i);
+                    builder.append(param.name());
+                    // TODO: generics
+                    builder.append(" ").append("p").append(i + 1);
+                    if (i < variation.size() - 1) {
+                        builder.append(", ");
+                    }
+                }
+                builder.append(")");
+                return builder.toString();
             }
 
             @Override
@@ -324,7 +406,7 @@ public class PatternsProcessor extends AbstractProcessor {
 
     enum Param {
 
-        T(0),               // value
+        T(0),               // Eq(t) = o -> Objects.equals(o, t)
         InversePattern(1),  // $()
         Pattern0(0),        // $_
         Pattern1(1),        // $("test")
