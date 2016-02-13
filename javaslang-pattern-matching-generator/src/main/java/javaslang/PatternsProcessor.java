@@ -135,7 +135,8 @@ public class PatternsProcessor extends AbstractProcessor {
         int arity = getArity(elem);
         if (arity == 0) {
             final String type = Elements.getRawParameterType(elem, 0);
-            builder.append("    public static Pattern0 " + name + " = Pattern0.fromType(" + type + ".class);\n");
+            builder.append("    public static Pattern0 ")
+                    .append(name).append(" = Pattern0.fromType(").append(type).append(".class);\n");
         } else {
             final List<List<Param>> variations = Lists.crossProduct(Arrays.asList(Param.values()), arity)
                     .stream()
@@ -162,9 +163,8 @@ public class PatternsProcessor extends AbstractProcessor {
         result.addAll(Arrays.asList(Elements.getTypeParameters(elem)));
         int j = 1;
         for (Param param : variation) {
-            if (param == Param.Pattern0 || param == Param.InversePattern) {
-                // Pattern0 has no result types, InversePattern takes pre-defined result tuple type parameter
-            } else {
+            // Pattern0 has no result types, InversePattern takes pre-defined result tuple type parameter
+            if (param != Param.Pattern0 && param != Param.InversePattern) {
                 for (int i = 1; i <= param.arity; i++) {
                     result.add("T" + (j++));
                 }
@@ -184,11 +184,9 @@ public class PatternsProcessor extends AbstractProcessor {
             int j = 1;
             for (int i = 0; i < variation.size(); i++) {
                 Param param = variation.get(i);
-                if (param == Param.T || param == Param.Pattern0) {
-                    // nothing to be decomposed
-                } else if (param == Param.InversePattern) {
+                if (param == Param.InversePattern) {
                     resultTypes.add(tupleArgTypes[i]);
-                } else {
+                } else if (param != Param.T && param != Param.Pattern0) {
                     for (int k = 1; k <= param.arity; k++) {
                         resultTypes.add("T" + (j++));
                     }
@@ -207,13 +205,13 @@ public class PatternsProcessor extends AbstractProcessor {
             if (param == Param.T) {
                 builder.append(tupleArgTypes[i]);
             } else if (param == Param.InversePattern) {
-                builder.append(param.name() + "<? extends " + tupleArgTypes[i] + ">");
+                builder.append(param.name()).append("<? extends ").append(tupleArgTypes[i]).append(">");
             } else if (param == Param.Pattern0) {
                 builder.append("Pattern0");
             } else {
-                builder.append(param.name() + "<? extends " + tupleArgTypes[i] + ", ");
+                builder.append(param.name()).append("<? extends ").append(tupleArgTypes[i]).append(", ");
                 for (int k = 1; k <= param.arity; k++) {
-                    builder.append("T" + (j++));
+                    builder.append("T").append(j++);
                     if (k < param.arity) {
                         builder.append(", ");
                     }
@@ -228,7 +226,6 @@ public class PatternsProcessor extends AbstractProcessor {
         builder.append(")");
         return builder.toString();
     }
-
 
     private List<ExecutableElement> getMethods(TypeElement typeElement) {
         if (Patterns.Checker.isValid(typeElement, processingEnv.getMessager())) {
