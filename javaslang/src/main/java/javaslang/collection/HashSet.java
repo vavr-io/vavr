@@ -791,6 +791,19 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return taken.length() == length() ? this : taken;
     }
 
+    /**
+     * Transforms this {@code HashSet}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public  <U> U transform(Function<? super HashSet<T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     @Override
     public java.util.HashSet<T> toJavaSet() {
         return toJavaSet(java.util.HashSet::new);

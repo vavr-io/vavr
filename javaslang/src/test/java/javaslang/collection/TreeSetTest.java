@@ -143,6 +143,14 @@ public class TreeSetTest extends AbstractSortedSetTest {
         assertThat(list).isEqualTo(List.of(3, 2, 1));
     }
 
+    // -- transform()
+
+    @Test
+    public void shouldTransform() {
+        String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        assertThat(transformed).isEqualTo("42");
+    }
+
     // -- helpers
 
     private static Comparator<Integer> inverseIntComparator() {

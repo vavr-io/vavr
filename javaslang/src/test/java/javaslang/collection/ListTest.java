@@ -272,6 +272,14 @@ public class ListTest extends AbstractLinearSeqTest {
         assertThat(of(0).pushAll(of(1, 2, 3))).isEqualTo(of(3, 2, 1, 0));
     }
 
+    // -- transform()
+
+    @Test
+    public void shouldTransform() {
+        String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        assertThat(transformed).isEqualTo("42");
+    }
+
     // -- toString
 
     @Test

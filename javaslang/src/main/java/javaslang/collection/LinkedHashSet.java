@@ -804,6 +804,19 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return taken.length() == length() ? this : taken;
     }
 
+    /**
+     * Transforms this {@code LinkedHashSet}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public  <U> U transform(Function<? super LinkedHashSet<T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     @Override
     public java.util.LinkedHashSet<T> toJavaSet() {
         return toJavaSet(java.util.LinkedHashSet::new);

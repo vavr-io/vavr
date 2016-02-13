@@ -874,6 +874,19 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return (treeSet.length() == length()) ? this : treeSet;
     }
 
+    /**
+     * Transforms this {@code TreeSet}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public  <U> U transform(Function<? super TreeSet<T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     @Override
     public java.util.TreeSet<T> toJavaSet() {
         return toJavaSet(() -> new java.util.TreeSet<>(comparator()));

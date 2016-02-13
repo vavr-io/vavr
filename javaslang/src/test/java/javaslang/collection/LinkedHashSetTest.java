@@ -183,4 +183,12 @@ public class LinkedHashSetTest extends AbstractSetTest {
         assertThat(actual).isEqualTo(3);
     }
 
+    // -- transform()
+
+    @Test
+    public void shouldTransform() {
+        String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        assertThat(transformed).isEqualTo("42");
+    }
+
 }

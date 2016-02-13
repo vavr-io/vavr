@@ -314,6 +314,14 @@ public class QueueTest extends AbstractLinearSeqTest {
         assertThat(enqueued().lastIndexOf(1, 1)).isEqualTo(0);
     }
 
+    // -- transform()
+
+    @Test
+    public void shouldTransform() {
+        String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        assertThat(transformed).isEqualTo("42");
+    }
+
     // -- equals
 
     @Test
