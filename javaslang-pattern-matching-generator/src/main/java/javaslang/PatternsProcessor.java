@@ -44,6 +44,10 @@ import static java.util.stream.Collectors.joining;
 //
 // See Difference between Element, Type and Mirror: http://stackoverflow.com/a/2127320/1110815
 //
+// BUILD-NOTES:
+//
+// Tests work best with `mvn clean test-compile -DskipGen`
+//
 public class PatternsProcessor extends AbstractProcessor {
 
     // corresponds to the number of Javaslang Tuples.
@@ -141,6 +145,7 @@ public class PatternsProcessor extends AbstractProcessor {
      * If the class name is just '$' it will be replaced with 'Patterns',
      * otherwise 'Patterns' will be concatenated.
      */
+    // TODO: delete this model, create helpers in Elements and use javax.lang.model.element.Element as model
     static class PatternsModel {
 
         final TypeElement typeElement;
@@ -189,7 +194,15 @@ public class PatternsProcessor extends AbstractProcessor {
                 // DEBUG
                 System.out.println("@Unapply " + name);
                 if (arity == 0) {
-                    System.out.println("trivial...");
+                    // TODO: call JS.generate(...)
+                    final String method = "static Pattern0 " + name + " = new Pattern0() {\n" +
+                            "   @Override\n" +
+                            "   public Option<Void> apply(Object o) {\n" +
+                            "       return (o instanceof " + Elements.getRawParameterType(elem, 0) + ") ? Option.nothing() : Option.none();\n" +
+                            "   }\n" +
+                            "};\n";
+                    /*DEBUG*/
+                    System.out.println(method);
                 } else {
                     final List<List<Param>> variations = Lists.crossProduct(Arrays.asList(Param.values()), arity)
                             .stream()
@@ -197,15 +210,29 @@ public class PatternsProcessor extends AbstractProcessor {
                             .collect(Collectors.toList());
                     for (List<Param> variation : variations) {
                         final int returnPatternArity = variation.stream().mapToInt(Param::arity).sum();
-                        if (returnPatternArity == 0) {
-                            // TODO
-                            System.out.println("returnArity 0");
-                        } else {
-                            final String method = Stream.of(getGenerics(variation), getReturnType(variation, returnPatternArity), name, getParams(variation), "{", "...", "}")
-                                    .collect(joining(" "));
+                        final String method;
+//                        if (returnPatternArity == 0) {
+//                            // TODO: call JS.generate(...)
+//                            method = "static Pattern0 " + name + " = new Pattern0() {\n" +
+//                                    "   @Override\n" +
+//                                    "   public Option<Void> apply(Object o) {\n" +
+//                                    "       return (o instanceof " + paramType.name + ") ? Option.nothing() : Option.none();\n" +
+//                                    "   }\n" +
+//                                    "};\n";
+//                        } else {
+                            // TODO: call JS.generate(...)
+                            method = Stream.of(
+                                    getGenerics(variation),
+                                    getReturnType(variation, returnPatternArity),
+                                    name,
+                                    getParams(variation),
+                                    "{",
+                                    "...",
+                                    "}"
+                            ).collect(joining(" "));
+//                        }
                         /*DEBUG*/
-                            System.out.println(method);
-                        }
+                        System.out.println(method);
                     }
                 }
             }
@@ -244,12 +271,12 @@ public class PatternsProcessor extends AbstractProcessor {
                     resultTypes.add(paramType.name);
                     for (int i = 0; i < variation.size(); i++) {
                         Param param = variation.get(i);
-                        if (param == Param.T) {
-                            // TODO
+                        if (param.arity == 0) {
+                            // nothing is decomposed
                         } else if (param == Param.InversePattern) {
                             resultTypes.add(tupleArgTypes[i]);
                         } else {
-                            resultTypes.add(tupleArgTypes[i]);
+                            resultTypes.add("T" + (i + 1));
                         }
                     }
                     return "Pattern" + returnTypeArtiy + "<" + resultTypes.stream().collect(joining(", ")) + ">";
