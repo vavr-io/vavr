@@ -323,6 +323,15 @@ public final class Match<T> {
     // no type forwarding via T here, type ignored
     public static abstract class Pattern0 {
         public abstract Option<Void> apply(Object o);
+        public static Pattern0 fromType(Class<?> type) {
+            Objects.requireNonNull(type, "type is null");
+            return  new Pattern0() {
+                @Override
+                public Option<Void> apply(Object o) {
+                    return (o != null && type.isAssignableFrom(o.getClass())) ? Option.nothing() : Option.none();
+                }
+            };
+        }
     }
 
     public static abstract class Pattern1<T, T1> {

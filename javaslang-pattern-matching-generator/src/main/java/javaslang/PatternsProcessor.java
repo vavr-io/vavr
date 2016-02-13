@@ -111,6 +111,7 @@ public class PatternsProcessor extends AbstractProcessor {
             final String _package = Elements.getPackage(typeElement);
             final String _class = Elements.getSimpleName(typeElement);
             final String result = (_package.isEmpty() ? "" : "package " + _package + ";\n\n") +
+                    "import static javaslang.Match.*;\n\n" +
                     "public final class " + _class + "{\n\n" +
                     "    private " + _class + "() {\n" +
                     "    }\n\n" +
@@ -133,93 +134,92 @@ public class PatternsProcessor extends AbstractProcessor {
         final String name = elem.getSimpleName().toString();
         int arity = getArity(elem);
         if (arity == 0) {
-            // TODO: call JS.generate(...)
-            builder.append("    public static Pattern0 " + name + " = new Pattern0() {\n" +
-                    "       @Override\n" +
-                    "       public Option<Void> apply(Object o) {\n" +
-                    "           return (o instanceof " + Elements.getRawParameterType(elem, 0) + ") ? Option.nothing() : Option.none();\n" +
-                    "       }\n" +
-                    "    };\n");
+            final String type = Elements.getRawParameterType(elem, 0);
+            builder.append("    public static Pattern0 " + name + " = Pattern0.fromType(" + type + ".class);\n");
         } else {
             final List<List<Param>> variations = Lists.crossProduct(Arrays.asList(Param.values()), arity)
                     .stream()
                     .filter(params -> params.stream().map(Param::arity).reduce((a, b) -> a + b).get() <= ARITY)
                     .collect(Collectors.toList());
             for (List<Param> variation : variations) {
-                final String method;
-//                        if (returnPatternArity == 0) {
-//                            // TODO: call JS.generate(...)
-//                            method = "static Pattern0 " + name + " = new Pattern0() {\n" +
-//                                    "   @Override\n" +
-//                                    "   public Option<Void> apply(Object o) {\n" +
-//                                    "       return (o instanceof " + paramType.name + ") ? Option.nothing() : Option.none();\n" +
-//                                    "   }\n" +
-//                                    "};\n";
-//                        } else {
-                // TODO: call JS.generate(...)
-                method = Stream.of(
+                final String method = Stream.of(
+                        "public",
+                        "static",
                         getGenerics(elem, variation),
                         getReturnType(elem, variation),
                         name,
-                        getParams(variation),
-                        "{",
-                        "...",
-                        "}"
+                        getParams(elem, variation),
+                        "{ return null; /*TODO*/ }"
                 ).collect(joining(" "));
-//                        }
-                builder.append("    public static ").append(method).append("\n");
+                builder.append("    ").append(method).append("\n");
             }
         }
     }
 
-    String getGenerics(ExecutableElement elem, List<Param> variation) {
+    private String getGenerics(ExecutableElement elem, List<Param> variation) {
         List<String> result = new ArrayList<>();
         result.add("__ extends " + Elements.getParameterType(elem, 0));
         result.addAll(Arrays.asList(Elements.getTypeParameters(elem)));
-        int i = 1;
+        int j = 1;
         for (Param param : variation) {
-            if (param == Param.T) {
-                // TODO
-            } else if (param == Param.InversePattern) {
-                // uses pre-defined result tuple type parameter
+            if (param == Param.Pattern0 || param == Param.InversePattern) {
+                // Pattern0 has no result types, InversePattern takes pre-defined result tuple type parameter
             } else {
-                for (int j = 1; j <= param.arity; j++) {
-                    result.add("T" + (i++));
+                for (int i = 1; i <= param.arity; i++) {
+                    result.add("T" + (j++));
                 }
             }
         }
         return result.stream().collect(joining(", ", "<", ">"));
     }
 
-    // TODO
-    String getReturnType(ExecutableElement elem, List<Param> variation) {
-//                if (returnTypeArity == 0) {
-//                    return "Pattern0";
-//                } else {
-        final String[] tupleArgTypes = Elements.getReturnTypeArgs(elem);
-        final List<String> resultTypes = new ArrayList<>();
-        resultTypes.add(Elements.getParameterType(elem, 0));
-        for (int i = 0; i < variation.size(); i++) {
-            Param param = variation.get(i);
-            if (param.arity == 0) {
-                // nothing is decomposed
-            } else if (param == Param.InversePattern) {
-                resultTypes.add(tupleArgTypes[i]);
-            } else {
-                resultTypes.add("T" + (i + 1));
-            }
-        }
+    private String getReturnType(ExecutableElement elem, List<Param> variation) {
         final int resultArity = Param.getArity(variation);
-        return "Pattern" + resultArity + "<" + resultTypes.stream().collect(joining(", ")) + ">";
-//                }
+        if (resultArity == 0) {
+            return "Pattern0";
+        } else {
+            final String[] tupleArgTypes = Elements.getReturnTypeArgs(elem);
+            final List<String> resultTypes = new ArrayList<>();
+            resultTypes.add(Elements.getParameterType(elem, 0));
+            int j = 1;
+            for (int i = 0; i < variation.size(); i++) {
+                Param param = variation.get(i);
+                if (param == Param.T || param == Param.Pattern0) {
+                    // nothing to be decomposed
+                } else if (param == Param.InversePattern) {
+                    resultTypes.add(tupleArgTypes[i]);
+                } else {
+                    for (int k = 1; k <= param.arity; k++) {
+                        resultTypes.add("T" + (j++));
+                    }
+                }
+            }
+            return "Pattern" + resultArity + "<" + resultTypes.stream().collect(joining(", ")) + ">";
+        }
     }
 
-    String getParams(List<Param> variation) {
+    private String getParams(ExecutableElement elem, List<Param> variation) {
         StringBuilder builder = new StringBuilder("(");
+        final String[] tupleArgTypes = Elements.getReturnTypeArgs(elem);
+        int j = 1;
         for (int i = 0; i < variation.size(); i++) {
             Param param = variation.get(i);
-            builder.append(param.name());
-            // TODO: generics
+            if (param == Param.T) {
+                builder.append(tupleArgTypes[i]);
+            } else if (param == Param.InversePattern) {
+                builder.append(param.name() + "<? extends " + tupleArgTypes[i] + ">");
+            } else if (param == Param.Pattern0) {
+                builder.append("Pattern0");
+            } else {
+                builder.append(param.name() + "<? extends " + tupleArgTypes[i] + ", ");
+                for (int k = 1; k <= param.arity; k++) {
+                    builder.append("T" + (j++));
+                    if (k < param.arity) {
+                        builder.append(", ");
+                    }
+                }
+                builder.append(">");
+            }
             builder.append(" ").append("p").append(i + 1);
             if (i < variation.size() - 1) {
                 builder.append(", ");
