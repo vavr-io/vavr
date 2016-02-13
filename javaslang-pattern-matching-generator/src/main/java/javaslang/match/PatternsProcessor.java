@@ -267,6 +267,14 @@ public class PatternsProcessor extends AbstractProcessor {
             if (i < variation.size()) {
                 String v = (param == Param.T || param == Param.Pattern0) ? "_" + (ignored++) : "v" + (j++);
                 builder.append(".flatMap(" + v + " -> ");
+            } else {
+                // the last pattern contains the relevant information, the patterns before were ignored
+                boolean isOptimal = j == 1;
+                if (!isOptimal) {
+                    String v = (param == Param.T || param == Param.Pattern0) ? "_" + (ignored++) : "v" + (j++);
+                    String result = (j == 2) ? "v1" : IntStream.range(1, j).boxed().map(k -> "v" + k).collect(joining(", ", "javaslang.Tuple.of(", ")"));
+                    builder.append(".map(" + v + " -> " + result + ")");
+                }
             }
         }
         for (int i = 1; i <= variation.size(); i++) {
