@@ -520,20 +520,8 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<Tuple2<T, T>> crossProduct() {
-        return crossProduct(this);
-    }
-
-    @Override
-    public Array<Array<T>> crossProduct(int power) {
-        return Collections.crossProduct(this, power).map(Array::ofAll).toArray();
-    }
-
-    @Override
-    public <U> Array<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
-        final Array<U> other = unit(that);
-        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
+    public Iterator<Array<T>> crossProduct(int power) {
+        return Collections.crossProduct(Array.empty(), this, power);
     }
 
     @SuppressWarnings("unchecked")

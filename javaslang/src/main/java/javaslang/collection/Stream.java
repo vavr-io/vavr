@@ -654,20 +654,8 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<Tuple2<T, T>> crossProduct() {
-        return crossProduct(this);
-    }
-
-    @Override
-    default Stream<Stream<T>> crossProduct(int power) {
-        return Collections.crossProduct(this, power).map(Stream::ofAll).toStream();
-    }
-
-    @Override
-    default <U> Stream<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
-        final Stream<U> other = Stream.ofAll(that);
-        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
+    default Iterator<Stream<T>> crossProduct(int power) {
+        return Collections.crossProduct(Stream.empty(), this, power);
     }
 
     /**

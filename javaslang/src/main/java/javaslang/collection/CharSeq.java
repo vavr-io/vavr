@@ -296,20 +296,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public IndexedSeq<Tuple2<Character, Character>> crossProduct() {
-        return crossProduct(this);
-    }
-
-    @Override
-    public IndexedSeq<CharSeq> crossProduct(int power) {
-        return Collections.crossProduct(this, power).map(CharSeq::ofAll).toVector();
-    }
-
-    @Override
-    public <U> IndexedSeq<Tuple2<Character, U>> crossProduct(Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
-        final IndexedSeq<U> other = Vector.ofAll(that);
-        return flatMap(a -> other.map(b -> Tuple.of(a, b)));
+    public Iterator<CharSeq> crossProduct(int power) {
+        return Collections.crossProduct(CharSeq.empty(), this, power);
     }
 
     @Override

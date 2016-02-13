@@ -238,54 +238,59 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldCalculateCrossProductOfNil() {
-        final Traversable<Tuple2<Object, Object>> actual = empty().crossProduct();
+        final Iterator<Tuple2<Object, Object>> actual = empty().crossProduct();
         assertThat(actual).isEmpty();
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldCalculateCrossProductOfNonNil() {
-        final Traversable<Tuple2<Integer, Integer>> actual = of(1, 2, 3).crossProduct();
-        final Traversable<Tuple2<Integer, Integer>> expected = of(Tuple.of(1, 1), Tuple.of(1, 2), Tuple.of(1, 3),
+        final List<Tuple2<Integer, Integer>> actual = of(1, 2, 3).crossProduct().toList();
+        final List<Tuple2<Integer, Integer>> expected = List.of(Tuple.of(1, 1), Tuple.of(1, 2), Tuple.of(1, 3),
                 Tuple.of(2, 1), Tuple.of(2, 2), Tuple.of(2, 3), Tuple.of(3, 1), Tuple.of(3, 2), Tuple.of(3, 3));
         assertThat(actual).isEqualTo(expected);
     }
 
     // -- crossProduct(int)
 
-    @SuppressWarnings("varargs")
     @Test
     public void shouldCalculateCrossProductPower() {
-        Seq<Seq<?>> expected = of(of(1, 1), of(1, 2), of(2, 1), of(2, 2));
-        assertThat(of(1, 2).crossProduct(2)).isEqualTo(expected);
+        assertThat(of(1, 2).crossProduct(0).toList()).isEqualTo(List.of(empty()));
+        assertThat(of(1, 2).crossProduct(1).toList()).isEqualTo(List.of(of(1), of(2)));
+        assertThat(of(1, 2).crossProduct(2).toList()).isEqualTo(List.of(of(1, 1), of(1, 2), of(2, 1), of(2, 2)));
+    }
+
+    @Test
+    public void shouldCrossProductPowerBeLazy() {
+        assertThat(range(0, 10).crossProduct(100).take(1).get()).isEqualTo(tabulate(100, i -> 0));
     }
 
     // -- crossProduct(Iterable)
 
     @Test
     public void shouldCalculateCrossProductOfNilAndNil() {
-        final Traversable<Tuple2<Object, Object>> actual = empty().crossProduct(empty());
+        final Iterator<Tuple2<Object, Object>> actual = empty().crossProduct(empty());
         assertThat(actual).isEmpty();
     }
 
     @Test
     public void shouldCalculateCrossProductOfNilAndNonNil() {
-        final Traversable<Tuple2<Object, Object>> actual = empty().crossProduct(of(1, 2, 3));
+        final Iterator<Tuple2<Object, Object>> actual = empty().crossProduct(of(1, 2, 3));
         assertThat(actual).isEmpty();
     }
 
     @Test
     public void shouldCalculateCrossProductOfNonNilAndNil() {
-        final Traversable<Tuple2<Integer, Integer>> actual = of(1, 2, 3).crossProduct(empty());
+        final Iterator<Tuple2<Integer, Integer>> actual = of(1, 2, 3).crossProduct(empty());
         assertThat(actual).isEmpty();
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldCalculateCrossProductOfNonNilAndNonNil() {
-        final Traversable<Tuple2<Integer, Character>> actual = of(1, 2, 3).crossProduct(of('a', 'b'));
-        final Traversable<Tuple2<Integer, Character>> expected = of(Tuple.of(1, 'a'), Tuple.of(1, 'b'),
-                Tuple.of(2, 'a'), Tuple.of(2, 'b'), Tuple.of(3, 'a'), Tuple.of(3, 'b'));
+        final List<Tuple2<Integer, Character>> actual = of(1, 2, 3).crossProduct(of('a', 'b')).toList();
+        final List<Tuple2<Integer, Character>> expected = of(Tuple.of(1, 'a'), Tuple.of(1, 'b'),
+                Tuple.of(2, 'a'), Tuple.of(2, 'b'), Tuple.of(3, 'a'), Tuple.of(3, 'b')).toList();
         assertThat(actual).isEqualTo(expected);
     }
 

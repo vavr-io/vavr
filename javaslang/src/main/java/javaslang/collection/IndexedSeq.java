@@ -60,13 +60,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<? extends IndexedSeq<T>> combinations(int k);
 
     @Override
-    IndexedSeq<Tuple2<T, T>> crossProduct();
-
-    @Override
-    IndexedSeq<? extends IndexedSeq<T>> crossProduct(int power);
-
-    @Override
-    <U> IndexedSeq<Tuple2<T, U>> crossProduct(Iterable<? extends U> that);
+    Iterator<? extends IndexedSeq<T>> crossProduct(int power);
 
     @Override
     IndexedSeq<T> distinct();
