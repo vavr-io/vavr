@@ -7,6 +7,7 @@ package javaslang.match;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.ExecutableElement;
@@ -79,18 +80,17 @@ public class PatternsProcessor extends AbstractProcessor {
                 if (roundEnv.processingOver()) {
                     processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Processing over.");
                 } else {
-                    generate(typeElements);
+                    generate(typeElements, processingEnv.getFiler(), processingEnv.getMessager());
                 }
             }
         }
         return true;
     }
 
-    private void generate(Set<TypeElement> typeElements) {
-        final Filer filer = processingEnv.getFiler();
+    private static void generate(Set<TypeElement> typeElements, Filer filer, Messager messager) {
         for (TypeElement typeElement : typeElements) {
             final String name = Elements.getFullQualifiedName(typeElement);
-            generate(typeElement).ifPresent(code -> {
+            generate(typeElement, messager).ifPresent(code -> {
                 try (final Writer writer = filer.createSourceFile(name, typeElement).openWriter()) {
                     writer.write(code);
                 } catch (IOException x) {
@@ -100,10 +100,11 @@ public class PatternsProcessor extends AbstractProcessor {
         }
     }
 
-    private Optional<String> generate(TypeElement typeElement) {
-        List<ExecutableElement> executableElements = getMethods(typeElement);
+    // Expands the class
+    private static Optional<String> generate(TypeElement typeElement, Messager messager) {
+        List<ExecutableElement> executableElements = getMethods(typeElement, messager);
         if (executableElements.isEmpty()) {
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "No @Unapply methods found.", typeElement);
+            messager.printMessage(Diagnostic.Kind.WARNING, "No @Unapply methods found.", typeElement);
             return Optional.empty();
         } else {
             final String _package = Elements.getPackage(typeElement);
@@ -119,7 +120,8 @@ public class PatternsProcessor extends AbstractProcessor {
         }
     }
 
-    private String generate(TypeElement typeElement, List<ExecutableElement> executableElements) {
+    // Expands the methods
+    private static String generate(TypeElement typeElement, List<ExecutableElement> executableElements) {
         final StringBuilder builder = new StringBuilder();
         for (ExecutableElement executableElement : executableElements) {
             generate(typeElement, executableElement, builder);
@@ -128,7 +130,8 @@ public class PatternsProcessor extends AbstractProcessor {
         return builder.toString();
     }
 
-    private void generate(TypeElement type, ExecutableElement elem, StringBuilder builder) {
+    // Expands one method
+    private static void generate(TypeElement type, ExecutableElement elem, StringBuilder builder) {
         final String typeName = Elements.getRawParameterType(elem, 0);
         final String name = elem.getSimpleName().toString();
         int arity = getArity(elem);
@@ -155,7 +158,8 @@ public class PatternsProcessor extends AbstractProcessor {
         }
     }
 
-    private String getGenerics(ExecutableElement elem, List<Param> variation) {
+    // Expands the generics part of a method declaration
+    private static String getGenerics(ExecutableElement elem, List<Param> variation) {
         List<String> result = new ArrayList<>();
         result.add("__ extends " + Elements.getParameterType(elem, 0));
         result.addAll(Arrays.asList(Elements.getTypeParameters(elem)));
@@ -171,7 +175,8 @@ public class PatternsProcessor extends AbstractProcessor {
         return result.stream().collect(joining(", ", "<", ">"));
     }
 
-    private String getReturnType(ExecutableElement elem, List<Param> variation) {
+    // Expands the return type of a method declaration
+    private static String getReturnType(ExecutableElement elem, List<Param> variation) {
         final int resultArity = Param.getArity(variation);
         if (resultArity == 0) {
             return "Pattern0";
@@ -194,7 +199,8 @@ public class PatternsProcessor extends AbstractProcessor {
         }
     }
 
-    private String getParams(ExecutableElement elem, List<Param> variation) {
+    // Expands the parameters of a method declaration
+    private static String getParams(ExecutableElement elem, List<Param> variation) {
         StringBuilder builder = new StringBuilder("(");
         final String[] tupleArgTypes = Elements.getReturnTypeArgs(elem);
         int j = 1;
@@ -225,12 +231,13 @@ public class PatternsProcessor extends AbstractProcessor {
         return builder.toString();
     }
 
-    private List<ExecutableElement> getMethods(TypeElement typeElement) {
-        if (Patterns.Checker.isValid(typeElement, processingEnv.getMessager())) {
+    // returns all @Unapply methods of a @Patterns class
+    private static List<ExecutableElement> getMethods(TypeElement typeElement, Messager messager) {
+        if (Patterns.Checker.isValid(typeElement, messager)) {
             return typeElement.getEnclosedElements().stream()
                     .filter(element -> element.getAnnotationsByType(Unapply.class).length == 1 &&
                             element instanceof ExecutableElement &&
-                            Unapply.Checker.isValid((ExecutableElement) element, processingEnv.getMessager()))
+                            Unapply.Checker.isValid((ExecutableElement) element, messager))
                     .map(element -> (ExecutableElement) element)
                     .collect(Collectors.toList());
         } else {
@@ -238,8 +245,7 @@ public class PatternsProcessor extends AbstractProcessor {
         }
     }
 
-    // Not part of Elements helper because specific for this use-case
-
+    // Not part of Elements helper because specific for this use-case (return type Tuple)
     private static int getArity(ExecutableElement elem) {
         final DeclaredType returnType = (DeclaredType) elem.getReturnType();
         final String simpleName = returnType.asElement().getSimpleName().toString();
