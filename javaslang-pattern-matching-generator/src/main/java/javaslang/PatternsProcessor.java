@@ -49,15 +49,6 @@ public class PatternsProcessor extends AbstractProcessor {
     // corresponds to the number of Javaslang Tuples.
     private static final int ARITY = 8;
 
-    private final JS generator;
-
-    public PatternsProcessor() {
-        this.generator = JS.create("-scripting").load(
-                "javaslang/code-gen.js",
-                "javaslang/pattern-generator.js"
-        );
-    }
-
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         // we do not use @SupportedAnnotationTypes in order to be type-safe
@@ -143,7 +134,7 @@ public class PatternsProcessor extends AbstractProcessor {
         int arity = getArity(elem);
         if (arity == 0) {
             // TODO: call JS.generate(...)
-            builder.append("    static Pattern0 " + name + " = new Pattern0() {\n" +
+            builder.append("    public static Pattern0 " + name + " = new Pattern0() {\n" +
                     "       @Override\n" +
                     "       public Option<Void> apply(Object o) {\n" +
                     "           return (o instanceof " + Elements.getRawParameterType(elem, 0) + ") ? Option.nothing() : Option.none();\n" +
@@ -176,7 +167,7 @@ public class PatternsProcessor extends AbstractProcessor {
                         "}"
                 ).collect(joining(" "));
 //                        }
-                builder.append("    ").append(method).append("\n");
+                builder.append("    public static ").append(method).append("\n");
             }
         }
     }
