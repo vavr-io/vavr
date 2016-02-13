@@ -3,7 +3,7 @@
  *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/  \__/  /   Copyright 2014-now Daniel Dietrich
  * /___/\_/  \_/\____/\_/  \_/\__\/__/___\_/  \_//  \__/_____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang;
+package javaslang.match;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;

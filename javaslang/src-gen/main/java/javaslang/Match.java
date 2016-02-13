@@ -23,7 +23,7 @@ import javaslang.control.Option;
  * import static javaslang.Match.*;
  *
  * // Match Patterns for Javaslang types
- * import static javaslang.Patterns.*;
+ * import static javaslang.match.Patterns.*;
  *
  * // Example
  * Match(list).of(
@@ -322,10 +322,12 @@ public final class Match<T> {
 
     // no type forwarding via T here, type ignored
     public static abstract class Pattern0 {
+
         public abstract Option<Void> apply(Object o);
-        public static Pattern0 fromType(Class<?> type) {
+
+        public static Pattern0 create(Class<?> type) {
             Objects.requireNonNull(type, "type is null");
-            return  new Pattern0() {
+            return new Pattern0() {
                 @Override
                 public Option<Void> apply(Object o) {
                     return (o != null && type.isAssignableFrom(o.getClass())) ? Option.nothing() : Option.none();
@@ -335,34 +337,230 @@ public final class Match<T> {
     }
 
     public static abstract class Pattern1<T, T1> {
+
         public abstract Option<T1> apply(Object o);
+
+        public static <TYPE, A1, T1> Pattern1<TYPE, T1> create(
+                Class<TYPE> matchableType,
+                Function<TYPE, Tuple1<A1>> unapply,
+                Pattern1<A1, T1> p1) {
+            return new Pattern1<TYPE, T1>() {
+                @Override
+                public Option<T1> apply(Object o) {
+                    if (o != null && matchableType.isAssignableFrom(o.getClass())) {
+                        @SuppressWarnings("unchecked")
+                        final TYPE matchable = (TYPE) o;
+                        final Tuple1<A1> t = unapply.apply(matchable);
+                        return
+                                p1.apply(t._1);
+                    } else {
+                        return Option.none();
+                    }
+                }
+            };
+        }
     }
 
     public static abstract class Pattern2<T, T1, T2> {
+
         public abstract Option<Tuple2<T1, T2>> apply(Object o);
+
+        public static <TYPE, A1, A2, T1, T2> Pattern2<TYPE, T1, T2> create(
+                Class<TYPE> matchableType,
+                Function<TYPE, Tuple2<A1, A2>> unapply,
+                Pattern1<A1, T1> p1, Pattern1<A2, T2> p2) {
+            return new Pattern2<TYPE, T1, T2>() {
+                @Override
+                public Option<Tuple2<T1, T2>> apply(Object o) {
+                    if (o != null && matchableType.isAssignableFrom(o.getClass())) {
+                        @SuppressWarnings("unchecked")
+                        final TYPE matchable = (TYPE) o;
+                        final Tuple2<A1, A2> t = unapply.apply(matchable);
+                        return
+                                p1.apply(t._1).flatMap(v1 ->
+                                p2.apply(t._2).map(v2 -> Tuple.of(v1, v2)));
+                    } else {
+                        return Option.none();
+                    }
+                }
+            };
+        }
     }
 
     public static abstract class Pattern3<T, T1, T2, T3> {
+
         public abstract Option<Tuple3<T1, T2, T3>> apply(Object o);
+
+        public static <TYPE, A1, A2, A3, T1, T2, T3> Pattern3<TYPE, T1, T2, T3> create(
+                Class<TYPE> matchableType,
+                Function<TYPE, Tuple3<A1, A2, A3>> unapply,
+                Pattern1<A1, T1> p1, Pattern1<A2, T2> p2, Pattern1<A3, T3> p3) {
+            return new Pattern3<TYPE, T1, T2, T3>() {
+                @Override
+                public Option<Tuple3<T1, T2, T3>> apply(Object o) {
+                    if (o != null && matchableType.isAssignableFrom(o.getClass())) {
+                        @SuppressWarnings("unchecked")
+                        final TYPE matchable = (TYPE) o;
+                        final Tuple3<A1, A2, A3> t = unapply.apply(matchable);
+                        return
+                                p1.apply(t._1).flatMap(v1 ->
+                                p2.apply(t._2).flatMap(v2 ->
+                                p3.apply(t._3).map(v3 -> Tuple.of(v1, v2, v3))));
+                    } else {
+                        return Option.none();
+                    }
+                }
+            };
+        }
     }
 
     public static abstract class Pattern4<T, T1, T2, T3, T4> {
+
         public abstract Option<Tuple4<T1, T2, T3, T4>> apply(Object o);
+
+        public static <TYPE, A1, A2, A3, A4, T1, T2, T3, T4> Pattern4<TYPE, T1, T2, T3, T4> create(
+                Class<TYPE> matchableType,
+                Function<TYPE, Tuple4<A1, A2, A3, A4>> unapply,
+                Pattern1<A1, T1> p1, Pattern1<A2, T2> p2, Pattern1<A3, T3> p3, Pattern1<A4, T4> p4) {
+            return new Pattern4<TYPE, T1, T2, T3, T4>() {
+                @Override
+                public Option<Tuple4<T1, T2, T3, T4>> apply(Object o) {
+                    if (o != null && matchableType.isAssignableFrom(o.getClass())) {
+                        @SuppressWarnings("unchecked")
+                        final TYPE matchable = (TYPE) o;
+                        final Tuple4<A1, A2, A3, A4> t = unapply.apply(matchable);
+                        return
+                                p1.apply(t._1).flatMap(v1 ->
+                                p2.apply(t._2).flatMap(v2 ->
+                                p3.apply(t._3).flatMap(v3 ->
+                                p4.apply(t._4).map(v4 -> Tuple.of(v1, v2, v3, v4)))));
+                    } else {
+                        return Option.none();
+                    }
+                }
+            };
+        }
     }
 
     public static abstract class Pattern5<T, T1, T2, T3, T4, T5> {
+
         public abstract Option<Tuple5<T1, T2, T3, T4, T5>> apply(Object o);
+
+        public static <TYPE, A1, A2, A3, A4, A5, T1, T2, T3, T4, T5> Pattern5<TYPE, T1, T2, T3, T4, T5> create(
+                Class<TYPE> matchableType,
+                Function<TYPE, Tuple5<A1, A2, A3, A4, A5>> unapply,
+                Pattern1<A1, T1> p1, Pattern1<A2, T2> p2, Pattern1<A3, T3> p3, Pattern1<A4, T4> p4, Pattern1<A5, T5> p5) {
+            return new Pattern5<TYPE, T1, T2, T3, T4, T5>() {
+                @Override
+                public Option<Tuple5<T1, T2, T3, T4, T5>> apply(Object o) {
+                    if (o != null && matchableType.isAssignableFrom(o.getClass())) {
+                        @SuppressWarnings("unchecked")
+                        final TYPE matchable = (TYPE) o;
+                        final Tuple5<A1, A2, A3, A4, A5> t = unapply.apply(matchable);
+                        return
+                                p1.apply(t._1).flatMap(v1 ->
+                                p2.apply(t._2).flatMap(v2 ->
+                                p3.apply(t._3).flatMap(v3 ->
+                                p4.apply(t._4).flatMap(v4 ->
+                                p5.apply(t._5).map(v5 -> Tuple.of(v1, v2, v3, v4, v5))))));
+                    } else {
+                        return Option.none();
+                    }
+                }
+            };
+        }
     }
 
     public static abstract class Pattern6<T, T1, T2, T3, T4, T5, T6> {
+
         public abstract Option<Tuple6<T1, T2, T3, T4, T5, T6>> apply(Object o);
+
+        public static <TYPE, A1, A2, A3, A4, A5, A6, T1, T2, T3, T4, T5, T6> Pattern6<TYPE, T1, T2, T3, T4, T5, T6> create(
+                Class<TYPE> matchableType,
+                Function<TYPE, Tuple6<A1, A2, A3, A4, A5, A6>> unapply,
+                Pattern1<A1, T1> p1, Pattern1<A2, T2> p2, Pattern1<A3, T3> p3, Pattern1<A4, T4> p4, Pattern1<A5, T5> p5, Pattern1<A6, T6> p6) {
+            return new Pattern6<TYPE, T1, T2, T3, T4, T5, T6>() {
+                @Override
+                public Option<Tuple6<T1, T2, T3, T4, T5, T6>> apply(Object o) {
+                    if (o != null && matchableType.isAssignableFrom(o.getClass())) {
+                        @SuppressWarnings("unchecked")
+                        final TYPE matchable = (TYPE) o;
+                        final Tuple6<A1, A2, A3, A4, A5, A6> t = unapply.apply(matchable);
+                        return
+                                p1.apply(t._1).flatMap(v1 ->
+                                p2.apply(t._2).flatMap(v2 ->
+                                p3.apply(t._3).flatMap(v3 ->
+                                p4.apply(t._4).flatMap(v4 ->
+                                p5.apply(t._5).flatMap(v5 ->
+                                p6.apply(t._6).map(v6 -> Tuple.of(v1, v2, v3, v4, v5, v6)))))));
+                    } else {
+                        return Option.none();
+                    }
+                }
+            };
+        }
     }
 
     public static abstract class Pattern7<T, T1, T2, T3, T4, T5, T6, T7> {
+
         public abstract Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> apply(Object o);
+
+        public static <TYPE, A1, A2, A3, A4, A5, A6, A7, T1, T2, T3, T4, T5, T6, T7> Pattern7<TYPE, T1, T2, T3, T4, T5, T6, T7> create(
+                Class<TYPE> matchableType,
+                Function<TYPE, Tuple7<A1, A2, A3, A4, A5, A6, A7>> unapply,
+                Pattern1<A1, T1> p1, Pattern1<A2, T2> p2, Pattern1<A3, T3> p3, Pattern1<A4, T4> p4, Pattern1<A5, T5> p5, Pattern1<A6, T6> p6, Pattern1<A7, T7> p7) {
+            return new Pattern7<TYPE, T1, T2, T3, T4, T5, T6, T7>() {
+                @Override
+                public Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> apply(Object o) {
+                    if (o != null && matchableType.isAssignableFrom(o.getClass())) {
+                        @SuppressWarnings("unchecked")
+                        final TYPE matchable = (TYPE) o;
+                        final Tuple7<A1, A2, A3, A4, A5, A6, A7> t = unapply.apply(matchable);
+                        return
+                                p1.apply(t._1).flatMap(v1 ->
+                                p2.apply(t._2).flatMap(v2 ->
+                                p3.apply(t._3).flatMap(v3 ->
+                                p4.apply(t._4).flatMap(v4 ->
+                                p5.apply(t._5).flatMap(v5 ->
+                                p6.apply(t._6).flatMap(v6 ->
+                                p7.apply(t._7).map(v7 -> Tuple.of(v1, v2, v3, v4, v5, v6, v7))))))));
+                    } else {
+                        return Option.none();
+                    }
+                }
+            };
+        }
     }
 
     public static abstract class Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> {
+
         public abstract Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> apply(Object o);
+
+        public static <TYPE, A1, A2, A3, A4, A5, A6, A7, A8, T1, T2, T3, T4, T5, T6, T7, T8> Pattern8<TYPE, T1, T2, T3, T4, T5, T6, T7, T8> create(
+                Class<TYPE> matchableType,
+                Function<TYPE, Tuple8<A1, A2, A3, A4, A5, A6, A7, A8>> unapply,
+                Pattern1<A1, T1> p1, Pattern1<A2, T2> p2, Pattern1<A3, T3> p3, Pattern1<A4, T4> p4, Pattern1<A5, T5> p5, Pattern1<A6, T6> p6, Pattern1<A7, T7> p7, Pattern1<A8, T8> p8) {
+            return new Pattern8<TYPE, T1, T2, T3, T4, T5, T6, T7, T8>() {
+                @Override
+                public Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> apply(Object o) {
+                    if (o != null && matchableType.isAssignableFrom(o.getClass())) {
+                        @SuppressWarnings("unchecked")
+                        final TYPE matchable = (TYPE) o;
+                        final Tuple8<A1, A2, A3, A4, A5, A6, A7, A8> t = unapply.apply(matchable);
+                        return
+                                p1.apply(t._1).flatMap(v1 ->
+                                p2.apply(t._2).flatMap(v2 ->
+                                p3.apply(t._3).flatMap(v3 ->
+                                p4.apply(t._4).flatMap(v4 ->
+                                p5.apply(t._5).flatMap(v5 ->
+                                p6.apply(t._6).flatMap(v6 ->
+                                p7.apply(t._7).flatMap(v7 ->
+                                p8.apply(t._8).map(v8 -> Tuple.of(v1, v2, v3, v4, v5, v6, v7, v8)))))))));
+                    } else {
+                        return Option.none();
+                    }
+                }
+            };
+        }
     }
 }

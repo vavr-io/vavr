@@ -3,13 +3,12 @@
  *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/  \__/  /   Copyright 2014-now Daniel Dietrich
  * /___/\_/  \_/\____/\_/  \_/\__\/__/___\_/  \_//  \__/_____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang;
+package javaslang.match;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
-import java.util.stream.Collectors;
 
 class Elements {
 
@@ -39,7 +38,6 @@ class Elements {
 
     // `R m(fqn.Type1<T1, ..., T2> arg1, ...)` -> fqn.Type1 (for index = 0)
     static String getRawParameterType(ExecutableElement elem, int index) {
-        // TODO: better way to do this directly on Element/TypeMirror et al?
         final String type = getParameterType(elem, index);
         final int i = type.indexOf('<');
         return (i == -1) ? type : type.substring(0, i);

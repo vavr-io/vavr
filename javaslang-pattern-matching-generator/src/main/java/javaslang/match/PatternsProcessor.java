@@ -3,7 +3,7 @@
  *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/  \__/  /   Copyright 2014-now Daniel Dietrich
  * /___/\_/  \_/\____/\_/  \_/\__\/__/___\_/  \_//  \__/_____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang;
+package javaslang.match;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -71,15 +71,15 @@ public class PatternsProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (!annotations.isEmpty()) {
-            final Set<TypeElement> types = roundEnv.getElementsAnnotatedWith(Patterns.class).stream()
+            final Set<TypeElement> typeElements = roundEnv.getElementsAnnotatedWith(Patterns.class).stream()
                     .filter(element -> element instanceof TypeElement)
                     .map(element -> (TypeElement) element)
                     .collect(Collectors.toSet());
-            if (!types.isEmpty()) {
+            if (!typeElements.isEmpty()) {
                 if (roundEnv.processingOver()) {
                     processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Processing over.");
                 } else {
-                    generate(types);
+                    generate(typeElements);
                 }
             }
         }
@@ -91,8 +91,6 @@ public class PatternsProcessor extends AbstractProcessor {
         for (TypeElement typeElement : typeElements) {
             final String name = Elements.getFullQualifiedName(typeElement);
             generate(typeElement).ifPresent(code -> {
-                /*TODO:DEBUG*/
-                System.out.println(code);
                 try (final Writer writer = filer.createSourceFile(name, typeElement).openWriter()) {
                     writer.write(code);
                 } catch (IOException x) {
@@ -115,28 +113,28 @@ public class PatternsProcessor extends AbstractProcessor {
                     "public final class " + _class + "{\n\n" +
                     "    private " + _class + "() {\n" +
                     "    }\n\n" +
-                    generate(executableElements) +
+                    generate(typeElement, executableElements) +
                     "}\n";
             return Optional.of(result);
         }
     }
 
-    private String generate(List<ExecutableElement> executableElements) {
+    private String generate(TypeElement typeElement, List<ExecutableElement> executableElements) {
         final StringBuilder builder = new StringBuilder();
-        for (ExecutableElement elem : executableElements) {
-            generate(elem, builder);
+        for (ExecutableElement executableElement : executableElements) {
+            generate(typeElement, executableElement, builder);
             builder.append("\n");
         }
         return builder.toString();
     }
 
-    private void generate(ExecutableElement elem, StringBuilder builder) {
+    private void generate(TypeElement type, ExecutableElement elem, StringBuilder builder) {
+        final String typeName = Elements.getFullQualifiedName(type);
         final String name = elem.getSimpleName().toString();
         int arity = getArity(elem);
         if (arity == 0) {
-            final String type = Elements.getRawParameterType(elem, 0);
             builder.append("    public static Pattern0 ")
-                    .append(name).append(" = Pattern0.fromType(").append(type).append(".class);\n");
+                    .append(name).append(" = Pattern0.create(").append(typeName).append(".class);\n");
         } else {
             final List<List<Param>> variations = Lists.crossProduct(Arrays.asList(Param.values()), arity)
                     .stream()
@@ -150,7 +148,7 @@ public class PatternsProcessor extends AbstractProcessor {
                         getReturnType(elem, variation),
                         name,
                         getParams(elem, variation),
-                        "{ return null; /*TODO*/ }"
+                        "{ return Pattern" + Param.getArity(variation) + ".create(" + typeName + ".class, " + type.getSimpleName() + "::" + name + ", p1, p2); }"
                 ).collect(joining(" "));
                 builder.append("    ").append(method).append("\n");
             }

@@ -59,7 +59,7 @@ def generateMainClasses(): Unit = {
          * import static javaslang.Match.*;
          *
          * // Match Patterns for Javaslang types
-         * import static javaslang.Patterns.*;
+         * import static javaslang.match.Patterns.*;
          *
          * // Example
          * Match(list).of(
@@ -244,23 +244,62 @@ def generateMainClasses(): Unit = {
 
             // used by any-match $$() to inject a type into the pattern
             public static abstract class InversePattern<T> {
-                public abstract Option<T> apply(T t);
+                public abstract $OptionType<T> apply(T t);
             }
 
             // no type forwarding via T here, type ignored
             public static abstract class Pattern0 {
-                public abstract Option<Void> apply(Object o);
+
+                public abstract $OptionType<Void> apply(Object o);
+
+                public static Pattern0 create(Class<?> type) {
+                    $Objects.requireNonNull(type, "type is null");
+                    return new Pattern0() {
+                        @Override
+                        public $OptionType<Void> apply(Object o) {
+                            return (o != null && type.isAssignableFrom(o.getClass())) ? $OptionType.nothing() : $OptionType.none();
+                        }
+                    };
+                }
             }
 
-            public static abstract class Pattern1<T, T1> {
-                public abstract Option<T1> apply(Object o);
-            }
-
-            ${(2 to N).gen(i => {
+            ${(1 to N).gen(i => {
               val generics = (1 to i).gen(j => s"T$j")(", ")
+              val resultType = if (i == 1) "T1" else s"Tuple$i<$generics>"
+              val patternTypes = (1 to i).gen(j => s"A$j")(", ")
+              val patterns = (1 to i).gen(j => s"Pattern1<A$j, T$j> p$j")(", ")
               xs"""
                 public static abstract class Pattern$i<T, $generics> {
-                    public abstract Option<Tuple$i<$generics>> apply(Object o);
+
+                    public abstract Option<$resultType> apply(Object o);
+
+                    public static <TYPE, $patternTypes, $generics> Pattern$i<TYPE, $generics> create(
+                            Class<TYPE> matchableType,
+                            Function<TYPE, Tuple$i<$patternTypes>> unapply,
+                            $patterns) {
+                        return new Pattern$i<TYPE, $generics>() {
+                            @Override
+                            public Option<$resultType> apply(Object o) {
+                                if (o != null && matchableType.isAssignableFrom(o.getClass())) {
+                                    @SuppressWarnings("unchecked")
+                                    final TYPE matchable = (TYPE) o;
+                                    final Tuple$i<$patternTypes> t = unapply.apply(matchable);
+                                    return
+                                            ${if (i == 1) xs"""
+                                              p1.apply(t._1);
+                                            """ else xs"""
+                                              ${(1 to i).gen(j => if (j == i) xs"""
+                                                p$j.apply(t._$j).map(v$j -> Tuple.of(${(1 to i).gen(k => s"v$k")(", ")})${")" * i}
+                                              """ else xs"""
+                                                p$j.apply(t._$j).flatMap(v$j ->
+                                              """)("\n")};
+                                            """}
+                                } else {
+                                    return Option.none();
+                                }
+                            }
+                        };
+                    }
                 }
               """
             })("\n\n")}
