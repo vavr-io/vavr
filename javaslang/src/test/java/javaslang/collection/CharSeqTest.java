@@ -1828,16 +1828,16 @@ public class CharSeqTest {
 
     @Test
     public void shouldCalculateCrossProductOfNil() {
-        final IndexedSeq<Tuple2<Character, Character>> actual = empty().crossProduct();
-        assertThat(actual).isEqualTo(Vector.empty());
+        final Iterator<Tuple2<Character, Character>> actual = empty().crossProduct();
+        assertThat(actual).isEmpty();
     }
 
     @Test
     public void shouldCalculateCrossProductOfNonNil() {
-        final IndexedSeq<Tuple2<Character, Character>> actual = CharSeq.of('1', '2', '3').crossProduct();
-        final Vector<Tuple2<Character, Character>> expected = Vector.of(Tuple.of('1', '1'), Tuple.of('1', '2'),
+        final List<Tuple2<Character, Character>> actual = CharSeq.of('1', '2', '3').crossProduct().toList();
+        final List<Tuple2<Character, Character>> expected = Iterator.of(Tuple.of('1', '1'), Tuple.of('1', '2'),
                 Tuple.of('1', '3'), Tuple.of('2', '1'), Tuple.of('2', '2'), Tuple.of('2', '3'), Tuple.of('3', '1'),
-                Tuple.of('3', '2'), Tuple.of('3', '3'));
+                Tuple.of('3', '2'), Tuple.of('3', '3')).toList();
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1845,8 +1845,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldCalculateCrossProductPower() {
-        final IndexedSeq<CharSeq> actual = CharSeq.of("12").crossProduct(2);
-        final Vector<CharSeq> expected = Vector.of(CharSeq.of('1', '1'), CharSeq.of('1', '2'), CharSeq.of('2', '1'), CharSeq.of('2', '2'));
+        final List<CharSeq> actual = CharSeq.of("12").crossProduct(2).toList();
+        final List<CharSeq> expected = Iterator.of(CharSeq.of('1', '1'), CharSeq.of('1', '2'), CharSeq.of('2', '1'), CharSeq.of('2', '2')).toList();
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1855,13 +1855,13 @@ public class CharSeqTest {
     @Test
     public void shouldCalculateCrossProductOfNilAndNil() {
         final Traversable<Tuple2<Character, Object>> actual = empty().crossProduct(empty());
-        assertThat(actual).isEqualTo(Vector.empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test
     public void shouldCalculateCrossProductOfNilAndNonNil() {
         final Traversable<Tuple2<Character, Object>> actual = empty().crossProduct(CharSeq.of('1', '2', '3'));
-        assertThat(actual).isEqualTo(Vector.empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test
@@ -1869,16 +1869,17 @@ public class CharSeqTest {
         final Traversable<Tuple2<Character, Character>> actual = CharSeq
                 .of('1', '2', '3')
                 .crossProduct(CharSeq.empty());
-        assertThat(actual).isEqualTo(Vector.empty());
+        assertThat(actual).isEmpty();
     }
 
     @Test
     public void shouldCalculateCrossProductOfNonNilAndNonNil() {
-        final IndexedSeq<Tuple2<Character, Character>> actual = CharSeq
+        final List<Tuple2<Character, Character>> actual = CharSeq
                 .of('1', '2', '3')
-                .crossProduct(CharSeq.of('a', 'b'));
-        final IndexedSeq<Tuple2<Character, Character>> expected = Vector.of(Tuple.of('1', 'a'), Tuple.of('1', 'b'),
-                Tuple.of('2', 'a'), Tuple.of('2', 'b'), Tuple.of('3', 'a'), Tuple.of('3', 'b'));
+                .crossProduct(CharSeq.of('a', 'b'))
+                .toList();
+        final List<Tuple2<Character, Character>> expected = Vector.of(Tuple.of('1', 'a'), Tuple.of('1', 'b'),
+                Tuple.of('2', 'a'), Tuple.of('2', 'b'), Tuple.of('3', 'a'), Tuple.of('3', 'b')).toList();
         assertThat(actual).isEqualTo(expected);
     }
 

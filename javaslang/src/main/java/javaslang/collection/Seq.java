@@ -198,9 +198,11 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * </code>
      * </pre>
      *
-     * @return a new Seq containing the square of {@code this}
+     * @return a new Iterator containing the square of {@code this}
      */
-    Seq<Tuple2<T, T>> crossProduct();
+    default Iterator<Tuple2<T, T>> crossProduct() {
+        return crossProduct(this);
+    }
 
     /**
      * Calculates the n-ary cartesian power (or <em>cross product</em> or simply <em>product</em>) of this.
@@ -214,9 +216,9 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * </pre>
      *
      * @param power the number of cartesian multiplications
-     * @return A new Seq representing the n-ary cartesian power of this
+     * @return A new Iterator representing the n-ary cartesian power of this
      */
-    Seq<? extends Seq<T>> crossProduct(int power);
+    Iterator<? extends Seq<T>> crossProduct(int power);
 
     /**
      * Calculates the cross product {@code this x that}.
@@ -231,10 +233,14 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      *
      * @param that Another iterable
      * @param <U>  Component type
-     * @return a new Seq containing the cross product {@code this x that}
+     * @return a new Iterator containing the cross product {@code this x that}
      * @throws NullPointerException if that is null
      */
-    <U> Seq<Tuple2<T, U>> crossProduct(Iterable<? extends U> that);
+    default <U> Iterator<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
+        Objects.requireNonNull(that, "that is null");
+        final Stream<U> other = Stream.ofAll(that);
+        return Iterator.ofAll(this).flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
+    }
 
     /**
      * Tests whether this sequence ends with the given sequence.

@@ -612,19 +612,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<Tuple2<T, T>> crossProduct() {
-        return crossProduct(this);
-    }
-
-    @Override
-    public Queue<Queue<T>> crossProduct(int power) {
-        return Collections.crossProduct(this, power).map(Queue::ofAll).toQueue();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Queue<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
-        return toList().crossProduct((Iterable<U>) that).toQueue();
+    public Iterator<Queue<T>> crossProduct(int power) {
+        return Collections.crossProduct(Queue.empty(), this, power);
     }
 
     @Override

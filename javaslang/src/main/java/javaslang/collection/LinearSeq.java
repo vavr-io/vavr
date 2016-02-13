@@ -59,13 +59,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<? extends LinearSeq<T>> combinations(int k);
 
     @Override
-    LinearSeq<Tuple2<T, T>> crossProduct();
-
-    @Override
-    LinearSeq<? extends LinearSeq<T>> crossProduct(int power);
-
-    @Override
-    <U> LinearSeq<Tuple2<T, U>> crossProduct(Iterable<? extends U> that);
+    Iterator<? extends LinearSeq<T>> crossProduct(int power);
 
     @Override
     LinearSeq<T> distinct();
