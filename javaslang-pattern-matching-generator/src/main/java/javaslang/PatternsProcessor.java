@@ -5,8 +5,6 @@
  */
 package javaslang;
 
-import javaslang.PatternsProcessor.PatternsModel.UnapplyModel;
-
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
@@ -14,8 +12,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.io.Writer;
@@ -88,129 +84,78 @@ public class PatternsProcessor extends AbstractProcessor {
                     .filter(element -> element instanceof TypeElement)
                     .map(element -> (TypeElement) element)
                     .collect(Collectors.toSet());
-            if (types.size() > 0) {
+            if (!types.isEmpty()) {
                 if (roundEnv.processingOver()) {
                     processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Processing over.");
                 } else {
-                    final List<PatternsModel> patternsModels = createModel(types);
-                    if (!patternsModels.isEmpty()) {
-                        generate(patternsModels);
-                    }
+                    generate(types);
                 }
             }
         }
         return true;
     }
 
-    private void generate(List<PatternsModel> patternsModels) {
+    private void generate(Set<TypeElement> typeElements) {
         final Filer filer = processingEnv.getFiler();
-        for (PatternsModel model : patternsModels) {
-            try (final Writer writer = filer.createSourceFile(model.getFullQualifiedName(), model.typeElement).openWriter()) {
-                final String result = model.toString(); // TODO: generator.invoke("generate", model);
-                /*DEBUG*/
-                System.out.println(result);
-                writer.write(result);
-            } catch (IOException x) {
-                throw new Error("Error creating patterns " + model.getFullQualifiedName(), x);
-            }
-        }
-    }
-
-    private List<PatternsModel> createModel(Set<TypeElement> typeElements) {
-        final List<PatternsModel> patternsModels = new ArrayList<>();
         for (TypeElement typeElement : typeElements) {
-            if (Patterns.Checker.isValid(typeElement, processingEnv.getMessager())) {
-                final List<ExecutableElement> executableElements = typeElement.getEnclosedElements().stream()
-                        .filter(element -> element instanceof ExecutableElement && element.getAnnotationsByType(Unapply.class).length == 1)
-                        .map(element -> (ExecutableElement) element)
-                        .collect(Collectors.toList());
-                final List<UnapplyModel> unapplyModels = new ArrayList<>();
-                for (ExecutableElement executableElement : executableElements) {
-                    if (Unapply.Checker.isValid(executableElement, processingEnv.getMessager())) {
-                        unapplyModels.add(new UnapplyModel(executableElement));
-                    }
+            final String name = Elements.getFullQualifiedName(typeElement);
+            generate(typeElement).ifPresent(code -> {
+                /*TODO:DEBUG*/
+                System.out.println(code);
+                try (final Writer writer = filer.createSourceFile(name, typeElement).openWriter()) {
+                    writer.write(code);
+                } catch (IOException x) {
+                    throw new Error("Error creating generating " + name, x);
                 }
-                if (unapplyModels.isEmpty()) {
-                    processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "No @Unapply methods found.", typeElement);
-                } else {
-                    patternsModels.add(new PatternsModel(typeElement, unapplyModels));
-                }
-            }
+            });
         }
-        return patternsModels;
     }
 
-    /**
-     * The file name is derived from the annotated class.
-     * If the class name is just '$' it will be replaced with 'Patterns',
-     * otherwise 'Patterns' will be concatenated.
-     */
-    // TODO: delete this model, create helpers in Elements and use javax.lang.model.element.Element as model
-    static class PatternsModel {
-
-        final TypeElement typeElement;
-        final String pkg;
-        final String name;
-        final List<UnapplyModel> unapplys;
-
-        PatternsModel(TypeElement typeElement, List<UnapplyModel> unapplys) {
-            this.typeElement = typeElement;
-            final String simpleName = typeElement.getSimpleName().toString();
-            final String qualifiedName = typeElement.getQualifiedName().toString();
-            this.pkg = qualifiedName.isEmpty() ? "" : qualifiedName.substring(0, qualifiedName.length() - simpleName.length() - 1);
-            this.name = ("$".equals(simpleName) ? "" : simpleName) + Patterns.class.getSimpleName();
-            this.unapplys = unapplys;
+    private Optional<String> generate(TypeElement typeElement) {
+        List<ExecutableElement> executableElements = getMethods(typeElement);
+        if (executableElements.isEmpty()) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "No @Unapply methods found.", typeElement);
+            return Optional.empty();
+        } else {
+            final String _package = Elements.getPackage(typeElement);
+            final String _class = Elements.getSimpleName(typeElement);
+            final String result = (_package.isEmpty() ? "" : "package " + _package + ";\n\n") +
+                    "public final class " + _class + "{\n\n" +
+                    "    private " + _class + "() {\n" +
+                    "    }\n\n" +
+                    generate(executableElements) +
+                    "}\n";
+            return Optional.of(result);
         }
+    }
 
-        public String getFullQualifiedName() {
-            return pkg.isEmpty() ? name : pkg + "." + name;
+    private String generate(List<ExecutableElement> executableElements) {
+        final StringBuilder builder = new StringBuilder();
+        for (ExecutableElement elem : executableElements) {
+            generate(elem, builder);
+            builder.append("\n");
         }
+        return builder.toString();
+    }
 
-        @Override
-        public String toString() {
-            return "Patterns(pkg=" +
-                    pkg +
-                    ", name=" +
-                    name +
-                    unapplys.stream().map(Object::toString).collect(joining(",\n    ", ",\n    ", "\n")) +
-                    ")";
-        }
-
-        static class UnapplyModel {
-
-            final int arity;
-            final String name;
-            final List<GenericModel> generics;
-            final TypeModel paramType;
-            final TypeModel returnType;
-
-            UnapplyModel(ExecutableElement elem) {
-                this.arity = getArity(elem);
-                this.name = getName(elem);
-                this.generics = getTypeParameters(elem);
-                this.paramType = getParamType(elem);
-                this.returnType = getReturnType(elem);
-
-                // DEBUG
-                System.out.println("@Unapply " + name);
-                if (arity == 0) {
-                    // TODO: call JS.generate(...)
-                    final String method = "static Pattern0 " + name + " = new Pattern0() {\n" +
-                            "   @Override\n" +
-                            "   public Option<Void> apply(Object o) {\n" +
-                            "       return (o instanceof " + Elements.getRawParameterType(elem, 0) + ") ? Option.nothing() : Option.none();\n" +
-                            "   }\n" +
-                            "};\n";
-                    /*DEBUG*/
-                    System.out.println(method);
-                } else {
-                    final List<List<Param>> variations = Lists.crossProduct(Arrays.asList(Param.values()), arity)
-                            .stream()
-                            .filter(params -> params.stream().map(Param::arity).reduce((a, b) -> a + b).get() <= ARITY)
-                            .collect(Collectors.toList());
-                    for (List<Param> variation : variations) {
-                        final int returnPatternArity = variation.stream().mapToInt(Param::arity).sum();
-                        final String method;
+    private void generate(ExecutableElement elem, StringBuilder builder) {
+        final String name = elem.getSimpleName().toString();
+        int arity = getArity(elem);
+        if (arity == 0) {
+            // TODO: call JS.generate(...)
+            builder.append("    static Pattern0 " + name + " = new Pattern0() {\n" +
+                    "       @Override\n" +
+                    "       public Option<Void> apply(Object o) {\n" +
+                    "           return (o instanceof " + Elements.getRawParameterType(elem, 0) + ") ? Option.nothing() : Option.none();\n" +
+                    "       }\n" +
+                    "    };\n");
+        } else {
+            final List<List<Param>> variations = Lists.crossProduct(Arrays.asList(Param.values()), arity)
+                    .stream()
+                    .filter(params -> params.stream().map(Param::arity).reduce((a, b) -> a + b).get() <= ARITY)
+                    .collect(Collectors.toList());
+            for (List<Param> variation : variations) {
+                final String method;
 //                        if (returnPatternArity == 0) {
 //                            // TODO: call JS.generate(...)
 //                            method = "static Pattern0 " + name + " = new Pattern0() {\n" +
@@ -220,169 +165,127 @@ public class PatternsProcessor extends AbstractProcessor {
 //                                    "   }\n" +
 //                                    "};\n";
 //                        } else {
-                            // TODO: call JS.generate(...)
-                            method = Stream.of(
-                                    getGenerics(variation),
-                                    getReturnType(variation, returnPatternArity),
-                                    name,
-                                    getParams(variation),
-                                    "{",
-                                    "...",
-                                    "}"
-                            ).collect(joining(" "));
+                // TODO: call JS.generate(...)
+                method = Stream.of(
+                        getGenerics(elem, variation),
+                        getReturnType(elem, variation),
+                        name,
+                        getParams(variation),
+                        "{",
+                        "...",
+                        "}"
+                ).collect(joining(" "));
 //                        }
-                        /*DEBUG*/
-                        System.out.println(method);
-                    }
-                }
-            }
-
-            String getGenerics(List<Param> variation) {
-                List<String> result = new ArrayList<>();
-                result.add("__ extends " + paramType.name);
-                result.addAll(generics.stream().map(generic -> generic.name).collect(Collectors.toList()));
-                int i = 1;
-                for (Param param : variation) {
-                    if (param == Param.T) {
-                        // TODO
-                    } else if (param == Param.InversePattern) {
-                        // uses pre-defined result tuple type parameter
-                    } else {
-                        for (int j = 1; j <= param.arity; j++) {
-                            result.add("T" + (i++));
-                        }
-                    }
-                }
-                return result.stream().collect(joining(", ", "<", ">"));
-            }
-
-            String getReturnType(List<Param> variation, int returnTypeArtiy) {
-                if (arity == 0) {
-                    return "Pattern0";
-                } else {
-                    final String[] tupleArgTypes;
-                    {
-                        int start = returnType.name.indexOf('<') + 1;
-                        int end = returnType.name.lastIndexOf('>');
-                        tupleArgTypes = returnType.name.substring(start, end).split(",");
-                        assert tupleArgTypes.length == variation.size();
-                    }
-                    final List<String> resultTypes = new ArrayList<>();
-                    resultTypes.add(paramType.name);
-                    for (int i = 0; i < variation.size(); i++) {
-                        Param param = variation.get(i);
-                        if (param.arity == 0) {
-                            // nothing is decomposed
-                        } else if (param == Param.InversePattern) {
-                            resultTypes.add(tupleArgTypes[i]);
-                        } else {
-                            resultTypes.add("T" + (i + 1));
-                        }
-                    }
-                    return "Pattern" + returnTypeArtiy + "<" + resultTypes.stream().collect(joining(", ")) + ">";
-                }
-            }
-
-            String getParams(List<Param> variation) {
-                StringBuilder builder = new StringBuilder("(");
-                for (int i = 0; i < variation.size(); i++) {
-                    Param param = variation.get(i);
-                    builder.append(param.name());
-                    // TODO: generics
-                    builder.append(" ").append("p").append(i + 1);
-                    if (i < variation.size() - 1) {
-                        builder.append(", ");
-                    }
-                }
-                builder.append(")");
-                return builder.toString();
-            }
-
-            @Override
-            public String toString() {
-                return String.format("UnapplyModel(arity=%s, name=%s, generics=%s, paramType=%s, returnType=%s)", arity, name, generics, paramType, returnType);
-            }
-
-            private static int getArity(ExecutableElement elem) {
-                final DeclaredType returnType = (DeclaredType) elem.getReturnType();
-                final String simpleName = returnType.asElement().getSimpleName().toString();
-                return Integer.parseInt(simpleName.substring("Tuple".length()));
-            }
-
-            private static String getName(ExecutableElement elem) {
-                return elem.getSimpleName().toString();
-            }
-
-            private static List<GenericModel> getTypeParameters(ExecutableElement elem) {
-                return elem.getTypeParameters().stream().map(typeArg -> new GenericModel(typeArg.asType())).collect(Collectors.toList());
-            }
-
-            private static TypeModel getParamType(ExecutableElement elem) {
-                // unapply method has exactly one parameter (= object to be deconstructed)
-                return new TypeModel((DeclaredType) elem.getParameters().get(0).asType());
-            }
-
-            private static TypeModel getReturnType(ExecutableElement elem) {
-                return new TypeModel((DeclaredType) elem.getReturnType());
-            }
-
-            static class TypeModel {
-
-                final String name;
-                final List<GenericModel> generics;
-
-                TypeModel(DeclaredType type) {
-                    this.name = type.toString();
-                    this.generics = type.getTypeArguments().stream().map(GenericModel::new).collect(Collectors.toList());
-                }
-
-                @Override
-                public String toString() {
-                    return String.format("TypeModel(name=%s, generics=%s)", name, generics);
-                }
-
-            }
-
-            static class GenericModel {
-
-                final String name;
-                final TypeKind kind;
-
-                GenericModel(TypeMirror typeMirror) {
-                    this.name = typeMirror.toString();
-                    this.kind = typeMirror.getKind();
-                }
-
-                @Override
-                public String toString() {
-                    return "Generic(name=" + name + ", kind=" + kind + ")";
-                }
+                builder.append("    ").append(method).append("\n");
             }
         }
     }
 
-    enum Param {
-
-        T(0),               // Eq(t) = o -> Objects.equals(o, t)
-        InversePattern(1),  // $()
-        Pattern0(0),        // $_
-        Pattern1(1),        // $("test")
-        Pattern2(2),        // combinations of the above...
-        Pattern3(3),
-        Pattern4(4),
-        Pattern5(5),
-        Pattern6(6),
-        Pattern7(7),
-        Pattern8(8);
-
-        final int arity;
-
-        Param(int arity) {
-            this.arity = arity;
+    String getGenerics(ExecutableElement elem, List<Param> variation) {
+        List<String> result = new ArrayList<>();
+        result.add("__ extends " + Elements.getParameterType(elem, 0));
+        result.addAll(Arrays.asList(Elements.getTypeParameters(elem)));
+        int i = 1;
+        for (Param param : variation) {
+            if (param == Param.T) {
+                // TODO
+            } else if (param == Param.InversePattern) {
+                // uses pre-defined result tuple type parameter
+            } else {
+                for (int j = 1; j <= param.arity; j++) {
+                    result.add("T" + (i++));
+                }
+            }
         }
+        return result.stream().collect(joining(", ", "<", ">"));
+    }
 
-        int arity() {
-            return arity;
+    // TODO
+    String getReturnType(ExecutableElement elem, List<Param> variation) {
+//                if (returnTypeArity == 0) {
+//                    return "Pattern0";
+//                } else {
+        final String[] tupleArgTypes = Elements.getReturnTypeArgs(elem);
+        final List<String> resultTypes = new ArrayList<>();
+        resultTypes.add(Elements.getParameterType(elem, 0));
+        for (int i = 0; i < variation.size(); i++) {
+            Param param = variation.get(i);
+            if (param.arity == 0) {
+                // nothing is decomposed
+            } else if (param == Param.InversePattern) {
+                resultTypes.add(tupleArgTypes[i]);
+            } else {
+                resultTypes.add("T" + (i + 1));
+            }
         }
+        final int resultArity = Param.getArity(variation);
+        return "Pattern" + resultArity + "<" + resultTypes.stream().collect(joining(", ")) + ">";
+//                }
+    }
+
+    String getParams(List<Param> variation) {
+        StringBuilder builder = new StringBuilder("(");
+        for (int i = 0; i < variation.size(); i++) {
+            Param param = variation.get(i);
+            builder.append(param.name());
+            // TODO: generics
+            builder.append(" ").append("p").append(i + 1);
+            if (i < variation.size() - 1) {
+                builder.append(", ");
+            }
+        }
+        builder.append(")");
+        return builder.toString();
+    }
+
+
+    private List<ExecutableElement> getMethods(TypeElement typeElement) {
+        if (Patterns.Checker.isValid(typeElement, processingEnv.getMessager())) {
+            return typeElement.getEnclosedElements().stream()
+                    .filter(element -> element.getAnnotationsByType(Unapply.class).length == 1 &&
+                            element instanceof ExecutableElement &&
+                            Unapply.Checker.isValid((ExecutableElement) element, processingEnv.getMessager()))
+                    .map(element -> (ExecutableElement) element)
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    // Not part of Elements helper because specific for this use-case
+
+    private static int getArity(ExecutableElement elem) {
+        final DeclaredType returnType = (DeclaredType) elem.getReturnType();
+        final String simpleName = returnType.asElement().getSimpleName().toString();
+        return Integer.parseInt(simpleName.substring("Tuple".length()));
+    }
+}
+
+enum Param {
+
+    T(0),               // Eq(t) = o -> Objects.equals(o, t)
+    InversePattern(1),  // $()
+    Pattern0(0),        // $_
+    Pattern1(1),        // $("test")
+    Pattern2(2),        // combinations of the above...
+    Pattern3(3),
+    Pattern4(4),
+    Pattern5(5),
+    Pattern6(6),
+    Pattern7(7),
+    Pattern8(8);
+
+    final int arity;
+
+    Param(int arity) {
+        this.arity = arity;
+    }
+
+    int arity() {
+        return arity;
+    }
+
+    static int getArity(List<Param> params) {
+        return params.stream().mapToInt(Param::arity).sum();
     }
 }
