@@ -557,20 +557,8 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<Tuple2<T, T>> crossProduct() {
-        return crossProduct(this);
-    }
-
-    @Override
-    default List<List<T>> crossProduct(int power) {
-        return Collections.crossProduct(this, power).map(List::ofAll).toList();
-    }
-
-    @Override
-    default <U> List<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
-        final List<U> other = unit(that);
-        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
+    default Iterator<List<T>> crossProduct(int power) {
+        return Collections.crossProduct(List.empty(), this, power);
     }
 
     @Override

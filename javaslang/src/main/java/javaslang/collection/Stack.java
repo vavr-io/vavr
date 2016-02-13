@@ -546,13 +546,7 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<? extends Stack<T>> combinations(int k);
 
     @Override
-    Stack<Tuple2<T, T>> crossProduct();
-
-    @Override
-    Stack<? extends Stack<T>> crossProduct(int power);
-
-    @Override
-    <U> Stack<Tuple2<T, U>> crossProduct(Iterable<? extends U> that);
+    Iterator<? extends Stack<T>> crossProduct(int power);
 
     @Override
     Stack<T> distinct();

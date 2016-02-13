@@ -71,13 +71,13 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <T> Iterator<Seq<T>> crossProduct(Seq<? extends T> seq, int power) {
+    static <T, S extends Seq<T>> Iterator<S> crossProduct(S empty, S seq, int power) {
         if (power < 0) {
             throw new IllegalArgumentException("negative power");
         }
         return Iterator
-                .range(1, power)
-                .foldLeft((Iterator<Seq<T>>) seq.sliding(1), (product, ignored) -> product.flatMap(tuple -> seq.map(tuple::append)));
+                .range(0, power)
+                .foldLeft(Iterator.of(empty), (product, ignored) -> product.flatMap(el -> seq.map(t -> (S) el.append(t))));
     }
 
     static <C extends Traversable<T>, T> C tabulate(int n, Function<? super Integer, ? extends T> f, C empty, Function<T[], C> of) {

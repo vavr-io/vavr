@@ -494,20 +494,8 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<Tuple2<T, T>> crossProduct() {
-        return crossProduct(this);
-    }
-
-    @Override
-    public Vector<Vector<T>> crossProduct(int power) {
-        return Collections.crossProduct(this, power).map(Vector::ofAll).toVector();
-    }
-
-    @Override
-    public <U> Vector<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
-        final Vector<U> other = Vector.ofAll(that);
-        return flatMap(a -> other.map((Function<U, Tuple2<T, U>>) b -> Tuple.of(a, b)));
+    public Iterator<Vector<T>> crossProduct(int power) {
+        return Collections.crossProduct(Vector.empty(), this, power);
     }
 
     @Override
