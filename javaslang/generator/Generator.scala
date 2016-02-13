@@ -252,23 +252,34 @@ def generateMainClasses(): Unit = {
 
                 public abstract $OptionType<Void> apply(Object o);
 
-                public static Pattern0 isEqualTo(Object prototype) {
+                // for @Unapply result type Tuple0
+                public static <T> Pattern0 create(Class<? super T> c) {
                     return new Pattern0() {
+                        @SuppressWarnings("unchecked")
                         @Override
-                        public $OptionType<Void> apply(Object o) {
-                            return Objects.equals(o, prototype) ? $OptionType.nothing() : $OptionType.none();
+                        public Option<Void> apply(Object o) {
+                            return (o != null && c.isAssignableFrom(o.getClass())) ? Option.nothing() : Option.none();
                         }
                     };
                 }
 
-                public static Pattern0 isInstanceOf(Class<?> type) {
-                    $Objects.requireNonNull(type, "type is null");
+                // should have been Class<T> instead of Class<? super T> but it does not work for complex generic types
+                public static <T> Pattern0 create(Class<? super T> c, Function<T, Option<Void>> unapply) {
                     return new Pattern0() {
+                        @SuppressWarnings("unchecked")
                         @Override
-                        public $OptionType<Void> apply(Object o) {
-                            return (o != null && type.isAssignableFrom(o.getClass())) ? $OptionType.nothing() : $OptionType.none();
+                        public Option<Void> apply(Object o) {
+                            if (o != null && c.isAssignableFrom(o.getClass())) {
+                                return unapply.apply(((T) o));
+                            } else {
+                                return Option.none();
+                            }
                         }
                     };
+                }
+
+                public static $OptionType<Void> equals(Object o1, Object o2) {
+                    return Objects.equals(o1, o2) ? $OptionType.nothing() : $OptionType.none();
                 }
             }
 

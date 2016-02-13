@@ -236,26 +236,37 @@ public class PatternsProcessor extends AbstractProcessor {
         return builder.toString();
     }
 
-    // Expands the method body
+    // Expands the method body (used for unapplied tuple arity >= 1)
     private static String generateBody(TypeElement type, ExecutableElement elem, List<Param> variation) {
         final StringBuilder builder = new StringBuilder();
+        final int unapplyArity = getArity(elem);
         final int resultArity = Param.getArity(variation);
         final String matchableType = Elements.getRawParameterType(elem, 0);
         final String annotatedType = type.getSimpleName().toString();
         final String methodName = elem.getSimpleName().toString();
-        builder.append("Pattern" + resultArity + ".create(" + matchableType + ".class, t -> " + annotatedType + "." + methodName + "(t).transform((");
-        builder.append(IntStream.rangeClosed(1, resultArity).boxed().map(i -> "t" + i).collect(joining(", ")));
-        builder.append(") -> ");
-        int j = 1;
-        for (int i = 0; i < variation.size(); i++) {
-            Param param = variation.get(i);
-            // TODO: Patterns.create(List.Cons.class, t -> $.Cons(t).transform((t1, t2) -> ((InversePattern<List<T>>) p2).apply(t2)));
-            if (param.arity > 0) {
-                builder.append("((" + param.name() + "<?>)" + "p" + (i + 1) + ").apply(t" + (i + 1) + ").map(v" + (j++) + " -> null)");
+        final String typeHint = (resultArity == 0) ? "<" + Elements.getParameterType(elem, 0) + ">" : "";
+        builder.append("Pattern" + resultArity + "." + typeHint + "create(" + matchableType + ".class, t -> " + annotatedType + "." + methodName + "(t).transform(");
+        if (unapplyArity == 1) {
+            builder.append("t1");
+        } else {
+            builder.append("(" + IntStream.rangeClosed(1, unapplyArity).boxed().map(i -> "t" + i).collect(joining(", ")) + ")");
+        }
+        builder.append(" -> ");
+        for (int i = 1; i <= variation.size(); i++) {
+            Param param = variation.get(i - 1);
+            if (param == Param.T) {
+                builder.append("Pattern0.equals(t" + i + ", p" + i + ")");
+            } else if (param == Param.InversePattern) {
+                builder.append("((InversePattern<T>) p" + i + ").apply(t" + i + ")");
+            } else {
+                builder.append("p"+ i + ".apply(t" + i + ")");
             }
-//            if (i < variation.size() - 1) {
-//                builder.append(", ");
-//            }
+            if (i < variation.size()) {
+                builder.append(".flatMap(v" + i + " -> ");
+            }
+        }
+        for (int i = 1; i <= variation.size(); i++) {
+            builder.append(")");
         }
         builder.append(");");
         return builder.toString();

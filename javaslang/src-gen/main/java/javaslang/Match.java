@@ -325,23 +325,32 @@ public final class Match<T> {
 
         public abstract Option<Void> apply(Object o);
 
-        public static Pattern0 isEqualTo(Object prototype) {
+        public static <T> Pattern0 create(Class<? super T> c) {
             return new Pattern0() {
+                @SuppressWarnings("unchecked")
                 @Override
                 public Option<Void> apply(Object o) {
-                    return Objects.equals(o, prototype) ? Option.nothing() : Option.none();
+                    return (o != null && c.isAssignableFrom(o.getClass())) ? Option.nothing() : Option.none();
                 }
             };
         }
 
-        public static Pattern0 isInstanceOf(Class<?> type) {
-            Objects.requireNonNull(type, "type is null");
+        public static <T> Pattern0 create(Class<? super T> c, Function<T, Option<Void>> unapply) {
             return new Pattern0() {
+                @SuppressWarnings("unchecked")
                 @Override
                 public Option<Void> apply(Object o) {
-                    return (o != null && type.isAssignableFrom(o.getClass())) ? Option.nothing() : Option.none();
+                    if (o != null && c.isAssignableFrom(o.getClass())) {
+                        return unapply.apply(((T) o));
+                    } else {
+                        return Option.none();
+                    }
                 }
             };
+        }
+
+        public static Option<Void> equals(Object o1, Object o2) {
+            return Objects.equals(o1, o2) ? Option.nothing() : Option.none();
         }
     }
 
