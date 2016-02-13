@@ -1254,6 +1254,19 @@ public interface Stream<T> extends LinearSeq<T> {
         }
     }
 
+    /**
+     * Transforms this {@code Stream}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    default <U> U transform(Function<? super Stream<T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     @Override
     default <U> Stream<U> unit(Iterable<? extends U> iterable) {
         return Stream.ofAll(iterable);

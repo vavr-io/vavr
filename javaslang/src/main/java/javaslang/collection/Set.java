@@ -120,19 +120,6 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
     java.util.Set<T> toJavaSet();
 
     /**
-     * Transforms this {@code Set}.
-     *
-     * @param f   A transformation
-     * @param <U> Type of transformation result
-     * @return An instance of type {@code U}
-     * @throws NullPointerException if {@code f} is null
-     */
-    default <U> U transform(Function<? super Set<? super T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
-        return f.apply(this);
-    }
-
-    /**
      * Adds all of the elements of {@code that} set to this set, if not already present.
      * <p>
      * See also {@link #addAll(Iterable)}.

@@ -794,19 +794,6 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      */
     Seq<T> subSequence(int beginIndex, int endIndex);
 
-    /**
-     * Transforms this {@code Seq}.
-     *
-     * @param f   A transformation
-     * @param <U> Type of transformation result
-     * @return An instance of type {@code U}
-     * @throws NullPointerException if {@code f} is null
-     */
-    default <U> U transform(Function<? super Seq<? super T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
-        return f.apply(this);
-    }
-
     <U> Seq<U> unit(Iterable<? extends U> iterable);
 
     /**

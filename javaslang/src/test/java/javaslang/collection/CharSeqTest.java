@@ -2652,6 +2652,14 @@ public class CharSeqTest {
     }
 
 
+    // -- transform()
+
+    @Test
+    public void shouldTransform() {
+        String transformed = CharSeq.of('0').transform(v -> String.valueOf(v.get()));
+        assertThat(transformed).isEqualTo("0");
+    }
+
     // -- scan, scanLeft, scanRight
 
     @Test

@@ -904,6 +904,19 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return sb.length() == length() ? this : sb.length() == 0 ? EMPTY : of(sb.toString());
     }
 
+    /**
+     * Transforms this {@code CharSeq}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public  <U> U transform(Function<? super CharSeq, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     @Override
     public <U> IndexedSeq<U> unit(Iterable<? extends U> iterable) {
         return Vector.ofAll(iterable);

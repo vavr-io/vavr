@@ -1129,6 +1129,19 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
         return taken.length() == length() ? this : taken.toQueue();
     }
 
+    /**
+     * Transforms this {@code Queue}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public <U> U transform(Function<? super Queue<T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     @Override
     public <U> Queue<U> unit(Iterable<? extends U> iterable) {
         return Queue.ofAll(iterable);

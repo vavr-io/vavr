@@ -1205,6 +1205,19 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         return this;
     }
 
+    /**
+     * Transforms this {@code Array}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public  <U> U transform(Function<? super Array<T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     @Override
     public <U> Array<U> unit(Iterable<? extends U> iterable) {
     	return Array.ofAll(iterable);

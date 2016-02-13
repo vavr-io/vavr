@@ -1014,7 +1014,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> U transform(Function<? super Iterator<? super T>, ? extends U> f) {
+    default <U> U transform(Function<? super Iterator<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }

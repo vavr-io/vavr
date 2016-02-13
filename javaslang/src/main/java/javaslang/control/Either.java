@@ -570,7 +570,7 @@ public interface Either<L, R> extends Value<R> {
          * @return An instance of type {@code U}
          * @throws NullPointerException if {@code f} is null
          */
-        public <U> U transform(Function<? super LeftProjection<? super L, ? super R>, ? extends U> f) {
+        public <U> U transform(Function<? super LeftProjection<L, R>, ? extends U> f) {
             Objects.requireNonNull(f, "f is null");
             return f.apply(this);
         }
@@ -800,7 +800,7 @@ public interface Either<L, R> extends Value<R> {
          * @return An instance of type {@code U}
          * @throws NullPointerException if {@code f} is null
          */
-        public <U> U transform(Function<? super RightProjection<? super L, ? super R>, ? extends U> f) {
+        public <U> U transform(Function<? super RightProjection<L, R>, ? extends U> f) {
             Objects.requireNonNull(f, "f is null");
             return f.apply(this);
         }

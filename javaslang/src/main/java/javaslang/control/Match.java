@@ -591,7 +591,7 @@ public interface Match {
          * @return An instance of type {@code U}
          * @throws NullPointerException if {@code f} is null
          */
-        default <U> U transform(Function<? super MatchValue<? super R>, ? extends U> f) {
+        default <U> U transform(Function<? super MatchValue<R>, ? extends U> f) {
             Objects.requireNonNull(f, "f is null");
             return f.apply(this);
         }
