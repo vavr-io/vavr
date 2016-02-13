@@ -9,10 +9,10 @@ import javaslang.PatternsProcessor.PatternsModel.UnapplyModel;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
-import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.*;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -20,13 +20,10 @@ import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
-import static javax.lang.model.element.Modifier.*;
 
 /**
  * A code generator for Javaslang <em>structural pattern matching</em> patterns.
@@ -111,14 +108,14 @@ public class PatternsProcessor extends AbstractProcessor {
     private List<PatternsModel> createModel(Set<TypeElement> typeElements) {
         final List<PatternsModel> patternsModels = new ArrayList<>();
         for (TypeElement typeElement : typeElements) {
-            if (isTypeDeclarationValid(typeElement, processingEnv.getMessager())) {
+            if (Patterns.Checker.isValid(typeElement, processingEnv.getMessager())) {
                 final List<ExecutableElement> executableElements = typeElement.getEnclosedElements().stream()
                         .filter(element -> element instanceof ExecutableElement && element.getAnnotationsByType(Unapply.class).length == 1)
                         .map(element -> (ExecutableElement) element)
                         .collect(Collectors.toList());
                 final List<UnapplyModel> unapplyModels = new ArrayList<>();
                 for (ExecutableElement executableElement : executableElements) {
-                    if (isMethodDeclarationValid(executableElement, processingEnv.getMessager())) {
+                    if (Unapply.Checker.isValid(executableElement, processingEnv.getMessager())) {
                         unapplyModels.add(new UnapplyModel(executableElement));
                     }
                 }
@@ -130,80 +127,6 @@ public class PatternsProcessor extends AbstractProcessor {
             }
         }
         return patternsModels;
-    }
-
-    private static boolean isTypeDeclarationValid(TypeElement typeElement, Messager messager) {
-        class TypeElemChecker extends ElemChecker<TypeElemChecker, TypeElement> {
-            TypeElemChecker(TypeElement elem, Messager messager) {
-                super(elem, messager);
-            }
-
-            boolean isNested() {
-                return elem.getNestingKind().isNested();
-            }
-        }
-        final TypeElemChecker typeChecker = new TypeElemChecker(typeElement, messager);
-        return typeChecker.ensure(e -> !e.isNested(), () -> "Patterns need to be defined in top-level classes.");
-    }
-
-    private static boolean isMethodDeclarationValid(ExecutableElement executableElement, Messager messager) {
-        class ExecElemChecker extends ElemChecker<ExecElemChecker, ExecutableElement> {
-            ExecElemChecker(ExecutableElement elem, Messager messager) {
-                super(elem, messager);
-            }
-
-            boolean isMethod() {
-                final String name = elem.getSimpleName().toString();
-                return !name.isEmpty() && !"<init>".equals(name) && !"<clinit>".equals(name);
-            }
-
-            boolean doesNotThrow() {
-                return elem.getThrownTypes().isEmpty();
-            }
-        }
-        final ExecElemChecker methodChecker = new ExecElemChecker(executableElement, messager);
-        return methodChecker.ensure(ExecElemChecker::isMethod, () -> "Annotation " + Unapply.class.getName() + " only allowed for methods.") &&
-                methodChecker.ensure(ExecElemChecker::doesNotThrow, () -> "@" + "Unapply method should not throw (checked) exceptions.") &&
-                methodChecker.ensure(e -> !e.elem.isDefault(), () -> "@" + "Unapply method needs to be declared in a class, not an interface.") &&
-                methodChecker.ensure(e -> !e.elem.isVarArgs(), () -> "@" + "Unapply method has varargs.") &&
-                methodChecker.ensure(e -> e.elem.getParameters().size() == 1, () -> "Unapply method must have exactly one parameter of the object to be deconstructed.") &&
-                methodChecker.ensure(e -> e.elem.getReturnType().toString().startsWith("javaslang.Tuple"), () -> "Return type of unapply method must be a Tuple.") &&
-                methodChecker.ensure(e -> e.hasAll(STATIC), () -> "Unapply method needs to be static.") &&
-                methodChecker.ensure(e -> e.hasNone(PRIVATE, PROTECTED, ABSTRACT), () -> "Unapply method may not be private or protected.");
-    }
-
-    private static abstract class ElemChecker<SELF extends ElemChecker<SELF, E>, E extends Element> {
-
-        final E elem;
-        final Messager messager;
-
-        ElemChecker(E elem, Messager messager) {
-            this.elem = elem;
-            this.messager = messager;
-        }
-
-        boolean ensure(Predicate<? super SELF> condition, Supplier<String> msg) {
-            @SuppressWarnings("unchecked")
-            final boolean result = condition.test((SELF) this);
-            if (!result) {
-                messager.printMessage(Diagnostic.Kind.ERROR, msg.get(), elem);
-            }
-            return result;
-        }
-
-        boolean hasAll(Modifier... modifiers) {
-            return elem.getModifiers().containsAll(Arrays.asList(modifiers));
-        }
-
-        boolean hasNone(Modifier... modifiers) {
-            final Set<Modifier> set = elem.getModifiers();
-            for (Modifier modifier : modifiers) {
-                if (set.contains(modifier)) {
-                    return false;
-                }
-            }
-            return true;
-        }
     }
 
     /**
