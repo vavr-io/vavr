@@ -1220,6 +1220,19 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         return trie.size() == length() ? this : wrap(trie);
     }
 
+    /**
+     * Transforms this {@code Vector}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public  <U> U transform(Function<? super Vector<T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     @Override
     public <U> Vector<U> unit(Iterable<? extends U> iterable) {
         return Vector.ofAll(iterable);

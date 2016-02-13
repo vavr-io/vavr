@@ -280,6 +280,14 @@ public class HashSetTest extends AbstractSetTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- transform()
+
+    @Test
+    public void shouldTransform() {
+        String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        assertThat(transformed).isEqualTo("42");
+    }
+
     // HashSet special cases
 
     @Override

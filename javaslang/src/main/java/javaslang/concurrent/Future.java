@@ -789,7 +789,7 @@ public interface Future<T> extends Value<T> {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> U transform(Function<? super Future<? super T>, ? extends U> f) {
+    default <U> U transform(Function<? super Future<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }

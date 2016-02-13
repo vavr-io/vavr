@@ -252,7 +252,16 @@ def generateMainClasses(): Unit = {
 
                 public abstract $OptionType<Void> apply(Object o);
 
-                public static Pattern0 create(Class<?> type) {
+                public static Pattern0 isEqualTo(Object prototype) {
+                    return new Pattern0() {
+                        @Override
+                        public $OptionType<Void> apply(Object o) {
+                            return Objects.equals(o, prototype) ? $OptionType.nothing() : $OptionType.none();
+                        }
+                    };
+                }
+
+                public static Pattern0 isInstanceOf(Class<?> type) {
                     $Objects.requireNonNull(type, "type is null");
                     return new Pattern0() {
                         @Override

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
@@ -87,6 +88,7 @@ public class PatternsProcessor extends AbstractProcessor {
         return true;
     }
 
+    // Expands all @Patterns classes
     private static void generate(Set<TypeElement> typeElements, Filer filer, Messager messager) {
         for (TypeElement typeElement : typeElements) {
             final String name = Elements.getFullQualifiedName(typeElement);
@@ -100,7 +102,7 @@ public class PatternsProcessor extends AbstractProcessor {
         }
     }
 
-    // Expands the class
+    // Expands one @Patterns class
     private static Optional<String> generate(TypeElement typeElement, Messager messager) {
         List<ExecutableElement> executableElements = getMethods(typeElement, messager);
         if (executableElements.isEmpty()) {
@@ -120,7 +122,7 @@ public class PatternsProcessor extends AbstractProcessor {
         }
     }
 
-    // Expands the methods
+    // Expands the @Unapply methods of a @Patterns class
     private static String generate(TypeElement typeElement, List<ExecutableElement> executableElements) {
         final StringBuilder builder = new StringBuilder();
         for (ExecutableElement executableElement : executableElements) {
@@ -130,7 +132,7 @@ public class PatternsProcessor extends AbstractProcessor {
         return builder.toString();
     }
 
-    // Expands one method
+    // Expands one @Unapply method
     private static void generate(TypeElement type, ExecutableElement elem, StringBuilder builder) {
         final String typeName = Elements.getRawParameterType(elem, 0);
         final String name = elem.getSimpleName().toString();
@@ -151,7 +153,10 @@ public class PatternsProcessor extends AbstractProcessor {
                         getReturnType(elem, variation),
                         name,
                         getParams(elem, variation),
-                        "{ return Pattern" + Param.getArity(variation) + ".create(" + typeName + ".class, " + type.getSimpleName() + "::" + name + ", p1, p2); }"
+                        "{",
+                        "return",
+                        generateBody(type, elem, variation),
+                        "}"
                 ).collect(joining(" "));
                 builder.append("    ").append(method).append("\n");
             }
@@ -228,6 +233,31 @@ public class PatternsProcessor extends AbstractProcessor {
             }
         }
         builder.append(")");
+        return builder.toString();
+    }
+
+    // Expands the method body
+    private static String generateBody(TypeElement type, ExecutableElement elem, List<Param> variation) {
+        final StringBuilder builder = new StringBuilder();
+        final int resultArity = Param.getArity(variation);
+        final String matchableType = Elements.getRawParameterType(elem, 0);
+        final String annotatedType = type.getSimpleName().toString();
+        final String methodName = elem.getSimpleName().toString();
+        builder.append("Pattern" + resultArity + ".create(" + matchableType + ".class, t -> " + annotatedType + "." + methodName + "(t).transform((");
+        builder.append(IntStream.rangeClosed(1, resultArity).boxed().map(i -> "t" + i).collect(joining(", ")));
+        builder.append(") -> ");
+        int j = 1;
+        for (int i = 0; i < variation.size(); i++) {
+            Param param = variation.get(i);
+            // TODO: Patterns.create(List.Cons.class, t -> $.Cons(t).transform((t1, t2) -> ((InversePattern<List<T>>) p2).apply(t2)));
+            if (param.arity > 0) {
+                builder.append("((" + param.name() + "<?>)" + "p" + (i + 1) + ").apply(t" + (i + 1) + ").map(v" + (j++) + " -> null)");
+            }
+//            if (i < variation.size() - 1) {
+//                builder.append(", ");
+//            }
+        }
+        builder.append(");");
         return builder.toString();
     }
 

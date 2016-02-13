@@ -571,6 +571,14 @@ public class TreeTest extends AbstractTraversableTest {
         assertThat($(0).hashCode()).isGreaterThan(1);
     }
 
+    // -- transform()
+
+    @Test
+    public void shouldTransform() {
+        String transformed = $(42, $(2), $(3)).transform(v -> String.valueOf(v.get()));
+        assertThat(transformed).isEqualTo("42");
+    }
+
     // toString
 
     @Test

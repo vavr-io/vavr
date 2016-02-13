@@ -235,7 +235,7 @@ public interface Tree<T> extends Traversable<T> {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> U transform(Function<? super Tree<? super T>, ? extends U> f) {
+    default <U> U transform(Function<? super Tree<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }

@@ -202,7 +202,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U transform(Function<? super Lazy<? super T>, ? extends U> f) {
+    public <U> U transform(Function<? super Lazy<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }

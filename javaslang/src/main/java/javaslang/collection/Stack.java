@@ -719,6 +719,8 @@ public interface Stack<T> extends LinearSeq<T> {
     @Override
     Stack<T> takeWhile(Predicate<? super T> predicate);
 
+    <U> U transform(Function<? super List<T>, ? extends U> f);
+
     @Override
     <U> Stack<U> unit(Iterable<? extends U> iterable);
 

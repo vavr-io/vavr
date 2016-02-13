@@ -1304,6 +1304,20 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         return result.length() == length() ? this : result.reverse();
     }
 
+    /**
+     * Transforms this {@code List}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    @Override
+    default <U> U transform(Function<? super List<T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     @Override
     default <U> List<U> unit(Iterable<? extends U> iterable) {
         return List.ofAll(iterable);
