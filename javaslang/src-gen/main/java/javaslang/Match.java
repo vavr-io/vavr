@@ -151,6 +151,9 @@ public final class Match<T> {
      * Wildcard extractor.
      * <p>
      * Matches any value and extracts it as named lambda parameter.
+     *
+     * @param <T> injected type of the underlying value
+     * @return a new {@code InversePattern} instance
      */
     public static <T> InversePattern<T> $() {
         return new InversePattern<T>() {
@@ -165,6 +168,10 @@ public final class Match<T> {
      * Value extractor.
      * <p>
      * Matches a specific value and extracts it as named lambda parameter.
+     *
+     * @param <T1>      type of the prototype
+     * @param prototype the value that should be equal to the underlying object
+     * @return a new {@code Pattern1} instance
      */
     public static <T1> Pattern1<T1, T1> $(T1 prototype) {
         return new Pattern1<T1, T1>() {
