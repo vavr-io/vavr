@@ -16,6 +16,8 @@ import static java.util.stream.Collectors.*;
  */
 class ImportManager {
 
+    static final int DEFAULT_WILDCARD_THRESHOLD = 5;
+
     // properties
     private final String packageNameOfClass;
     private final Set<String> knownSimpleClassNames;
@@ -29,6 +31,10 @@ class ImportManager {
         this.packageNameOfClass = packageNameOfClass;
         this.knownSimpleClassNames = knownSimpleClassNames;
         this.wildcardThreshold = wildcardThreshold;
+    }
+
+    public static ImportManager of(String packageNameOfClass) {
+        return new ImportManager(packageNameOfClass, Collections.emptySet(), DEFAULT_WILDCARD_THRESHOLD);
     }
 
     // used by generator to register non-static imports

@@ -30,15 +30,12 @@ import java.util.stream.Collectors;
  */
 //
 // DEV-NOTES:
-//
-// In order to keep the Javaslang maven module dependency graph simple, the javaslang-matchable-annotation
-// is stringly-typed and does not have any dependencies to other Javaslang modules containing core classes
-// like Functions and Tuples.
+// In order to keep the Javaslang maven module dependency graph simple, javaslang-match is stringly-typed and
+// does not have any dependencies to other Javaslang modules containing core classes like Functions and Tuples.
 //
 // See Difference between Element, Type and Mirror: http://stackoverflow.com/a/2127320/1110815
 //
 // BUILD-NOTES:
-//
 // Tests work best with `mvn clean compile test-compile -DskipGen`
 //
 public class PatternsProcessor extends AbstractProcessor {
