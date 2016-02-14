@@ -1218,6 +1218,8 @@ public interface Stream<T> extends LinearSeq<T> {
     default Stream<T> take(long n) {
         if (n < 1 || isEmpty()) {
             return Empty.instance();
+        } else if (n == 1) {
+            return cons(head(), Stream::empty);
         } else {
             return cons(head(), () -> tail().take(n - 1));
         }
