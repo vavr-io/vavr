@@ -181,7 +181,7 @@ public class PatternsProcessor extends AbstractProcessor {
         int i = 0;
         for (String type : types) {
             // TODO: Class.forName(type).isAssignableFrom(any of ATOMICS) ? 1 : ARITY
-            maxArity[i] = ATOMICS.contains(type) ? 1 : ARITY;
+            maxArity[i++] = ATOMICS.contains(type) ? 1 : ARITY;
         }
         return maxArity;
     }
