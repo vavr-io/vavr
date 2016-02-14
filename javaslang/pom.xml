@@ -47,6 +47,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgs>
+                        <!-- target dir of the annotation processor for pattern matching patterns -->
+                        <arg>-s</arg>
+                        <arg>${basedir}/src-gen/main/java/</arg>
+                    </compilerArgs>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

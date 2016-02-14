@@ -113,6 +113,7 @@ public class PatternsProcessor extends AbstractProcessor {
             final String _class = Elements.getSimpleName(typeElement);
             final String result = (_package.isEmpty() ? "" : "package " + _package + ";\n\n") +
                     "import static javaslang.Match.*;\n\n" +
+                    "// GENERATED <<>> JAVASLANG\n\n" +
                     "public final class " + _class + "{\n\n" +
                     "    private " + _class + "() {\n" +
                     "    }\n\n" +
