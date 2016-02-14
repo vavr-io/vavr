@@ -9,7 +9,9 @@ import javaslang.collection.List;
 import javaslang.control.Option;
 import org.junit.Test;
 
+import static javaslang.Match.$;
 import static javaslang.Match.*;
+import static javaslang.Match.Match;
 import static javaslang.Patterns.*;
 
 public class MatchTest {
@@ -36,7 +38,7 @@ public class MatchTest {
 
         Match(TUPLE2_OPTION).of(
                 Case(Some($()), value -> {
-                    Tuple2<String, Integer> tuple2 = value;
+                    Tuple2<String, Integer> tuple2 = value; // types are inferred correctly!
                     System.out.printf("Option($()) = Option(%s)\n", value);
                     return null;
                 })
