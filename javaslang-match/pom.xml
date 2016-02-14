@@ -10,10 +10,10 @@
         <version>2.0.0-RC5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>javaslang-pattern-matching-generator</artifactId>
+    <artifactId>javaslang-match</artifactId>
     <packaging>jar</packaging>
-    <name>Javaslang Patterns Annotation and Processor</name>
-    <description>Pattern code generator for structural pattern matching.</description>
+    <name>Javaslang Match</name>
+    <description>Annotation and processor for structural pattern matching.</description>
     <url>http://javaslang.com</url>
     <licenses>
         <license>
