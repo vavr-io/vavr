@@ -264,19 +264,17 @@ public class PatternsProcessor extends AbstractProcessor {
         builder.append(" -> ");
         int j = 1;
         int ignored = 1;
-        int lastPosition = -1;
         for (int i = 1; i <= variation.size(); i++) {
             Param param = variation.get(i - 1);
             if (param == Param.T) {
                 builder.append("Pattern0.equals(t" + i + ", p" + i + ")");
             } else if (param == Param.InversePattern) {
-                builder.append("((InversePattern<" + tupleArgTypes[i - 1] + ">) p" + i + ").apply(t" + i + ")");
+                builder.append("InversePattern.narrow(p" + i + ").apply(t" + i + ")");
             } else {
                 builder.append("p"+ i + ".apply(t" + i + ")");
             }
             if (i < variation.size()) {
                 final String v = (param == Param.T || param == Param.Pattern0) ? "_" + (ignored++) : "v" + (j++);
-                if (v.startsWith("v")) { lastPosition = i; }
                 builder.append(".flatMap(" + v + " -> ");
             } else {
                 // the last pattern contains the relevant information, the patterns before were ignored
@@ -286,16 +284,7 @@ public class PatternsProcessor extends AbstractProcessor {
                     final String v = (param == Param.T || param == Param.Pattern0) ? "_" + (ignored++) : "v" + (j++);
                     builder.append(".map(" + v + " -> ");
                     if (j == 2) {
-                        final Param p = variation.get(lastPosition - 1);
-                        final String argType;
-                        if (p == Param.InversePattern) {
-                            argType = tupleArgTypes[lastPosition - 1];
-                        } else if (p == Param.Pattern1) {
-                            argType = "T1";
-                        } else {
-                            argType = IntStream.rangeClosed(1, p.arity).boxed().map(l -> "T" + l).collect(joining(", ", "Tuple" + p.arity + "<", ">"));
-                        }
-                        builder.append("(" + argType + ") v1");
+                        builder.append("v1");
                     } else {
                         builder.append("javaslang.Tuple.of(");
                         for (int k = 1; k < j; k++) {

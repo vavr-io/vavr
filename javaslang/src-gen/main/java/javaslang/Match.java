@@ -319,6 +319,11 @@ public final class Match<T> {
     public static abstract class InversePattern<T> {
 
         public abstract Option<T> apply(T t);
+
+        @SuppressWarnings("unchecked")
+        public static <T> InversePattern<T> narrow(InversePattern<? extends T> p) {
+            return (InversePattern<T>) p;
+        }
     }
 
     // no type forwarding via T here, type ignored

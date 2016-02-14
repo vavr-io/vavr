@@ -246,6 +246,11 @@ def generateMainClasses(): Unit = {
             public static abstract class InversePattern<T> {
 
                 public abstract $OptionType<T> apply(T t);
+
+                @SuppressWarnings("unchecked")
+                public static <T> InversePattern<T> narrow(InversePattern<? extends T> p) {
+                    return (InversePattern<T>) p;
+                }
             }
 
             // no type forwarding via T here, type ignored
