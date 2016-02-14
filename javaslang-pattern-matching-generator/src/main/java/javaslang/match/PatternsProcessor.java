@@ -19,7 +19,6 @@ import java.io.Writer;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
@@ -113,8 +112,9 @@ public class PatternsProcessor extends AbstractProcessor {
             final String _class = Elements.getSimpleName(typeElement);
             final String result = (_package.isEmpty() ? "" : "package " + _package + ";\n\n") +
                     "import static javaslang.Match.*;\n\n" +
-                    "// GENERATED <<>> JAVASLANG\n\n" +
-                    "public final class " + _class + "{\n\n" +
+                    "// GENERATED <<>> JAVASLANG\n" +
+                    "// derived from " + typeElement.getQualifiedName() +"\n\n" +
+                    "public final class " + _class + " {\n\n" +
                     "    private " + _class + "() {\n" +
                     "    }\n\n" +
                     generate(typeElement, executableElements) +
@@ -147,18 +147,12 @@ public class PatternsProcessor extends AbstractProcessor {
                     .filter(params -> params.stream().map(Param::arity).reduce((a, b) -> a + b).get() <= ARITY)
                     .collect(Collectors.toList());
             for (List<Param> variation : variations) {
-                final String method = Stream.of(
-                        "public",
-                        "static",
-                        getGenerics(elem, variation),
-                        getReturnType(elem, variation),
-                        name,
-                        getParams(elem, variation),
-                        "{\n",
-                        "        return",
-                        generateBody(type, elem, variation) + "\n",
-                        "    }"
-                ).collect(joining(" "));
+                final String method = "public static " +
+                        getGenerics(elem, variation) + " " +
+                        getReturnType(elem, variation) + " " +
+                        name + getParams(elem, variation) + " {\n" +
+                        "        return " + generateBody(type, elem, variation) + "\n" +
+                        "    }";
                 builder.append("    ").append(method).append("\n");
             }
         }
@@ -194,7 +188,6 @@ public class PatternsProcessor extends AbstractProcessor {
             return "Pattern" + resultArity + "<" + resultTypes.stream().collect(joining(", ")) + ">";
         }
     }
-
 
     // Generic type arguments of result
     private static List<String> getResultTypeArgs(ExecutableElement elem, List<Param> variation) {
@@ -272,7 +265,7 @@ public class PatternsProcessor extends AbstractProcessor {
             } else if (param == Param.InversePattern) {
                 builder.append("InversePattern.narrow(p" + i + ").apply(t" + i + ")");
             } else {
-                builder.append("p"+ i + ".apply(t" + i + ")");
+                builder.append("p" + i + ".apply(t" + i + ")");
             }
             if (i < variation.size()) {
                 final String v = (param == Param.T || param == Param.Pattern0) ? "_" + (ignored++) : "v" + (j++);
