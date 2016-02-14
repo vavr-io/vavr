@@ -470,6 +470,19 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(actual.toString()).isEqualTo(expected.toString());
     }
 
+    @Test
+    public void shouldNotEvaluateNplusOneWhenTakeN() {
+        assertThat(Stream.from(0).filter(this::hiddenThrow).take(1).sum().intValue()).isEqualTo(0);
+
+    }
+
+    private boolean hiddenThrow(final int i) {
+        if (i == 0) {
+            return true;
+        }
+        throw new IllegalArgumentException();
+    }
+
     private Try<Void> flatTryWithJavaslangStream(Integer[] vals, Try.CheckedConsumer<Integer> func) {
         return Stream.of(vals)
                 .map(v -> Try.run(() -> func.accept(v)))
