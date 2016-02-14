@@ -81,13 +81,17 @@ public final class Match<T> {
 
     // -- Cases
 
-    public static <T, R> Case<T, R> Case(T value, R retVal) {
+    public static <T, R> Case<T, R> Case(T value, Supplier<? extends R> f) {
         return new Case0<>(new Pattern0() {
             @Override
             public Option<Void> apply(Object o) {
                 return Pattern0.equals(o, value);
             }
-        }, () -> retVal);
+        }, f);
+    }
+
+    public static <T, R> Case<T, R> Case(T value, R retVal) {
+        return Case(value, () -> retVal);
     }
 
     public static <T, R> Case<T, R> Case(InversePattern<T> pattern, Function<? super T, ? extends R> f) {
