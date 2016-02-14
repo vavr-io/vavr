@@ -135,13 +135,37 @@ public final class Match<T> {
 
     // -- Atomic matchers $_, $(), $(val)
 
-    public static Pattern0 $_ = new Pattern0() {
+    /**
+     * Wildcard pattern.
+     * <p>
+     * Matches any value but does not extract it.
+     */
+    public static final Pattern0 $_ = new Pattern0() {
         @Override
         public Option<Void> apply(Object any) {
             return Option.nothing();
         }
     };
 
+    /**
+     * Wildcard extractor.
+     * <p>
+     * Matches any value and extracts it as named lambda parameter.
+     */
+    public static <T> InversePattern<T> $() {
+        return new InversePattern<T>() {
+            @Override
+            public Option<T> apply(T t) {
+                return Option.some(t);
+            }
+        };
+    }
+
+    /**
+     * Value extractor.
+     * <p>
+     * Matches a specific value and extracts it as named lambda parameter.
+     */
     public static <T1> Pattern1<T1, T1> $(T1 prototype) {
         return new Pattern1<T1, T1>() {
             @SuppressWarnings("unchecked")
@@ -149,15 +173,6 @@ public final class Match<T> {
             public Option<T1> apply(Object that) {
                 // 'that' is of type T1 when injected by a type-safe pattern
                 return Objects.equals(that, prototype) ? Option.some((T1) that) : Option.none();
-            }
-        };
-    }
-
-    public static <T> InversePattern<T> $() {
-        return new InversePattern<T>() {
-            @Override
-            public Option<T> apply(T t) {
-                return Option.some(t);
             }
         };
     }

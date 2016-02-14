@@ -50,6 +50,21 @@ public class PatternsProcessor extends AbstractProcessor {
     // corresponds to the number of Javaslang Tuples.
     private static final int ARITY = 8;
 
+    private static final Set<String> ATOMICS = new HashSet<>(Arrays.asList(
+            java.lang.Boolean.class.getName(),
+            java.lang.Byte.class.getName(),
+            java.lang.Character.class.getName(),
+            java.lang.Double.class.getName(),
+            java.lang.Float.class.getName(),
+            java.lang.Integer.class.getName(),
+            java.lang.Long.class.getName(),
+            java.lang.Number.class.getName(),
+            java.lang.Short.class.getName(),
+            java.lang.String.class.getName(),
+            java.math.BigDecimal.class.getName(),
+            java.math.BigInteger.class.getName()
+    ));
+
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         // we do not use @SupportedAnnotationTypes in order to be type-safe
@@ -113,7 +128,7 @@ public class PatternsProcessor extends AbstractProcessor {
             final String result = (_package.isEmpty() ? "" : "package " + _package + ";\n\n") +
                     "import static javaslang.Match.*;\n\n" +
                     "// GENERATED <<>> JAVASLANG\n" +
-                    "// derived from " + typeElement.getQualifiedName() +"\n\n" +
+                    "// derived from " + typeElement.getQualifiedName() + "\n\n" +
                     "public final class " + _class + " {\n\n" +
                     "    private " + _class + "() {\n" +
                     "    }\n\n" +
@@ -139,12 +154,15 @@ public class PatternsProcessor extends AbstractProcessor {
         final String name = elem.getSimpleName().toString();
         int arity = getArity(elem);
         if (arity == 0) {
-            builder.append("    public static Pattern0 ")
+            builder.append("    public static final Pattern0 ")
                     .append(name).append(" = Pattern0.create(").append(typeName).append(".class);\n");
         } else {
+
+            final int[] maxArity = getMaxArity(Elements.getReturnTypeArgs(elem));
             final List<List<Param>> variations = Lists.crossProduct(Arrays.asList(Param.values()), arity)
                     .stream()
                     .filter(params -> params.stream().map(Param::arity).reduce((a, b) -> a + b).get() <= ARITY)
+                    .filter(params -> isDecomposable(params, maxArity))
                     .collect(Collectors.toList());
             for (List<Param> variation : variations) {
                 final String method = "public static " +
@@ -156,6 +174,26 @@ public class PatternsProcessor extends AbstractProcessor {
                 builder.append("    ").append(method).append("\n");
             }
         }
+    }
+
+    private static int[] getMaxArity(String[] types) {
+        int[] maxArity = new int[types.length];
+        int i = 0;
+        for (String type : types) {
+            // TODO: Class.forName(type).isAssignableFrom(any of ATOMICS) ? 1 : ARITY
+            maxArity[i] = ATOMICS.contains(type) ? 1 : ARITY;
+        }
+        return maxArity;
+    }
+
+    private static boolean isDecomposable(List<Param> params, int[] maxArity) {
+        int i = 0;
+        for (Param param : params) {
+            if (param.arity > maxArity[i++]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // Expands the generics part of a method declaration
@@ -181,7 +219,6 @@ public class PatternsProcessor extends AbstractProcessor {
         if (resultArity == 0) {
             return "Pattern0";
         } else {
-            final String[] tupleArgTypes = Elements.getReturnTypeArgs(elem);
             final List<String> resultTypes = new ArrayList<>();
             resultTypes.add(Elements.getParameterType(elem, 0));
             resultTypes.addAll(getResultTypeArgs(elem, variation));
@@ -248,7 +285,6 @@ public class PatternsProcessor extends AbstractProcessor {
         final String annotatedType = type.getSimpleName().toString();
         final String methodName = elem.getSimpleName().toString();
         final String typeHint = (resultArity == 0) ? "<" + Elements.getParameterType(elem, 0) + ">" : "";
-        final String[] tupleArgTypes = Elements.getReturnTypeArgs(elem);
         builder.append("Pattern" + resultArity + "." + typeHint + "create(" + matchableType + ".class, t -> " + annotatedType + "." + methodName + "(t).transform(");
         if (unapplyArity == 1) {
             builder.append("t1");
@@ -268,31 +304,33 @@ public class PatternsProcessor extends AbstractProcessor {
                 builder.append("p" + i + ".apply(t" + i + ")");
             }
             if (i < variation.size()) {
-                final String v = (param == Param.T || param == Param.Pattern0) ? "_" + (ignored++) : "v" + (j++);
+                final String v = (param.arity == 0) ? "_" + (ignored++) : "v" + (j++);
                 builder.append(".flatMap(" + v + " -> ");
             } else {
                 // the last pattern contains the relevant information, the patterns before were ignored
                 boolean isOptimal = j == 1;
                 if (!isOptimal) {
                     // this line needs to remain here because j is increased
-                    final String v = (param == Param.T || param == Param.Pattern0) ? "_" + (ignored++) : "v" + (j++);
+                    final String v = (param.arity == 0) ? "_" + (ignored++) : "v" + (j++);
                     builder.append(".map(" + v + " -> ");
                     if (j == 2) {
                         builder.append("v1");
                     } else {
                         builder.append("javaslang.Tuple.of(");
-                        for (int k = 1; k < j; k++) {
+                        List<String> args = new ArrayList<>();
+                        int z = 1;
+                        for (int k = 1; k <= variation.size(); k++) {
                             final Param p = variation.get(k - 1);
-                            final String vv = "v" + k;
-                            if (p.arity == 1) {
-                                builder.append(vv);
-                            } else {
-                                builder.append(IntStream.rangeClosed(1, p.arity).boxed().map(l -> vv + "._" + l).collect(joining(", ")));
-                            }
-                            if (k < j - 1) {
-                                builder.append(", ");
+                            if (p.arity > 0) {
+                                final String vv = "v" + (z++);
+                                if (p.arity == 1) {
+                                    args.add(vv);
+                                } else {
+                                    args.add(IntStream.rangeClosed(1, p.arity).boxed().map(l -> vv + "._" + l).collect(joining(", ")));
+                                }
                             }
                         }
+                        builder.append(args.stream().collect(joining(", ")));
                         builder.append(")");
                     }
                     builder.append(")");
@@ -330,7 +368,7 @@ public class PatternsProcessor extends AbstractProcessor {
 
 enum Param {
 
-    T(0),               // Eq(t) = o -> Objects.equals(o, t)
+    T(0),               // equals
     InversePattern(1),  // $()
     Pattern0(0),        // $_
     Pattern1(1),        // $("test")
