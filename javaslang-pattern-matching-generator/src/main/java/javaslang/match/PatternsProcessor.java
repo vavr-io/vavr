@@ -153,10 +153,10 @@ public class PatternsProcessor extends AbstractProcessor {
                         getReturnType(elem, variation),
                         name,
                         getParams(elem, variation),
-                        "{",
-                        "return",
-                        generateBody(type, elem, variation),
-                        "}"
+                        "{\n",
+                        "        return",
+                        generateBody(type, elem, variation) + "\n",
+                        "    }"
                 ).collect(joining(" "));
                 builder.append("    ").append(method).append("\n");
             }
@@ -189,19 +189,28 @@ public class PatternsProcessor extends AbstractProcessor {
             final String[] tupleArgTypes = Elements.getReturnTypeArgs(elem);
             final List<String> resultTypes = new ArrayList<>();
             resultTypes.add(Elements.getParameterType(elem, 0));
-            int j = 1;
-            for (int i = 0; i < variation.size(); i++) {
-                Param param = variation.get(i);
-                if (param == Param.InversePattern) {
-                    resultTypes.add(tupleArgTypes[i]);
-                } else if (param != Param.T && param != Param.Pattern0) {
-                    for (int k = 1; k <= param.arity; k++) {
-                        resultTypes.add("T" + (j++));
-                    }
-                }
-            }
+            resultTypes.addAll(getResultTypeArgs(elem, variation));
             return "Pattern" + resultArity + "<" + resultTypes.stream().collect(joining(", ")) + ">";
         }
+    }
+
+
+    // Generic type arguments of result
+    private static List<String> getResultTypeArgs(ExecutableElement elem, List<Param> variation) {
+        final List<String> resultTypes = new ArrayList<>();
+        final String[] tupleArgTypes = Elements.getReturnTypeArgs(elem);
+        int j = 1;
+        for (int i = 0; i < variation.size(); i++) {
+            Param param = variation.get(i);
+            if (param == Param.InversePattern) {
+                resultTypes.add(tupleArgTypes[i]);
+            } else if (param != Param.T && param != Param.Pattern0) {
+                for (int k = 1; k <= param.arity; k++) {
+                    resultTypes.add("T" + (j++));
+                }
+            }
+        }
+        return resultTypes;
     }
 
     // Expands the parameters of a method declaration
@@ -255,6 +264,7 @@ public class PatternsProcessor extends AbstractProcessor {
         builder.append(" -> ");
         int j = 1;
         int ignored = 1;
+        int lastPosition = -1;
         for (int i = 1; i <= variation.size(); i++) {
             Param param = variation.get(i - 1);
             if (param == Param.T) {
@@ -265,15 +275,44 @@ public class PatternsProcessor extends AbstractProcessor {
                 builder.append("p"+ i + ".apply(t" + i + ")");
             }
             if (i < variation.size()) {
-                String v = (param == Param.T || param == Param.Pattern0) ? "_" + (ignored++) : "v" + (j++);
+                final String v = (param == Param.T || param == Param.Pattern0) ? "_" + (ignored++) : "v" + (j++);
+                if (v.startsWith("v")) { lastPosition = i; }
                 builder.append(".flatMap(" + v + " -> ");
             } else {
                 // the last pattern contains the relevant information, the patterns before were ignored
                 boolean isOptimal = j == 1;
                 if (!isOptimal) {
-                    String v = (param == Param.T || param == Param.Pattern0) ? "_" + (ignored++) : "v" + (j++);
-                    String result = (j == 2) ? "v1" : IntStream.range(1, j).boxed().map(k -> "v" + k).collect(joining(", ", "javaslang.Tuple.of(", ")"));
-                    builder.append(".map(" + v + " -> " + result + ")");
+                    // this line needs to remain here because j is increased
+                    final String v = (param == Param.T || param == Param.Pattern0) ? "_" + (ignored++) : "v" + (j++);
+                    builder.append(".map(" + v + " -> ");
+                    if (j == 2) {
+                        final Param p = variation.get(lastPosition - 1);
+                        final String argType;
+                        if (p == Param.InversePattern) {
+                            argType = tupleArgTypes[lastPosition - 1];
+                        } else if (p == Param.Pattern1) {
+                            argType = "T1";
+                        } else {
+                            argType = IntStream.rangeClosed(1, p.arity).boxed().map(l -> "T" + l).collect(joining(", ", "Tuple" + p.arity + "<", ">"));
+                        }
+                        builder.append("(" + argType + ") v1");
+                    } else {
+                        builder.append("javaslang.Tuple.of(");
+                        for (int k = 1; k < j; k++) {
+                            final Param p = variation.get(k - 1);
+                            final String vv = "v" + k;
+                            if (p.arity == 1) {
+                                builder.append(vv);
+                            } else {
+                                builder.append(IntStream.rangeClosed(1, p.arity).boxed().map(l -> vv + "._" + l).collect(joining(", ")));
+                            }
+                            if (k < j - 1) {
+                                builder.append(", ");
+                            }
+                        }
+                        builder.append(")");
+                    }
+                    builder.append(")");
                 }
             }
         }
