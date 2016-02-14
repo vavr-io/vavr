@@ -44,7 +44,7 @@ public final class Patterns {
         return Pattern8.create(javaslang.control.Option.Some.class, t -> $.Some(t).transform(t1 -> p1.apply(t1)));
     }
 
-    public static Pattern0 None = Pattern0.create(javaslang.control.Option.None.class);
+    public static final Pattern0 None = Pattern0.create(javaslang.control.Option.None.class);
 
     public static <__ extends javaslang.collection.List.Cons<T>, T> Pattern0 Cons(T p1, javaslang.collection.List<T> p2) {
         return Pattern0.<javaslang.collection.List.Cons<T>>create(javaslang.collection.List.Cons.class, t -> $.Cons(t).transform((t1, t2) -> Pattern0.equals(t1, p1).flatMap(_1 -> Pattern0.equals(t2, p2))));
@@ -296,6 +296,6 @@ public final class Patterns {
         return Pattern8.create(javaslang.collection.List.Cons.class, t -> $.Cons(t).transform((t1, t2) -> p1.apply(t1).flatMap(v1 -> p2.apply(t2).map(_1 -> v1))));
     }
 
-    public static Pattern0 Nil = Pattern0.create(javaslang.collection.List.Nil.class);
+    public static final Pattern0 Nil = Pattern0.create(javaslang.collection.List.Nil.class);
 
 }
