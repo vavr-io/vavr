@@ -79,18 +79,38 @@ public final class Match<T> {
         return new Match<>(value);
     }
 
-    // TODO(values):
-    //    public static <T, R> Case<T, R> Case(T value, Function<? super T, ? extends R> f) {
-    //        return ...;
-    //    }
+    // -- Cases
 
-    // TODO(named values):
-    //    public static <T, R> Case<T, R> Case(InversePattern<T> pattern, Function<? super T, ? extends R> f) {
-    //        return ...;
-    //    }
+    public static <T, R> Case<T, R> Case(T value, Supplier<? extends R> f) {
+        return new Case0<>(new Pattern0() {
+            @Override
+            public Option<Void> apply(Object o) {
+                return Pattern0.equals(o, value);
+            }
+        }, f);
+    }
+
+    public static <T, R> Case<T, R> Case(T value, R retVal) {
+        return Case(value, () -> retVal);
+    }
+
+    public static <T, R> Case<T, R> Case(InversePattern<T> pattern, Function<? super T, ? extends R> f) {
+        return new Case1<>(new Pattern1<T, T>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Option<T> apply(Object o) {
+                return pattern.apply((T) o);
+            }
+        }, f);
+    }
 
     public static <T, R> Case<T, R> Case(Pattern0 pattern, Supplier<? extends R> f) {
         return new Case0<>(pattern, f);
+    }
+
+    // syntactic sugar
+    public static <T, R> Case<T, R> Case(Pattern0 pattern, R retVal) {
+        return new Case0<>(pattern, () -> retVal);
     }
 
     public static <T, T1, R> Case<T, R> Case(Pattern1<T, T1> pattern, Function<? super T1, ? extends R> f) {

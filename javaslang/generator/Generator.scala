@@ -115,18 +115,38 @@ def generateMainClasses(): Unit = {
                 return new Match<>(value);
             }
 
-            // TODO(values):
-            //    public static <T, R> Case<T, R> Case(T value, Function<? super T, ? extends R> f) {
-            //        return ...;
-            //    }
+            // -- Cases
 
-            // TODO(named values):
-            //    public static <T, R> Case<T, R> Case(InversePattern<T> pattern, Function<? super T, ? extends R> f) {
-            //        return ...;
-            //    }
+            public static <T, R> Case<T, R> Case(T value, $SupplierType<? extends R> f) {
+                return new Case0<>(new Pattern0() {
+                    @Override
+                    public Option<Void> apply(Object o) {
+                        return Pattern0.equals(o, value);
+                    }
+                }, f);
+            }
+
+            public static <T, R> Case<T, R> Case(T value, R retVal) {
+                return Case(value, () -> retVal);
+            }
+
+            public static <T, R> Case<T, R> Case(InversePattern<T> pattern, $FunctionType<? super T, ? extends R> f) {
+                return new Case1<>(new Pattern1<T, T>() {
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public Option<T> apply(Object o) {
+                        return pattern.apply((T) o);
+                    }
+                }, f);
+            }
 
             public static <T, R> Case<T, R> Case(Pattern0 pattern, $SupplierType<? extends R> f) {
                 return new Case0<>(pattern, f);
+            }
+
+            // syntactic sugar
+            public static <T, R> Case<T, R> Case(Pattern0 pattern, R retVal) {
+                return new Case0<>(pattern, () -> retVal);
             }
 
             ${(1 to N).gen(i => {
