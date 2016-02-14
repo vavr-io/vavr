@@ -5,12 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.collection.CharSeqModule.Combinations;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -21,6 +17,8 @@ import java.util.HashSet;
 import java.util.function.*;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collector;
+
+import static javaslang.Match.Match;
 
 /**
  * The CharSeq (read: character sequence) collection essentially is a rich String wrapper having all operations
@@ -543,8 +541,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public Match.MatchValue.Of<CharSeq> match() {
-        return Match.of(this);
+    public Match<CharSeq> match() {
+        return Match(this);
     }
 
     @Override

@@ -5,16 +5,18 @@
  */
 package javaslang.collection;
 
+import javaslang.Match;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.util.*;
 import java.util.function.*;
+
+import static javaslang.Match.*;
 
 /**
  * {@code javaslang.collection.Iterator} is a compositional replacement for {@code java.util.Iterator}
@@ -1449,8 +1451,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Match.MatchValue.Of<Iterator<T>> match() {
-        return Match.of(this);
+    default Match<Iterator<T>> match() {
+        return Match(this);
     }
 
     @Override

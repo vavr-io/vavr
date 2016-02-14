@@ -5,11 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.control.Match;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.util.Comparator;
@@ -814,10 +810,10 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      *
      * @param element the element to find
      * @return the index of the search element, if it is contained in the sequence;
-     *         otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>. The
-     *         <i>insertion point</i> is defined as the point at which the
-     *         element would be inserted into the sequence. Note that this guarantees that
-     *         the return value will be &gt;= 0 if and only if the element is found.
+     * otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>. The
+     * <i>insertion point</i> is defined as the point at which the
+     * element would be inserted into the sequence. Note that this guarantees that
+     * the return value will be &gt;= 0 if and only if the element is found.
      * @throws ClassCastException if T cannot be cast to {@code Comparable<? super T>}
      */
     int search(T element);
@@ -828,13 +824,13 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * <p>
      * If this sequence is an `IndexedSeq`, a binary search is used. Otherwise, a linear search is used.
      *
-     * @param element the element to find
+     * @param element    the element to find
      * @param comparator the comparator by which this sequence is ordered
      * @return the index of the search element, if it is contained in the sequence;
-     *         otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>. The
-     *         <i>insertion point</i> is defined as the point at which the
-     *         element would be inserted into the sequence. Note that this guarantees that
-     *         the return value will be &gt;= 0 if and only if the element is found.
+     * otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>. The
+     * <i>insertion point</i> is defined as the point at which the
+     * element would be inserted into the sequence. Note that this guarantees that
+     * the return value will be &gt;= 0 if and only if the element is found.
      */
     int search(T element, Comparator<? super T> comparator);
 
@@ -892,7 +888,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     <U> Seq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    Match.MatchValue.Of<? extends Seq<T>> match();
+    Match<? extends Seq<T>> match();
 
     @Override
     Tuple2<? extends Seq<T>, ? extends Seq<T>> partition(Predicate<? super T> predicate);

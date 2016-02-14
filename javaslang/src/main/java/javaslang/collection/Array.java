@@ -7,7 +7,6 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.collection.ArrayModule.Combinations;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -15,6 +14,8 @@ import java.util.*;
 import java.util.HashSet;
 import java.util.function.*;
 import java.util.stream.Collector;
+
+import static javaslang.Match.*;
 
 /**
  * Array is a Traversable wrapper for {@code Object[]} containing elements of type {@code T}.
@@ -771,8 +772,8 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Match.MatchValue.Of<Array<T>> match() {
-        return Match.of(this);
+    public Match<Array<T>> match() {
+        return Match(this);
     }
 
     @Override

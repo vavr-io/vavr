@@ -5,15 +5,11 @@
  */
 package javaslang.collection;
 
-import javaslang.Lazy;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.Empty;
 import javaslang.collection.Tree.Node;
 import javaslang.collection.TreeModule.*;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.*;
@@ -21,6 +17,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+import static javaslang.Match.Match;
 import static javaslang.collection.Tree.Order.PRE_ORDER;
 
 /**
@@ -483,8 +480,8 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Match.MatchValue.Of<Tree<T>> match() {
-        return Match.of(this);
+    default Match<Tree<T>> match() {
+        return Match(this);
     }
 
     @SuppressWarnings("unchecked")

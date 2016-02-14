@@ -3,7 +3,7 @@
  *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/  \__/  /   Copyright 2014-now Daniel Dietrich
  * /___/\_/  \_/\____/\_/  \_/\__\/__/___\_/  \_//  \__/_____/    Licensed under the Apache License, Version 2.0
  */
-package javaslang.control;
+package javaslang;
 
 import java.util.NoSuchElementException;
 

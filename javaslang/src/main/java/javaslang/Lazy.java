@@ -8,7 +8,6 @@ package javaslang;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.IOException;
@@ -22,6 +21,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import static javaslang.Match.*;
 
 /**
  * Represents a lazy evaluated value. Compared to a Supplier, Lazy is memoizing, i.e. it evaluates only once and
@@ -183,8 +184,8 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     @Override
-    public Match.MatchValue.Of<Lazy<T>> match() {
-        return Match.of(this);
+    public Match<Lazy<T>> match() {
+        return Match(this);
     }
 
     @Override

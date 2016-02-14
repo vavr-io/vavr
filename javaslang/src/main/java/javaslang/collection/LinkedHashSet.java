@@ -5,10 +5,10 @@
  */
 package javaslang.collection;
 
+import javaslang.Match;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.*;
@@ -18,6 +18,8 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
+
+import static javaslang.Match.Match;
 
 /**
  * An immutable {@code HashSet} implementation.
@@ -653,8 +655,8 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Match.MatchValue.Of<LinkedHashSet<T>> match() {
-        return Match.of(this);
+    public Match<LinkedHashSet<T>> match() {
+        return Match(this);
     }
 
     @Override

@@ -5,9 +5,9 @@
  */
 package javaslang.collection;
 
+import javaslang.Match;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.util.Comparator;
@@ -149,7 +149,7 @@ public interface LinearSeq<T> extends Seq<T> {
     <U> LinearSeq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    Match.MatchValue.Of<? extends LinearSeq<T>> match();
+    Match<? extends LinearSeq<T>> match();
 
     @Override
     LinearSeq<T> padTo(int length, T element);
@@ -300,15 +300,15 @@ public interface LinearSeq<T> extends Seq<T> {
      *
      * @param element the element to find
      * @return the index of the search element, if it is contained in the sequence;
-     *         otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>. The
-     *         <i>insertion point</i> is defined as the point at which the
-     *         element would be inserted into the sequence. Note that this guarantees that
-     *         the return value will be &gt;= 0 if and only if the element is found.
+     * otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>. The
+     * <i>insertion point</i> is defined as the point at which the
+     * element would be inserted into the sequence. Note that this guarantees that
+     * the return value will be &gt;= 0 if and only if the element is found.
      * @throws ClassCastException if T cannot be cast to {@code Comparable<? super T>}
      */
     @SuppressWarnings("unchecked")
     default int search(T element) {
-        ToIntFunction<T> comparison =  current -> {
+        ToIntFunction<T> comparison = current -> {
             Comparable<T> comparable = (Comparable<T>) element;
             return comparable.compareTo(current);
         };
@@ -319,13 +319,13 @@ public interface LinearSeq<T> extends Seq<T> {
      * Searches this sequence for a specific element using a linear search. The sequence must already be sorted into
      * ascending order according to the specified comparator. If it is not sorted, the results are undefined.
      *
-     * @param element the element to find
+     * @param element    the element to find
      * @param comparator the comparator by which this sequence is ordered
      * @return the index of the search element, if it is contained in the sequence;
-     *         otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>. The
-     *         <i>insertion point</i> is defined as the point at which the
-     *         element would be inserted into the sequence. Note that this guarantees that
-     *         the return value will be &gt;= 0 if and only if the element is found.
+     * otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>. The
+     * <i>insertion point</i> is defined as the point at which the
+     * element would be inserted into the sequence. Note that this guarantees that
+     * the return value will be &gt;= 0 if and only if the element is found.
      */
     default int search(T element, Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
@@ -378,6 +378,7 @@ interface LinearSeqModule {
             return null;
         }
     }
+
     interface Search {
         static <T> int linearSearch(LinearSeq<T> seq, ToIntFunction<T> comparison) {
             int idx = 0;

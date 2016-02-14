@@ -6,13 +6,14 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
+
+import static javaslang.Match.Match;
 
 /**
  * An immutable {@code Queue} stores elements allowing a first-in-first-out (FIFO) retrieval.
@@ -843,8 +844,8 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Match.MatchValue.Of<Queue<T>> match() {
-        return Match.of(this);
+    public Match<Queue<T>> match() {
+        return Match(this);
     }
 
     @Override

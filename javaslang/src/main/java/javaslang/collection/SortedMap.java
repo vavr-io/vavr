@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.Match;
 import javaslang.Tuple2;
-import javaslang.control.Match;
 import javaslang.control.Option;
 
 import java.util.Comparator;
@@ -154,7 +154,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
     <V2> SortedMap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper);
 
     @Override
-    Match.MatchValue.Of<? extends SortedMap<K, V>> match();
+    Match<? extends SortedMap<K, V>> match();
 
     @Override
     SortedMap<K, V> merge(Map<? extends K, ? extends V> that);

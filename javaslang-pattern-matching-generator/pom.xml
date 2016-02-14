@@ -10,10 +10,10 @@
         <version>2.0.0-RC5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>javaslang-pure</artifactId>
+    <artifactId>javaslang-pattern-matching-generator</artifactId>
     <packaging>jar</packaging>
-    <name>Javaslang Pure</name>
-    <description>A purely functional layer above Javaslang.</description>
+    <name>Javaslang Patterns Annotation and Processor</name>
+    <description>Pattern code generator for structural pattern matching.</description>
     <url>http://javaslang.com</url>
     <licenses>
         <license>
@@ -23,11 +23,6 @@
         </license>
     </licenses>
     <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>javaslang</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -40,12 +35,12 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <!-- Disable annotation processing for this module. -->
+                    <compilerArgument>-proc:none</compilerArgument>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -65,27 +60,4 @@
             </plugin>
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <!-- Use `mvn clean test -DskipGen` to skip the code generator -->
-            <id>gen</id>
-            <activation>
-                <property>
-                    <name>!skipGen</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-clean-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>net.alchim31.maven</groupId>
-                        <artifactId>scala-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
