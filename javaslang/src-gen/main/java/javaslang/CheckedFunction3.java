@@ -174,44 +174,4 @@ public interface CheckedFunction3<T1, T2, T3, R> extends λ<R> {
         return (t1, t2, t3) -> after.apply(apply(t1, t2, t3));
     }
 
-    @Override
-    default Type<T1, T2, T3, R> getType() {
-        return new Type<>(this);
-    }
-
-    /**
-     * Represents the type of a {@code CheckedFunction3} which consists of three parameter types
-     * and a return type.
-     *
-     *
-     * @param <T1> the 1st parameter type of the function
-     * @param <T2> the 2nd parameter type of the function
-     * @param <T3> the 3rd parameter type of the function
-     * @param <R> the return type of the function
-     * @author Daniel Dietrich
-     * @since 2.0.0
-     */
-    final class Type<T1, T2, T3, R> extends λ.Type<R> {
-
-        private static final long serialVersionUID = 1L;
-
-        private Type(CheckedFunction3<T1, T2, T3, R> λ) {
-            super(λ);
-        }
-
-        @SuppressWarnings("unchecked")
-        public Class<T1> parameterType1() {
-            return (Class<T1>) parameterTypes()[0];
-        }
-
-        @SuppressWarnings("unchecked")
-        public Class<T2> parameterType2() {
-            return (Class<T2>) parameterTypes()[1];
-        }
-
-        @SuppressWarnings("unchecked")
-        public Class<T3> parameterType3() {
-            return (Class<T3>) parameterTypes()[2];
-        }
-    }
 }

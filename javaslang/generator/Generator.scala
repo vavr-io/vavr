@@ -636,36 +636,6 @@ def generateMainClasses(): Unit = {
                     return v -> apply(before.apply(v));
                 }
               """)}
-
-              @Override
-              default Type$fullGenerics getType() {
-                  return new Type<>(this);
-              }
-
-              /$javadoc
-               * Represents the type of a {@code $className} which consists of ${i.numerus("parameter type")}
-               * and a return type.
-               *
-               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> the ${j.ordinal} parameter type of the function")("\n")}
-               * @param <R> the return type of the function
-               * @author Daniel Dietrich
-               * @since 2.0.0
-               */
-              final class Type$fullGenerics extends λ.Type<R> {
-
-                  private static final long serialVersionUID = 1L;
-
-                  private Type($name$i$fullGenerics λ) {
-                      super(λ);
-                  }
-
-                  ${(1 to i).gen(j => xs"""
-                    @SuppressWarnings("unchecked")
-                    public Class<T$j> parameterType$j() {
-                        return (Class<T$j>) parameterTypes()[${j-1}];
-                    }
-                  """)("\n\n")}
-              }
           }
         """
       }
@@ -1101,36 +1071,6 @@ def generateTestClasses(): Unit = {
                 }
               """)}
 
-              ${(i > 0).gen(xs"""
-                @$test
-                public void shouldRecognizeApplicabilityOfNonNull() {
-                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                    $assertThat(f.isApplicableTo(${(1 to i).gen(j => s"$j")(", ")})).isTrue();
-                }
-
-                ${(2 to i).gen(j => xs"""
-                  @$test
-                  public void shouldRecognizeApplicabilityOfNull$j() {
-                      final $name$i<$generics> f = ($functionArgs) -> null;
-                      $assertThat(f.isApplicableTo(${(1 to i).gen(k => if (j == k) "null" else "new Object()")(", ")})).isTrue();
-                  }
-                """)("\n\n")}
-
-                @$test
-                public void shouldRecognizeApplicabilityToTypes() {
-                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                    $assertThat(f.isApplicableToTypes(${(1 to i).gen(j => "Integer.class")(", ")})).isTrue();
-                }
-
-                ${(1 to i).gen(j => xs"""
-                  @$test
-                  public void shouldRecognizeNonApplicabilityToType$j() {
-                      final $name$i<${(1 to i + 1).gen(j => "Number")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                      $assertThat(f.isApplicableToTypes(${(1 to i).gen(k => if (j == k) "String.class" else "Integer.class")(", ")})).isFalse();
-                  }
-                """)("\n\n")}
-              """)}
-
               @$test
               public void shouldGetArity() {
                   final $name$i<$generics> f = ($functionArgs) -> null;
@@ -1226,38 +1166,6 @@ def generateTestClasses(): Unit = {
                     $assertThat(composed).isNotNull();
                 }
               """)}
-
-              @$test
-              public void shouldGetType() {
-                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                  final $name$i.Type<${(1 to i + 1).gen(j => "Integer")(", ")}> type = f.getType();
-                  ${(1 to i).gen(j => s"assertThat(type.parameterType$j()).isEqualTo(Integer.class);")("\n")}
-                  $assertThat(type.toString()).isEqualTo("(${(1 to i).gen(j => "java.lang.Integer")(", ")}) -> java.lang.Integer");
-              }
-
-              @$test
-              public void shouldGetReturnType() {
-                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                  $assertThat(f.getType().returnType()).isEqualTo(Integer.class);
-              }
-
-              @$test
-              public void testTypesEquals() {
-                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f1 = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f2 = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                  final $name$i<${(1 to i).gen(j => "Integer")(", ")}${(i > 0).gen(s", ")}String> f3 = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                  ${(i > 0).gen(xs"""
-                  final $name$i<String, ${(2 to i + 1).gen(j => "Integer")(", ")}> f4 = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                  """)}
-                  final $name$i.Type<${(1 to i + 1).gen(j => "Integer")(", ")}> t1 = f1.getType();
-                  $assertThat(t1).isEqualTo(t1);
-                  $assertThat(t1).isNotEqualTo(11);
-                  $assertThat(f1.getType()).isEqualTo(f2.getType());
-                  $assertThat(f1.getType()).isNotEqualTo(f3.getType());
-                  ${(i > 0).gen(xs"""
-                  $assertThat(f1.getType()).isNotEqualTo(f4.getType());
-                  """)}
-              }
           }
         """
       }

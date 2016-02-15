@@ -41,60 +41,6 @@ public class CheckedFunction4Test {
     }
 
     @Test
-    public void shouldRecognizeApplicabilityOfNonNull() {
-        final CheckedFunction4<Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4) -> null;
-        assertThat(f.isApplicableTo(1, 2, 3, 4)).isTrue();
-    }
-
-    @Test
-    public void shouldRecognizeApplicabilityOfNull2() {
-        final CheckedFunction4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
-        assertThat(f.isApplicableTo(new Object(), null, new Object(), new Object())).isTrue();
-    }
-
-    @Test
-    public void shouldRecognizeApplicabilityOfNull3() {
-        final CheckedFunction4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
-        assertThat(f.isApplicableTo(new Object(), new Object(), null, new Object())).isTrue();
-    }
-
-    @Test
-    public void shouldRecognizeApplicabilityOfNull4() {
-        final CheckedFunction4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
-        assertThat(f.isApplicableTo(new Object(), new Object(), new Object(), null)).isTrue();
-    }
-
-    @Test
-    public void shouldRecognizeApplicabilityToTypes() {
-        final CheckedFunction4<Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4) -> null;
-        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, Integer.class)).isTrue();
-    }
-
-    @Test
-    public void shouldRecognizeNonApplicabilityToType1() {
-        final CheckedFunction4<Number, Number, Number, Number, Number> f = (i1, i2, i3, i4) -> null;
-        assertThat(f.isApplicableToTypes(String.class, Integer.class, Integer.class, Integer.class)).isFalse();
-    }
-
-    @Test
-    public void shouldRecognizeNonApplicabilityToType2() {
-        final CheckedFunction4<Number, Number, Number, Number, Number> f = (i1, i2, i3, i4) -> null;
-        assertThat(f.isApplicableToTypes(Integer.class, String.class, Integer.class, Integer.class)).isFalse();
-    }
-
-    @Test
-    public void shouldRecognizeNonApplicabilityToType3() {
-        final CheckedFunction4<Number, Number, Number, Number, Number> f = (i1, i2, i3, i4) -> null;
-        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, String.class, Integer.class)).isFalse();
-    }
-
-    @Test
-    public void shouldRecognizeNonApplicabilityToType4() {
-        final CheckedFunction4<Number, Number, Number, Number, Number> f = (i1, i2, i3, i4) -> null;
-        assertThat(f.isApplicableToTypes(Integer.class, Integer.class, Integer.class, String.class)).isFalse();
-    }
-
-    @Test
     public void shouldGetArity() {
         final CheckedFunction4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
         assertThat(f.arity()).isEqualTo(4);
@@ -174,34 +120,4 @@ public class CheckedFunction4Test {
         assertThat(composed).isNotNull();
     }
 
-    @Test
-    public void shouldGetType() {
-        final CheckedFunction4<Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4) -> null;
-        final CheckedFunction4.Type<Integer, Integer, Integer, Integer, Integer> type = f.getType();
-        assertThat(type.parameterType1()).isEqualTo(Integer.class);
-        assertThat(type.parameterType2()).isEqualTo(Integer.class);
-        assertThat(type.parameterType3()).isEqualTo(Integer.class);
-        assertThat(type.parameterType4()).isEqualTo(Integer.class);
-        assertThat(type.toString()).isEqualTo("(java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer) -> java.lang.Integer");
-    }
-
-    @Test
-    public void shouldGetReturnType() {
-        final CheckedFunction4<Integer, Integer, Integer, Integer, Integer> f = (i1, i2, i3, i4) -> null;
-        assertThat(f.getType().returnType()).isEqualTo(Integer.class);
-    }
-
-    @Test
-    public void testTypesEquals() {
-        final CheckedFunction4<Integer, Integer, Integer, Integer, Integer> f1 = (i1, i2, i3, i4) -> null;
-        final CheckedFunction4<Integer, Integer, Integer, Integer, Integer> f2 = (i1, i2, i3, i4) -> null;
-        final CheckedFunction4<Integer, Integer, Integer, Integer, String> f3 = (i1, i2, i3, i4) -> null;
-        final CheckedFunction4<String, Integer, Integer, Integer, Integer> f4 = (i1, i2, i3, i4) -> null;
-        final CheckedFunction4.Type<Integer, Integer, Integer, Integer, Integer> t1 = f1.getType();
-        assertThat(t1).isEqualTo(t1);
-        assertThat(t1).isNotEqualTo(11);
-        assertThat(f1.getType()).isEqualTo(f2.getType());
-        assertThat(f1.getType()).isNotEqualTo(f3.getType());
-        assertThat(f1.getType()).isNotEqualTo(f4.getType());
-    }
 }

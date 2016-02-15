@@ -108,31 +108,4 @@ public class Function0Test {
         assertThat(composed).isNotNull();
     }
 
-    @Test
-    public void shouldGetType() {
-        final Function0<Integer> f = () -> null;
-        final Function0.Type<Integer> type = f.getType();
-
-        assertThat(type.toString()).isEqualTo("() -> java.lang.Integer");
-    }
-
-    @Test
-    public void shouldGetReturnType() {
-        final Function0<Integer> f = () -> null;
-        assertThat(f.getType().returnType()).isEqualTo(Integer.class);
-    }
-
-    @Test
-    public void testTypesEquals() {
-        final Function0<Integer> f1 = () -> null;
-        final Function0<Integer> f2 = () -> null;
-        final Function0<String> f3 = () -> null;
-
-        final Function0.Type<Integer> t1 = f1.getType();
-        assertThat(t1).isEqualTo(t1);
-        assertThat(t1).isNotEqualTo(11);
-        assertThat(f1.getType()).isEqualTo(f2.getType());
-        assertThat(f1.getType()).isNotEqualTo(f3.getType());
-
-    }
 }

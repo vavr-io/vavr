@@ -40,24 +40,6 @@ public class CheckedFunction1Test {
     }
 
     @Test
-    public void shouldRecognizeApplicabilityOfNonNull() {
-        final CheckedFunction1<Integer, Integer> f = (i1) -> null;
-        assertThat(f.isApplicableTo(1)).isTrue();
-    }
-
-    @Test
-    public void shouldRecognizeApplicabilityToTypes() {
-        final CheckedFunction1<Integer, Integer> f = (i1) -> null;
-        assertThat(f.isApplicableToTypes(Integer.class)).isTrue();
-    }
-
-    @Test
-    public void shouldRecognizeNonApplicabilityToType1() {
-        final CheckedFunction1<Number, Number> f = (i1) -> null;
-        assertThat(f.isApplicableToTypes(String.class)).isFalse();
-    }
-
-    @Test
     public void shouldGetArity() {
         final CheckedFunction1<Object, Object> f = (o1) -> null;
         assertThat(f.arity()).isEqualTo(1);
@@ -143,33 +125,5 @@ public class CheckedFunction1Test {
         final CheckedFunction1<Object, Object> before = o -> null;
         final CheckedFunction1<Object, Object> composed = f.compose(before);
         assertThat(composed).isNotNull();
-    }
-
-    @Test
-    public void shouldGetType() {
-        final CheckedFunction1<Integer, Integer> f = (i1) -> null;
-        final CheckedFunction1.Type<Integer, Integer> type = f.getType();
-        assertThat(type.parameterType1()).isEqualTo(Integer.class);
-        assertThat(type.toString()).isEqualTo("(java.lang.Integer) -> java.lang.Integer");
-    }
-
-    @Test
-    public void shouldGetReturnType() {
-        final CheckedFunction1<Integer, Integer> f = (i1) -> null;
-        assertThat(f.getType().returnType()).isEqualTo(Integer.class);
-    }
-
-    @Test
-    public void testTypesEquals() {
-        final CheckedFunction1<Integer, Integer> f1 = (i1) -> null;
-        final CheckedFunction1<Integer, Integer> f2 = (i1) -> null;
-        final CheckedFunction1<Integer, String> f3 = (i1) -> null;
-        final CheckedFunction1<String, Integer> f4 = (i1) -> null;
-        final CheckedFunction1.Type<Integer, Integer> t1 = f1.getType();
-        assertThat(t1).isEqualTo(t1);
-        assertThat(t1).isNotEqualTo(11);
-        assertThat(f1.getType()).isEqualTo(f2.getType());
-        assertThat(f1.getType()).isNotEqualTo(f3.getType());
-        assertThat(f1.getType()).isNotEqualTo(f4.getType());
     }
 }

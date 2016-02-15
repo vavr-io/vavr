@@ -170,33 +170,4 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
         Objects.requireNonNull(before, "before is null");
         return v -> apply(before.apply(v));
     }
-
-    @Override
-    default Type<T1, R> getType() {
-        return new Type<>(this);
-    }
-
-    /**
-     * Represents the type of a {@code CheckedFunction1} which consists of one parameter type
-     * and a return type.
-     *
-     *
-     * @param <T1> the 1st parameter type of the function
-     * @param <R> the return type of the function
-     * @author Daniel Dietrich
-     * @since 2.0.0
-     */
-    final class Type<T1, R> extends λ.Type<R> {
-
-        private static final long serialVersionUID = 1L;
-
-        private Type(CheckedFunction1<T1, R> λ) {
-            super(λ);
-        }
-
-        @SuppressWarnings("unchecked")
-        public Class<T1> parameterType1() {
-            return (Class<T1>) parameterTypes()[0];
-        }
-    }
 }
