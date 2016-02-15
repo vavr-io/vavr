@@ -161,14 +161,6 @@ public abstract class AbstractValueTest {
         assertThat(of(1).isEmpty()).isFalse();
     }
 
-    // -- isDefined
-
-    @Test
-    public void shouldCalculateIsDefined() {
-        assertThat(empty().isDefined()).isFalse();
-        assertThat(of(1).isDefined()).isTrue();
-    }
-
     // -- peek
 
     @Test

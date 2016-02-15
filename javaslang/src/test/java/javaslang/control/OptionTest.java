@@ -138,7 +138,7 @@ public class OptionTest extends AbstractValueTest {
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void shouldThrowOnGetWhenValueIsNotPresent() {
+    public void shouldThrowOnGetWhenValueIsNotDefined() {
         Option.none().get();
     }
 
@@ -157,13 +157,13 @@ public class OptionTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldReturnAlternativeOnOrElseIfValueIsNotPresent() {
+    public void shouldReturnAlternativeOnOrElseIfValueIsNotDefined() {
         Option<Integer> opt = Option.of(42);
         assertThat(Option.none().orElse(opt)).isSameAs(opt);
     }
 
     @Test
-    public void shouldReturnAlternativeOnOrElseSupplierIfValueIsNotPresent() {
+    public void shouldReturnAlternativeOnOrElseSupplierIfValueIsNotDefined() {
         Option<Integer> opt = Option.of(42);
         assertThat(Option.none().orElse(() -> opt)).isSameAs(opt);
     }
@@ -176,7 +176,7 @@ public class OptionTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldGetAlternativeOnGetOrElseWhenValueIsNotPresent() {
+    public void shouldGetAlternativeOnGetOrElseWhenValueIsNotDefined() {
         assertThat(Option.none().getOrElse(2)).isEqualTo(2);
     }
 
@@ -188,7 +188,7 @@ public class OptionTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldGetAlternativeOnGetOrElseGetWhenValueIsNotPresent() {
+    public void shouldGetAlternativeOnGetOrElseGetWhenValueIsNotDefined() {
         assertThat(Option.none().getOrElse(() -> 2)).isEqualTo(2);
     }
 
@@ -200,7 +200,7 @@ public class OptionTest extends AbstractValueTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void shouldThrowOnGetOrElseThrowWhenValueIsNotPresent() {
+    public void shouldThrowOnGetOrElseThrowWhenValueIsNotDefined() {
         Option.none().getOrElseThrow(() -> new RuntimeException("none"));
     }
 
@@ -218,15 +218,15 @@ public class OptionTest extends AbstractValueTest {
         assertThat(some.toJavaOptional()).isEqualTo(Optional.of(1));
     }
 
-    // -- isPresent
+    // -- isDefined
 
     @Test
-    public void shouldBePresentOnIsPresentWhenValueIsPresent() {
+    public void shouldBePresentOnIsDefinedWhenValueIsDefined() {
         assertThat(Option.of(1).isDefined()).isTrue();
     }
 
     @Test
-    public void shouldNotBePresentOnIsPresentWhenValueIsNotPresent() {
+    public void shouldNotBePresentOnIsDefinedWhenValueIsNotDefined() {
         assertThat(Option.none().isDefined()).isFalse();
     }
 
@@ -238,21 +238,21 @@ public class OptionTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldBePresentOnIsEmptyWhenValueIsPresent() {
+    public void shouldBePresentOnIsEmptyWhenValue() {
         assertThat(Option.of(1).isEmpty()).isFalse();
     }
 
     // -- ifPresent
 
     @Test
-    public void shouldConsumePresentValueOnIsPresentWhenValueIsPresent() {
+    public void shouldConsumePresentValueOnWhenValueIsDefined() {
         final int[] actual = new int[] { -1 };
         Option.of(1).forEach(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(1);
     }
 
     @Test
-    public void shouldNotConsumeAnythingOnIsPresentWhenValueIsNotPresent() {
+    public void shouldNotConsumeAnythingOnIsDefinedWhenValueIsNotDefined() {
         final int[] actual = new int[] { -1 };
         Option.<Integer> none().forEach(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(-1);
@@ -261,17 +261,17 @@ public class OptionTest extends AbstractValueTest {
     // -- filter
 
     @Test
-    public void shouldReturnSomeOnFilterWhenValueIsPresentAndPredicateMatches() {
+    public void shouldReturnSomeOnFilterWhenValueIsDefinedAndPredicateMatches() {
         assertThat(Option.of(1).filter(i -> i == 1)).isEqualTo(Option.of(1));
     }
 
     @Test
-    public void shouldReturnNoneOnFilterWhenValueIsPresentAndPredicateNotMatches() {
+    public void shouldReturnNoneOnFilterWhenValueIsDefinedAndPredicateNotMatches() {
         assertThat(Option.of(1).filter(i -> i == 2)).isEqualTo(Option.none());
     }
 
     @Test
-    public void shouldReturnNoneOnFilterWhenValueIsNotPresentAndPredicateNotMatches() {
+    public void shouldReturnNoneOnFilterWhenValueIsNotDefinedAndPredicateNotMatches() {
         assertThat(Option.<Integer> none().filter(i -> i == 1)).isEqualTo(Option.none());
     }
 
@@ -348,14 +348,14 @@ public class OptionTest extends AbstractValueTest {
     // -- forEach
 
     @Test
-    public void shouldConsumePresentValueOnForEachWhenValueIsPresent() {
+    public void shouldConsumePresentValueOnForEachWhenValueIsDefined() {
         final int[] actual = new int[] { -1 };
         Option.of(1).forEach(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(1);
     }
 
     @Test
-    public void shouldNotConsumeAnythingOnForEachWhenValueIsNotPresent() {
+    public void shouldNotConsumeAnythingOnForEachWhenValueIsNotDefined() {
         final int[] actual = new int[] { -1 };
         Option.<Integer> none().forEach(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(-1);
@@ -364,7 +364,7 @@ public class OptionTest extends AbstractValueTest {
     // -- peek
 
     @Test
-    public void shouldConsumePresentValueOnPeekWhenValueIsPresent() {
+    public void shouldConsumePresentValueOnPeekWhenValueIsDefined() {
         final int[] actual = new int[] { -1 };
         final Option<Integer> testee = Option.of(1).peek(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(1);
@@ -372,7 +372,7 @@ public class OptionTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldNotConsumeAnythingOnPeekWhenValueIsNotPresent() {
+    public void shouldNotConsumeAnythingOnPeekWhenValueIsNotDefined() {
         final int[] actual = new int[] { -1 };
         final Option<Integer> testee = Option.<Integer> none().peek(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(-1);

@@ -35,7 +35,6 @@ import java.util.stream.StreamSupport;
  * <li>{@link #getOrElse(Object)}</li>
  * <li>{@link #getOrElse(Supplier)}</li>
  * <li>{@link #getOrElseThrow(Supplier)}</li>
- * <li>{@link #isDefined()}</li>
  * <li>{@link #isEmpty()}</li>
  * <li>{@link #isSingleValued()}</li>
  * <li>{@link #map(Function)}</li>
@@ -319,15 +318,6 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Checks, this {@code Value} is defined, i.e. if the underlying value is present.
-     *
-     * @return true, if an underlying value is present, false otherwise.
-     */
-    default boolean isDefined() {
-        return !isEmpty();
-    }
-
-    /**
      * Checks, this {@code Value} is empty, i.e. if the underlying value is absent.
      *
      * @return false, if no underlying value is present, true otherwise.
@@ -553,7 +543,7 @@ public interface Value<T> extends Iterable<T> {
     default <K, V, MAP extends java.util.Map<K, V>> MAP toJavaMap(Supplier<MAP> factory, Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         final MAP map = factory.get();
-        if (isDefined()) {
+        if (!isEmpty()) {
             if (isSingleValued()) {
                 final Tuple2<? extends K, ? extends V> entry = f.apply(get());
                 map.put(entry._1, entry._2);
@@ -834,7 +824,7 @@ interface ValueModule {
     }
 
     static <T extends java.util.Collection<V>, V> T toJavaCollection(Value<V> value, T empty) {
-        if (value.isDefined()) {
+        if (!value.isEmpty()) {
             if (value.isSingleValued()) {
                 empty.add(value.get());
             } else {
