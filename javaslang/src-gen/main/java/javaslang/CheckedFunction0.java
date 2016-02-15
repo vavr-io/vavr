@@ -128,27 +128,4 @@ public interface CheckedFunction0<R> extends λ<R> {
         return () -> after.apply(apply());
     }
 
-    @Override
-    default Type<R> getType() {
-        return new Type<>(this);
-    }
-
-    /**
-     * Represents the type of a {@code CheckedFunction0} which consists of no parameter types
-     * and a return type.
-     *
-     *
-     * @param <R> the return type of the function
-     * @author Daniel Dietrich
-     * @since 2.0.0
-     */
-    final class Type<R> extends λ.Type<R> {
-
-        private static final long serialVersionUID = 1L;
-
-        private Type(CheckedFunction0<R> λ) {
-            super(λ);
-        }
-
-    }
 }

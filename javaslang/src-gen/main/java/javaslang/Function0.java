@@ -140,27 +140,4 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
         return () -> after.apply(apply());
     }
 
-    @Override
-    default Type<R> getType() {
-        return new Type<>(this);
-    }
-
-    /**
-     * Represents the type of a {@code Function0} which consists of no parameter types
-     * and a return type.
-     *
-     *
-     * @param <R> the return type of the function
-     * @author Daniel Dietrich
-     * @since 2.0.0
-     */
-    final class Type<R> extends λ.Type<R> {
-
-        private static final long serialVersionUID = 1L;
-
-        private Type(Function0<R> λ) {
-            super(λ);
-        }
-
-    }
 }
