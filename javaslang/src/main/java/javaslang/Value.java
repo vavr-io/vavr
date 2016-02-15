@@ -320,6 +320,12 @@ public interface Value<T> extends Iterable<T> {
 
     /**
      * Checks, this {@code Value} is defined, i.e. if the underlying value is present.
+     * <p>
+     * {@code isDefined()} is equivalent to {@link #nonEmpty()}. Most people find using {@code nonEmpty} more intuitive
+     * in conjunction with multi-valued types (collections). {@code isDefined} is typically used with single-valued
+     * types like {@code Option} or {@code Try}.
+     * <p>
+     * See {@link #nonEmpty()}, {@link #isEmpty()} and {@link #isSingleValued()}.
      *
      * @return true, if an underlying value is present, false otherwise.
      */
@@ -349,6 +355,21 @@ public interface Value<T> extends Iterable<T> {
      * @return A new value
      */
     <U> Value<U> map(Function<? super T, ? extends U> mapper);
+
+    /**
+     * Checks, this {@code Value} is not empty, i.e. if the underlying value is present.
+     * <p>
+     * {@code nonEmpty} is equivalent to {@link #isDefined()}. Most people find using {@code nonEmpty} more intuitive
+     * in conjunction with multi-valued types (collections). {@code isDefined} is typically used with single-valued
+     * types like {@code Option} or {@code Try}.
+     * <p>
+     * See {@link #isDefined()}, {@link #isEmpty()} and {@link #isSingleValued()}.
+     *
+     * @return true, if an underlying value is present, false otherwise.
+     */
+    default boolean nonEmpty() {
+        return !isEmpty();
+    }
 
     /**
      * Performs the given {@code action} on the first element if this is an <em>eager</em> implementation.

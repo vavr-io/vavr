@@ -169,6 +169,14 @@ public abstract class AbstractValueTest {
         assertThat(of(1).isDefined()).isTrue();
     }
 
+    // -- nonEmpty
+
+    @Test
+    public void shouldCalculateNonEmpty() {
+        assertThat(empty().nonEmpty()).isFalse();
+        assertThat(of(1).nonEmpty()).isTrue();
+    }
+
     // -- peek
 
     @Test
