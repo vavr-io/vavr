@@ -846,33 +846,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 2, 3).length()).isEqualTo(3);
     }
 
-    // -- partition
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenPartitionNilAndPredicateIsNull() {
-        empty().partition(null);
-    }
-
-    @Test
-    public void shouldPartitionNil() {
-        assertThat(empty().partition(e -> true)).isEqualTo(Tuple.of(empty(), empty()));
-    }
-
-    @Test
-    public void shouldPartitionIntsInOddAndEvenHavingOddAndEvenNumbers() {
-        assertThat(of(1, 2, 3, 4).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(of(1, 3), of(2, 4)));
-    }
-
-    @Test
-    public void shouldPartitionIntsInOddAndEvenHavingOnlyOddNumbers() {
-        assertThat(of(1, 3).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(of(1, 3), empty()));
-    }
-
-    @Test
-    public void shouldPartitionIntsInOddAndEvenHavingOnlyEvenNumbers() {
-        assertThat(of(2, 4).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(empty(), of(2, 4)));
-    }
-
     // -- max
 
     @Test
@@ -1103,6 +1076,41 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
             return i;
         })).isEqualTo(Option.some(1));
         assertThat(cnt[0]).isEqualTo(3);
+    }
+
+    // -- nonEmpty
+
+    @Test
+    public void shouldCalculateNonEmpty() {
+        assertThat(empty().nonEmpty()).isFalse();
+        assertThat(of(1).nonEmpty()).isTrue();
+    }
+
+    // -- partition
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenPartitionNilAndPredicateIsNull() {
+        empty().partition(null);
+    }
+
+    @Test
+    public void shouldPartitionNil() {
+        assertThat(empty().partition(e -> true)).isEqualTo(Tuple.of(empty(), empty()));
+    }
+
+    @Test
+    public void shouldPartitionIntsInOddAndEvenHavingOddAndEvenNumbers() {
+        assertThat(of(1, 2, 3, 4).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(of(1, 3), of(2, 4)));
+    }
+
+    @Test
+    public void shouldPartitionIntsInOddAndEvenHavingOnlyOddNumbers() {
+        assertThat(of(1, 3).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(of(1, 3), empty()));
+    }
+
+    @Test
+    public void shouldPartitionIntsInOddAndEvenHavingOnlyEvenNumbers() {
+        assertThat(of(2, 4).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(empty(), of(2, 4)));
     }
 
     // -- product

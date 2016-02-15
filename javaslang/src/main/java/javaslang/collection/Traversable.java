@@ -823,6 +823,17 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
+     * Checks, this {@code Traversable} is not empty.
+     * <p>
+     * The call is equivalent to {@code !isEmpty()}.
+     *
+     * @return true, if an underlying value is present, false otherwise.
+     */
+    default boolean nonEmpty() {
+        return !isEmpty();
+    }
+
+    /**
      * Creates a partition of this {@code Traversable} by splitting this elements in two in distinct tarversables
      * according to a predicate.
      *

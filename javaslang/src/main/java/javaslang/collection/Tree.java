@@ -1034,7 +1034,7 @@ interface TreeModule {
                 final List<Node<U>> children = (List<Node<U>>) (Object) node
                         .getChildren()
                         .map(child -> FlatMap.apply(child, mapper))
-                        .filter(Tree::isDefined);
+                        .filter(Tree::nonEmpty);
                 return Tree.of(mapped.getValue(), children.prependAll(mapped.getChildren()));
             }
         }
@@ -1148,7 +1148,7 @@ interface TreeModule {
                 final List<Node<Tuple2<T, U>>> children = (List<Node<Tuple2<T, U>>>) (Object) node
                         .getChildren()
                         .map(child -> Zip.apply(child, that))
-                        .filter(Tree::isDefined);
+                        .filter(Tree::nonEmpty);
                 return new Node<>(value, children);
             }
         }
@@ -1165,7 +1165,7 @@ interface TreeModule {
                 final List<Node<Tuple2<T, U>>> children = (List<Node<Tuple2<T, U>>>) (Object) node
                         .getChildren()
                         .map(child -> ZipAll.apply(child, that, thatElem))
-                        .filter(Tree::isDefined);
+                        .filter(Tree::nonEmpty);
                 return new Node<>(value, children);
             }
         }
