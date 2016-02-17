@@ -26,7 +26,7 @@ Note: The maven build currently needs to be started from the javaslang root dir
         <artifactId>oss-parent</artifactId>
         <version>9</version>
     </parent>
-    <groupId>com.javaslang</groupId>
+    <groupId>io.javaslang</groupId>
     <artifactId>javaslang-parent</artifactId>
     <version>2.0.0-RC5-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -38,7 +38,7 @@ Note: The maven build currently needs to be started from the javaslang root dir
         <module>javaslang-pure</module>
         <module>javaslang-test</module>
     </modules>
-    <url>http://javaslang.com</url>
+    <url>http://javaslang.io</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>

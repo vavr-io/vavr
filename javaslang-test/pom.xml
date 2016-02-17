@@ -5,7 +5,7 @@
         <maven>3.0.4</maven>
     </prerequisites>
     <parent>
-        <groupId>com.javaslang</groupId>
+        <groupId>io.javaslang</groupId>
         <artifactId>javaslang-parent</artifactId>
         <version>2.0.0-RC5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -14,7 +14,7 @@
     <packaging>jar</packaging>
     <name>Javaslang Test</name>
     <description>A property check framework for Javaslang.</description>
-    <url>http://javaslang.com</url>
+    <url>http://javaslang.io</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
