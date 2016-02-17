@@ -1098,11 +1098,11 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
             final Traversable<?> objects = isTraversableAgain() ? this : toStream();
             final Object head = objects.head();
             if (head instanceof Integer || head instanceof Short || head instanceof Byte) {
-                return ((Traversable<Number>) objects).toJavaStream().mapToInt(Number::intValue).sum();
+                return ((Traversable<Number>) objects).foldLeft(0, (n1, n2) -> n1 + n2.intValue());
             } else if (head instanceof Double || head instanceof Float || head instanceof BigDecimal) {
-                return ((Traversable<Number>) objects).toJavaStream().mapToDouble(Number::doubleValue).sum();
+                return ((Traversable<Number>) objects).foldLeft(0d, (n1, n2) -> n1 + n2.doubleValue());
             } else if (head instanceof Long || head instanceof BigInteger) {
-                return ((Traversable<Number>) objects).toJavaStream().mapToLong(Number::longValue).sum();
+                return ((Traversable<Number>) objects).foldLeft(0l, (n1, n2) -> n1 + n2.longValue());
             } else {
                 throw new UnsupportedOperationException("not numeric");
             }
