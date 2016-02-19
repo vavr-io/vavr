@@ -12,7 +12,7 @@ There's also a [blog](http://blog.javaslang.io).
 
 ## Using Javaslang
 
-See [User Guide](http://docs.javaslang.io/2.0.0-RC4)
+See [User Guide](http://docs.javaslang.io)
 
 ## Release Management
 
