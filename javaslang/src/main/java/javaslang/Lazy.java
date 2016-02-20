@@ -128,7 +128,8 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     public Option<T> filter(Predicate<? super T> predicate) {
-        return predicate.test(value) ? Option.some(value) : Option.none();
+        T v = get();
+        return predicate.test(v) ? Option.some(v) : Option.none();
     }
 
     /**
