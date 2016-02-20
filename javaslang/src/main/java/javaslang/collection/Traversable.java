@@ -11,7 +11,6 @@ import javaslang.Tuple3;
 import javaslang.Value;
 import javaslang.control.Option;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
@@ -229,30 +228,25 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
             return Option.none();
         } else {
             final Traversable<?> objects = isTraversableAgain() ? this : toStream();
-            final Object head = objects.head();
-            final double d;
-            if (head instanceof Integer || head instanceof Short || head instanceof Byte) {
-                d = ((Traversable<Number>) objects)
-                        .toJavaStream()
-                        .mapToInt(Number::intValue)
-                        .average()
-                        .getAsDouble();
-            } else if (head instanceof Double || head instanceof Float || head instanceof BigDecimal) {
-                d = ((Traversable<Number>) objects)
-                        .toJavaStream()
-                        .mapToDouble(Number::doubleValue)
-                        .average()
-                        .getAsDouble();
-            } else if (head instanceof Long || head instanceof BigInteger) {
-                d = ((Traversable<Number>) objects)
-                        .toJavaStream()
-                        .mapToLong(Number::longValue)
-                        .average()
-                        .getAsDouble();
+            final Object o = objects.head();
+            if (o instanceof Number) {
+                final Traversable<Number> numbers = (Traversable<Number>) objects;
+                final double d;
+                if (o instanceof Integer || o instanceof Long || o instanceof Byte || o instanceof BigInteger || o instanceof Short) {
+                    d = numbers.toJavaStream()
+                            .mapToLong(Number::longValue)
+                            .average()
+                            .getAsDouble();
+                } else {
+                    d = numbers.toJavaStream()
+                            .mapToDouble(Number::doubleValue)
+                            .average()
+                            .getAsDouble();
+                }
+                return Option.some(d);
             } else {
                 throw new UnsupportedOperationException("not numeric");
             }
-            return Option.some(d);
         }
     }
 
@@ -274,6 +268,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return true, if this List contains all given elements, false otherwise.
      * @throws NullPointerException if {@code elements} is null
      */
+
     default boolean containsAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return List.ofAll(elements).distinct().find(e -> !this.contains(e)).isEmpty();
@@ -670,11 +665,11 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     @SuppressWarnings("unchecked")
     default Option<T> max() {
-        final Stream<T> stream = Stream.ofAll(iterator());
-        if (isEmpty() || !(stream.head() instanceof Comparable)) {
+        final Traversable<T> ts = isTraversableAgain() ? this : toStream();
+        if (isEmpty() || !(ts.head() instanceof Comparable)) {
             return Option.none();
         } else {
-            return stream.maxBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
+            return ts.maxBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
         }
     }
 
@@ -730,11 +725,11 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     @SuppressWarnings("unchecked")
     default Option<T> min() {
-        final Stream<T> stream = Stream.ofAll(iterator());
-        if (isEmpty() || !(stream.head() instanceof Comparable)) {
+        final Traversable<T> ts = isTraversableAgain() ? this : toStream();
+        if (isEmpty() || !(ts.head() instanceof Comparable)) {
             return Option.none();
         } else {
-            return stream.minBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
+            return ts.minBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
         }
     }
 
@@ -854,7 +849,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * <pre>
      * <code>
      * List.empty().product()              // = 1
-     * List.of(1, 2, 3).product()          // = 6
+     * List.of(1, 2, 3).product()          // = 6L
      * List.of(0.1, 0.2, 0.3).product()    // = 0.006
      * List.of("apple", "pear").product()  // throws
      * </code>
@@ -868,17 +863,16 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
         if (isEmpty()) {
             return 1;
         } else {
-            final Traversable<?> objects = isTraversableAgain() ? this : toStream();
-            final Object head = objects.head();
-            if (head instanceof Integer || head instanceof Short || head instanceof Byte) {
-                return ((Traversable<Number>) objects).toJavaStream().mapToInt(Number::intValue).reduce(1,
-                        (i1, i2) -> i1 * i2);
-            } else if (head instanceof Double || head instanceof Float || head instanceof BigDecimal) {
-                return ((Traversable<Number>) objects).toJavaStream().mapToDouble(Number::doubleValue).reduce(1.0,
-                        (d1, d2) -> d1 * d2);
-            } else if (head instanceof Long || head instanceof BigInteger) {
-                return ((Traversable<Number>) objects).toJavaStream().mapToLong(Number::longValue).reduce(1L,
-                        (l1, l2) -> l1 * l2);
+            final Iterator<?> iter = iterator();
+            final Object o = iter.next();
+            if (o instanceof Number) {
+                final Number head = (Number) o;
+                final Iterator<Number> numbers = (Iterator<Number>) iter;
+                if (head instanceof Integer || head instanceof Long || head instanceof Byte || head instanceof BigInteger || head instanceof Short) {
+                    return numbers.toJavaStream().mapToLong(Number::longValue).reduce(head.longValue(), (l1, l2) -> l1 * l2);
+                } else {
+                    return numbers.toJavaStream().mapToDouble(Number::doubleValue).reduce(head.doubleValue(), (d1, d2) -> d1 * d2);
+                }
             } else {
                 throw new UnsupportedOperationException("not numeric");
             }
@@ -1081,7 +1075,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * <pre>
      * <code>
      * List.empty().sum()              // = 0
-     * List.of(1, 2, 3).sum()          // = 6
+     * List.of(1, 2, 3).sum()          // = 6L
      * List.of(0.1, 0.2, 0.3).sum()    // = 0.6
      * List.of("apple", "pear").sum()  // throws
      * </code>
@@ -1095,14 +1089,16 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
         if (isEmpty()) {
             return 0;
         } else {
-            final Traversable<?> objects = isTraversableAgain() ? this : toStream();
-            final Object head = objects.head();
-            if (head instanceof Integer || head instanceof Short || head instanceof Byte) {
-                return ((Traversable<Number>) objects).foldLeft(0, (n1, n2) -> n1 + n2.intValue());
-            } else if (head instanceof Double || head instanceof Float || head instanceof BigDecimal) {
-                return ((Traversable<Number>) objects).foldLeft(0d, (n1, n2) -> n1 + n2.doubleValue());
-            } else if (head instanceof Long || head instanceof BigInteger) {
-                return ((Traversable<Number>) objects).foldLeft(0l, (n1, n2) -> n1 + n2.longValue());
+            final Iterator<?> iter = iterator();
+            final Object o = iter.next();
+            if (o instanceof Number) {
+                final Number head = (Number) o;
+                final Iterator<Number> numbers = (Iterator<Number>) iter;
+                if (head instanceof Integer || head instanceof Long || head instanceof Byte || head instanceof BigInteger || head instanceof Short) {
+                    return numbers.foldLeft(head.longValue(), (n1, n2) -> n1 + n2.longValue());
+                } else {
+                    return numbers.foldLeft(head.doubleValue(), (n1, n2) -> n1 + n2.doubleValue());
+                }
             } else {
                 throw new UnsupportedOperationException("not numeric");
             }

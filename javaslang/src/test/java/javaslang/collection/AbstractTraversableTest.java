@@ -1127,7 +1127,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeProductOfByte() {
-        assertThat(of((byte) 1, (byte) 2).product()).isEqualTo(2);
+        assertThat(of((byte) 1, (byte) 2).product()).isEqualTo(2L);
     }
 
     @Test
@@ -1142,7 +1142,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeProductOfInt() {
-        assertThat(of(1, 2, 3).product()).isEqualTo(6);
+        assertThat(of(1, 2, 3).product()).isEqualTo(6L);
     }
 
     @Test
@@ -1152,7 +1152,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeProductOfShort() {
-        assertThat(of((short) 1, (short) 2, (short) 3).product()).isEqualTo(6);
+        assertThat(of((short) 1, (short) 2, (short) 3).product()).isEqualTo(6L);
     }
 
     @Test
@@ -1656,7 +1656,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeSumOfByte() {
-        assertThat(of((byte) 1, (byte) 2).sum()).isEqualTo(3);
+        assertThat(of((byte) 1, (byte) 2).sum()).isEqualTo(3L);
     }
 
     @Test
@@ -1671,7 +1671,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeSumOfInt() {
-        assertThat(of(1, 2, 3).sum()).isEqualTo(6);
+        assertThat(of(1, 2, 3).sum()).isEqualTo(6L);
     }
 
     @Test
@@ -1681,7 +1681,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeSumOfShort() {
-        assertThat(of((short) 1, (short) 2, (short) 3).sum()).isEqualTo(6);
+        assertThat(of((short) 1, (short) 2, (short) 3).sum()).isEqualTo(6L);
     }
 
     @Test

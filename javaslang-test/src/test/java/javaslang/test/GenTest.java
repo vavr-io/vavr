@@ -57,7 +57,7 @@ public class GenTest {
         };
         final Gen<Integer> gen = Gen.choose(1, 2);
         final Number actual = Stream.gen(() -> gen.apply(rng)).take(10).sum();
-        assertThat(actual).isEqualTo(10);
+        assertThat(actual).isEqualTo(10L);
     }
 
     // -- choose(int, int)
