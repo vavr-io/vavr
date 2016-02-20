@@ -22,7 +22,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static javaslang.Match.*;
+import static javaslang.Match.Match;
 
 /**
  * Represents a lazy evaluated value. Compared to a Supplier, Lazy is memoizing, i.e. it evaluates only once and
@@ -208,6 +208,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
         return f.apply(this);
     }
 
+    @Override
     public String stringPrefix() {
         return "Lazy";
     }
