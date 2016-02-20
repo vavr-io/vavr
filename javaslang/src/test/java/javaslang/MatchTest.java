@@ -9,9 +9,7 @@ import javaslang.collection.List;
 import javaslang.control.Option;
 import org.junit.Test;
 
-import static javaslang.Match.$;
 import static javaslang.Match.*;
-import static javaslang.Match.Match;
 import static javaslang.Patterns.*;
 
 public class MatchTest {
