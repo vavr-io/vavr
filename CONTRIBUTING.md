@@ -29,10 +29,10 @@ Using Eclipse, the minimal requirements are
 * Running `mvn javadoc:javadoc` results in no javadoc errors.
 * All classes start with the following copyright notice, which contains the list of core developers:
 ```java
-/*     / \____  _    _  ____   ______  / \ ____  __    _ _____
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  / /  _  \   Javaslang
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/  \__/  /   Copyright 2014-now Daniel Dietrich
- * /___/\_/  \_/\____/\_/  \_/\__\/__/___\_/  \_//  \__/_____/    Licensed under the Apache License, Version 2.0
+/*     / \____  _    _  ____   ______  / \ ____  __    _______
+ *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
+ *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang contributors
+ * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
  */
 ```
 
