@@ -863,14 +863,15 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
         if (isEmpty()) {
             return 1;
         } else {
-            final Object o = head();
+            final Iterator<?> iter = iterator();
+            final Object o = iter.next();
             if (o instanceof Number) {
                 final Number head = (Number) o;
-                final Traversable<Number> tail = (Traversable<Number>) this;
+                final Iterator<Number> numbers = (Iterator<Number>) iter;
                 if (head instanceof Integer || head instanceof Long || head instanceof Byte || head instanceof BigInteger || head instanceof Short) {
-                    return tail.toJavaStream().mapToLong(Number::longValue).reduce(head.longValue(), (l1, l2) -> l1 * l2);
+                    return numbers.toJavaStream().mapToLong(Number::longValue).reduce(head.longValue(), (l1, l2) -> l1 * l2);
                 } else {
-                    return tail.toJavaStream().mapToDouble(Number::doubleValue).reduce(head.doubleValue(), (d1, d2) -> d1 * d2);
+                    return numbers.toJavaStream().mapToDouble(Number::doubleValue).reduce(head.doubleValue(), (d1, d2) -> d1 * d2);
                 }
             } else {
                 throw new UnsupportedOperationException("not numeric");
@@ -1088,14 +1089,15 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
         if (isEmpty()) {
             return 0;
         } else {
-            final Object o = head();
+            final Iterator<?> iter = iterator();
+            final Object o = iter.next();
             if (o instanceof Number) {
                 final Number head = (Number) o;
-                final Traversable<Number> tail = (Traversable<Number>) this;
+                final Iterator<Number> numbers = (Iterator<Number>) iter;
                 if (head instanceof Integer || head instanceof Long || head instanceof Byte || head instanceof BigInteger || head instanceof Short) {
-                    return tail.foldLeft(head.longValue(), (n1, n2) -> n1 + n2.longValue());
+                    return numbers.foldLeft(head.longValue(), (n1, n2) -> n1 + n2.longValue());
                 } else {
-                    return tail.foldLeft(head.doubleValue(), (n1, n2) -> n1 + n2.doubleValue());
+                    return numbers.foldLeft(head.doubleValue(), (n1, n2) -> n1 + n2.doubleValue());
                 }
             } else {
                 throw new UnsupportedOperationException("not numeric");

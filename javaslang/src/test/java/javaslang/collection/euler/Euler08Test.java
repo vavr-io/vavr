@@ -49,7 +49,7 @@ public class Euler08Test {
     @Test
     public void shouldSolveProblem8() {
         assertThat(largestProductOfConsecutives(4, _1000_DIGITS_NUMBER)).isEqualTo(5_832);
-        assertThat(largestProductOfConsecutives(13, _1000_DIGITS_NUMBER)).isEqualTo(2_091_059_712);
+        assertThat(largestProductOfConsecutives(13, _1000_DIGITS_NUMBER)).isEqualTo(23_514_624_000L);
     }
 
     private static long largestProductOfConsecutives(int sizeOfConsecutive, String num) {
