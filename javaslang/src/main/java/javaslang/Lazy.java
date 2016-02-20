@@ -40,7 +40,7 @@ import static javaslang.Match.*;
  *
  * Since 2.0.0 you may also create a <em>real</em> lazy value (works only with interfaces):
  *
- * <pre><code>final CharSequence chars = Lazy.of(() -&gt; "Yay!", CharSequence.class);</code></pre>
+ * <pre><code>final CharSequence chars = Lazy.val(() -&gt; "Yay!", CharSequence.class);</code></pre>
  *
  * @author Daniel Dietrich
  * @since 1.2.1
