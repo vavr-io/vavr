@@ -50,6 +50,49 @@ def generateMainClasses(): Unit = {
       val BiFunctionType = im.getType("java.util.function.BiFunction")
 
       xs"""
+        /**
+         * The most basic Javaslang functionality is accessed through this API class.
+         *
+         * <pre><code>
+         * import static javaslang.API.*;
+         * </code></pre>
+         *
+         * <h3>For-comprehension</h3>
+         * <p>
+         * The {@code For}-comprehension is syntactic sugar for nested for loops. We write
+         *
+         * <pre><code>
+         * // lazily evaluated
+         * Stream&lt;R&gt; result = For(iterable1, iterable2, ..., iterableN).yield(f);
+         * </code></pre>
+         *
+         * instead of
+         *
+         * <pre><code>
+         * for(T1 v1 : iterable1) {
+         *     for (T2 v2 : iterable2) {
+         *         ...
+         *         for (TN vN : iterableN) {
+         *             R result = f.apply(v1, v2, ..., VN);
+         *             //
+         *             // We are forced to perform side effects to do s.th. meaningful with the result :-/
+         *             //
+         *         }
+         *     }
+         * }
+         * </code></pre>
+         *
+         * Given a suitable function
+         * f {@code (v1, v2, ..., vN) -&gt; ...} and 1 &lt;= N &lt;= 8 iterables, the result is a Stream of the
+         * mapped cross product elements.
+         *
+         * <pre><code>
+         * { f(v1, v2, ..., vN) | v1 &isin; iterable1, ... vN &isin; iterableN}
+         * </code></pre>
+         *
+         * As with all Javaslang Values, the result of a For-comprehension can be converted
+         * to standard Java library and Javaslang types.
+         */
         public final class API {
 
             private API() {
@@ -57,13 +100,14 @@ def generateMainClasses(): Unit = {
 
             ${(1 to N).gen(i => {
               val generics = (1 to i).gen(j => s"T$j")(", ")
-              val functionType = i match {
-                case 1 => FunctionType
-                case 2 => BiFunctionType
-                case _ => s"Function$i"
-              }
               val params = (1 to i).gen(j => s"Iterable<T$j> ts$j")(", ")
               xs"""
+                /$javadoc
+                 * Creates a {@code For}-comprehension of ${i.numerus("Iterable")}.
+                 ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} Iterable")("\n")}
+                 ${(1 to i).gen(j => s"* @param <T$j> component type of the ${j.ordinal} Iterable")("\n")}
+                 * @return a new {@code For}-comprehension of arity $i
+                 */
                 public static <$generics> For$i<$generics> For($params) {
                     ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")("\n")}
                     return new For$i<>(${(1 to i).gen(j => s"${im.getType("javaslang.collection.Stream")}.ofAll(ts$j)")(", ")});
@@ -79,16 +123,25 @@ def generateMainClasses(): Unit = {
                 case _ => s"Function$i"
               }
               val args = (1 to i).gen(j => s"? super T$j")(", ")
-              val params = (1 to i).gen(j => s"Iterable<T$j> ts$j")(", ")
               xs"""
+                /$javadoc
+                 * For-comprehension with ${i.numerus("Iterables")}.
+                 */
                 public static class For$i<$generics> {
 
-                    ${(1 to i).gen(j => xs"""private ${im.getType("javaslang.collection.Stream")}<T$j> stream$j;""")("\n")}
+                    ${(1 to i).gen(j => xs"""private final ${im.getType("javaslang.collection.Stream")}<T$j> stream$j;""")("\n")}
 
                     private For$i(${(1 to i).gen(j => s"${im.getType("javaslang.collection.Stream")}<T$j> stream$j")(", ")}) {
                         ${(1 to i).gen(j => xs"""this.stream$j = stream$j;""")("\n")}
                     }
 
+                    /$javadoc
+                     * Yields a result for elements of the cross product of the underlying Iterables.
+                     *
+                     * @param f a function that maps an element of the cross product to a result
+                     * @param <R> type of the resulting Stream elements
+                     * @return a Stream of mapped results
+                     */
                     public <R> ${im.getType("javaslang.collection.Stream")}<R> yield($functionType<$args, ? extends R> f) {
                         $Objects.requireNonNull(f, "f is null");
                         return
