@@ -23,7 +23,7 @@ import javaslang.collection.Stream;
  *
  * <h3>For-comprehension</h3>
  * <p>
- * The {@code For}-comprehension is syntactic sugar for nested for loops. We write
+ * The {@code For}-comprehension is syntactic sugar for nested for-loops. We write
  *
  * <pre><code>
  * // lazily evaluated
@@ -39,7 +39,7 @@ import javaslang.collection.Stream;
  *         for (TN vN : iterableN) {
  *             R result = f.apply(v1, v2, ..., VN);
  *             //
- *             // We are forced to perform side effects to do s.th. meaningful with the result :-/
+ *             // We are forced to perform side effects to do s.th. meaningful with the result.
  *             //
  *         }
  *     }
@@ -47,7 +47,7 @@ import javaslang.collection.Stream;
  * </code></pre>
  *
  * Given a suitable function
- * f {@code (v1, v2, ..., vN) -&gt; ...} and 1 &lt;= N &lt;= 8 iterables, the result is a Stream of the
+ * f {@code (v1, v2, ..., vN) -> ...} and 1 &lt;= N &lt;= 8 iterables, the result is a Stream of the
  * mapped cross product elements.
  *
  * <pre><code>
