@@ -963,7 +963,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     // -- Additional methods of Iterator
 
     // DEV-NOTE: cannot use arg Iterable, it would be ambiguous
-    default Iterator<T> concat(java.util.Iterator<T> that) {
+    default Iterator<T> concat(java.util.Iterator<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
         if (!that.hasNext()) {
             return this;
