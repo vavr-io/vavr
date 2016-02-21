@@ -31,9 +31,76 @@ def generateMainClasses(): Unit = {
   // Workaround: Use /$javadoc instead of /** in a StringContext when IntelliJ IDEA otherwise shows up errors in the editor
   val javadoc = "**"
 
-  genMatch()
+  genAPI()
+  genMatch() // will move also to API soon
   genFunctions()
   genTuples()
+
+  /**
+   * Generator of Match
+   */
+  def genAPI(): Unit = {
+
+    genJavaslangFile("javaslang", "API")(genAPI)
+
+    def genAPI(im: ImportManager, packageName: String, className: String): String = {
+
+      val Objects = im.getType("java.util.Objects")
+      val FunctionType = im.getType("java.util.function.Function")
+      val BiFunctionType = im.getType("java.util.function.BiFunction")
+
+      xs"""
+        public final class API {
+
+            private API() {
+            }
+
+            ${(1 to N).gen(i => {
+              val generics = (1 to i).gen(j => s"T$j")(", ")
+              val functionType = i match {
+                case 1 => FunctionType
+                case 2 => BiFunctionType
+                case _ => s"Function$i"
+              }
+              val params = (1 to i).gen(j => s"Iterable<T$j> ts$j")(", ")
+              xs"""
+                public static <$generics> For$i<$generics> For($params) {
+                    ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")("\n")}
+                    return new For$i<>(${(1 to i).gen(j => s"${im.getType("javaslang.collection.Stream")}.ofAll(ts$j)")(", ")});
+                }
+              """
+            })("\n\n")}
+
+            ${(1 to N).gen(i => {
+              val generics = (1 to i).gen(j => s"T$j")(", ")
+              val functionType = i match {
+                case 1 => FunctionType
+                case 2 => BiFunctionType
+                case _ => s"Function$i"
+              }
+              val args = (1 to i).gen(j => s"? super T$j")(", ")
+              val params = (1 to i).gen(j => s"Iterable<T$j> ts$j")(", ")
+              xs"""
+                public static class For$i<$generics> {
+
+                    ${(1 to i).gen(j => xs"""private ${im.getType("javaslang.collection.Stream")}<T$j> stream$j;""")("\n")}
+
+                    private For$i(${(1 to i).gen(j => s"${im.getType("javaslang.collection.Stream")}<T$j> stream$j")(", ")}) {
+                        ${(1 to i).gen(j => xs"""this.stream$j = stream$j;""")("\n")}
+                    }
+
+                    public <R> ${im.getType("javaslang.collection.Stream")}<R> yield($functionType<$args, ? extends R> f) {
+                        $Objects.requireNonNull(f, "f is null");
+                        return
+                            ${(1 until i).gen(j => s"stream$j.flatMap(t$j ->")("\n")} stream$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")}))${")" * (i - 1)};
+                    }
+                }
+              """
+            })("\n\n")}
+        }
+      """
+    }
+  }
 
   /**
    * Generator of Match
@@ -985,8 +1052,39 @@ def generateMainClasses(): Unit = {
  */
 def generateTestClasses(): Unit = {
 
+  genAPITests()
   genFunctionTests()
   genTupleTests()
+
+  /**
+   * Generator of Function tests
+   */
+  def genAPITests(): Unit = {
+
+    genJavaslangFile("javaslang", s"APITest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+
+      val test = im.getType("org.junit.Test")
+      val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+
+      im.getStatic("javaslang.API.*")
+
+      xs"""
+        public class $className {
+
+            ${(1 to N).gen(i => xs"""
+              @$test
+              public void shouldStreamFor$i() {
+                  final ${im.getType("javaslang.collection.Stream")}<Integer> result = For(
+                      ${(1 to i).gen(j => s"${im.getType("javaslang.collection.Stream")}.of(1, 2, 3)")(",\n")}
+                  ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
+                  $assertThat(result.head()).isEqualTo($i);
+                  $assertThat(result.tail().head()).isEqualTo(${i + 1});
+              }
+            """)("\n\n")}
+        }
+      """
+    })
+  }
 
   /**
    * Generator of Function tests
