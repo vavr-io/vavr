@@ -241,6 +241,28 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(Stream.range(0, bigNum).foldLeft(Stream.empty(), Stream::append).length()).isEqualTo(bigNum);
     }
 
+    // -- appendAll
+
+    @Test
+    public void shouldAppendAll() {
+        assertThat(of(1, 2, 3).appendAll(of(4, 5, 6))).isEqualTo(of(1, 2, 3, 4, 5, 6));
+    }
+
+    @Test
+    public void shouldAppendAllIfThisIsEmpty() {
+        assertThat(empty().appendAll(of(4, 5, 6))).isEqualTo(of(4, 5, 6));
+    }
+
+    @Test
+    public void shouldAppendAllIfThatIsInfinite() {
+        assertThat(of(1, 2, 3).appendAll(Stream.from(4)).take(6)).isEqualTo(of(1, 2, 3, 4, 5, 6));
+    }
+
+    @Test
+    public void shouldAppendAllToInfiniteStream() {
+        assertThat(Stream.from(1).appendAll(Stream.gen(() -> -1)).take(6)).isEqualTo(of(1, 2, 3, 4, 5, 6));
+    }
+
     // -- combinations
 
     @Test

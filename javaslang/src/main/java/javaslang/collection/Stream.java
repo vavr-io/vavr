@@ -609,7 +609,7 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default Stream<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return isEmpty() ? Stream.ofAll(elements) : new AppendElements<>(head(), Queue.ofAll(elements), this::tail);
+        return Stream.ofAll(isEmpty() ? elements : Iterator.concat(this, elements));
     }
 
     /**
