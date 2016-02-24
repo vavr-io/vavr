@@ -46,12 +46,14 @@ import javaslang.collection.Stream;
  * }
  * </code></pre>
  *
+ * Please note that values like Option, Try, Future, etc. are also iterable.
+ * <p>
  * Given a suitable function
- * f {@code (v1, v2, ..., vN) -> ...} and 1 &lt;= N &lt;= 8 iterables, the result is a Stream of the
+ * f: {@code (v1, v2, ..., vN) -> ...} and 1 &lt;= N &lt;= 8 iterables, the result is a Stream of the
  * mapped cross product elements.
  *
  * <pre><code>
- * { f(v1, v2, ..., vN) | v1 &isin; iterable1, ... vN &isin; iterableN}
+ * { f(v1, v2, ..., vN) | v1 &isin; iterable1, ... vN &isin; iterableN }
  * </code></pre>
  *
  * As with all Javaslang Values, the result of a For-comprehension can be converted
@@ -60,6 +62,32 @@ import javaslang.collection.Stream;
 public final class API {
 
     private API() {
+    }
+
+    //
+    // For-Comprehension
+    //
+
+    /**
+     * A shortcut for {@code Stream.ofAll(ts).flatMap(f)} which allows us to write real for-comprehensions using
+     * {@code For(...).yield(...)}.
+     * <p>
+     * Example:
+     * <pre><code>
+     * For(getPersons(), person -&gt;
+     *     For(person.getTweets(), tweet -&gt;
+     *         For(tweet.getReplies())
+     *             .yield(reply -&gt; person + ", " + tweet + ", " + reply)));
+     * </code></pre>
+     *
+     * @param ts An iterable
+     * @param f A function {@code T -> Iterable<U>}
+     * @param <T> element type of {@code ts}
+     * @param <U> component type of the resulting {@code Stream}
+     * @return A new Stream
+     */
+    public static <T, U> Stream<U> For(Iterable<T> ts, Function<? super T, ? extends Iterable<U>> f) {
+        return Stream.ofAll(ts).flatMap(f);
     }
 
     /**
@@ -243,7 +271,7 @@ public final class API {
     }
 
     /**
-     * For-comprehension with one Iterables.
+     * For-comprehension with one Iterable.
      */
     public static class For1<T1> {
 
@@ -268,7 +296,7 @@ public final class API {
     }
 
     /**
-     * For-comprehension with two Iterabless.
+     * For-comprehension with two Iterables.
      */
     public static class For2<T1, T2> {
 
@@ -295,7 +323,7 @@ public final class API {
     }
 
     /**
-     * For-comprehension with three Iterabless.
+     * For-comprehension with three Iterables.
      */
     public static class For3<T1, T2, T3> {
 
@@ -325,7 +353,7 @@ public final class API {
     }
 
     /**
-     * For-comprehension with 4 Iterabless.
+     * For-comprehension with 4 Iterables.
      */
     public static class For4<T1, T2, T3, T4> {
 
@@ -358,7 +386,7 @@ public final class API {
     }
 
     /**
-     * For-comprehension with 5 Iterabless.
+     * For-comprehension with 5 Iterables.
      */
     public static class For5<T1, T2, T3, T4, T5> {
 
@@ -394,7 +422,7 @@ public final class API {
     }
 
     /**
-     * For-comprehension with 6 Iterabless.
+     * For-comprehension with 6 Iterables.
      */
     public static class For6<T1, T2, T3, T4, T5, T6> {
 
@@ -433,7 +461,7 @@ public final class API {
     }
 
     /**
-     * For-comprehension with 7 Iterabless.
+     * For-comprehension with 7 Iterables.
      */
     public static class For7<T1, T2, T3, T4, T5, T6, T7> {
 
@@ -475,7 +503,7 @@ public final class API {
     }
 
     /**
-     * For-comprehension with 8 Iterabless.
+     * For-comprehension with 8 Iterables.
      */
     public static class For8<T1, T2, T3, T4, T5, T6, T7, T8> {
 
@@ -518,4 +546,8 @@ public final class API {
                 stream7.flatMap(t7 -> stream8.map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8)))))))));
         }
     }
+
+    //
+    // Structural Pattern Matching
+    //
 }

@@ -49,6 +49,97 @@ def generateMainClasses(): Unit = {
       val FunctionType = im.getType("java.util.function.Function")
       val BiFunctionType = im.getType("java.util.function.BiFunction")
 
+      def genFor(im: ImportManager, packageName: String, className: String): String = {
+        xs"""
+          //
+          // For-Comprehension
+          //
+
+          /**
+           * A shortcut for {@code Stream.ofAll(ts).flatMap(f)} which allows us to write real for-comprehensions using
+           * {@code For(...).yield(...)}.
+           * <p>
+           * Example:
+           * <pre><code>
+           * For(getPersons(), person -&gt;
+           *     For(person.getTweets(), tweet -&gt;
+           *         For(tweet.getReplies())
+           *             .yield(reply -&gt; person + ", " + tweet + ", " + reply)));
+           * </code></pre>
+           *
+           * @param ts An iterable
+           * @param f A function {@code T -> Iterable<U>}
+           * @param <T> element type of {@code ts}
+           * @param <U> component type of the resulting {@code Stream}
+           * @return A new Stream
+           */
+          public static <T, U> Stream<U> For(Iterable<T> ts, Function<? super T, ? extends Iterable<U>> f) {
+              return Stream.ofAll(ts).flatMap(f);
+          }
+
+          ${(1 to N).gen(i => {
+            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val params = (1 to i).gen(j => s"Iterable<T$j> ts$j")(", ")
+            xs"""
+              /$javadoc
+               * Creates a {@code For}-comprehension of ${i.numerus("Iterable")}.
+               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} Iterable")("\n")}
+               ${(1 to i).gen(j => s"* @param <T$j> component type of the ${j.ordinal} Iterable")("\n")}
+               * @return a new {@code For}-comprehension of arity $i
+               */
+              public static <$generics> For$i<$generics> For($params) {
+                  ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")("\n")}
+                  return new For$i<>(${(1 to i).gen(j => s"${im.getType("javaslang.collection.Stream")}.ofAll(ts$j)")(", ")});
+              }
+            """
+          })("\n\n")}
+
+          ${(1 to N).gen(i => {
+            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val functionType = i match {
+              case 1 => FunctionType
+              case 2 => BiFunctionType
+              case _ => s"Function$i"
+            }
+            val args = (1 to i).gen(j => s"? super T$j")(", ")
+            xs"""
+              /$javadoc
+               * For-comprehension with ${i.numerus("Iterable")}.
+               */
+              public static class For$i<$generics> {
+
+                  ${(1 to i).gen(j => xs"""private final ${im.getType("javaslang.collection.Stream")}<T$j> stream$j;""")("\n")}
+
+                  private For$i(${(1 to i).gen(j => s"${im.getType("javaslang.collection.Stream")}<T$j> stream$j")(", ")}) {
+                      ${(1 to i).gen(j => xs"""this.stream$j = stream$j;""")("\n")}
+                  }
+
+                  /$javadoc
+                   * Yields a result for elements of the cross product of the underlying Iterables.
+                   *
+                   * @param f a function that maps an element of the cross product to a result
+                   * @param <R> type of the resulting Stream elements
+                   * @return a Stream of mapped results
+                   */
+                  public <R> ${im.getType("javaslang.collection.Stream")}<R> yield($functionType<$args, ? extends R> f) {
+                      $Objects.requireNonNull(f, "f is null");
+                      return
+                          ${(1 until i).gen(j => s"stream$j.flatMap(t$j ->")("\n")} stream$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")}))${")" * (i - 1)};
+                  }
+              }
+            """
+          })("\n\n")}
+        """
+      }
+
+      def genMatch(im: ImportManager, packageName: String, className: String): String = {
+        xs"""
+          //
+          // Structural Pattern Matching
+          //
+        """
+      }
+
       xs"""
         /**
          * The most basic Javaslang functionality is accessed through this API class.
@@ -82,12 +173,14 @@ def generateMainClasses(): Unit = {
          * }
          * </code></pre>
          *
+         * Please note that values like Option, Try, Future, etc. are also iterable.
+         * <p>
          * Given a suitable function
-         * f {@code (v1, v2, ..., vN) -> ...} and 1 &lt;= N &lt;= 8 iterables, the result is a Stream of the
+         * f: {@code (v1, v2, ..., vN) -> ...} and 1 &lt;= N &lt;= 8 iterables, the result is a Stream of the
          * mapped cross product elements.
          *
          * <pre><code>
-         * { f(v1, v2, ..., vN) | v1 &isin; iterable1, ... vN &isin; iterableN}
+         * { f(v1, v2, ..., vN) | v1 &isin; iterable1, ... vN &isin; iterableN }
          * </code></pre>
          *
          * As with all Javaslang Values, the result of a For-comprehension can be converted
@@ -98,58 +191,9 @@ def generateMainClasses(): Unit = {
             private API() {
             }
 
-            ${(1 to N).gen(i => {
-              val generics = (1 to i).gen(j => s"T$j")(", ")
-              val params = (1 to i).gen(j => s"Iterable<T$j> ts$j")(", ")
-              xs"""
-                /$javadoc
-                 * Creates a {@code For}-comprehension of ${i.numerus("Iterable")}.
-                 ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} Iterable")("\n")}
-                 ${(1 to i).gen(j => s"* @param <T$j> component type of the ${j.ordinal} Iterable")("\n")}
-                 * @return a new {@code For}-comprehension of arity $i
-                 */
-                public static <$generics> For$i<$generics> For($params) {
-                    ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")("\n")}
-                    return new For$i<>(${(1 to i).gen(j => s"${im.getType("javaslang.collection.Stream")}.ofAll(ts$j)")(", ")});
-                }
-              """
-            })("\n\n")}
+            ${genFor(im, packageName, className)}
 
-            ${(1 to N).gen(i => {
-              val generics = (1 to i).gen(j => s"T$j")(", ")
-              val functionType = i match {
-                case 1 => FunctionType
-                case 2 => BiFunctionType
-                case _ => s"Function$i"
-              }
-              val args = (1 to i).gen(j => s"? super T$j")(", ")
-              xs"""
-                /$javadoc
-                 * For-comprehension with ${i.numerus("Iterables")}.
-                 */
-                public static class For$i<$generics> {
-
-                    ${(1 to i).gen(j => xs"""private final ${im.getType("javaslang.collection.Stream")}<T$j> stream$j;""")("\n")}
-
-                    private For$i(${(1 to i).gen(j => s"${im.getType("javaslang.collection.Stream")}<T$j> stream$j")(", ")}) {
-                        ${(1 to i).gen(j => xs"""this.stream$j = stream$j;""")("\n")}
-                    }
-
-                    /$javadoc
-                     * Yields a result for elements of the cross product of the underlying Iterables.
-                     *
-                     * @param f a function that maps an element of the cross product to a result
-                     * @param <R> type of the resulting Stream elements
-                     * @return a Stream of mapped results
-                     */
-                    public <R> ${im.getType("javaslang.collection.Stream")}<R> yield($functionType<$args, ? extends R> f) {
-                        $Objects.requireNonNull(f, "f is null");
-                        return
-                            ${(1 until i).gen(j => s"stream$j.flatMap(t$j ->")("\n")} stream$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")}))${")" * (i - 1)};
-                    }
-                }
-              """
-            })("\n\n")}
+            ${genMatch(im, packageName, className)}
         }
       """
     }
