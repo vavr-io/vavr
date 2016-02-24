@@ -1178,6 +1178,14 @@ def generateTestClasses(): Unit = {
                   $assertThat(result.tail().head()).isEqualTo(${i + 1});
               }
             """)("\n\n")}
+
+            @Test
+            public void shouldStreamNestedFor() {
+                final Stream<String> result =
+                        For(${im.getType("java.util.Arrays")}.asList(1, 2), i ->
+                                For(${im.getType("javaslang.collection.CharSeq")}.of('a', 'b')).yield(c -> i + ":" + c));
+                assertThat(result).isEqualTo(Stream.of("1:a", "1:b", "2:a", "2:b"));
+            }
         }
       """
     })

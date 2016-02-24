@@ -12,6 +12,8 @@ package javaslang;
 import static javaslang.API.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import javaslang.collection.CharSeq;
 import javaslang.collection.Stream;
 import org.junit.Test;
 
@@ -115,5 +117,13 @@ public class APITest {
         ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
         assertThat(result.head()).isEqualTo(8);
         assertThat(result.tail().head()).isEqualTo(9);
+    }
+
+    @Test
+    public void shouldStreamNestedFor() {
+        final Stream<String> result =
+                For(Arrays.asList(1, 2), i ->
+                        For(CharSeq.of('a', 'b')).yield(c -> i + ":" + c));
+        assertThat(result).isEqualTo(Stream.of("1:a", "1:b", "2:a", "2:b"));
     }
 }
