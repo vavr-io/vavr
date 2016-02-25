@@ -81,9 +81,6 @@ public interface SortedSet<T> extends Set<T> {
     SortedSet<T> addAll(Iterable<? extends T> elements);
 
     @Override
-    SortedSet<T> clear();
-
-    @Override
     SortedSet<T> diff(Set<? extends T> elements);
 
     @Override

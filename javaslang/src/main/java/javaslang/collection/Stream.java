@@ -639,11 +639,6 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> clear() {
-        return Empty.instance();
-    }
-
-    @Override
     default Stream<Stream<T>> combinations() {
         return Stream.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }

@@ -16,7 +16,7 @@ import javaslang.control.Option;
 import java.util.*;
 import java.util.function.*;
 
-import static javaslang.Match.*;
+import static javaslang.Match.Match;
 
 /**
  * {@code javaslang.collection.Iterator} is a compositional replacement for {@code java.util.Iterator}
@@ -1114,11 +1114,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     // -- Overridden methods of Traversable
-
-    @Override
-    default Iterator<T> clear() {
-        return empty();
-    }
 
     @Override
     default Iterator<T> distinct() {

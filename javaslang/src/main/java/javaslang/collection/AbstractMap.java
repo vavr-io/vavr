@@ -26,13 +26,18 @@ import java.util.function.Predicate;
  * @author Ruslan Sennov
  * @since 2.0.0
  */
-abstract class AbstractMap<K, V, M extends Map<K, V>> implements Map<K, V> {
+abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<K, V> {
 
     private static final long serialVersionUID = 1L;
 
     abstract M createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries);
 
-    abstract M getEmpty();
+    /**
+     * Returns an empty version of this traversable, i.e. {@code empty().isEmpty() == true}.
+     *
+     * @return an empty instance of this Map.
+     */
+    abstract M emptyInstance();
 
     @SuppressWarnings("unchecked")
     @Override
@@ -59,7 +64,7 @@ abstract class AbstractMap<K, V, M extends Map<K, V>> implements Map<K, V> {
             return (M) this;
         }
         if (n >= length()) {
-            return getEmpty();
+            return emptyInstance();
         }
         return createFromEntries(iterator().drop(n));
     }
@@ -71,7 +76,7 @@ abstract class AbstractMap<K, V, M extends Map<K, V>> implements Map<K, V> {
             return (M) this;
         }
         if (n >= length()) {
-            return getEmpty();
+            return emptyInstance();
         }
         return createFromEntries(iterator().dropRight(n));
     }
@@ -234,7 +239,7 @@ abstract class AbstractMap<K, V, M extends Map<K, V>> implements Map<K, V> {
     @Override
     public M scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, getEmpty(), (m, e) -> (M) m.put(e), Function.identity());
+        return Collections.scanLeft(this, zero, operation, emptyInstance(), (m, e) -> (M) m.put(e), Function.identity());
     }
 
     @Override

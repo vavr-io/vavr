@@ -12,7 +12,6 @@ import javaslang.Tuple3;
 import javaslang.control.Option;
 
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.BiFunction;
@@ -130,9 +129,6 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
     Set<T> union(Set<? extends T> that);
 
     // -- Adjusted return types of Traversable methods
-
-    @Override
-    Set<T> clear();
 
     @Override
     boolean contains(T element);

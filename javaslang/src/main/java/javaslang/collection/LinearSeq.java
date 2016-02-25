@@ -50,9 +50,6 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> appendAll(Iterable<? extends T> elements);
 
     @Override
-    LinearSeq<T> clear();
-
-    @Override
     LinearSeq<? extends LinearSeq<T>> combinations();
 
     @Override

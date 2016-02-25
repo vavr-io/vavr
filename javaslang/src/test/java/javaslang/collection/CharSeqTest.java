@@ -361,19 +361,6 @@ public class CharSeqTest {
         CharSeq.of('1', '2', '3').average();
     }
 
-    // -- clear
-
-    @Test
-
-    public void shouldClearNil() {
-        assertThat(empty().clear()).isSameAs(empty());
-    }
-
-    @Test
-    public void shouldClearNonNil() {
-        assertThat(CharSeq.of('1', '2', '3').clear()).isSameAs(empty());
-    }
-
     // -- contains
 
     @Test
