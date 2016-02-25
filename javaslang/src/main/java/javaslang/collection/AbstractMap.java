@@ -1,3 +1,8 @@
+/*     / \____  _    _  ____   ______  / \ ____  __    _______
+ *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
+ *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang contributors
+ * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+ */
 package javaslang.collection;
 
 import javaslang.Match;
@@ -12,15 +17,22 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+/**
+ * An abstract {@link Map} implementation (not intended to be public).
+ *
+ * @param <K> Key type
+ * @param <V> Value type
+ * @param <M> Map type
+ * @author Ruslan Sennov
+ * @since 2.0.0
+ */
 abstract class AbstractMap<K, V, M extends Map<K, V>> implements Map<K, V> {
 
-    abstract M createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries);
-    abstract M getEmpty();
+    private static final long serialVersionUID = 1L;
 
-    @Override
-    public boolean containsValue(V value) {
-        return iterator().map(Tuple2::_2).contains(value);
-    }
+    abstract M createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries);
+
+    abstract M getEmpty();
 
     @SuppressWarnings("unchecked")
     @Override
@@ -82,12 +94,6 @@ abstract class AbstractMap<K, V, M extends Map<K, V>> implements Map<K, V> {
         return createFromEntries(iterator().filter(predicate));
     }
 
-    @Override
-    public <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
-        return iterator().foldRight(zero, f);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public <C> Map<C, M> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {
@@ -104,16 +110,6 @@ abstract class AbstractMap<K, V, M extends Map<K, V>> implements Map<K, V> {
     @Override
     public Iterator<M> grouped(long size) {
         return sliding(size, size);
-    }
-
-    @Override
-    public boolean hasDefiniteSize() {
-        return true;
-    }
-
-    @Override
-    public Option<Tuple2<K, V>> headOption() {
-        return isEmpty() ? Option.none() : Option.some(head());
     }
 
     @SuppressWarnings("unchecked")
@@ -164,11 +160,6 @@ abstract class AbstractMap<K, V, M extends Map<K, V>> implements Map<K, V> {
         Objects.requireNonNull(predicate, "predicate is null");
         final M taken = createFromEntries(iterator().takeWhile(predicate));
         return taken.length() == length() ? (M) this : taken;
-    }
-
-    @Override
-    public boolean isTraversableAgain() {
-        return true;
     }
 
     @SuppressWarnings("unchecked")
@@ -244,18 +235,6 @@ abstract class AbstractMap<K, V, M extends Map<K, V>> implements Map<K, V> {
     public M scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
         return Collections.scanLeft(this, zero, operation, getEmpty(), (m, e) -> (M) m.put(e), Function.identity());
-    }
-
-    @Override
-    public <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
-    }
-
-    @Override
-    public <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
     }
 
     @Override

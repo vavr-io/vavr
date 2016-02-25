@@ -74,7 +74,9 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @return <code>true</code> if this map maps one or more keys to the
      * specified value
      */
-    boolean containsValue(V value);
+    default boolean containsValue(V value) {
+        return iterator().map(Tuple2::_2).contains(value);
+    }
 
     /**
      * FlatMaps this {@code Map} to a new {@code Map} with different component type.
@@ -251,7 +253,14 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     @Override
     default <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
+        // don't remove cast, doesn't compile in Eclipse without it
         return (Seq<U>) iterator().flatMap(mapper).toStream();
+    }
+
+    @Override
+    default <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return iterator().foldRight(zero, f);
     }
 
     @Override
@@ -261,10 +270,25 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     Iterator<? extends Map<K, V>> grouped(long size);
 
     @Override
+    default boolean hasDefiniteSize() {
+        return true;
+    }
+
+    @Override
+    default Option<Tuple2<K, V>> headOption() {
+        return isEmpty() ? Option.none() : Option.some(head());
+    }
+
+    @Override
     Map<K, V> init();
 
     @Override
     Option<? extends Map<K, V>> initOption();
+
+    @Override
+    default boolean isTraversableAgain() {
+        return true;
+    }
 
     @Override
     Iterator<Tuple2<K, V>> iterator();
@@ -340,10 +364,16 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
                    BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
 
     @Override
-    <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation);
+    default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+    }
 
     @Override
-    <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation);
+    default <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+    }
 
     @Override
     Iterator<? extends Map<K, V>> sliding(long size);
