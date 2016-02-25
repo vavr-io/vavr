@@ -14,116 +14,116 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import javaslang.collection.CharSeq;
-import javaslang.collection.Stream;
+import javaslang.collection.List;
 import org.junit.Test;
 
 public class APITest {
 
     @Test
-    public void shouldStreamFor1() {
-        final Stream<Integer> result = For(
-            Stream.of(1, 2, 3)
-        ).yield(i1 -> i1);
+    public void shouldIterateFor1() {
+        final List<Integer> result = For(
+            List.of(1, 2, 3)
+        ).yield(i1 -> i1).toList();
         assertThat(result.head()).isEqualTo(1);
         assertThat(result.tail().head()).isEqualTo(2);
     }
 
     @Test
-    public void shouldStreamFor2() {
-        final Stream<Integer> result = For(
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3)
-        ).yield((i1, i2) -> i1 + i2);
+    public void shouldIterateFor2() {
+        final List<Integer> result = For(
+            List.of(1, 2, 3),
+            List.of(1, 2, 3)
+        ).yield((i1, i2) -> i1 + i2).toList();
         assertThat(result.head()).isEqualTo(2);
         assertThat(result.tail().head()).isEqualTo(3);
     }
 
     @Test
-    public void shouldStreamFor3() {
-        final Stream<Integer> result = For(
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3)
-        ).yield((i1, i2, i3) -> i1 + i2 + i3);
+    public void shouldIterateFor3() {
+        final List<Integer> result = For(
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3)
+        ).yield((i1, i2, i3) -> i1 + i2 + i3).toList();
         assertThat(result.head()).isEqualTo(3);
         assertThat(result.tail().head()).isEqualTo(4);
     }
 
     @Test
-    public void shouldStreamFor4() {
-        final Stream<Integer> result = For(
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3)
-        ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
+    public void shouldIterateFor4() {
+        final List<Integer> result = For(
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3)
+        ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4).toList();
         assertThat(result.head()).isEqualTo(4);
         assertThat(result.tail().head()).isEqualTo(5);
     }
 
     @Test
-    public void shouldStreamFor5() {
-        final Stream<Integer> result = For(
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3)
-        ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
+    public void shouldIterateFor5() {
+        final List<Integer> result = For(
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3)
+        ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5).toList();
         assertThat(result.head()).isEqualTo(5);
         assertThat(result.tail().head()).isEqualTo(6);
     }
 
     @Test
-    public void shouldStreamFor6() {
-        final Stream<Integer> result = For(
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3)
-        ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
+    public void shouldIterateFor6() {
+        final List<Integer> result = For(
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3)
+        ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6).toList();
         assertThat(result.head()).isEqualTo(6);
         assertThat(result.tail().head()).isEqualTo(7);
     }
 
     @Test
-    public void shouldStreamFor7() {
-        final Stream<Integer> result = For(
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3)
-        ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
+    public void shouldIterateFor7() {
+        final List<Integer> result = For(
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3)
+        ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7).toList();
         assertThat(result.head()).isEqualTo(7);
         assertThat(result.tail().head()).isEqualTo(8);
     }
 
     @Test
-    public void shouldStreamFor8() {
-        final Stream<Integer> result = For(
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3),
-            Stream.of(1, 2, 3)
-        ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
+    public void shouldIterateFor8() {
+        final List<Integer> result = For(
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3),
+            List.of(1, 2, 3)
+        ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8).toList();
         assertThat(result.head()).isEqualTo(8);
         assertThat(result.tail().head()).isEqualTo(9);
     }
 
     @Test
     public void shouldStreamNestedFor() {
-        final Stream<String> result =
+        final List<String> result =
                 For(Arrays.asList(1, 2), i ->
-                        For(CharSeq.of('a', 'b')).yield(c -> i + ":" + c));
-        assertThat(result).isEqualTo(Stream.of("1:a", "1:b", "2:a", "2:b"));
+                        For(CharSeq.of('a', 'b')).yield(c -> i + ":" + c)).toList();
+        assertThat(result).isEqualTo(List.of("1:a", "1:b", "2:a", "2:b"));
     }
 }

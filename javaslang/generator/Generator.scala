@@ -48,6 +48,7 @@ def generateMainClasses(): Unit = {
       val Objects = im.getType("java.util.Objects")
       val FunctionType = im.getType("java.util.function.Function")
       val BiFunctionType = im.getType("java.util.function.BiFunction")
+      val IteratorType = im.getType("javaslang.collection.Iterator")
 
       def genFor(im: ImportManager, packageName: String, className: String): String = {
         xs"""
@@ -56,7 +57,7 @@ def generateMainClasses(): Unit = {
           //
 
           /**
-           * A shortcut for {@code Stream.ofAll(ts).flatMap(f)} which allows us to write real for-comprehensions using
+           * A shortcut for {@code Iterator.ofAll(ts).flatMap(f)} which allows us to write real for-comprehensions using
            * {@code For(...).yield(...)}.
            * <p>
            * Example:
@@ -70,11 +71,11 @@ def generateMainClasses(): Unit = {
            * @param ts An iterable
            * @param f A function {@code T -> Iterable<U>}
            * @param <T> element type of {@code ts}
-           * @param <U> component type of the resulting {@code Stream}
-           * @return A new Stream
+           * @param <U> component type of the resulting {@code Iterator}
+           * @return A new Iterator
            */
-          public static <T, U> Stream<U> For(Iterable<T> ts, Function<? super T, ? extends Iterable<U>> f) {
-              return Stream.ofAll(ts).flatMap(f);
+          public static <T, U> $IteratorType<U> For(Iterable<T> ts, Function<? super T, ? extends Iterable<U>> f) {
+              return $IteratorType.ofAll(ts).flatMap(f);
           }
 
           ${(1 to N).gen(i => {
@@ -89,7 +90,7 @@ def generateMainClasses(): Unit = {
                */
               public static <$generics> For$i<$generics> For($params) {
                   ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")("\n")}
-                  return new For$i<>(${(1 to i).gen(j => s"${im.getType("javaslang.collection.Stream")}.ofAll(ts$j)")(", ")});
+                  return new For$i<>(${(1 to i).gen(j => s"$IteratorType.ofAll(ts$j)")(", ")});
               }
             """
           })("\n\n")}
@@ -108,9 +109,9 @@ def generateMainClasses(): Unit = {
                */
               public static class For$i<$generics> {
 
-                  ${(1 to i).gen(j => xs"""private final ${im.getType("javaslang.collection.Stream")}<T$j> stream$j;""")("\n")}
+                  ${(1 to i).gen(j => xs"""private final $IteratorType<T$j> stream$j;""")("\n")}
 
-                  private For$i(${(1 to i).gen(j => s"${im.getType("javaslang.collection.Stream")}<T$j> stream$j")(", ")}) {
+                  private For$i(${(1 to i).gen(j => s"$IteratorType<T$j> stream$j")(", ")}) {
                       ${(1 to i).gen(j => xs"""this.stream$j = stream$j;""")("\n")}
                   }
 
@@ -121,7 +122,7 @@ def generateMainClasses(): Unit = {
                    * @param <R> type of the resulting Stream elements
                    * @return a Stream of mapped results
                    */
-                  public <R> ${im.getType("javaslang.collection.Stream")}<R> yield($functionType<$args, ? extends R> f) {
+                  public <R> $IteratorType<R> yield($functionType<$args, ? extends R> f) {
                       $Objects.requireNonNull(f, "f is null");
                       return
                           ${(1 until i).gen(j => s"stream$j.flatMap(t$j ->")("\n")} stream$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")}))${")" * (i - 1)};
@@ -154,7 +155,19 @@ def generateMainClasses(): Unit = {
          *
          * <pre><code>
          * // lazily evaluated
-         * Stream&lt;R&gt; result = For(iterable1, iterable2, ..., iterableN).yield(f);
+         * Iterator&lt;R&gt; result = For(iterable1, iterable2, ..., iterableN).yield(f);
+         * </code></pre>
+         *
+         * or
+         *
+         * <pre><code>
+         * Iterator&lt;R&gt; result =
+         *     For(iterable1, v1 -&gt;
+         *         For(iterable2, v2 -&gt;
+         *             ...
+         *             For(iterableN).yield(vN -&gt; f.apply(v1, v2, ..., vN))
+         *         )
+         *     );
          * </code></pre>
          *
          * instead of
@@ -1162,6 +1175,7 @@ def generateTestClasses(): Unit = {
 
       val test = im.getType("org.junit.Test")
       val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+      val ListType = im.getType("javaslang.collection.List")
 
       im.getStatic("javaslang.API.*")
 
@@ -1170,10 +1184,10 @@ def generateTestClasses(): Unit = {
 
             ${(1 to N).gen(i => xs"""
               @$test
-              public void shouldStreamFor$i() {
-                  final ${im.getType("javaslang.collection.Stream")}<Integer> result = For(
-                      ${(1 to i).gen(j => s"${im.getType("javaslang.collection.Stream")}.of(1, 2, 3)")(",\n")}
-                  ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
+              public void shouldIterateFor$i() {
+                  final $ListType<Integer> result = For(
+                      ${(1 to i).gen(j => s"$ListType.of(1, 2, 3)")(",\n")}
+                  ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")}).toList();
                   $assertThat(result.head()).isEqualTo($i);
                   $assertThat(result.tail().head()).isEqualTo(${i + 1});
               }
@@ -1181,10 +1195,10 @@ def generateTestClasses(): Unit = {
 
             @Test
             public void shouldStreamNestedFor() {
-                final Stream<String> result =
+                final $ListType<String> result =
                         For(${im.getType("java.util.Arrays")}.asList(1, 2), i ->
-                                For(${im.getType("javaslang.collection.CharSeq")}.of('a', 'b')).yield(c -> i + ":" + c));
-                assertThat(result).isEqualTo(Stream.of("1:a", "1:b", "2:a", "2:b"));
+                                For(${im.getType("javaslang.collection.CharSeq")}.of('a', 'b')).yield(c -> i + ":" + c)).toList();
+                assertThat(result).isEqualTo($ListType.of("1:a", "1:b", "2:a", "2:b"));
             }
         }
       """
