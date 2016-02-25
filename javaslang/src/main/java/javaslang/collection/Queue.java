@@ -598,11 +598,6 @@ public class Queue<T> implements LinearSeq<T>, Serializable {
     }
 
     @Override
-    public Queue<T> clear() {
-        return Queue.empty();
-    }
-
-    @Override
     public Queue<Queue<T>> combinations() {
         return toList().combinations().map(Queue::ofAll).toQueue();
     }

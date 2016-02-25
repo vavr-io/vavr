@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Match;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
@@ -18,7 +17,6 @@ import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.Match.Match;
 import static javaslang.collection.Comparators.naturalComparator;
 
 /**
@@ -378,8 +376,8 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
     }
 
     @Override
-    TreeMap<K, V> getEmpty() {
-        return clear();
+    TreeMap<K, V> emptyInstance() {
+        return isEmpty() ? this : new TreeMap<>(entries.emptyInstance());
     }
 
     @Override
@@ -394,11 +392,6 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return createTreeMap(new EntryComparator<>(keyComparator),
                 entries.iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2))));
-    }
-
-    @Override
-    public TreeMap<K, V> clear() {
-        return isEmpty() ? this : new TreeMap<>(entries.clear());
     }
 
     @Override

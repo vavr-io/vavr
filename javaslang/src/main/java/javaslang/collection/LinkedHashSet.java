@@ -468,11 +468,6 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public LinkedHashSet<T> clear() {
-        return empty();
-    }
-
-    @Override
     public boolean contains(T element) {
         return map.get(element).isDefined();
     }
@@ -814,7 +809,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    public  <U> U transform(Function<? super LinkedHashSet<T>, ? extends U> f) {
+    public <U> U transform(Function<? super LinkedHashSet<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }

@@ -5,17 +5,15 @@
  */
 package javaslang.collection;
 
-import javaslang.Match;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
-
-import static javaslang.Match.Match;
 
 /**
  * An immutable {@code LinkedHashMap} implementation.
@@ -246,7 +244,7 @@ public final class LinkedHashMap<K, V> extends AbstractMap<K, V, LinkedHashMap<K
     }
 
     @Override
-    LinkedHashMap<K, V> getEmpty() {
+    LinkedHashMap<K, V> emptyInstance() {
         return LinkedHashMap.empty();
     }
 
@@ -256,11 +254,6 @@ public final class LinkedHashMap<K, V> extends AbstractMap<K, V, LinkedHashMap<K
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
         return LinkedHashMap.ofEntries(entries);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> clear() {
-        return LinkedHashMap.empty();
     }
 
     @Override

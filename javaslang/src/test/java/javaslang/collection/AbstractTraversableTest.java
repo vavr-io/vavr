@@ -222,27 +222,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).average().get()).isEqualTo(.5);
     }
 
-    // -- clear
-
-    @Test
-
-    public void shouldClearNil() {
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(empty().clear()).isEqualTo(empty());
-        } else {
-            assertThat(empty().clear()).isSameAs(empty());
-        }
-    }
-
-    @Test
-    public void shouldClearNonNil() {
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(of(1, 2, 3).clear()).isEqualTo(empty());
-        } else {
-            assertThat(of(1, 2, 3).clear()).isSameAs(empty());
-        }
-    }
-
     // -- contains
 
     @Test

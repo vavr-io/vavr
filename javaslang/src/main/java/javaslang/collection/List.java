@@ -543,11 +543,6 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> clear() {
-        return Nil.instance();
-    }
-
-    @Override
     default List<List<T>> combinations() {
         return List.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }

@@ -537,9 +537,6 @@ public interface Stack<T> extends LinearSeq<T> {
     Stack<T> appendAll(Iterable<? extends T> elements);
 
     @Override
-    Stack<T> clear();
-
-    @Override
     Stack<? extends Stack<T>> combinations();
 
     @Override

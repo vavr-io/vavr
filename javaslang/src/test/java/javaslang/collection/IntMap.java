@@ -65,11 +65,6 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public IntMap<T> clear() {
-        return IntMap.of(original.clear());
-    }
-
-    @Override
     public IntMap<T> distinct() {
         return IntMap.of(original.distinct());
     }

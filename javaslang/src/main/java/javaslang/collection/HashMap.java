@@ -6,20 +6,16 @@
 package javaslang.collection;
 
 import javaslang.Lazy;
-import javaslang.Match;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
-
-import static javaslang.Match.Match;
 
 /**
  * An immutable {@code HashMap} implementation based on a
@@ -241,7 +237,7 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
     }
 
     @Override
-    HashMap<K, V> getEmpty() {
+    HashMap<K, V> emptyInstance() {
         return HashMap.empty();
     }
 
@@ -251,11 +247,6 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
         return HashMap.ofEntries(entries);
-    }
-
-    @Override
-    public HashMap<K, V> clear() {
-        return HashMap.empty();
     }
 
     @Override

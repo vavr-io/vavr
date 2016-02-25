@@ -501,11 +501,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public TreeSet<T> clear() {
-        return isEmpty() ? this : new TreeSet<>(tree.clear());
-    }
-
-    @Override
     public Comparator<T> comparator() {
         return tree.comparator();
     }

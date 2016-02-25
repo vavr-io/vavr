@@ -98,9 +98,6 @@ public interface SortedMap<K, V> extends Map<K, V> {
     <K2, V2> SortedMap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
 
     @Override
-    SortedMap<K, V> clear();
-
-    @Override
     SortedMap<K, V> distinct();
 
     @Override

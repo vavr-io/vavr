@@ -505,11 +505,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> clear() {
-        return empty();
-    }
-
-    @Override
     public Array<Array<T>> combinations() {
         return Array.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }

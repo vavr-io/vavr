@@ -209,9 +209,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     // -- Adjusted return types of Traversable methods
 
     @Override
-    Map<K, V> clear();
-
-    @Override
     default boolean contains(Tuple2<K, V> element) {
         return get(element._1).map(v -> Objects.equals(v, element._2)).getOrElse(false);
     }

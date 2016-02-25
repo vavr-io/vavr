@@ -480,11 +480,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> clear() {
-        return Vector.empty();
-    }
-
-    @Override
     public Vector<Vector<T>> combinations() {
         return Vector.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
@@ -1228,7 +1223,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    public  <U> U transform(Function<? super Vector<T>, ? extends U> f) {
+    public <U> U transform(Function<? super Vector<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
