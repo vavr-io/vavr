@@ -837,9 +837,6 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     // -- Adjusted return types of Traversable methods
 
     @Override
-    Seq<T> clear();
-
-    @Override
     Seq<T> distinct();
 
     @Override

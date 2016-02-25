@@ -281,11 +281,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq clear() {
-        return EMPTY;
-    }
-
-    @Override
     public IndexedSeq<CharSeq> combinations() {
         return Vector.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }

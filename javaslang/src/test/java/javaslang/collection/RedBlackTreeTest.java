@@ -24,7 +24,6 @@ public class RedBlackTreeTest {
         assertThat(tree.isEmpty()).isTrue();
         assertThat(tree.size()).isEqualTo(0);
         assertThat(tree.color()).isEqualTo(BLACK);
-        assertThat(tree.clear()).isSameAs(tree);
     }
 
     @Test(expected = UnsupportedOperationException.class)

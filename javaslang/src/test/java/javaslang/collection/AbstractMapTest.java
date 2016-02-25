@@ -250,7 +250,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     }
 
     private static java.util.Map.Entry<String, Integer> entry(String key, Integer value) {
-        return new AbstractMap.SimpleEntry<>(key, value);
+        return new java.util.AbstractMap.SimpleEntry<>(key, value);
     }
 
     @SuppressWarnings("unchecked")

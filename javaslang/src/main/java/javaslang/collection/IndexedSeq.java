@@ -51,9 +51,6 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> appendAll(Iterable<? extends T> elements);
 
     @Override
-    IndexedSeq<T> clear();
-
-    @Override
     IndexedSeq<? extends IndexedSeq<T>> combinations();
 
     @Override

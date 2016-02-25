@@ -104,13 +104,6 @@ interface RedBlackTree<T> extends Iterable<T> {
     }
 
     /**
-     * Clears this RedBlackTree.
-     *
-     * @return An empty ReadBlackTree
-     */
-    RedBlackTree<T> clear();
-
-    /**
      * Return the {@link Color} of this Red/Black Tree node.
      * <p>
      * An empty node is {@code BLACK} by definition.
@@ -155,6 +148,13 @@ interface RedBlackTree<T> extends Iterable<T> {
             return Node.merge(split._1.difference(that.left), split._2.difference(that.right));
         }
     }
+
+    /**
+     * Returns the empty instance of this RedBlackTree.
+     *
+     * @return An empty ReadBlackTree
+     */
+    RedBlackTree<T> emptyInstance();
 
     /**
      * Finds the value stored in this tree, if exists, by applying the underlying comparator to the tree elements and
@@ -387,11 +387,6 @@ interface RedBlackTreeModule {
         }
 
         @Override
-        public Empty<T> clear() {
-            return empty;
-        }
-
-        @Override
         public Color color() {
             return color;
         }
@@ -411,6 +406,11 @@ interface RedBlackTreeModule {
             } else {
                 return true;
             }
+        }
+
+        @Override
+        public Empty<T> emptyInstance() {
+            return empty;
         }
 
         @Override
@@ -887,11 +887,6 @@ interface RedBlackTreeModule {
         }
 
         @Override
-        public Empty<T> clear() {
-            return this;
-        }
-
-        @Override
         public Color color() {
             return BLACK;
         }
@@ -904,6 +899,11 @@ interface RedBlackTreeModule {
         @Override
         public boolean contains(T value) {
             return false;
+        }
+
+        @Override
+        public Empty<T> emptyInstance() {
+            return this;
         }
 
         @Override

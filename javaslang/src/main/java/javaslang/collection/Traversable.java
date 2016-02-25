@@ -30,7 +30,6 @@ import java.util.function.Predicate;
  * Basic operations:
  *
  * <ul>
- * <li>{@link #clear()}</li>
  * <li>{@link #contains(Object)}</li>
  * <li>{@link #containsAll(Iterable)}</li>
  * <li>{@link #head()}</li>
@@ -249,13 +248,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
             }
         }
     }
-
-    /**
-     * Returns an empty version of this traversable, i.e. {@code this.clear().isEmpty() == true}.
-     *
-     * @return an empty Traversable.
-     */
-    Traversable<T> clear();
 
     /**
      * Tests if this Traversable contains all given elements.

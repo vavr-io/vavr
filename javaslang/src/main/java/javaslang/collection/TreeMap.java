@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Match;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
@@ -18,7 +17,6 @@ import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.Match.Match;
 import static javaslang.collection.Comparators.naturalComparator;
 
 /**
@@ -30,7 +28,7 @@ import static javaslang.collection.Comparators.naturalComparator;
  * @since 2.0.0
  */
 // DEV-NOTE: use entries.min().get() in favor of iterator().next(), it is faster!
-public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
+public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implements SortedMap<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -373,6 +371,16 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
+    TreeMap<K, V> createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> it) {
+        return createTreeMap(entries.comparator(), it);
+    }
+
+    @Override
+    TreeMap<K, V> emptyInstance() {
+        return isEmpty() ? this : new TreeMap<>(entries.emptyInstance());
+    }
+
+    @Override
     public <K2, V2> TreeMap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
         return bimap(naturalComparator(), keyMapper, valueMapper);
     }
@@ -387,72 +395,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public TreeMap<K, V> clear() {
-        return isEmpty() ? this : new TreeMap<>(entries.clear());
-    }
-
-    @Override
-    public TreeMap<K, V> distinct() {
-        return this;
-    }
-
-    @Override
-    public TreeMap<K, V> distinctBy(Comparator<? super Tuple2<K, V>> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        return createTreeMap(entries.comparator(), iterator().distinctBy(comparator));
-    }
-
-    @Override
-    public <U> TreeMap<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
-        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return createTreeMap(entries.comparator(), iterator().distinctBy(keyExtractor));
-    }
-
-    @Override
-    public TreeMap<K, V> drop(long n) {
-        if (n <= 0) {
-            return this;
-        } else {
-            return createTreeMap(entries.comparator(), iterator().drop(n));
-        }
-    }
-
-    @Override
-    public TreeMap<K, V> dropRight(long n) {
-        if (n <= 0) {
-            return this;
-        } else {
-            return createTreeMap(entries.comparator(), iterator().dropRight(n));
-        }
-    }
-
-    @Override
-    public TreeMap<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return dropWhile(predicate.negate());
-    }
-
-    @Override
-    public TreeMap<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return createTreeMap(entries.comparator(), iterator().dropWhile(predicate));
-    }
-
-    @Override
     public boolean containsKey(K key) {
         final V ignored = null;
         return entries.contains(new Tuple2<>(key, ignored));
-    }
-
-    @Override
-    public boolean containsValue(V value) {
-        return iterator().map(Tuple2::_2).contains(value);
-    }
-
-    @Override
-    public TreeMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return createTreeMap(entries.comparator(), entries.iterator().filter(predicate));
     }
 
     @Override
@@ -469,36 +414,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
-        return iterator().foldRight(zero, f);
-    }
-
-    @Override
     public Option<V> get(K key) {
         final V ignored = null;
         return entries.find(new Tuple2<>(key, ignored)).map(Tuple2::_2);
-    }
-
-    @Override
-    public <C> Map<C, TreeMap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {
-        Objects.requireNonNull(classifier, "classifier is null");
-        return foldLeft(HashMap.empty(), (map, entry) -> {
-            final C key = classifier.apply(entry);
-            final TreeMap<K, V> values = map.get(key).map(entries -> entries.put(entry._1, entry._2)).getOrElse(
-                    createTreeMap(entries.comparator(), Iterator.of(entry)));
-            return map.put(key, values);
-        });
-    }
-
-    @Override
-    public Iterator<TreeMap<K, V>> grouped(long size) {
-        return sliding(size, size);
-    }
-
-    @Override
-    public boolean hasDefiniteSize() {
-        return true;
     }
 
     @Override
@@ -508,11 +426,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
         } else {
             return entries.min().get();
         }
-    }
-
-    @Override
-    public Option<Tuple2<K, V>> headOption() {
-        return isEmpty() ? Option.none() : Option.some(head());
     }
 
     @Override
@@ -526,18 +439,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public Option<TreeMap<K, V>> initOption() {
-        return isEmpty() ? Option.none() : Option.some(init());
-    }
-
-    @Override
     public boolean isEmpty() {
         return entries.isEmpty();
-    }
-
-    @Override
-    public boolean isTraversableAgain() {
-        return true;
     }
 
     @Override
@@ -574,50 +477,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     public <W> TreeMap<K, W> mapValues(Function<? super V, ? extends W> valueMapper) {
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return map(keyComparator(), (k, v) -> Tuple.of(k, valueMapper.apply(v)));
-    }
-
-    @Override
-    public Match<TreeMap<K, V>> match() {
-        return Match(this);
-    }
-
-    @Override
-    public Option<Tuple2<K, V>> max() {
-        return entries.max();
-    }
-
-    @Override
-    public TreeMap<K, V> merge(Map<? extends K, ? extends V> that) {
-        return (TreeMap<K, V>) Collections.mergeMaps(this, that, m -> createTreeMap(entries.comparator(), that));
-    }
-
-    @Override
-    public <U extends V> TreeMap<K, V> merge(Map<? extends K, U> that,
-                                             BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
-        return (TreeMap<K, V>) Collections.mergeMaps(this, that, m -> createTreeMap(entries.comparator(), that), collisionResolution);
-    }
-
-    @Override
-    public Option<Tuple2<K, V>> min() {
-        return entries.min();
-    }
-
-    @Override
-    public Tuple2<TreeMap<K, V>, TreeMap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final Tuple2<Iterator<Tuple2<K, V>>, Iterator<Tuple2<K, V>>> p = iterator().partition(predicate);
-        final TreeMap<K, V> treeMap1 = createTreeMap(entries.comparator(), p._1);
-        final TreeMap<K, V> treeMap2 = createTreeMap(entries.comparator(), p._2);
-        return Tuple.of(treeMap1, treeMap2);
-    }
-
-    @Override
-    public TreeMap<K, V> peek(Consumer<? super Tuple2<K, V>> action) {
-        Objects.requireNonNull(action, "action is null");
-        if (!isEmpty()) {
-            action.accept(entries.min().get());
-        }
-        return this;
     }
 
     @Override
@@ -661,18 +520,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public TreeMap<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
-        Objects.requireNonNull(currentElement, "currentElement is null");
-        Objects.requireNonNull(newElement, "newElement is null");
-        return containsKey(currentElement._1) ? remove(currentElement._1).put(newElement) : this;
-    }
-
-    @Override
-    public TreeMap<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
-        return replace(currentElement, newElement);
-    }
-
-    @Override
     public TreeMap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements) {
         Objects.requireNonNull(elements, "elements is null");
         RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(entries.comparator());
@@ -685,45 +532,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public TreeMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, TreeMap.empty(keyComparator()), TreeMap::put, Function.identity());
-    }
-
-    @Override
-    public <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
-    }
-
-    @Override
-    public <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
-    }
-
-    @Override
     public int size() {
         return entries.size();
-    }
-
-    @Override
-    public Iterator<TreeMap<K, V>> sliding(long size) {
-        return sliding(size, 1);
-    }
-
-    @Override
-    public Iterator<TreeMap<K, V>> sliding(long size, long step) {
-        return iterator().sliding(size, step).map(seq -> createTreeMap(entries.comparator(), seq));
-    }
-
-    @Override
-    public Tuple2<TreeMap<K, V>, TreeMap<K, V>> span(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final Tuple2<Iterator<Tuple2<K, V>>, Iterator<Tuple2<K, V>>> t = iterator().span(predicate);
-        final TreeMap<K, V> treeMap1 = createTreeMap(entries.comparator(), t._1);
-        final TreeMap<K, V> treeMap2 = createTreeMap(entries.comparator(), t._2);
-        return Tuple.of(treeMap1, treeMap2);
     }
 
     @Override
@@ -734,33 +544,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
             final Tuple2<K, V> min = entries.min().get();
             return new TreeMap<>(entries.delete(min));
         }
-    }
-
-    @Override
-    public Option<TreeMap<K, V>> tailOption() {
-        return isEmpty() ? Option.none() : Option.some(tail());
-    }
-
-    @Override
-    public TreeMap<K, V> take(long n) {
-        return createTreeMap(entries.comparator(), entries.iterator().take(n));
-    }
-
-    @Override
-    public TreeMap<K, V> takeRight(long n) {
-        return createTreeMap(entries.comparator(), entries.iterator().takeRight(n));
-    }
-
-    @Override
-    public TreeMap<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return createTreeMap(entries.comparator(), entries.iterator().takeUntil(predicate));
-    }
-
-    @Override
-    public TreeMap<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return createTreeMap(entries.comparator(), entries.iterator().takeWhile(predicate));
     }
 
     @Override

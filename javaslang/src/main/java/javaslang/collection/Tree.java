@@ -320,11 +320,6 @@ public interface Tree<T> extends Traversable<T> {
     // -- Methods inherited from Traversable
 
     @Override
-    default Tree<T> clear() {
-        return Tree.empty();
-    }
-
-    @Override
     default Seq<T> distinct() {
         return traverse().distinct();
     }

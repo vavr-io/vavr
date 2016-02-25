@@ -467,11 +467,6 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> clear() {
-        return empty();
-    }
-
-    @Override
     public boolean contains(T element) {
         return tree.get(element).isDefined();
     }
