@@ -19,10 +19,11 @@ import java.util.function.*;
  *
  * @param <K> Key type
  * @param <V> Value type
+ * @param <T> Values container type
  * @author Ruslan Sennov
  * @since 2.0.0
  */
-public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, Seq<V>> {
+public interface Multimap<K, V, T extends Traversable<V>> extends Traversable<Tuple2<K, V>>, Function1<K, T> {
 
     long serialVersionUID = 1L;
 
@@ -37,12 +38,12 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @return the given {@code multimap} instance as narrowed type {@code Multimap<K, V>}.
      */
     @SuppressWarnings("unchecked")
-    static <K, V> Multimap<K, V> narrow(Multimap<? extends K, ? extends V> map) {
-        return (Multimap<K, V>) map;
+    static <K, V, T extends Traversable<V>> Multimap<K, V, T> narrow(Multimap<? extends K, ? extends V, ? extends T> map) {
+        return (Multimap<K, V, T>) map;
     }
 
     @Override
-    default Seq<V> apply(K key) {
+    default T apply(K key) {
         return get(key).getOrElseThrow(NoSuchElementException::new);
     }
 
@@ -56,7 +57,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @return a new {@code Multimap}
      * @throws NullPointerException if {@code keyMapper} or {@code valueMapper} is null
      */
-    <K2, V2> Multimap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
+    <K2, V2, T2 extends Traversable<V2>> Multimap<K2, V2, T2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
 
     /**
      * Returns <code>true</code> if this multimap contains a mapping for the specified key.
@@ -74,7 +75,9 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @return <code>true</code> if this multimap maps one or more keys to the
      * specified value
      */
-    boolean containsValue(V value);
+    default boolean containsValue(V value) {
+        return iterator().map(Tuple2::_2).contains(value);
+    }
 
     /**
      * FlatMaps this {@code Multimap} to a new {@code Multimap} with different component type.
@@ -85,7 +88,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @return A new {@code Multimap}.
      * @throws NullPointerException if {@code mapper} is null
      */
-    <K2, V2> Multimap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper);
+    <K2, V2, T2 extends Traversable<V2>> Multimap<K2, V2, T2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper);
 
     /**
      * Returns the {@code Some} of value to which the specified key
@@ -96,7 +99,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * is mapped, or {@code None} if this multimap contains no mapping
      * for the key
      */
-    Option<Seq<V>> get(K key);
+    Option<T> get(K key);
 
     /**
      * Returns the keys contained in this multimap.
@@ -114,7 +117,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @return a new {@code Multimap}
      * @throws NullPointerException if {@code mapper} is null
      */
-    <K2, V2> Multimap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
+    <K2, V2, T2 extends Traversable<V2>> Multimap<K2, V2, T2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
 
     /**
      * Maps the values of this {@code Multimap} while preserving the corresponding keys.
@@ -124,7 +127,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @return a new {@code Multimap}
      * @throws NullPointerException if {@code valueMapper} is null
      */
-    <V2> Multimap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper);
+    <V2, T2 extends Traversable<V2>> Multimap<K, V2, T2> mapValues(Function<? super V, ? extends V2> valueMapper);
 
     /**
      * Associates the specified value with the specified key in this multimap.
@@ -135,7 +138,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @param value value to be associated with the specified key
      * @return A new Multimap containing these elements and that entry.
      */
-    Multimap<K, V> put(K key, V value);
+    Multimap<K, V, T> put(K key, V value);
 
     /**
      * Convenience method for {@code put(entry._1, entry._2)}.
@@ -143,7 +146,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @param entry A Tuple2 containing the key and value
      * @return A new Multimap containing these elements and that entry.
      */
-    Multimap<K, V> put(Tuple2<? extends K, ? extends V> entry);
+    Multimap<K, V, T> put(Tuple2<? extends K, ? extends V> entry);
 
     /**
      * Removes the mapping for a key from this multimap if it is present.
@@ -152,7 +155,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @return A new Multimap containing these elements without the entry
      * specified by that key.
      */
-    Multimap<K, V> remove(K key);
+    Multimap<K, V, T> remove(K key);
 
     /**
      * Removes the mapping for a key from this multimap if it is present.
@@ -161,7 +164,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @return A new Multimap containing these elements without the entries
      * specified by that keys.
      */
-    Multimap<K, V> removeAll(Iterable<? extends K> keys);
+    Multimap<K, V, T> removeAll(Iterable<? extends K> keys);
 
     @Override
     int size();
@@ -182,7 +185,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> U transform(Function<? super Multimap<K, V>, ? extends U> f) {
+    default <U> U transform(Function<? super Multimap<K, V, T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
@@ -202,12 +205,9 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
         return unzip3(entry -> unzipper.apply(entry._1, entry._2));
     }
 
-    Seq<V> values();
+    Traversable<V> values();
 
     // -- Adjusted return types of Traversable methods
-
-    @Override
-    Multimap<K, V> clear();
 
     @Override
     default boolean contains(Tuple2<K, V> element) {
@@ -215,28 +215,28 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     }
 
     @Override
-    Multimap<K, V> distinct();
+    Multimap<K, V, T> distinct();
 
     @Override
-    Multimap<K, V> distinctBy(Comparator<? super Tuple2<K, V>> comparator);
+    Multimap<K, V, T> distinctBy(Comparator<? super Tuple2<K, V>> comparator);
 
     @Override
-    <U> Multimap<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor);
+    <U> Multimap<K, V, T> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor);
 
     @Override
-    Multimap<K, V> drop(long n);
+    Multimap<K, V, T> drop(long n);
 
     @Override
-    Multimap<K, V> dropRight(long n);
+    Multimap<K, V, T> dropRight(long n);
 
     @Override
-    Multimap<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate);
+    Multimap<K, V, T> dropUntil(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    Multimap<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate);
+    Multimap<K, V, T> dropWhile(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    Multimap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
+    Multimap<K, V, T> filter(Predicate<? super Tuple2<K, V>> predicate);
 
     /**
      * Flat-maps this entries to a sequence of values.
@@ -251,20 +251,42 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     @Override
     default <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
+        // don't remove cast, doesn't compile in Eclipse without it
         return (Seq<U>) iterator().flatMap(mapper).toStream();
     }
 
     @Override
-    <C> Map<C, ? extends Multimap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
+    default <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return iterator().foldRight(zero, f);
+    }
 
     @Override
-    Iterator<? extends Multimap<K, V>> grouped(long size);
+    <C> Map<C, ? extends Multimap<K, V, T>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
 
     @Override
-    Multimap<K, V> init();
+    Iterator<? extends Multimap<K, V, T>> grouped(long size);
 
     @Override
-    Option<? extends Multimap<K, V>> initOption();
+    default boolean hasDefiniteSize() {
+        return true;
+    }
+
+    @Override
+    default Option<Tuple2<K, V>> headOption() {
+        return isEmpty() ? Option.none() : Option.some(head());
+    }
+
+    @Override
+    Multimap<K, V, T> init();
+
+    @Override
+    Option<? extends Multimap<K, V, T>> initOption();
+
+    @Override
+    default boolean isTraversableAgain() {
+        return true;
+    }
 
     @Override
     Iterator<Tuple2<K, V>> iterator();
@@ -292,7 +314,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     }
 
     @Override
-    Match<? extends Multimap<K, V>> match();
+    Match<? extends Multimap<K, V, T>> match();
 
     /**
      * Creates a new multimap which by merging the entries of {@code this} multimap and {@code that} multimap.
@@ -303,7 +325,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @return A merged multimap
      * @throws NullPointerException if that multimap is null
      */
-    Multimap<K, V> merge(Multimap<? extends K, ? extends V> that);
+    Multimap<K, V, T> merge(Multimap<? extends K, ? extends V, ? extends T> that);
 
     /**
      * Creates a new multimap which by merging the entries of {@code this} multimap and {@code that} multimap.
@@ -318,41 +340,47 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @return A merged multimap
      * @throws NullPointerException if that multimap or the given collision resolution function is null
      */
-    <U extends V> Multimap<K, V> merge(Multimap<? extends K, U> that, BiFunction<Traversable<? super V>, Traversable<? super U>, Traversable<? extends V>> collisionResolution);
+    <U extends V> Multimap<K, V, T> merge(Multimap<? extends K, U, ?> that, BiFunction<Traversable<? super V>, Traversable<? super U>, Traversable<? extends V>> collisionResolution);
 
     @Override
-    Tuple2<? extends Multimap<K, V>, ? extends Multimap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate);
+    Tuple2<? extends Multimap<K, V, T>, ? extends Multimap<K, V, T>> partition(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    Multimap<K, V> peek(Consumer<? super Tuple2<K, V>> action);
+    Multimap<K, V, T> peek(Consumer<? super Tuple2<K, V>> action);
 
     @Override
-    Multimap<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
+    Multimap<K, V, T> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
 
     @Override
-    Multimap<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
+    Multimap<K, V, T> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
 
     @Override
-    Multimap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements);
+    Multimap<K, V, T> retainAll(Iterable<? extends Tuple2<K, V>> elements);
 
     @Override
-    Multimap<K, V> scan(Tuple2<K, V> zero,
+    Multimap<K, V, T> scan(Tuple2<K, V> zero,
                         BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
 
     @Override
-    <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation);
+    default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+    }
 
     @Override
-    <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation);
+    default <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+    }
 
     @Override
-    Iterator<? extends Multimap<K, V>> sliding(long size);
+    Iterator<? extends Multimap<K, V, T>> sliding(long size);
 
     @Override
-    Iterator<? extends Multimap<K, V>> sliding(long size, long step);
+    Iterator<? extends Multimap<K, V, T>> sliding(long size, long step);
 
     @Override
-    Tuple2<? extends Multimap<K, V>, ? extends Multimap<K, V>> span(Predicate<? super Tuple2<K, V>> predicate);
+    Tuple2<? extends Multimap<K, V, T>, ? extends Multimap<K, V, T>> span(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
     default Spliterator<Tuple2<K, V>> spliterator() {
@@ -360,22 +388,22 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     }
 
     @Override
-    Multimap<K, V> tail();
+    Multimap<K, V, T> tail();
 
     @Override
-    Option<? extends Multimap<K, V>> tailOption();
+    Option<? extends Multimap<K, V, T>> tailOption();
 
     @Override
-    Multimap<K, V> take(long n);
+    Multimap<K, V, T> take(long n);
 
     @Override
-    Multimap<K, V> takeRight(long n);
+    Multimap<K, V, T> takeRight(long n);
 
     @Override
-    Multimap<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate);
+    Multimap<K, V, T> takeUntil(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    Multimap<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate);
+    Multimap<K, V, T> takeWhile(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
     default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super Tuple2<K, V>, Tuple2<? extends T1, ? extends T2>> unzipper) {
