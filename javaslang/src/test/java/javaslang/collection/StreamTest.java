@@ -385,6 +385,51 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(transformed).isEqualTo("42");
     }
 
+    @Test
+    public void shouldExtendStreamWithConstantValue() {
+        assertThat(Stream.of(1, 2, 3).extend(42).take(6)).isEqualTo(of(1, 2, 3, 42, 42, 42));
+    }
+
+    @Test
+    public void shouldExtendStreamWithSupplier() {
+        assertThat(Stream.of(1, 2, 3).extend(() -> 42).take(6)).isEqualTo(of(1, 2, 3, 42, 42, 42));
+    }
+
+    @Test
+    public void shouldExtendStreamWithFunction() {
+        assertThat(Stream.of(1, 2, 3).extend(i -> i + 1).take(6)).isEqualTo(of(1, 2, 3, 4, 5, 6));
+    }
+
+    @Test
+    public void shouldExtendEmptyStreamWithConstantValue() {
+        assertThat(Stream.of().extend(42).take(6)).isEqualTo(of(42, 42, 42, 42, 42, 42));
+    }
+
+    @Test
+    public void shouldExtendEmptyStreamWithSupplier() {
+        assertThat(Stream.of().extend(() -> 42).take(6)).isEqualTo(of(42, 42, 42, 42, 42, 42));
+    }
+
+    @Test
+    public void shouldReturnAnEmptyStreamWhenExtendingAnEmptyStreamWithFunction() {
+        assertThat(Stream.<Integer>of().extend(i -> i + 1)).isEqualTo(of());
+    }
+
+    @Test
+    public void shouldReturnTheOriginalStreamWhenTryingToExtendInfiniteStreamWithConstantValue() {
+        assertThat(Stream.repeat(1).extend(42).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
+    }
+
+    @Test
+    public void shouldReturnTheOriginalStreamWhenTryingToExtendInfiniteStreamWithSupplier() {
+        assertThat(Stream.repeat(1).extend(() -> 42).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
+    }
+
+    @Test
+    public void shouldReturnTheOriginalStreamWhenTryingToExtendInfiniteStreamWithFunction() {
+        assertThat(Stream.repeat(1).extend(i -> i + 1).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
+    }
+
     // -- toString
 
     @Test
