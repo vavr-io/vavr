@@ -1332,6 +1332,64 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     /**
+     * Extends (continues) this {@code Stream} with a constantly repeated value.
+     *
+     * @param next value with which the stream should be extended
+     * @return new {@code Stream} composed from this stream extended with a Stream of provided value
+     */
+    default Stream<T> extend(T next) {
+        return Stream.ofAll(this.appendAll(Stream.repeat(next)));
+    }
+
+    /**
+     * Extends (continues) this {@code Stream} with values provided by a {@code Supplier}
+     *
+     * @param nextSupplier a supplier which will provide values for extending a stream
+     * @return new {@code Stream} composed from this stream extended with values provided by the supplier
+     */
+    default Stream<T> extend(Supplier<? extends T> nextSupplier) {
+        Objects.requireNonNull(nextSupplier, "nextSupplier is null");
+        return Stream.ofAll(appendAll(Stream.gen(nextSupplier)));
+    }
+
+    /**
+     * Extends (continues) this {@code Stream} with a Stream of values created by applying
+     * consecutively provided {@code Function} to the last element of the original Stream.
+     *
+     * @param nextFunction a function which calculates the next value basing on the previous value
+     * @return new {@code Stream} composed from this stream extended with values calculated by the provided function
+     */
+    default Stream<T> extend(Function<? super T, ? extends T> nextFunction) {
+        Objects.requireNonNull(nextFunction, "nextFunction is null");
+        if (isEmpty()) {
+            return this;
+        } else {
+            final Stream<T> that = this;
+            return Stream.ofAll(new AbstractIterator<T>() {
+
+                Stream<T> stream = that;
+                T last = null;
+
+                @Override
+                protected T getNext() {
+                    if (stream.isEmpty()) {
+                        stream = Stream.gen(nextFunction.apply(last), nextFunction);
+                    }
+                    last = stream.head();
+                    stream = stream.tail();
+                    return last;
+                }
+
+                @Override
+                public boolean hasNext() {
+                    return true;
+                }
+            });
+        }
+    }
+
+
+    /**
      * The empty Stream.
      * <p>
      * This is a singleton, i.e. not Cloneable.
