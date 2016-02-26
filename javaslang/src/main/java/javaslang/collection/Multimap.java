@@ -158,6 +158,16 @@ public interface Multimap<K, V, T extends Traversable<V>> extends Traversable<Tu
     Multimap<K, V, T> remove(K key);
 
     /**
+     * Removes the key-value pair from this multimap if it is present.
+     *
+     * @param key key whose mapping is to be removed from the multimap
+     * @param value value whose mapping is to be removed from the multimap
+     * @return A new Multimap containing these elements without the entry
+     * specified by that key and value.
+     */
+    Multimap<K, V, T> remove(K key, V value);
+
+    /**
      * Removes the mapping for a key from this multimap if it is present.
      *
      * @param keys keys are to be removed from the multimap
@@ -334,13 +344,14 @@ public interface Multimap<K, V, T extends Traversable<V>> extends Traversable<Tu
      * The collision resolution function will always take the first argument from <code>this</code> multimap
      * and the second from <code>that</code> multimap.
      *
-     * @param <U>                 value type of that Multimap
+     * @param <K2>                 key type of that Multimap
+     * @param <V2>                 value type of that Multimap
      * @param that                the other multimap
      * @param collisionResolution the collision resolution function
      * @return A merged multimap
      * @throws NullPointerException if that multimap or the given collision resolution function is null
      */
-    <U extends V> Multimap<K, V, T> merge(Multimap<? extends K, U, ?> that, BiFunction<Traversable<? super V>, Traversable<? super U>, Traversable<? extends V>> collisionResolution);
+    <K2 extends  K, V2 extends V> Multimap<K, V, T> merge(Multimap<K2, V2, Traversable<V2>> that, BiFunction<Traversable<? super V>, Traversable<? super V2>, Traversable<? extends V>> collisionResolution);
 
     @Override
     Tuple2<? extends Multimap<K, V, T>, ? extends Multimap<K, V, T>> partition(Predicate<? super Tuple2<K, V>> predicate);

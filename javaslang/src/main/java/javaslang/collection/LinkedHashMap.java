@@ -332,11 +332,6 @@ public final class LinkedHashMap<K, V> extends AbstractMap<K, V, LinkedHashMap<K
     }
 
     @Override
-    public LinkedHashMap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
-        return put(entry._1, entry._2);
-    }
-
-    @Override
     public LinkedHashMap<K, V> remove(K key) {
         if (containsKey(key)) {
             final Queue<Tuple2<K, V>> newList = list.removeFirst(t -> t._1.equals(key));
@@ -345,15 +340,6 @@ public final class LinkedHashMap<K, V> extends AbstractMap<K, V, LinkedHashMap<K
         } else {
             return this;
         }
-    }
-
-    @Override
-    public LinkedHashMap<K, V> removeAll(Iterable<? extends K> keys) {
-        Objects.requireNonNull(keys, "keys is null");
-        final HashSet<K> toRemove = HashSet.ofAll(keys);
-        final Queue<Tuple2<K, V>> newList = list.filter(t -> !toRemove.contains(t._1));
-        final HashMap<K, V> newMap = map.filter(t -> !toRemove.contains(t._1));
-        return newList.size() == size() ? this : wrap(newList, newMap);
     }
 
     @Override

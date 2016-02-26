@@ -41,6 +41,24 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
 
     @SuppressWarnings("unchecked")
     @Override
+    public M put(Tuple2<? extends K, ? extends V> entry) {
+        Objects.requireNonNull(entry, "entry is null");
+        return (M) put(entry._1, entry._2);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public M removeAll(Iterable<? extends K> keys) {
+        Objects.requireNonNull(keys, "keys is null");
+        Map<K, V> result = this;
+        for (K key : keys) {
+            result = result.remove(key);
+        }
+        return result == this ? (M) this : (M) result;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public M distinct() {
         return (M) this;
     }

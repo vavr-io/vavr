@@ -31,34 +31,73 @@ import java.util.function.Predicate;
 
     private static final long serialVersionUID = 1L;
 
-    private final Map<K, T> back;
-
-    AbstractMultimap(Map<K, T> back) {
-        this.back = back;
-    }
+    abstract Map<K, T> back();
 
     abstract M createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries);
+
+    abstract M createFromMap(Map<K, T> back);
+
+    abstract T emptyContainer();
+
+    abstract T addToContainer(T container, V value);
+
+    abstract T removeFromContainer(T container, V value);
 
     abstract M emptyInstance();
 
     @Override
     public boolean containsKey(K key) {
-        return back.containsKey(key);
+        return back().containsKey(key);
     }
 
     @Override
     public Option<T> get(K key) {
-        return back.get(key);
+        return back().get(key);
     }
 
     @Override
     public Set<K> keySet() {
-        return back.keySet();
+        return back().keySet();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public M put(K key, V value) {
+        final T values = back().get(key).getOrElse(emptyContainer());
+        final T newValues = addToContainer(values, value);
+        return newValues == values ? (M) this : createFromMap(back().put(key, newValues));
+    }
+
+    @Override
+    public M put(Tuple2<? extends K, ? extends V> entry) {
+        Objects.requireNonNull(entry, "entry is null");
+        return put(entry._1, entry._2);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public M remove(K key) {
+        return back().containsKey(key) ? (M) this : createFromMap(back().remove(key));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public M remove(K key, V value) {
+        final T values = back().get(key).getOrElse(emptyContainer());
+        final T newValues = removeFromContainer(values, value);
+        return newValues == values ? (M) this : createFromMap(back().put(key, newValues));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public M removeAll(Iterable<? extends K> keys) {
+        Map<K, T> result = back().removeAll(keys);
+        return result == back() ? (M) this : createFromMap(result);
     }
 
     @Override
     public Traversable<V> values() {
-        return Iterator.concat(back.values());
+        return Iterator.concat(back().values());
     }
 
     @Override
@@ -135,7 +174,7 @@ import java.util.function.Predicate;
 
     @Override
     public Tuple2<K, V> head() {
-        final Tuple2<K, T> head = back.head();
+        final Tuple2<K, T> head = back().head();
         return Tuple.of(head._1, head._2.head());
     }
 
@@ -147,12 +186,12 @@ import java.util.function.Predicate;
 
     @Override
     public boolean isEmpty() {
-        return back.isEmpty();
+        return back().isEmpty();
     }
 
     @Override
     public Iterator<Tuple2<K, V>> iterator() {
-        return back.iterator().flatMap(t -> t._2.map(v -> Tuple.of(t._1, v)));
+        return back().iterator().flatMap(t -> t._2.map(v -> Tuple.of(t._1, v)));
     }
 
     @SuppressWarnings("unchecked")
@@ -169,6 +208,37 @@ import java.util.function.Predicate;
     @Override
     public Match<M> match() {
         return Match.Match((M) this);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public M merge(Multimap<? extends K, ? extends V, ? extends T> that) {
+        Objects.requireNonNull(that, "that is null");
+        if (isEmpty()) {
+            return createFromEntries(that);
+        } else if (that.isEmpty()) {
+            return (M) this;
+        } else {
+            return that.foldLeft((M) this, (map, entry) -> !map.contains((Tuple2<K, V>) entry) ? (M) map.put(entry) : map);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <K2 extends K, V2 extends V> M merge(Multimap<K2, V2, Traversable<V2>> that, BiFunction<Traversable<? super V>, Traversable<? super V2>, Traversable<? extends V>> collisionResolution) {
+        Objects.requireNonNull(that, "that is null");
+        Objects.requireNonNull(collisionResolution, "collisionResolution is null");
+        if (isEmpty()) {
+            return createFromEntries(that);
+        } else if (that.isEmpty()) {
+            return (M) this;
+        } else {
+            Queue<Tuple2<K, V>> entries = that.keySet().foldLeft(Queue.empty(), (queue, key) -> {
+                final Traversable<? extends V> newValues = get(key).map(v -> collisionResolution.apply(v, that.get(key).get())).get();
+                return newValues.foldLeft(queue, (q, v) -> q.append(Tuple.of(key, v)));
+            });
+            return createFromEntries(entries);
+        }
     }
 
     @Override
@@ -199,6 +269,12 @@ import java.util.function.Predicate;
     @Override
     public M replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         return replace(currentElement, newElement);
+    }
+
+    @Override
+    public M retainAll(Iterable<? extends Tuple2<K, V>> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return createFromEntries(back().flatMap(t -> t._2.map(v -> Tuple.of(t._1, v))).retainAll(elements));
     }
 
     @SuppressWarnings("unchecked")
