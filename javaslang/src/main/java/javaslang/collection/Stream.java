@@ -1347,10 +1347,9 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param nextSupplier a supplier which will provide values for extending a stream
      * @return new {@code Stream} composed from this stream extended with values provided by the supplier
      */
-    default Stream<T> extend(Supplier<T> nextSupplier) {
+    default Stream<T> extend(Supplier<? extends T> nextSupplier) {
         Objects.requireNonNull(nextSupplier, "nextSupplier is null");
-
-        return Stream.ofAll(this.appendAll(Stream.gen(nextSupplier)));
+        return Stream.ofAll(appendAll(Stream.gen(nextSupplier)));
     }
 
     /**
@@ -1362,7 +1361,6 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     default Stream<T> extend(Function<? super T, ? extends T> nextFunction) {
         Objects.requireNonNull(nextFunction, "nextFunction is null");
-
         if (isEmpty()) {
             return this;
         } else {
