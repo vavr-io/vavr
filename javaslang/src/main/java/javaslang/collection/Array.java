@@ -776,7 +776,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         if (length <= length()) {
             return this;
         } else {
-            return appendAll(Iterator.gen(() -> element).take(length - length()));
+            return appendAll(Iterator.continually(element).take(length - length()));
         }
     }
 

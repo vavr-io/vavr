@@ -56,7 +56,7 @@ public class Euler55Test {
     }
 
     private static boolean isLychrel(int n) {
-        return Stream.gen(String.valueOf(n), Euler55Test::next)
+        return Stream.iterate(String.valueOf(n), Euler55Test::next)
                 .tail()  // Surprisingly, there are palindromic numbers that are themselves Lychrel numbers
                 .take(50)
                 .find(Utils::isPalindrome)

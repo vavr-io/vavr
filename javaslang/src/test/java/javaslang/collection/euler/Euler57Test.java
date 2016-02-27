@@ -50,7 +50,7 @@ public class Euler57Test {
     }
 
     private static Stream<Tuple2<BigDecimal, BigDecimal>> fractions() {
-        return Stream.gen(Tuple.of(BigDecimal.ONE, BigDecimal.ONE), Euler57Test::it);
+        return Stream.iterate(Tuple.of(BigDecimal.ONE, BigDecimal.ONE), Euler57Test::it);
     }
 
     /**

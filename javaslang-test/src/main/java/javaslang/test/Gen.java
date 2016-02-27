@@ -60,7 +60,7 @@ public interface Gen<T> {
     }
 
     static <T> Gen<T> of(T seed, Function<? super T, ? extends T> next) {
-        final Iterator<T> iterator = Stream.gen(seed, next).iterator();
+        final Iterator<T> iterator = Stream.iterate(seed, next).iterator();
         return ignored -> iterator.next();
     }
 
