@@ -46,8 +46,8 @@ import static javaslang.Match.Match;
  *
  * // generators
  * Stream.cons(Object, Supplier)   // e.g. Stream.cons(current, () -&gt; next(current));
- * Stream.gen(Supplier)            // e.g. Stream.gen(Math::random);
- * Stream.gen(Object, Function)    // e.g. Stream.gen(1, i -&gt; i * 2);
+ * Stream.continually(Supplier)    // e.g. Stream.continually(Math::random);
+ * Stream.iterate(Object, Function)// e.g. Stream.iterate(1, i -&gt; i * 2);
  * </code>
  * </pre>
  *
@@ -75,7 +75,7 @@ import static javaslang.Match.Match;
  * <pre>
  * <code>
  * // = Stream(2L, 3L, 5L, 7L, ...)
- * Stream.gen(2L, PrimeNumbers::nextPrimeFrom)
+ * Stream.iterate(2L, PrimeNumbers::nextPrimeFrom)
  *
  * // helpers
  *
@@ -148,9 +148,9 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param <T>      value type
      * @return A new Stream
      */
-    static <T> Stream<T> gen(Supplier<? extends T> supplier) {
+    static <T> Stream<T> continually(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return Stream.ofAll(Iterator.gen(supplier));
+        return Stream.ofAll(Iterator.continually(supplier));
     }
 
     /**
@@ -162,9 +162,9 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param <T>  value type
      * @return A new Stream
      */
-    static <T> Stream<T> gen(T seed, Function<? super T, ? extends T> f) {
+    static <T> Stream<T> iterate(T seed, Function<? super T, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return Stream.ofAll(Iterator.gen(seed, f));
+        return Stream.ofAll(Iterator.iterate(seed, f));
     }
 
     /**
@@ -597,8 +597,8 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param <T> Element type
      * @return A new Stream containing infinite {@code t}'s.
      */
-    static <T> Stream<T> repeat(T t) {
-        return Stream.ofAll(Iterator.repeat(t));
+    static <T> Stream<T> continually(T t) {
+        return Stream.ofAll(Iterator.continually(t));
     }
 
     @Override
@@ -907,7 +907,7 @@ public interface Stream<T> extends LinearSeq<T> {
         if (length <= 0) {
             return this;
         } else if (isEmpty()) {
-            return Stream.ofAll(Iterator.gen(() -> element).take(length));
+            return Stream.ofAll(Iterator.continually(element).take(length));
         } else {
             return cons(head(), () -> tail().padTo(length - 1, element));
         }
@@ -1338,7 +1338,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return new {@code Stream} composed from this stream extended with a Stream of provided value
      */
     default Stream<T> extend(T next) {
-        return Stream.ofAll(this.appendAll(Stream.repeat(next)));
+        return Stream.ofAll(this.appendAll(Stream.continually(next)));
     }
 
     /**
@@ -1349,7 +1349,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     default Stream<T> extend(Supplier<? extends T> nextSupplier) {
         Objects.requireNonNull(nextSupplier, "nextSupplier is null");
-        return Stream.ofAll(appendAll(Stream.gen(nextSupplier)));
+        return Stream.ofAll(appendAll(Stream.continually(nextSupplier)));
     }
 
     /**
@@ -1373,7 +1373,7 @@ public interface Stream<T> extends LinearSeq<T> {
                 @Override
                 protected T getNext() {
                     if (stream.isEmpty()) {
-                        stream = Stream.gen(nextFunction.apply(last), nextFunction);
+                        stream = Stream.iterate(nextFunction.apply(last), nextFunction);
                     }
                     last = stream.head();
                     stream = stream.tail();

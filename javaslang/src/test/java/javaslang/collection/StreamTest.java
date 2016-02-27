@@ -195,25 +195,25 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(Stream.from(Long.MAX_VALUE).take(2)).isEqualTo(Stream.of(Long.MAX_VALUE, Long.MAX_VALUE + 1));
     }
 
-    // -- static gen(Supplier)
+    // -- static continually(Supplier)
 
     @Test
     public void shouldGenerateInfiniteStreamBasedOnSupplier() {
-        assertThat(Stream.gen(() -> 1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
+        assertThat(Stream.continually(() -> 1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
     }
 
-    // -- static gen(T, Function)
+    // -- static iterate(T, Function)
 
     @Test
     public void shouldGenerateInfiniteStreamBasedOnSupplierWithAccessToPreviousValue() {
-        assertThat(Stream.gen(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
+        assertThat(Stream.iterate(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
     }
 
-    // -- static repeat(T)
+    // -- static continually (T)
 
     @Test
     public void shouldGenerateInfiniteStreamBasedOnRepeatedElement() {
-        assertThat(Stream.repeat(2).take(3).reduce((i, j) -> i + j)).isEqualTo(6);
+        assertThat(Stream.continually(2).take(3).reduce((i, j) -> i + j)).isEqualTo(6);
     }
 
     // -- static cons(T, Supplier)
@@ -260,7 +260,7 @@ public class StreamTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldAppendAllToInfiniteStream() {
-        assertThat(Stream.from(1).appendAll(Stream.gen(() -> -1)).take(6)).isEqualTo(of(1, 2, 3, 4, 5, 6));
+        assertThat(Stream.from(1).appendAll(Stream.continually(() -> -1)).take(6)).isEqualTo(of(1, 2, 3, 4, 5, 6));
     }
 
     // -- combinations
@@ -293,7 +293,7 @@ public class StreamTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldFlatMapInfiniteTraversable() {
-        assertThat(Stream.gen(1, i -> i + 1).flatMap(i -> List.of(i, 2 * i)).take(7))
+        assertThat(Stream.iterate(1, i -> i + 1).flatMap(i -> List.of(i, 2 * i)).take(7))
                 .isEqualTo(Stream.of(1, 2, 2, 4, 3, 6, 4));
     }
 
@@ -330,7 +330,7 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(Stream
                 .of(2)
                 .appendSelf(self -> Stream
-                        .gen(3, i -> i + 2)
+                        .iterate(3, i -> i + 2)
                         .filter(i -> self.takeWhile(j -> j * j <= i).forAll(k -> i % k > 0)))
                 .take(10)).isEqualTo(Stream.of(2, 3, 5, 7, 11, 13, 17, 19, 23, 29));
     }
@@ -354,7 +354,7 @@ public class StreamTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldRecognizeInfiniteDoesContainSlice() {
-        final boolean actual = Stream.gen(1, i -> i + 1).containsSlice(of(12, 13, 14));
+        final boolean actual = Stream.iterate(1, i -> i + 1).containsSlice(of(12, 13, 14));
         assertThat(actual).isTrue();
     }
 
@@ -417,17 +417,17 @@ public class StreamTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldReturnTheOriginalStreamWhenTryingToExtendInfiniteStreamWithConstantValue() {
-        assertThat(Stream.repeat(1).extend(42).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
+        assertThat(Stream.continually(1).extend(42).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
     }
 
     @Test
     public void shouldReturnTheOriginalStreamWhenTryingToExtendInfiniteStreamWithSupplier() {
-        assertThat(Stream.repeat(1).extend(() -> 42).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
+        assertThat(Stream.continually(1).extend(() -> 42).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
     }
 
     @Test
     public void shouldReturnTheOriginalStreamWhenTryingToExtendInfiniteStreamWithFunction() {
-        assertThat(Stream.repeat(1).extend(i -> i + 1).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
+        assertThat(Stream.continually(1).extend(i -> i + 1).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
     }
 
     // -- toString
@@ -505,7 +505,7 @@ public class StreamTest extends AbstractLinearSeqTest {
     @Test
     public void shouldEvaluateTailAtMostOnce() {
         final int[] counter = { 0 };
-        final Stream<Integer> stream = Stream.gen(() -> counter[0]++);
+        final Stream<Integer> stream = Stream.continually(() -> counter[0]++);
         // this test ensures that the `tail.append(100)` does not modify the tail elements
         final Stream<Integer> tail = stream.tail().append(100);
         final String expected = stream.drop(1).take(3).mkString(",");

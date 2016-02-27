@@ -842,7 +842,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
-     * Returns an infinitely iterator of int values starting from {@code from}.
+     * Returns an infinite iterator of int values starting from {@code value}.
      * <p>
      * The {@code Iterator} extends to {@code Integer.MIN_VALUE} when passing {@code Integer.MAX_VALUE}.
      *
@@ -866,7 +866,34 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
-     * Returns an infinitely iterator of long values starting from {@code from}.
+     * Returns an infinite iterator of int values starting from {@code value} and spaced by {@code step}.
+     * <p>
+     * The {@code Iterator} extends to {@code Integer.MIN_VALUE} when passing {@code Integer.MAX_VALUE}.
+     *
+     * @param value a start int value
+     * @param step the step by which to advance on each iteration
+     * @return a new {@code Iterator} of int values starting from {@code from}
+     */
+    static Iterator<Integer> from(int value, int step) {
+        return new AbstractIterator<Integer>() {
+            private int next = value;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Integer getNext() {
+                int result = next;
+                next += step;
+                return result;
+            }
+        };
+    }
+
+    /**
+     * Returns an infinite iterator of long values starting from {@code value}.
      * <p>
      * The {@code Iterator} extends to {@code Long.MIN_VALUE} when passing {@code Long.MAX_VALUE}.
      *
@@ -890,13 +917,40 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
-     * Generates an infinitely iterator using a value Supplier.
+     * Returns an infinite iterator of long values starting from {@code value} and spaced by {@code step}.
+     * <p>
+     * The {@code Iterator} extends to {@code Long.MIN_VALUE} when passing {@code Long.MAX_VALUE}.
+     *
+     * @param value a start long value
+     * @param step the step by which to advance on each iteration
+     * @return a new {@code Iterator} of long values starting from {@code from}
+     */
+    static Iterator<Long> from(long value, long step) {
+        return new AbstractIterator<Long>() {
+            private long next = value;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Long getNext() {
+                long result = next;
+                next += step;
+                return result;
+            }
+        };
+    }
+
+    /**
+     * Generates an infinite iterator using a value Supplier.
      *
      * @param supplier A Supplier of iterator values
      * @param <T>      value type
      * @return A new {@code Iterator}
      */
-    static <T> Iterator<T> gen(Supplier<? extends T> supplier) {
+    static <T> Iterator<T> continually(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return new AbstractIterator<T>() {
             @Override
@@ -912,7 +966,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
-     * Generates an infinitely iterator using a function to calculate the next value
+     * Generates an infinite iterator using a function to calculate the next value
      * based on the previous.
      *
      * @param seed The first value in the iterator
@@ -920,7 +974,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param <T>  value type
      * @return A new {@code Iterator}
      */
-    static <T> Iterator<T> gen(T seed, Function<? super T, ? extends T> f) {
+    static <T> Iterator<T> iterate(T seed, Function<? super T, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return new AbstractIterator<T>() {
             T next = seed;
@@ -940,13 +994,13 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
-     * Repeats an element infinitely often.
+     * Creates an infinite iterator returning the given element.
      *
      * @param t   An element
      * @param <T> Element type
      * @return A new Iterator containing infinite {@code t}'s.
      */
-    static <T> Iterator<T> repeat(T t) {
+    static <T> Iterator<T> continually(T t) {
         return new AbstractIterator<T>() {
             @Override
             public boolean hasNext() {

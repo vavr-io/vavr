@@ -798,7 +798,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         if (length <= length()) {
             return this;
         } else {
-            return appendAll(Iterator.gen(() -> element).take(length - length()));
+            return appendAll(Iterator.continually(element).take(length - length()));
         }
     }
 
