@@ -142,7 +142,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     /**
      * Convenience method for {@code put(entry._1, entry._2)}.
      *
-     * @param entry A Map.Tuple2
+     * @param entry A Tuple2 containing the key and value
      * @return A new Map containing these elements and that entry.
      */
     Map<K, V> put(Tuple2<? extends K, ? extends V> entry);
