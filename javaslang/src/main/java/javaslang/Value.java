@@ -445,6 +445,10 @@ public interface Value<T> extends Iterable<T> {
      * @return a new type-safe match builder.
      */
     Match<? extends Value<T>> match();
+    // TODO:
+    //    default <R, U extends Value<T>> Match<?> match(Match.Case<? extends U, ? extends R> cases) {
+    //        return Match.Match(this).of(cases);
+    //    }
 
     /**
      * Converts this to a {@link Array}.
