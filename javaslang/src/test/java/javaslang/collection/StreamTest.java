@@ -176,10 +176,24 @@ public class StreamTest extends AbstractLinearSeqTest {
     }
 
     @Test
-    public void shouldGenerateTerminatingIntStream() {
+    public void shouldGenerateOverflowingIntStream() {
         //noinspection NumericOverflow
         assertThat(Stream.from(Integer.MAX_VALUE).take(2))
                 .isEqualTo(Stream.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
+    }
+
+    // -- static from(int, int)
+
+    @Test
+    public void shouldGenerateIntStreamWithStep() {
+        assertThat(Stream.from(-1, 6).take(3)).isEqualTo(Stream.of(-1, 5, 11));
+    }
+
+    @Test
+    public void shouldGenerateOverflowingIntStreamWithStep() {
+        //noinspection NumericOverflow
+        assertThat(Stream.from(Integer.MAX_VALUE, 2).take(2))
+                .isEqualTo(Stream.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 2));
     }
 
     // -- static from(long)
@@ -190,11 +204,25 @@ public class StreamTest extends AbstractLinearSeqTest {
     }
 
     @Test
-    public void shouldGenerateTerminatingLongStream() {
+    public void shouldGenerateOverflowingLongStream() {
         //noinspection NumericOverflow
-        assertThat(Stream.from(Long.MAX_VALUE).take(2)).isEqualTo(Stream.of(Long.MAX_VALUE, Long.MAX_VALUE + 1));
+        assertThat(Stream.from(Long.MAX_VALUE).take(2))
+                .isEqualTo(Stream.of(Long.MAX_VALUE, Long.MAX_VALUE + 1));
     }
 
+    // -- static from(long, long)
+
+    @Test
+    public void shouldGenerateLongStreamWithStep() {
+        assertThat(Stream.from(-1L, 5L).take(3)).isEqualTo(Stream.of(-1L, 4L, 9L));
+    }
+
+    @Test
+    public void shouldGenerateOverflowingLongStreamWithStep() {
+        //noinspection NumericOverflow
+        assertThat(Stream.from(Long.MAX_VALUE, 2).take(2))
+                .isEqualTo(Stream.of(Long.MAX_VALUE, Long.MAX_VALUE + 2));
+    }
     // -- static continually(Supplier)
 
     @Test
@@ -412,7 +440,7 @@ public class StreamTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldReturnAnEmptyStreamWhenExtendingAnEmptyStreamWithFunction() {
-        assertThat(Stream.<Integer>of().extend(i -> i + 1)).isEqualTo(of());
+        assertThat(Stream.<Integer> of().extend(i -> i + 1)).isEqualTo(of());
     }
 
     @Test

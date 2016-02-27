@@ -118,7 +118,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     /**
-     * Returns an infinitely long Stream of int values starting from {@code from}.
+     * Returns an infinitely long Stream of {@code int} values starting from {@code from}.
      * <p>
      * The {@code Stream} extends to {@code Integer.MIN_VALUE} when passing {@code Integer.MAX_VALUE}.
      *
@@ -130,7 +130,20 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     /**
-     * Returns an infinitely long Stream of long values starting from {@code from}.
+     * Returns an infinite long Stream of {@code int} values starting from {@code value} and spaced by {@code step}.
+     * <p>
+     * The {@code Stream} extends to {@code Integer.MIN_VALUE} when passing {@code Integer.MAX_VALUE}.
+     *
+     * @param value a start int value
+     * @param step the step by which to advance on each next value
+     * @return a new {@code Stream} of int values starting from {@code from}
+     */
+    static Stream<Integer> from(int value, int step) {
+        return Stream.ofAll(Iterator.from(value, step));
+    }
+
+    /**
+     * Returns an infinitely long Stream of {@code long} values starting from {@code from}.
      * <p>
      * The {@code Stream} extends to {@code Integer.MIN_VALUE} when passing {@code Long.MAX_VALUE}.
      *
@@ -139,6 +152,19 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static Stream<Long> from(long value) {
         return Stream.ofAll(Iterator.from(value));
+    }
+
+    /**
+     * Returns an infinite long Stream of {@code long} values starting from {@code value} and spaced by {@code step}.
+     * <p>
+     * The {@code Stream} extends to {@code Long.MIN_VALUE} when passing {@code Long.MAX_VALUE}.
+     *
+     * @param value a start long value
+     * @param step the step by which to advance on each next value
+     * @return a new {@code Stream} of long values starting from {@code from}
+     */
+    static Stream<Long> from(long value, long step) {
+        return Stream.ofAll(Iterator.from(value, step));
     }
 
     /**
