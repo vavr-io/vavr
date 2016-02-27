@@ -54,7 +54,7 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
         for (K key : keys) {
             result = result.remove(key);
         }
-        return result == this ? (M) this : (M) result;
+        return (M) result;
     }
 
     @SuppressWarnings("unchecked")
