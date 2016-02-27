@@ -274,19 +274,21 @@ public class ValidationTest extends AbstractValueTest {
 
     @Test
     public void shouldProcessFunctionInForEach() {
-        final java.util.List<String> accumulator = new ArrayList<>();
 
-        Validation<String, String> v1 = Validation.valid("valid");
-        Validation<String, String> v2 = Validation.invalid("error");
+        { // Valid.forEach
+            java.util.List<String> accumulator = new ArrayList<>();
+            Validation<String, String> v1 = Validation.valid("valid");
+            v1.forEach(accumulator::add);
+            assertThat(accumulator.size()).isEqualTo(1);
+            assertThat(accumulator.get(0)).isEqualTo("valid");
+        }
 
-        accumulator.clear();
-        v1.forEach(accumulator::add);
-        assertThat(accumulator.size()).isEqualTo(1);
-        assertThat(accumulator.get(0)).isEqualTo("valid");
-
-        accumulator.clear();
-        v2.forEach(accumulator::add);
-        assertThat(accumulator.size()).isEqualTo(0);
+        { // Invalid.forEach
+            java.util.List<String> accumulator = new ArrayList<>();
+            Validation<String, String> v2 = Validation.invalid("error");
+            v2.forEach(accumulator::add);
+            assertThat(accumulator.size()).isEqualTo(0);
+        }
     }
 
     // -- combine and apply
