@@ -296,7 +296,8 @@ def generateMainClasses(): Unit = {
 
               // -- CASES
 
-              public interface Case<T, R> extends Function<T, Option<R>> {
+              // does not compile if interfaces are not fully qualified - wtf!?
+              public interface Case<T, R> extends java.util.function.Function<T, javaslang.control.Option<R>> {
               }
 
               public static final class Case0<T, R> implements Case<T, R> {
