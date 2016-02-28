@@ -261,21 +261,21 @@ def generateMainClasses(): Unit = {
 
             @SuppressWarnings({ "unchecked", "varargs" })
             @SafeVarargs
-            public final <SUP extends R, R> R of(Case<? extends T, ? extends R>... cases) {
-                return safe(cases).getOrElseThrow(() -> new MatchError(value));
+            public final <R> R of(Case<? extends T, ? extends R>... cases) {
+                return option(cases).getOrElseThrow(() -> new MatchError(value));
             }
 
             @SuppressWarnings({ "unchecked", "varargs" })
             @SafeVarargs
-            public final <SUP extends R, R> Option<R> safe(Case<? extends T, ? extends R>... cases) {
+            public final <R> $OptionType<R> option(Case<? extends T, ? extends R>... cases) {
                 Objects.requireNonNull(cases, "cases is null");
                 for (Case<? extends T, ? extends R> _case : cases) {
-                    final Option<R> it = ((Case<T, R>) _case).apply(value);
+                    final $OptionType<R> it = ((Case<T, R>) _case).apply(value);
                     if (it.isDefined()) {
                         return it;
                     }
                 }
-                return Option.none();
+                return $OptionType.none();
             }
 
             // -- static Match API
@@ -307,22 +307,12 @@ def generateMainClasses(): Unit = {
                 return Case(value, () -> retVal);
             }
 
-            public static <T, R> Case<T, R> Case(InversePattern<T> pattern, $FunctionType<? super T, ? extends R> f) {
-                return new Case1<>(new Pattern1<T, T>() {
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public Option<T> apply(Object o) {
-                        return pattern.apply((T) o);
-                    }
-                }, f);
-            }
-
-            public static <T, R> Case<T, R> Case(Pattern0 pattern, $SupplierType<? extends R> f) {
+            public static <T, R> Case<T, R> Case(Pattern0<T> pattern, $SupplierType<? extends R> f) {
                 return new Case0<>(pattern, f);
             }
 
             // syntactic sugar
-            public static <T, R> Case<T, R> Case(Pattern0 pattern, R retVal) {
+            public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
                 return new Case0<>(pattern, () -> retVal);
             }
 
@@ -342,65 +332,14 @@ def generateMainClasses(): Unit = {
               """
             })("\n\n")}
 
-            // -- Atomic matchers $$_, $$(), $$(val)
+            // -- CASES
 
-            /**
-             * Wildcard pattern.
-             * <p>
-             * Matches any value but does not extract it.
-             */
-            public static final Pattern0 $$_ = new Pattern0() {
-                @Override
-                public Option<Void> apply(Object any) {
-                    return Option.nothing();
-                }
-            };
-
-            /**
-             * Wildcard extractor.
-             * <p>
-             * Matches any value and extracts it as named lambda parameter.
-             *
-             * @param <T> injected type of the underlying value
-             * @return a new {@code InversePattern} instance
-             */
-            public static <T> InversePattern<T> $$() {
-                return new InversePattern<T>() {
-                    @Override
-                    public Option<T> apply(T t) {
-                        return Option.some(t);
-                    }
-                };
-            }
-
-            /**
-             * Value extractor.
-             * <p>
-             * Matches a specific value and extracts it as named lambda parameter.
-             *
-             * @param <T1>      type of the prototype
-             * @param prototype the value that should be equal to the underlying object
-             * @return a new {@code Pattern1} instance
-             */
-            public static <T1> Pattern1<T1, T1> $$(T1 prototype) {
-                return new Pattern1<T1, T1>() {
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public Option<T1> apply(Object that) {
-                        // 'that' is of type T1 when injected by a type-safe pattern
-                        return Objects.equals(that, prototype) ? Option.some((T1) that) : Option.none();
-                    }
-                };
-            }
-
-            // -- Match Cases
-
-            public interface Case<T, R> extends Function<Object, Option<R>> {
+            public interface Case<T, R> extends Function<T, Option<R>> {
             }
 
             public static final class Case0<T, R> implements Case<T, R> {
 
-                private final Pattern0 pattern;
+                private final Pattern0<T> pattern;
                 private final $SupplierType<? extends R> f;
 
                 private Case0(Pattern0 pattern, $SupplierType<? extends R> f) {
@@ -409,24 +348,24 @@ def generateMainClasses(): Unit = {
                 }
 
                 @Override
-                public Option<R> apply(Object o) {
-                    return pattern.apply(o).map(ignored -> f.get());
+                public Option<R> apply(T obj) {
+                    return pattern.apply(obj).map(ignored -> f.get());
                 }
             }
 
             public static final class Case1<T, T1, R> implements Case<T, R> {
 
                 private final Pattern1<T, T1> pattern;
-                private final Function<? super T1, ? extends R> f;
+                private final $FunctionType<? super T1, ? extends R> f;
 
-                private Case1(Pattern1<T, T1> pattern, Function<? super T1, ? extends R> f) {
+                private Case1(Pattern1<T, T1> pattern, $FunctionType<? super T1, ? extends R> f) {
                     this.pattern = pattern;
                     this.f = f;
                 }
 
                 @Override
-                public Option<R> apply(Object o) {
-                    return pattern.apply(o).map(f::apply);
+                public $OptionType<R> apply(T obj) {
+                    return pattern.apply(obj).map(f);
                 }
             }
 
@@ -450,52 +389,91 @@ def generateMainClasses(): Unit = {
                     }
 
                     @Override
-                    public $OptionType<R> apply(Object o) {
-                        return pattern.apply(o).map(t -> f.apply(${(1 to i).gen(j => s"t._$j")(", ")}));
+                    public $OptionType<R> apply(T obj) {
+                        return pattern.apply(obj).map(t -> f.apply(${(1 to i).gen(j => s"t._$j")(", ")}));
                     }
                 }
               """
             })("\n\n")}
 
-            // -- Match Patterns
-            //    These can't be @FunctionalInterfaces because of ambiguities.
-            //    For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
+            // -- PATTERNS
 
-            // used by any-match $$() to inject a type into the pattern
-            public static abstract class InversePattern<T> {
+            // atomic patterns $$_, $$(), $$(val)
 
-                public abstract $OptionType<T> apply(T t);
-
-                @SuppressWarnings("unchecked")
-                public static <T> InversePattern<T> narrow(InversePattern<? extends T> p) {
-                    return (InversePattern<T>) p;
+            /**
+             * Wildcard pattern.
+             * <p>
+             * Matches any value but does not extract it.
+             */
+            public static final Pattern0<Object> $$_ = new Pattern0<Object>() {
+                @Override
+                public $OptionType<Void> apply(Object obj) {
+                    return $OptionType.nothing();
                 }
+            };
+
+            /**
+             * Wildcard extractor.
+             * <p>
+             * Matches any value and extracts it as named lambda parameter.
+             *
+             * @param <O> injected type of the underlying value
+             * @return a new {@code Pattern1} instance
+             */
+            public static <O> Pattern1<O, O> $$() {
+                return new Pattern1<O, O>() {
+                    @Override
+                    public $OptionType<O> apply(O obj) {
+                        return $OptionType.some(obj);
+                    }
+                };
             }
 
+            /**
+             * Value extractor.
+             * <p>
+             * Matches a specific value and extracts it as named lambda parameter.
+             *
+             * @param <O>       type of the prototype
+             * @param prototype the value that should be equal to the underlying object
+             * @return a new {@code Pattern1} instance
+             */
+            public static <O> Pattern1<O, O> $$(O prototype) {
+                return new Pattern1<O, O>() {
+                    @Override
+                    public $OptionType<O> apply(O obj) {
+                        return $Objects.equals(obj, prototype) ? $OptionType.some(obj) : $OptionType.none();
+                    }
+                };
+            }
+
+            // These can't be @FunctionalInterfaces because of ambiguities.
+            // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
+
             // no type forwarding via T here, type ignored
-            public static abstract class Pattern0 {
+            public static abstract class Pattern0<O> {
 
-                public abstract $OptionType<Void> apply(Object o);
+                public abstract $OptionType<Void> apply(O obj);
 
+                // TODO: DELME
                 // for @Unapply result type Tuple0
-                public static <T> Pattern0 create(Class<? super T> c) {
-                    return new Pattern0() {
-                        @SuppressWarnings("unchecked")
+                public static <O> Pattern0 create(Class<? super O> c) {
+                    return new Pattern0<O>() {
                         @Override
-                        public Option<Void> apply(Object o) {
-                            return (o != null && c.isAssignableFrom(o.getClass())) ? Option.nothing() : Option.none();
+                        public Option<Void> apply(O obj) {
+                            return (obj != null && c.isAssignableFrom(obj.getClass())) ? Option.nothing() : Option.none();
                         }
                     };
                 }
 
+                // TODO: DELME
                 // should have been Class<T> instead of Class<? super T> but it does not work for complex generic types
-                public static <T> Pattern0 create(Class<? super T> c, Function<T, Option<Void>> unapply) {
-                    return new Pattern0() {
-                        @SuppressWarnings("unchecked")
+                public static <O> Pattern0 create(Class<? super O> c, Function<O, Option<Void>> unapply) {
+                    return new Pattern0<O>() {
                         @Override
-                        public Option<Void> apply(Object o) {
-                            if (o != null && c.isAssignableFrom(o.getClass())) {
-                                return unapply.apply(((T) o));
+                        public Option<Void> apply(O obj) {
+                            if (obj != null && c.isAssignableFrom(obj.getClass())) {
+                                return unapply.apply(obj);
                             } else {
                                 return Option.none();
                             }
@@ -503,6 +481,7 @@ def generateMainClasses(): Unit = {
                     };
                 }
 
+                // TODO: DELME
                 public static $OptionType<Void> equals(Object o1, Object o2) {
                     return Objects.equals(o1, o2) ? $OptionType.nothing() : $OptionType.none();
                 }
@@ -513,17 +492,17 @@ def generateMainClasses(): Unit = {
               val resultType = if (i == 1) "T1" else s"Tuple$i<$generics>"
               val FunctionType = im.getType("java.util.function.Function")
               xs"""
-                public static abstract class Pattern$i<T, $generics> {
+                public static abstract class Pattern$i<O, $generics> {
 
-                    public abstract Option<$resultType> apply(Object o);
+                    public abstract Option<$resultType> apply(O obj);
 
-                    public static <T, $generics> Pattern$i<T, $generics> create(Class<? super T> c, $FunctionType<T, Option<$resultType>> unapply) {
-                        return new Pattern$i<T, $generics>() {
-                            @SuppressWarnings("unchecked")
+                    // TODO: DELME
+                    public static <O, $generics> Pattern$i<O, $generics> create(Class<? super O> c, $FunctionType<O, Option<$resultType>> unapply) {
+                        return new Pattern$i<O, $generics>() {
                             @Override
-                            public Option<$resultType> apply(Object o) {
-                                if (o != null && c.isAssignableFrom(o.getClass())) {
-                                    return unapply.apply(((T) o));
+                            public Option<$resultType> apply(O obj) {
+                                if (obj != null && c.isAssignableFrom(obj.getClass())) {
+                                    return unapply.apply(obj);
                                 } else {
                                     return Option.none();
                                 }

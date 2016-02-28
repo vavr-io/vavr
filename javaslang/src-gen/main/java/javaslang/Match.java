@@ -48,13 +48,13 @@ public final class Match<T> {
 
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    public final <SUP extends R, R> R of(Case<? extends T, ? extends R>... cases) {
-        return safe(cases).getOrElseThrow(() -> new MatchError(value));
+    public final <R> R of(Case<? extends T, ? extends R>... cases) {
+        return option(cases).getOrElseThrow(() -> new MatchError(value));
     }
 
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    public final <SUP extends R, R> Option<R> safe(Case<? extends T, ? extends R>... cases) {
+    public final <R> Option<R> option(Case<? extends T, ? extends R>... cases) {
         Objects.requireNonNull(cases, "cases is null");
         for (Case<? extends T, ? extends R> _case : cases) {
             final Option<R> it = ((Case<T, R>) _case).apply(value);
@@ -94,22 +94,12 @@ public final class Match<T> {
         return Case(value, () -> retVal);
     }
 
-    public static <T, R> Case<T, R> Case(InversePattern<T> pattern, Function<? super T, ? extends R> f) {
-        return new Case1<>(new Pattern1<T, T>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public Option<T> apply(Object o) {
-                return pattern.apply((T) o);
-            }
-        }, f);
-    }
-
-    public static <T, R> Case<T, R> Case(Pattern0 pattern, Supplier<? extends R> f) {
+    public static <T, R> Case<T, R> Case(Pattern0<T> pattern, Supplier<? extends R> f) {
         return new Case0<>(pattern, f);
     }
 
     // syntactic sugar
-    public static <T, R> Case<T, R> Case(Pattern0 pattern, R retVal) {
+    public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
         return new Case0<>(pattern, () -> retVal);
     }
 
@@ -153,65 +143,14 @@ public final class Match<T> {
         return new Case8<>(pattern, f);
     }
 
-    // -- Atomic matchers $_, $(), $(val)
+    // -- CASES
 
-    /**
-     * Wildcard pattern.
-     * <p>
-     * Matches any value but does not extract it.
-     */
-    public static final Pattern0 $_ = new Pattern0() {
-        @Override
-        public Option<Void> apply(Object any) {
-            return Option.nothing();
-        }
-    };
-
-    /**
-     * Wildcard extractor.
-     * <p>
-     * Matches any value and extracts it as named lambda parameter.
-     *
-     * @param <T> injected type of the underlying value
-     * @return a new {@code InversePattern} instance
-     */
-    public static <T> InversePattern<T> $() {
-        return new InversePattern<T>() {
-            @Override
-            public Option<T> apply(T t) {
-                return Option.some(t);
-            }
-        };
-    }
-
-    /**
-     * Value extractor.
-     * <p>
-     * Matches a specific value and extracts it as named lambda parameter.
-     *
-     * @param <T1>      type of the prototype
-     * @param prototype the value that should be equal to the underlying object
-     * @return a new {@code Pattern1} instance
-     */
-    public static <T1> Pattern1<T1, T1> $(T1 prototype) {
-        return new Pattern1<T1, T1>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public Option<T1> apply(Object that) {
-                // 'that' is of type T1 when injected by a type-safe pattern
-                return Objects.equals(that, prototype) ? Option.some((T1) that) : Option.none();
-            }
-        };
-    }
-
-    // -- Match Cases
-
-    public interface Case<T, R> extends Function<Object, Option<R>> {
+    public interface Case<T, R> extends Function<T, Option<R>> {
     }
 
     public static final class Case0<T, R> implements Case<T, R> {
 
-        private final Pattern0 pattern;
+        private final Pattern0<T> pattern;
         private final Supplier<? extends R> f;
 
         private Case0(Pattern0 pattern, Supplier<? extends R> f) {
@@ -220,8 +159,8 @@ public final class Match<T> {
         }
 
         @Override
-        public Option<R> apply(Object o) {
-            return pattern.apply(o).map(ignored -> f.get());
+        public Option<R> apply(T obj) {
+            return pattern.apply(obj).map(ignored -> f.get());
         }
     }
 
@@ -236,8 +175,8 @@ public final class Match<T> {
         }
 
         @Override
-        public Option<R> apply(Object o) {
-            return pattern.apply(o).map(f::apply);
+        public Option<R> apply(T obj) {
+            return pattern.apply(obj).map(f);
         }
     }
 
@@ -252,8 +191,8 @@ public final class Match<T> {
         }
 
         @Override
-        public Option<R> apply(Object o) {
-            return pattern.apply(o).map(t -> f.apply(t._1, t._2));
+        public Option<R> apply(T obj) {
+            return pattern.apply(obj).map(t -> f.apply(t._1, t._2));
         }
     }
 
@@ -268,8 +207,8 @@ public final class Match<T> {
         }
 
         @Override
-        public Option<R> apply(Object o) {
-            return pattern.apply(o).map(t -> f.apply(t._1, t._2, t._3));
+        public Option<R> apply(T obj) {
+            return pattern.apply(obj).map(t -> f.apply(t._1, t._2, t._3));
         }
     }
 
@@ -284,8 +223,8 @@ public final class Match<T> {
         }
 
         @Override
-        public Option<R> apply(Object o) {
-            return pattern.apply(o).map(t -> f.apply(t._1, t._2, t._3, t._4));
+        public Option<R> apply(T obj) {
+            return pattern.apply(obj).map(t -> f.apply(t._1, t._2, t._3, t._4));
         }
     }
 
@@ -300,8 +239,8 @@ public final class Match<T> {
         }
 
         @Override
-        public Option<R> apply(Object o) {
-            return pattern.apply(o).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5));
+        public Option<R> apply(T obj) {
+            return pattern.apply(obj).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5));
         }
     }
 
@@ -316,8 +255,8 @@ public final class Match<T> {
         }
 
         @Override
-        public Option<R> apply(Object o) {
-            return pattern.apply(o).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5, t._6));
+        public Option<R> apply(T obj) {
+            return pattern.apply(obj).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5, t._6));
         }
     }
 
@@ -332,8 +271,8 @@ public final class Match<T> {
         }
 
         @Override
-        public Option<R> apply(Object o) {
-            return pattern.apply(o).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7));
+        public Option<R> apply(T obj) {
+            return pattern.apply(obj).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7));
         }
     }
 
@@ -348,50 +287,89 @@ public final class Match<T> {
         }
 
         @Override
-        public Option<R> apply(Object o) {
-            return pattern.apply(o).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8));
+        public Option<R> apply(T obj) {
+            return pattern.apply(obj).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8));
         }
     }
 
-    // -- Match Patterns
-    //    These can't be @FunctionalInterfaces because of ambiguities.
-    //    For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
+    // -- PATTERNS
 
-    // used by any-match $() to inject a type into the pattern
-    public static abstract class InversePattern<T> {
+    // atomic patterns $_, $(), $(val)
 
-        public abstract Option<T> apply(T t);
-
-        @SuppressWarnings("unchecked")
-        public static <T> InversePattern<T> narrow(InversePattern<? extends T> p) {
-            return (InversePattern<T>) p;
+    /**
+     * Wildcard pattern.
+     * <p>
+     * Matches any value but does not extract it.
+     */
+    public static final Pattern0<Object> $_ = new Pattern0<Object>() {
+        @Override
+        public Option<Void> apply(Object obj) {
+            return Option.nothing();
         }
+    };
+
+    /**
+     * Wildcard extractor.
+     * <p>
+     * Matches any value and extracts it as named lambda parameter.
+     *
+     * @param <O> injected type of the underlying value
+     * @return a new {@code Pattern1} instance
+     */
+    public static <O> Pattern1<O, O> $() {
+        return new Pattern1<O, O>() {
+            @Override
+            public Option<O> apply(O obj) {
+                return Option.some(obj);
+            }
+        };
     }
+
+    /**
+     * Value extractor.
+     * <p>
+     * Matches a specific value and extracts it as named lambda parameter.
+     *
+     * @param <O>       type of the prototype
+     * @param prototype the value that should be equal to the underlying object
+     * @return a new {@code Pattern1} instance
+     */
+    public static <O> Pattern1<O, O> $(O prototype) {
+        return new Pattern1<O, O>() {
+            @Override
+            public Option<O> apply(O obj) {
+                return Objects.equals(obj, prototype) ? Option.some(obj) : Option.none();
+            }
+        };
+    }
+
+    // These can't be @FunctionalInterfaces because of ambiguities.
+    // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
 
     // no type forwarding via T here, type ignored
-    public static abstract class Pattern0 {
+    public static abstract class Pattern0<O> {
 
-        public abstract Option<Void> apply(Object o);
+        public abstract Option<Void> apply(O obj);
 
+        // TODO: DELME
         // for @Unapply result type Tuple0
-        public static <T> Pattern0 create(Class<? super T> c) {
-            return new Pattern0() {
-                @SuppressWarnings("unchecked")
+        public static <O> Pattern0 create(Class<? super O> c) {
+            return new Pattern0<O>() {
                 @Override
-                public Option<Void> apply(Object o) {
-                    return (o != null && c.isAssignableFrom(o.getClass())) ? Option.nothing() : Option.none();
+                public Option<Void> apply(O obj) {
+                    return (obj != null && c.isAssignableFrom(obj.getClass())) ? Option.nothing() : Option.none();
                 }
             };
         }
 
+        // TODO: DELME
         // should have been Class<T> instead of Class<? super T> but it does not work for complex generic types
-        public static <T> Pattern0 create(Class<? super T> c, Function<T, Option<Void>> unapply) {
-            return new Pattern0() {
-                @SuppressWarnings("unchecked")
+        public static <O> Pattern0 create(Class<? super O> c, Function<O, Option<Void>> unapply) {
+            return new Pattern0<O>() {
                 @Override
-                public Option<Void> apply(Object o) {
-                    if (o != null && c.isAssignableFrom(o.getClass())) {
-                        return unapply.apply(((T) o));
+                public Option<Void> apply(O obj) {
+                    if (obj != null && c.isAssignableFrom(obj.getClass())) {
+                        return unapply.apply(obj);
                     } else {
                         return Option.none();
                     }
@@ -399,22 +377,23 @@ public final class Match<T> {
             };
         }
 
+        // TODO: DELME
         public static Option<Void> equals(Object o1, Object o2) {
             return Objects.equals(o1, o2) ? Option.nothing() : Option.none();
         }
     }
 
-    public static abstract class Pattern1<T, T1> {
+    public static abstract class Pattern1<O, T1> {
 
-        public abstract Option<T1> apply(Object o);
+        public abstract Option<T1> apply(O obj);
 
-        public static <T, T1> Pattern1<T, T1> create(Class<? super T> c, Function<T, Option<T1>> unapply) {
-            return new Pattern1<T, T1>() {
-                @SuppressWarnings("unchecked")
+        // TODO: DELME
+        public static <O, T1> Pattern1<O, T1> create(Class<? super O> c, Function<O, Option<T1>> unapply) {
+            return new Pattern1<O, T1>() {
                 @Override
-                public Option<T1> apply(Object o) {
-                    if (o != null && c.isAssignableFrom(o.getClass())) {
-                        return unapply.apply(((T) o));
+                public Option<T1> apply(O obj) {
+                    if (obj != null && c.isAssignableFrom(obj.getClass())) {
+                        return unapply.apply(obj);
                     } else {
                         return Option.none();
                     }
@@ -423,17 +402,17 @@ public final class Match<T> {
         }
     }
 
-    public static abstract class Pattern2<T, T1, T2> {
+    public static abstract class Pattern2<O, T1, T2> {
 
-        public abstract Option<Tuple2<T1, T2>> apply(Object o);
+        public abstract Option<Tuple2<T1, T2>> apply(O obj);
 
-        public static <T, T1, T2> Pattern2<T, T1, T2> create(Class<? super T> c, Function<T, Option<Tuple2<T1, T2>>> unapply) {
-            return new Pattern2<T, T1, T2>() {
-                @SuppressWarnings("unchecked")
+        // TODO: DELME
+        public static <O, T1, T2> Pattern2<O, T1, T2> create(Class<? super O> c, Function<O, Option<Tuple2<T1, T2>>> unapply) {
+            return new Pattern2<O, T1, T2>() {
                 @Override
-                public Option<Tuple2<T1, T2>> apply(Object o) {
-                    if (o != null && c.isAssignableFrom(o.getClass())) {
-                        return unapply.apply(((T) o));
+                public Option<Tuple2<T1, T2>> apply(O obj) {
+                    if (obj != null && c.isAssignableFrom(obj.getClass())) {
+                        return unapply.apply(obj);
                     } else {
                         return Option.none();
                     }
@@ -442,17 +421,17 @@ public final class Match<T> {
         }
     }
 
-    public static abstract class Pattern3<T, T1, T2, T3> {
+    public static abstract class Pattern3<O, T1, T2, T3> {
 
-        public abstract Option<Tuple3<T1, T2, T3>> apply(Object o);
+        public abstract Option<Tuple3<T1, T2, T3>> apply(O obj);
 
-        public static <T, T1, T2, T3> Pattern3<T, T1, T2, T3> create(Class<? super T> c, Function<T, Option<Tuple3<T1, T2, T3>>> unapply) {
-            return new Pattern3<T, T1, T2, T3>() {
-                @SuppressWarnings("unchecked")
+        // TODO: DELME
+        public static <O, T1, T2, T3> Pattern3<O, T1, T2, T3> create(Class<? super O> c, Function<O, Option<Tuple3<T1, T2, T3>>> unapply) {
+            return new Pattern3<O, T1, T2, T3>() {
                 @Override
-                public Option<Tuple3<T1, T2, T3>> apply(Object o) {
-                    if (o != null && c.isAssignableFrom(o.getClass())) {
-                        return unapply.apply(((T) o));
+                public Option<Tuple3<T1, T2, T3>> apply(O obj) {
+                    if (obj != null && c.isAssignableFrom(obj.getClass())) {
+                        return unapply.apply(obj);
                     } else {
                         return Option.none();
                     }
@@ -461,17 +440,17 @@ public final class Match<T> {
         }
     }
 
-    public static abstract class Pattern4<T, T1, T2, T3, T4> {
+    public static abstract class Pattern4<O, T1, T2, T3, T4> {
 
-        public abstract Option<Tuple4<T1, T2, T3, T4>> apply(Object o);
+        public abstract Option<Tuple4<T1, T2, T3, T4>> apply(O obj);
 
-        public static <T, T1, T2, T3, T4> Pattern4<T, T1, T2, T3, T4> create(Class<? super T> c, Function<T, Option<Tuple4<T1, T2, T3, T4>>> unapply) {
-            return new Pattern4<T, T1, T2, T3, T4>() {
-                @SuppressWarnings("unchecked")
+        // TODO: DELME
+        public static <O, T1, T2, T3, T4> Pattern4<O, T1, T2, T3, T4> create(Class<? super O> c, Function<O, Option<Tuple4<T1, T2, T3, T4>>> unapply) {
+            return new Pattern4<O, T1, T2, T3, T4>() {
                 @Override
-                public Option<Tuple4<T1, T2, T3, T4>> apply(Object o) {
-                    if (o != null && c.isAssignableFrom(o.getClass())) {
-                        return unapply.apply(((T) o));
+                public Option<Tuple4<T1, T2, T3, T4>> apply(O obj) {
+                    if (obj != null && c.isAssignableFrom(obj.getClass())) {
+                        return unapply.apply(obj);
                     } else {
                         return Option.none();
                     }
@@ -480,17 +459,17 @@ public final class Match<T> {
         }
     }
 
-    public static abstract class Pattern5<T, T1, T2, T3, T4, T5> {
+    public static abstract class Pattern5<O, T1, T2, T3, T4, T5> {
 
-        public abstract Option<Tuple5<T1, T2, T3, T4, T5>> apply(Object o);
+        public abstract Option<Tuple5<T1, T2, T3, T4, T5>> apply(O obj);
 
-        public static <T, T1, T2, T3, T4, T5> Pattern5<T, T1, T2, T3, T4, T5> create(Class<? super T> c, Function<T, Option<Tuple5<T1, T2, T3, T4, T5>>> unapply) {
-            return new Pattern5<T, T1, T2, T3, T4, T5>() {
-                @SuppressWarnings("unchecked")
+        // TODO: DELME
+        public static <O, T1, T2, T3, T4, T5> Pattern5<O, T1, T2, T3, T4, T5> create(Class<? super O> c, Function<O, Option<Tuple5<T1, T2, T3, T4, T5>>> unapply) {
+            return new Pattern5<O, T1, T2, T3, T4, T5>() {
                 @Override
-                public Option<Tuple5<T1, T2, T3, T4, T5>> apply(Object o) {
-                    if (o != null && c.isAssignableFrom(o.getClass())) {
-                        return unapply.apply(((T) o));
+                public Option<Tuple5<T1, T2, T3, T4, T5>> apply(O obj) {
+                    if (obj != null && c.isAssignableFrom(obj.getClass())) {
+                        return unapply.apply(obj);
                     } else {
                         return Option.none();
                     }
@@ -499,17 +478,17 @@ public final class Match<T> {
         }
     }
 
-    public static abstract class Pattern6<T, T1, T2, T3, T4, T5, T6> {
+    public static abstract class Pattern6<O, T1, T2, T3, T4, T5, T6> {
 
-        public abstract Option<Tuple6<T1, T2, T3, T4, T5, T6>> apply(Object o);
+        public abstract Option<Tuple6<T1, T2, T3, T4, T5, T6>> apply(O obj);
 
-        public static <T, T1, T2, T3, T4, T5, T6> Pattern6<T, T1, T2, T3, T4, T5, T6> create(Class<? super T> c, Function<T, Option<Tuple6<T1, T2, T3, T4, T5, T6>>> unapply) {
-            return new Pattern6<T, T1, T2, T3, T4, T5, T6>() {
-                @SuppressWarnings("unchecked")
+        // TODO: DELME
+        public static <O, T1, T2, T3, T4, T5, T6> Pattern6<O, T1, T2, T3, T4, T5, T6> create(Class<? super O> c, Function<O, Option<Tuple6<T1, T2, T3, T4, T5, T6>>> unapply) {
+            return new Pattern6<O, T1, T2, T3, T4, T5, T6>() {
                 @Override
-                public Option<Tuple6<T1, T2, T3, T4, T5, T6>> apply(Object o) {
-                    if (o != null && c.isAssignableFrom(o.getClass())) {
-                        return unapply.apply(((T) o));
+                public Option<Tuple6<T1, T2, T3, T4, T5, T6>> apply(O obj) {
+                    if (obj != null && c.isAssignableFrom(obj.getClass())) {
+                        return unapply.apply(obj);
                     } else {
                         return Option.none();
                     }
@@ -518,17 +497,17 @@ public final class Match<T> {
         }
     }
 
-    public static abstract class Pattern7<T, T1, T2, T3, T4, T5, T6, T7> {
+    public static abstract class Pattern7<O, T1, T2, T3, T4, T5, T6, T7> {
 
-        public abstract Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> apply(Object o);
+        public abstract Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> apply(O obj);
 
-        public static <T, T1, T2, T3, T4, T5, T6, T7> Pattern7<T, T1, T2, T3, T4, T5, T6, T7> create(Class<? super T> c, Function<T, Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>>> unapply) {
-            return new Pattern7<T, T1, T2, T3, T4, T5, T6, T7>() {
-                @SuppressWarnings("unchecked")
+        // TODO: DELME
+        public static <O, T1, T2, T3, T4, T5, T6, T7> Pattern7<O, T1, T2, T3, T4, T5, T6, T7> create(Class<? super O> c, Function<O, Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>>> unapply) {
+            return new Pattern7<O, T1, T2, T3, T4, T5, T6, T7>() {
                 @Override
-                public Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> apply(Object o) {
-                    if (o != null && c.isAssignableFrom(o.getClass())) {
-                        return unapply.apply(((T) o));
+                public Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> apply(O obj) {
+                    if (obj != null && c.isAssignableFrom(obj.getClass())) {
+                        return unapply.apply(obj);
                     } else {
                         return Option.none();
                     }
@@ -537,17 +516,17 @@ public final class Match<T> {
         }
     }
 
-    public static abstract class Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> {
+    public static abstract class Pattern8<O, T1, T2, T3, T4, T5, T6, T7, T8> {
 
-        public abstract Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> apply(Object o);
+        public abstract Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> apply(O obj);
 
-        public static <T, T1, T2, T3, T4, T5, T6, T7, T8> Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> create(Class<? super T> c, Function<T, Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>> unapply) {
-            return new Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8>() {
-                @SuppressWarnings("unchecked")
+        // TODO: DELME
+        public static <O, T1, T2, T3, T4, T5, T6, T7, T8> Pattern8<O, T1, T2, T3, T4, T5, T6, T7, T8> create(Class<? super O> c, Function<O, Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>> unapply) {
+            return new Pattern8<O, T1, T2, T3, T4, T5, T6, T7, T8>() {
                 @Override
-                public Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> apply(Object o) {
-                    if (o != null && c.isAssignableFrom(o.getClass())) {
-                        return unapply.apply(((T) o));
+                public Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> apply(O obj) {
+                    if (obj != null && c.isAssignableFrom(obj.getClass())) {
+                        return unapply.apply(obj);
                     } else {
                         return Option.none();
                     }
