@@ -16,8 +16,6 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.Match.Match;
-
 /**
  * An immutable {@code Stream} is lazy sequence of elements which may be infinitely long.
  * Its immutability makes it suitable for concurrent programming.
@@ -135,7 +133,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * The {@code Stream} extends to {@code Integer.MIN_VALUE} when passing {@code Integer.MAX_VALUE}.
      *
      * @param value a start int value
-     * @param step the step by which to advance on each next value
+     * @param step  the step by which to advance on each next value
      * @return a new {@code Stream} of int values starting from {@code from}
      */
     static Stream<Integer> from(int value, int step) {
@@ -160,7 +158,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * The {@code Stream} extends to {@code Long.MIN_VALUE} when passing {@code Long.MAX_VALUE}.
      *
      * @param value a start long value
-     * @param step the step by which to advance on each next value
+     * @param step  the step by which to advance on each next value
      * @return a new {@code Stream} of long values starting from {@code from}
      */
     static Stream<Long> from(long value, long step) {
@@ -629,7 +627,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> append(T element) {
-        return isEmpty()? Stream.of(element): new AppendElements<>(head(), Queue.of(element), this::tail);
+        return isEmpty() ? Stream.of(element) : new AppendElements<>(head(), Queue.of(element), this::tail);
     }
 
     @Override
@@ -924,8 +922,8 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Match<Stream<T>> match() {
-        return Match(this);
+    default API.Match<Stream<T>> match() {
+        return API.Match(this);
     }
 
     @Override
@@ -1622,10 +1620,10 @@ interface StreamModule {
         @Override
         public Stream<T> tail() {
             Stream<T> t = tail.get();
-            if(t.isEmpty()) {
+            if (t.isEmpty()) {
                 return Stream.ofAll(queue);
             } else {
-                if(t instanceof ConsImpl) {
+                if (t instanceof ConsImpl) {
                     ConsImpl<T> c = (ConsImpl<T>) t;
                     return new AppendElements<>(c.head(), queue, c.tail);
                 } else {

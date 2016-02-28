@@ -575,7 +575,6 @@ public final class API {
      * @param <T> type of the value
      * @return a new {@code Match} instance
      */
-    @SuppressWarnings("MethodNameSameAsClassName")
     public static <T> Match<T> Match(T value) {
         return new Match<>(value);
     }
@@ -583,14 +582,10 @@ public final class API {
     // -- Cases
 
     public static <T, R> Case<T, R> Case(T value, Supplier<? extends R> f) {
-        return new Case0<>(new Pattern0<T>() {
-            @Override
-            public Option<Void> apply(Object o) {
-                return Pattern0.equals(o, value);
-            }
-        }, f);
+        return new Case0<>(Pattern0.of(value), f);
     }
 
+    // syntactic sugar
     public static <T, R> Case<T, R> Case(T value, R retVal) {
         return Case(value, () -> retVal);
     }
@@ -897,193 +892,48 @@ public final class API {
         // These can't be @FunctionalInterfaces because of ambiguities.
         // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
 
-        // no type forwarding via T here, type ignored
         public static abstract class Pattern0<O> {
-
             public abstract Option<Void> apply(O obj);
-
-            // TODO: DELME
-            // for @Unapply result type Tuple0
-            public static <O> Pattern0 create(Class<? super O> c) {
+            public static <O> Pattern0<O> of(O prototype) {
                 return new Pattern0<O>() {
                     @Override
                     public Option<Void> apply(O obj) {
-                        return (obj != null && c.isAssignableFrom(obj.getClass())) ? Option.nothing() : Option.none();
+                        return Objects.equals(obj, prototype) ? Option.nothing() : Option.none();
                     }
                 };
-            }
-
-            // TODO: DELME
-            // should have been Class<T> instead of Class<? super T> but it does not work for complex generic types
-            public static <O> Pattern0 create(Class<? super O> c, Function<O, Option<Void>> unapply) {
-                return new Pattern0<O>() {
-                    @Override
-                    public Option<Void> apply(O obj) {
-                        if (obj != null && c.isAssignableFrom(obj.getClass())) {
-                            return unapply.apply(obj);
-                        } else {
-                            return Option.none();
-                        }
-                    }
-                };
-            }
-
-            // TODO: DELME
-            public static Option<Void> equals(Object o1, Object o2) {
-                return Objects.equals(o1, o2) ? Option.nothing() : Option.none();
             }
         }
 
         public static abstract class Pattern1<O, T1> {
-
             public abstract Option<T1> apply(O obj);
-
-            // TODO: DELME
-            public static <O, T1> Pattern1<O, T1> create(Class<? super O> c, Function<O, Option<T1>> unapply) {
-                return new Pattern1<O, T1>() {
-                    @Override
-                    public Option<T1> apply(O obj) {
-                        if (obj != null && c.isAssignableFrom(obj.getClass())) {
-                            return unapply.apply(obj);
-                        } else {
-                            return Option.none();
-                        }
-                    }
-                };
-            }
         }
 
         public static abstract class Pattern2<O, T1, T2> {
-
             public abstract Option<Tuple2<T1, T2>> apply(O obj);
-
-            // TODO: DELME
-            public static <O, T1, T2> Pattern2<O, T1, T2> create(Class<? super O> c, Function<O, Option<Tuple2<T1, T2>>> unapply) {
-                return new Pattern2<O, T1, T2>() {
-                    @Override
-                    public Option<Tuple2<T1, T2>> apply(O obj) {
-                        if (obj != null && c.isAssignableFrom(obj.getClass())) {
-                            return unapply.apply(obj);
-                        } else {
-                            return Option.none();
-                        }
-                    }
-                };
-            }
         }
 
         public static abstract class Pattern3<O, T1, T2, T3> {
-
             public abstract Option<Tuple3<T1, T2, T3>> apply(O obj);
-
-            // TODO: DELME
-            public static <O, T1, T2, T3> Pattern3<O, T1, T2, T3> create(Class<? super O> c, Function<O, Option<Tuple3<T1, T2, T3>>> unapply) {
-                return new Pattern3<O, T1, T2, T3>() {
-                    @Override
-                    public Option<Tuple3<T1, T2, T3>> apply(O obj) {
-                        if (obj != null && c.isAssignableFrom(obj.getClass())) {
-                            return unapply.apply(obj);
-                        } else {
-                            return Option.none();
-                        }
-                    }
-                };
-            }
         }
 
         public static abstract class Pattern4<O, T1, T2, T3, T4> {
-
             public abstract Option<Tuple4<T1, T2, T3, T4>> apply(O obj);
-
-            // TODO: DELME
-            public static <O, T1, T2, T3, T4> Pattern4<O, T1, T2, T3, T4> create(Class<? super O> c, Function<O, Option<Tuple4<T1, T2, T3, T4>>> unapply) {
-                return new Pattern4<O, T1, T2, T3, T4>() {
-                    @Override
-                    public Option<Tuple4<T1, T2, T3, T4>> apply(O obj) {
-                        if (obj != null && c.isAssignableFrom(obj.getClass())) {
-                            return unapply.apply(obj);
-                        } else {
-                            return Option.none();
-                        }
-                    }
-                };
-            }
         }
 
         public static abstract class Pattern5<O, T1, T2, T3, T4, T5> {
-
             public abstract Option<Tuple5<T1, T2, T3, T4, T5>> apply(O obj);
-
-            // TODO: DELME
-            public static <O, T1, T2, T3, T4, T5> Pattern5<O, T1, T2, T3, T4, T5> create(Class<? super O> c, Function<O, Option<Tuple5<T1, T2, T3, T4, T5>>> unapply) {
-                return new Pattern5<O, T1, T2, T3, T4, T5>() {
-                    @Override
-                    public Option<Tuple5<T1, T2, T3, T4, T5>> apply(O obj) {
-                        if (obj != null && c.isAssignableFrom(obj.getClass())) {
-                            return unapply.apply(obj);
-                        } else {
-                            return Option.none();
-                        }
-                    }
-                };
-            }
         }
 
         public static abstract class Pattern6<O, T1, T2, T3, T4, T5, T6> {
-
             public abstract Option<Tuple6<T1, T2, T3, T4, T5, T6>> apply(O obj);
-
-            // TODO: DELME
-            public static <O, T1, T2, T3, T4, T5, T6> Pattern6<O, T1, T2, T3, T4, T5, T6> create(Class<? super O> c, Function<O, Option<Tuple6<T1, T2, T3, T4, T5, T6>>> unapply) {
-                return new Pattern6<O, T1, T2, T3, T4, T5, T6>() {
-                    @Override
-                    public Option<Tuple6<T1, T2, T3, T4, T5, T6>> apply(O obj) {
-                        if (obj != null && c.isAssignableFrom(obj.getClass())) {
-                            return unapply.apply(obj);
-                        } else {
-                            return Option.none();
-                        }
-                    }
-                };
-            }
         }
 
         public static abstract class Pattern7<O, T1, T2, T3, T4, T5, T6, T7> {
-
             public abstract Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> apply(O obj);
-
-            // TODO: DELME
-            public static <O, T1, T2, T3, T4, T5, T6, T7> Pattern7<O, T1, T2, T3, T4, T5, T6, T7> create(Class<? super O> c, Function<O, Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>>> unapply) {
-                return new Pattern7<O, T1, T2, T3, T4, T5, T6, T7>() {
-                    @Override
-                    public Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> apply(O obj) {
-                        if (obj != null && c.isAssignableFrom(obj.getClass())) {
-                            return unapply.apply(obj);
-                        } else {
-                            return Option.none();
-                        }
-                    }
-                };
-            }
         }
 
         public static abstract class Pattern8<O, T1, T2, T3, T4, T5, T6, T7, T8> {
-
             public abstract Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> apply(O obj);
-
-            // TODO: DELME
-            public static <O, T1, T2, T3, T4, T5, T6, T7, T8> Pattern8<O, T1, T2, T3, T4, T5, T6, T7, T8> create(Class<? super O> c, Function<O, Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>> unapply) {
-                return new Pattern8<O, T1, T2, T3, T4, T5, T6, T7, T8>() {
-                    @Override
-                    public Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> apply(O obj) {
-                        if (obj != null && c.isAssignableFrom(obj.getClass())) {
-                            return unapply.apply(obj);
-                        } else {
-                            return Option.none();
-                        }
-                    }
-                };
-            }
         }
     }
 }

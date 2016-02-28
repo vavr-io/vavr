@@ -16,8 +16,6 @@ import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.Match.Match;
-
 /**
  * An immutable {@code HashSet} implementation.
  *
@@ -636,8 +634,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Match<HashSet<T>> match() {
-        return Match(this);
+    public API.Match<HashSet<T>> match() {
+        return API.Match(this);
     }
 
     @Override
@@ -792,7 +790,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    public  <U> U transform(Function<? super HashSet<T>, ? extends U> f) {
+    public <U> U transform(Function<? super HashSet<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }

@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Match;
+import javaslang.API;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
@@ -166,7 +166,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     <U> IndexedSeq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    Match<? extends IndexedSeq<T>> match();
+    API.Match<? extends IndexedSeq<T>> match();
 
     @Override
     IndexedSeq<T> padTo(int length, T element);

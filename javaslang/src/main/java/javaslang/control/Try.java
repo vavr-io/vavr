@@ -5,7 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.Match;
+import javaslang.API;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -19,8 +19,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import static javaslang.Match.*;
 
 /**
  * An implementation similar to Scala's Try control.
@@ -418,8 +416,8 @@ public interface Try<T> extends Value<T> {
     }
 
     @Override
-    default Match<Try<T>> match() {
-        return Match(this);
+    default API.Match<Try<T>> match() {
+        return API.Match(this);
     }
 
     /**

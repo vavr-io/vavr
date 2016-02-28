@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Match;
+import javaslang.API;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -15,8 +15,6 @@ import javaslang.control.Option;
 
 import java.util.*;
 import java.util.function.*;
-
-import static javaslang.Match.Match;
 
 /**
  * {@code javaslang.collection.Iterator} is a compositional replacement for {@code java.util.Iterator}
@@ -871,7 +869,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * The {@code Iterator} extends to {@code Integer.MIN_VALUE} when passing {@code Integer.MAX_VALUE}.
      *
      * @param value a start int value
-     * @param step the step by which to advance on each iteration
+     * @param step  the step by which to advance on each iteration
      * @return a new {@code Iterator} of int values starting from {@code from}
      */
     static Iterator<Integer> from(int value, int step) {
@@ -922,7 +920,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * The {@code Iterator} extends to {@code Long.MIN_VALUE} when passing {@code Long.MAX_VALUE}.
      *
      * @param value a start long value
-     * @param step the step by which to advance on each iteration
+     * @param step  the step by which to advance on each iteration
      * @return a new {@code Iterator} of long values starting from {@code from}
      */
     static Iterator<Long> from(long value, long step) {
@@ -1500,8 +1498,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Match<Iterator<T>> match() {
-        return Match(this);
+    default API.Match<Iterator<T>> match() {
+        return API.Match(this);
     }
 
     @Override

@@ -155,7 +155,6 @@ def generateMainClasses(): Unit = {
            * @param <T> type of the value
            * @return a new {@code Match} instance
            */
-          @SuppressWarnings("MethodNameSameAsClassName")
           public static <T> Match<T> Match(T value) {
               return new Match<>(value);
           }
@@ -163,14 +162,10 @@ def generateMainClasses(): Unit = {
           // -- Cases
 
           public static <T, R> Case<T, R> Case(T value, $SupplierType<? extends R> f) {
-              return new Case0<>(new Pattern0<T>() {
-                  @Override
-                  public Option<Void> apply(Object o) {
-                      return Pattern0.equals(o, value);
-                  }
-              }, f);
+              return new Case0<>(Pattern0.of(value), f);
           }
 
+          // syntactic sugar
           public static <T, R> Case<T, R> Case(T value, R retVal) {
               return Case(value, () -> retVal);
           }
@@ -368,40 +363,15 @@ def generateMainClasses(): Unit = {
               // These can't be @FunctionalInterfaces because of ambiguities.
               // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
 
-              // no type forwarding via T here, type ignored
               public static abstract class Pattern0<O> {
-
                   public abstract $OptionType<Void> apply(O obj);
-
-                  // TODO: DELME
-                  // for @Unapply result type Tuple0
-                  public static <O> Pattern0 create(Class<? super O> c) {
+                  public static <O> Pattern0<O> of(O prototype) {
                       return new Pattern0<O>() {
                           @Override
                           public Option<Void> apply(O obj) {
-                              return (obj != null && c.isAssignableFrom(obj.getClass())) ? Option.nothing() : Option.none();
+                              return $Objects.equals(obj, prototype) ? $OptionType.nothing() : $OptionType.none();
                           }
                       };
-                  }
-
-                  // TODO: DELME
-                  // should have been Class<T> instead of Class<? super T> but it does not work for complex generic types
-                  public static <O> Pattern0 create(Class<? super O> c, Function<O, Option<Void>> unapply) {
-                      return new Pattern0<O>() {
-                          @Override
-                          public Option<Void> apply(O obj) {
-                              if (obj != null && c.isAssignableFrom(obj.getClass())) {
-                                  return unapply.apply(obj);
-                              } else {
-                                  return Option.none();
-                              }
-                          }
-                      };
-                  }
-
-                  // TODO: DELME
-                  public static $OptionType<Void> equals(Object o1, Object o2) {
-                      return Objects.equals(o1, o2) ? $OptionType.nothing() : $OptionType.none();
                   }
               }
 
@@ -411,22 +381,7 @@ def generateMainClasses(): Unit = {
                 val FunctionType = im.getType("java.util.function.Function")
                 xs"""
                   public static abstract class Pattern$i<O, $generics> {
-
                       public abstract Option<$resultType> apply(O obj);
-
-                      // TODO: DELME
-                      public static <O, $generics> Pattern$i<O, $generics> create(Class<? super O> c, $FunctionType<O, Option<$resultType>> unapply) {
-                          return new Pattern$i<O, $generics>() {
-                              @Override
-                              public Option<$resultType> apply(O obj) {
-                                  if (obj != null && c.isAssignableFrom(obj.getClass())) {
-                                      return unapply.apply(obj);
-                                  } else {
-                                      return Option.none();
-                                  }
-                              }
-                          };
-                      }
                   }
                 """
               })("\n\n")}

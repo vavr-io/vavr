@@ -17,8 +17,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static javaslang.Match.Match;
-
 /**
  * An implementation similar to scalaz's <a href="http://eed3si9n.com/learning-scalaz/Validation.html">Validation</a> control.
  *
@@ -569,8 +567,8 @@ public interface Validation<E, T> extends Value<T> {
     }
 
     @Override
-    default Match<Validation<E, T>> match() {
-        return Match(this);
+    default API.Match<Validation<E, T>> match() {
+        return API.Match(this);
     }
 
     @Override

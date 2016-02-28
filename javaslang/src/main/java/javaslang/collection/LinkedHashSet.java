@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Match;
+import javaslang.API;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -18,8 +18,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
-
-import static javaslang.Match.Match;
 
 /**
  * An immutable {@code HashSet} implementation.
@@ -650,8 +648,8 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Match<LinkedHashSet<T>> match() {
-        return Match(this);
+    public API.Match<LinkedHashSet<T>> match() {
+        return API.Match(this);
     }
 
     @Override

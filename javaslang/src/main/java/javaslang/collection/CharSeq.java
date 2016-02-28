@@ -18,8 +18,6 @@ import java.util.function.*;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collector;
 
-import static javaslang.Match.Match;
-
 /**
  * The CharSeq (read: character sequence) collection essentially is a rich String wrapper having all operations
  * we know from the functional Javaslang collections.
@@ -536,8 +534,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public Match<CharSeq> match() {
-        return Match(this);
+    public API.Match<CharSeq> match() {
+        return API.Match(this);
     }
 
     @Override
@@ -905,7 +903,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    public  <U> U transform(Function<? super CharSeq, ? extends U> f) {
+    public <U> U transform(Function<? super CharSeq, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }

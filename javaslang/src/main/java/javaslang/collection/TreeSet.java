@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Match;
+import javaslang.API;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -19,7 +19,6 @@ import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.Match.Match;
 import static javaslang.collection.Comparators.naturalComparator;
 
 /**
@@ -688,8 +687,8 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public Match<TreeSet<T>> match() {
-        return Match(this);
+    public API.Match<TreeSet<T>> match() {
+        return API.Match(this);
     }
 
     @Override
