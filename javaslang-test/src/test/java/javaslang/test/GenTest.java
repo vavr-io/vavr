@@ -156,12 +156,12 @@ public class GenTest {
     // -- Choose(enum)
 
     enum testEnum {
-        value1, value2, value3
+        value1
     }
 
     @Test
     public void shouldChooseFromEnum() throws Exception {
-        assertForAll(() -> Gen.choose(testEnum.class).apply(RANDOM), e ->{  System.out.println(e); return true;});
+        assertForAll(() -> Gen.choose(testEnum.class).apply(RANDOM), e -> Arrays.asList(testEnum.values()).contains(e));
     }
 
 
