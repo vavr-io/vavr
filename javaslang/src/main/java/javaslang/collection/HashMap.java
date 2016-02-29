@@ -321,11 +321,6 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
     }
 
     @Override
-    public HashMap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
-        return put(entry._1, entry._2);
-    }
-
-    @Override
     public HashMap<K, V> remove(K key) {
         final HashArrayMappedTrie<K, V> result = trie.remove(key);
         return result.size() == trie.size() ? this : wrap(result);

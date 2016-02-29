@@ -41,6 +41,13 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
 
     @SuppressWarnings("unchecked")
     @Override
+    public M put(Tuple2<? extends K, ? extends V> entry) {
+        Objects.requireNonNull(entry, "entry is null");
+        return (M) put(entry._1, entry._2);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public M distinct() {
         return (M) this;
     }
@@ -182,7 +189,7 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
         } else if (that.isEmpty()) {
             return (M) this;
         } else {
-            return that.foldLeft((M) this, (map, entry) -> !map.containsKey(entry._1) ? (M) map.put(entry) : map);
+            return that.foldLeft((M) this, (map, entry) -> !map.containsKey(entry._1) ? map.put(entry) : map);
         }
     }
 
@@ -239,7 +246,7 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
     @Override
     public M scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, emptyInstance(), (m, e) -> (M) m.put(e), Function.identity());
+        return Collections.scanLeft(this, zero, operation, emptyInstance(), (m, e) -> m.put(e), Function.identity());
     }
 
     @Override
