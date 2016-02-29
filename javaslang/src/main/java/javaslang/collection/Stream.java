@@ -711,7 +711,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     default Stream<T> cycle(int count) {
         if (count <= 0 || isEmpty()) {
-            return this;
+            return empty();
         } else {
             final Stream<T> self = this;
             return Stream.ofAll(new Iterator<T>() {
