@@ -1,6 +1,6 @@
 /*     / \____  _    _  ____   ______  / \ ____  __    _______
  *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang contributors
+ *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang, http://javaslang.io
  * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
  */
 package javaslang.collection.euler;
@@ -36,7 +36,7 @@ public class Euler48Test {
     }
 
     private static long selfPower(long v) {
-        Stream<Long> powers = Stream.gen(v, el -> multMod(el, el));
+        Stream<Long> powers = Stream.iterate(v, el -> multMod(el, el));
         return bits(v)
                 .map(powers::get)
                 .prepend(1L)
@@ -44,7 +44,7 @@ public class Euler48Test {
     }
 
     private static long multMod(long v1, long v2) {
-        Stream<Long> shifts = Stream.gen(v1, el -> sumMod(el, el));
+        Stream<Long> shifts = Stream.iterate(v1, el -> sumMod(el, el));
         return bits(v2)
                 .map(shifts::get)
                 .prepend(0L)

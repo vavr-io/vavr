@@ -1,6 +1,6 @@
 /*     / \____  _    _  ____   ______  / \ ____  __    _______
  *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang contributors
+ *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang, http://javaslang.io
  * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
  */
 package javaslang.collection;
@@ -323,6 +323,16 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
     @Override
     public HashMap<K, V> remove(K key) {
         final HashArrayMappedTrie<K, V> result = trie.remove(key);
+        return result.size() == trie.size() ? this : wrap(result);
+    }
+
+    @Override
+    public HashMap<K, V> removeAll(Iterable<? extends K> keys) {
+        Objects.requireNonNull(keys, "keys is null");
+        HashArrayMappedTrie<K, V> result = trie;
+        for (K key : keys) {
+            result = result.remove(key);
+        }
         return result.size() == trie.size() ? this : wrap(result);
     }
 

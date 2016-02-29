@@ -1,6 +1,6 @@
 /*     / \____  _    _  ____   ______  / \ ____  __    _______
  *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang contributors
+ *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang, http://javaslang.io
  * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
  */
 package javaslang.collection;
@@ -492,6 +492,23 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
             return new TreeMap<>(entries.delete(entry));
         } else {
             return this;
+        }
+    }
+
+    @Override
+    public TreeMap<K, V> removeAll(Iterable<? extends K> keys) {
+        final V ignored = null;
+        RedBlackTree<Tuple2<K, V>> removed = entries;
+        for (K key : keys) {
+            final Tuple2<K, V> entry = new Tuple2<>(key, ignored);
+            if (removed.contains(entry)) {
+                removed = removed.delete(entry);
+            }
+        }
+        if (removed.size() == entries.size()) {
+            return this;
+        } else {
+            return new TreeMap<>(removed);
         }
     }
 

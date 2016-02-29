@@ -1,6 +1,6 @@
 /*     / \____  _    _  ____   ______  / \ ____  __    _______
  *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang contributors
+ *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang, http://javaslang.io
  * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
  */
 package javaslang;
@@ -445,6 +445,10 @@ public interface Value<T> extends Iterable<T> {
      * @return a new type-safe match builder.
      */
     Match<? extends Value<T>> match();
+    // TODO:
+    //    default <R, U extends Value<T>> Match<?> match(Match.Case<? extends U, ? extends R> cases) {
+    //        return Match.Match(this).of(cases);
+    //    }
 
     /**
      * Converts this to a {@link Array}.

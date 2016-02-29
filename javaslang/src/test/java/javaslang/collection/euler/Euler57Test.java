@@ -1,6 +1,6 @@
 /*     / \____  _    _  ____   ______  / \ ____  __    _______
  *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang contributors
+ *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang, http://javaslang.io
  * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
  */
 package javaslang.collection.euler;
@@ -50,7 +50,7 @@ public class Euler57Test {
     }
 
     private static Stream<Tuple2<BigDecimal, BigDecimal>> fractions() {
-        return Stream.gen(Tuple.of(BigDecimal.ONE, BigDecimal.ONE), Euler57Test::it);
+        return Stream.iterate(Tuple.of(BigDecimal.ONE, BigDecimal.ONE), Euler57Test::it);
     }
 
     /**

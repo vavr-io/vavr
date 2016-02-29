@@ -1,6 +1,6 @@
 /*     / \____  _    _  ____   ______  / \ ____  __    _______
  *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang contributors
+ *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang, http://javaslang.io
  * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
  */
 package javaslang.collection;
@@ -298,10 +298,24 @@ public class IteratorTest extends AbstractTraversableTest {
     }
 
     @Test
-    public void shouldGenerateTerminatingIntStream() {
+    public void shouldGenerateOverflowingIntStream() {
         //noinspection NumericOverflow
         assertThat(Iterator.from(Integer.MAX_VALUE).take(2))
                 .isEqualTo(Iterator.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
+    }
+
+    // -- static from(int, int)
+
+    @Test
+    public void shouldGenerateIntStreamWithStep() {
+        assertThat(Iterator.from(-1, 6).take(3)).isEqualTo(Iterator.of(-1, 5, 11));
+    }
+
+    @Test
+    public void shouldGenerateOverflowingIntStreamWithStep() {
+        //noinspection NumericOverflow
+        assertThat(Iterator.from(Integer.MAX_VALUE, 2).take(2))
+                .isEqualTo(Iterator.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 2));
     }
 
     // -- static from(long)
@@ -312,23 +326,36 @@ public class IteratorTest extends AbstractTraversableTest {
     }
 
     @Test
-    public void shouldGenerateTerminatingLongStream() {
+    public void shouldGenerateOverflowingLongStream() {
         //noinspection NumericOverflow
         assertThat(Iterator.from(Long.MAX_VALUE).take(2)).isEqualTo(Iterator.of(Long.MAX_VALUE, Long.MAX_VALUE + 1));
     }
 
-    // -- static gen(Supplier)
+    // -- static from(long, long)
+
+    @Test
+    public void shouldGenerateLongStreamWithStep() {
+        assertThat(Iterator.from(-1L, 5L).take(3)).isEqualTo(Iterator.of(-1L, 4L, 9L));
+    }
+
+    @Test
+    public void shouldGenerateOverflowingLongStreamWithStep() {
+        //noinspection NumericOverflow
+        assertThat(Iterator.from(Long.MAX_VALUE, 2).take(2)).isEqualTo(Iterator.of(Long.MAX_VALUE, Long.MAX_VALUE + 2));
+    }
+
+    // -- static continually(Supplier)
 
     @Test
     public void shouldGenerateInfiniteStreamBasedOnSupplier() {
-        assertThat(Iterator.gen(() -> 1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
+        assertThat(Iterator.continually(() -> 1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
     }
 
-    // -- static gen(T, Function)
+    // -- static iterate(T, Function)
 
     @Test
     public void shouldGenerateInfiniteStreamBasedOnSupplierWithAccessToPreviousValue() {
-        assertThat(Iterator.gen(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
+        assertThat(Iterator.iterate(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
     }
 
     // ++++++ OBJECT ++++++

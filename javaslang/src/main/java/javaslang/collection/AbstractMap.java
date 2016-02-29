@@ -1,6 +1,6 @@
 /*     / \____  _    _  ____   ______  / \ ____  __    _______
  *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang contributors
+ *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang, http://javaslang.io
  * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
  */
 package javaslang.collection;
@@ -44,17 +44,6 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
     public M put(Tuple2<? extends K, ? extends V> entry) {
         Objects.requireNonNull(entry, "entry is null");
         return (M) put(entry._1, entry._2);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public M removeAll(Iterable<? extends K> keys) {
-        Objects.requireNonNull(keys, "keys is null");
-        Map<K, V> result = this;
-        for (K key : keys) {
-            result = result.remove(key);
-        }
-        return result == this ? (M) this : (M) result;
     }
 
     @SuppressWarnings("unchecked")
@@ -200,7 +189,7 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
         } else if (that.isEmpty()) {
             return (M) this;
         } else {
-            return that.foldLeft((M) this, (map, entry) -> !map.containsKey(entry._1) ? (M) map.put(entry) : map);
+            return that.foldLeft((M) this, (map, entry) -> !map.containsKey(entry._1) ? map.put(entry) : map);
         }
     }
 
@@ -257,7 +246,7 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
     @Override
     public M scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, emptyInstance(), (m, e) -> (M) m.put(e), Function.identity());
+        return Collections.scanLeft(this, zero, operation, emptyInstance(), (m, e) -> m.put(e), Function.identity());
     }
 
     @Override

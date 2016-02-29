@@ -1,6 +1,6 @@
 /*     / \____  _    _  ____   ______  / \ ____  __    _______
  *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang contributors
+ *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang, http://javaslang.io
  * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
  */
 package javaslang.collection.euler;
@@ -56,7 +56,7 @@ public class Euler55Test {
     }
 
     private static boolean isLychrel(int n) {
-        return Stream.gen(String.valueOf(n), Euler55Test::next)
+        return Stream.iterate(String.valueOf(n), Euler55Test::next)
                 .tail()  // Surprisingly, there are palindromic numbers that are themselves Lychrel numbers
                 .take(50)
                 .find(Utils::isPalindrome)

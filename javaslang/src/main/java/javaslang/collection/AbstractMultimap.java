@@ -1,6 +1,6 @@
 /*     / \____  _    _  ____   ______  / \ ____  __    _______
  *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang contributors
+ *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang, http://javaslang.io
  * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
  */
 package javaslang.collection;
@@ -219,7 +219,7 @@ import java.util.function.Predicate;
         } else if (that.isEmpty()) {
             return (M) this;
         } else {
-            return that.foldLeft((M) this, (map, entry) -> !map.contains((Tuple2<K, V>) entry) ? (M) map.put(entry) : map);
+            return that.foldLeft((M) this, (map, entry) -> !map.contains((Tuple2<K, V>) entry) ? map.put(entry) : map);
         }
     }
 
@@ -263,7 +263,7 @@ import java.util.function.Predicate;
     public M replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
         Objects.requireNonNull(newElement, "newElement is null");
-        return containsKey(currentElement._1) ? (M) remove(currentElement._1).put(newElement) : (M) this;
+        return containsKey(currentElement._1) ? remove(currentElement._1).put(newElement) : (M) this;
     }
 
     @Override
@@ -281,7 +281,7 @@ import java.util.function.Predicate;
     @Override
     public M scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, emptyInstance(), (m, e) -> (M) m.put(e), Function.identity());
+        return Collections.scanLeft(this, zero, operation, emptyInstance(), (m, e) -> m.put(e), Function.identity());
     }
 
     @Override

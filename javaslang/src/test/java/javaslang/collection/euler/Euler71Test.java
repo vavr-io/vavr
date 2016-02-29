@@ -1,6 +1,6 @@
 /*     / \____  _    _  ____   ______  / \ ____  __    _______
  *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang contributors
+ *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang, http://javaslang.io
  * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
  */
 package javaslang.collection.euler;
@@ -36,7 +36,7 @@ public class Euler71Test {
     }
 
     private static int left37(int maxDenominator) {
-        return Stream.gen(Tuple.of(0, 1, 1, 1), (Tuple4<Integer, Integer, Integer, Integer> t) -> {
+        return Stream.iterate(Tuple.of(0, 1, 1, 1), (Tuple4<Integer, Integer, Integer, Integer> t) -> {
             final int m1 = t._1 + t._3;
             final int m2 = t._2 + t._4;
             if (m1 * 7 >= m2 * 3) {
