@@ -16,8 +16,6 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.Match.Match;
-
 /**
  * An immutable {@code Stream} is lazy sequence of elements which may be infinitely long.
  * Its immutability makes it suitable for concurrent programming.
@@ -135,7 +133,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * The {@code Stream} extends to {@code Integer.MIN_VALUE} when passing {@code Integer.MAX_VALUE}.
      *
      * @param value a start int value
-     * @param step the step by which to advance on each next value
+     * @param step  the step by which to advance on each next value
      * @return a new {@code Stream} of int values starting from {@code from}
      */
     static Stream<Integer> from(int value, int step) {
@@ -160,7 +158,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * The {@code Stream} extends to {@code Long.MIN_VALUE} when passing {@code Long.MAX_VALUE}.
      *
      * @param value a start long value
-     * @param step the step by which to advance on each next value
+     * @param step  the step by which to advance on each next value
      * @return a new {@code Stream} of long values starting from {@code from}
      */
     static Stream<Long> from(long value, long step) {
@@ -629,7 +627,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> append(T element) {
-        return isEmpty()? Stream.of(element): new AppendElements<>(head(), Queue.of(element), this::tail);
+        return isEmpty() ? Stream.of(element) : new AppendElements<>(head(), Queue.of(element), this::tail);
     }
 
     @Override
@@ -643,7 +641,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * <strong>Example:</strong>
      * <p>
-     * Well known scala code for Fibonacci infinite sequence
+     * Well known Scala code for Fibonacci infinite sequence
      * <pre>
      * <code>
      * val fibs:Stream[Int] = 0 #:: 1 #:: (fibs zip fibs.tail).map{ t =&gt; t._1 + t._2 }
@@ -693,7 +691,48 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream containing this elements cycled.
      */
     default Stream<T> cycle() {
-        return appendSelf(Function.identity());
+        return isEmpty() ? this : appendSelf(Function.identity());
+    }
+
+    /**
+     * Repeat the elements of this Stream {@code count} times.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * // = 1, 2, 3, 1, 2, 3, 1, 2, 3
+     * Stream.of(1, 2, 3).cycle(3);
+     * </code>
+     * </pre>
+     *
+     * @return A new Stream containing this elements cycled {@code count} times.
+     */
+    default Stream<T> cycle(int count) {
+        if (count <= 0 || isEmpty()) {
+            return this;
+        } else {
+            final Stream<T> self = this;
+            return Stream.ofAll(new Iterator<T>() {
+                Stream<T> stream = self;
+                int i = count - 1;
+
+                @Override
+                public boolean hasNext() {
+                    return !stream.isEmpty() || i > 0;
+                }
+
+                @Override
+                public T next() {
+                    if (stream.isEmpty()) {
+                        i--;
+                        stream = self;
+                    }
+                    final T result = stream.head();
+                    stream = stream.tail();
+                    return result;
+                }
+            });
+        }
     }
 
     @Override
@@ -924,8 +963,8 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Match<Stream<T>> match() {
-        return Match(this);
+    default API.Match<Stream<T>> match() {
+        return API.Match(this);
     }
 
     @Override
@@ -1622,10 +1661,10 @@ interface StreamModule {
         @Override
         public Stream<T> tail() {
             Stream<T> t = tail.get();
-            if(t.isEmpty()) {
+            if (t.isEmpty()) {
                 return Stream.ofAll(queue);
             } else {
-                if(t instanceof ConsImpl) {
+                if (t instanceof ConsImpl) {
                     ConsImpl<T> c = (ConsImpl<T>) t;
                     return new AppendElements<>(c.head(), queue, c.tail);
                 } else {
