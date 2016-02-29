@@ -162,6 +162,27 @@ public interface Gen<T> {
     }
 
     /**
+     * Chooses an enum value from all the enum constants defined in the enumerated type.
+     * @param clazz Enum class
+     * @return A new enum generator
+     */
+    static <E extends Enum<E>> Gen<E> choose(Class<E> clazz) {
+        return random -> Gen.choose(clazz.getEnumConstants()).apply(random);
+    }
+
+    /**
+     * Chooses a value from all values in the array.
+     * @param values array with the values to choose from
+     * @return A new enum generator
+     */
+    static <E> Gen<E> choose(E[] values) {
+        if(values.length == 0)
+            return Gen.fail("Emtpy array");
+        else
+            return random -> Gen.choose(0, values.length - 1).map(i -> values[i]).apply(random);
+    }
+
+    /**
      * A failing generator which throws a RuntimeException("failed").
      *
      * @param <T> Type of values theoretically generated.
