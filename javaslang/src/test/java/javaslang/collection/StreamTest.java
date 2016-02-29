@@ -414,6 +414,9 @@ public class StreamTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldCycleTimesNonEmptyStream() {
+        assertThat(of(1, 2, 3).cycle(-1)).isEqualTo(empty());
+        assertThat(of(1, 2, 3).cycle(0)).isEqualTo(empty());
+        assertThat(of(1, 2, 3).cycle(1)).isEqualTo(of(1, 2, 3));
         assertThat(of(1, 2, 3).cycle(3)).isEqualTo(of(1, 2, 3, 1, 2, 3, 1, 2, 3));
     }
 
