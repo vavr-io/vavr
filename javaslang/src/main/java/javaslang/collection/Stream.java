@@ -641,7 +641,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * <strong>Example:</strong>
      * <p>
-     * Well known scala code for Fibonacci infinite sequence
+     * Well known Scala code for Fibonacci infinite sequence
      * <pre>
      * <code>
      * val fibs:Stream[Int] = 0 #:: 1 #:: (fibs zip fibs.tail).map{ t =&gt; t._1 + t._2 }
@@ -691,7 +691,48 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream containing this elements cycled.
      */
     default Stream<T> cycle() {
-        return appendSelf(Function.identity());
+        return isEmpty() ? this : appendSelf(Function.identity());
+    }
+
+    /**
+     * Repeat the elements of this Stream {@code count} times.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * // = 1, 2, 3, 1, 2, 3, 1, 2, 3
+     * Stream.of(1, 2, 3).cycle(3);
+     * </code>
+     * </pre>
+     *
+     * @return A new Stream containing this elements cycled {@code count} times.
+     */
+    default Stream<T> cycle(int count) {
+        if (count <= 0 || isEmpty()) {
+            return this;
+        } else {
+            final Stream<T> self = this;
+            return Stream.ofAll(new Iterator<T>() {
+                Stream<T> stream = self;
+                int i = count - 1;
+
+                @Override
+                public boolean hasNext() {
+                    return !stream.isEmpty() || i > 0;
+                }
+
+                @Override
+                public T next() {
+                    if (stream.isEmpty()) {
+                        i--;
+                        stream = self;
+                    }
+                    final T result = stream.head();
+                    stream = stream.tail();
+                    return result;
+                }
+            });
+        }
     }
 
     @Override

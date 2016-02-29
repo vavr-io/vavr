@@ -405,6 +405,18 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(of(1, 2, 3).cycle().take(9)).isEqualTo(of(1, 2, 3, 1, 2, 3, 1, 2, 3));
     }
 
+    // -- cycle(int)
+
+    @Test
+    public void shouldCycleTimesEmptyStream() {
+        assertThat(empty().cycle(3)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldCycleTimesNonEmptyStream() {
+        assertThat(of(1, 2, 3).cycle(3)).isEqualTo(of(1, 2, 3, 1, 2, 3, 1, 2, 3));
+    }
+
     // -- transform()
 
     @Test
