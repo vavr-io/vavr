@@ -177,7 +177,7 @@ public interface Gen<T> {
      */
     static <E> Gen<E> choose(E[] values) {
         if(values.length == 0)
-            return Gen.fail("Emtpy array");
+            return Gen.fail("Empty array");
         else
             return random -> Gen.choose(0, values.length - 1).map(i -> values[i]).apply(random);
     }
