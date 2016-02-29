@@ -484,13 +484,6 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
         return new TreeMap<>(entries.insert(new Tuple2<>(key, value)));
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public TreeMap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
-        Objects.requireNonNull(entry, "entry is null");
-        return new TreeMap<>(entries.insert((Tuple2<K, V>) entry));
-    }
-
     @Override
     public TreeMap<K, V> remove(K key) {
         final V ignored = null;
