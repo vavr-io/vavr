@@ -167,6 +167,8 @@ public interface Gen<T> {
      * @return A new enum generator
      */
     static <E extends Enum<E>> Gen<E> choose(Class<E> clazz) {
+        Objects.requireNonNull(clazz, "clazz is null");
+
         return random -> Gen.choose(clazz.getEnumConstants()).apply(random);
     }
 
@@ -176,6 +178,8 @@ public interface Gen<T> {
      * @return A new enum generator
      */
     static <E> Gen<E> choose(E[] values) {
+        Objects.requireNonNull(values, "values is null");
+
         if(values.length == 0)
             return Gen.fail("Empty array");
         else
