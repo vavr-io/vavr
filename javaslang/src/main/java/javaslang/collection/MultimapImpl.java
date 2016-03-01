@@ -10,6 +10,7 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -27,45 +28,76 @@ import java.util.function.Predicate;
  * @author Ruslan Sennov
  * @since 2.0.0
  */
- abstract class AbstractMultimap<K, V, T extends Traversable<V>, M extends AbstractMultimap<K, V, T, M>> implements Multimap<K, V, T> {
+ class MultimapImpl<K, V, T extends Traversable<V>, M extends MultimapImpl<K, V, T, M>> implements Multimap<K, V, T> {
+
+    interface Factory<K, V, T extends Traversable<V>> {
+
+        Multimap<K, V, T> emptyInstance();
+
+        Multimap<K, V, T> createFromMap(Map<K, T> back);
+
+        Multimap<K, V, T> createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries);
+
+        T emptyContainer();
+
+        T addToContainer(T container, V value);
+
+        T removeFromContainer(T container, V value);
+
+        String containerName();
+    }
 
     private static final long serialVersionUID = 1L;
 
-    abstract Map<K, T> back();
+    private final Map<K, T> back;
+    final Factory factory;
 
-    abstract M createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries);
+    MultimapImpl(Map<K, T> back, Factory<K, V, T> factory) {
+        this.back = back;
+        this.factory = factory;
+    }
 
-    abstract M createFromMap(Map<K, T> back);
-
-    abstract T emptyContainer();
-
-    abstract T addToContainer(T container, V value);
-
-    abstract T removeFromContainer(T container, V value);
-
-    abstract M emptyInstance();
+    @Override
+    public <K2, V2, T2 extends Traversable<V2>> Multimap<K2, V2, T2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
+        return null;
+    }
 
     @Override
     public boolean containsKey(K key) {
-        return back().containsKey(key);
+        return back.containsKey(key);
+    }
+
+    @Override
+    public <K2, V2, T2 extends Traversable<V2>> Multimap<K2, V2, T2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
+        return null;
     }
 
     @Override
     public Option<T> get(K key) {
-        return back().get(key);
+        return back.get(key);
     }
 
     @Override
     public Set<K> keySet() {
-        return back().keySet();
+        return back.keySet();
+    }
+
+    @Override
+    public <K2, V2, T2 extends Traversable<V2>> Multimap<K2, V2, T2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
+        return null;
+    }
+
+    @Override
+    public <V2, T2 extends Traversable<V2>> Multimap<K, V2, T2> mapValues(Function<? super V, ? extends V2> valueMapper) {
+        return null;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public M put(K key, V value) {
-        final T values = back().get(key).getOrElse(emptyContainer());
-        final T newValues = addToContainer(values, value);
-        return newValues == values ? (M) this : createFromMap(back().put(key, newValues));
+        final T values = back.get(key).getOrElse((T) factory.emptyContainer());
+        final T newValues = (T) factory.addToContainer(values, value);
+        return newValues == values ? (M) this : (M) factory.createFromMap(back.put(key, newValues));
     }
 
     @Override
@@ -77,39 +109,56 @@ import java.util.function.Predicate;
     @SuppressWarnings("unchecked")
     @Override
     public M remove(K key) {
-        return back().containsKey(key) ? (M) this : createFromMap(back().remove(key));
+        return back.containsKey(key) ? (M) this : (M) factory.createFromMap(back.remove(key));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public M remove(K key, V value) {
-        final T values = back().get(key).getOrElse(emptyContainer());
-        final T newValues = removeFromContainer(values, value);
-        return newValues == values ? (M) this : createFromMap(back().put(key, newValues));
+        final T values = back.get(key).getOrElse((T) factory.emptyContainer());
+        final T newValues = (T) factory.removeFromContainer(values, value);
+        return newValues == values ? (M) this : (M) factory.createFromMap(back.put(key, newValues));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public M removeAll(Iterable<? extends K> keys) {
-        Map<K, T> result = back().removeAll(keys);
-        return result == back() ? (M) this : createFromMap(result);
+        Map<K, T> result = back.removeAll(keys);
+        return result == back ? (M) this : (M) factory.createFromMap(result);
+    }
+
+    @Override
+    public int size() {
+        return 0;
+    }
+
+    @Override
+    public java.util.Map<K, Collection<V>> toJavaMap() {
+        return null;
     }
 
     @Override
     public Traversable<V> values() {
-        return Iterator.concat(back().values());
+        return Iterator.concat(back.values());
     }
 
+    @Override
+    public Multimap<K, V, T> distinct() {
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public M distinctBy(Comparator<? super Tuple2<K, V>> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return createFromEntries(iterator().distinctBy(comparator));
+        return (M) factory.createFromEntries(iterator().distinctBy(comparator));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <U> M distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return createFromEntries(iterator().distinctBy(keyExtractor));
+        return (M) factory.createFromEntries(iterator().distinctBy(keyExtractor));
     }
 
     @SuppressWarnings("unchecked")
@@ -119,9 +168,9 @@ import java.util.function.Predicate;
             return (M) this;
         }
         if (n >= length()) {
-            return emptyInstance();
+            return (M) factory.emptyInstance();
         }
-        return createFromEntries(iterator().drop(n));
+        return (M) factory.createFromEntries(iterator().drop(n));
     }
 
     @SuppressWarnings("unchecked")
@@ -131,9 +180,9 @@ import java.util.function.Predicate;
             return (M) this;
         }
         if (n >= length()) {
-            return emptyInstance();
+            return (M) factory.emptyInstance();
         }
-        return createFromEntries(iterator().dropRight(n));
+        return (M) factory.createFromEntries(iterator().dropRight(n));
     }
 
     @Override
@@ -142,16 +191,18 @@ import java.util.function.Predicate;
         return dropWhile(predicate.negate());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public M dropWhile(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return createFromEntries(iterator().dropWhile(predicate));
+        return (M) factory.createFromEntries(iterator().dropWhile(predicate));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public M filter(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return createFromEntries(iterator().filter(predicate));
+        return (M) factory.createFromEntries(iterator().filter(predicate));
     }
 
     @SuppressWarnings("unchecked")
@@ -162,7 +213,7 @@ import java.util.function.Predicate;
             final C key = classifier.apply(entry);
             final Multimap<K, V, T> values = map.get(key)
                     .map(entries -> entries.put(entry._1, entry._2))
-                    .getOrElse(createFromEntries(Iterator.of(entry)));
+                    .getOrElse((M) factory.createFromEntries(Iterator.of(entry)));
             return map.put(key, (M) values);
         });
     }
@@ -173,8 +224,13 @@ import java.util.function.Predicate;
     }
 
     @Override
+    public Multimap<K, V, T> init() {
+        return null;
+    }
+
+    @Override
     public Tuple2<K, V> head() {
-        final Tuple2<K, T> head = back().head();
+        final Tuple2<K, T> head = back.head();
         return Tuple.of(head._1, head._2.head());
     }
 
@@ -186,12 +242,12 @@ import java.util.function.Predicate;
 
     @Override
     public boolean isEmpty() {
-        return back().isEmpty();
+        return back.isEmpty();
     }
 
     @Override
     public Iterator<Tuple2<K, V>> iterator() {
-        return back().iterator().flatMap(t -> t._2.map(v -> Tuple.of(t._1, v)));
+        return back.iterator().flatMap(t -> t._2.map(v -> Tuple.of(t._1, v)));
     }
 
     @SuppressWarnings("unchecked")
@@ -215,7 +271,7 @@ import java.util.function.Predicate;
     public M merge(Multimap<? extends K, ? extends V, ? extends T> that) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
-            return createFromEntries(that);
+            return (M) factory.createFromEntries(that);
         } else if (that.isEmpty()) {
             return (M) this;
         } else {
@@ -229,7 +285,7 @@ import java.util.function.Predicate;
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         if (isEmpty()) {
-            return createFromEntries(that);
+            return (M) factory.createFromEntries(that);
         } else if (that.isEmpty()) {
             return (M) this;
         } else {
@@ -237,15 +293,16 @@ import java.util.function.Predicate;
                 final Traversable<? extends V> newValues = get(key).map(v -> collisionResolution.apply(v, that.get(key).get())).get();
                 return newValues.foldLeft(queue, (q, v) -> q.append(Tuple.of(key, v)));
             });
-            return createFromEntries(entries);
+            return (M) factory.createFromEntries(entries);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Tuple2<M, M> partition(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<Tuple2<K, V>>, Iterator<Tuple2<K, V>>> p = iterator().partition(predicate);
-        return Tuple.of(createFromEntries(p._1), createFromEntries(p._2));
+        return Tuple.of((M) factory.createFromEntries(p._1), (M) factory.createFromEntries(p._2));
     }
 
     @SuppressWarnings("unchecked")
@@ -256,6 +313,11 @@ import java.util.function.Predicate;
             action.accept(head());
         }
         return (M) this;
+    }
+
+    @Override
+    public String stringPrefix() {
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -271,17 +333,18 @@ import java.util.function.Predicate;
         return replace(currentElement, newElement);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public M retainAll(Iterable<? extends Tuple2<K, V>> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return createFromEntries(back().flatMap(t -> t._2.map(v -> Tuple.of(t._1, v))).retainAll(elements));
+        return (M) factory.createFromEntries(back.flatMap(t -> t._2.map(v -> Tuple.of(t._1, v))).retainAll(elements));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public M scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, emptyInstance(), (m, e) -> m.put(e), Function.identity());
+        return Collections.scanLeft(this, zero, operation, (M) factory.emptyInstance(), MultimapImpl::put, Function.identity());
     }
 
     @Override
@@ -289,16 +352,23 @@ import java.util.function.Predicate;
         return sliding(size, 1);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Iterator<M> sliding(long size, long step) {
-        return iterator().sliding(size, step).map(this::createFromEntries);
+        return iterator().sliding(size, step).map(t -> (M) factory.createFromEntries(t));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Tuple2<M, M> span(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<Tuple2<K, V>>, Iterator<Tuple2<K, V>>> t = iterator().span(predicate);
-        return Tuple.of(createFromEntries(t._1), createFromEntries(t._2));
+        return Tuple.of((M) factory.createFromEntries(t._1), (M) factory.createFromEntries(t._2));
+    }
+
+    @Override
+    public Multimap<K, V, T> tail() {
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -307,7 +377,7 @@ import java.util.function.Predicate;
         if (size() <= n) {
             return (M) this;
         } else {
-            return createFromEntries(iterator().take(n));
+            return (M) factory.createFromEntries(iterator().take(n));
         }
     }
 
@@ -317,7 +387,7 @@ import java.util.function.Predicate;
         if (size() <= n) {
             return (M) this;
         } else {
-            return createFromEntries(iterator().takeRight(n));
+            return (M) factory.createFromEntries(iterator().takeRight(n));
         }
     }
 
@@ -331,7 +401,7 @@ import java.util.function.Predicate;
     @Override
     public M takeWhile(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final M taken = createFromEntries(iterator().takeWhile(predicate));
+        final M taken = (M) factory.createFromEntries(iterator().takeWhile(predicate));
         return taken.length() == length() ? (M) this : taken;
     }
 }
