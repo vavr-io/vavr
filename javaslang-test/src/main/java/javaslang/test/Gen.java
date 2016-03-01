@@ -166,7 +166,7 @@ public interface Gen<T> {
      * @param clazz Enum class
      * @return A new enum generator
      */
-    static <E extends Enum<E>> Gen<E> choose(Class<E> clazz) {
+    static <T extends Enum<T>> Gen<T> choose(Class<T> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
 
         return random -> Gen.choose(clazz.getEnumConstants()).apply(random);
@@ -175,15 +175,32 @@ public interface Gen<T> {
     /**
      * Chooses a value from all values in the array.
      * @param values array with the values to choose from
-     * @return A new enum generator
+     * @return A new array generator
      */
-    static <E> Gen<E> choose(E[] values) {
+    static <T> Gen<T> choose(T[] values) {
         Objects.requireNonNull(values, "values is null");
 
         if(values.length == 0)
             return Gen.fail("Empty array");
         else
             return random -> Gen.choose(0, values.length - 1).map(i -> values[i]).apply(random);
+    }
+
+
+    /**
+     * Chooses a value from all values in the iterable
+     * @param values iterable with the values to choose from.
+     * @return A new iterable generator
+     */
+    static <T> Gen<T> choose(Iterable<T> values) {
+        Objects.requireNonNull(values, "values is null");
+        final Stream<T> stream = Stream.ofAll(values);
+        if (stream.isEmpty()) {
+            throw new IllegalArgumentException("Empty iterable");
+        }
+        @SuppressWarnings("unchecked")
+        final T[] array = stream.toJavaArray((Class<T>) stream.head().getClass());
+        return choose(array);
     }
 
     /**
