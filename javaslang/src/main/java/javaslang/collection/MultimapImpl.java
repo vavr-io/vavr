@@ -50,7 +50,7 @@ import java.util.function.Predicate;
     private static final long serialVersionUID = 1L;
 
     private final Map<K, T> back;
-    final Factory factory;
+    final Factory<K, V, T> factory;
 
     MultimapImpl(Map<K, T> back, Factory<K, V, T> factory) {
         this.back = back;
@@ -95,8 +95,8 @@ import java.util.function.Predicate;
     @SuppressWarnings("unchecked")
     @Override
     public M put(K key, V value) {
-        final T values = back.get(key).getOrElse((T) factory.emptyContainer());
-        final T newValues = (T) factory.addToContainer(values, value);
+        final T values = back.get(key).getOrElse(factory.emptyContainer());
+        final T newValues = factory.addToContainer(values, value);
         return newValues == values ? (M) this : (M) factory.createFromMap(back.put(key, newValues));
     }
 
@@ -115,8 +115,8 @@ import java.util.function.Predicate;
     @SuppressWarnings("unchecked")
     @Override
     public M remove(K key, V value) {
-        final T values = back.get(key).getOrElse((T) factory.emptyContainer());
-        final T newValues = (T) factory.removeFromContainer(values, value);
+        final T values = back.get(key).getOrElse(factory.emptyContainer());
+        final T newValues = factory.removeFromContainer(values, value);
         return newValues == values ? (M) this : (M) factory.createFromMap(back.put(key, newValues));
     }
 
@@ -344,7 +344,7 @@ import java.util.function.Predicate;
     @Override
     public M scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, (M) factory.emptyInstance(), MultimapImpl::put, Function.identity());
+        return Collections.scanLeft(this, zero, operation, (M) factory.emptyInstance(), (m, e) -> m.put(e), Function.identity());
     }
 
     @Override
