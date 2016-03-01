@@ -24,7 +24,7 @@ import static javaslang.Match.Match;
  * @author Ruslan Sennov
  * @since 2.0.0
  */
-public final class Vector<T> implements IndexedSeq<T>, Serializable {
+public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 

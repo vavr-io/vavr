@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Kind1;
 import javaslang.Match;
 import javaslang.Tuple2;
 import javaslang.control.Option;
@@ -38,7 +39,7 @@ import java.util.stream.Collector;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Stack<T> extends LinearSeq<T> {
+public interface Stack<T> extends Kind1<List<?>, T>, LinearSeq<T> {
 
     long serialVersionUID = 1L;
 
