@@ -95,7 +95,7 @@ import static javaslang.Match.Match;
  * @author Daniel Dietrich, Jörgen Andersson, Ruslan Sennov
  * @since 1.1.0
  */
-public interface Stream<T> extends LinearSeq<T> {
+public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
     long serialVersionUID = 1L;
 

@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Kind2;
 import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
@@ -24,7 +25,7 @@ import java.util.stream.Collector;
  * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  * @since 2.0.0
  */
-public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implements Serializable {
+public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implements Kind2<HashMap<?, ?>, K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
 

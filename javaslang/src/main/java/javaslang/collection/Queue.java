@@ -42,7 +42,7 @@ import static javaslang.Match.Match;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public class Queue<T> implements LinearSeq<T>, Serializable {
+public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
