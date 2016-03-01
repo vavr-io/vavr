@@ -7,28 +7,40 @@ package javaslang;
 
 import org.junit.Test;
 
+import java.util.function.Function;
+
+import static javaslang.Match.$;
+import static javaslang.Match.*;
+import static javaslang.Match.Match;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class MatchErrorTest {
 
-// TODO
-//    @Test
-//    public void shouldReturnCorrectObjectWhenMatchingByMonad() {
-//        final Object obj = new Object();
-//        try {
-//            Match.of(obj).whenIs(0).then(0).get();
-//        } catch (MatchError matchError) {
-//            assertThat(matchError.getObject()).isEqualTo(obj);
-//        }
-//    }
-//
-//    @Test
-//    public void shouldReturnCorrectObjectWhenMatchingByFunction() {
-//        final Object obj = new Object();
-//        try {
-//            Match.whenIs(0).then(0).apply(obj);
-//        } catch (MatchError matchError) {
-//            assertThat(matchError.getObject()).isEqualTo(obj);
-//        }
-//    }
+    @Test
+    public void shouldReturnCorrectObjectWhenMatchingByMonad() {
+
+        final Object obj = new Object();
+        try {
+
+            Match(obj).of(
+                    Case($(0), Function.identity())
+            );
+
+            failBecauseExceptionWasNotThrown(MatchError.class);
+
+        } catch (MatchError matchError) {
+            assertThat(matchError.getObject()).isEqualTo(obj);
+        }
+    }
+
+    @Test
+    public void shouldReturnCorrectObjectWhenMatchingByFunction() {
+        final Object obj = new Object();
+        try {
+            Match.$(0).apply(obj);
+        } catch (MatchError matchError) {
+            assertThat(matchError.getObject()).isEqualTo(obj);
+        }
+    }
 }

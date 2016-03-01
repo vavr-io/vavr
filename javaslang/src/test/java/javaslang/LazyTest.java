@@ -7,6 +7,7 @@ package javaslang;
 
 import javaslang.collection.List;
 import javaslang.collection.Seq;
+import javaslang.control.Option;
 import javaslang.control.Try;
 import org.junit.Test;
 
@@ -69,6 +70,44 @@ public class LazyTest {
         final List<Lazy<Integer>> testee = List.of(1, 2, 3).map(i -> Lazy.of(() -> i));
         final Lazy<Seq<Integer>> sequence = Lazy.sequence(testee);
         assertThat(sequence.isEvaluated()).isFalse();
+    }
+
+    @Test
+    public void shouldMapOverLazyValue() {
+        final Lazy<Integer> testee = Lazy.of(() -> 42);
+        final Lazy<Integer> expected = Lazy.of(() -> 21);
+
+        assertThat(testee.map( i -> i / 2)).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldFilterOverLazyValue() {
+        final Lazy<Integer> testee = Lazy.of(() -> 42);
+        final Option<Integer> expectedPositive = Option.some(42);
+        final Option<Integer> expectedNegative = Option.none();
+
+        assertThat(testee.filter( i -> i % 2 == 0)).isEqualTo(expectedPositive);
+        assertThat(testee.filter( i -> i % 2 != 0)).isEqualTo(expectedNegative);
+    }
+
+    @Test
+    public void shouldTransformLazyValue() {
+        final Lazy<Integer> testee = Lazy.of(() -> 42);
+        final Integer expected = 21;
+
+        final Integer actual = testee.transform( lazy -> lazy.get() / 2 );
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldNotBeEmpty() {
+        assertThat(Lazy.of(Option::none).isEmpty()).isFalse();
+    }
+
+    @Test
+    public void shouldContainASingleValue() {
+        assertThat(Lazy.of(Option::none).isSingleValued()).isTrue();
     }
 
     // -- val(Supplier, Class) -- Proxy
