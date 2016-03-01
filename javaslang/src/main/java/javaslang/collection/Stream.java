@@ -16,8 +16,6 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.Match.Match;
-
 /**
  * An immutable {@code Stream} is lazy sequence of elements which may be infinitely long.
  * Its immutability makes it suitable for concurrent programming.
@@ -965,8 +963,8 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Match<Stream<T>> match() {
-        return Match(this);
+    default API.Match<Stream<T>> match() {
+        return API.Match(this);
     }
 
     @Override
