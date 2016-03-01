@@ -1,7 +1,7 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.javaslang/javaslang/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.javaslang/javaslang)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.javaslang/javaslang/badge.png)](https://maven-badges.herokuapp.com/maven-central/com.javaslang/javaslang)
 [![Build Status](https://travis-ci.org/javaslang/javaslang.png)](https://travis-ci.org/javaslang/javaslang)
-[![Coverage Status](https://codecov.io/github/javaslang/javaslang/coverage.svg?branch=master)](https://codecov.io/github/javaslang/javaslang?branch=master)
-[![Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/javaslang/javaslang)
+[![Coverage Status](https://codecov.io/github/javaslang/javaslang/coverage.png?branch=master)](https://codecov.io/github/javaslang/javaslang?branch=master)
+[![Gitter Chat](https://badges.gitter.im/Join%20Chat.png)](https://gitter.im/javaslang/javaslang)
 
 # [Javaslang](http://javaslang.io/)
 
