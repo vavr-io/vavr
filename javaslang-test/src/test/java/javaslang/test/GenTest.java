@@ -164,6 +164,19 @@ public class GenTest {
         assertForAll(() -> Gen.choose(testEnum.class).apply(RANDOM), e -> Arrays.asList(testEnum.values()).contains(e));
     }
 
+    // -- Choose(iterable)
+    @Test
+    public void shouldChooseFromIterable() throws Exception {
+        List<Integer> i = List.of(1);
+        assertForAll(() -> Gen.choose(i).apply(RANDOM), c -> c == 1);
+    }
+
+
+    @Test(expected = RuntimeException.class)
+    public void shouldFailOnEmptyIterable() throws Exception {
+        List<Integer> i = List.empty();
+        Gen.choose(i).apply(RANDOM);
+    }
 
     // -- fail
 
