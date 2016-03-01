@@ -289,7 +289,7 @@ interface RedBlackTree<T> extends Iterable<T> {
             final Node<T> that = (Node<T>) this;
             return new AbstractIterator<T>() {
 
-                Stack<Node<T>> stack = pushLeftChildren(Stack.empty(), that);
+                Stack<Node<T>> stack = pushLeftChildren(List.empty(), that);
 
                 @Override
                 public boolean hasNext() {

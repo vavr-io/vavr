@@ -36,8 +36,6 @@ import java.util.function.Predicate;
 @FunctionalInterface
 public interface Gen<T> {
 
-    long serialVersionUID = 1L;
-
     int FILTER_THRESHOLD = Integer.MAX_VALUE;
 
     /**
@@ -163,33 +161,38 @@ public interface Gen<T> {
 
     /**
      * Chooses an enum value from all the enum constants defined in the enumerated type.
+     *
      * @param clazz Enum class
+     * @param <T>   type of enum constants
      * @return A new enum generator
      */
     static <T extends Enum<T>> Gen<T> choose(Class<T> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
-
         return random -> Gen.choose(clazz.getEnumConstants()).apply(random);
     }
 
     /**
      * Chooses a value from all values in the array.
+     *
      * @param values array with the values to choose from
+     * @param <T>    value type
      * @return A new array generator
      */
     static <T> Gen<T> choose(T[] values) {
         Objects.requireNonNull(values, "values is null");
-
-        if(values.length == 0)
+        if (values.length == 0) {
             return Gen.fail("Empty array");
-        else
+        } else {
             return random -> Gen.choose(0, values.length - 1).map(i -> values[i]).apply(random);
+        }
     }
 
 
     /**
      * Chooses a value from all values in the iterable
+     *
      * @param values iterable with the values to choose from.
+     * @param <T> value type
      * @return A new iterable generator
      */
     static <T> Gen<T> choose(Iterable<T> values) {

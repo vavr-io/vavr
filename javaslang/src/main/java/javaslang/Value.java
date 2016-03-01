@@ -718,7 +718,7 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link List}, which is a {@link Stack}.
      */
     default Stack<T> toStack() {
-        return ValueModule.toTraversable(this, Stack.empty(), Stack::of, Stack::ofAll);
+        return toList();
     }
 
     /**
