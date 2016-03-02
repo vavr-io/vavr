@@ -285,9 +285,9 @@ public abstract class AbstractValueTest {
         final Value<Integer> value = of(1, 2, 3);
         final Stack<Integer> stack = value.toStack();
         if (value.isSingleValued()) {
-            assertThat(stack).isEqualTo(Stack.of(1));
+            assertThat(stack).isEqualTo(List.of(1));
         } else {
-            assertThat(stack).isEqualTo(Stack.of(1, 2, 3));
+            assertThat(stack).isEqualTo(List.of(1, 2, 3));
         }
     }
 
