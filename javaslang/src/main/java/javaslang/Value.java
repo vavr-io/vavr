@@ -424,7 +424,7 @@ public interface Value<T> extends Iterable<T> {
     // -- conversion methods
 
     /**
-     * Provides syntactic sugar for {@link Match#Match(Object)}.
+     * Provides syntactic sugar for {@link API#Match(Object)}.
      * <p>
      * We write
      *
@@ -714,7 +714,7 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link List}, which is a {@link Stack}.
      */
     default Stack<T> toStack() {
-        return ValueModule.toTraversable(this, Stack.empty(), Stack::of, Stack::ofAll);
+        return toList();
     }
 
     /**

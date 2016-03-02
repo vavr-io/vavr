@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.API;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -29,7 +26,7 @@ import static javaslang.collection.Comparators.naturalComparator;
  * @since 2.0.0
  */
 // DEV-NOTE: it is not possible to create an EMPTY TreeSet without a Comparator type in scope
-public final class TreeSet<T> implements SortedSet<T>, Serializable {
+public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 

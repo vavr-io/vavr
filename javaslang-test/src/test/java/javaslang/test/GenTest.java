@@ -11,6 +11,7 @@ import javaslang.collection.List;
 import javaslang.collection.Stream;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -136,6 +137,45 @@ public class GenTest {
     @Test
     public void shouldChooseCharWhenMinEqualsMax() {
         assertForAll(() -> Gen.choose('λ', 'λ').apply(RANDOM), c -> c == 'λ');
+    }
+
+    // -- choose(array)
+
+    @Test
+    public void shouldChooseFromASingleArray() throws Exception {
+        Integer[] i = {1};
+        assertForAll(() -> Gen.choose(i).apply(RANDOM), c -> c == 1);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldFailOnEmptyArray() throws Exception {
+        Integer[] i = {};
+        Gen.choose(i).apply(RANDOM);
+    }
+
+    // -- Choose(enum)
+
+    enum testEnum {
+        value1
+    }
+
+    @Test
+    public void shouldChooseFromEnum() throws Exception {
+        assertForAll(() -> Gen.choose(testEnum.class).apply(RANDOM), e -> Arrays.asList(testEnum.values()).contains(e));
+    }
+
+    // -- Choose(iterable)
+    @Test
+    public void shouldChooseFromIterable() throws Exception {
+        List<Integer> i = List.of(1);
+        assertForAll(() -> Gen.choose(i).apply(RANDOM), c -> c == 1);
+    }
+
+
+    @Test(expected = RuntimeException.class)
+    public void shouldFailOnEmptyIterable() throws Exception {
+        List<Integer> i = List.empty();
+        Gen.choose(i).apply(RANDOM);
     }
 
     // -- fail

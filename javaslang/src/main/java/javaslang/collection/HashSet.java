@@ -23,7 +23,7 @@ import java.util.stream.Collector;
  * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  * @since 2.0.0
  */
-public final class HashSet<T> implements Set<T>, Serializable {
+public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 

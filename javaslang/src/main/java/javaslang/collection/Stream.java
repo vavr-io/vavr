@@ -93,7 +93,7 @@ import java.util.stream.Collector;
  * @author Daniel Dietrich, Jörgen Andersson, Ruslan Sennov
  * @since 1.1.0
  */
-public interface Stream<T> extends LinearSeq<T> {
+public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
     long serialVersionUID = 1L;
 
@@ -700,16 +700,23 @@ public interface Stream<T> extends LinearSeq<T> {
      * Example:
      * <pre>
      * <code>
+     * // = empty
+     * Stream.of(1, 2, 3).cycle(0);
+     *
+     * // = 1, 2, 3
+     * Stream.of(1, 2, 3).cycle(1);
+     *
      * // = 1, 2, 3, 1, 2, 3, 1, 2, 3
      * Stream.of(1, 2, 3).cycle(3);
      * </code>
      * </pre>
      *
+     * @param count the number of cycles to be performed
      * @return A new Stream containing this elements cycled {@code count} times.
      */
     default Stream<T> cycle(int count) {
         if (count <= 0 || isEmpty()) {
-            return this;
+            return empty();
         } else {
             final Stream<T> self = this;
             return Stream.ofAll(new Iterator<T>() {

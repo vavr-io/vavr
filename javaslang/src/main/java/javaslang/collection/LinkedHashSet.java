@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.API;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.io.*;
@@ -26,7 +23,7 @@ import java.util.stream.Collector;
  * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  * @since 2.0.0
  */
-public final class LinkedHashSet<T> implements Set<T>, Serializable {
+public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
