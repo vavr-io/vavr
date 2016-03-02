@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Kind2;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
@@ -21,7 +22,7 @@ import java.util.stream.Collector;
  * @author Ruslan Sennov
  * @since 2.0.0
  */
-public final class LinkedHashMap<K, V> extends AbstractMap<K, V, LinkedHashMap<K, V>> implements Serializable {
+public final class LinkedHashMap<K, V> extends AbstractMap<K, V, LinkedHashMap<K, V>> implements Kind2<LinkedHashMap<?, ?>, K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
 

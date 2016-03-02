@@ -24,7 +24,7 @@ import static javaslang.Match.*;
  * @author Ruslan Sennov, Daniel Dietrich
  * @since 2.0.0
  */
-public final class Array<T> implements IndexedSeq<T>, Serializable {
+public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
