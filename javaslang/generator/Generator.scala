@@ -162,7 +162,7 @@ def generateMainClasses(): Unit = {
           // -- Cases
 
           public static <T, R> Case<T, R> Case(T value, $SupplierType<? extends R> f) {
-              return new Case0<>(Pattern0.of(value), f);
+              return new Case0<>(P0.eq(value), f);
           }
 
           // syntactic sugar
@@ -170,12 +170,12 @@ def generateMainClasses(): Unit = {
               return Case(value, () -> retVal);
           }
 
-          public static <T, R> Case<T, R> Case(Pattern0<T> pattern, $SupplierType<? extends R> f) {
+          public static <T, R> Case<T, R> Case(P0<T> pattern, $SupplierType<? extends R> f) {
               return new Case0<>(pattern, f);
           }
 
           // syntactic sugar
-          public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
+          public static <T, R> Case<T, R> Case(P0<T> pattern, R retVal) {
               return new Case0<>(pattern, () -> retVal);
           }
 
@@ -188,7 +188,7 @@ def generateMainClasses(): Unit = {
             }
             val argTypes = (1 to i).gen(j => s"? super T$j")(", ")
             xs"""
-              public static <T, $generics, R> Case<T, R> Case(Pattern$i<T, $generics> pattern, $functionType<$argTypes, ? extends R> f) {
+              public static <T, $generics, R> Case<T, R> Case(P$i<T, $generics> pattern, $functionType<$argTypes, ? extends R> f) {
                   $Objects.requireNonNull(pattern, "pattern is null");
                   return new Case$i<>(pattern, f);
               }
@@ -202,9 +202,9 @@ def generateMainClasses(): Unit = {
            * <p>
            * Matches any value but does not extract it.
            */
-          public static final Pattern0<Object> $$_ = new Pattern0<Object>() {
+          public static final P0<Object> $$_ = new P0<Object>() {
               @Override
-              public $OptionType<Void> apply(Object obj) {
+              $OptionType<Void> apply(Object obj) {
                   return $OptionType.nothing();
               }
           };
@@ -217,10 +217,10 @@ def generateMainClasses(): Unit = {
            * @param <O> injected type of the underlying value
            * @return a new {@code Pattern1} instance
            */
-          public static <O> Pattern1<O, O> $$() {
-              return new Pattern1<O, O>() {
+          public static <O> P1<O, O> $$() {
+              return new P1<O, O>() {
                   @Override
-                  public $OptionType<O> apply(O obj) {
+                  $OptionType<O> apply(O obj) {
                       return $OptionType.some(obj);
                   }
               };
@@ -235,10 +235,10 @@ def generateMainClasses(): Unit = {
            * @param prototype the value that should be equal to the underlying object
            * @return a new {@code Pattern1} instance
            */
-          public static <O> Pattern1<O, O> $$(O prototype) {
-              return new Pattern1<O, O>() {
+          public static <O> P1<O, O> $$(O prototype) {
+              return new P1<O, O>() {
                   @Override
-                  public $OptionType<O> apply(O obj) {
+                  $OptionType<O> apply(O obj) {
                       return $Objects.equals(obj, prototype) ? $OptionType.some(obj) : $OptionType.none();
                   }
               };
@@ -302,10 +302,10 @@ def generateMainClasses(): Unit = {
 
               public static final class Case0<T, R> implements Case<T, R> {
 
-                  private final Pattern0<T> pattern;
+                  private final P0<T> pattern;
                   private final $SupplierType<? extends R> f;
 
-                  private Case0(Pattern0<T> pattern, $SupplierType<? extends R> f) {
+                  private Case0(P0<T> pattern, $SupplierType<? extends R> f) {
                       this.pattern = pattern;
                       this.f = f;
                   }
@@ -318,10 +318,10 @@ def generateMainClasses(): Unit = {
 
               public static final class Case1<T, T1, R> implements Case<T, R> {
 
-                  private final Pattern1<T, T1> pattern;
+                  private final P1<T, T1> pattern;
                   private final $FunctionType<? super T1, ? extends R> f;
 
-                  private Case1(Pattern1<T, T1> pattern, $FunctionType<? super T1, ? extends R> f) {
+                  private Case1(P1<T, T1> pattern, $FunctionType<? super T1, ? extends R> f) {
                       this.pattern = pattern;
                       this.f = f;
                   }
@@ -343,10 +343,10 @@ def generateMainClasses(): Unit = {
                 xs"""
                   public static final class Case$i<T, $generics, R> implements Case<T, R> {
 
-                      private final Pattern$i<T, $generics> pattern;
+                      private final P$i<T, $generics> pattern;
                       private final $functionType<$argTypes, ? extends R> f;
 
-                      private Case$i(Pattern$i<T, $generics> pattern, $functionType<$argTypes, ? extends R> f) {
+                      private Case$i(P$i<T, $generics> pattern, $functionType<$argTypes, ? extends R> f) {
                           this.pattern = pattern;
                           this.f = f;
                       }
@@ -364,15 +364,45 @@ def generateMainClasses(): Unit = {
               // These can't be @FunctionalInterfaces because of ambiguities.
               // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
 
-              public static abstract class Pattern0<O> {
-                  public abstract $OptionType<Void> apply(O obj);
-                  public static <O> Pattern0<O> of(O prototype) {
-                      return new Pattern0<O>() {
+              public static abstract class P0<O> {
+
+                  // created with factory methods only for safety reasons
+                  private P0() {
+                  }
+
+                  abstract $OptionType<Void> apply(O o);
+
+                  public static <O> P0<O> eq(O prototype) {
+                      return new P0<O>() {
                           @Override
-                          public Option<Void> apply(O obj) {
-                              return $Objects.equals(obj, prototype) ? $OptionType.nothing() : $OptionType.none();
+                          $OptionType<Void> apply(O o) {
+                              return $Objects.equals(o, prototype) ? $OptionType.nothing() : $OptionType.none();
                           }
                       };
+                  }
+
+                  public static <O> P0<O> of(Class<O> type) {
+                      return new P0<O>() {
+                          @Override
+                          $OptionType<Void> apply(O o) {
+                              return (o != null && type.isAssignableFrom(o.getClass())) ? $OptionType.nothing() : $OptionType.none();
+                          }
+                      };
+                  }
+
+                  private static <O> P0<O> of($FunctionType<O, $OptionType<Void>> f) {
+                      return new P0<O>() {
+                          @Override
+                          $OptionType<Void> apply(O o) {
+                              return f.apply(o);
+                          }
+                      };
+                  }
+
+                  // TODO: these need to be generated for all variations...
+                  @SuppressWarnings("unchecked")
+                  public static <O, O1, T1> P0<O> of(P0<? extends O1> p1, $FunctionType<? super O, Tuple1<O1>> f) {
+                      return of(o -> f.apply(o).transform(((P0<O1>) p1)::apply));
                   }
               }
 
@@ -381,8 +411,30 @@ def generateMainClasses(): Unit = {
                 val resultType = if (i == 1) "T1" else s"Tuple$i<$generics>"
                 val FunctionType = im.getType("java.util.function.Function")
                 xs"""
-                  public static abstract class Pattern$i<O, $generics> {
-                      public abstract Option<$resultType> apply(O obj);
+                  public static abstract class P$i<O, $generics> {
+
+                      // created with factory methods only for safety reasons
+                      private P$i() {
+                      }
+
+                      abstract $OptionType<$resultType> apply(O obj);
+
+                      private static <O, $generics> P$i<O, $generics> of($FunctionType<O, Option<$resultType>> f) {
+                          return new P$i<O, $generics>() {
+                              @Override
+                              protected $OptionType<$resultType> apply(O obj) {
+                                  return f.apply(obj);
+                              }
+                          };
+                      }
+
+                      // TODO: methods need to be generated for all variations...
+                      ${(i == 1).gen(s"""
+                        @SuppressWarnings("unchecked")
+                        public static <O, O1, T1> P1<O, T1> of(P1<? extends O1, T1> p1, $FunctionType<? super O, Tuple1<O1>> f) {
+                            return of(o -> f.apply(o).transform(((P1<O1, T1>) p1)::apply));
+                        }
+                      """)}
                   }
                 """
               })("\n\n")}
