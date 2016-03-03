@@ -109,6 +109,11 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
         return (Seq<T>) seq;
     }
 
+    @SuppressWarnings("unchecked")
+    static <T extends Comparable<? super T>, S extends Seq<T>> S sorted2(S seq) {
+        return (S) seq.sorted(Comparator.naturalOrder());
+    }
+
     /**
      * A {@code Seq} is a partial function which returns the element at the specified index by calling
      * {@linkplain #get(int)}.
