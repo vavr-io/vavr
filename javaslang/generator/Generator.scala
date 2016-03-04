@@ -162,6 +162,18 @@ def generateMainClasses(): Unit = {
 
           // -- Cases
 
+          public static <T, R> Case<T, R> Case(Pattern0<T> pattern, $SupplierType<? extends R> f) {
+              Objects.requireNonNull(pattern, "pattern is null");
+              Objects.requireNonNull(f, "f is null");
+              return new Case0<>(pattern, f);
+          }
+
+          // syntactic sugar for {@link #Case0(Pattern0, $SupplierType)}
+          public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
+              Objects.requireNonNull(pattern, "pattern is null");
+              return new Case0<>(pattern, () -> retVal);
+          }
+
           ${(1 to N).gen(i => {
             val argTypes = (1 to i).gen(j => s"? super T$j")(", ")
             val generics = (1 to i).gen(j => s"T$j")(", ")
@@ -194,10 +206,10 @@ def generateMainClasses(): Unit = {
            * Wildcard pattern, matches any value.
            *
            * @param <O> injected type of the underlying value
-           * @return a new {@code Pattern1} instance
+           * @return a new {@code Pattern0} instance
            */
-          public static <O> Pattern1<O, O> $$() {
-              return Pattern1.any();
+          public static <O> Pattern0<O> $$() {
+              return Pattern0.any();
           }
 
           /**
@@ -245,13 +257,13 @@ def generateMainClasses(): Unit = {
             xs"""
               // collections
 
-              public static <T> Pattern1<$OptionNoneType<T>, $OptionNoneType<T>> None() { return Pattern1.typed(); }
-              public static <T, T1> Pattern1<$OptionSomeType<T>, T1> Some(Pattern<? extends T, T1> p1) { return Pattern1.of(p1, $OptionSomeType::get); }
+              public static <T> Pattern0<$OptionNoneType<T>> None() { return Pattern0.instanceOf($OptionNoneType.class); }
+              public static <T, T1> Pattern1<$OptionSomeType<T>, T1> Some(Pattern<? extends T, T1> p1) { return Pattern1.of($OptionSomeType.class, p1, $OptionSomeType::get); }
 
               // controls
 
-              public static <T> Pattern1<$ListNilType<T>, $ListNilType<T>> Nil() { return Pattern1.typed(); }
-              public static <T, T1, T2> Pattern2<$ListConsType<T>, T1, T2> Cons(Pattern<? extends T, T1> p1, Pattern<? extends ${im.getType("javaslang.collection.List")}<T>, T2> p2) { return Pattern2.of(p1, p2, cons -> Tuple.of(cons.head(), cons.tail())); }
+              public static <T> Pattern0<$ListNilType<T>> Nil() { return Pattern0.instanceOf($ListNilType.class); }
+              public static <T, T1, T2> Pattern2<$ListConsType<T>, T1, T2> Cons(Pattern<? extends T, T1> p1, Pattern<? extends ${im.getType("javaslang.collection.List")}<T>, T2> p2) { return Pattern2.of($ListConsType.class, p1, p2, cons -> Tuple.of(cons.head(), cons.tail())); }
             """
           }
 
@@ -312,6 +324,27 @@ def generateMainClasses(): Unit = {
               public interface Case<T, R> extends PartialFunction<T, R> {
               }
 
+              public static final class Case0<T, R> implements Case<T, R> {
+
+                  private final Pattern0<T> pattern;
+                  private final Supplier<? extends R> f;
+
+                  private Case0(Pattern0<T> pattern, Supplier<? extends R> f) {
+                      this.pattern = pattern;
+                      this.f = f;
+                  }
+
+                  @Override
+                  public boolean isApplicable(T t) {
+                      return pattern.isApplicable(t);
+                  }
+
+                  @Override
+                  public R apply(T o) {
+                      return f.get();
+                  }
+              }
+
               ${(1 to N).gen(i => {
                 val argTypes = (1 to i).gen(j => s"? super T$j")(", ")
                 val generics = (1 to i).gen(j => s"T$j")(", ")
@@ -366,56 +399,46 @@ def generateMainClasses(): Unit = {
               // These can't be @FunctionalInterfaces because of ambiguities.
               // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
 
+              public static abstract class Pattern0<O> implements Pattern<O, O> {
+
+                  private static final Pattern0<Object> ANY = new Pattern0<Object>() {
+                      @Override
+                      public boolean isApplicable(Object o) {
+                          return true;
+                      }
+                  };
+
+                  @SuppressWarnings("unchecked")
+                  public static <O> Pattern0<O> any() {
+                      return (Pattern0<O>) ANY;
+                  }
+
+                  @SuppressWarnings("unchecked")
+                  public static <O> Pattern0<O> instanceOf(Class<? super O> type) {
+                      return new Pattern0<O>() {
+                          @Override
+                          public boolean isApplicable(O o) {
+                              return o != null && type.isAssignableFrom(o.getClass());
+                          }
+                      };
+                  }
+
+                  @Override
+                  public O apply(O o) {
+                      return o;
+                  }
+              }
+
               ${(1 to N).gen(i => {
                 val partGenerics = (1 to i).gen(j => s"O$j")(", ")
                 val unapplyType = if (i == 1) "O1" else s"Tuple$i<$partGenerics>"
                 val resultGenerics = (1 to i).gen(j => s"T$j")(", ")
                 val resultType = if (i == 1) "T1" else s"Tuple$i<$resultGenerics>"
                 val args = (1 to i).gen(j => s"Pattern<? extends O$j, T$j> p$j")(", ")
-                def arg(j: Int) = s"((Pattern<O$j, T$j>) p$j)"
                 xs"""
                   public static abstract class Pattern$i<O, $resultGenerics> implements Pattern<O, $resultType> {
 
-                      ${(i == 1).gen(xs"""
-
-                        private static final Pattern1<Object, Object> ANY = new Pattern1<Object, Object>() {
-
-                            @Override
-                            public boolean isApplicable(Object o) {
-                                return true;
-                            }
-
-                            @Override
-                            public Object apply(Object o) {
-                                return o;
-                            }
-                        };
-
-                        private static final Pattern1<Object, Object> TYPED = new Pattern1<Object, Object>() {
-
-                            @Override
-                            public boolean isApplicable(Object o) {
-                                return o != null;
-                            }
-
-                            @Override
-                            public Object apply(Object o) {
-                                return o;
-                            }
-                        };
-
-                        @SuppressWarnings("unchecked")
-                        public static <O> Pattern1<O, O> any() {
-                            return (Pattern1<O, O>) ANY;
-                        }
-
-                        @SuppressWarnings("unchecked")
-                        public static <O> Pattern1<O, O> typed() {
-                            return (Pattern1<O, O>) TYPED;
-                        }
-                      """)}
-
-                      public static <O, $partGenerics, $resultGenerics> Pattern$i<O, $resultGenerics> of($args, Function<? super O, ? extends $unapplyType> unapply) {
+                      public static <O, $partGenerics, $resultGenerics> Pattern$i<O, $resultGenerics> of(Class<? super O> type, $args, Function<? super O, ? extends $unapplyType> unapply) {
                           return new Pattern$i<O, $resultGenerics>() {
 
                               // the unapplied object
@@ -424,11 +447,14 @@ def generateMainClasses(): Unit = {
                               @SuppressWarnings("unchecked")
                               @Override
                               public boolean isApplicable(O o) {
+                                  if (o == null || !type.isAssignableFrom(o.getClass())) {
+                                      return false;
+                                  }
                                   u = unapply.apply(o);
                                   ${if (i == 1) xs"""
                                       return ((Pattern<O1, T1>) p1).isApplicable(u);
                                   """ else xs"""
-                                      return ${(1 to i).gen(j => arg(j) + s".isApplicable(u._$j)")(" && ")};
+                                      return ${(1 to i).gen(j => s"((Pattern<O$j, T$j>) p$j).isApplicable(u._$j)")(" && ")};
                                   """}
                               }
 
@@ -438,7 +464,7 @@ def generateMainClasses(): Unit = {
                                   ${if (i == 1) xs"""
                                       return ((Pattern<O1, T1>) p1).apply(u);
                                   """ else xs"""
-                                      return Tuple.of(${(1 to i).gen(j => arg(j) + s".apply(u._$j)")(", ")});
+                                      return Tuple.of(${(1 to i).gen(j => s"((Pattern<O$j, T$j>) p$j).apply(u._$j)")(", ")});
                                   """}
                               }
                           };
