@@ -16,7 +16,6 @@ import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.Match.Match;
 import static javaslang.collection.Comparators.naturalComparator;
 
 /**
@@ -685,8 +684,8 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     }
 
     @Override
-    public Match<TreeSet<T>> match() {
-        return Match(this);
+    public API.Match<TreeSet<T>> match() {
+        return API.Match(this);
     }
 
     @Override

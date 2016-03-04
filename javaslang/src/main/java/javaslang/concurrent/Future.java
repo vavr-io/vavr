@@ -5,7 +5,7 @@
  */
 package javaslang.concurrent;
 
-import javaslang.Match;
+import javaslang.API;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
@@ -26,8 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.*;
-
-import static javaslang.Match.*;
 
 /**
  * A Future is a computation result that becomes available at some point. All operations provided are non-blocking.
@@ -938,8 +936,8 @@ public interface Future<T> extends Value<T> {
     }
 
     @Override
-    default Match<Future<T>> match() {
-        return Match(this);
+    default API.Match<Future<T>> match() {
+        return API.Match(this);
     }
 
     @Override

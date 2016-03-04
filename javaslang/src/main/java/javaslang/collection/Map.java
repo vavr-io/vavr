@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.API;
 import javaslang.Function1;
-import javaslang.Match;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
@@ -313,7 +313,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     }
 
     @Override
-    Match<? extends Map<K, V>> match();
+    API.Match<? extends Map<K, V>> match();
 
     /**
      * Creates a new map which by merging the entries of {@code this} map and {@code that} map.

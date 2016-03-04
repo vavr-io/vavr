@@ -22,8 +22,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static javaslang.Match.Match;
-
 /**
  * Represents a lazy evaluated value. Compared to a Supplier, Lazy is memoizing, i.e. it evaluates only once and
  * therefore is referential transparent.
@@ -185,8 +183,8 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     @Override
-    public Match<Lazy<T>> match() {
-        return Match(this);
+    public API.Match<Lazy<T>> match() {
+        return API.Match(this);
     }
 
     @Override

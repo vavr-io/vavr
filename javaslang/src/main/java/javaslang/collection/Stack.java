@@ -5,16 +5,8 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind1;
-import javaslang.Match;
 import javaslang.Tuple2;
 import javaslang.control.Option;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.function.*;
-import java.util.stream.Collector;
 
 /**
  * An immutable {@code Stack} stores elements allowing a last-in-first-out (LIFO) retrieval.

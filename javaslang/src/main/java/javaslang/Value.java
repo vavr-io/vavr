@@ -424,7 +424,7 @@ public interface Value<T> extends Iterable<T> {
     // -- conversion methods
 
     /**
-     * Provides syntactic sugar for {@link Match#Match(Object)}.
+     * Provides syntactic sugar for {@link API#Match(Object)}.
      * <p>
      * We write
      *
@@ -444,11 +444,7 @@ public interface Value<T> extends Iterable<T> {
      *
      * @return a new type-safe match builder.
      */
-    Match<? extends Value<T>> match();
-    // TODO:
-    //    default <R, U extends Value<T>> Match<?> match(Match.Case<? extends U, ? extends R> cases) {
-    //        return Match.Match(this).of(cases);
-    //    }
+    API.Match<? extends Value<T>> match();
 
     /**
      * Converts this to a {@link Array}.

@@ -17,7 +17,6 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.Match.Match;
 import static javaslang.collection.Tree.Order.PRE_ORDER;
 
 /**
@@ -475,8 +474,8 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Match<Tree<T>> match() {
-        return Match(this);
+    default API.Match<Tree<T>> match() {
+        return API.Match(this);
     }
 
     @SuppressWarnings("unchecked")

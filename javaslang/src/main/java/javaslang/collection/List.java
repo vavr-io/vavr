@@ -16,8 +16,6 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.Match.Match;
-
 /**
  * An immutable {@code List} is an eager sequence of elements. Its immutability makes it suitable for concurrent programming.
  * <p>
@@ -784,8 +782,8 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Match<List<T>> match() {
-        return Match(this);
+    default API.Match<List<T>> match() {
+        return API.Match(this);
     }
 
     @Override
