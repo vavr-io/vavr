@@ -18,6 +18,12 @@ import static java.util.stream.Collectors.joining;
 
 class Generator {
 
+// ------------
+// TODO: if result is a Pattern0
+//       => if generic type args are present: generate static final constant
+//       => if not generic type args are present: generate method
+// ------------
+
 //    // corresponds to the number of Javaslang Tuples.
 //    private static final int ARITY = 8;
 //

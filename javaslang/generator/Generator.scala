@@ -49,6 +49,7 @@ def generateMainClasses(): Unit = {
       val SupplierType = im.getType("java.util.function.Supplier")
       val FunctionType = im.getType("java.util.function.Function")
       val BiFunctionType = im.getType("java.util.function.BiFunction")
+      val PredicateType = im.getType("java.util.function.Predicate")
       val IteratorType = im.getType("javaslang.collection.Iterator")
 
       im.getStatic("javaslang.API.Match.*")
@@ -161,88 +162,100 @@ def generateMainClasses(): Unit = {
 
           // -- Cases
 
-          public static <T, R> Case<T, R> Case(T value, $SupplierType<? extends R> f) {
-              return new Case0<>(P0.eq(value), f);
-          }
-
-          // syntactic sugar
-          public static <T, R> Case<T, R> Case(T value, R retVal) {
-              return Case(value, () -> retVal);
-          }
-
-          public static <T, R> Case<T, R> Case(P0<T> pattern, $SupplierType<? extends R> f) {
-              return new Case0<>(pattern, f);
-          }
-
-          // syntactic sugar
-          public static <T, R> Case<T, R> Case(P0<T> pattern, R retVal) {
-              return new Case0<>(pattern, () -> retVal);
-          }
-
           ${(1 to N).gen(i => {
+            val argTypes = (1 to i).gen(j => s"? super T$j")(", ")
             val generics = (1 to i).gen(j => s"T$j")(", ")
+            val params = (i > 1).gen("(") + (1 to i).gen(j => s"_$j")(", ") + (i > 1).gen(")")
             val functionType = i match {
               case 1 => FunctionType
               case 2 => BiFunctionType
               case _ => s"Function$i"
             }
-            val argTypes = (1 to i).gen(j => s"? super T$j")(", ")
             xs"""
-              public static <T, $generics, R> Case<T, R> Case(P$i<T, $generics> pattern, $functionType<$argTypes, ? extends R> f) {
+              public static <T, $generics, R> Case<T, R> Case(Pattern$i<T, $generics> pattern, $functionType<$argTypes, ? extends R> f) {
                   $Objects.requireNonNull(pattern, "pattern is null");
+                  $Objects.requireNonNull(f, "f is null");
                   return new Case$i<>(pattern, f);
+              }
+
+              // syntactic sugar for {@link #Case$i(Pattern$i, $functionType)}
+              public static <T, $generics, R> Case<T, R> Case(Pattern$i<T, $generics> pattern, R retVal) {
+                  $Objects.requireNonNull(pattern, "pattern is null");
+                  return new Case$i<>(pattern, $params -> retVal);
               }
             """
           })("\n\n")}
 
-          // atomic patterns $$_, $$(), $$(val)
+          // PRE-DEFINED PATTERNS
+
+          // 1) Atomic patterns $$(), $$(value), $$(predicate)
 
           /**
-           * Wildcard pattern.
-           * <p>
-           * Matches any value but does not extract it.
-           */
-          public static final P0<Object> $$_ = new P0<Object>() {
-              @Override
-              $OptionType<Void> apply(Object obj) {
-                  return $OptionType.nothing();
-              }
-          };
-
-          /**
-           * Wildcard extractor.
-           * <p>
-           * Matches any value and extracts it as named lambda parameter.
+           * Wildcard pattern, matches any value.
            *
            * @param <O> injected type of the underlying value
            * @return a new {@code Pattern1} instance
            */
-          public static <O> P1<O, O> $$() {
-              return new P1<O, O>() {
-                  @Override
-                  $OptionType<O> apply(O obj) {
-                      return $OptionType.some(obj);
-                  }
-              };
+          public static <O> Pattern1<O, O> $$() {
+              return Pattern1.any();
           }
 
           /**
-           * Value extractor.
-           * <p>
-           * Matches a specific value and extracts it as named lambda parameter.
+           * Value pattern, checks for equality.
            *
            * @param <O>       type of the prototype
            * @param prototype the value that should be equal to the underlying object
            * @return a new {@code Pattern1} instance
            */
-          public static <O> P1<O, O> $$(O prototype) {
-              return new P1<O, O>() {
+          public static <O> Pattern1<O, O> $$(O prototype) {
+              return $$(o -> $Objects.equals(o, prototype));
+          }
+
+          /**
+           * Guard pattern, checks if a predicate is satisfied.
+           *
+           * @param <O>       type of the prototype
+           * @param predicate the predicate that tests a given value
+           * @return a new {@code Pattern1} instance
+           */
+          public static <O> Pattern1<O, O> $$($PredicateType<? super O> predicate) {
+              $Objects.requireNonNull(predicate, "predicate is null");
+              return new Pattern1<O, O>() {
+
                   @Override
-                  $OptionType<O> apply(O obj) {
-                      return $Objects.equals(obj, prototype) ? $OptionType.some(obj) : $OptionType.none();
+                  public boolean isApplicable(O o) {
+                      return predicate.test(o);
+                  }
+
+                  @Override
+                  public O apply(O o) {
+                      return o;
                   }
               };
           }
+
+          // 2) Unapply patterns for existing Javaslang values
+
+          ${
+            val ListConsType = im.getType("javaslang.collection.List.Cons")
+            val ListNilType = im.getType("javaslang.collection.List.Nil")
+            val OptionNoneType = im.getType("javaslang.control.Option.None")
+            val OptionSomeType = im.getType("javaslang.control.Option.Some")
+
+            xs"""
+              // collections
+
+              public static <T> Pattern1<$OptionNoneType<T>, $OptionNoneType<T>> None() { return Pattern1.typed(); }
+              public static <T, T1> Pattern1<$OptionSomeType<T>, T1> Some(Pattern<? extends T, T1> p1) { return Pattern1.of(p1, $OptionSomeType::get); }
+
+              // controls
+
+              public static <T> Pattern1<$ListNilType<T>, $ListNilType<T>> Nil() { return Pattern1.typed(); }
+              public static <T, T1, T2> Pattern2<$ListConsType<T>, T1, T2> Cons(Pattern<? extends T, T1> p1, Pattern<? extends ${im.getType("javaslang.collection.List")}<T>, T2> p2) { return Pattern2.of(p1, p2, cons -> Tuple.of(cons.head(), cons.tail())); }
+            """
+          }
+
+          // TODO: more patterns...
 
           /**
            * Scala-like structural pattern matching for Java.
@@ -286,9 +299,9 @@ def generateMainClasses(): Unit = {
               public final <R> $OptionType<R> option(Case<? extends T, ? extends R>... cases) {
                   Objects.requireNonNull(cases, "cases is null");
                   for (Case<? extends T, ? extends R> _case : cases) {
-                      final $OptionType<R> it = ((Case<T, R>) _case).apply(value);
-                      if (it.isDefined()) {
-                          return it;
+                      final Case<T, R> narrowedCase = (Case<T, R>) _case;
+                      if (narrowedCase.isApplicable(value)) {
+                          return Option.some(narrowedCase.apply(value));
                       }
                   }
                   return $OptionType.none();
@@ -296,64 +309,42 @@ def generateMainClasses(): Unit = {
 
               // -- CASES
 
-              // does not compile if interfaces are not fully qualified - wtf!?
-              public interface Case<T, R> extends java.util.function.Function<T, javaslang.control.Option<R>> {
+              public interface Case<T, R> extends PartialFunction<T, R> {
               }
 
-              public static final class Case0<T, R> implements Case<T, R> {
-
-                  private final P0<T> pattern;
-                  private final $SupplierType<? extends R> f;
-
-                  private Case0(P0<T> pattern, $SupplierType<? extends R> f) {
-                      this.pattern = pattern;
-                      this.f = f;
-                  }
-
-                  @Override
-                  public Option<R> apply(T obj) {
-                      return pattern.apply(obj).map(ignored -> f.get());
-                  }
-              }
-
-              public static final class Case1<T, T1, R> implements Case<T, R> {
-
-                  private final P1<T, T1> pattern;
-                  private final $FunctionType<? super T1, ? extends R> f;
-
-                  private Case1(P1<T, T1> pattern, $FunctionType<? super T1, ? extends R> f) {
-                      this.pattern = pattern;
-                      this.f = f;
-                  }
-
-                  @Override
-                  public $OptionType<R> apply(T obj) {
-                      return pattern.apply(obj).map(f);
-                  }
-              }
-
-              ${(2 to N).gen(i => {
+              ${(1 to N).gen(i => {
+                val argTypes = (1 to i).gen(j => s"? super T$j")(", ")
                 val generics = (1 to i).gen(j => s"T$j")(", ")
+                val resultType = s"Tuple$i<$generics>"
                 val functionType = i match {
-                  case 1 => ""
+                  case 1 => FunctionType
                   case 2 => BiFunctionType
                   case _ => s"Function$i"
                 }
-                val argTypes = (1 to i).gen(j => s"? super T$j")(", ")
                 xs"""
                   public static final class Case$i<T, $generics, R> implements Case<T, R> {
 
-                      private final P$i<T, $generics> pattern;
+                      private final Pattern$i<T, $generics> pattern;
                       private final $functionType<$argTypes, ? extends R> f;
 
-                      private Case$i(P$i<T, $generics> pattern, $functionType<$argTypes, ? extends R> f) {
+                      private Case$i(Pattern$i<T, $generics> pattern, $functionType<$argTypes, ? extends R> f) {
                           this.pattern = pattern;
                           this.f = f;
                       }
 
                       @Override
-                      public $OptionType<R> apply(T obj) {
-                          return pattern.apply(obj).map(t -> f.apply(${(1 to i).gen(j => s"t._$j")(", ")}));
+                      public boolean isApplicable(T t) {
+                          return pattern.isApplicable(t);
+                      }
+
+                      @Override
+                      public R apply(T t) {
+                          ${if (i == 1) xs"""
+                            return f.apply(pattern.apply(t));
+                          """ else xs"""
+                            final $resultType r = pattern.apply(t);
+                            return f.apply(${(1 to i).gen(j => s"r._$j")(", ")});
+                          """}
                       }
                   }
                 """
@@ -361,80 +352,97 @@ def generateMainClasses(): Unit = {
 
               // -- PATTERNS
 
+              /**
+               * A Pattern is a {@link PartialFunction}. By calling {@link #isApplicable(Object)} we check, if
+               * {@link #apply(Object)} can be called. If a Pattern is not applicable to an object, {@linkplain #apply(Object)}
+               * must not be called.
+               *
+               * @param <O> An object type that has a part of type T than is matched and decomposed by this pattern
+               * @param <T> The part type of O
+               */
+              interface Pattern<O, T> extends PartialFunction<O, T> {
+              }
+
               // These can't be @FunctionalInterfaces because of ambiguities.
               // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
 
-              public static abstract class P0<O> {
-
-                  // created with factory methods only for safety reasons
-                  private P0() {
-                  }
-
-                  abstract $OptionType<Void> apply(O o);
-
-                  public static <O> P0<O> eq(O prototype) {
-                      return new P0<O>() {
-                          @Override
-                          $OptionType<Void> apply(O o) {
-                              return $Objects.equals(o, prototype) ? $OptionType.nothing() : $OptionType.none();
-                          }
-                      };
-                  }
-
-                  public static <O> P0<O> of(Class<O> type) {
-                      return new P0<O>() {
-                          @Override
-                          $OptionType<Void> apply(O o) {
-                              return (o != null && type.isAssignableFrom(o.getClass())) ? $OptionType.nothing() : $OptionType.none();
-                          }
-                      };
-                  }
-
-                  private static <O> P0<O> of($FunctionType<O, $OptionType<Void>> f) {
-                      return new P0<O>() {
-                          @Override
-                          $OptionType<Void> apply(O o) {
-                              return f.apply(o);
-                          }
-                      };
-                  }
-
-                  // TODO: these need to be generated for all variations...
-                  @SuppressWarnings("unchecked")
-                  public static <O, O1, T1> P0<O> of(P0<? extends O1> p1, $FunctionType<? super O, Tuple1<O1>> f) {
-                      return of(o -> f.apply(o).transform(((P0<O1>) p1)::apply));
-                  }
-              }
-
               ${(1 to N).gen(i => {
-                val generics = (1 to i).gen(j => s"T$j")(", ")
-                val resultType = if (i == 1) "T1" else s"Tuple$i<$generics>"
-                val FunctionType = im.getType("java.util.function.Function")
+                val partGenerics = (1 to i).gen(j => s"O$j")(", ")
+                val unapplyType = if (i == 1) "O1" else s"Tuple$i<$partGenerics>"
+                val resultGenerics = (1 to i).gen(j => s"T$j")(", ")
+                val resultType = if (i == 1) "T1" else s"Tuple$i<$resultGenerics>"
+                val args = (1 to i).gen(j => s"Pattern<? extends O$j, T$j> p$j")(", ")
+                def arg(j: Int) = s"((Pattern<O$j, T$j>) p$j)"
                 xs"""
-                  public static abstract class P$i<O, $generics> {
+                  public static abstract class Pattern$i<O, $resultGenerics> implements Pattern<O, $resultType> {
 
-                      // created with factory methods only for safety reasons
-                      private P$i() {
-                      }
+                      ${(i == 1).gen(xs"""
 
-                      abstract $OptionType<$resultType> apply(O obj);
+                        private static final Pattern1<Object, Object> ANY = new Pattern1<Object, Object>() {
 
-                      private static <O, $generics> P$i<O, $generics> of($FunctionType<O, Option<$resultType>> f) {
-                          return new P$i<O, $generics>() {
+                            @Override
+                            public boolean isApplicable(Object o) {
+                                return true;
+                            }
+
+                            @Override
+                            public Object apply(Object o) {
+                                return o;
+                            }
+                        };
+
+                        private static final Pattern1<Object, Object> TYPED = new Pattern1<Object, Object>() {
+
+                            @Override
+                            public boolean isApplicable(Object o) {
+                                return o != null;
+                            }
+
+                            @Override
+                            public Object apply(Object o) {
+                                return o;
+                            }
+                        };
+
+                        @SuppressWarnings("unchecked")
+                        public static <O> Pattern1<O, O> any() {
+                            return (Pattern1<O, O>) ANY;
+                        }
+
+                        @SuppressWarnings("unchecked")
+                        public static <O> Pattern1<O, O> typed() {
+                            return (Pattern1<O, O>) TYPED;
+                        }
+                      """)}
+
+                      public static <O, $partGenerics, $resultGenerics> Pattern$i<O, $resultGenerics> of($args, Function<? super O, ? extends $unapplyType> unapply) {
+                          return new Pattern$i<O, $resultGenerics>() {
+
+                              // the unapplied object
+                              $unapplyType u = null;
+
+                              @SuppressWarnings("unchecked")
                               @Override
-                              protected $OptionType<$resultType> apply(O obj) {
-                                  return f.apply(obj);
+                              public boolean isApplicable(O o) {
+                                  u = unapply.apply(o);
+                                  ${if (i == 1) xs"""
+                                      return ((Pattern<O1, T1>) p1).isApplicable(u);
+                                  """ else xs"""
+                                      return ${(1 to i).gen(j => arg(j) + s".isApplicable(u._$j)")(" && ")};
+                                  """}
+                              }
+
+                              @SuppressWarnings("unchecked")
+                              @Override
+                              public $resultType apply(O o) {
+                                  ${if (i == 1) xs"""
+                                      return ((Pattern<O1, T1>) p1).apply(u);
+                                  """ else xs"""
+                                      return Tuple.of(${(1 to i).gen(j => arg(j) + s".apply(u._$j)")(", ")});
+                                  """}
                               }
                           };
                       }
-
-                      // TODO: methods need to be generated for all variations...
-                      ${(i == 1).gen(s"""
-                        @SuppressWarnings("unchecked")
-                        public static <O, O1, T1> P1<O, T1> of(P1<? extends O1, T1> p1, $FunctionType<? super O, Tuple1<O1>> f) {
-                            return of(o -> f.apply(o).transform(((P1<O1, T1>) p1)::apply));
-                        }
-                      """)}
                   }
                 """
               })("\n\n")}
@@ -499,6 +507,8 @@ def generateMainClasses(): Unit = {
          *
          * As with all Javaslang Values, the result of a For-comprehension can be converted
          * to standard Java library and Javaslang types.
+         * @author Daniel Dietrich
+         * @since 2.0.0
          */
         public final class API {
 
