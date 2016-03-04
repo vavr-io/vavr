@@ -10,6 +10,7 @@ import javaslang.control.Option;
 import org.junit.Test;
 
 import static javaslang.API.*;
+import static javaslang.API.Match.*;
 
 public class MatchTest {
 
@@ -57,15 +58,14 @@ public class MatchTest {
                 })
         );
 
-// TODO
-//        Match(TUPLE3_LIST).of(
-//                Case(Cons($(), $()), (x, xs) -> {
-//                    Tuple3<String, Integer, Double> head = x;
-//                    List<Tuple3<String, Integer, Double>> tail = xs;
-//                    System.out.printf("List($(), $()) = List(%s, %s)\n", head, tail);
-//                    return null;
-//                })
-//        );
+        Match(TUPLE3_LIST).of(
+                Case(Cons($(), $()), (x, xs) -> {
+                    Tuple3<String, Integer, Double> head = x;
+                    List<Tuple3<String, Integer, Double>> tail = xs;
+                    System.out.printf("List($(), $()) = List(%s, %s)\n", head, tail);
+                    return null;
+                })
+        );
 
         Match(TUPLE3_LIST).of(
                 Case(Cons($(), $()), (x, xs) -> {
@@ -77,30 +77,30 @@ public class MatchTest {
 
 // TODO
 //        Match(TUPLE3_LIST).of(
-//                Case(Cons(Tuple3($("begin"), $_, $_), $_), s -> {
+//                Case(Cons(Tuple3($("begin"), $(), $()), $()), s -> {
 //                    System.out.printf("List(Tuple3($(\"begin\"), _, _), _) = List(Tuple3(%s, _, _), _)\n", s);
 //                    return null;
 //                })
 //        );
 //
 //        Match(TUPLE3_LIST).of(
-//                Case(Cons(Tuple3($_, $_, $_), $_), () -> {
+//                Case(Cons(Tuple3($(), $(), $()), $()), () -> {
 //                    System.out.printf("List(Tuple3($_, _, _), _) = List(Tuple3(_, _, _), _)\n");
 //                    return null;
 //                })
 //        );
 
 // TODO
-//        // = Daniel is caffeinated
-//        final String msg1 = Match(PERSON).of(
-//                Case(Developer($("Daniel"), $(true), $_), Util::devInfo),
-//                Case($_, () -> "Unknown Person type")
-//        );
-//
-//        // = Some(Daniel is caffeinated)
-//        final Option<String> msg2 = Match(PERSON).safe(
-//                Case(Developer($("Daniel"), $(true), $_), Util::devInfo)
-//        );
+        // = Daniel is caffeinated
+        final String msg1 = Match(PERSON).of(
+                Case(Developer($("Daniel"), $(true), $()), Util::devInfo),
+                Case($(), () -> "Unknown Person type")
+        );
+
+        // = Some(Daniel is caffeinated)
+        final Option<String> msg2 = Match(PERSON).option(
+                Case(Developer($("Daniel"), $(true), $()), Util::devInfo)
+        );
 
         // should not match wrong subtype
         final Option<Integer> opt = Option.none();
@@ -143,7 +143,7 @@ public class MatchTest {
     }
 
     static class Util {
-        static String devInfo(String name, boolean isCaffeinated) {
+        static String devInfo(String name, boolean isCaffeinated, Option<Number> number) {
             return name + " is " + (isCaffeinated ? "" : "not ") + "caffeinated.";
         }
     }
@@ -168,5 +168,9 @@ public class MatchTest {
         public boolean isCaffeinated() { return isCaffeinated; }
 
         public Option<Number> number() { return number; }
+    }
+
+    static <T1> Match.Pattern3<Developer, String, Boolean, T1> Developer(Pattern<String, String> p1, Pattern<Boolean, Boolean> p2, Pattern<Option<Number>, T1> p3) {
+        return Pattern3.of(Developer.class, p1, p2, p3, dev -> Tuple.of(dev.name, dev.isCaffeinated, dev.number));
     }
 }
