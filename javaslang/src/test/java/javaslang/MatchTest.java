@@ -30,6 +30,28 @@ public class MatchTest {
     @Test
     public void shouldMatch() {
 
+//        i match {
+//            case 1 => "one"
+//            case 2 => "two"
+//            case _ => "many"
+//        }
+
+//        Matchable.of(i).matches(c-> c.is(when(1),then("one"))
+//                                     .is(when(2),then("two"))
+//                                     ,otherwise("many"));
+
+        Match(3).of(
+            Case($(1), "one"),
+            Case($(2), "two"),
+            Case($(), "many")
+        );
+
+        Match(3).of(
+            Case(1, "one"),
+            Case(2, "two"),
+            Case($(), "many")
+        );
+
         Match(TUPLE2_OPTION).of(
                 Case($(), "good!")
         );

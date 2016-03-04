@@ -162,13 +162,24 @@ def generateMainClasses(): Unit = {
 
           // -- Cases
 
+          // syntactic sugar for {@code Case($$(value), f)}
+          public static <T, R> Case<T, R> Case(T value, $SupplierType<? extends R> f) {
+              Objects.requireNonNull(f, "f is null");
+              return new Case0<>($$(value), f);
+          }
+
+          // syntactic sugar for {@code Case($$(value), () -> retVal)}
+          public static <T, R> Case<T, R> Case(T value, R retVal) {
+              return new Case0<>($$(value), () -> retVal);
+          }
+
           public static <T, R> Case<T, R> Case(Pattern0<T> pattern, $SupplierType<? extends R> f) {
               Objects.requireNonNull(pattern, "pattern is null");
               Objects.requireNonNull(f, "f is null");
               return new Case0<>(pattern, f);
           }
 
-          // syntactic sugar for {@link #Case0(Pattern0, $SupplierType)}
+          // syntactic sugar for {@link #Case(Pattern0, $SupplierType)}
           public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
               Objects.requireNonNull(pattern, "pattern is null");
               return new Case0<>(pattern, () -> retVal);
@@ -190,7 +201,7 @@ def generateMainClasses(): Unit = {
                   return new Case$i<>(pattern, f);
               }
 
-              // syntactic sugar for {@link #Case$i(Pattern$i, $functionType)}
+              // syntactic sugar for {@link #Case(Pattern$i, $functionType)}
               public static <T, $generics, R> Case<T, R> Case(Pattern$i<T, $generics> pattern, R retVal) {
                   $Objects.requireNonNull(pattern, "pattern is null");
                   return new Case$i<>(pattern, $params -> retVal);
@@ -217,10 +228,15 @@ def generateMainClasses(): Unit = {
            *
            * @param <O>       type of the prototype
            * @param prototype the value that should be equal to the underlying object
-           * @return a new {@code Pattern1} instance
+           * @return a new {@code Pattern0} instance
            */
-          public static <O> Pattern1<O, O> $$(O prototype) {
-              return $$(o -> $Objects.equals(o, prototype));
+          public static <O> Pattern0<O> $$(O prototype) {
+              return new Pattern0<O>() {
+                  @Override
+                  public boolean isApplicable(O o) {
+                      return $Objects.equals(o, prototype);
+                  }
+              };
           }
 
           /**
@@ -228,20 +244,14 @@ def generateMainClasses(): Unit = {
            *
            * @param <O>       type of the prototype
            * @param predicate the predicate that tests a given value
-           * @return a new {@code Pattern1} instance
+           * @return a new {@code Pattern0} instance
            */
-          public static <O> Pattern1<O, O> $$($PredicateType<? super O> predicate) {
+          public static <O> Pattern0<O> $$($PredicateType<? super O> predicate) {
               $Objects.requireNonNull(predicate, "predicate is null");
-              return new Pattern1<O, O>() {
-
+              return new Pattern0<O>() {
                   @Override
                   public boolean isApplicable(O o) {
                       return predicate.test(o);
-                  }
-
-                  @Override
-                  public O apply(O o) {
-                      return o;
                   }
               };
           }

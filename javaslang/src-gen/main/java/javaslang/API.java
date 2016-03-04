@@ -589,13 +589,24 @@ public final class API {
 
     // -- Cases
 
+    // syntactic sugar for {@code Case($(value), f)}
+    public static <T, R> Case<T, R> Case(T value, Supplier<? extends R> f) {
+        Objects.requireNonNull(f, "f is null");
+        return new Case0<>($(value), f);
+    }
+
+    // syntactic sugar for {@code Case($(value), () -> retVal)}
+    public static <T, R> Case<T, R> Case(T value, R retVal) {
+        return new Case0<>($(value), () -> retVal);
+    }
+
     public static <T, R> Case<T, R> Case(Pattern0<T> pattern, Supplier<? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
         return new Case0<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case0(Pattern0, Supplier)}
+    // syntactic sugar for {@link #Case(Pattern0, Supplier)}
     public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case0<>(pattern, () -> retVal);
@@ -607,7 +618,7 @@ public final class API {
         return new Case1<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case1(Pattern1, Function)}
+    // syntactic sugar for {@link #Case(Pattern1, Function)}
     public static <T, T1, R> Case<T, R> Case(Pattern1<T, T1> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case1<>(pattern, _1 -> retVal);
@@ -619,7 +630,7 @@ public final class API {
         return new Case2<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case2(Pattern2, BiFunction)}
+    // syntactic sugar for {@link #Case(Pattern2, BiFunction)}
     public static <T, T1, T2, R> Case<T, R> Case(Pattern2<T, T1, T2> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case2<>(pattern, (_1, _2) -> retVal);
@@ -631,7 +642,7 @@ public final class API {
         return new Case3<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case3(Pattern3, Function3)}
+    // syntactic sugar for {@link #Case(Pattern3, Function3)}
     public static <T, T1, T2, T3, R> Case<T, R> Case(Pattern3<T, T1, T2, T3> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case3<>(pattern, (_1, _2, _3) -> retVal);
@@ -643,7 +654,7 @@ public final class API {
         return new Case4<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case4(Pattern4, Function4)}
+    // syntactic sugar for {@link #Case(Pattern4, Function4)}
     public static <T, T1, T2, T3, T4, R> Case<T, R> Case(Pattern4<T, T1, T2, T3, T4> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case4<>(pattern, (_1, _2, _3, _4) -> retVal);
@@ -655,7 +666,7 @@ public final class API {
         return new Case5<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case5(Pattern5, Function5)}
+    // syntactic sugar for {@link #Case(Pattern5, Function5)}
     public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(Pattern5<T, T1, T2, T3, T4, T5> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case5<>(pattern, (_1, _2, _3, _4, _5) -> retVal);
@@ -667,7 +678,7 @@ public final class API {
         return new Case6<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case6(Pattern6, Function6)}
+    // syntactic sugar for {@link #Case(Pattern6, Function6)}
     public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case6<>(pattern, (_1, _2, _3, _4, _5, _6) -> retVal);
@@ -679,7 +690,7 @@ public final class API {
         return new Case7<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case7(Pattern7, Function7)}
+    // syntactic sugar for {@link #Case(Pattern7, Function7)}
     public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case7<>(pattern, (_1, _2, _3, _4, _5, _6, _7) -> retVal);
@@ -691,7 +702,7 @@ public final class API {
         return new Case8<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case8(Pattern8, Function8)}
+    // syntactic sugar for {@link #Case(Pattern8, Function8)}
     public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case8<>(pattern, (_1, _2, _3, _4, _5, _6, _7, _8) -> retVal);
@@ -716,10 +727,15 @@ public final class API {
      *
      * @param <O>       type of the prototype
      * @param prototype the value that should be equal to the underlying object
-     * @return a new {@code Pattern1} instance
+     * @return a new {@code Pattern0} instance
      */
-    public static <O> Pattern1<O, O> $(O prototype) {
-        return $(o -> Objects.equals(o, prototype));
+    public static <O> Pattern0<O> $(O prototype) {
+        return new Pattern0<O>() {
+            @Override
+            public boolean isApplicable(O o) {
+                return Objects.equals(o, prototype);
+            }
+        };
     }
 
     /**
@@ -727,20 +743,14 @@ public final class API {
      *
      * @param <O>       type of the prototype
      * @param predicate the predicate that tests a given value
-     * @return a new {@code Pattern1} instance
+     * @return a new {@code Pattern0} instance
      */
-    public static <O> Pattern1<O, O> $(Predicate<? super O> predicate) {
+    public static <O> Pattern0<O> $(Predicate<? super O> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return new Pattern1<O, O>() {
-
+        return new Pattern0<O>() {
             @Override
             public boolean isApplicable(O o) {
                 return predicate.test(o);
-            }
-
-            @Override
-            public O apply(O o) {
-                return o;
             }
         };
     }
