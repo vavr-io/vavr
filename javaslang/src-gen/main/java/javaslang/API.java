@@ -17,12 +17,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javaslang.collection.Iterator;
-import javaslang.collection.List;
-import javaslang.collection.List.Cons;
-import javaslang.collection.List.Nil;
 import javaslang.control.Option;
-import javaslang.control.Option.None;
-import javaslang.control.Option.Some;
 
 /**
  * The most basic Javaslang functionality is accessed through this API class.
@@ -587,7 +582,18 @@ public final class API {
         return new Match<>(value);
     }
 
-    // -- Cases
+    // -- static Case API
+
+    // syntactic sugar for {@code Case($(predicate), f)}
+    public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, Supplier<? extends R> f) {
+        Objects.requireNonNull(f, "f is null");
+        return new Case0<>($(predicate), f);
+    }
+
+    // syntactic sugar for {@code Case($(predicate), () -> retVal)}
+    public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, R retVal) {
+        return new Case0<>($(predicate), () -> retVal);
+    }
 
     // syntactic sugar for {@code Case($(value), f)}
     public static <T, R> Case<T, R> Case(T value, Supplier<? extends R> f) {
@@ -715,25 +721,25 @@ public final class API {
     /**
      * Wildcard pattern, matches any value.
      *
-     * @param <O> injected type of the underlying value
+     * @param <T> injected type of the underlying value
      * @return a new {@code Pattern0} instance
      */
-    public static <O> Pattern0<O> $() {
+    public static <T> Pattern0<T> $() {
         return Pattern0.any();
     }
 
     /**
      * Value pattern, checks for equality.
      *
-     * @param <O>       type of the prototype
+     * @param <T>       type of the prototype
      * @param prototype the value that should be equal to the underlying object
      * @return a new {@code Pattern0} instance
      */
-    public static <O> Pattern0<O> $(O prototype) {
-        return new Pattern0<O>() {
+    public static <T> Pattern0<T> $(T prototype) {
+        return new Pattern0<T>() {
             @Override
-            public boolean isApplicable(O o) {
-                return Objects.equals(o, prototype);
+            public boolean isApplicable(T obj) {
+                return Objects.equals(obj, prototype);
             }
         };
     }
@@ -741,56 +747,23 @@ public final class API {
     /**
      * Guard pattern, checks if a predicate is satisfied.
      *
-     * @param <O>       type of the prototype
+     * @param <T>       type of the prototype
      * @param predicate the predicate that tests a given value
      * @return a new {@code Pattern0} instance
      */
-    public static <O> Pattern0<O> $(Predicate<? super O> predicate) {
+    public static <T> Pattern0<T> $(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return new Pattern0<O>() {
+        return new Pattern0<T>() {
             @Override
-            public boolean isApplicable(O o) {
-                return predicate.test(o);
+            public boolean isApplicable(T obj) {
+                return predicate.test(obj);
             }
         };
     }
 
-    // 2) Unapply patterns for existing Javaslang values
-
-    // collections
-
-    public static <T> Pattern0<None<T>> None() { return Pattern0.instanceOf(None.class); }
-    public static <T, T1> Pattern1<Some<T>, T1> Some(Pattern<? extends T, T1> p1) { return Pattern1.of(Some.class, p1, Some::get); }
-
-    // controls
-
-    public static <T> Pattern0<Nil<T>> Nil() { return Pattern0.instanceOf(Nil.class); }
-    public static <T, T1, T2> Pattern2<Cons<T>, T1, T2> Cons(Pattern<? extends T, T1> p1, Pattern<? extends List<T>, T2> p2) { return Pattern2.of(Cons.class, p1, p2, cons -> Tuple.of(cons.head(), cons.tail())); }
-
-    // TODO: more patterns...
-
     /**
-     * Scala-like structural pattern matching for Java.
-     *
-     * <pre><code>
-     * // Match API
-     * import static javaslang.Match.*;
-     *
-     * // Match Patterns for Javaslang types
-     * import static javaslang.match.Patterns.*;
-     *
-     * // Example
-     * Match(list).of(
-     *         Case(List($(), $()), (x, xs) -&gt; "head: " + x + ", tail: " + xs),
-     *         Case($_, -&gt; "Nil")
-     * );
-     *
-     * // Syntactic sugar
-     * list.match(
-     *         Case(List($(), $()), (x, xs) -&gt; "head: " + x + ", tail: " + xs),
-     *         Case($_, -&gt; "Nil")
-     * );
-     * </code></pre>
+     * Scala-like structural pattern matching for Java. Instances are obtained via {@link API#Match(Object)}.
+     * @param <T> type of the object that is matched
      */
     public static final class Match<T> {
 
@@ -1027,16 +1000,16 @@ public final class API {
          * {@link #apply(Object)} can be called. If a Pattern is not applicable to an object, {@linkplain #apply(Object)}
          * must not be called.
          *
-         * @param <O> An object type that has a part of type T than is matched and decomposed by this pattern
-         * @param <T> The part type of O
+         * @param <T> An object type that has a part of type R than is matched and decomposed by this pattern
+         * @param <R> Type of the part this pattern matches/decomposes
          */
-        interface Pattern<O, T> extends PartialFunction<O, T> {
+        public interface Pattern<T, R> extends PartialFunction<T, R> {
         }
 
         // These can't be @FunctionalInterfaces because of ambiguities.
         // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
 
-        public static abstract class Pattern0<O> implements Pattern<O, O> {
+        public static abstract class Pattern0<T> implements Pattern<T, T> {
 
             private static final Pattern0<Object> ANY = new Pattern0<Object>() {
                 @Override
@@ -1046,239 +1019,296 @@ public final class API {
             };
 
             @SuppressWarnings("unchecked")
-            public static <O> Pattern0<O> any() {
-                return (Pattern0<O>) ANY;
+            public static <T> Pattern0<T> any() {
+                return (Pattern0<T>) ANY;
             }
 
+            // DEV-NOTE: We need the lower bound `Class<? super T>` instead of the more appropriate `Class<T>`
+            //           because it allows us to create patterns for generic types, which would otherwise not be
+            //           possible: `Pattern0<Some<String>> p = Pattern0.of(Some.class);`
             @SuppressWarnings("unchecked")
-            public static <O> Pattern0<O> instanceOf(Class<? super O> type) {
-                return new Pattern0<O>() {
+            public static <T> Pattern0<T> of(Class<? super T> type) {
+                return new Pattern0<T>() {
                     @Override
-                    public boolean isApplicable(O o) {
-                        return o != null && type.isAssignableFrom(o.getClass());
+                    public boolean isApplicable(T obj) {
+                        return obj != null && type.isAssignableFrom(obj.getClass());
                     }
                 };
+            }
+
+            private Pattern0() {
             }
 
             @Override
-            public O apply(O o) {
-                return o;
+            public T apply(T obj) {
+                return obj;
             }
         }
 
-        public static abstract class Pattern1<O, T1> implements Pattern<O, T1> {
+        public static abstract class Pattern1<T, T1> implements Pattern<T, T1> {
 
-            public static <O, O1, T1> Pattern1<O, T1> of(Class<? super O> type, Pattern<? extends O1, T1> p1, Function<? super O, ? extends O1> unapply) {
-                return new Pattern1<O, T1>() {
+            public static <T, T1> Pattern1<T, T1> of(Class<? super T> type, Pattern<T1, ?> p1, Function<? super T, T1> unapply) {
+                return new Pattern1<T, T1>() {
 
                     // the unapplied object
-                    O1 u = null;
+                    T1 part = null;
 
                     @SuppressWarnings("unchecked")
                     @Override
-                    public boolean isApplicable(O o) {
-                        if (o == null || !type.isAssignableFrom(o.getClass())) {
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                             return false;
                         }
-                        u = unapply.apply(o);
-                        return ((Pattern<O1, T1>) p1).isApplicable(u);
+                        part = unapply.apply(obj);
+                        return p1.isApplicable(part);
                     }
 
-                    @SuppressWarnings("unchecked")
                     @Override
-                    public T1 apply(O o) {
-                        return ((Pattern<O1, T1>) p1).apply(u);
+                    public T1 apply(T obj) {
+                        return part;
                     }
                 };
             }
-        }
 
-        public static abstract class Pattern2<O, T1, T2> implements Pattern<O, Tuple2<T1, T2>> {
-
-            public static <O, O1, O2, T1, T2> Pattern2<O, T1, T2> of(Class<? super O> type, Pattern<? extends O1, T1> p1, Pattern<? extends O2, T2> p2, Function<? super O, ? extends Tuple2<O1, O2>> unapply) {
-                return new Pattern2<O, T1, T2>() {
-
-                    // the unapplied object
-                    Tuple2<O1, O2> u = null;
-
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public boolean isApplicable(O o) {
-                        if (o == null || !type.isAssignableFrom(o.getClass())) {
-                            return false;
-                        }
-                        u = unapply.apply(o);
-                        return ((Pattern<O1, T1>) p1).isApplicable(u._1) && ((Pattern<O2, T2>) p2).isApplicable(u._2);
-                    }
-
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public Tuple2<T1, T2> apply(O o) {
-                        return Tuple.of(((Pattern<O1, T1>) p1).apply(u._1), ((Pattern<O2, T2>) p2).apply(u._2));
-                    }
-                };
+            private Pattern1() {
             }
         }
 
-        public static abstract class Pattern3<O, T1, T2, T3> implements Pattern<O, Tuple3<T1, T2, T3>> {
+        public static abstract class Pattern2<T, T1, T2> implements Pattern<T, Tuple2<T1, T2>> {
 
-            public static <O, O1, O2, O3, T1, T2, T3> Pattern3<O, T1, T2, T3> of(Class<? super O> type, Pattern<? extends O1, T1> p1, Pattern<? extends O2, T2> p2, Pattern<? extends O3, T3> p3, Function<? super O, ? extends Tuple3<O1, O2, O3>> unapply) {
-                return new Pattern3<O, T1, T2, T3>() {
+            public static <T, T1, T2> Pattern2<T, T1, T2> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Function<? super T, Tuple2<T1, T2>> unapply) {
+                return new Pattern2<T, T1, T2>() {
 
                     // the unapplied object
-                    Tuple3<O1, O2, O3> u = null;
+                    Tuple2<T1, T2> parts = null;
 
                     @SuppressWarnings("unchecked")
                     @Override
-                    public boolean isApplicable(O o) {
-                        if (o == null || !type.isAssignableFrom(o.getClass())) {
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                             return false;
                         }
-                        u = unapply.apply(o);
-                        return ((Pattern<O1, T1>) p1).isApplicable(u._1) && ((Pattern<O2, T2>) p2).isApplicable(u._2) && ((Pattern<O3, T3>) p3).isApplicable(u._3);
+                        parts = unapply.apply(obj);
+                        return
+                                p1.isApplicable(parts._1) &&
+                                p2.isApplicable(parts._2);
                     }
 
-                    @SuppressWarnings("unchecked")
                     @Override
-                    public Tuple3<T1, T2, T3> apply(O o) {
-                        return Tuple.of(((Pattern<O1, T1>) p1).apply(u._1), ((Pattern<O2, T2>) p2).apply(u._2), ((Pattern<O3, T3>) p3).apply(u._3));
+                    public Tuple2<T1, T2> apply(T obj) {
+                        return parts;
                     }
                 };
             }
-        }
 
-        public static abstract class Pattern4<O, T1, T2, T3, T4> implements Pattern<O, Tuple4<T1, T2, T3, T4>> {
-
-            public static <O, O1, O2, O3, O4, T1, T2, T3, T4> Pattern4<O, T1, T2, T3, T4> of(Class<? super O> type, Pattern<? extends O1, T1> p1, Pattern<? extends O2, T2> p2, Pattern<? extends O3, T3> p3, Pattern<? extends O4, T4> p4, Function<? super O, ? extends Tuple4<O1, O2, O3, O4>> unapply) {
-                return new Pattern4<O, T1, T2, T3, T4>() {
-
-                    // the unapplied object
-                    Tuple4<O1, O2, O3, O4> u = null;
-
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public boolean isApplicable(O o) {
-                        if (o == null || !type.isAssignableFrom(o.getClass())) {
-                            return false;
-                        }
-                        u = unapply.apply(o);
-                        return ((Pattern<O1, T1>) p1).isApplicable(u._1) && ((Pattern<O2, T2>) p2).isApplicable(u._2) && ((Pattern<O3, T3>) p3).isApplicable(u._3) && ((Pattern<O4, T4>) p4).isApplicable(u._4);
-                    }
-
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public Tuple4<T1, T2, T3, T4> apply(O o) {
-                        return Tuple.of(((Pattern<O1, T1>) p1).apply(u._1), ((Pattern<O2, T2>) p2).apply(u._2), ((Pattern<O3, T3>) p3).apply(u._3), ((Pattern<O4, T4>) p4).apply(u._4));
-                    }
-                };
+            private Pattern2() {
             }
         }
 
-        public static abstract class Pattern5<O, T1, T2, T3, T4, T5> implements Pattern<O, Tuple5<T1, T2, T3, T4, T5>> {
+        public static abstract class Pattern3<T, T1, T2, T3> implements Pattern<T, Tuple3<T1, T2, T3>> {
 
-            public static <O, O1, O2, O3, O4, O5, T1, T2, T3, T4, T5> Pattern5<O, T1, T2, T3, T4, T5> of(Class<? super O> type, Pattern<? extends O1, T1> p1, Pattern<? extends O2, T2> p2, Pattern<? extends O3, T3> p3, Pattern<? extends O4, T4> p4, Pattern<? extends O5, T5> p5, Function<? super O, ? extends Tuple5<O1, O2, O3, O4, O5>> unapply) {
-                return new Pattern5<O, T1, T2, T3, T4, T5>() {
+            public static <T, T1, T2, T3> Pattern3<T, T1, T2, T3> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Function<? super T, Tuple3<T1, T2, T3>> unapply) {
+                return new Pattern3<T, T1, T2, T3>() {
 
                     // the unapplied object
-                    Tuple5<O1, O2, O3, O4, O5> u = null;
+                    Tuple3<T1, T2, T3> parts = null;
 
                     @SuppressWarnings("unchecked")
                     @Override
-                    public boolean isApplicable(O o) {
-                        if (o == null || !type.isAssignableFrom(o.getClass())) {
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                             return false;
                         }
-                        u = unapply.apply(o);
-                        return ((Pattern<O1, T1>) p1).isApplicable(u._1) && ((Pattern<O2, T2>) p2).isApplicable(u._2) && ((Pattern<O3, T3>) p3).isApplicable(u._3) && ((Pattern<O4, T4>) p4).isApplicable(u._4) && ((Pattern<O5, T5>) p5).isApplicable(u._5);
+                        parts = unapply.apply(obj);
+                        return
+                                p1.isApplicable(parts._1) &&
+                                p2.isApplicable(parts._2) &&
+                                p3.isApplicable(parts._3);
                     }
 
-                    @SuppressWarnings("unchecked")
                     @Override
-                    public Tuple5<T1, T2, T3, T4, T5> apply(O o) {
-                        return Tuple.of(((Pattern<O1, T1>) p1).apply(u._1), ((Pattern<O2, T2>) p2).apply(u._2), ((Pattern<O3, T3>) p3).apply(u._3), ((Pattern<O4, T4>) p4).apply(u._4), ((Pattern<O5, T5>) p5).apply(u._5));
+                    public Tuple3<T1, T2, T3> apply(T obj) {
+                        return parts;
                     }
                 };
             }
-        }
 
-        public static abstract class Pattern6<O, T1, T2, T3, T4, T5, T6> implements Pattern<O, Tuple6<T1, T2, T3, T4, T5, T6>> {
-
-            public static <O, O1, O2, O3, O4, O5, O6, T1, T2, T3, T4, T5, T6> Pattern6<O, T1, T2, T3, T4, T5, T6> of(Class<? super O> type, Pattern<? extends O1, T1> p1, Pattern<? extends O2, T2> p2, Pattern<? extends O3, T3> p3, Pattern<? extends O4, T4> p4, Pattern<? extends O5, T5> p5, Pattern<? extends O6, T6> p6, Function<? super O, ? extends Tuple6<O1, O2, O3, O4, O5, O6>> unapply) {
-                return new Pattern6<O, T1, T2, T3, T4, T5, T6>() {
-
-                    // the unapplied object
-                    Tuple6<O1, O2, O3, O4, O5, O6> u = null;
-
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public boolean isApplicable(O o) {
-                        if (o == null || !type.isAssignableFrom(o.getClass())) {
-                            return false;
-                        }
-                        u = unapply.apply(o);
-                        return ((Pattern<O1, T1>) p1).isApplicable(u._1) && ((Pattern<O2, T2>) p2).isApplicable(u._2) && ((Pattern<O3, T3>) p3).isApplicable(u._3) && ((Pattern<O4, T4>) p4).isApplicable(u._4) && ((Pattern<O5, T5>) p5).isApplicable(u._5) && ((Pattern<O6, T6>) p6).isApplicable(u._6);
-                    }
-
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public Tuple6<T1, T2, T3, T4, T5, T6> apply(O o) {
-                        return Tuple.of(((Pattern<O1, T1>) p1).apply(u._1), ((Pattern<O2, T2>) p2).apply(u._2), ((Pattern<O3, T3>) p3).apply(u._3), ((Pattern<O4, T4>) p4).apply(u._4), ((Pattern<O5, T5>) p5).apply(u._5), ((Pattern<O6, T6>) p6).apply(u._6));
-                    }
-                };
+            private Pattern3() {
             }
         }
 
-        public static abstract class Pattern7<O, T1, T2, T3, T4, T5, T6, T7> implements Pattern<O, Tuple7<T1, T2, T3, T4, T5, T6, T7>> {
+        public static abstract class Pattern4<T, T1, T2, T3, T4> implements Pattern<T, Tuple4<T1, T2, T3, T4>> {
 
-            public static <O, O1, O2, O3, O4, O5, O6, O7, T1, T2, T3, T4, T5, T6, T7> Pattern7<O, T1, T2, T3, T4, T5, T6, T7> of(Class<? super O> type, Pattern<? extends O1, T1> p1, Pattern<? extends O2, T2> p2, Pattern<? extends O3, T3> p3, Pattern<? extends O4, T4> p4, Pattern<? extends O5, T5> p5, Pattern<? extends O6, T6> p6, Pattern<? extends O7, T7> p7, Function<? super O, ? extends Tuple7<O1, O2, O3, O4, O5, O6, O7>> unapply) {
-                return new Pattern7<O, T1, T2, T3, T4, T5, T6, T7>() {
+            public static <T, T1, T2, T3, T4> Pattern4<T, T1, T2, T3, T4> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Function<? super T, Tuple4<T1, T2, T3, T4>> unapply) {
+                return new Pattern4<T, T1, T2, T3, T4>() {
 
                     // the unapplied object
-                    Tuple7<O1, O2, O3, O4, O5, O6, O7> u = null;
+                    Tuple4<T1, T2, T3, T4> parts = null;
 
                     @SuppressWarnings("unchecked")
                     @Override
-                    public boolean isApplicable(O o) {
-                        if (o == null || !type.isAssignableFrom(o.getClass())) {
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                             return false;
                         }
-                        u = unapply.apply(o);
-                        return ((Pattern<O1, T1>) p1).isApplicable(u._1) && ((Pattern<O2, T2>) p2).isApplicable(u._2) && ((Pattern<O3, T3>) p3).isApplicable(u._3) && ((Pattern<O4, T4>) p4).isApplicable(u._4) && ((Pattern<O5, T5>) p5).isApplicable(u._5) && ((Pattern<O6, T6>) p6).isApplicable(u._6) && ((Pattern<O7, T7>) p7).isApplicable(u._7);
+                        parts = unapply.apply(obj);
+                        return
+                                p1.isApplicable(parts._1) &&
+                                p2.isApplicable(parts._2) &&
+                                p3.isApplicable(parts._3) &&
+                                p4.isApplicable(parts._4);
                     }
 
-                    @SuppressWarnings("unchecked")
                     @Override
-                    public Tuple7<T1, T2, T3, T4, T5, T6, T7> apply(O o) {
-                        return Tuple.of(((Pattern<O1, T1>) p1).apply(u._1), ((Pattern<O2, T2>) p2).apply(u._2), ((Pattern<O3, T3>) p3).apply(u._3), ((Pattern<O4, T4>) p4).apply(u._4), ((Pattern<O5, T5>) p5).apply(u._5), ((Pattern<O6, T6>) p6).apply(u._6), ((Pattern<O7, T7>) p7).apply(u._7));
+                    public Tuple4<T1, T2, T3, T4> apply(T obj) {
+                        return parts;
                     }
                 };
             }
+
+            private Pattern4() {
+            }
         }
 
-        public static abstract class Pattern8<O, T1, T2, T3, T4, T5, T6, T7, T8> implements Pattern<O, Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> {
+        public static abstract class Pattern5<T, T1, T2, T3, T4, T5> implements Pattern<T, Tuple5<T1, T2, T3, T4, T5>> {
 
-            public static <O, O1, O2, O3, O4, O5, O6, O7, O8, T1, T2, T3, T4, T5, T6, T7, T8> Pattern8<O, T1, T2, T3, T4, T5, T6, T7, T8> of(Class<? super O> type, Pattern<? extends O1, T1> p1, Pattern<? extends O2, T2> p2, Pattern<? extends O3, T3> p3, Pattern<? extends O4, T4> p4, Pattern<? extends O5, T5> p5, Pattern<? extends O6, T6> p6, Pattern<? extends O7, T7> p7, Pattern<? extends O8, T8> p8, Function<? super O, ? extends Tuple8<O1, O2, O3, O4, O5, O6, O7, O8>> unapply) {
-                return new Pattern8<O, T1, T2, T3, T4, T5, T6, T7, T8>() {
+            public static <T, T1, T2, T3, T4, T5> Pattern5<T, T1, T2, T3, T4, T5> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Function<? super T, Tuple5<T1, T2, T3, T4, T5>> unapply) {
+                return new Pattern5<T, T1, T2, T3, T4, T5>() {
 
                     // the unapplied object
-                    Tuple8<O1, O2, O3, O4, O5, O6, O7, O8> u = null;
+                    Tuple5<T1, T2, T3, T4, T5> parts = null;
 
                     @SuppressWarnings("unchecked")
                     @Override
-                    public boolean isApplicable(O o) {
-                        if (o == null || !type.isAssignableFrom(o.getClass())) {
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                             return false;
                         }
-                        u = unapply.apply(o);
-                        return ((Pattern<O1, T1>) p1).isApplicable(u._1) && ((Pattern<O2, T2>) p2).isApplicable(u._2) && ((Pattern<O3, T3>) p3).isApplicable(u._3) && ((Pattern<O4, T4>) p4).isApplicable(u._4) && ((Pattern<O5, T5>) p5).isApplicable(u._5) && ((Pattern<O6, T6>) p6).isApplicable(u._6) && ((Pattern<O7, T7>) p7).isApplicable(u._7) && ((Pattern<O8, T8>) p8).isApplicable(u._8);
+                        parts = unapply.apply(obj);
+                        return
+                                p1.isApplicable(parts._1) &&
+                                p2.isApplicable(parts._2) &&
+                                p3.isApplicable(parts._3) &&
+                                p4.isApplicable(parts._4) &&
+                                p5.isApplicable(parts._5);
                     }
+
+                    @Override
+                    public Tuple5<T1, T2, T3, T4, T5> apply(T obj) {
+                        return parts;
+                    }
+                };
+            }
+
+            private Pattern5() {
+            }
+        }
+
+        public static abstract class Pattern6<T, T1, T2, T3, T4, T5, T6> implements Pattern<T, Tuple6<T1, T2, T3, T4, T5, T6>> {
+
+            public static <T, T1, T2, T3, T4, T5, T6> Pattern6<T, T1, T2, T3, T4, T5, T6> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Function<? super T, Tuple6<T1, T2, T3, T4, T5, T6>> unapply) {
+                return new Pattern6<T, T1, T2, T3, T4, T5, T6>() {
+
+                    // the unapplied object
+                    Tuple6<T1, T2, T3, T4, T5, T6> parts = null;
 
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> apply(O o) {
-                        return Tuple.of(((Pattern<O1, T1>) p1).apply(u._1), ((Pattern<O2, T2>) p2).apply(u._2), ((Pattern<O3, T3>) p3).apply(u._3), ((Pattern<O4, T4>) p4).apply(u._4), ((Pattern<O5, T5>) p5).apply(u._5), ((Pattern<O6, T6>) p6).apply(u._6), ((Pattern<O7, T7>) p7).apply(u._7), ((Pattern<O8, T8>) p8).apply(u._8));
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
+                            return false;
+                        }
+                        parts = unapply.apply(obj);
+                        return
+                                p1.isApplicable(parts._1) &&
+                                p2.isApplicable(parts._2) &&
+                                p3.isApplicable(parts._3) &&
+                                p4.isApplicable(parts._4) &&
+                                p5.isApplicable(parts._5) &&
+                                p6.isApplicable(parts._6);
+                    }
+
+                    @Override
+                    public Tuple6<T1, T2, T3, T4, T5, T6> apply(T obj) {
+                        return parts;
                     }
                 };
+            }
+
+            private Pattern6() {
+            }
+        }
+
+        public static abstract class Pattern7<T, T1, T2, T3, T4, T5, T6, T7> implements Pattern<T, Tuple7<T1, T2, T3, T4, T5, T6, T7>> {
+
+            public static <T, T1, T2, T3, T4, T5, T6, T7> Pattern7<T, T1, T2, T3, T4, T5, T6, T7> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Pattern<T7, ?> p7, Function<? super T, Tuple7<T1, T2, T3, T4, T5, T6, T7>> unapply) {
+                return new Pattern7<T, T1, T2, T3, T4, T5, T6, T7>() {
+
+                    // the unapplied object
+                    Tuple7<T1, T2, T3, T4, T5, T6, T7> parts = null;
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
+                            return false;
+                        }
+                        parts = unapply.apply(obj);
+                        return
+                                p1.isApplicable(parts._1) &&
+                                p2.isApplicable(parts._2) &&
+                                p3.isApplicable(parts._3) &&
+                                p4.isApplicable(parts._4) &&
+                                p5.isApplicable(parts._5) &&
+                                p6.isApplicable(parts._6) &&
+                                p7.isApplicable(parts._7);
+                    }
+
+                    @Override
+                    public Tuple7<T1, T2, T3, T4, T5, T6, T7> apply(T obj) {
+                        return parts;
+                    }
+                };
+            }
+
+            private Pattern7() {
+            }
+        }
+
+        public static abstract class Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> implements Pattern<T, Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> {
+
+            public static <T, T1, T2, T3, T4, T5, T6, T7, T8> Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Pattern<T7, ?> p7, Pattern<T8, ?> p8, Function<? super T, Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> unapply) {
+                return new Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8>() {
+
+                    // the unapplied object
+                    Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> parts = null;
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
+                            return false;
+                        }
+                        parts = unapply.apply(obj);
+                        return
+                                p1.isApplicable(parts._1) &&
+                                p2.isApplicable(parts._2) &&
+                                p3.isApplicable(parts._3) &&
+                                p4.isApplicable(parts._4) &&
+                                p5.isApplicable(parts._5) &&
+                                p6.isApplicable(parts._6) &&
+                                p7.isApplicable(parts._7) &&
+                                p8.isApplicable(parts._8);
+                    }
+
+                    @Override
+                    public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> apply(T obj) {
+                        return parts;
+                    }
+                };
+            }
+
+            private Pattern8() {
             }
         }
     }
