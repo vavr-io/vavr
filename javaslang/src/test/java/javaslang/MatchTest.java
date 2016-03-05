@@ -6,7 +6,9 @@
 package javaslang;
 
 import javaslang.collection.List;
+import javaslang.collection.List.Cons;
 import javaslang.control.Option;
+import javaslang.control.Option.Some;
 import org.junit.Test;
 
 import static javaslang.API.*;
@@ -20,6 +22,8 @@ public class MatchTest {
             Tuple.of("end", 10, 1.2));
 
     static final List<Option<Integer>> INT_OPTION_LIST = List.of(Option.some(1));
+
+    static final List<Option<Integer>> INT_OPTION_LIST2 = List.of(Option.some(1), Option.some(2));
 
     static final Option<Tuple2<String, Integer>> TUPLE2_OPTION = Option.of(Tuple.of("Test", 123));
 
@@ -66,16 +70,17 @@ public class MatchTest {
 
         Match(TUPLE2_OPTION_OPTION).of(
                 Case(Some(Some($(Tuple.of("Test", 123)))), value -> {
-                    Tuple2<String, Integer> i = value;
+                    Some<Tuple2<String, Integer>> i = value;
                     System.out.printf("Option(Option($(Tuple.of(\"Test\", 123)))) = Option(Option(%s))\n", value);
                     return null;
                 })
         );
 
-        Match(INT_OPTION_LIST).of(
-                Case(Cons(Some($(1)), $()), (x, xs) -> {
-                    int i = x;
-                    System.out.printf("List(Option($(1)), _) = List(Option(%d), _)\n", i);
+        Match(INT_OPTION_LIST2).of(
+                Case(Cons(Some($(1)), Cons($(), $())), (x, xs) -> {
+                    Some<Integer> _x = x;
+                    Cons<Option<Integer>> _xs = xs;
+                    System.out.printf("Cons(Some($(1)), Cons($(), $())) = %s :: %s\n", _x, _xs);
                     return null;
                 })
         );
@@ -192,7 +197,7 @@ public class MatchTest {
         public Option<Number> number() { return number; }
     }
 
-    static <T1> Match.Pattern3<Developer, String, Boolean, T1> Developer(Pattern<String, String> p1, Pattern<Boolean, Boolean> p2, Pattern<Option<Number>, T1> p3) {
+    static <T1> Match.Pattern3<Developer, String, Boolean, Option<Number>> Developer(Pattern<String, String> p1, Pattern<Boolean, Boolean> p2, Pattern<Option<Number>, T1> p3) {
         return Pattern3.of(Developer.class, p1, p2, p3, dev -> Tuple.of(dev.name, dev.isCaffeinated, dev.number));
     }
 }

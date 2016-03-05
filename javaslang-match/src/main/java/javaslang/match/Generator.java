@@ -20,8 +20,17 @@ class Generator {
 
 // ------------
 // TODO: if result is a Pattern0
-//       => if generic type args are present: generate static final constant
-//       => if not generic type args are present: generate method
+//       => if not generic type args are present: generate static final constant
+//       => if generic type args are present: generate method
+// ------------
+// TODO: detect collisions / retry with different generic type arg names (starting with _1, _2, ...)
+//    public static <T> Pattern0<List.Nil<T>> Nil() {
+//        return Pattern0.of(List.Nil.class);
+//    }
+//
+//    public static <T, _1, _2> Pattern2<List.Cons<T>, _1, _2> Cons(Pattern<? extends T, _1> p1, Pattern<? extends List<T>, _2> p2) {
+//        return Pattern2.of(List.Cons.class, p1, p2, cons -> Tuple.of(cons.head(), cons.tail()));
+//    }
 // ------------
 
 //    // corresponds to the number of Javaslang Tuples.

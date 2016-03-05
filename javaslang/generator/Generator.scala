@@ -261,19 +261,20 @@ def generateMainClasses(): Unit = {
           ${
             val ListConsType = im.getType("javaslang.collection.List.Cons")
             val ListNilType = im.getType("javaslang.collection.List.Nil")
+            val ListType = im.getType("javaslang.collection.List")
             val OptionNoneType = im.getType("javaslang.control.Option.None")
             val OptionSomeType = im.getType("javaslang.control.Option.Some")
 
             xs"""
               // collections
 
-              public static <T> Pattern0<$OptionNoneType<T>> None() { return Pattern0.instanceOf($OptionNoneType.class); }
-              public static <T, T1> Pattern1<$OptionSomeType<T>, T1> Some(Pattern<? extends T, T1> p1) { return Pattern1.of($OptionSomeType.class, p1, $OptionSomeType::get); }
+              public static <T> Pattern0<$OptionNoneType<T>> None() { return Pattern0.of($OptionNoneType.class); }
+              public static <T, O1 extends T, T1> Pattern1<$OptionSomeType<T>, O1> Some(Pattern<O1, T1> p1) { return Pattern1.of($OptionSomeType.class, p1, $OptionSomeType::get); }
 
               // controls
 
-              public static <T> Pattern0<$ListNilType<T>> Nil() { return Pattern0.instanceOf($ListNilType.class); }
-              public static <T, T1, T2> Pattern2<$ListConsType<T>, T1, T2> Cons(Pattern<? extends T, T1> p1, Pattern<? extends ${im.getType("javaslang.collection.List")}<T>, T2> p2) { return Pattern2.of($ListConsType.class, p1, p2, cons -> Tuple.of(cons.head(), cons.tail())); }
+              public static <T> Pattern0<$ListNilType<T>> Nil() { return Pattern0.of($ListNilType.class); }
+              public static <T, O1 extends T, O2 extends $ListType<T>, T1, T2> Pattern2<$ListConsType<T>, O1, O2> Cons(Pattern<O1, T1> p1, Pattern<O2, T2> p2) { return Pattern2.of($ListConsType.class, p1, p2, cons -> Tuple.of(cons.head(), cons.tail())); }
             """
           }
 
@@ -403,7 +404,7 @@ def generateMainClasses(): Unit = {
                * @param <O> An object type that has a part of type T than is matched and decomposed by this pattern
                * @param <T> The part type of O
                */
-              interface Pattern<O, T> extends PartialFunction<O, T> {
+              public interface Pattern<O, T> extends PartialFunction<O, T> {
               }
 
               // These can't be @FunctionalInterfaces because of ambiguities.
@@ -424,13 +425,16 @@ def generateMainClasses(): Unit = {
                   }
 
                   @SuppressWarnings("unchecked")
-                  public static <O> Pattern0<O> instanceOf(Class<? super O> type) {
+                  public static <O> Pattern0<O> of(Class<? super O> type) {
                       return new Pattern0<O>() {
                           @Override
                           public boolean isApplicable(O o) {
                               return o != null && type.isAssignableFrom(o.getClass());
                           }
                       };
+                  }
+
+                  private Pattern0() {
                   }
 
                   @Override
@@ -440,15 +444,16 @@ def generateMainClasses(): Unit = {
               }
 
               ${(1 to N).gen(i => {
-                val partGenerics = (1 to i).gen(j => s"O$j")(", ")
-                val unapplyType = if (i == 1) "O1" else s"Tuple$i<$partGenerics>"
-                val resultGenerics = (1 to i).gen(j => s"T$j")(", ")
-                val resultType = if (i == 1) "T1" else s"Tuple$i<$resultGenerics>"
-                val args = (1 to i).gen(j => s"Pattern<? extends O$j, T$j> p$j")(", ")
+                val partGenerics = (1 to i).gen(j => s"U$j")(", ")
+                val extendedPartGenerics = (1 to i).gen(j => s"O$j extends U$j")(", ")
+                val unapplyType = if (i == 1) "U1" else s"Tuple$i<$partGenerics>"
+                val resultGenerics = (1 to i).gen(j => s"O$j")(", ")
+                val resultType = if (i == 1) "O1" else s"Tuple$i<$resultGenerics>"
+                val args = (1 to i).gen(j => s"Pattern<O$j, ?> p$j")(", ")
                 xs"""
                   public static abstract class Pattern$i<O, $resultGenerics> implements Pattern<O, $resultType> {
 
-                      public static <O, $partGenerics, $resultGenerics> Pattern$i<O, $resultGenerics> of(Class<? super O> type, $args, Function<? super O, ? extends $unapplyType> unapply) {
+                      public static <O, $partGenerics, $extendedPartGenerics> Pattern$i<O, $resultGenerics> of(Class<? super O> type, $args, Function<? super O, $unapplyType> unapply) {
                           return new Pattern$i<O, $resultGenerics>() {
 
                               // the unapplied object
@@ -462,22 +467,21 @@ def generateMainClasses(): Unit = {
                                   }
                                   u = unapply.apply(o);
                                   ${if (i == 1) xs"""
-                                      return ((Pattern<O1, T1>) p1).isApplicable(u);
+                                      return ((Pattern<U1, ?>) p1).isApplicable(u);
                                   """ else xs"""
-                                      return ${(1 to i).gen(j => s"((Pattern<O$j, T$j>) p$j).isApplicable(u._$j)")(" && ")};
+                                      return ${(1 to i).gen(j => s"((Pattern<U$j, ?>) p$j).isApplicable(u._$j)")(" && ")};
                                   """}
                               }
 
                               @SuppressWarnings("unchecked")
                               @Override
                               public $resultType apply(O o) {
-                                  ${if (i == 1) xs"""
-                                      return ((Pattern<O1, T1>) p1).apply(u);
-                                  """ else xs"""
-                                      return Tuple.of(${(1 to i).gen(j => s"((Pattern<O$j, T$j>) p$j).apply(u._$j)")(", ")});
-                                  """}
+                                  return ($resultType) u;
                               }
                           };
+                      }
+
+                      private Pattern$i() {
                       }
                   }
                 """
