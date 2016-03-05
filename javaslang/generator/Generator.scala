@@ -438,7 +438,8 @@ def generateMainClasses(): Unit = {
                                   ${if (i == 1) xs"""
                                       return p1.isApplicable($parts);
                                   """ else xs"""
-                                      return ${(1 to i).gen(j => s"p$j.isApplicable($parts._$j)")(" && ")};
+                                      return
+                                              ${(1 to i).gen(j => s"p$j.isApplicable($parts._$j)")(" &&\n")};
                                   """}
                               }
 
