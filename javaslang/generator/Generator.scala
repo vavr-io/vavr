@@ -1711,8 +1711,8 @@ object Generator {
       case _ => s"$i ${noun}s"
     }
 
-    // returns the a pluralized noun, e.g. 0: "name", 1: "names", -1: "names"
-    def plural(noun: String): String = noun + (i != 0).gen("s")
+    // returns the a pluralized noun, e.g. 0: "names", 1: "name", -1: "name", 2: "names"
+    def plural(noun: String): String = noun + (i != 1).gen("s")
 
   }
 

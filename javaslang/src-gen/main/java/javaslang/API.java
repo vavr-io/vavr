@@ -1051,7 +1051,7 @@ public final class API {
                 return new Pattern1<T, T1>() {
 
                     // the unapplied object
-                    T1 parts = null;
+                    T1 part = null;
 
                     @SuppressWarnings("unchecked")
                     @Override
@@ -1059,13 +1059,13 @@ public final class API {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                             return false;
                         }
-                        parts = unapply.apply(obj);
-                        return ((Pattern<T1, ?>) p1).isApplicable(parts);
+                        part = unapply.apply(obj);
+                        return ((Pattern<T1, ?>) p1).isApplicable(part);
                     }
 
                     @Override
                     public T1 apply(T obj) {
-                        return parts;
+                        return part;
                     }
                 };
             }
