@@ -6,6 +6,10 @@ Before creating a pull request, the following goals should be executed locally:
 * Executing doclint: `mvn javadoc:javadoc`
 * Executing code coverage report: `mvn -P ci clean test jacoco:report`
 
+Run benchmarks:
+
+* `mvn test -Pbenchmark -pl javaslang`
+
 We use these goals frequently to keep the dependencies and plugins up-to-date:
 
 * Update version properties: `mvn versions:update-properties`
