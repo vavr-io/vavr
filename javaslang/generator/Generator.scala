@@ -436,9 +436,9 @@ def generateMainClasses(): Unit = {
                                   }
                                   $parts = unapply.apply(obj);
                                   ${if (i == 1) xs"""
-                                      return ((Pattern<T1, ?>) p1).isApplicable($parts);
+                                      return p1.isApplicable($parts);
                                   """ else xs"""
-                                      return ${(1 to i).gen(j => s"((Pattern<T$j, ?>) p$j).isApplicable($parts._$j)")(" && ")};
+                                      return ${(1 to i).gen(j => s"p$j.isApplicable($parts._$j)")(" && ")};
                                   """}
                               }
 

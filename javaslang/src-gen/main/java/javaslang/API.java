@@ -1060,7 +1060,7 @@ public final class API {
                             return false;
                         }
                         part = unapply.apply(obj);
-                        return ((Pattern<T1, ?>) p1).isApplicable(part);
+                        return p1.isApplicable(part);
                     }
 
                     @Override
@@ -1089,7 +1089,7 @@ public final class API {
                             return false;
                         }
                         parts = unapply.apply(obj);
-                        return ((Pattern<T1, ?>) p1).isApplicable(parts._1) && ((Pattern<T2, ?>) p2).isApplicable(parts._2);
+                        return p1.isApplicable(parts._1) && p2.isApplicable(parts._2);
                     }
 
                     @Override
@@ -1118,7 +1118,7 @@ public final class API {
                             return false;
                         }
                         parts = unapply.apply(obj);
-                        return ((Pattern<T1, ?>) p1).isApplicable(parts._1) && ((Pattern<T2, ?>) p2).isApplicable(parts._2) && ((Pattern<T3, ?>) p3).isApplicable(parts._3);
+                        return p1.isApplicable(parts._1) && p2.isApplicable(parts._2) && p3.isApplicable(parts._3);
                     }
 
                     @Override
@@ -1147,7 +1147,7 @@ public final class API {
                             return false;
                         }
                         parts = unapply.apply(obj);
-                        return ((Pattern<T1, ?>) p1).isApplicable(parts._1) && ((Pattern<T2, ?>) p2).isApplicable(parts._2) && ((Pattern<T3, ?>) p3).isApplicable(parts._3) && ((Pattern<T4, ?>) p4).isApplicable(parts._4);
+                        return p1.isApplicable(parts._1) && p2.isApplicable(parts._2) && p3.isApplicable(parts._3) && p4.isApplicable(parts._4);
                     }
 
                     @Override
@@ -1176,7 +1176,7 @@ public final class API {
                             return false;
                         }
                         parts = unapply.apply(obj);
-                        return ((Pattern<T1, ?>) p1).isApplicable(parts._1) && ((Pattern<T2, ?>) p2).isApplicable(parts._2) && ((Pattern<T3, ?>) p3).isApplicable(parts._3) && ((Pattern<T4, ?>) p4).isApplicable(parts._4) && ((Pattern<T5, ?>) p5).isApplicable(parts._5);
+                        return p1.isApplicable(parts._1) && p2.isApplicable(parts._2) && p3.isApplicable(parts._3) && p4.isApplicable(parts._4) && p5.isApplicable(parts._5);
                     }
 
                     @Override
@@ -1205,7 +1205,7 @@ public final class API {
                             return false;
                         }
                         parts = unapply.apply(obj);
-                        return ((Pattern<T1, ?>) p1).isApplicable(parts._1) && ((Pattern<T2, ?>) p2).isApplicable(parts._2) && ((Pattern<T3, ?>) p3).isApplicable(parts._3) && ((Pattern<T4, ?>) p4).isApplicable(parts._4) && ((Pattern<T5, ?>) p5).isApplicable(parts._5) && ((Pattern<T6, ?>) p6).isApplicable(parts._6);
+                        return p1.isApplicable(parts._1) && p2.isApplicable(parts._2) && p3.isApplicable(parts._3) && p4.isApplicable(parts._4) && p5.isApplicable(parts._5) && p6.isApplicable(parts._6);
                     }
 
                     @Override
@@ -1234,7 +1234,7 @@ public final class API {
                             return false;
                         }
                         parts = unapply.apply(obj);
-                        return ((Pattern<T1, ?>) p1).isApplicable(parts._1) && ((Pattern<T2, ?>) p2).isApplicable(parts._2) && ((Pattern<T3, ?>) p3).isApplicable(parts._3) && ((Pattern<T4, ?>) p4).isApplicable(parts._4) && ((Pattern<T5, ?>) p5).isApplicable(parts._5) && ((Pattern<T6, ?>) p6).isApplicable(parts._6) && ((Pattern<T7, ?>) p7).isApplicable(parts._7);
+                        return p1.isApplicable(parts._1) && p2.isApplicable(parts._2) && p3.isApplicable(parts._3) && p4.isApplicable(parts._4) && p5.isApplicable(parts._5) && p6.isApplicable(parts._6) && p7.isApplicable(parts._7);
                     }
 
                     @Override
@@ -1263,7 +1263,7 @@ public final class API {
                             return false;
                         }
                         parts = unapply.apply(obj);
-                        return ((Pattern<T1, ?>) p1).isApplicable(parts._1) && ((Pattern<T2, ?>) p2).isApplicable(parts._2) && ((Pattern<T3, ?>) p3).isApplicable(parts._3) && ((Pattern<T4, ?>) p4).isApplicable(parts._4) && ((Pattern<T5, ?>) p5).isApplicable(parts._5) && ((Pattern<T6, ?>) p6).isApplicable(parts._6) && ((Pattern<T7, ?>) p7).isApplicable(parts._7) && ((Pattern<T8, ?>) p8).isApplicable(parts._8);
+                        return p1.isApplicable(parts._1) && p2.isApplicable(parts._2) && p3.isApplicable(parts._3) && p4.isApplicable(parts._4) && p5.isApplicable(parts._5) && p6.isApplicable(parts._6) && p7.isApplicable(parts._7) && p8.isApplicable(parts._8);
                     }
 
                     @Override
