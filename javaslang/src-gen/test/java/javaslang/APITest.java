@@ -20,6 +20,13 @@ import org.junit.Test;
 public class APITest {
 
     @Test
+    public void shouldRunUnitAndReturnVoid() {
+        int[] i = { 0 };
+        Void nothing = run(() -> i[0]++);
+        assertThat(i[0]).isEqualTo(1);
+    }
+
+    @Test
     public void shouldIterateFor1() {
         final List<Integer> result = For(
             List.of(1, 2, 3)

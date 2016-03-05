@@ -1204,6 +1204,13 @@ def generateTestClasses(): Unit = {
       xs"""
         public class $className {
 
+            @$test
+            public void shouldRunUnitAndReturnVoid() {
+                int[] i = { 0 };
+                Void nothing = run(() -> i[0]++);
+                $assertThat(i[0]).isEqualTo(1);
+            }
+
             ${(1 to N).gen(i => xs"""
               @$test
               public void shouldIterateFor$i() {
