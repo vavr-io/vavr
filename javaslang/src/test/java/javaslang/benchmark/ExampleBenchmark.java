@@ -21,8 +21,7 @@ public class ExampleBenchmark {
 
 
     @Test
-    public void
-    launchBenchmark() throws Exception {
+    public void launchBenchmark() throws Exception {
 
         Options opt = new OptionsBuilder()
                 // Specify which benchmarks to run.
