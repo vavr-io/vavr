@@ -84,6 +84,28 @@ public final class API {
     }
 
     //
+    // Java type tweaks
+    //
+
+    /**
+     * Runs a {@code unit} of work and returns {@code Void}. This is helpful when a return value is expected,
+     * e.g. by {@code Match}:
+     *
+     * <pre><code>Match(i).of(
+     *     Case(0, run(() -&gt; System.out.println("zero"))),
+     *     Case(1, run(() -&gt; System.out.println("one"))),
+     *     Case($(), run(() -&gt; System.out.println("many")))
+     * )</code></pre>
+     *
+     * @param unit A block of code to be run.
+     * @return the single instance of {@code Void}, namely {@code null}
+     */
+    public static Void run(Runnable unit) {
+        unit.run();
+        return null;
+    }
+
+    //
     // For-Comprehension
     //
 
