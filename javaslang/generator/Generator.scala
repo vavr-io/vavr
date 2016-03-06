@@ -305,12 +305,14 @@ def generateMainClasses(): Unit = {
                   this.value = value;
               }
 
+              // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
               @SuppressWarnings({ "unchecked", "varargs" })
               @SafeVarargs
               public final <R> R of(Case<? super T, ? extends R>... cases) {
                   return option(cases).getOrElseThrow(() -> new MatchError(value));
               }
 
+              // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
               @SuppressWarnings({ "unchecked", "varargs" })
               @SafeVarargs
               public final <R> $OptionType<R> option(Case<? super T, ? extends R>... cases) {
@@ -420,7 +422,6 @@ def generateMainClasses(): Unit = {
                   // DEV-NOTE: We need the lower bound `Class<? super T>` instead of the more appropriate `Class<T>`
                   //           because it allows us to create patterns for generic types, which would otherwise not be
                   //           possible: `Pattern0<Some<String>> p = Pattern0.of(Some.class);`
-                  @SuppressWarnings("unchecked")
                   public static <T> Pattern0<T> of(Class<? super T> type) {
                       return new Pattern0<T>() {
                           @Override
@@ -453,7 +454,6 @@ def generateMainClasses(): Unit = {
                               // the unapplied object
                               $resultType $parts = null;
 
-                              @SuppressWarnings("unchecked")
                               @Override
                               public boolean isApplicable(T obj) {
                                   if (obj == null || !type.isAssignableFrom(obj.getClass())) {
@@ -1206,6 +1206,7 @@ def generateTestClasses(): Unit = {
             @$test
             public void shouldRunUnitAndReturnVoid() {
                 int[] i = { 0 };
+                @SuppressWarnings("unused")
                 Void nothing = run(() -> i[0]++);
                 $assertThat(i[0]).isEqualTo(1);
             }

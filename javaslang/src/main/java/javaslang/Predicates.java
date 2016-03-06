@@ -13,10 +13,6 @@ import java.util.function.Predicate;
 /**
  * Defines a set of predicates which are particularly useful when working with {@link javaslang.API.Match}.
  *
- * <pre><code>import static javaslang.API.*;
- *
- * </code></pre>
- *
  * @author Daniel Dietrich
  * @since 2.0.0
  */
@@ -34,28 +30,31 @@ public final class Predicates {
      * @return A new {@code Predicate}
      */
     // DEV-NOTE: The Class<? extends T> is needed, e.g. for PredicatesTest.shouldUsePredicateInCaseWithSuccess
-    public static <T> Predicate<? super T> instanceOf(Class<? extends T> type) {
+    public static <T> Predicate<T> instanceOf(Class<? extends T> type) {
         Objects.requireNonNull(type, "type is null");
         return obj -> obj != null && type.isAssignableFrom(obj.getClass());
     }
 
     // -- Predicate combinators
 
+    // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    public static <T> Predicate<? super T> allOf(Predicate<? super T>... predicates) {
+    public static <T> Predicate<T> allOf(Predicate<? super T>... predicates) {
         return t -> List.of(predicates).foldLeft(true, (bool, pred) -> bool && pred.test(t));
     }
 
+    // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    public static <T> Predicate<? super T> anyOf(Predicate<? super T>... predicates) {
+    public static <T> Predicate<T> anyOf(Predicate<? super T>... predicates) {
         return t -> List.of(predicates).find(pred -> pred.test(t)).isDefined();
     }
 
+    // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    public static <T> Predicate<? super T> noneOf(Predicate<? super T>... predicates) {
+    public static <T> Predicate<T> noneOf(Predicate<? super T>... predicates) {
         return allOf(predicates).negate();
     }
 }
