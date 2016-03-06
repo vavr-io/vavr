@@ -7,8 +7,7 @@ package javaslang;
 
 import org.junit.Test;
 
-import java.util.function.Function;
-
+import static javaslang.API.$;
 import static javaslang.API.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
@@ -16,27 +15,13 @@ import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 public class MatchErrorTest {
 
     @Test
-    public void shouldReturnCorrectObjectWhenMatchingByMonad() {
-
+    public void shouldReturnCorrectObject() {
         final Object obj = new Object();
         try {
-
             Match(obj).of(
-                    Case($(0), Function.identity())
+                    Case($(0), 0)
             );
-
             failBecauseExceptionWasNotThrown(MatchError.class);
-
-        } catch (MatchError matchError) {
-            assertThat(matchError.getObject()).isEqualTo(obj);
-        }
-    }
-
-    @Test
-    public void shouldReturnCorrectObjectWhenMatchingByFunction() {
-        final Object obj = new Object();
-        try {
-            $(new Object()).apply(obj);
         } catch (MatchError matchError) {
             assertThat(matchError.getObject()).isEqualTo(obj);
         }

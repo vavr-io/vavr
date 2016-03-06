@@ -22,7 +22,6 @@ import java.util.stream.Collector;
 
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractMapTest extends AbstractTraversableTest {
 

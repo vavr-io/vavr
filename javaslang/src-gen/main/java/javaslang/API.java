@@ -795,20 +795,21 @@ public final class API {
             this.value = value;
         }
 
+        // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
-        public final <R> R of(Case<? extends T, ? extends R>... cases) {
+        public final <R> R of(Case<? super T, ? extends R>... cases) {
             return option(cases).getOrElseThrow(() -> new MatchError(value));
         }
 
+        // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
-        public final <R> Option<R> option(Case<? extends T, ? extends R>... cases) {
+        public final <R> Option<R> option(Case<? super T, ? extends R>... cases) {
             Objects.requireNonNull(cases, "cases is null");
-            for (Case<? extends T, ? extends R> _case : cases) {
-                final Case<T, R> narrowedCase = (Case<T, R>) _case;
-                if (narrowedCase.isApplicable(value)) {
-                    return Option.some(narrowedCase.apply(value));
+            for (Case<? super T, ? extends R> _case : cases) {
+                if (_case.isApplicable(value)) {
+                    return Option.some(_case.apply(value));
                 }
             }
             return Option.none();
@@ -1048,7 +1049,6 @@ public final class API {
             // DEV-NOTE: We need the lower bound `Class<? super T>` instead of the more appropriate `Class<T>`
             //           because it allows us to create patterns for generic types, which would otherwise not be
             //           possible: `Pattern0<Some<String>> p = Pattern0.of(Some.class);`
-            @SuppressWarnings("unchecked")
             public static <T> Pattern0<T> of(Class<? super T> type) {
                 return new Pattern0<T>() {
                     @Override
@@ -1075,7 +1075,6 @@ public final class API {
                     // the unapplied object
                     T1 part = null;
 
-                    @SuppressWarnings("unchecked")
                     @Override
                     public boolean isApplicable(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
@@ -1104,7 +1103,6 @@ public final class API {
                     // the unapplied object
                     Tuple2<T1, T2> parts = null;
 
-                    @SuppressWarnings("unchecked")
                     @Override
                     public boolean isApplicable(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
@@ -1135,7 +1133,6 @@ public final class API {
                     // the unapplied object
                     Tuple3<T1, T2, T3> parts = null;
 
-                    @SuppressWarnings("unchecked")
                     @Override
                     public boolean isApplicable(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
@@ -1167,7 +1164,6 @@ public final class API {
                     // the unapplied object
                     Tuple4<T1, T2, T3, T4> parts = null;
 
-                    @SuppressWarnings("unchecked")
                     @Override
                     public boolean isApplicable(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
@@ -1200,7 +1196,6 @@ public final class API {
                     // the unapplied object
                     Tuple5<T1, T2, T3, T4, T5> parts = null;
 
-                    @SuppressWarnings("unchecked")
                     @Override
                     public boolean isApplicable(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
@@ -1234,7 +1229,6 @@ public final class API {
                     // the unapplied object
                     Tuple6<T1, T2, T3, T4, T5, T6> parts = null;
 
-                    @SuppressWarnings("unchecked")
                     @Override
                     public boolean isApplicable(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
@@ -1269,7 +1263,6 @@ public final class API {
                     // the unapplied object
                     Tuple7<T1, T2, T3, T4, T5, T6, T7> parts = null;
 
-                    @SuppressWarnings("unchecked")
                     @Override
                     public boolean isApplicable(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
@@ -1305,7 +1298,6 @@ public final class API {
                     // the unapplied object
                     Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> parts = null;
 
-                    @SuppressWarnings("unchecked")
                     @Override
                     public boolean isApplicable(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {

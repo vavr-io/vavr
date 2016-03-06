@@ -5,14 +5,12 @@
  */
 package javaslang;
 
-import javaslang.collection.List;
-import javaslang.collection.List.Cons;
-import javaslang.control.Option;
-import javaslang.control.Option.Some;
 import org.junit.Test;
 
+import java.math.BigDecimal;
+
+import static javaslang.API.$;
 import static javaslang.API.*;
-import static javaslang.API.Match.*;
 
 public class MatchTest {
 
@@ -31,30 +29,36 @@ public class MatchTest {
 //
 //    static final Person PERSON = new Developer("Daniel", true, Option.some(13));
 //
-//    @Test
-//    public void shouldMatch() {
-//
-////        i match {
-////            case 1 => "one"
-////            case 2 => "two"
-////            case _ => "many"
-////        }
-//
-////        Matchable.of(i).matches(c-> c.is(when(1),then("one"))
-////                                     .is(when(2),then("two"))
-////                                     ,otherwise("many"));
-//
-//        Match(3).of(
-//            Case($(1), "one"),
-//            Case($(2), "two"),
-//            Case($(), "many")
-//        );
-//
-//        Match(3).of(
-//            Case(1, "one"),
-//            Case(2, "two"),
-//            Case($(), "many")
-//        );
+    @Test
+    public void shouldMatch() {
+
+//        i match {
+//            case 1 => "one"
+//            case 2 => "two"
+//            case _ => "many"
+//        }
+
+//        Matchable.of(i).matches(c-> c.is(when(1),then("one"))
+//                                     .is(when(2),then("two"))
+//                                     ,otherwise("many"));
+
+        Match(3).of(
+            Case($(1), "one"),
+            Case($(2), "two"),
+            Case($(), "many")
+        );
+
+        Match(3).of(
+            Case(1, "one"),
+            Case(2, "two"),
+            Case($(), "many")
+        );
+
+        final Number num = Match(3).of(
+                Case(1, 1),
+                Case(2, 2.0),
+                Case($(), new BigDecimal("3"))
+        );
 //
 //        Match(TUPLE2_OPTION).of(
 //                Case($(), "good!")
@@ -168,9 +172,9 @@ public class MatchTest {
 ////                    return null;
 ////                })
 ////        );
-//
-//    }
-//
+
+    }
+
 //    static class Util {
 //        static String devInfo(String name, boolean isCaffeinated, Option<Number> number) {
 //            return name + " is " + (isCaffeinated ? "" : "not ") + "caffeinated.";
