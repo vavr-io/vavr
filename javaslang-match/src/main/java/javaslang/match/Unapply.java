@@ -31,6 +31,7 @@ public @interface Unapply {
                     methodChecker.ensure(e -> !e.elem.isVarArgs(), () -> "@" + "Unapply method has varargs.") &&
                     methodChecker.ensure(e -> e.elem.getParameters().size() == 1, () -> "Unapply method must have exactly one parameter of the object to be deconstructed.") &&
                     methodChecker.ensure(e -> e.elem.getReturnType().toString().startsWith("javaslang.Tuple"), () -> "Return type of unapply method must be a Tuple.") &&
+                    methodChecker.ensure(e -> !e.elem.getReturnType().toString().endsWith("Tuple"), () -> "Return type is no Tuple implementation.") &&
                     methodChecker.ensure(e -> e.hasAll(STATIC), () -> "Unapply method needs to be static.") &&
                     methodChecker.ensure(e -> e.hasNone(PRIVATE, PROTECTED, ABSTRACT), () -> "Unapply method may not be private or protected.");
         }

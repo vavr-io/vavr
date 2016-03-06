@@ -10,7 +10,10 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
-class Elements {
+final class Elements {
+
+    private Elements() {
+    }
 
     // `Type` -> <empty>, `some.pkg.Type` -> some.pkg
     static String getPackage(TypeElement elem) {
@@ -59,5 +62,13 @@ class Elements {
     // `<T1, ..., Tn> m(params)` -> [T1, ..., Tn]
     static String[] getTypeParameters(ExecutableElement elem) {
         return elem.getTypeParameters().stream().map(typeArg -> typeArg.asType().toString()).toArray(String[]::new);
+    }
+
+    static int typeParameterCount(ExecutableElement elem) {
+        return elem.getTypeParameters().size();
+    }
+
+    static boolean hasTypeParameters(ExecutableElement elem) {
+        return !elem.getTypeParameters().isEmpty();
     }
 }

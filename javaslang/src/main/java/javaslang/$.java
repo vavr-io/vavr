@@ -17,13 +17,13 @@ class $ {
     static <T> Tuple1<T> Some(Option.Some<T> some) { return Tuple.of(some.get()); }
 
     @Unapply
-    static Tuple0 None(Option.None<?> none) { return Tuple.empty(); }
+    static <T> Tuple0 None(Option.None<T> none) { return Tuple.empty(); }
 
     // List
     @Unapply
     static <T> Tuple2<T, List<T>> Cons(List.Cons<T> cons) { return Tuple.of(cons.head(), cons.tail()); }
 
     @Unapply
-    static Tuple0 Nil(List.Nil<?> nil) { return Tuple.empty(); }
+    static <T> Tuple0 Nil(List.Nil<T> nil) { return Tuple.empty(); }
 
 }
