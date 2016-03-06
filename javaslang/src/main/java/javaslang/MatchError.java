@@ -8,7 +8,7 @@ package javaslang;
 import java.util.NoSuchElementException;
 
 /**
- * A {@link Match} throws a MatchError if no case matches the applied object.
+ * A {@link API.Match} throws a MatchError if no case matches the applied object.
  *
  * @author Daniel Dietrich
  * @since 1.0.0
@@ -20,7 +20,7 @@ public class MatchError extends NoSuchElementException {
     private final Object obj;
 
     /**
-     * Internally called by {@link Match}.
+     * Internally called by {@link API.Match}.
      *
      * @param obj The object which could not be matched.
      */

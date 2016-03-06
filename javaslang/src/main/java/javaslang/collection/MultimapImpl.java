@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.API;
 import javaslang.Lazy;
-import javaslang.Match;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
@@ -278,8 +278,8 @@ import java.util.function.Predicate;
 
     @SuppressWarnings("unchecked")
     @Override
-    public Match<M> match() {
-        return Match.Match((M) this);
+    public API.Match<M> match() {
+        return API.Match((M) this);
     }
 
     @SuppressWarnings("unchecked")

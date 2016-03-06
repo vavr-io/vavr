@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Match;
+import javaslang.API;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -19,8 +19,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import static javaslang.Match.Match;
 
 public class IntMap<T> implements Traversable<T>, Serializable {
 
@@ -173,8 +171,8 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Match<IntMap<T>> match() {
-        return Match(this);
+    public API.Match<IntMap<T>> match() {
+        return API.Match(this);
     }
 
     @Override

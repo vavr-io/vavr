@@ -9,10 +9,15 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import static javaslang.API.Match.*;
+
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import javaslang.collection.Iterator;
+import javaslang.control.Option;
 
 /**
  * The most basic Javaslang functionality is accessed through this API class.
@@ -70,10 +75,34 @@ import javaslang.collection.Iterator;
  *
  * As with all Javaslang Values, the result of a For-comprehension can be converted
  * to standard Java library and Javaslang types.
+ * @author Daniel Dietrich
+ * @since 2.0.0
  */
 public final class API {
 
     private API() {
+    }
+
+    //
+    // Java type tweaks
+    //
+
+    /**
+     * Runs a {@code unit} of work and returns {@code Void}. This is helpful when a return value is expected,
+     * e.g. by {@code Match}:
+     *
+     * <pre><code>Match(i).of(
+     *     Case(0, run(() -&gt; System.out.println("zero"))),
+     *     Case(1, run(() -&gt; System.out.println("one"))),
+     *     Case($(), run(() -&gt; System.out.println("many")))
+     * )</code></pre>
+     *
+     * @param unit A block of code to be run.
+     * @return the single instance of {@code Void}, namely {@code null}
+     */
+    public static Void run(Runnable unit) {
+        unit.run();
+        return null;
     }
 
     //
@@ -302,8 +331,7 @@ public final class API {
          */
         public <R> Iterator<R> yield(Function<? super T1, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
-            return
-                 stream1.map(t1 -> f.apply(t1));
+            return stream1.map(f::apply);
         }
     }
 
@@ -562,4 +590,748 @@ public final class API {
     //
     // Structural Pattern Matching
     //
+
+    // -- static Match API
+
+    /**
+     * Entry point of the match API.
+     *
+     * @param value a value to be matched
+     * @param <T> type of the value
+     * @return a new {@code Match} instance
+     */
+    public static <T> Match<T> Match(T value) {
+        return new Match<>(value);
+    }
+
+    // -- static Case API
+
+    // syntactic sugar for {@code Case($(predicate), f)}
+    public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, Supplier<? extends R> f) {
+        Objects.requireNonNull(f, "f is null");
+        return new Case0<>($(predicate), f);
+    }
+
+    // syntactic sugar for {@code Case($(predicate), () -> retVal)}
+    public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, R retVal) {
+        return new Case0<>($(predicate), () -> retVal);
+    }
+
+    // syntactic sugar for {@code Case($(value), f)}
+    public static <T, R> Case<T, R> Case(T value, Supplier<? extends R> f) {
+        Objects.requireNonNull(f, "f is null");
+        return new Case0<>($(value), f);
+    }
+
+    // syntactic sugar for {@code Case($(value), () -> retVal)}
+    public static <T, R> Case<T, R> Case(T value, R retVal) {
+        return new Case0<>($(value), () -> retVal);
+    }
+
+    public static <T, R> Case<T, R> Case(Pattern0<T> pattern, Supplier<? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(f, "f is null");
+        return new Case0<>(pattern, f);
+    }
+
+    // syntactic sugar for {@link #Case(Pattern0, Supplier)}
+    public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case0<>(pattern, () -> retVal);
+    }
+
+    public static <T, T1, R> Case<T, R> Case(Pattern1<T, T1> pattern, Function<? super T1, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(f, "f is null");
+        return new Case1<>(pattern, f);
+    }
+
+    // syntactic sugar for {@link #Case(Pattern1, Function)}
+    public static <T, T1, R> Case<T, R> Case(Pattern1<T, T1> pattern, R retVal) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case1<>(pattern, _1 -> retVal);
+    }
+
+    public static <T, T1, T2, R> Case<T, R> Case(Pattern2<T, T1, T2> pattern, BiFunction<? super T1, ? super T2, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(f, "f is null");
+        return new Case2<>(pattern, f);
+    }
+
+    // syntactic sugar for {@link #Case(Pattern2, BiFunction)}
+    public static <T, T1, T2, R> Case<T, R> Case(Pattern2<T, T1, T2> pattern, R retVal) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case2<>(pattern, (_1, _2) -> retVal);
+    }
+
+    public static <T, T1, T2, T3, R> Case<T, R> Case(Pattern3<T, T1, T2, T3> pattern, Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(f, "f is null");
+        return new Case3<>(pattern, f);
+    }
+
+    // syntactic sugar for {@link #Case(Pattern3, Function3)}
+    public static <T, T1, T2, T3, R> Case<T, R> Case(Pattern3<T, T1, T2, T3> pattern, R retVal) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case3<>(pattern, (_1, _2, _3) -> retVal);
+    }
+
+    public static <T, T1, T2, T3, T4, R> Case<T, R> Case(Pattern4<T, T1, T2, T3, T4> pattern, Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(f, "f is null");
+        return new Case4<>(pattern, f);
+    }
+
+    // syntactic sugar for {@link #Case(Pattern4, Function4)}
+    public static <T, T1, T2, T3, T4, R> Case<T, R> Case(Pattern4<T, T1, T2, T3, T4> pattern, R retVal) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case4<>(pattern, (_1, _2, _3, _4) -> retVal);
+    }
+
+    public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(Pattern5<T, T1, T2, T3, T4, T5> pattern, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(f, "f is null");
+        return new Case5<>(pattern, f);
+    }
+
+    // syntactic sugar for {@link #Case(Pattern5, Function5)}
+    public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(Pattern5<T, T1, T2, T3, T4, T5> pattern, R retVal) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case5<>(pattern, (_1, _2, _3, _4, _5) -> retVal);
+    }
+
+    public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(f, "f is null");
+        return new Case6<>(pattern, f);
+    }
+
+    // syntactic sugar for {@link #Case(Pattern6, Function6)}
+    public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, R retVal) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case6<>(pattern, (_1, _2, _3, _4, _5, _6) -> retVal);
+    }
+
+    public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(f, "f is null");
+        return new Case7<>(pattern, f);
+    }
+
+    // syntactic sugar for {@link #Case(Pattern7, Function7)}
+    public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, R retVal) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case7<>(pattern, (_1, _2, _3, _4, _5, _6, _7) -> retVal);
+    }
+
+    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(f, "f is null");
+        return new Case8<>(pattern, f);
+    }
+
+    // syntactic sugar for {@link #Case(Pattern8, Function8)}
+    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, R retVal) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case8<>(pattern, (_1, _2, _3, _4, _5, _6, _7, _8) -> retVal);
+    }
+
+    // PRE-DEFINED PATTERNS
+
+    // 1) Atomic patterns $(), $(value), $(predicate)
+
+    /**
+     * Wildcard pattern, matches any value.
+     *
+     * @param <T> injected type of the underlying value
+     * @return a new {@code Pattern0} instance
+     */
+    public static <T> Pattern0<T> $() {
+        return Pattern0.any();
+    }
+
+    /**
+     * Value pattern, checks for equality.
+     *
+     * @param <T>       type of the prototype
+     * @param prototype the value that should be equal to the underlying object
+     * @return a new {@code Pattern0} instance
+     */
+    public static <T> Pattern0<T> $(T prototype) {
+        return new Pattern0<T>() {
+            @Override
+            public boolean isApplicable(T obj) {
+                return Objects.equals(obj, prototype);
+            }
+        };
+    }
+
+    /**
+     * Guard pattern, checks if a predicate is satisfied.
+     *
+     * @param <T>       type of the prototype
+     * @param predicate the predicate that tests a given value
+     * @return a new {@code Pattern0} instance
+     */
+    public static <T> Pattern0<T> $(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return new Pattern0<T>() {
+            @Override
+            public boolean isApplicable(T obj) {
+                return predicate.test(obj);
+            }
+        };
+    }
+
+    /**
+     * Scala-like structural pattern matching for Java. Instances are obtained via {@link API#Match(Object)}.
+     * @param <T> type of the object that is matched
+     */
+    public static final class Match<T> {
+
+        private final T value;
+
+        private Match(T value) {
+            this.value = value;
+        }
+
+        @SuppressWarnings({ "unchecked", "varargs" })
+        @SafeVarargs
+        public final <R> R of(Case<? extends T, ? extends R>... cases) {
+            return option(cases).getOrElseThrow(() -> new MatchError(value));
+        }
+
+        @SuppressWarnings({ "unchecked", "varargs" })
+        @SafeVarargs
+        public final <R> Option<R> option(Case<? extends T, ? extends R>... cases) {
+            Objects.requireNonNull(cases, "cases is null");
+            for (Case<? extends T, ? extends R> _case : cases) {
+                final Case<T, R> narrowedCase = (Case<T, R>) _case;
+                if (narrowedCase.isApplicable(value)) {
+                    return Option.some(narrowedCase.apply(value));
+                }
+            }
+            return Option.none();
+        }
+
+        // -- CASES
+
+        public interface Case<T, R> extends PartialFunction<T, R> {
+        }
+
+        public static final class Case0<T, R> implements Case<T, R> {
+
+            private final Pattern0<T> pattern;
+            private final Supplier<? extends R> f;
+
+            private Case0(Pattern0<T> pattern, Supplier<? extends R> f) {
+                this.pattern = pattern;
+                this.f = f;
+            }
+
+            @Override
+            public boolean isApplicable(T t) {
+                return pattern.isApplicable(t);
+            }
+
+            @Override
+            public R apply(T o) {
+                return f.get();
+            }
+        }
+
+        public static final class Case1<T, T1, R> implements Case<T, R> {
+
+            private final Pattern1<T, T1> pattern;
+            private final Function<? super T1, ? extends R> f;
+
+            private Case1(Pattern1<T, T1> pattern, Function<? super T1, ? extends R> f) {
+                this.pattern = pattern;
+                this.f = f;
+            }
+
+            @Override
+            public boolean isApplicable(T t) {
+                return pattern.isApplicable(t);
+            }
+
+            @Override
+            public R apply(T t) {
+                return f.apply(pattern.apply(t));
+            }
+        }
+
+        public static final class Case2<T, T1, T2, R> implements Case<T, R> {
+
+            private final Pattern2<T, T1, T2> pattern;
+            private final BiFunction<? super T1, ? super T2, ? extends R> f;
+
+            private Case2(Pattern2<T, T1, T2> pattern, BiFunction<? super T1, ? super T2, ? extends R> f) {
+                this.pattern = pattern;
+                this.f = f;
+            }
+
+            @Override
+            public boolean isApplicable(T t) {
+                return pattern.isApplicable(t);
+            }
+
+            @Override
+            public R apply(T t) {
+                final Tuple2<T1, T2> r = pattern.apply(t);
+                return f.apply(r._1, r._2);
+            }
+        }
+
+        public static final class Case3<T, T1, T2, T3, R> implements Case<T, R> {
+
+            private final Pattern3<T, T1, T2, T3> pattern;
+            private final Function3<? super T1, ? super T2, ? super T3, ? extends R> f;
+
+            private Case3(Pattern3<T, T1, T2, T3> pattern, Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+                this.pattern = pattern;
+                this.f = f;
+            }
+
+            @Override
+            public boolean isApplicable(T t) {
+                return pattern.isApplicable(t);
+            }
+
+            @Override
+            public R apply(T t) {
+                final Tuple3<T1, T2, T3> r = pattern.apply(t);
+                return f.apply(r._1, r._2, r._3);
+            }
+        }
+
+        public static final class Case4<T, T1, T2, T3, T4, R> implements Case<T, R> {
+
+            private final Pattern4<T, T1, T2, T3, T4> pattern;
+            private final Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f;
+
+            private Case4(Pattern4<T, T1, T2, T3, T4> pattern, Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+                this.pattern = pattern;
+                this.f = f;
+            }
+
+            @Override
+            public boolean isApplicable(T t) {
+                return pattern.isApplicable(t);
+            }
+
+            @Override
+            public R apply(T t) {
+                final Tuple4<T1, T2, T3, T4> r = pattern.apply(t);
+                return f.apply(r._1, r._2, r._3, r._4);
+            }
+        }
+
+        public static final class Case5<T, T1, T2, T3, T4, T5, R> implements Case<T, R> {
+
+            private final Pattern5<T, T1, T2, T3, T4, T5> pattern;
+            private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f;
+
+            private Case5(Pattern5<T, T1, T2, T3, T4, T5> pattern, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+                this.pattern = pattern;
+                this.f = f;
+            }
+
+            @Override
+            public boolean isApplicable(T t) {
+                return pattern.isApplicable(t);
+            }
+
+            @Override
+            public R apply(T t) {
+                final Tuple5<T1, T2, T3, T4, T5> r = pattern.apply(t);
+                return f.apply(r._1, r._2, r._3, r._4, r._5);
+            }
+        }
+
+        public static final class Case6<T, T1, T2, T3, T4, T5, T6, R> implements Case<T, R> {
+
+            private final Pattern6<T, T1, T2, T3, T4, T5, T6> pattern;
+            private final Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f;
+
+            private Case6(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+                this.pattern = pattern;
+                this.f = f;
+            }
+
+            @Override
+            public boolean isApplicable(T t) {
+                return pattern.isApplicable(t);
+            }
+
+            @Override
+            public R apply(T t) {
+                final Tuple6<T1, T2, T3, T4, T5, T6> r = pattern.apply(t);
+                return f.apply(r._1, r._2, r._3, r._4, r._5, r._6);
+            }
+        }
+
+        public static final class Case7<T, T1, T2, T3, T4, T5, T6, T7, R> implements Case<T, R> {
+
+            private final Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern;
+            private final Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f;
+
+            private Case7(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+                this.pattern = pattern;
+                this.f = f;
+            }
+
+            @Override
+            public boolean isApplicable(T t) {
+                return pattern.isApplicable(t);
+            }
+
+            @Override
+            public R apply(T t) {
+                final Tuple7<T1, T2, T3, T4, T5, T6, T7> r = pattern.apply(t);
+                return f.apply(r._1, r._2, r._3, r._4, r._5, r._6, r._7);
+            }
+        }
+
+        public static final class Case8<T, T1, T2, T3, T4, T5, T6, T7, T8, R> implements Case<T, R> {
+
+            private final Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern;
+            private final Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f;
+
+            private Case8(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+                this.pattern = pattern;
+                this.f = f;
+            }
+
+            @Override
+            public boolean isApplicable(T t) {
+                return pattern.isApplicable(t);
+            }
+
+            @Override
+            public R apply(T t) {
+                final Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> r = pattern.apply(t);
+                return f.apply(r._1, r._2, r._3, r._4, r._5, r._6, r._7, r._8);
+            }
+        }
+
+        // -- PATTERNS
+
+        /**
+         * A Pattern is a {@link PartialFunction}. By calling {@link #isApplicable(Object)} we check, if
+         * {@link #apply(Object)} can be called. If a Pattern is not applicable to an object, {@linkplain #apply(Object)}
+         * must not be called.
+         *
+         * @param <T> An object type that has a part of type R than is matched and decomposed by this pattern
+         * @param <R> Type of the part this pattern matches/decomposes
+         */
+        public interface Pattern<T, R> extends PartialFunction<T, R> {
+        }
+
+        // These can't be @FunctionalInterfaces because of ambiguities.
+        // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
+
+        public static abstract class Pattern0<T> implements Pattern<T, T> {
+
+            private static final Pattern0<Object> ANY = new Pattern0<Object>() {
+                @Override
+                public boolean isApplicable(Object o) {
+                    return true;
+                }
+            };
+
+            @SuppressWarnings("unchecked")
+            public static <T> Pattern0<T> any() {
+                return (Pattern0<T>) ANY;
+            }
+
+            // DEV-NOTE: We need the lower bound `Class<? super T>` instead of the more appropriate `Class<T>`
+            //           because it allows us to create patterns for generic types, which would otherwise not be
+            //           possible: `Pattern0<Some<String>> p = Pattern0.of(Some.class);`
+            @SuppressWarnings("unchecked")
+            public static <T> Pattern0<T> of(Class<? super T> type) {
+                return new Pattern0<T>() {
+                    @Override
+                    public boolean isApplicable(T obj) {
+                        return obj != null && type.isAssignableFrom(obj.getClass());
+                    }
+                };
+            }
+
+            private Pattern0() {
+            }
+
+            @Override
+            public T apply(T obj) {
+                return obj;
+            }
+        }
+
+        public static abstract class Pattern1<T, T1> implements Pattern<T, T1> {
+
+            public static <T, T1> Pattern1<T, T1> of(Class<? super T> type, Pattern<T1, ?> p1, Function<? super T, T1> unapply) {
+                return new Pattern1<T, T1>() {
+
+                    // the unapplied object
+                    T1 part = null;
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
+                            return false;
+                        }
+                        part = unapply.apply(obj);
+                        return p1.isApplicable(part);
+                    }
+
+                    @Override
+                    public T1 apply(T obj) {
+                        return part;
+                    }
+                };
+            }
+
+            private Pattern1() {
+            }
+        }
+
+        public static abstract class Pattern2<T, T1, T2> implements Pattern<T, Tuple2<T1, T2>> {
+
+            public static <T, T1, T2> Pattern2<T, T1, T2> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Function<? super T, Tuple2<T1, T2>> unapply) {
+                return new Pattern2<T, T1, T2>() {
+
+                    // the unapplied object
+                    Tuple2<T1, T2> parts = null;
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
+                            return false;
+                        }
+                        parts = unapply.apply(obj);
+                        return
+                                p1.isApplicable(parts._1) &&
+                                p2.isApplicable(parts._2);
+                    }
+
+                    @Override
+                    public Tuple2<T1, T2> apply(T obj) {
+                        return parts;
+                    }
+                };
+            }
+
+            private Pattern2() {
+            }
+        }
+
+        public static abstract class Pattern3<T, T1, T2, T3> implements Pattern<T, Tuple3<T1, T2, T3>> {
+
+            public static <T, T1, T2, T3> Pattern3<T, T1, T2, T3> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Function<? super T, Tuple3<T1, T2, T3>> unapply) {
+                return new Pattern3<T, T1, T2, T3>() {
+
+                    // the unapplied object
+                    Tuple3<T1, T2, T3> parts = null;
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
+                            return false;
+                        }
+                        parts = unapply.apply(obj);
+                        return
+                                p1.isApplicable(parts._1) &&
+                                p2.isApplicable(parts._2) &&
+                                p3.isApplicable(parts._3);
+                    }
+
+                    @Override
+                    public Tuple3<T1, T2, T3> apply(T obj) {
+                        return parts;
+                    }
+                };
+            }
+
+            private Pattern3() {
+            }
+        }
+
+        public static abstract class Pattern4<T, T1, T2, T3, T4> implements Pattern<T, Tuple4<T1, T2, T3, T4>> {
+
+            public static <T, T1, T2, T3, T4> Pattern4<T, T1, T2, T3, T4> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Function<? super T, Tuple4<T1, T2, T3, T4>> unapply) {
+                return new Pattern4<T, T1, T2, T3, T4>() {
+
+                    // the unapplied object
+                    Tuple4<T1, T2, T3, T4> parts = null;
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
+                            return false;
+                        }
+                        parts = unapply.apply(obj);
+                        return
+                                p1.isApplicable(parts._1) &&
+                                p2.isApplicable(parts._2) &&
+                                p3.isApplicable(parts._3) &&
+                                p4.isApplicable(parts._4);
+                    }
+
+                    @Override
+                    public Tuple4<T1, T2, T3, T4> apply(T obj) {
+                        return parts;
+                    }
+                };
+            }
+
+            private Pattern4() {
+            }
+        }
+
+        public static abstract class Pattern5<T, T1, T2, T3, T4, T5> implements Pattern<T, Tuple5<T1, T2, T3, T4, T5>> {
+
+            public static <T, T1, T2, T3, T4, T5> Pattern5<T, T1, T2, T3, T4, T5> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Function<? super T, Tuple5<T1, T2, T3, T4, T5>> unapply) {
+                return new Pattern5<T, T1, T2, T3, T4, T5>() {
+
+                    // the unapplied object
+                    Tuple5<T1, T2, T3, T4, T5> parts = null;
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
+                            return false;
+                        }
+                        parts = unapply.apply(obj);
+                        return
+                                p1.isApplicable(parts._1) &&
+                                p2.isApplicable(parts._2) &&
+                                p3.isApplicable(parts._3) &&
+                                p4.isApplicable(parts._4) &&
+                                p5.isApplicable(parts._5);
+                    }
+
+                    @Override
+                    public Tuple5<T1, T2, T3, T4, T5> apply(T obj) {
+                        return parts;
+                    }
+                };
+            }
+
+            private Pattern5() {
+            }
+        }
+
+        public static abstract class Pattern6<T, T1, T2, T3, T4, T5, T6> implements Pattern<T, Tuple6<T1, T2, T3, T4, T5, T6>> {
+
+            public static <T, T1, T2, T3, T4, T5, T6> Pattern6<T, T1, T2, T3, T4, T5, T6> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Function<? super T, Tuple6<T1, T2, T3, T4, T5, T6>> unapply) {
+                return new Pattern6<T, T1, T2, T3, T4, T5, T6>() {
+
+                    // the unapplied object
+                    Tuple6<T1, T2, T3, T4, T5, T6> parts = null;
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
+                            return false;
+                        }
+                        parts = unapply.apply(obj);
+                        return
+                                p1.isApplicable(parts._1) &&
+                                p2.isApplicable(parts._2) &&
+                                p3.isApplicable(parts._3) &&
+                                p4.isApplicable(parts._4) &&
+                                p5.isApplicable(parts._5) &&
+                                p6.isApplicable(parts._6);
+                    }
+
+                    @Override
+                    public Tuple6<T1, T2, T3, T4, T5, T6> apply(T obj) {
+                        return parts;
+                    }
+                };
+            }
+
+            private Pattern6() {
+            }
+        }
+
+        public static abstract class Pattern7<T, T1, T2, T3, T4, T5, T6, T7> implements Pattern<T, Tuple7<T1, T2, T3, T4, T5, T6, T7>> {
+
+            public static <T, T1, T2, T3, T4, T5, T6, T7> Pattern7<T, T1, T2, T3, T4, T5, T6, T7> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Pattern<T7, ?> p7, Function<? super T, Tuple7<T1, T2, T3, T4, T5, T6, T7>> unapply) {
+                return new Pattern7<T, T1, T2, T3, T4, T5, T6, T7>() {
+
+                    // the unapplied object
+                    Tuple7<T1, T2, T3, T4, T5, T6, T7> parts = null;
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
+                            return false;
+                        }
+                        parts = unapply.apply(obj);
+                        return
+                                p1.isApplicable(parts._1) &&
+                                p2.isApplicable(parts._2) &&
+                                p3.isApplicable(parts._3) &&
+                                p4.isApplicable(parts._4) &&
+                                p5.isApplicable(parts._5) &&
+                                p6.isApplicable(parts._6) &&
+                                p7.isApplicable(parts._7);
+                    }
+
+                    @Override
+                    public Tuple7<T1, T2, T3, T4, T5, T6, T7> apply(T obj) {
+                        return parts;
+                    }
+                };
+            }
+
+            private Pattern7() {
+            }
+        }
+
+        public static abstract class Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> implements Pattern<T, Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> {
+
+            public static <T, T1, T2, T3, T4, T5, T6, T7, T8> Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Pattern<T7, ?> p7, Pattern<T8, ?> p8, Function<? super T, Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> unapply) {
+                return new Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8>() {
+
+                    // the unapplied object
+                    Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> parts = null;
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isApplicable(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
+                            return false;
+                        }
+                        parts = unapply.apply(obj);
+                        return
+                                p1.isApplicable(parts._1) &&
+                                p2.isApplicable(parts._2) &&
+                                p3.isApplicable(parts._3) &&
+                                p4.isApplicable(parts._4) &&
+                                p5.isApplicable(parts._5) &&
+                                p6.isApplicable(parts._6) &&
+                                p7.isApplicable(parts._7) &&
+                                p8.isApplicable(parts._8);
+                    }
+
+                    @Override
+                    public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> apply(T obj) {
+                        return parts;
+                    }
+                };
+            }
+
+            private Pattern8() {
+            }
+        }
+    }
 }

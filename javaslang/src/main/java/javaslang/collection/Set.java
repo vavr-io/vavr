@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.API;
 import javaslang.Function1;
-import javaslang.Match;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
@@ -182,7 +182,7 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
     <U> Set<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    Match<? extends Set<T>> match();
+    API.Match<? extends Set<T>> match();
 
     @Override
     Tuple2<? extends Set<T>, ? extends Set<T>> partition(Predicate<? super T> predicate);

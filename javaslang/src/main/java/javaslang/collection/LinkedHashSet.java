@@ -16,8 +16,6 @@ import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.Match.Match;
-
 /**
  * An immutable {@code HashSet} implementation.
  *
@@ -647,8 +645,8 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     @Override
-    public Match<LinkedHashSet<T>> match() {
-        return Match(this);
+    public API.Match<LinkedHashSet<T>> match() {
+        return API.Match(this);
     }
 
     @Override

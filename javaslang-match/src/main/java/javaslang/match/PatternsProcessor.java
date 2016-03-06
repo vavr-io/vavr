@@ -81,13 +81,14 @@ public class PatternsProcessor extends AbstractProcessor {
     private static void generate(Set<TypeElement> typeElements, Filer filer, Messager messager) {
         for (TypeElement typeElement : typeElements) {
             final String name = Elements.getFullQualifiedName(typeElement);
-            Generator.generate(typeElement, messager).ifPresent(code -> {
-                try (final Writer writer = filer.createSourceFile(name, typeElement).openWriter()) {
-                    writer.write(code);
-                } catch (IOException x) {
-                    throw new Error("Error creating generating " + name, x);
-                }
-            });
+// TODO
+//            Generator.generate(typeElement, messager).ifPresent(code -> {
+//                try (final Writer writer = filer.createSourceFile(name, typeElement).openWriter()) {
+//                    writer.write(code);
+//                } catch (IOException x) {
+//                    throw new Error("Error creating generating " + name, x);
+//                }
+//            });
         }
     }
 }

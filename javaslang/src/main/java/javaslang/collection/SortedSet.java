@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Match;
+import javaslang.API;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
@@ -134,7 +134,7 @@ public interface SortedSet<T> extends Set<T> {
     <U> SortedSet<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    Match<? extends SortedSet<T>> match();
+    API.Match<? extends SortedSet<T>> match();
 
     @Override
     Tuple2<? extends SortedSet<T>, ? extends SortedSet<T>> partition(Predicate<? super T> predicate);

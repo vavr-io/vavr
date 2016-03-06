@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Match;
+import javaslang.API;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.Value;
@@ -648,7 +648,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    Match<? extends Traversable<T>> match();
+    API.Match<? extends Traversable<T>> match();
 
     /**
      * Calculates the maximum of this elements according to their natural order.

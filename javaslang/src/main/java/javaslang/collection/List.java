@@ -16,8 +16,6 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.Match.Match;
-
 /**
  * An immutable {@code List} is an eager sequence of elements. Its immutability makes it suitable for concurrent programming.
  * <p>
@@ -45,7 +43,14 @@ import static javaslang.Match.Match;
  * </pre>
  *
  * Note: A {@code List} is primary a {@code Seq} and extends {@code Stack} for technical reasons (so {@code Stack} does not need to wrap {@code List}).
- *
+ * <p>
+ * If operating on a {@code List}, please prefer
+ * <ul>
+ * <li>{@link #prepend(Object)} over {@link #push(Object)}</li>
+ * <li>{@link #prependAll(Iterable)} over {@link #pushAll(Iterable)}</li>
+ * <li>{@link #tail()} over {@link #pop()}</li>
+ * <li>{@link #tailOption()} over {@link #popOption()}</li>
+ * </ul>
  *
  * Factory method applications:
  *
@@ -636,18 +641,6 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default void forEach(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        Stack.super.forEach(action);
-    }
-
-    @Override
-    default boolean forAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return Stack.super.forAll(predicate);
-    }
-
-    @Override
     default T get(int index) {
         if (isEmpty()) {
             throw new IndexOutOfBoundsException("get(" + index + ") on Nil");
@@ -789,8 +782,8 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Match<List<T>> match() {
-        return Match(this);
+    default API.Match<List<T>> match() {
+        return API.Match(this);
     }
 
     @Override
@@ -1307,7 +1300,6 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    @Override
     default <U> U transform(Function<? super List<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);

@@ -14,8 +14,6 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.Match.Match;
-
 /**
  * Vector is the default Seq implementation. It provides the best performance in between Array (with constant time element access)
  * and List (with constant time element addition).
@@ -769,8 +767,8 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Match<Vector<T>> match() {
-        return Match(this);
+    public API.Match<Vector<T>> match() {
+        return API.Match(this);
     }
 
     @Override

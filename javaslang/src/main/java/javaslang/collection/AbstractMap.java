@@ -5,7 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Match;
+import javaslang.API;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
@@ -176,8 +176,8 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
 
     @SuppressWarnings("unchecked")
     @Override
-    public Match<M> match() {
-        return Match.Match((M) this);
+    public API.Match<M> match() {
+        return API.Match((M) this);
     }
 
     @SuppressWarnings("unchecked")

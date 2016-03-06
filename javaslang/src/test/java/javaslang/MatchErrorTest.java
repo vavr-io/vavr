@@ -9,9 +9,7 @@ import org.junit.Test;
 
 import java.util.function.Function;
 
-import static javaslang.Match.$;
-import static javaslang.Match.*;
-import static javaslang.Match.Match;
+import static javaslang.API.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
@@ -38,7 +36,7 @@ public class MatchErrorTest {
     public void shouldReturnCorrectObjectWhenMatchingByFunction() {
         final Object obj = new Object();
         try {
-            Match.$(0).apply(obj);
+            $(new Object()).apply(obj);
         } catch (MatchError matchError) {
             assertThat(matchError.getObject()).isEqualTo(obj);
         }

@@ -13,8 +13,6 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.Match.Match;
-
 /**
  * An immutable {@code Queue} stores elements allowing a first-in-first-out (FIFO) retrieval.
  * <p>
@@ -839,8 +837,8 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     }
 
     @Override
-    public Match<Queue<T>> match() {
-        return Match(this);
+    public API.Match<Queue<T>> match() {
+        return API.Match(this);
     }
 
     @Override

@@ -15,8 +15,6 @@ import java.util.HashSet;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.Match.*;
-
 /**
  * Array is a Traversable wrapper for {@code Object[]} containing elements of type {@code T}.
  *
@@ -223,8 +221,8 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * over a range of integer values from 0 to {@code n - 1}.
      *
      * @param <T> Component type of the Array
-     * @param n The number of elements in the Array
-     * @param f The Function computing element values
+     * @param n   The number of elements in the Array
+     * @param f   The Function computing element values
      * @return An Array consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
@@ -237,8 +235,8 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * Returns an Array containing {@code n} values supplied by a given Supplier {@code s}.
      *
      * @param <T> Component type of the Array
-     * @param n The number of elements in the Array
-     * @param s The Supplier computing element values
+     * @param n   The number of elements in the Array
+     * @param s   The Supplier computing element values
      * @return An Array of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
@@ -767,8 +765,8 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public Match<Array<T>> match() {
-        return Match(this);
+    public API.Match<Array<T>> match() {
+        return API.Match(this);
     }
 
     @Override
@@ -1209,14 +1207,14 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    public  <U> U transform(Function<? super Array<T>, ? extends U> f) {
+    public <U> U transform(Function<? super Array<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
     @Override
     public <U> Array<U> unit(Iterable<? extends U> iterable) {
-    	return Array.ofAll(iterable);
+        return Array.ofAll(iterable);
     }
 
     @Override

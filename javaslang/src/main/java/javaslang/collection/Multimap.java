@@ -5,8 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.API;
 import javaslang.Function1;
-import javaslang.Match;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
@@ -324,7 +324,7 @@ public interface Multimap<K, V, T extends Traversable<V>> extends Traversable<Tu
     }
 
     @Override
-    Match<? extends Multimap<K, V, T>> match();
+    API.Match<? extends Multimap<K, V, T>> match();
 
     /**
      * Creates a new multimap which by merging the entries of {@code this} multimap and {@code that} multimap.

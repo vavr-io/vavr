@@ -5,7 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.Match;
+import javaslang.API;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 
@@ -16,8 +16,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import static javaslang.Match.*;
 
 /**
  * Either represents a value of two possible types. An Either is either a {@link Left} or a
@@ -225,8 +223,8 @@ public interface Either<L, R> extends Value<R> {
     // -- Adjusted return types of Convertible methods
 
     @Override
-    default Match<Either<L, R>> match() {
-        return Match(this);
+    default API.Match<Either<L, R>> match() {
+        return API.Match(this);
     }
 
     // -- Adjusted return types of Monad methods
@@ -546,8 +544,8 @@ public interface Either<L, R> extends Value<R> {
         }
 
         @Override
-        public Match<LeftProjection<L, R>> match() {
-            return Match(this);
+        public API.Match<LeftProjection<L, R>> match() {
+            return API.Match(this);
         }
 
         /**
@@ -776,8 +774,8 @@ public interface Either<L, R> extends Value<R> {
         }
 
         @Override
-        public Match<RightProjection<L, R>> match() {
-            return Match(this);
+        public API.Match<RightProjection<L, R>> match() {
+            return API.Match(this);
         }
 
         /**
