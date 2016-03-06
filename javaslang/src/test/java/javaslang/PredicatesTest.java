@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PredicatesTest {
 
-    static final Predicate<? super Throwable> IS_RUNTIME_EXCEPTION = narrow(instanceOf(RuntimeException.class));
+    static final Predicate<? super Throwable> IS_RUNTIME_EXCEPTION = instanceOf(RuntimeException.class);
 
     // -- instanceOf
 
@@ -105,9 +105,5 @@ public class PredicatesTest {
         assertThat(noneOf(P1).test(2)).isFalse();
         assertThat(noneOf(P1, P2).test(2)).isFalse();
     }
-
-    // helpers
-
-    private static <T extends U, U> U narrow(T t) { return t; }
 
 }
