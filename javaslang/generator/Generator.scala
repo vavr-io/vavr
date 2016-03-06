@@ -189,35 +189,35 @@ def generateMainClasses(): Unit = {
           // -- static Case API
 
           // syntactic sugar for {@code Case($$(predicate), f)}
-          public static <T, R> Case<? super T, ? extends R> Case(Predicate<? super T> predicate, Supplier<? extends R> f) {
+          public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, Supplier<? extends R> f) {
               Objects.requireNonNull(f, "f is null");
               return new Case0<>($$(predicate), f);
           }
 
           // syntactic sugar for {@code Case($$(predicate), () -> retVal)}
-          public static <T, R> Case<? super T, ? extends R> Case(Predicate<? super T> predicate, R retVal) {
+          public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, R retVal) {
               return new Case0<>($$(predicate), () -> retVal);
           }
 
           // syntactic sugar for {@code Case($$(value), f)}
-          public static <T, R> Case<? super T, ? extends R> Case(T value, $SupplierType<? extends R> f) {
+          public static <T, R> Case<T, R> Case(T value, $SupplierType<? extends R> f) {
               Objects.requireNonNull(f, "f is null");
               return new Case0<>($$(value), f);
           }
 
           // syntactic sugar for {@code Case($$(value), () -> retVal)}
-          public static <T, R> Case<? super T, ? extends R> Case(T value, R retVal) {
+          public static <T, R> Case<T, R> Case(T value, R retVal) {
               return new Case0<>($$(value), () -> retVal);
           }
 
-          public static <T, R> Case<? super T, ? extends R> Case(Pattern0<T> pattern, $SupplierType<? extends R> f) {
+          public static <T, R> Case<T, R> Case(Pattern0<T> pattern, $SupplierType<? extends R> f) {
               Objects.requireNonNull(pattern, "pattern is null");
               Objects.requireNonNull(f, "f is null");
               return new Case0<>(pattern, f);
           }
 
           // syntactic sugar for {@link #Case(Pattern0, $SupplierType)}
-          public static <T, R> Case<? super T, ? extends R> Case(Pattern0<T> pattern, R retVal) {
+          public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
               Objects.requireNonNull(pattern, "pattern is null");
               return new Case0<>(pattern, () -> retVal);
           }
@@ -232,14 +232,14 @@ def generateMainClasses(): Unit = {
               case _ => s"Function$i"
             }
             xs"""
-              public static <T, $generics, R> Case<? super T, ? extends R> Case(Pattern$i<T, $generics> pattern, $functionType<$argTypes, ? extends R> f) {
+              public static <T, $generics, R> Case<T, R> Case(Pattern$i<T, $generics> pattern, $functionType<$argTypes, ? extends R> f) {
                   $Objects.requireNonNull(pattern, "pattern is null");
                   $Objects.requireNonNull(f, "f is null");
                   return new Case$i<>(pattern, f);
               }
 
               // syntactic sugar for {@link #Case(Pattern$i, $functionType)}
-              public static <T, $generics, R> Case<? super T, ? extends R> Case(Pattern$i<T, $generics> pattern, R retVal) {
+              public static <T, $generics, R> Case<T, R> Case(Pattern$i<T, $generics> pattern, R retVal) {
                   $Objects.requireNonNull(pattern, "pattern is null");
                   return new Case$i<>(pattern, $params -> retVal);
               }
