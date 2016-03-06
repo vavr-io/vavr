@@ -15,6 +15,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static javaslang.API.Case;
+import static javaslang.Predicates.instanceOf;
 import static org.assertj.core.api.Assertions.fail;
 
 public class TryTest extends AbstractValueTest {
@@ -202,6 +204,11 @@ public class TryTest extends AbstractValueTest {
         }
     }
 
+    @Test
+    public void shouldCreateFailureOnNonFatalException() {
+        assertThat(failure().failed().get().getClass().getName()).isEqualTo(RuntimeException.class.getName());
+    }
+
     // -- Failure.NonFatal
 
     @Test
@@ -225,6 +232,7 @@ public class TryTest extends AbstractValueTest {
     }
 
     // -- Failure.Fatal
+
     @Test
     public void shouldReturnToStringOnFatal() {
         try {
@@ -286,30 +294,49 @@ public class TryTest extends AbstractValueTest {
         });
     }
 
+    // -- isFailure
+
     @Test
     public void shouldDetectFailureOnNonFatalException() {
         assertThat(failure().isFailure()).isTrue();
     }
+
+    // -- isSuccess
 
     @Test
     public void shouldDetectNonSuccessOnFailure() {
         assertThat(failure().isSuccess()).isFalse();
     }
 
+    // -- get
+
     @Test(expected = Try.NonFatalException.class)
     public void shouldThrowWhenGetOnFailure() {
         failure().get();
     }
+
+    // -- getOrElse
 
     @Test
     public void shouldReturnElseWhenOrElseOnFailure() {
         assertThat(failure().getOrElse(OK)).isEqualTo(OK);
     }
 
+    // -- getOrElseGet
+
     @Test
     public void shouldReturnElseWhenOrElseGetOnFailure() {
         assertThat(failure().getOrElseGet(x -> OK)).isEqualTo(OK);
     }
+
+    // -- getOrElseThrow
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowOtherWhenGetOrElseThrowOnFailure() {
+        failure().getOrElseThrow(x -> new IllegalStateException(OK));
+    }
+
+    // -- orElseRun
 
     @Test
     public void shouldRunElseWhenOrElseRunOnFailure() {
@@ -318,15 +345,30 @@ public class TryTest extends AbstractValueTest {
         assertThat(result[0]).isEqualTo(OK);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowOtherWhenOrElseThrowOnFailure() {
-        failure().getOrElseThrow(x -> new IllegalStateException(OK));
-    }
+    // -- recover
 
     @Test
     public void shouldRecoverOnFailure() {
         assertThat(failure().recover(x -> OK).get()).isEqualTo(OK);
     }
+
+    @Test
+    public void shouldRecoverSuccessUsingCase() {
+        final String actual = Try.of(() -> "ok")
+                .recover(Case(instanceOf(Error.class), "fixed"))
+                .get();
+        assertThat(actual).isEqualTo("ok");
+    }
+
+    @Test
+    public void shouldRecoverFailureUsingCase() {
+        final Object actual = Try.of(() -> { throw new Error("error"); })
+                .recover(Case(instanceOf(Error.class), "fixed"))
+                .get();
+        assertThat(actual).isEqualTo("fixed");
+    }
+
+    // -- recoverWith
 
     @Test
     public void shouldRecoverWithOnFailure() {
@@ -341,6 +383,8 @@ public class TryTest extends AbstractValueTest {
         })).isEqualTo(Try.failure(error));
     }
 
+    // -- onFailure
+
     @Test
     public void shouldConsumeThrowableWhenCallingOnFailureGivenFailure() {
         final String[] result = new String[] { FAILURE };
@@ -348,20 +392,28 @@ public class TryTest extends AbstractValueTest {
         assertThat(result[0]).isEqualTo(OK);
     }
 
+    // -- toOption
+
     @Test
     public void shouldConvertFailureToOption() {
         assertThat(failure().toOption().isDefined()).isFalse();
     }
+
+    // -- toEither
 
     @Test
     public void shouldConvertFailureToEither() {
         assertThat(failure().toEither().isLeft()).isTrue();
     }
 
+    // -- toJavaOptional
+
     @Test
     public void shouldConvertFailureToJavaOptional() {
         assertThat(failure().toJavaOptional().isPresent()).isFalse();
     }
+
+    // -- filter
 
     @Test
     public void shouldFilterMatchingPredicateOnFailure() {
@@ -387,6 +439,8 @@ public class TryTest extends AbstractValueTest {
         assertThat(identity.filter(s -> true)).isEqualTo(identity);
     }
 
+    // -- flatMap
+
     @Test
     public void shouldFlatMapOnFailure() {
         final Try<String> actual = failure();
@@ -399,12 +453,16 @@ public class TryTest extends AbstractValueTest {
         assertThat(actual.flatMap(this::flatMap)).isEqualTo(actual);
     }
 
+    // -- isEmpty
+
     @Test
     public void shouldForEachOnFailure() {
         final List<String> actual = new ArrayList<>();
         TryTest.<String> failure().forEach(actual::add);
         assertThat(actual.isEmpty()).isTrue();
     }
+
+    // -- map
 
     @Test
     public void shouldMapOnFailure() {
@@ -416,21 +474,6 @@ public class TryTest extends AbstractValueTest {
     public void shouldMapWithExceptionOnFailure() {
         final Try<String> actual = failure();
         assertThat(actual.map(this::map)).isEqualTo(actual);
-    }
-
-    @Test
-    public void shouldCreateFailureOnNonFatalException() {
-        assertThat(failure().failed().get().getClass().getName()).isEqualTo(RuntimeException.class.getName());
-    }
-
-    @Test
-    public void shouldComposeFailureWithAndThenWhenFailing() {
-        final Try<Void> actual = Try.run(() -> {
-            throw new Error("err1");
-        }).andThen(() -> {
-            throw new Error("err2");
-        });
-        assertThat(actual.toString()).isEqualTo("Failure(java.lang.Error: err1)");
     }
 
     @Test
@@ -450,6 +493,18 @@ public class TryTest extends AbstractValueTest {
                 .map(x -> Integer.parseInt("aaa") + x)   //Throws exception.
                 .map(x -> x / 2);
         assertThat(actual.toString()).isEqualTo("Failure(java.lang.NumberFormatException: For input string: \"aaa\")");
+    }
+
+    // -- andThen
+
+    @Test
+    public void shouldComposeFailureWithAndThenWhenFailing() {
+        final Try<Void> actual = Try.run(() -> {
+            throw new Error("err1");
+        }).andThen(() -> {
+            throw new Error("err2");
+        });
+        assertThat(actual.toString()).isEqualTo("Failure(java.lang.Error: err1)");
     }
 
     @Test
