@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Lazy;
 import javaslang.Match;
 import javaslang.Tuple;
 import javaslang.Tuple2;
@@ -32,13 +33,13 @@ import java.util.function.Predicate;
 
     interface Factory<K, V, T extends Traversable<V>> {
 
-        Multimap<K, V, T> emptyInstance();
+        <K2, V2, T2 extends Traversable<V2>> Multimap<K2, V2, T2> emptyInstance();
 
         Multimap<K, V, T> createFromMap(Map<K, T> back);
 
         Multimap<K, V, T> createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries);
 
-        T emptyContainer();
+        <V2, T2 extends Traversable<V2>> T2 emptyContainer();
 
         T addToContainer(T container, V value);
 
@@ -50,10 +51,12 @@ import java.util.function.Predicate;
     private static final long serialVersionUID = 1L;
 
     private final Map<K, T> back;
-    final Factory<K, V, T> factory;
+    private final Lazy<Integer> size;
+    final transient Factory<K, V, T> factory;
 
     MultimapImpl(Map<K, T> back, Factory<K, V, T> factory) {
         this.back = back;
+        this.size = Lazy.of(() -> back.foldLeft(0, (s, t) -> s + t._2.size()));
         this.factory = factory;
     }
 
@@ -69,7 +72,13 @@ import java.util.function.Predicate;
 
     @Override
     public <K2, V2, T2 extends Traversable<V2>> Multimap<K2, V2, T2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
-        return null;
+        Objects.requireNonNull(mapper, "mapper is null");
+        return foldLeft(factory.<K2, V2, T2>emptyInstance(), (acc, entry) -> {
+            for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
+                acc = acc.put(mappedEntry);
+            }
+            return acc;
+        });
     }
 
     @Override
@@ -84,18 +93,20 @@ import java.util.function.Predicate;
 
     @Override
     public <K2, V2, T2 extends Traversable<V2>> Multimap<K2, V2, T2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
-        return null;
+        Objects.requireNonNull(mapper, "mapper is null");
+        return foldLeft(factory.<K2, V2, T2>emptyInstance(), (acc, entry) -> acc.put(mapper.apply(entry._1, entry._2)));
     }
 
     @Override
     public <V2, T2 extends Traversable<V2>> Multimap<K, V2, T2> mapValues(Function<? super V, ? extends V2> valueMapper) {
-        return null;
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return map((k, v) -> Tuple.of(k, valueMapper.apply(v)));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public M put(K key, V value) {
-        final T values = back.get(key).getOrElse(factory.emptyContainer());
+        final T values = back.get(key).getOrElse(factory.<V, T>emptyContainer());
         final T newValues = factory.addToContainer(values, value);
         return newValues == values ? (M) this : (M) factory.createFromMap(back.put(key, newValues));
     }
@@ -109,15 +120,15 @@ import java.util.function.Predicate;
     @SuppressWarnings("unchecked")
     @Override
     public M remove(K key) {
-        return back.containsKey(key) ? (M) this : (M) factory.createFromMap(back.remove(key));
+        return back.containsKey(key) ? (M) factory.createFromMap(back.remove(key)) : (M) this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public M remove(K key, V value) {
-        final T values = back.get(key).getOrElse(factory.emptyContainer());
+        final T values = back.get(key).getOrElse(factory.<V, T>emptyContainer());
         final T newValues = factory.removeFromContainer(values, value);
-        return newValues == values ? (M) this : (M) factory.createFromMap(back.put(key, newValues));
+        return newValues == values ? (M) this : newValues.isEmpty() ? (M) factory.createFromMap(back.remove(key)): (M) factory.createFromMap(back.put(key, newValues));
     }
 
     @SuppressWarnings("unchecked")
@@ -129,7 +140,7 @@ import java.util.function.Predicate;
 
     @Override
     public int size() {
-        return 0;
+        return size.get();
     }
 
     @Override
@@ -139,12 +150,12 @@ import java.util.function.Predicate;
 
     @Override
     public Traversable<V> values() {
-        return Iterator.concat(back.values());
+        return Iterator.concat(back.values()).toStream();
     }
 
     @Override
     public Multimap<K, V, T> distinct() {
-        return null;
+        return this;
     }
 
     @SuppressWarnings("unchecked")
@@ -225,7 +236,12 @@ import java.util.function.Predicate;
 
     @Override
     public Multimap<K, V, T> init() {
-        return null;
+        if (back.isEmpty()) {
+            throw new UnsupportedOperationException("init of empty HashMap");
+        } else {
+            final Tuple2<K, V> last = last();
+            return remove(last._1, last._2);
+        }
     }
 
     @Override
@@ -281,7 +297,7 @@ import java.util.function.Predicate;
 
     @SuppressWarnings("unchecked")
     @Override
-    public <K2 extends K, V2 extends V> M merge(Multimap<K2, V2, Traversable<V2>> that, BiFunction<Traversable<? super V>, Traversable<? super V2>, Traversable<? extends V>> collisionResolution) {
+    public <K2 extends  K, V2 extends V, T2 extends Traversable<V2>> Multimap<K, V, T> merge(Multimap<K2, V2, T2> that, BiFunction<T, T2, T> collisionResolution) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         if (isEmpty()) {
@@ -289,11 +305,13 @@ import java.util.function.Predicate;
         } else if (that.isEmpty()) {
             return (M) this;
         } else {
-            Queue<Tuple2<K, V>> entries = that.keySet().foldLeft(Queue.empty(), (queue, key) -> {
-                final Traversable<? extends V> newValues = get(key).map(v -> collisionResolution.apply(v, that.get(key).get())).get();
-                return newValues.foldLeft(queue, (q, v) -> q.append(Tuple.of(key, v)));
+            Map<K, T> result = that.keySet().foldLeft(this.back, (map, key) -> {
+                final T thisValues = map.get(key).getOrElse((T) factory.emptyContainer());
+                final T2 thatValues = that.get(key).get();
+                final T newValues = collisionResolution.apply(thisValues, thatValues);
+                return map.put(key, newValues);
             });
-            return (M) factory.createFromEntries(entries);
+            return (M) factory.createFromMap(result);
         }
     }
 
@@ -368,7 +386,12 @@ import java.util.function.Predicate;
 
     @Override
     public Multimap<K, V, T> tail() {
-        return null;
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("tail of empty Multimap");
+        } else {
+            final Tuple2<K, V> head = head();
+            return remove(head._1, head._2);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -403,5 +426,10 @@ import java.util.function.Predicate;
         Objects.requireNonNull(predicate, "predicate is null");
         final M taken = (M) factory.createFromEntries(iterator().takeWhile(predicate));
         return taken.length() == length() ? (M) this : taken;
+    }
+
+    @Override
+    public int hashCode() {
+        return back.hashCode();
     }
 }

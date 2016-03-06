@@ -351,7 +351,7 @@ public interface Multimap<K, V, T extends Traversable<V>> extends Traversable<Tu
      * @return A merged multimap
      * @throws NullPointerException if that multimap or the given collision resolution function is null
      */
-    <K2 extends  K, V2 extends V> Multimap<K, V, T> merge(Multimap<K2, V2, Traversable<V2>> that, BiFunction<Traversable<? super V>, Traversable<? super V2>, Traversable<? extends V>> collisionResolution);
+    <K2 extends  K, V2 extends V, T2 extends Traversable<V2>> Multimap<K, V, T> merge(Multimap<K2, V2, T2> that, BiFunction<T, T2, T> collisionResolution);
 
     @Override
     Tuple2<? extends Multimap<K, V, T>, ? extends Multimap<K, V, T>> partition(Predicate<? super Tuple2<K, V>> predicate);
