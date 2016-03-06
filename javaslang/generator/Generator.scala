@@ -308,18 +308,19 @@ def generateMainClasses(): Unit = {
               // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
               @SuppressWarnings({ "unchecked", "varargs" })
               @SafeVarargs
-              public final <R> R of(Case<? super T, ? extends R>... cases) {
+              public final <R> R of(Case<? extends T, ? extends R>... cases) {
                   return option(cases).getOrElseThrow(() -> new MatchError(value));
               }
 
               // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
               @SuppressWarnings({ "unchecked", "varargs" })
               @SafeVarargs
-              public final <R> $OptionType<R> option(Case<? super T, ? extends R>... cases) {
+              public final <R> $OptionType<R> option(Case<? extends T, ? extends R>... cases) {
                   Objects.requireNonNull(cases, "cases is null");
-                  for (Case<? super T, ? extends R> _case : cases) {
-                      if (_case.isApplicable(value)) {
-                          return Option.some(_case.apply(value));
+                  for (Case<? extends T, ? extends R> _case : cases) {
+                      final Case<T, R> narrowedCase = (Case<T, R>) _case;
+                      if (narrowedCase.isApplicable(value)) {
+                          return Option.some(narrowedCase.apply(value));
                       }
                   }
                   return $OptionType.none();
@@ -441,36 +442,42 @@ def generateMainClasses(): Unit = {
               }
 
               ${(1 to N).gen(i => {
+                val declaredGenerics = (1 to i).gen(j => s"T$j extends U$j, U$j")(", ")
                 val resultGenerics = (1 to i).gen(j => s"T$j")(", ")
                 val resultType = if (i == 1) resultGenerics else s"Tuple$i<$resultGenerics>"
+                val unapplyGenerics = (1 to i).gen(j => s"U$j")(", ")
+                val unapplyTupleType = s"Tuple$i<$unapplyGenerics>"
+                val unapplyType = if (i == 1) "U1" else unapplyTupleType
                 val args = (1 to i).gen(j => s"Pattern<T$j, ?> p$j")(", ")
                 val parts = i.plural("part")
                 xs"""
                   public static abstract class Pattern$i<T, $resultGenerics> implements Pattern<T, $resultType> {
 
-                      public static <T, $resultGenerics> Pattern$i<T, $resultGenerics> of(Class<? super T> type, $args, Function<? super T, $resultType> unapply) {
+                      public static <T, $declaredGenerics> Pattern$i<T, $resultGenerics> of(Class<? super T> type, $args, Function<T, $unapplyTupleType> unapply) {
                           return new Pattern$i<T, $resultGenerics>() {
 
                               // the unapplied object
-                              $resultType $parts = null;
+                              $unapplyType $parts = null;
 
+                              @SuppressWarnings("unchecked")
                               @Override
                               public boolean isApplicable(T obj) {
                                   if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                                       return false;
                                   }
-                                  $parts = unapply.apply(obj);
+                                  $parts = unapply.apply(obj)${(i == 1).gen("._1")};
                                   ${if (i == 1) xs"""
-                                      return p1.isApplicable($parts);
+                                      return ((Pattern<U1, ?>) p1).isApplicable($parts);
                                   """ else xs"""
                                       return
-                                              ${(1 to i).gen(j => s"p$j.isApplicable($parts._$j)")(" &&\n")};
+                                              ${(1 to i).gen(j => s"((Pattern<U$j ,?>) p$j).isApplicable($parts._$j)")(" &&\n")};
                                   """}
                               }
 
+                              @SuppressWarnings("unchecked")
                               @Override
                               public $resultType apply(T obj) {
-                                  return $parts;
+                                  return ($resultType) $parts;
                               }
                           };
                       }
