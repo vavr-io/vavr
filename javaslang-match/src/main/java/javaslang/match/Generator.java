@@ -58,20 +58,17 @@ class Generator {
 
     // Expands one @Unapply method
     private static void generate(ImportManager im, TypeElement type, ExecutableElement elem, StringBuilder builder) {
-
         final String typeName = im.getType(Elements.getRawParameterType(elem, 0));
         final String name = elem.getSimpleName().toString();
         final int arity = getArity(elem);
-
+        final String args = getArgs(elem, arity);
+        final String unapplyRef = type.getSimpleName() + "::" + name;
         final String body;
         if (arity == 0) {
             body = "Pattern0.of(" + typeName + ".class)";
         } else {
-            // TODO: generateBody(type, elem
-            body = String.format("Pattern%d.of(%s, ..., ...)", arity, typeName + ".class");
+            body = String.format("Pattern%d.of(%s, %s, %s)", arity, typeName + ".class", args, unapplyRef);
         }
-
-        //TODO    builder.append(String.format("    public static final Pattern%d<%s> %s = Pattern0.of(%s);\n", arity, null, name, typeName + ".class"));
         final String generics = getGenerics(im, elem);
         final String returnType = getReturnType(im, elem, arity);
         final String params = getParams(im, elem, arity);
@@ -81,30 +78,8 @@ class Generator {
         } else {
             method = String.format("final %s %s = %s;", returnType, name, body);
         }
-
         builder.append("    public static ").append(method).append("\n");
     }
-
-//    // collections
-//
-//    public static <T> Pattern0<None<T>> None() {
-//        return Pattern0.of(None.class);
-//    }
-//
-//    public static <T, T1 extends T> Pattern1<Some<T>, T1> Some(Pattern<T1, ?> p1) {
-//        return Pattern1.of(Some.class, p1, Some::get);
-//    }
-//
-//    // controls
-//
-//    public static <T> Pattern0<Nil<T>> Nil() {
-//        return Pattern0.of(Nil.class);
-//    }
-//
-//    public static <T, T1 extends T, T2 extends List<T>> Pattern2<List.Cons<T>, T1, T2> Cons(Pattern<T1, ?> p1, Pattern<T2, ?> p2) {
-//        return Pattern2.of(Cons.class, p1, p2, cons -> Tuple.of(cons.head(), cons.tail()));
-//    }
-
 
     // Expands the generics part of a method declaration
     private static String getGenerics(ImportManager im, ExecutableElement elem) {
@@ -139,8 +114,13 @@ class Generator {
         }
     }
 
+    private static String getArgs(ExecutableElement elem, int arity) {
+        return IntStream.rangeClosed(1, arity).mapToObj(i -> "p" + i).collect(joining(", "));
+    }
+
     private static String getParams(ImportManager im, ExecutableElement elem, int arity) {
-        return IntStream.rangeClosed(1, arity).mapToObj(i -> "Pattern<_" + i + ", ?> p" + i).collect(joining(", "));
+        final String patternType = im.getType("javaslang.API.Match.Pattern");
+        return IntStream.rangeClosed(1, arity).mapToObj(i -> patternType + "<_" + i + ", ?> p" + i).collect(joining(", "));
     }
 
     // returns all @Unapply methods of a @Patterns class
