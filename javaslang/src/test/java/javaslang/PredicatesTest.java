@@ -16,9 +16,8 @@ public class PredicatesTest {
 
     @Test
     public void shouldUsePredicateInCaseWithSuccess() {
-        final Match.Case<? super Throwable, ? extends String> f = Case(instanceOf(Error.class), "fixed");
         final String actual = Try.of(() -> "ok")
-                .recover(f)
+                .recover(Case(instanceOf(Error.class), "fixed"))
                 .get();
         assertThat(actual).isEqualTo("ok");
     }
