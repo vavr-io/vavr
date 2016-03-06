@@ -9,8 +9,8 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 
-import static javaslang.API.$;
 import static javaslang.API.*;
+import static javaslang.Predicates.*;
 
 public class MatchTest {
 
@@ -59,6 +59,11 @@ public class MatchTest {
                 Case(2, 2.0),
                 Case($(), new BigDecimal("3"))
         );
+
+//        Throwable t = new Error("error");
+//        Match(t).of(
+//                Case(instanceOf(NumberFormatException.class), "")
+//        );
 //
 //        Match(TUPLE2_OPTION).of(
 //                Case($(), "good!")
