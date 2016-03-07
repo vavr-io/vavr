@@ -280,7 +280,6 @@ public interface IndexedSeq<T> extends Seq<T> {
     @Override
     Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> span(Predicate<? super T> predicate);
 
-    @SuppressWarnings("unchecked")
     @Override
     default boolean startsWith(Iterable<? extends T> that, int offset) {
         Objects.requireNonNull(that, "that is null");

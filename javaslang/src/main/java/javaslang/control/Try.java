@@ -374,7 +374,6 @@ public interface Try<T> extends Value<T> {
      * @return a {@code Try}
      * @throws NullPointerException if {@code mapper} is null
      */
-    @SuppressWarnings("unchecked")
     @Override
     default <U> Try<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");

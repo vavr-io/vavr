@@ -9,8 +9,6 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public abstract class AbstractLinearSeqTest extends AbstractSeqTest {
 
     @Override

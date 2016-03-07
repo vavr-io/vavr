@@ -242,7 +242,6 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
         return replace(currentElement, newElement);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public M scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
