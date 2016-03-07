@@ -397,10 +397,7 @@ public class OptionTest extends AbstractValueTest {
 
     @Test
     public void shouldHandleTransformOnNone() {
-        // TODO: What is the expected behavior when transform is called on None given return type may or may not be an Option?
-        // Calling None.get() will throw NoSuchElementException
-        // Should it be left to the caller to decide how to handle a value of None in their transform function?
-        // If not, should the default implementation of transform be overridden in None so that it is handled consistently?
+        assertThat(Option.none().<String>transform(self -> self.isEmpty() ? "ok" : "failed")).isEqualTo("ok");
     }
 
     // -- iterator
