@@ -11,6 +11,7 @@ import javaslang.collection.Seq;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class OptionTest extends AbstractValueTest {
 
@@ -379,6 +380,26 @@ public class OptionTest extends AbstractValueTest {
         assertThat(testee).isEqualTo(Option.none());
     }
 
+    // -- transform
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionOnNullTransformFunction() {
+        Option<Integer> option = Option.some(1);
+        option.transform(null);
+    }
+
+    @Test
+    public void shouldApplyTransformFunctionToSome() {
+        Option<Integer> option = Option.some(1);
+        Function<Option<Integer>, String> f = o -> o.get().toString().concat("-transformed");
+        assertThat(option.<String>transform(f)).isEqualTo("1-transformed");
+    }
+
+    @Test
+    public void shouldHandleTransformOnNone() {
+        assertThat(Option.none().<String>transform(self -> self.isEmpty() ? "ok" : "failed")).isEqualTo("ok");
+    }
+
     // -- iterator
 
     @Test
@@ -428,8 +449,13 @@ public class OptionTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldEqualSome() {
+    public void shouldEqualSomeIfObjectsAreEquivalent() {
         assertThat(Option.some(1)).isEqualTo(Option.some(1));
+    }
+
+    @Test
+    public void shouldNotEqualSomeIfObjectIsOfDifferentValue() {
+        assertThat(Option.some(1)).isNotEqualTo(Option.some(2));
     }
 
     // -- hashCode
