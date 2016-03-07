@@ -549,8 +549,8 @@ public class ValidationTest extends AbstractValueTest {
 
         private Validation<String, String> validateName(String name) {
             return CharSeq.of(name).replaceAll(validNameChars, "").transform(seq ->
-                    seq.isEmpty() ? Validation.valid(name)
-                            : Validation.invalid("Name contains invalid characters: '" + seq.distinct().sorted() + "'"));
+                    seq.isEmpty() ? Validation.<String, String>valid(name)
+                            : Validation.<String, String>invalid("Name contains invalid characters: '" + seq.distinct().sorted() + "'"));
         }
 
         private Validation<String, Integer> validateAge(int age) {
