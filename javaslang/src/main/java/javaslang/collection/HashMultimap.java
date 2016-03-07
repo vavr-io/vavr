@@ -94,16 +94,8 @@ public final class HashMultimap<K, V, T extends Traversable<V>> extends Multimap
             }
 
             @Override
-            public HashMultimap<K, V, Set<V>> createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
-                Map<K, Set<V>> back = HashMap.empty();
-                for (Tuple2<? extends K, ? extends V> entry : entries) {
-                    if (back.containsKey(entry._1)) {
-                        back = back.put(entry._1, back.get(entry._1).get().add(entry._2));
-                    } else {
-                        back = back.put(entry._1, HashSet.of(entry._2));
-                    }
-                }
-                return new HashMultimap<>(back, this);
+            public <K2, V2> Map<K2, V2> emptyMap() {
+                return HashMap.empty();
             }
 
             @SuppressWarnings("unchecked")
@@ -144,16 +136,8 @@ public final class HashMultimap<K, V, T extends Traversable<V>> extends Multimap
             }
 
             @Override
-            public HashMultimap<K, V, Seq<V>> createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
-                Map<K, Seq<V>> back = HashMap.empty();
-                for (Tuple2<? extends K, ? extends V> entry : entries) {
-                    if (back.containsKey(entry._1)) {
-                        back = back.put(entry._1, back.get(entry._1).get().append(entry._2));
-                    } else {
-                        back = back.put(entry._1, List.of(entry._2));
-                    }
-                }
-                return new HashMultimap<>(back, this);
+            public <K2, V2> Map<K2, V2> emptyMap() {
+                return HashMap.empty();
             }
 
             @SuppressWarnings("unchecked")

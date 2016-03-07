@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.API;
-import javaslang.Lazy;
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.util.Collection;
@@ -37,7 +34,7 @@ import java.util.function.Predicate;
 
         Multimap<K, V, T> createFromMap(Map<K, T> back);
 
-        Multimap<K, V, T> createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries);
+        <K2, V2> Map<K2, V2> emptyMap();
 
         <V2, T2 extends Traversable<V2>> T2 emptyContainer();
 
@@ -58,6 +55,19 @@ import java.util.function.Predicate;
         this.back = back;
         this.size = Lazy.of(() -> back.foldLeft(0, (s, t) -> s + t._2.size()));
         this.factory = factory;
+    }
+
+    @SuppressWarnings("unchecked")
+    private M createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+        Map<K, T> back = factory.emptyMap();
+        for (Tuple2<? extends K, ? extends V> entry : entries) {
+            if (back.containsKey(entry._1)) {
+                back = back.put(entry._1, factory.addToContainer(back.get(entry._1).get(), entry._2));
+            } else {
+                back = back.put(entry._1, factory.addToContainer(factory.emptyContainer(), entry._2));
+            }
+        }
+        return (M) factory.createFromMap(back);
     }
 
     @Override
@@ -162,14 +172,14 @@ import java.util.function.Predicate;
     @Override
     public M distinctBy(Comparator<? super Tuple2<K, V>> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return (M) factory.createFromEntries(iterator().distinctBy(comparator));
+        return createFromEntries(iterator().distinctBy(comparator));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <U> M distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return (M) factory.createFromEntries(iterator().distinctBy(keyExtractor));
+        return createFromEntries(iterator().distinctBy(keyExtractor));
     }
 
     @SuppressWarnings("unchecked")
@@ -181,7 +191,7 @@ import java.util.function.Predicate;
         if (n >= length()) {
             return (M) factory.emptyInstance();
         }
-        return (M) factory.createFromEntries(iterator().drop(n));
+        return createFromEntries(iterator().drop(n));
     }
 
     @SuppressWarnings("unchecked")
@@ -193,7 +203,7 @@ import java.util.function.Predicate;
         if (n >= length()) {
             return (M) factory.emptyInstance();
         }
-        return (M) factory.createFromEntries(iterator().dropRight(n));
+        return createFromEntries(iterator().dropRight(n));
     }
 
     @Override
@@ -206,14 +216,14 @@ import java.util.function.Predicate;
     @Override
     public M dropWhile(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return (M) factory.createFromEntries(iterator().dropWhile(predicate));
+        return createFromEntries(iterator().dropWhile(predicate));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public M filter(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return (M) factory.createFromEntries(iterator().filter(predicate));
+        return createFromEntries(iterator().filter(predicate));
     }
 
     @SuppressWarnings("unchecked")
@@ -224,7 +234,7 @@ import java.util.function.Predicate;
             final C key = classifier.apply(entry);
             final Multimap<K, V, T> values = map.get(key)
                     .map(entries -> entries.put(entry._1, entry._2))
-                    .getOrElse((M) factory.createFromEntries(Iterator.of(entry)));
+                    .getOrElse(createFromEntries(Iterator.of(entry)));
             return map.put(key, (M) values);
         });
     }
@@ -287,7 +297,7 @@ import java.util.function.Predicate;
     public M merge(Multimap<? extends K, ? extends V, ? extends T> that) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
-            return (M) factory.createFromEntries(that);
+            return createFromEntries(that);
         } else if (that.isEmpty()) {
             return (M) this;
         } else {
@@ -301,7 +311,7 @@ import java.util.function.Predicate;
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         if (isEmpty()) {
-            return (M) factory.createFromEntries(that);
+            return createFromEntries(that);
         } else if (that.isEmpty()) {
             return (M) this;
         } else {
@@ -320,7 +330,7 @@ import java.util.function.Predicate;
     public Tuple2<M, M> partition(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<Tuple2<K, V>>, Iterator<Tuple2<K, V>>> p = iterator().partition(predicate);
-        return Tuple.of((M) factory.createFromEntries(p._1), (M) factory.createFromEntries(p._2));
+        return Tuple.of(createFromEntries(p._1), createFromEntries(p._2));
     }
 
     @SuppressWarnings("unchecked")
@@ -355,14 +365,14 @@ import java.util.function.Predicate;
     @Override
     public M retainAll(Iterable<? extends Tuple2<K, V>> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return (M) factory.createFromEntries(back.flatMap(t -> t._2.map(v -> Tuple.of(t._1, v))).retainAll(elements));
+        return createFromEntries(back.flatMap(t -> t._2.map(v -> Tuple.of(t._1, v))).retainAll(elements));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public M scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, (M) factory.emptyInstance(), (m, e) -> m.put(e), Function.identity());
+        return Collections.scanLeft(this, zero, operation, Queue.<Tuple2<K, V>>empty(), Queue::append, this::createFromEntries);
     }
 
     @Override
@@ -373,7 +383,7 @@ import java.util.function.Predicate;
     @SuppressWarnings("unchecked")
     @Override
     public Iterator<M> sliding(long size, long step) {
-        return iterator().sliding(size, step).map(t -> (M) factory.createFromEntries(t));
+        return iterator().sliding(size, step).map(this::createFromEntries);
     }
 
     @SuppressWarnings("unchecked")
@@ -381,7 +391,7 @@ import java.util.function.Predicate;
     public Tuple2<M, M> span(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<Tuple2<K, V>>, Iterator<Tuple2<K, V>>> t = iterator().span(predicate);
-        return Tuple.of((M) factory.createFromEntries(t._1), (M) factory.createFromEntries(t._2));
+        return Tuple.of(createFromEntries(t._1), createFromEntries(t._2));
     }
 
     @Override
@@ -400,7 +410,7 @@ import java.util.function.Predicate;
         if (size() <= n) {
             return (M) this;
         } else {
-            return (M) factory.createFromEntries(iterator().take(n));
+            return createFromEntries(iterator().take(n));
         }
     }
 
@@ -410,7 +420,7 @@ import java.util.function.Predicate;
         if (size() <= n) {
             return (M) this;
         } else {
-            return (M) factory.createFromEntries(iterator().takeRight(n));
+            return createFromEntries(iterator().takeRight(n));
         }
     }
 
@@ -424,7 +434,7 @@ import java.util.function.Predicate;
     @Override
     public M takeWhile(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final M taken = (M) factory.createFromEntries(iterator().takeWhile(predicate));
+        final M taken = createFromEntries(iterator().takeWhile(predicate));
         return taken.length() == length() ? (M) this : taken;
     }
 
