@@ -11,6 +11,7 @@ import javaslang.collection.Seq;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class OptionTest extends AbstractValueTest {
 
@@ -379,6 +380,29 @@ public class OptionTest extends AbstractValueTest {
         assertThat(testee).isEqualTo(Option.none());
     }
 
+    // -- transform
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionOnNullTransformFunction() {
+        Option<Integer> option = Option.some(1);
+        option.transform(null);
+    }
+
+    @Test
+    public void shouldApplyTransformFunctionToSome() {
+        Option<Integer> option = Option.some(1);
+        Function<Option<Integer>, String> f = o -> o.get().toString().concat("-transformed");
+        assertThat(option.<String>transform(f)).isEqualTo("1-transformed");
+    }
+
+    @Test
+    public void shouldHandleTransformOnNone() {
+        // TODO: What is the expected behavior when transform is called on None given return type may or may not be an Option?
+        // Calling None.get() will throw NoSuchElementException
+        // Should it be left to the caller to decide how to handle a value of None in their transform function?
+        // If not, should the default implementation of transform be overridden in None so that it is handled consistently?
+    }
+
     // -- iterator
 
     @Test
@@ -428,8 +452,13 @@ public class OptionTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldEqualSome() {
+    public void shouldEqualSomeIfObjectsAreEquivalent() {
         assertThat(Option.some(1)).isEqualTo(Option.some(1));
+    }
+
+    @Test
+    public void shouldNotEqualSomeIfObjectIsOfDifferentValue() {
+        assertThat(Option.some(1)).isNotEqualTo(Option.some(2));
     }
 
     // -- hashCode

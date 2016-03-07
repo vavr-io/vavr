@@ -30,6 +30,7 @@ public class PredicatesTest {
     public void shouldTestInstanceOf_NegativeCase() {
         assertThat(IS_RUNTIME_EXCEPTION.test(new Exception())).isFalse();
         assertThat(IS_RUNTIME_EXCEPTION.test(new Error("error"))).isFalse();
+        assertThat(IS_RUNTIME_EXCEPTION.test(null)).isFalse();
     }
 
     // -- is
