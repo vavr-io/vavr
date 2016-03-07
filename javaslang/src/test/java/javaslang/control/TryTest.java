@@ -462,6 +462,13 @@ public class TryTest extends AbstractValueTest {
         assertThat(actual.isEmpty()).isTrue();
     }
 
+    @Test
+    public void shouldBeEmptyIfSuccessAndNullValue() throws Exception {
+        assertThat(TryTest.failure().isEmpty()).isTrue();
+        assertThat(Try.of(() -> null).isEmpty()).isTrue();
+        assertThat(Try.of(() -> "a").isEmpty()).isFalse();
+    }
+
     // -- map
 
     @Test
