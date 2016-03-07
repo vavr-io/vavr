@@ -28,7 +28,8 @@ public class MonoidTest {
 
     @Test
     public void shouldFoldMultipleElements() {
-        assertThat(Monoid.fold(Monoid.of(0, (a, b) -> a + b), List.of(1, 2, 3))).isEqualTo(6);
+        // DEV note:  generic is required for Windows compiler (1.8.0_45)
+        assertThat(Monoid.fold(Monoid.<Integer>of(0, (a, b) -> a + b), List.of(1, 2, 3))).isEqualTo(6);
     }
 
     // -- foldLeft
