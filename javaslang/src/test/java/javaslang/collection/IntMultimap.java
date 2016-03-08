@@ -24,13 +24,13 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final Multimap<Integer, T, Set<T>> original;
+    private final Multimap<Integer, T> original;
 
-    public static <T> IntMultimap<T> of(Multimap<Integer, T, Set<T>> original) {
+    public static <T> IntMultimap<T> of(Multimap<Integer, T> original) {
         return new IntMultimap<>(original);
     }
 
-    private IntMultimap(Multimap<Integer, T, Set<T>> original) {
+    private IntMultimap(Multimap<Integer, T> original) {
         this.original = original;
     }
 
@@ -79,13 +79,13 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMultimap<T> drop(long n) {
-        final Multimap<Integer, T, Set<T>> dropped = original.drop(n);
+        final Multimap<Integer, T> dropped = original.drop(n);
         return dropped == original ? this : IntMultimap.of(dropped);
     }
 
     @Override
     public IntMultimap<T> dropRight(long n) {
-        final Multimap<Integer, T, Set<T>> dropped = original.dropRight(n);
+        final Multimap<Integer, T> dropped = original.dropRight(n);
         return dropped == original ? this : IntMultimap.of(dropped);
     }
 
@@ -199,7 +199,7 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMultimap<T> replaceAll(T currentElement, T newElement) {
-        Multimap<Integer, T, Set<T>> result = original;
+        Multimap<Integer, T> result = original;
         for (Tuple2<Integer, T> entry : original.filter(e -> e._2.equals(currentElement))) {
             result = result.replaceAll(entry, Tuple.of(entry._1, newElement));
         }

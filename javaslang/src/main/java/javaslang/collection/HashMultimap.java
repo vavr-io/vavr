@@ -17,17 +17,17 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-public final class HashMultimap<K, V, T extends Traversable<V>> extends MultimapImpl<K, V, T, HashMultimap<K, V, T>> implements Serializable {
+public final class HashMultimap<K, V> extends MultimapImpl<K, V, HashMultimap<K, V>> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final static HashMultimap<?, ?, ?> EMPTY_SET = new HashMultimap<>(HashMap.empty(), setFactory());
-    private final static HashMultimap<?, ?, ?> EMPTY_SEQ = new HashMultimap<>(HashMap.empty(), seqFactory());
+    private final static HashMultimap<?, ?> EMPTY_SET = new HashMultimap<>(HashMap.empty(), setFactory());
+    private final static HashMultimap<?, ?> EMPTY_SEQ = new HashMultimap<>(HashMap.empty(), seqFactory());
 
     @SuppressWarnings("unchecked")
-    public static <K, V> HashMultimap<K, V, Set<V>> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    public static <K, V> HashMultimap<K, V> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
-        HashMultimap<K, V, Set<V>> result = HashMultimap.emptyWithSet();
+        HashMultimap<K, V> result = HashMultimap.emptyWithSet();
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             result = result.put(entry._1, entry._2);
         }
@@ -35,9 +35,9 @@ public final class HashMultimap<K, V, T extends Traversable<V>> extends Multimap
     }
 
     @SafeVarargs
-    public static <K, V> HashMultimap<K, V, Set<V>> ofEntries(Tuple2<? extends K, ? extends V>... entries) {
+    public static <K, V> HashMultimap<K, V> ofEntries(Tuple2<? extends K, ? extends V>... entries) {
         Objects.requireNonNull(entries, "entries is null");
-        HashMultimap<K, V, Set<V>> result = HashMultimap.emptyWithSet();
+        HashMultimap<K, V> result = HashMultimap.emptyWithSet();
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             result = result.put(entry._1, entry._2);
         }
@@ -45,9 +45,9 @@ public final class HashMultimap<K, V, T extends Traversable<V>> extends Multimap
     }
 
     @SafeVarargs
-    public static <K, V> HashMultimap<K, V, Set<V>> ofEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+    public static <K, V> HashMultimap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         Objects.requireNonNull(entries, "entries is null");
-        HashMultimap<K, V, Set<V>> result = HashMultimap.emptyWithSet();
+        HashMultimap<K, V> result = HashMultimap.emptyWithSet();
         for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
             result = result.put(entry.getKey(), entry.getValue());
         }
@@ -55,41 +55,41 @@ public final class HashMultimap<K, V, T extends Traversable<V>> extends Multimap
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> HashMultimap<K, V, Set<V>> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+    public static <K, V> HashMultimap<K, V> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         return ofEntries(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> HashMultimap<K, V, Set<V>> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+    public static <K, V> HashMultimap<K, V> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
         Objects.requireNonNull(s, "s is null");
         return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> HashMultimap<K, V, Set<V>> of(Object... pairs) {
+    public static <K, V> HashMultimap<K, V> of(Object... pairs) {
         Objects.requireNonNull(pairs, "pairs is null");
         if ((pairs.length & 1) != 0) {
             throw new IllegalArgumentException("Odd length of key-value pairs list");
         }
-        HashMultimap<K, V, Set<V>> result = HashMultimap.emptyWithSet();
+        HashMultimap<K, V> result = HashMultimap.emptyWithSet();
         for (int i = 0; i < pairs.length; i += 2) {
             result = result.put((K) pairs[i], (V) pairs[i + 1]);
         }
         return result;
     }
 
-    private static <K, V> Factory<K, V, Set<V>> setFactory() {
-        return new Factory<K, V, Set<V>>() {
+    private static Factory setFactory() {
+        return new Factory() {
 
             @SuppressWarnings("unchecked")
             @Override
-            public <K2, V2, T2 extends Traversable<V2>> Multimap<K2, V2, T2> emptyInstance() {
-                return (Multimap<K2, V2, T2>) EMPTY_SET;
+            public <K2, V2> Multimap<K2, V2> emptyInstance() {
+                return (Multimap<K2, V2>) EMPTY_SET;
             }
 
             @Override
-            public HashMultimap<K, V, Set<V>> createFromMap(Map<K, Set<V>> back) {
+            public <K, V> HashMultimap<K, V> createFromMap(Map<K, Traversable<V>> back) {
                 return new HashMultimap<>(back, this);
             }
 
@@ -98,20 +98,19 @@ public final class HashMultimap<K, V, T extends Traversable<V>> extends Multimap
                 return HashMap.empty();
             }
 
-            @SuppressWarnings("unchecked")
             @Override
-            public <V2, T2 extends Traversable<V2>> T2 emptyContainer() {
-                return (T2) HashSet.empty();
+            public <V2> Traversable<V2> emptyContainer() {
+                return HashSet.empty();
             }
 
             @Override
-            public Set<V> addToContainer(Set<V> container, V value) {
-                return container.add(value);
+            public <V> Traversable<V> addToContainer(Traversable<V> container, V value) {
+                return ((Set<V>) container).add(value);
             }
 
             @Override
-            public Set<V> removeFromContainer(Set<V> container, V value) {
-                return container.remove(value);
+            public <V> Traversable<V> removeFromContainer(Traversable<V> container, V value) {
+                return ((Set<V>) container).remove(value);
             }
 
             @Override
@@ -121,17 +120,17 @@ public final class HashMultimap<K, V, T extends Traversable<V>> extends Multimap
         };
     }
 
-    private static <K, V> Factory<K, V, Seq<V>> seqFactory() {
-        return new Factory<K, V, Seq<V>>() {
+    private static Factory seqFactory() {
+        return new Factory() {
 
             @SuppressWarnings("unchecked")
             @Override
-            public <K2, V2, T2 extends Traversable<V2>> Multimap<K2, V2, T2> emptyInstance() {
-                return (HashMultimap<K2, V2, T2>) EMPTY_SEQ;
+            public <K2, V2> Multimap<K2, V2> emptyInstance() {
+                return (HashMultimap<K2, V2>) EMPTY_SEQ;
             }
 
             @Override
-            public HashMultimap<K, V, Seq<V>> createFromMap(Map<K, Seq<V>> back) {
+            public <K, V> HashMultimap<K, V> createFromMap(Map<K, Traversable<V>> back) {
                 return new HashMultimap<>(back, this);
             }
 
@@ -142,18 +141,18 @@ public final class HashMultimap<K, V, T extends Traversable<V>> extends Multimap
 
             @SuppressWarnings("unchecked")
             @Override
-            public <V2, T2 extends Traversable<V2>> T2 emptyContainer() {
-                return (T2) List.empty();
+            public <V2> Traversable<V2> emptyContainer() {
+                return List.empty();
             }
 
             @Override
-            public Seq<V> addToContainer(Seq<V> container, V value) {
-                return container.append(value);
+            public <V> Traversable<V> addToContainer(Traversable<V> container, V value) {
+                return ((Seq<V>) container).append(value);
             }
 
             @Override
-            public Seq<V> removeFromContainer(Seq<V> container, V value) {
-                return container.remove(value);
+            public <V> Traversable<V> removeFromContainer(Traversable<V> container, V value) {
+                return ((Seq<V>) container).remove(value);
             }
 
             @Override
@@ -163,14 +162,14 @@ public final class HashMultimap<K, V, T extends Traversable<V>> extends Multimap
         };
     }
 
-    public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, HashMultimap<K, V, Set<V>>> collector() {
+    public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, HashMultimap<K, V>> collector() {
         final Supplier<ArrayList<Tuple2<K, V>>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<Tuple2<K, V>>, Tuple2<K, V>> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<Tuple2<K, V>>> combiner = (left, right) -> {
             left.addAll(right);
             return left;
         };
-        final Function<ArrayList<Tuple2<K, V>>, HashMultimap<K, V, Set<V>>> finisher = HashMultimap::ofEntries;
+        final Function<ArrayList<Tuple2<K, V>>, HashMultimap<K, V>> finisher = HashMultimap::ofEntries;
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
@@ -179,16 +178,16 @@ public final class HashMultimap<K, V, T extends Traversable<V>> extends Multimap
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> HashMultimap<K, V, Set<V>> emptyWithSet() {
-        return (HashMultimap<K, V, Set<V>>) EMPTY_SET;
+    public static <K, V> HashMultimap<K, V> emptyWithSet() {
+        return (HashMultimap<K, V>) EMPTY_SET;
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> HashMultimap<K, V, Seq<V>> emptyWithSeq() {
-        return (HashMultimap<K, V, Seq<V>>) EMPTY_SEQ;
+    public static <K, V> HashMultimap<K, V> emptyWithSeq() {
+        return (HashMultimap<K, V>) EMPTY_SEQ;
     }
 
-    private HashMultimap(Map<K, T> back, Factory<K, V, T> factory) {
+    private HashMultimap(Map<K, Traversable<V>> back, Factory factory) {
         super(back, factory);
     }
 
