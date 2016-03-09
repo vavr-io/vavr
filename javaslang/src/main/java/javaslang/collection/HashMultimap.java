@@ -17,12 +17,12 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-public final class HashMultimap<K, V> extends MultimapImpl<K, V, HashMultimap<K, V>> implements Serializable {
+public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V>> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final static HashMultimap<?, ?> EMPTY_SET = new HashMultimap<>(HashMap.empty(), setFactory());
-    private final static HashMultimap<?, ?> EMPTY_SEQ = new HashMultimap<>(HashMap.empty(), seqFactory());
+    private final static HashMultimap<?, ?> EMPTY_SET = new HashMultimap<>(HashMap.empty(), setFactory(), MapSupplier.HASH_MAP, ContainerSupplier.SET);
+    private final static HashMultimap<?, ?> EMPTY_SEQ = new HashMultimap<>(HashMap.empty(), seqFactory(), MapSupplier.HASH_MAP, ContainerSupplier.SEQ);
 
     @SuppressWarnings("unchecked")
     public static <K, V> HashMultimap<K, V> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
@@ -90,32 +90,7 @@ public final class HashMultimap<K, V> extends MultimapImpl<K, V, HashMultimap<K,
 
             @Override
             public <K, V> HashMultimap<K, V> createFromMap(Map<K, Traversable<V>> back) {
-                return new HashMultimap<>(back, this);
-            }
-
-            @Override
-            public <K2, V2> Map<K2, V2> emptyMap() {
-                return HashMap.empty();
-            }
-
-            @Override
-            public <V2> Traversable<V2> emptyContainer() {
-                return HashSet.empty();
-            }
-
-            @Override
-            public <V> Traversable<V> addToContainer(Traversable<V> container, V value) {
-                return ((Set<V>) container).add(value);
-            }
-
-            @Override
-            public <V> Traversable<V> removeFromContainer(Traversable<V> container, V value) {
-                return ((Set<V>) container).remove(value);
-            }
-
-            @Override
-            public String containerName() {
-                return "Set";
+                return new HashMultimap<>(back, this, MapSupplier.HASH_MAP, ContainerSupplier.SET);
             }
         };
     }
@@ -131,33 +106,7 @@ public final class HashMultimap<K, V> extends MultimapImpl<K, V, HashMultimap<K,
 
             @Override
             public <K, V> HashMultimap<K, V> createFromMap(Map<K, Traversable<V>> back) {
-                return new HashMultimap<>(back, this);
-            }
-
-            @Override
-            public <K2, V2> Map<K2, V2> emptyMap() {
-                return HashMap.empty();
-            }
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public <V2> Traversable<V2> emptyContainer() {
-                return List.empty();
-            }
-
-            @Override
-            public <V> Traversable<V> addToContainer(Traversable<V> container, V value) {
-                return ((Seq<V>) container).append(value);
-            }
-
-            @Override
-            public <V> Traversable<V> removeFromContainer(Traversable<V> container, V value) {
-                return ((Seq<V>) container).remove(value);
-            }
-
-            @Override
-            public String containerName() {
-                return "Seq";
+                return new HashMultimap<>(back, this, MapSupplier.HASH_MAP, ContainerSupplier.SEQ);
             }
         };
     }
@@ -187,8 +136,8 @@ public final class HashMultimap<K, V> extends MultimapImpl<K, V, HashMultimap<K,
         return (HashMultimap<K, V>) EMPTY_SEQ;
     }
 
-    private HashMultimap(Map<K, Traversable<V>> back, Factory factory) {
-        super(back, factory);
+    private HashMultimap(Map<K, Traversable<V>> back, Factory factory, MapSupplier mapSupplier, ContainerSupplier container) {
+        super(back, factory, mapSupplier, container);
     }
 
     @Override
@@ -198,11 +147,6 @@ public final class HashMultimap<K, V> extends MultimapImpl<K, V, HashMultimap<K,
             javaMap.computeIfAbsent(t._1, k -> new java.util.HashSet<>()).add(t._2);
         }
         return javaMap;
-    }
-
-    @Override
-    public String stringPrefix() {
-        return "HashMultimap[" + factory.containerName() + "]";
     }
 
     @Override

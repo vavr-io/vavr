@@ -11,10 +11,7 @@ import javaslang.control.Option;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * An abstract {@link Multimap} implementation (not intended to be public).
@@ -25,45 +22,98 @@ import java.util.function.Predicate;
  * @author Ruslan Sennov
  * @since 2.0.0
  */
- class MultimapImpl<K, V, M extends MultimapImpl<K, V, M>> implements Multimap<K, V> {
+ class AbstractMultimap<K, V, M extends AbstractMultimap<K, V, M>> implements Multimap<K, V> {
+
+    @SuppressWarnings("unchecked")
+    enum ContainerSupplier {
+
+        SET(HashSet::empty,
+                (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
+                (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem)
+        ),
+        SORTED_SET(TreeSet::empty,
+                (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
+                (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem)
+        ),
+        SEQ(List::empty,
+                (Traversable<?> seq, Object elem) -> ((List<Object>) seq).append(elem),
+                (Traversable<?> seq, Object elem) -> ((List<Object>) seq).remove(elem)
+        );
+
+        final Supplier<Traversable<?>> emptySupplier;
+        final BiFunction<Traversable<?>, Object, Traversable<?>> add;
+        final BiFunction<Traversable<?>, Object, Traversable<?>> remove;
+
+        <T> ContainerSupplier(Supplier<Traversable<?>> emptySupplier,
+                              BiFunction<Traversable<?>, Object, Traversable<?>> add,
+                              BiFunction<Traversable<?>, Object, Traversable<?>> remove) {
+            this.emptySupplier = emptySupplier;
+            this.add = add;
+            this.remove = remove;
+        }
+
+        <T> Traversable<T> empty() {
+            return (Traversable<T>) emptySupplier.get();
+        }
+
+        <T> Traversable<T> add(Traversable<T> container, T elem) {
+            return (Traversable<T>) add.apply(container, elem);
+        }
+
+        <T> Traversable<T> remove(Traversable<T> container, T elem) {
+            return (Traversable<T>) remove.apply(container, elem);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    enum MapSupplier {
+
+        HASH_MAP(HashMap::empty),
+        LINKED_HASH_MAP(LinkedHashMap::empty),
+        TREE_MAP(TreeMap::empty);
+
+        final Supplier<Map<?,?>> emptySupplier;
+
+        MapSupplier(Supplier<Map<?, ?>> emptySupplier) {
+            this.emptySupplier = emptySupplier;
+        }
+
+        <K, V> Map<K, V> empty() {
+            return (Map<K, V>) emptySupplier.get();
+        }
+    }
 
     interface Factory {
 
         <K, V> Multimap<K, V> emptyInstance();
 
         <K, V> Multimap<K, V> createFromMap(Map<K, Traversable<V>> back);
-
-        <K, V> Map<K, V> emptyMap();
-
-        <V> Traversable<V> emptyContainer();
-
-        <V> Traversable<V> addToContainer(Traversable<V> container, V value);
-
-        <V> Traversable<V> removeFromContainer(Traversable<V> container, V value);
-
-        String containerName();
     }
 
     private static final long serialVersionUID = 1L;
 
     private final Map<K, Traversable<V>> back;
     private final Lazy<Integer> size;
-    final transient Factory factory;
+    private final transient Factory factory;
+    private final MapSupplier mapSupplier;
+    final ContainerSupplier containerSupplier;
 
-    MultimapImpl(Map<K, Traversable<V>> back, Factory factory) {
+    AbstractMultimap(Map<K, Traversable<V>> back, Factory factory, MapSupplier mapSupplier, ContainerSupplier containerSupplier) {
         this.back = back;
         this.size = Lazy.of(() -> back.foldLeft(0, (s, t) -> s + t._2.size()));
         this.factory = factory;
+        this.mapSupplier = mapSupplier;
+        this.containerSupplier = containerSupplier;
     }
 
     @SuppressWarnings("unchecked")
     private M createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
-        Map<K, Traversable<V>> back = factory.emptyMap();
+        Map<K, Traversable<V>> back = mapSupplier.empty();
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             if (back.containsKey(entry._1)) {
-                back = back.put(entry._1, factory.addToContainer(back.get(entry._1).get(), entry._2));
+                back = back.put(entry._1, containerSupplier.add(back.get(entry._1).get(), entry._2));
             } else {
-                back = back.put(entry._1, factory.addToContainer(factory.emptyContainer(), entry._2));
+                back = back.put(entry._1, containerSupplier.add(containerSupplier.empty(), entry._2));
             }
         }
         return (M) factory.createFromMap(back);
@@ -115,8 +165,8 @@ import java.util.function.Predicate;
     @SuppressWarnings("unchecked")
     @Override
     public M put(K key, V value) {
-        final Traversable<V> values = back.get(key).getOrElse(factory.<V>emptyContainer());
-        final Traversable<V> newValues = factory.addToContainer(values, value);
+        final Traversable<V> values = back.get(key).getOrElse(containerSupplier.empty());
+        final Traversable<V> newValues = containerSupplier.add(values, value);
         return newValues == values ? (M) this : (M) factory.createFromMap(back.put(key, newValues));
     }
 
@@ -135,8 +185,8 @@ import java.util.function.Predicate;
     @SuppressWarnings("unchecked")
     @Override
     public M remove(K key, V value) {
-        final Traversable<V> values = back.get(key).getOrElse(factory.<V>emptyContainer());
-        final Traversable<V> newValues = factory.removeFromContainer(values, value);
+        final Traversable<V> values = back.get(key).getOrElse(containerSupplier.empty());
+        final Traversable<V> newValues = containerSupplier.remove(values, value);
         return newValues == values ? (M) this : newValues.isEmpty() ? (M) factory.createFromMap(back.remove(key)): (M) factory.createFromMap(back.put(key, newValues));
     }
 
@@ -315,7 +365,7 @@ import java.util.function.Predicate;
             return (M) this;
         } else {
             Map<K, Traversable<V>> result = that.keySet().foldLeft(this.back, (map, key) -> {
-                final Traversable<V> thisValues = map.get(key).getOrElse(factory.emptyContainer());
+                final Traversable<V> thisValues = map.get(key).getOrElse(containerSupplier.empty());
                 final Traversable<V2> thatValues = that.get(key).get();
                 final Traversable<V> newValues = collisionResolution.apply(thisValues, thatValues);
                 return map.put(key, newValues);
@@ -344,7 +394,7 @@ import java.util.function.Predicate;
 
     @Override
     public String stringPrefix() {
-        return null;
+        return "Multimap[" + mapSupplier.empty().stringPrefix() + "," + containerSupplier.empty().stringPrefix() + "]";
     }
 
     @SuppressWarnings("unchecked")
