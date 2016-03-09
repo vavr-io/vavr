@@ -15,14 +15,14 @@ public class HashMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void test1() {
-        HashMultimap<Integer, String> hms = HashMultimap.emptyWithSet();
+        Multimap<Integer, String> hms = HashMultimap.emptyWithSet();
         hms = hms.put(1, "a").put(1, "b").put(1, "b");
         assertThat(hms.toString()).isEqualTo("Multimap[HashMap,HashSet]((1, a), (1, b))");
     }
 
     @Test
     public void test2() {
-        HashMultimap<Integer, String> hms = HashMultimap.emptyWithSeq();
+        Multimap<Integer, String> hms = HashMultimap.emptyWithSeq();
         hms = hms.put(1, "a").put(1, "b").put(1, "b");
         assertThat(hms.toString()).isEqualTo("Multimap[HashMap,List]((1, a), (1, b), (1, b))");
     }

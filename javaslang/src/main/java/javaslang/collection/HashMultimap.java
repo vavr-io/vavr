@@ -17,17 +17,17 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V>> implements Serializable {
+public final class HashMultimap<K, V> extends AbstractMultimap<K, V> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final static HashMultimap<?, ?> EMPTY_SET = new HashMultimap<>(HashMap.empty(), setFactory(), MapSupplier.HASH_MAP, ContainerSupplier.SET);
-    private final static HashMultimap<?, ?> EMPTY_SEQ = new HashMultimap<>(HashMap.empty(), seqFactory(), MapSupplier.HASH_MAP, ContainerSupplier.SEQ);
+    private final static HashMultimap<?, ?> EMPTY_SET = new HashMultimap<>(HashMap.empty(), MapSupplier.HASH_MAP, ContainerSupplier.SET);
+    private final static HashMultimap<?, ?> EMPTY_SEQ = new HashMultimap<>(HashMap.empty(), MapSupplier.HASH_MAP, ContainerSupplier.SEQ);
 
     @SuppressWarnings("unchecked")
-    public static <K, V> HashMultimap<K, V> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    public static <K, V> Multimap<K, V> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
-        HashMultimap<K, V> result = HashMultimap.emptyWithSet();
+        Multimap<K, V> result = HashMultimap.emptyWithSet();
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             result = result.put(entry._1, entry._2);
         }
@@ -35,9 +35,9 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
     }
 
     @SafeVarargs
-    public static <K, V> HashMultimap<K, V> ofEntries(Tuple2<? extends K, ? extends V>... entries) {
+    public static <K, V> Multimap<K, V> ofEntries(Tuple2<? extends K, ? extends V>... entries) {
         Objects.requireNonNull(entries, "entries is null");
-        HashMultimap<K, V> result = HashMultimap.emptyWithSet();
+        Multimap<K, V> result = HashMultimap.emptyWithSet();
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             result = result.put(entry._1, entry._2);
         }
@@ -45,9 +45,9 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
     }
 
     @SafeVarargs
-    public static <K, V> HashMultimap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+    public static <K, V> Multimap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         Objects.requireNonNull(entries, "entries is null");
-        HashMultimap<K, V> result = HashMultimap.emptyWithSet();
+        Multimap<K, V> result = HashMultimap.emptyWithSet();
         for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
             result = result.put(entry.getKey(), entry.getValue());
         }
@@ -55,70 +55,38 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> HashMultimap<K, V> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+    public static <K, V> Multimap<K, V> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         return ofEntries(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> HashMultimap<K, V> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+    public static <K, V> Multimap<K, V> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
         Objects.requireNonNull(s, "s is null");
         return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> HashMultimap<K, V> of(Object... pairs) {
+    public static <K, V> Multimap<K, V> of(Object... pairs) {
         Objects.requireNonNull(pairs, "pairs is null");
         if ((pairs.length & 1) != 0) {
             throw new IllegalArgumentException("Odd length of key-value pairs list");
         }
-        HashMultimap<K, V> result = HashMultimap.emptyWithSet();
+        Multimap<K, V> result = HashMultimap.emptyWithSet();
         for (int i = 0; i < pairs.length; i += 2) {
             result = result.put((K) pairs[i], (V) pairs[i + 1]);
         }
         return result;
     }
 
-    private static Factory setFactory() {
-        return new Factory() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public <K2, V2> Multimap<K2, V2> emptyInstance() {
-                return (Multimap<K2, V2>) EMPTY_SET;
-            }
-
-            @Override
-            public <K, V> HashMultimap<K, V> createFromMap(Map<K, Traversable<V>> back) {
-                return new HashMultimap<>(back, this, MapSupplier.HASH_MAP, ContainerSupplier.SET);
-            }
-        };
-    }
-
-    private static Factory seqFactory() {
-        return new Factory() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public <K2, V2> Multimap<K2, V2> emptyInstance() {
-                return (HashMultimap<K2, V2>) EMPTY_SEQ;
-            }
-
-            @Override
-            public <K, V> HashMultimap<K, V> createFromMap(Map<K, Traversable<V>> back) {
-                return new HashMultimap<>(back, this, MapSupplier.HASH_MAP, ContainerSupplier.SEQ);
-            }
-        };
-    }
-
-    public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, HashMultimap<K, V>> collector() {
+    public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, Multimap<K, V>> collector() {
         final Supplier<ArrayList<Tuple2<K, V>>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<Tuple2<K, V>>, Tuple2<K, V>> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<Tuple2<K, V>>> combiner = (left, right) -> {
             left.addAll(right);
             return left;
         };
-        final Function<ArrayList<Tuple2<K, V>>, HashMultimap<K, V>> finisher = HashMultimap::ofEntries;
+        final Function<ArrayList<Tuple2<K, V>>, Multimap<K, V>> finisher = HashMultimap::ofEntries;
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
@@ -136,8 +104,8 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
         return (HashMultimap<K, V>) EMPTY_SEQ;
     }
 
-    private HashMultimap(Map<K, Traversable<V>> back, Factory factory, MapSupplier mapSupplier, ContainerSupplier container) {
-        super(back, factory, mapSupplier, container);
+    private HashMultimap(Map<K, Traversable<V>> back, MapSupplier mapSupplier, ContainerSupplier container) {
+        super(back, mapSupplier, container);
     }
 
     @Override
@@ -149,8 +117,4 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
         return javaMap;
     }
 
-    @Override
-    public String toString() {
-        return mkString(stringPrefix() + "(", ", ", ")");
-    }
 }
