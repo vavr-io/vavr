@@ -12,10 +12,7 @@ import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -97,6 +94,10 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         };
     }
 
+    abstract protected Multimap.ContainerType containerType();
+
+    abstract protected Multimap.MapType mapType();
+
     @Override
     protected <T> IntMultimap<T> empty() {
         return IntMultimap.of(emptyMap());
@@ -121,27 +122,46 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     abstract protected String className();
 
-    abstract protected <T1, T2> Multimap<T1, T2> emptyMap();
+    protected <T1, T2> Multimap<T1, T2> emptyMap() {
+        return Multimap.empty(mapType(), containerType());
+    }
 
     protected boolean emptyMapShouldBeSingleton() {
         return true;
     }
 
-    abstract protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Multimap<Integer, T>> mapCollector();
+    protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Multimap<Integer, T>> mapCollector() {
+        return Multimap.collector(mapType(), containerType());
+    }
 
-    @SuppressWarnings("unchecked")
-    abstract protected <K, V> Multimap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries);
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    protected final <K, V> Multimap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
+        return Multimap.ofEntries(mapType(), containerType(), entries);
+    }
 
-    @SuppressWarnings("unchecked")
-    abstract protected <K, V> Multimap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries);
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    protected final <K, V> Multimap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+        return Multimap.ofEntries(mapType(), containerType(), entries);
+    }
 
-    abstract protected <K, V> Multimap<K, V> mapOfPairs(Object... pairs);
+    protected <K, V> Multimap<K, V> mapOfPairs(Object... pairs) {
+        return Multimap.of(mapType(), containerType(), pairs);
+    }
 
-    abstract protected <K, V> Multimap<K, V> mapOf(K key, V value);
+    protected <K, V> Multimap<K, V> mapOf(K key, V value) {
+        final Multimap<K, V> map = Multimap.empty(mapType(), containerType());
+        return map.put(key, value);
+    }
 
-    abstract protected <K, V> Multimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f);
+    protected <K, V> Multimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+        return Multimap.tabulate(mapType(), containerType(), n, f);
+    }
 
-    abstract protected <K, V> Multimap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s);
+    protected <K, V> Multimap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+        return Multimap.fill(mapType(), containerType(), n, s);
+    }
 
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
@@ -398,8 +418,13 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         Multimap<Integer, Integer> m3 = emptyIntInt().put(3, 3).put(4, 4);
         assertThat(emptyIntInt().merge(m2)).isEqualTo(m2);
         assertThat(m2.merge(emptyIntInt())).isEqualTo(m2);
-        assertThat(m1.merge(m2)).isEqualTo(emptyIntInt().put(1, 1).put(2, 2).put(4, 4));
-        assertThat(m1.merge(m3)).isEqualTo(emptyIntInt().put(1, 1).put(2, 2).put(3, 3).put(4, 4));
+        if(containerType() == Multimap.ContainerType.SEQ) {
+            assertThat(m1.merge(m2)).isEqualTo(emptyIntInt().put(1, 1).put(1, 1).put(2, 2).put(4, 4));
+            assertThat(m1.merge(m3)).isEqualTo(emptyIntInt().put(1, 1).put(2, 2).put(3, 3).put(4, 4));
+        } else {
+            assertThat(m1.merge(m2)).isEqualTo(emptyIntInt().put(1, 1).put(2, 2).put(4, 4));
+            assertThat(m1.merge(m3)).isEqualTo(emptyIntInt().put(1, 1).put(2, 2).put(3, 3).put(4, 4));
+        }
     }
 
     @SuppressWarnings("unchecked")

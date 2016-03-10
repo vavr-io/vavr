@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.function.*;
 
 /**
- * An abstract {@link Multimap} implementation (not intended to be public).
+ * An {@link Multimap} implementation (not intended to be public).
  *
  * @param <K> Key type
  * @param <V> Value type
