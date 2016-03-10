@@ -339,6 +339,20 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(HashSet.of(1, 2, 3));
     }
 
+    // -- biMap
+
+    @Test
+    public void shouldBiMapEmpty() {
+        assertThat(emptyInt().bimap(i -> i + 1, o -> o)).isEqualTo(Vector.empty());
+    }
+
+    @Test
+    public void shouldBiMapNonEmpty() {
+        final javaslang.collection.Seq<Tuple2<Integer, String>> expected = Stream.of(Tuple.of(2, "1!"), Tuple.of(3, "2!"));
+        final javaslang.collection.Seq<Tuple2<Integer, String>> actual = emptyInt().put(1, "1").put(2, "2").bimap(i -> i + 1, s -> s + "!").toStream();
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- map
 
     @Test
