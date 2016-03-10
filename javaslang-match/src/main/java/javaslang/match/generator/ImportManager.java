@@ -18,6 +18,7 @@ import static java.util.stream.Collectors.*;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
+// TODO: use Multimap (fqn without inner classes) -> (list/set of class names, incl. inner classes)
 class ImportManager {
 
     static final int DEFAULT_WILDCARD_THRESHOLD = 5;

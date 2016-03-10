@@ -83,10 +83,9 @@ public class PatternsProcessor extends AbstractProcessor {
         for (TypeElement typeElement : typeElements) {
             if (Patterns.Checker.isValid(typeElement, messager)) {
                 final ClassModel classModel = new ClassModel(elementUtils, typeElement);
-                Generator.generate(classModel, messager).ifPresent(code -> {
-                    final String className = classModel.getClassName();
-                    final String fqn = (classModel.hasDefaultPackage() ? "" : classModel.getPackageName() + ".") +
-                            ("$".equals(className) ? "" : className) + Patterns.class.getSimpleName();
+                final String className = deriveClassName(classModel);
+                Generator.generate(className, classModel, messager).ifPresent(code -> {
+                    final String fqn = (classModel.hasDefaultPackage() ? "" : classModel.getPackageName() + ".") + className;
                     try (final Writer writer = filer.createSourceFile(fqn, typeElement).openWriter()) {
                         writer.write(code);
                     } catch (IOException x) {
@@ -95,5 +94,10 @@ public class PatternsProcessor extends AbstractProcessor {
                 });
             }
         }
+    }
+
+    private String deriveClassName(ClassModel classModel) {
+        final String className = classModel.getClassName();
+        return ("$".equals(className) ? "" : className) + Patterns.class.getSimpleName();
     }
 }
