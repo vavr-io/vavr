@@ -5,9 +5,13 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.API;
+import javaslang.Lazy;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.Option;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
@@ -21,7 +25,7 @@ import java.util.function.*;
  * @author Ruslan Sennov
  * @since 2.0.0
  */
- class AbstractMultimap<K, V> implements Multimap<K, V> {
+ final class AbstractMultimap<K, V> implements Multimap<K, V>, Serializable {
 
     @SuppressWarnings("unchecked")
     enum ContainerSupplier {
@@ -38,6 +42,19 @@ import java.util.function.*;
                 (Traversable<?> seq, Object elem) -> ((List<Object>) seq).append(elem),
                 (Traversable<?> seq, Object elem) -> ((List<Object>) seq).remove(elem)
         );
+
+        public static ContainerSupplier of(ContainerType type) {
+            switch (type) {
+                case SEQ:
+                    return SEQ;
+                case SET:
+                    return SET;
+                case SORTED_SET:
+                    return SORTED_SET;
+                default:
+                    return null;
+            }
+        }
 
         final Supplier<Traversable<?>> emptySupplier;
         final BiFunction<Traversable<?>, Object, Traversable<?>> add;
@@ -71,6 +88,19 @@ import java.util.function.*;
         LINKED_HASH_MAP(LinkedHashMap::empty),
         TREE_MAP(TreeMap::empty);
 
+        public static MapSupplier of(MapType type) {
+            switch (type) {
+                case HASH_MAP:
+                    return HASH_MAP;
+                case LINKED_HASH_MAP:
+                    return LINKED_HASH_MAP;
+                case TREE_MAP:
+                    return TREE_MAP;
+                default:
+                    return null;
+            }
+        }
+
         final Supplier<Map<?,?>> emptySupplier;
 
         MapSupplier(Supplier<Map<?, ?>> emptySupplier) {
@@ -97,10 +127,19 @@ import java.util.function.*;
         }
     }
 
+    @SuppressWarnings("unchecked")
+    static <K, V> Multimap<K, V> empty(MapType mapType, ContainerType containerType) {
+        Objects.requireNonNull(mapType, "mapType is null");
+        Objects.requireNonNull(containerType, "containerType is null");
+        final MapSupplier mapSupplier = MapSupplier.of(mapType);
+        final ContainerSupplier containerSupplier = ContainerSupplier.of(containerType);
+        return (Multimap<K, V>) EMPTIES.get(mapSupplier).get(containerSupplier);
+    }
+
     private final Map<K, Traversable<V>> back;
     private final Lazy<Integer> size;
     private final MapSupplier mapSupplier;
-    final ContainerSupplier containerSupplier;
+    private final ContainerSupplier containerSupplier;
 
     AbstractMultimap(Map<K, Traversable<V>> back, MapSupplier mapSupplier, ContainerSupplier containerSupplier) {
         this.back = back;
@@ -110,9 +149,9 @@ import java.util.function.*;
     }
 
     @SuppressWarnings("unchecked")
-    private Multimap<K, V> createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
-        Map<K, Traversable<V>> back = mapSupplier.empty();
-        for (Tuple2<? extends K, ? extends V> entry : entries) {
+    private <K2, V2> Multimap<K2, V2> createFromEntries(Iterable<? extends Tuple2<? extends K2, ? extends V2>> entries) {
+        Map<K2, Traversable<V2>> back = mapSupplier.empty();
+        for (Tuple2<? extends K2, ? extends V2> entry : entries) {
             if (back.containsKey(entry._1)) {
                 back = back.put(entry._1, containerSupplier.add(back.get(entry._1).get(), entry._2));
             } else {
@@ -133,7 +172,10 @@ import java.util.function.*;
 
     @Override
     public <K2, V2> Multimap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
-        return null;
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
+        return createFromEntries(entries);
     }
 
     @Override
@@ -208,11 +250,6 @@ import java.util.function.*;
     @Override
     public int size() {
         return size.get();
-    }
-
-    @Override
-    public java.util.Map<K, Collection<V>> toJavaMap() {
-        return null;
     }
 
     @Override
@@ -483,5 +520,20 @@ import java.util.function.*;
     @Override
     public String toString() {
         return mkString(stringPrefix() + "(", ", ", ")");
+    }
+
+    @Override
+    public java.util.Map<K, Collection<V>> toJavaMap() {
+        final java.util.Map<K, Collection<V>> javaMap = new java.util.HashMap<>();
+        for (Tuple2<K, V> t : this) {
+            javaMap.computeIfAbsent(t._1, k -> {
+                if(containerSupplier.empty() instanceof Set) {
+                    return new java.util.HashSet<>();
+                } else {
+                    return new java.util.ArrayList<>();
+                }
+            }).add(t._2);
+        }
+        return javaMap;
     }
 }

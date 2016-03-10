@@ -137,7 +137,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     abstract protected <K, V> Multimap<K, V> mapOfPairs(Object... pairs);
 
-    abstract protected <K extends Comparable<? super K>, V> Multimap<K, V> mapOf(K key, V value);
+    abstract protected <K, V> Multimap<K, V> mapOf(K key, V value);
 
     abstract protected <K, V> Multimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f);
 
@@ -339,6 +339,20 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     public void shouldReturnsKeySet() {
         final javaslang.collection.Set<Integer> actual = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33)).keySet();
         assertThat(actual).isEqualTo(HashSet.of(1, 2, 3));
+    }
+
+    // -- biMap
+
+    @Test
+    public void shouldBiMapEmpty() {
+        assertThat(emptyInt().bimap(i -> i + 1, o -> o)).isEqualTo(Vector.empty());
+    }
+
+    @Test
+    public void shouldBiMapNonEmpty() {
+        final javaslang.collection.Seq<Tuple2<Integer, String>> expected = Stream.of(Tuple.of(2, "1!"), Tuple.of(3, "2!"));
+        final javaslang.collection.Seq<Tuple2<Integer, String>> actual = emptyInt().put(1, "1").put(2, "2").bimap(i -> i + 1, s -> s + "!").toStream();
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- map
@@ -647,9 +661,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Override
     public void shouldPreserveSingletonInstanceOnDeserialization() {
-        Multimap<?, ?> obj = deserialize(serialize(emptyMap()));
-        final boolean actual = obj == emptyMap();
-        assertThat(actual).isTrue();
+        // The empty Multimap encapsulates a container type and map type and therefore cannot be a singleton
     }
 
     @Override
