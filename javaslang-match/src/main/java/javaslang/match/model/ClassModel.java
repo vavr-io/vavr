@@ -8,7 +8,6 @@ package javaslang.match.model;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import java.util.List;
 
@@ -70,6 +69,22 @@ public class ClassModel {
 
     public boolean hasDefaultPackage() {
         return elementUtils.getPackageOf(typeElement()).isUnnamed();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof ClassModel) {
+            return toString().equals(o.toString());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
     }
 
     @Override

@@ -5,7 +5,6 @@
  */
 package javaslang.match.model;
 
-import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -48,6 +47,22 @@ public class TypeParameterModel {
 
     private boolean isTypeKind(TypeKind typeKind) {
         return typeMirror.getKind() == typeKind;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof TypeParameterModel) {
+            return toString().equals(o.toString());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
     }
 
     @Override

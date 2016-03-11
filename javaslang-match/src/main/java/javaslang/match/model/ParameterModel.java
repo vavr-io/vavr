@@ -25,8 +25,28 @@ public class ParameterModel {
         this.variableElement = variableElement;
     }
 
-    // TODO: cast to DeclaredType possible?
     public ClassModel getType() {
         return new ClassModel(elementUtils, (DeclaredType) variableElement.asType());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof ParameterModel) {
+            return toString().equals(o.toString());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return variableElement.toString();
     }
 }
