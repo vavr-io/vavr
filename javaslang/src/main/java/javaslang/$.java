@@ -12,9 +12,10 @@ import javaslang.control.Either;
 import javaslang.control.Option;
 import javaslang.control.Try;
 import javaslang.control.Validation;
-import javaslang.match.Unapply;
+import javaslang.match.annotation.Unapply;
+import javaslang.match.annotation.Patterns;
 
-@javaslang.match.Patterns
+@Patterns
 class $ {
 
     // -- javaslang

@@ -3,7 +3,7 @@
  *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang, http://javaslang.io
  * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
  */
-package javaslang.match;
+package javaslang.match.generator;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
@@ -19,6 +19,9 @@ import java.util.function.Supplier;
  *
  * @param <SELF> The class of this {@code BaseChecker} implementation.
  * @param <E> The element type to be checked.
+ *
+ * @author Daniel Dietrich
+ * @since 2.0.0
  */
 abstract class BaseChecker<SELF extends BaseChecker<SELF, E>, E extends Element> {
 
