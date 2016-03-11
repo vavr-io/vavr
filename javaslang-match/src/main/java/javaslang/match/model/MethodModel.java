@@ -62,13 +62,7 @@ public class MethodModel {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof MethodModel) {
-            return toString().equals(o.toString());
-        } else {
-            return false;
-        }
+        return (o == this) || (o instanceof MethodModel && toString().equals(o.toString()));
     }
 
     @Override

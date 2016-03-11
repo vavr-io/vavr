@@ -73,13 +73,7 @@ public class ClassModel {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof ClassModel) {
-            return toString().equals(o.toString());
-        } else {
-            return false;
-        }
+        return (o == this) || (o instanceof ClassModel && toString().equals(o.toString()));
     }
 
     @Override

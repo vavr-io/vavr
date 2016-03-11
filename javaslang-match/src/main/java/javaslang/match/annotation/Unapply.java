@@ -5,15 +5,10 @@
  */
 package javaslang.match.annotation;
 
-import javax.annotation.processing.Messager;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.TypeKind;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import static javax.lang.model.element.Modifier.*;
 
 /**
  * Structural pattern matching annotation for unapply methods.
@@ -24,31 +19,4 @@ import static javax.lang.model.element.Modifier.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
 public @interface Unapply {
-
-    /**
-     * Checks if an {@link javax.lang.model.element.ExecutableElement} is a valid {@code @Unapply} method.
-     */
-    class Checker extends BaseChecker<Checker, ExecutableElement> {
-
-        public static boolean isValid(ExecutableElement executableElement, Messager messager) {
-            final Checker methodChecker = new Checker(executableElement, messager);
-            return methodChecker.ensure(Checker::doesNotThrow, () -> "@" + "Unapply method should not throw (checked) exceptions.") &&
-                    methodChecker.ensure(e -> !e.elem.isDefault(), () -> "@" + "Unapply method needs to be declared in a class, not an interface.") &&
-                    methodChecker.ensure(e -> !e.elem.isVarArgs(), () -> "@" + "Unapply method has varargs.") &&
-                    methodChecker.ensure(e -> e.elem.getParameters().size() == 1, () -> "Unapply method must have exactly one parameter of the object to be deconstructed.") &&
-                    // TODO: methodChecker.ensure(e -> e.elem.getParameters().get(0).asType().getKind() != TypeKind.DECLARED, () -> "Unapply method parameter must be a declared type.") &&
-                    methodChecker.ensure(e -> e.elem.getReturnType().toString().startsWith("javaslang.Tuple"), () -> "Return type of unapply method must be a Tuple.") &&
-                    methodChecker.ensure(e -> !e.elem.getReturnType().toString().endsWith("Tuple"), () -> "Return type is no Tuple implementation.") &&
-                    methodChecker.ensure(e -> e.hasAll(STATIC), () -> "Unapply method needs to be static.") &&
-                    methodChecker.ensure(e -> e.hasNone(PRIVATE, PROTECTED, ABSTRACT), () -> "Unapply method may not be private or protected.");
-        }
-
-        private Checker(ExecutableElement elem, Messager messager) {
-            super(elem, messager);
-        }
-
-        boolean doesNotThrow() {
-            return elem.getThrownTypes().isEmpty();
-        }
-    }
 }

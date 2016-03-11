@@ -81,18 +81,16 @@ public class PatternsProcessor extends AbstractProcessor {
         final javax.lang.model.util.Elements elementUtils = processingEnv.getElementUtils();
         final Messager messager = processingEnv.getMessager();
         for (TypeElement typeElement : typeElements) {
-            if (Patterns.Checker.isValid(typeElement, messager)) {
-                final ClassModel classModel = ClassModel.of(elementUtils, typeElement);
-                final String className = deriveClassName(classModel);
-                Generator.generate(className, classModel, messager).ifPresent(code -> {
-                    final String fqn = (classModel.hasDefaultPackage() ? "" : classModel.getPackageName() + ".") + className;
-                    try (final Writer writer = filer.createSourceFile(fqn, typeElement).openWriter()) {
-                        writer.write(code);
-                    } catch (IOException x) {
-                        throw new Error("Error writing " + fqn, x);
-                    }
-                });
-            }
+            final ClassModel classModel = ClassModel.of(elementUtils, typeElement);
+            final String className = deriveClassName(classModel);
+            Generator.generate(className, classModel, messager).ifPresent(code -> {
+                final String fqn = (classModel.hasDefaultPackage() ? "" : classModel.getPackageName() + ".") + className;
+                try (final Writer writer = filer.createSourceFile(fqn, typeElement).openWriter()) {
+                    writer.write(code);
+                } catch (IOException x) {
+                    throw new Error("Error writing " + fqn, x);
+                }
+            });
         }
     }
 

@@ -5,6 +5,7 @@
  */
 package javaslang.match.generator;
 
+import javaslang.match.annotation.Patterns;
 import javaslang.match.annotation.Unapply;
 import javaslang.match.model.ClassModel;
 import javaslang.match.model.MethodModel;
@@ -38,6 +39,9 @@ public class Generator {
 
     // ENTRY POINT: Expands one @Patterns class
     public static Optional<String> generate(String derivedClassName, ClassModel classModel, Messager messager) {
+        if (!PatternsChecker.isValid(classModel.typeElement(), messager)) {
+            return Optional.empty();
+        }
         List<MethodModel> methodModels = getMethods(classModel, messager);
         if (methodModels.isEmpty()) {
             messager.printMessage(Diagnostic.Kind.WARNING, "No @Unapply methods found.", classModel.typeElement());
@@ -154,7 +158,7 @@ public class Generator {
     // returns all @Unapply methods of a @Patterns class
     private static List<MethodModel> getMethods(ClassModel classModel, Messager messager) {
         return classModel.getMethods().stream()
-                .filter(method -> method.isAnnotatedWith(Unapply.class) && Unapply.Checker.isValid(method.getExecutableElement(), messager))
+                .filter(method -> method.isAnnotatedWith(Unapply.class) && UnapplyChecker.isValid(method.getExecutableElement(), messager))
                 .collect(toList());
     }
 

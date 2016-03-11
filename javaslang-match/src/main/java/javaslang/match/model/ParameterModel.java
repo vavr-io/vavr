@@ -31,13 +31,7 @@ public class ParameterModel {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof ParameterModel) {
-            return toString().equals(o.toString());
-        } else {
-            return false;
-        }
+        return (o == this) || (o instanceof ParameterModel && toString().equals(o.toString()));
     }
 
     @Override

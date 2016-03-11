@@ -51,13 +51,7 @@ public class TypeParameterModel {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof TypeParameterModel) {
-            return toString().equals(o.toString());
-        } else {
-            return false;
-        }
+        return (o == this) || (o instanceof TypeParameterModel && toString().equals(o.toString()));
     }
 
     @Override
