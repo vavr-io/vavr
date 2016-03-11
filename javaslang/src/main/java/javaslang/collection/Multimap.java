@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.API;
-import javaslang.Function1;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.util.*;
@@ -23,7 +20,7 @@ import java.util.stream.Collector;
  * @author Ruslan Sennov
  * @since 2.0.0
  */
-public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, Traversable<V>> {
+public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, Traversable<V>>, Kind2<Multimap<?, ?>, K, V> {
 
     long serialVersionUID = 1L;
 
@@ -39,6 +36,14 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
         return AbstractMultimap.empty(mapType, containerType);
     }
 
+    /**
+     * Creates a {@link Multimap} of the given entries.
+     *
+     * @param mapType        The type of multimap
+     * @param containerType  The type of containers
+     * @param entries Multimap entries
+     * @return A new Multimap containing the given entries
+     */
     static <K, V> Multimap<K, V> ofEntries(MapType mapType, ContainerType containerType,
                                                   Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
@@ -49,6 +54,16 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
         return result;
     }
 
+    /**
+     * Creates a {@link Multimap} of the given entries.
+     *
+     * @param <K>     The key type
+     * @param <V>     The value type
+     * @param mapType        The type of multimap
+     * @param containerType  The type of containers
+     * @param entries Multimap entries
+     * @return A new Multimap containing the given entries
+     */
     @SafeVarargs
     static <K, V> Multimap<K, V> ofEntries(MapType mapType, ContainerType containerType,
                                                   Tuple2<? extends K, ? extends V>... entries) {
@@ -60,6 +75,16 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
         return result;
     }
 
+    /**
+     * Creates a {@link Multimap} of the given entries.
+     *
+     * @param <K>     The key type
+     * @param <V>     The value type
+     * @param mapType        The type of multimap
+     * @param containerType  The type of containers
+     * @param entries Multimap entries
+     * @return A new Multimap containing the given entries
+     */
     @SafeVarargs
     static <K, V> Multimap<K, V> ofEntries(MapType mapType, ContainerType containerType,
                                                   java.util.Map.Entry<? extends K, ? extends V>... entries) {
@@ -71,6 +96,19 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
         return result;
     }
 
+    /**
+     * Returns an {@link Multimap} containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1}.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param mapType        The type of multimap
+     * @param containerType  The type of containers
+     * @param n   The number of elements in the Multimap
+     * @param f   The Function computing element values
+     * @return An Multimap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code f} is null
+     */
     @SuppressWarnings("unchecked")
     static <K, V> Multimap<K, V> tabulate(MapType mapType, ContainerType containerType,
                                                  int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
@@ -78,6 +116,18 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
         return ofEntries(mapType, containerType, Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
     }
 
+    /**
+     * Returns an {@link Multimap} containing {@code n} values supplied by a given Supplier {@code s}.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param mapType        The type of multimap
+     * @param containerType  The type of containers
+     * @param n        The number of elements in the Multimap
+     * @param s        The Supplier computing element values
+     * @return An Multimap of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code s} is null
+     */
     @SuppressWarnings("unchecked")
     static <K, V> Multimap<K, V> fill(MapType mapType, ContainerType containerType,
                                              int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
@@ -85,6 +135,16 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
         return ofEntries(mapType, containerType, Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
     }
 
+    /**
+     * Creates a {@link Multimap} of the given list of key-value pairs.
+     *
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @param pairs A list of key-value pairs
+     * @param mapType        The type of multimap
+     * @param containerType  The type of containers
+     * @return A new {@link Multimap} containing the given entries
+     */
     @SuppressWarnings("unchecked")
     static <K, V> Multimap<K, V> of(MapType mapType, ContainerType containerType,
                                            Object... pairs) {
@@ -99,6 +159,14 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
         return result;
     }
 
+    /**
+     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link Multimap}.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A {@link Multimap} Collector.
+     */
     static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, Multimap<K, V>> collector(MapType mapType, ContainerType containerType) {
         final Supplier<ArrayList<Tuple2<K, V>>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<Tuple2<K, V>>, Tuple2<K, V>> accumulator = ArrayList::add;
