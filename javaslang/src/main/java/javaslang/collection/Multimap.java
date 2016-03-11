@@ -24,173 +24,45 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
 
     long serialVersionUID = 1L;
 
+    @SuppressWarnings("unchecked")
     enum ContainerType {
-        SET, SEQ, SORTED_SET
-    }
 
-    enum MapType {
-        HASH_MAP, LINKED_HASH_MAP, TREE_MAP
-    }
+        SET(HashSet::empty,
+                (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
+                (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem)
+        ),
+        SORTED_SET(TreeSet::empty,
+                (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
+                (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem)
+        ),
+        SEQ(List::empty,
+                (Traversable<?> seq, Object elem) -> ((List<Object>) seq).append(elem),
+                (Traversable<?> seq, Object elem) -> ((List<Object>) seq).remove(elem)
+        );
 
-    static <K, V> Multimap<K, V> empty(MapType mapType, ContainerType containerType) {
-        return AbstractMultimap.empty(mapType, containerType);
-    }
+        final Supplier<Traversable<?>> emptySupplier;
+        final BiFunction<Traversable<?>, Object, Traversable<?>> add;
+        final BiFunction<Traversable<?>, Object, Traversable<?>> remove;
 
-    /**
-     * Creates a {@link Multimap} of the given entries.
-     *
-     * @param mapType        The type of multimap
-     * @param containerType  The type of containers
-     * @param entries Multimap entries
-     * @return A new Multimap containing the given entries
-     */
-    static <K, V> Multimap<K, V> ofEntries(MapType mapType, ContainerType containerType,
-                                                  Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
-        Objects.requireNonNull(entries, "entries is null");
-        Multimap<K, V> result = empty(mapType, containerType);
-        for (Tuple2<? extends K, ? extends V> entry : entries) {
-            result = result.put(entry._1, entry._2);
+        ContainerType(Supplier<Traversable<?>> emptySupplier,
+                              BiFunction<Traversable<?>, Object, Traversable<?>> add,
+                              BiFunction<Traversable<?>, Object, Traversable<?>> remove) {
+            this.emptySupplier = emptySupplier;
+            this.add = add;
+            this.remove = remove;
         }
-        return result;
-    }
 
-    /**
-     * Creates a {@link Multimap} of the given entries.
-     *
-     * @param <K>     The key type
-     * @param <V>     The value type
-     * @param mapType        The type of multimap
-     * @param containerType  The type of containers
-     * @param entries Multimap entries
-     * @return A new Multimap containing the given entries
-     */
-    @SafeVarargs
-    static <K, V> Multimap<K, V> ofEntries(MapType mapType, ContainerType containerType,
-                                                  Tuple2<? extends K, ? extends V>... entries) {
-        Objects.requireNonNull(entries, "entries is null");
-        Multimap<K, V> result = empty(mapType, containerType);
-        for (Tuple2<? extends K, ? extends V> entry : entries) {
-            result = result.put(entry._1, entry._2);
+        <T> Traversable<T> empty() {
+            return (Traversable<T>) emptySupplier.get();
         }
-        return result;
-    }
 
-    /**
-     * Creates a {@link Multimap} of the given entries.
-     *
-     * @param <K>     The key type
-     * @param <V>     The value type
-     * @param mapType        The type of multimap
-     * @param containerType  The type of containers
-     * @param entries Multimap entries
-     * @return A new Multimap containing the given entries
-     */
-    @SafeVarargs
-    static <K, V> Multimap<K, V> ofEntries(MapType mapType, ContainerType containerType,
-                                                  java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        Objects.requireNonNull(entries, "entries is null");
-        Multimap<K, V> result = empty(mapType, containerType);
-        for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
-            result = result.put(entry.getKey(), entry.getValue());
+        <T> Traversable<T> add(Traversable<T> container, T elem) {
+            return (Traversable<T>) add.apply(container, elem);
         }
-        return result;
-    }
 
-    /**
-     * Returns an {@link Multimap} containing {@code n} values of a given Function {@code f}
-     * over a range of integer values from 0 to {@code n - 1}.
-     *
-     * @param <K> The key type
-     * @param <V> The value type
-     * @param mapType        The type of multimap
-     * @param containerType  The type of containers
-     * @param n   The number of elements in the Multimap
-     * @param f   The Function computing element values
-     * @return An Multimap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
-     * @throws NullPointerException if {@code f} is null
-     */
-    @SuppressWarnings("unchecked")
-    static <K, V> Multimap<K, V> tabulate(MapType mapType, ContainerType containerType,
-                                                 int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
-        Objects.requireNonNull(f, "f is null");
-        return ofEntries(mapType, containerType, Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
-    }
-
-    /**
-     * Returns an {@link Multimap} containing {@code n} values supplied by a given Supplier {@code s}.
-     *
-     * @param <K> The key type
-     * @param <V> The value type
-     * @param mapType        The type of multimap
-     * @param containerType  The type of containers
-     * @param n        The number of elements in the Multimap
-     * @param s        The Supplier computing element values
-     * @return An Multimap of size {@code n}, where each element contains the result supplied by {@code s}.
-     * @throws NullPointerException if {@code s} is null
-     */
-    @SuppressWarnings("unchecked")
-    static <K, V> Multimap<K, V> fill(MapType mapType, ContainerType containerType,
-                                             int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
-        Objects.requireNonNull(s, "s is null");
-        return ofEntries(mapType, containerType, Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
-    }
-
-    /**
-     * Creates a {@link Multimap} of the given list of key-value pairs.
-     *
-     * @param <K>   The key type
-     * @param <V>   The value type
-     * @param pairs A list of key-value pairs
-     * @param mapType        The type of multimap
-     * @param containerType  The type of containers
-     * @return A new {@link Multimap} containing the given entries
-     */
-    @SuppressWarnings("unchecked")
-    static <K, V> Multimap<K, V> of(MapType mapType, ContainerType containerType,
-                                           Object... pairs) {
-        Objects.requireNonNull(pairs, "pairs is null");
-        if ((pairs.length & 1) != 0) {
-            throw new IllegalArgumentException("Odd length of key-value pairs list");
+        <T> Traversable<T> remove(Traversable<T> container, T elem) {
+            return (Traversable<T>) remove.apply(container, elem);
         }
-        Multimap<K, V> result = empty(mapType, containerType);
-        for (int i = 0; i < pairs.length; i += 2) {
-            result = result.put((K) pairs[i], (V) pairs[i + 1]);
-        }
-        return result;
-    }
-
-    /**
-     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link Multimap}.
-     *
-     * @param <K> The key type
-     * @param <V> The value type
-     * @return A {@link Multimap} Collector.
-     */
-    static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, Multimap<K, V>> collector(MapType mapType, ContainerType containerType) {
-        final Supplier<ArrayList<Tuple2<K, V>>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<Tuple2<K, V>>, Tuple2<K, V>> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<Tuple2<K, V>>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
-        };
-        final Function<ArrayList<Tuple2<K, V>>, Multimap<K, V>> finisher = entries -> ofEntries(mapType, containerType, entries);
-        return Collector.of(supplier, accumulator, combiner, finisher);
-    }
-
-    /**
-     * Narrows a widened {@code Multimap<? extends K, ? extends V>} to {@code Multimap<K, V>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
-     * collections are covariant.
-     *
-     * @param map A {@code Map}.
-     * @param <K> Key type
-     * @param <V> Value type
-     * @return the given {@code multimap} instance as narrowed type {@code Multimap<K, V>}.
-     */
-    @SuppressWarnings("unchecked")
-    static <K, V> Multimap<K, V> narrow(Multimap<? extends K, ? extends V> map) {
-        return (Multimap<K, V>) map;
     }
 
     @Override
@@ -217,6 +89,8 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @return <code>true</code> if this multimap contains a mapping for the specified key
      */
     boolean containsKey(K key);
+
+    ContainerType getContainerType();
 
     /**
      * Returns <code>true</code> if this multimap maps one or more keys to the

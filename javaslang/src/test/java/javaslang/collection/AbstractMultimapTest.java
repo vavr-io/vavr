@@ -10,8 +10,9 @@ import javaslang.Tuple2;
 import javaslang.control.Option;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -19,10 +20,20 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import static javaslang.Serializables.deserialize;
-import static javaslang.Serializables.serialize;
-
+@RunWith(Parameterized.class)
 public abstract class AbstractMultimapTest extends AbstractTraversableTest {
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+                { Multimap.ContainerType.SEQ },
+                { Multimap.ContainerType.SET }/*,
+                { Multimap.ContainerType.SORTED_SET }*/
+        });
+    }
+
+    @Parameterized.Parameter
+    public Multimap.ContainerType containerType;
 
     @Override
     protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
@@ -94,10 +105,6 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         };
     }
 
-    abstract protected Multimap.ContainerType containerType();
-
-    abstract protected Multimap.MapType mapType();
-
     @Override
     protected <T> IntMultimap<T> empty() {
         return IntMultimap.of(emptyMap());
@@ -122,46 +129,27 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     abstract protected String className();
 
-    protected <T1, T2> Multimap<T1, T2> emptyMap() {
-        return Multimap.empty(mapType(), containerType());
-    }
+    abstract protected <T1, T2> Multimap<T1, T2> emptyMap();
 
     protected boolean emptyMapShouldBeSingleton() {
         return true;
     }
 
-    protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Multimap<Integer, T>> mapCollector() {
-        return Multimap.collector(mapType(), containerType());
-    }
+    abstract protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Multimap<Integer, T>> mapCollector();
 
-    @SuppressWarnings("varargs")
-    @SafeVarargs
-    protected final <K, V> Multimap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
-        return Multimap.ofEntries(mapType(), containerType(), entries);
-    }
+    @SuppressWarnings("unchecked")
+    abstract protected <K, V> Multimap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries);
 
-    @SuppressWarnings("varargs")
-    @SafeVarargs
-    protected final <K, V> Multimap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        return Multimap.ofEntries(mapType(), containerType(), entries);
-    }
+    @SuppressWarnings("unchecked")
+    abstract protected <K, V> Multimap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries);
 
-    protected <K, V> Multimap<K, V> mapOfPairs(Object... pairs) {
-        return Multimap.of(mapType(), containerType(), pairs);
-    }
+    abstract protected <K, V> Multimap<K, V> mapOfPairs(Object... pairs);
 
-    protected <K, V> Multimap<K, V> mapOf(K key, V value) {
-        final Multimap<K, V> map = Multimap.empty(mapType(), containerType());
-        return map.put(key, value);
-    }
+    abstract protected <K, V> Multimap<K, V> mapOf(K key, V value);
 
-    protected <K, V> Multimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
-        return Multimap.tabulate(mapType(), containerType(), n, f);
-    }
+    abstract protected <K, V> Multimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f);
 
-    protected <K, V> Multimap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
-        return Multimap.fill(mapType(), containerType(), n, s);
-    }
+    abstract protected <K, V> Multimap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s);
 
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
@@ -251,16 +239,6 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     @Override
     protected <T> IntMultimap<T> fill(int n, Supplier<? extends T> s) {
         return tabulate(n, anything -> s.get());
-    }
-
-    // -- narrow
-
-    @Test
-    public void shouldNarrowMap() {
-        final Multimap<Integer, Number> int2doubleMap = mapOf(1, 1.0d);
-        final Multimap<Number, Number> number2numberMap = Multimap.narrow(int2doubleMap);
-        final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
-        assertThat(actual).isEqualTo(3);
     }
 
     // -- construction
@@ -418,7 +396,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         Multimap<Integer, Integer> m3 = emptyIntInt().put(3, 3).put(4, 4);
         assertThat(emptyIntInt().merge(m2)).isEqualTo(m2);
         assertThat(m2.merge(emptyIntInt())).isEqualTo(m2);
-        if(containerType() == Multimap.ContainerType.SEQ) {
+        if(containerType == Multimap.ContainerType.SEQ) {
             assertThat(m1.merge(m2)).isEqualTo(emptyIntInt().put(1, 1).put(1, 1).put(2, 2).put(4, 4));
             assertThat(m1.merge(m3)).isEqualTo(emptyIntInt().put(1, 1).put(2, 2).put(3, 3).put(4, 4));
         } else {

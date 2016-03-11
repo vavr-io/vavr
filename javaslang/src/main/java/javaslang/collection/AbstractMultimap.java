@@ -22,152 +22,41 @@ import java.util.function.*;
  *
  * @param <K> Key type
  * @param <V> Value type
+ * @param <M> Multimap type
  * @author Ruslan Sennov
  * @since 2.0.0
  */
- final class AbstractMultimap<K, V> implements Multimap<K, V>, Serializable {
-
-    @SuppressWarnings("unchecked")
-    enum ContainerSupplier {
-
-        SET(HashSet::empty,
-                (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
-                (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem)
-        ),
-        SORTED_SET(TreeSet::empty,
-                (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
-                (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem)
-        ),
-        SEQ(List::empty,
-                (Traversable<?> seq, Object elem) -> ((List<Object>) seq).append(elem),
-                (Traversable<?> seq, Object elem) -> ((List<Object>) seq).remove(elem)
-        );
-
-        public static ContainerSupplier of(ContainerType type) {
-            switch (type) {
-                case SEQ:
-                    return SEQ;
-                case SET:
-                    return SET;
-                case SORTED_SET:
-                    return SORTED_SET;
-                default:
-                    return null;
-            }
-        }
-
-        final Supplier<Traversable<?>> emptySupplier;
-        final BiFunction<Traversable<?>, Object, Traversable<?>> add;
-        final BiFunction<Traversable<?>, Object, Traversable<?>> remove;
-
-        <T> ContainerSupplier(Supplier<Traversable<?>> emptySupplier,
-                              BiFunction<Traversable<?>, Object, Traversable<?>> add,
-                              BiFunction<Traversable<?>, Object, Traversable<?>> remove) {
-            this.emptySupplier = emptySupplier;
-            this.add = add;
-            this.remove = remove;
-        }
-
-        <T> Traversable<T> empty() {
-            return (Traversable<T>) emptySupplier.get();
-        }
-
-        <T> Traversable<T> add(Traversable<T> container, T elem) {
-            return (Traversable<T>) add.apply(container, elem);
-        }
-
-        <T> Traversable<T> remove(Traversable<T> container, T elem) {
-            return (Traversable<T>) remove.apply(container, elem);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    enum MapSupplier {
-
-        HASH_MAP(HashMap::empty),
-        LINKED_HASH_MAP(LinkedHashMap::empty),
-        TREE_MAP(TreeMap::empty);
-
-        public static MapSupplier of(MapType type) {
-            switch (type) {
-                case HASH_MAP:
-                    return HASH_MAP;
-                case LINKED_HASH_MAP:
-                    return LINKED_HASH_MAP;
-                case TREE_MAP:
-                    return TREE_MAP;
-                default:
-                    return null;
-            }
-        }
-
-        final Supplier<Map<?,?>> emptySupplier;
-
-        MapSupplier(Supplier<Map<?, ?>> emptySupplier) {
-            this.emptySupplier = emptySupplier;
-        }
-
-        <K, V> Map<K, V> empty() {
-            return (Map<K, V>) emptySupplier.get();
-        }
-    }
+ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multimap<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final java.util.Map<MapSupplier, java.util.Map<ContainerSupplier, Multimap<?, ?>>> EMPTIES;
-
-    static {
-        EMPTIES = new java.util.HashMap<>();
-        for (MapSupplier mapSupplier : MapSupplier.values()) {
-            java.util.Map<ContainerSupplier, Multimap<?, ?>> containers = new java.util.HashMap<>();
-            for (ContainerSupplier containerSupplier : ContainerSupplier.values()) {
-                containers.put(containerSupplier, new AbstractMultimap<>(mapSupplier.empty(), mapSupplier, containerSupplier));
-            }
-            EMPTIES.put(mapSupplier, containers);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    static <K, V> Multimap<K, V> empty(MapType mapType, ContainerType containerType) {
-        Objects.requireNonNull(mapType, "mapType is null");
-        Objects.requireNonNull(containerType, "containerType is null");
-        final MapSupplier mapSupplier = MapSupplier.of(mapType);
-        final ContainerSupplier containerSupplier = ContainerSupplier.of(containerType);
-        return (Multimap<K, V>) EMPTIES.get(mapSupplier).get(containerSupplier);
-    }
-
     private final Map<K, Traversable<V>> back;
     private final Lazy<Integer> size;
-    private final MapSupplier mapSupplier;
-    private final ContainerSupplier containerSupplier;
+    private final ContainerType containerType;
 
-    AbstractMultimap(Map<K, Traversable<V>> back, MapSupplier mapSupplier, ContainerSupplier containerSupplier) {
+    AbstractMultimap(Map<K, Traversable<V>> back, ContainerType containerType) {
         this.back = back;
         this.size = Lazy.of(() -> back.foldLeft(0, (s, t) -> s + t._2.size()));
-        this.mapSupplier = mapSupplier;
-        this.containerSupplier = containerSupplier;
+        this.containerType = containerType;
     }
+
+    abstract <K2, V2> Map<K2, V2> emptyMapSupplier();
+
+    abstract <K2, V2> Multimap<K2, V2> emptyInstance();
+
+    abstract <K2, V2> Multimap<K2, V2> createFromMap(Map<K2, Traversable<V2>> back);
 
     @SuppressWarnings("unchecked")
     private <K2, V2> Multimap<K2, V2> createFromEntries(Iterable<? extends Tuple2<? extends K2, ? extends V2>> entries) {
-        Map<K2, Traversable<V2>> back = mapSupplier.empty();
+        Map<K2, Traversable<V2>> back = emptyMapSupplier();
         for (Tuple2<? extends K2, ? extends V2> entry : entries) {
             if (back.containsKey(entry._1)) {
-                back = back.put(entry._1, containerSupplier.add(back.get(entry._1).get(), entry._2));
+                back = back.put(entry._1, containerType.add(back.get(entry._1).get(), entry._2));
             } else {
-                back = back.put(entry._1, containerSupplier.add(containerSupplier.empty(), entry._2));
+                back = back.put(entry._1, containerType.add(containerType.empty(), entry._2));
             }
         }
         return createFromMap(back);
-    }
-
-    private <K2, V2> Multimap<K2, V2> createFromMap(Map<K2, Traversable<V2>> back) {
-        return new AbstractMultimap<>(back, mapSupplier, containerSupplier);
-    }
-
-    @SuppressWarnings("unchecked")
-    private <K2, V2> Multimap<K2, V2> emptyInstance() {
-        return (Multimap<K2, V2>) EMPTIES.get(mapSupplier).get(containerSupplier);
     }
 
     @Override
@@ -181,6 +70,11 @@ import java.util.function.*;
     @Override
     public boolean containsKey(K key) {
         return back.containsKey(key);
+    }
+
+    @Override
+    public ContainerType getContainerType() {
+        return containerType;
     }
 
     @Override
@@ -216,35 +110,39 @@ import java.util.function.*;
         return map((k, v) -> Tuple.of(k, valueMapper.apply(v)));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Multimap<K, V> put(K key, V value) {
-        final Traversable<V> values = back.get(key).getOrElse(containerSupplier.empty());
-        final Traversable<V> newValues = containerSupplier.add(values, value);
-        return newValues == values ? this : createFromMap(back.put(key, newValues));
+    public M put(K key, V value) {
+        final Traversable<V> values = back.get(key).getOrElse(containerType.empty());
+        final Traversable<V> newValues = containerType.add(values, value);
+        return newValues == values ? (M) this : (M) createFromMap(back.put(key, newValues));
     }
 
     @Override
-    public Multimap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
+    public M put(Tuple2<? extends K, ? extends V> entry) {
         Objects.requireNonNull(entry, "entry is null");
         return put(entry._1, entry._2);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Multimap<K, V> remove(K key) {
-        return back.containsKey(key) ? createFromMap(back.remove(key)) : this;
+    public M remove(K key) {
+        return back.containsKey(key) ? (M) createFromMap(back.remove(key)) : (M) this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Multimap<K, V> remove(K key, V value) {
-        final Traversable<V> values = back.get(key).getOrElse(containerSupplier.empty());
-        final Traversable<V> newValues = containerSupplier.remove(values, value);
-        return newValues == values ? this : newValues.isEmpty() ? createFromMap(back.remove(key)): createFromMap(back.put(key, newValues));
+    public M remove(K key, V value) {
+        final Traversable<V> values = back.get(key).getOrElse(containerType.empty());
+        final Traversable<V> newValues = containerType.remove(values, value);
+        return newValues == values ? (M) this : newValues.isEmpty() ? (M) createFromMap(back.remove(key)): (M) createFromMap(back.put(key, newValues));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Multimap<K, V> removeAll(Iterable<? extends K> keys) {
+    public M removeAll(Iterable<? extends K> keys) {
         Map<K, Traversable<V>> result = back.removeAll(keys);
-        return result == back ? this : createFromMap(result);
+        return result == back ? (M) this : (M) createFromMap(result);
     }
 
     @Override
@@ -257,15 +155,11 @@ import java.util.function.*;
         return Iterator.concat(back.values()).toStream();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Multimap<K, V> distinct() {
-        return this;
-    }
-
-    @Override
-    public Multimap<K, V> distinctBy(Comparator<? super Tuple2<K, V>> comparator) {
+    public M distinctBy(Comparator<? super Tuple2<K, V>> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return createFromEntries(iterator().distinctBy(comparator));
+        return (M) createFromEntries(iterator().distinctBy(comparator));
     }
 
     @Override
@@ -274,44 +168,48 @@ import java.util.function.*;
         return createFromEntries(iterator().distinctBy(keyExtractor));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Multimap<K, V> drop(long n) {
+    public M drop(long n) {
         if (n <= 0) {
-            return this;
+            return (M) this;
         }
         if (n >= length()) {
-            return this.emptyInstance();
+            return (M) this.emptyInstance();
         }
-        return createFromEntries(iterator().drop(n));
+        return (M) createFromEntries(iterator().drop(n));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public M dropRight(long n) {
+        if (n <= 0) {
+            return (M) this;
+        }
+        if (n >= length()) {
+            return (M) this.emptyInstance();
+        }
+        return (M) createFromEntries(iterator().dropRight(n));
     }
 
     @Override
-    public Multimap<K, V> dropRight(long n) {
-        if (n <= 0) {
-            return this;
-        }
-        if (n >= length()) {
-            return this.emptyInstance();
-        }
-        return createFromEntries(iterator().dropRight(n));
-    }
-
-    @Override
-    public Multimap<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate) {
+    public M dropUntil(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Multimap<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate) {
+    public M dropWhile(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return createFromEntries(iterator().dropWhile(predicate));
+        return (M) createFromEntries(iterator().dropWhile(predicate));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Multimap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate) {
+    public M filter(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return createFromEntries(iterator().filter(predicate));
+        return (M) createFromEntries(iterator().filter(predicate));
     }
 
     @Override
@@ -332,7 +230,7 @@ import java.util.function.*;
     }
 
     @Override
-    public Multimap<K, V> init() {
+    public M init() {
         if (back.isEmpty()) {
             throw new UnsupportedOperationException("init of empty HashMap");
         } else {
@@ -379,14 +277,14 @@ import java.util.function.*;
 
     @SuppressWarnings("unchecked")
     @Override
-    public Multimap<K, V> merge(Multimap<? extends K, ? extends V> that) {
+    public M merge(Multimap<? extends K, ? extends V> that) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
-            return createFromEntries(that);
+            return (M) createFromEntries(that);
         } else if (that.isEmpty()) {
-            return this;
+            return (M) this;
         } else {
-            return that.foldLeft((Multimap<K, V>) this, (map, entry) -> !map.contains((Tuple2<K, V>) entry) ? map.put(entry) : map);
+            return that.foldLeft((M) this, (map, entry) -> !map.contains((Tuple2<K, V>) entry) ? (M) map.put(entry) : map);
         }
     }
 
@@ -400,7 +298,7 @@ import java.util.function.*;
             return this;
         } else {
             Map<K, Traversable<V>> result = that.keySet().foldLeft(this.back, (map, key) -> {
-                final Traversable<V> thisValues = map.get(key).getOrElse(containerSupplier.empty());
+                final Traversable<V> thisValues = map.get(key).getOrElse(containerType.empty());
                 final Traversable<V2> thatValues = that.get(key).get();
                 final Traversable<V> newValues = collisionResolution.apply(thisValues, thatValues);
                 return map.put(key, newValues);
@@ -416,42 +314,46 @@ import java.util.function.*;
         return Tuple.of(createFromEntries(p._1), createFromEntries(p._2));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Multimap<K, V> peek(Consumer<? super Tuple2<K, V>> action) {
+    public M peek(Consumer<? super Tuple2<K, V>> action) {
         Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
         }
-        return this;
+        return (M) this;
     }
 
     @Override
     public String stringPrefix() {
-        return "Multimap[" + mapSupplier.empty().stringPrefix() + "," + containerSupplier.empty().stringPrefix() + "]";
+        return "Multimap[" + emptyMapSupplier().stringPrefix() + "," + containerType.empty().stringPrefix() + "]";
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Multimap<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
+    public M replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
         Objects.requireNonNull(newElement, "newElement is null");
-        return containsKey(currentElement._1) ? remove(currentElement._1).put(newElement) : this;
+        return containsKey(currentElement._1) ? (M) remove(currentElement._1).put(newElement) : (M) this;
     }
 
     @Override
-    public Multimap<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
+    public M replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         return replace(currentElement, newElement);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Multimap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements) {
+    public M retainAll(Iterable<? extends Tuple2<K, V>> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return createFromEntries(back.flatMap(t -> t._2.map(v -> Tuple.of(t._1, v))).retainAll(elements));
+        return (M) createFromEntries(back.flatMap(t -> t._2.map(v -> Tuple.of(t._1, v))).retainAll(elements));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Multimap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
+    public M scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, Queue.<Tuple2<K, V>>empty(), Queue::append, this::createFromEntries);
+        return (M) Collections.scanLeft(this, zero, operation, Queue.<Tuple2<K, V>>empty(), Queue::append, this::createFromEntries);
     }
 
     @Override
@@ -472,7 +374,7 @@ import java.util.function.*;
     }
 
     @Override
-    public Multimap<K, V> tail() {
+    public M tail() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty Multimap");
         } else {
@@ -481,35 +383,38 @@ import java.util.function.*;
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Multimap<K, V> take(long n) {
+    public M take(long n) {
         if (size() <= n) {
-            return this;
+            return (M) this;
         } else {
-            return createFromEntries(iterator().take(n));
+            return (M) createFromEntries(iterator().take(n));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public M takeRight(long n) {
+        if (size() <= n) {
+            return (M) this;
+        } else {
+            return (M) createFromEntries(iterator().takeRight(n));
         }
     }
 
     @Override
-    public Multimap<K, V> takeRight(long n) {
-        if (size() <= n) {
-            return this;
-        } else {
-            return createFromEntries(iterator().takeRight(n));
-        }
-    }
-
-    @Override
-    public Multimap<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate) {
+    public M takeUntil(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Multimap<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate) {
+    public M takeWhile(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Multimap<K, V> taken = createFromEntries(iterator().takeWhile(predicate));
-        return taken.length() == length() ? this : taken;
+        return taken.length() == length() ? (M) this : (M) taken;
     }
 
     @Override
@@ -527,7 +432,7 @@ import java.util.function.*;
         final java.util.Map<K, Collection<V>> javaMap = new java.util.HashMap<>();
         for (Tuple2<K, V> t : this) {
             javaMap.computeIfAbsent(t._1, k -> {
-                if(containerSupplier.empty() instanceof Set) {
+                if(containerType.empty() instanceof Set) {
                     return new java.util.HashSet<>();
                 } else {
                     return new java.util.ArrayList<>();
