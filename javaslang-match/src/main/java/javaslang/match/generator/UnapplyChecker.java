@@ -7,6 +7,7 @@ package javaslang.match.generator;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeKind;
 
 import static javax.lang.model.element.Modifier.*;
 
@@ -24,7 +25,7 @@ class UnapplyChecker extends BaseChecker<UnapplyChecker, ExecutableElement> {
                 methodChecker.ensure(e -> !e.elem.isDefault(), () -> "@" + "Unapply method needs to be declared in a class, not an interface.") &&
                 methodChecker.ensure(e -> !e.elem.isVarArgs(), () -> "@" + "Unapply method has varargs.") &&
                 methodChecker.ensure(e -> e.elem.getParameters().size() == 1, () -> "Unapply method must have exactly one parameter of the object to be deconstructed.") &&
-                // TODO: methodChecker.ensure(e -> e.elem.getParameters().get(0).asType().getKind() != TypeKind.DECLARED, () -> "Unapply method parameter must be a declared type.") &&
+                methodChecker.ensure(e -> e.elem.getParameters().get(0).asType().getKind() == TypeKind.DECLARED, () -> "Unapply method parameter must be a declared type.") &&
                 methodChecker.ensure(e -> e.elem.getReturnType().toString().startsWith("javaslang.Tuple"), () -> "Return type of unapply method must be a Tuple.") &&
                 methodChecker.ensure(e -> !e.elem.getReturnType().toString().endsWith("Tuple"), () -> "Return type is no Tuple implementation.") &&
                 methodChecker.ensure(e -> e.hasAll(STATIC), () -> "Unapply method needs to be static.") &&
