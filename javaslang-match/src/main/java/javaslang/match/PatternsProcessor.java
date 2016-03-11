@@ -82,7 +82,7 @@ public class PatternsProcessor extends AbstractProcessor {
         final Messager messager = processingEnv.getMessager();
         for (TypeElement typeElement : typeElements) {
             if (Patterns.Checker.isValid(typeElement, messager)) {
-                final ClassModel classModel = new ClassModel(elementUtils, typeElement);
+                final ClassModel classModel = ClassModel.of(elementUtils, typeElement);
                 final String className = deriveClassName(classModel);
                 Generator.generate(className, classModel, messager).ifPresent(code -> {
                     final String fqn = (classModel.hasDefaultPackage() ? "" : classModel.getPackageName() + ".") + className;

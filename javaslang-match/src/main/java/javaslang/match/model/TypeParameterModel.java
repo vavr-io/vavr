@@ -6,7 +6,9 @@
 package javaslang.match.model;
 
 import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
 import static javax.lang.model.type.TypeKind.DECLARED;
@@ -21,15 +23,19 @@ import static javax.lang.model.type.TypeKind.TYPEVAR;
 public class TypeParameterModel {
 
     private final Elements elementUtils;
-    private final TypeParameterElement typeParameterElement;
+    private final TypeMirror typeMirror;
 
-    public TypeParameterModel(Elements elementUtils, TypeParameterElement typeParameterElement) {
+    public TypeParameterModel(Elements elementUtils, TypeMirror typeMirror) {
         this.elementUtils = elementUtils;
-        this.typeParameterElement = typeParameterElement;
+        this.typeMirror = typeMirror;
     }
 
     public ClassModel asType() {
-        return ClassModel.of(elementUtils, typeParameterElement.asType());
+        return new ClassModel(elementUtils, (DeclaredType) typeMirror);
+    }
+
+    public String asTypeVar() {
+        return typeMirror.toString();
     }
 
     public boolean isType() {
@@ -41,11 +47,11 @@ public class TypeParameterModel {
     }
 
     private boolean isTypeKind(TypeKind typeKind) {
-        return typeParameterElement.asType().getKind() == typeKind;
+        return typeMirror.getKind() == typeKind;
     }
 
     @Override
     public String toString() {
-        return typeParameterElement.asType().toString();
+        return typeMirror.toString();
     }
 }

@@ -23,20 +23,19 @@ import static java.util.stream.Collectors.toList;
 public class ClassModel {
 
     private final Elements elementUtils;
-    private final TypeElement typeElement;
+    private final DeclaredType declaredType;
 
-    public static ClassModel of(Elements elementUtils, TypeMirror typeMirror) {
-        final TypeElement typeElement = (TypeElement) ((DeclaredType) typeMirror).asElement();
-        return new ClassModel(elementUtils, typeElement);
+    public static ClassModel of(Elements elementUtils, TypeElement typeElement) {
+        return new ClassModel(elementUtils, (DeclaredType) typeElement.asType());
     }
 
-    public ClassModel(Elements elementUtils, TypeElement typeElement) {
+    public ClassModel(Elements elementUtils, DeclaredType declaredType) {
         this.elementUtils = elementUtils;
-        this.typeElement = typeElement;
+        this.declaredType = declaredType;
     }
 
-    public TypeElement getTypeElement() {
-        return typeElement;
+    public TypeElement typeElement() {
+        return (TypeElement) declaredType.asElement();
     }
 
     // returns the simple name for top level class and the combined class name for inner classes
@@ -46,11 +45,11 @@ public class ClassModel {
     }
 
     public String getFullQualifiedName() {
-        return typeElement.getQualifiedName().toString();
+        return typeElement().getQualifiedName().toString();
     }
 
     public List<MethodModel> getMethods() {
-        return typeElement.getEnclosedElements().stream()
+        return typeElement().getEnclosedElements().stream()
                 .filter(element -> {
                     final String name = element.getSimpleName().toString();
                     return element instanceof ExecutableElement && !name.isEmpty() && !"<init>".equals(name) && !"<clinit>".equals(name);
@@ -60,20 +59,21 @@ public class ClassModel {
     }
 
     public String getPackageName() {
-        return elementUtils.getPackageOf(typeElement).getQualifiedName().toString();
+        return elementUtils.getPackageOf(typeElement()).getQualifiedName().toString();
     }
 
     public List<TypeParameterModel> getTypeParameters() {
-        return typeElement.getTypeParameters().stream()
-                .map(typeParam -> new TypeParameterModel(elementUtils, typeParam))
+        return declaredType.getTypeArguments().stream()
+                .map(typeMirror -> new TypeParameterModel(elementUtils, typeMirror))
                 .collect(toList());
     }
 
-    public int getTypeParameterCount() {
-        return typeElement.getTypeParameters().size();
+    public boolean hasDefaultPackage() {
+        return elementUtils.getPackageOf(typeElement()).isUnnamed();
     }
 
-    public boolean hasDefaultPackage() {
-        return elementUtils.getPackageOf(typeElement).isUnnamed();
+    @Override
+    public String toString() {
+        return declaredType.toString();
     }
 }

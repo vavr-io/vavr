@@ -7,10 +7,10 @@ package javaslang.match.model;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
 import java.lang.annotation.Annotation;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -47,20 +47,21 @@ public class MethodModel {
     }
 
     public ClassModel getReturnType() {
-        return ClassModel.of(elementUtils, executableElement.getReturnType());
+        return new ClassModel(elementUtils, (DeclaredType) executableElement.getReturnType());
     }
 
     public List<TypeParameterModel> getTypeParameters() {
         return executableElement.getTypeParameters().stream()
-                .map(typeParam -> new TypeParameterModel(elementUtils, typeParam))
+                .map(typeParam -> new TypeParameterModel(elementUtils, typeParam.asType()))
                 .collect(toList());
-    }
-
-    public boolean hasTypeParameters() {
-        return !executableElement.getTypeParameters().isEmpty();
     }
 
     public <A extends Annotation> boolean isAnnotatedWith(Class<A> annotationType) {
         return executableElement.getAnnotationsByType(annotationType).length > 0;
+    }
+
+    @Override
+    public String toString() {
+        return executableElement.toString();
     }
 }

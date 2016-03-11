@@ -6,6 +6,7 @@
 package javaslang.match.model;
 
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
 
 /**
@@ -24,7 +25,8 @@ public class ParameterModel {
         this.variableElement = variableElement;
     }
 
+    // TODO: cast to DeclaredType possible?
     public ClassModel getType() {
-        return ClassModel.of(elementUtils, variableElement.asType());
+        return new ClassModel(elementUtils, (DeclaredType) variableElement.asType());
     }
 }

@@ -40,7 +40,7 @@ public class Generator {
     public static Optional<String> generate(String derivedClassName, ClassModel classModel, Messager messager) {
         List<MethodModel> methodModels = getMethods(classModel, messager);
         if (methodModels.isEmpty()) {
-            messager.printMessage(Diagnostic.Kind.WARNING, "No @Unapply methods found.", classModel.getTypeElement());
+            messager.printMessage(Diagnostic.Kind.WARNING, "No @Unapply methods found.", classModel.typeElement());
             return Optional.empty();
         } else {
             final String _package = classModel.getPackageName();
@@ -75,15 +75,15 @@ public class Generator {
         final int arity = Integer.parseInt(methodModel.getReturnType().getClassName().substring("Tuple".length()));
         final String body;
         if (arity == 0) {
-            body = pattern0(im) + ".of(" + paramTypeName + ".class)";
+            body = pattern(im, 0) + ".of(" + paramTypeName + ".class)";
         } else {
             final String args = IntStream.rangeClosed(1, arity).mapToObj(i -> "p" + i).collect(joining(", "));
             final String unapplyRef = classModel.getClassName() + "::" + name;
-            body = String.format("%s.of(%s, %s, %s)", patternN(im, arity), paramTypeName + ".class", args, unapplyRef);
+            body = String.format("%s.of(%s, %s, %s)", pattern(im, arity), paramTypeName + ".class", args, unapplyRef);
         }
         final String returnType = getReturnType(im, methodModel, arity);
         final String method;
-        if (methodModel.hasTypeParameters()) {
+        if (methodModel.getTypeParameters().size() > 0) {
             final String generics = getGenerics(im, methodModel);
             final String params = getParams(im, arity);
             method = String.format("%s %s %s(%s) {\n        return %s;\n    }", generics, returnType, name, params, body);
@@ -114,28 +114,36 @@ public class Generator {
 
     private static String mapToName(ImportManager im, TypeParameterModel typeParameterModel) {
         if (typeParameterModel.isType()) {
-            return im.getType(typeParameterModel.asType());
+            return mapToName(im, typeParameterModel.asType());
         } else if (typeParameterModel.isTypeVar()) {
-            return typeParameterModel.toString();
+            return typeParameterModel.asTypeVar();
         } else {
             throw new IllegalStateException("Unhandled type parameter: " + typeParameterModel.toString());
         }
     }
 
+    private static String mapToName(ImportManager im, ClassModel classModel) {
+        final List<TypeParameterModel> typeParameters = classModel.getTypeParameters();
+        final String simpleName = im.getType(classModel);
+        if (typeParameters.size() == 0) {
+            return simpleName;
+        } else {
+            return simpleName + classModel.getTypeParameters().stream()
+                    .map(typeParam -> mapToName(im, typeParam))
+                    .collect(joining(", ", "<", ">"));
+        }
+    }
+
     // Expands the return type of a method declaration
     private static String getReturnType(ImportManager im, MethodModel methodModel, int arity) {
-        final String type = im.getType(methodModel.getParameter(0).getType());
-        if (arity == 0) {
-            return pattern0(im) + "<" + type + ">";
-        } else {
-            final List<String> resultTypes = new ArrayList<>();
-            final int typeParameterCount = methodModel.getReturnType().getTypeParameterCount();
-            resultTypes.add(type);
-            for (int i = 0; i < typeParameterCount; i++) {
-                resultTypes.add("_" + (i + 1));
-            }
-            return patternN(im, arity) + "<" + resultTypes.stream().collect(joining(", ")) + ">";
+        final List<String> resultTypes = new ArrayList<>();
+        final int typeParameterCount = methodModel.getReturnType().getTypeParameters().size();
+        final String type = mapToName(im, methodModel.getParameter(0).getType());
+        resultTypes.add(type);
+        for (int i = 0; i < typeParameterCount; i++) {
+            resultTypes.add("_" + (i + 1));
         }
+        return pattern(im, arity) + resultTypes.stream().collect(joining(", ", "<", ">"));
     }
 
     private static String getParams(ImportManager im, int arity) {
@@ -150,11 +158,7 @@ public class Generator {
                 .collect(toList());
     }
 
-    private static String pattern0(ImportManager im) {
-        return im.getType("javaslang", "API.Match.Pattern0");
-    }
-
-    private static String patternN(ImportManager im, int arity) {
+    private static String pattern(ImportManager im, int arity) {
         return im.getType("javaslang", "API.Match.Pattern" + arity);
     }
 }
