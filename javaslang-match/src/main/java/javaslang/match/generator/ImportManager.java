@@ -24,31 +24,29 @@ class ImportManager {
 
     // properties
     private final String packageNameOfClass;
-    private final Set<String> knownSimpleClassNames;
     private final int wildcardThreshold;
 
     // mutable state
     private Map<FQN, String> imports = new HashMap<>();
 
-    public ImportManager(String packageNameOfClass, Set<String> knownSimpleClassNames, int wildcardThreshold) {
+    public ImportManager(String packageNameOfClass, int wildcardThreshold) {
         this.packageNameOfClass = packageNameOfClass;
-        this.knownSimpleClassNames = knownSimpleClassNames;
         this.wildcardThreshold = wildcardThreshold;
     }
 
     public static ImportManager forClass(ClassModel classModel) {
-        return new ImportManager(classModel.getPackageName(), Collections.emptySet(), DEFAULT_WILDCARD_THRESHOLD);
+        return new ImportManager(classModel.getPackageName(), DEFAULT_WILDCARD_THRESHOLD);
     }
 
     // used by generator to register non-static imports
     public String getType(ClassModel classModel) {
         final FQN fqn = new FQN(classModel.getPackageName(), classModel.getClassName());
-        return simplify(fqn, imports, packageNameOfClass, knownSimpleClassNames);
+        return simplify(fqn, imports, packageNameOfClass);
     }
 
     public String getType(String packageName, String className) {
         final FQN fqn = new FQN(packageName, className);
-        return simplify(fqn, imports, packageNameOfClass, knownSimpleClassNames);
+        return simplify(fqn, imports, packageNameOfClass);
     }
 
     // finally used by generator to get the import section
@@ -57,38 +55,33 @@ class ImportManager {
     }
 
     private static String optimizeImports(Set<FQN> imports, boolean isStatic, int wildcardThreshold) {
-
         final Map<String, Integer> counts = imports.stream()
                 .map(fqn -> fqn.packageName)
                 .collect(groupingBy(s -> s))
                 .entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().size()));
-
         final List<String> directImports = imports.stream()
                 .filter(fqn -> counts.get(fqn.packageName) <= wildcardThreshold)
                 .map(FQN::qualifiedName)
                 .collect(toList());
-
         final List<String> wildcardImports = counts.entrySet().stream()
                 .filter(entry -> entry.getValue() > wildcardThreshold)
                 .map(entry -> entry.getKey() + ".*")
                 .collect(toList());
-
         final List<String> result = new ArrayList<>(directImports);
         result.addAll(wildcardImports);
-
         final String prefix = "import " + (isStatic ? "static " : "");
         return result.stream().sorted().map(s -> prefix + s + ";").collect(joining("\n"));
     }
 
-    private static String simplify(FQN fqn, Map<FQN, String> imports, String packageNameOfClass, Set<String> knownSimpleClassNames) {
+    private static String simplify(FQN fqn, Map<FQN, String> imports, String packageNameOfClass) {
         if (fqn.packageName.isEmpty() && !packageNameOfClass.isEmpty()) {
             throw new IllegalStateException("Can't import class '" + fqn.className + "' located in default package");
         } else if (fqn.packageName.equals(packageNameOfClass)) {
             return fqn.className;
         } else if (imports.containsKey(fqn)) {
             return imports.get(fqn);
-        } else if (knownSimpleClassNames.contains(fqn.className) || imports.values().contains(fqn.className)) {
+        } else if (imports.values().contains(fqn.className)) {
             return fqn.qualifiedName();
         } else {
             imports.put(fqn, fqn.className);
