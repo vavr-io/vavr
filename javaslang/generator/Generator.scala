@@ -270,8 +270,8 @@ def generateMainClasses(): Unit = {
           public static <T> Pattern0<T> $$(T prototype) {
               return new Pattern0<T>() {
                   @Override
-                  public boolean isApplicable(T obj) {
-                      return $Objects.equals(obj, prototype);
+                  public $OptionType<T> apply(T obj) {
+                      return $Objects.equals(obj, prototype) ? $OptionType.some(obj) : $OptionType.none();
                   }
               };
           }
@@ -287,8 +287,8 @@ def generateMainClasses(): Unit = {
               $Objects.requireNonNull(predicate, "predicate is null");
               return new Pattern0<T>() {
                   @Override
-                  public boolean isApplicable(T obj) {
-                      return predicate.test(obj);
+                  public $OptionType<T> apply(T obj) {
+                      return predicate.test(obj) ? $OptionType.some(obj) : $OptionType.none();
                   }
               };
           }
@@ -318,9 +318,9 @@ def generateMainClasses(): Unit = {
               public final <R> $OptionType<R> option(Case<? extends T, ? extends R>... cases) {
                   Objects.requireNonNull(cases, "cases is null");
                   for (Case<? extends T, ? extends R> _case : cases) {
-                      final Case<T, R> narrowedCase = (Case<T, R>) _case;
-                      if (narrowedCase.isApplicable(value)) {
-                          return Option.some(narrowedCase.apply(value));
+                      final $OptionType<R> result = ((Case<T, R>) _case).apply(value);
+                      if (result.isDefined()) {
+                          return result;
                       }
                   }
                   return $OptionType.none();
@@ -328,7 +328,8 @@ def generateMainClasses(): Unit = {
 
               // -- CASES
 
-              public interface Case<T, R> extends PartialFunction<T, R> {
+              // javac needs fqn's here
+              public interface Case<T, R> extends java.util.function.Function<T, javaslang.control.Option<R>> {
               }
 
               public static final class Case0<T, R> implements Case<T, R> {
@@ -342,20 +343,14 @@ def generateMainClasses(): Unit = {
                   }
 
                   @Override
-                  public boolean isApplicable(T t) {
-                      return pattern.isApplicable(t);
-                  }
-
-                  @Override
-                  public R apply(T o) {
-                      return f.get();
+                  public Option<R> apply(T o) {
+                      return pattern.apply(o).map(ignored -> f.get());
                   }
               }
 
               ${(1 to N).gen(i => {
                 val argTypes = (1 to i).gen(j => s"? super T$j")(", ")
                 val generics = (1 to i).gen(j => s"T$j")(", ")
-                val resultType = s"Tuple$i<$generics>"
                 val functionType = i match {
                   case 1 => FunctionType
                   case 2 => BiFunctionType
@@ -373,17 +368,11 @@ def generateMainClasses(): Unit = {
                       }
 
                       @Override
-                      public boolean isApplicable(T t) {
-                          return pattern.isApplicable(t);
-                      }
-
-                      @Override
-                      public R apply(T t) {
+                      public $OptionType<R> apply(T obj) {
                           ${if (i == 1) xs"""
-                            return f.apply(pattern.apply(t));
+                            return pattern.apply(obj).map(f);
                           """ else xs"""
-                            final $resultType r = pattern.apply(t);
-                            return f.apply(${(1 to i).gen(j => s"r._$j")(", ")});
+                            return pattern.apply(obj).map(t -> f.apply(${(1 to i).gen(j => s"t._$j")(", ")}));
                           """}
                       }
                   }
@@ -393,14 +382,14 @@ def generateMainClasses(): Unit = {
               // -- PATTERNS
 
               /**
-               * A Pattern is a {@link PartialFunction}. By calling {@link #isApplicable(Object)} we check, if
-               * {@link #apply(Object)} can be called. If a Pattern is not applicable to an object, {@linkplain #apply(Object)}
-               * must not be called.
+               * A Pattern is a partial {@link $FunctionType} in the sense that a function applications returns an
+               * optional result of type {@code Option<R>}.
                *
-               * @param <T> An object type that has a part of type R than is matched and decomposed by this pattern
-               * @param <R> Type of the part this pattern matches/decomposes
+               * @param <T> Class type that is matched by this pattern
+               * @param <R> Type of the single or composite part this pattern decomposes
                */
-              public interface Pattern<T, R> extends PartialFunction<T, R> {
+              // javac needs fqn's here
+              public interface Pattern<T, R> extends java.util.function.Function<T, javaslang.control.Option<R>> {
               }
 
               // These can't be @FunctionalInterfaces because of ambiguities.
@@ -410,8 +399,8 @@ def generateMainClasses(): Unit = {
 
                   private static final Pattern0<Object> ANY = new Pattern0<Object>() {
                       @Override
-                      public boolean isApplicable(Object o) {
-                          return true;
+                      public $OptionType<Object> apply(Object o) {
+                          return $OptionType.some(o);
                       }
                   };
 
@@ -426,18 +415,13 @@ def generateMainClasses(): Unit = {
                   public static <T> Pattern0<T> of(Class<? super T> type) {
                       return new Pattern0<T>() {
                           @Override
-                          public boolean isApplicable(T obj) {
-                              return obj != null && type.isAssignableFrom(obj.getClass());
+                          public $OptionType<T> apply(T obj) {
+                              return (obj != null && type.isAssignableFrom(obj.getClass())) ? $OptionType.some(obj) : $OptionType.none();
                           }
                       };
                   }
 
                   private Pattern0() {
-                  }
-
-                  @Override
-                  public T apply(T obj) {
-                      return obj;
                   }
               }
 
@@ -447,37 +431,28 @@ def generateMainClasses(): Unit = {
                 val resultType = if (i == 1) resultGenerics else s"Tuple$i<$resultGenerics>"
                 val unapplyGenerics = (1 to i).gen(j => s"U$j")(", ")
                 val unapplyTupleType = s"Tuple$i<$unapplyGenerics>"
-                val unapplyType = if (i == 1) "U1" else unapplyTupleType
                 val args = (1 to i).gen(j => s"Pattern<T$j, ?> p$j")(", ")
-                val parts = i.plural("part")
                 xs"""
                   public static abstract class Pattern$i<T, $resultGenerics> implements Pattern<T, $resultType> {
 
                       public static <T, $declaredGenerics> Pattern$i<T, $resultGenerics> of(Class<? super T> type, $args, Function<T, $unapplyTupleType> unapply) {
                           return new Pattern$i<T, $resultGenerics>() {
-
-                              // the unapplied object
-                              $unapplyType $parts = null;
-
                               @SuppressWarnings("unchecked")
                               @Override
-                              public boolean isApplicable(T obj) {
+                              public $OptionType<$resultType> apply(T obj) {
                                   if (obj == null || !type.isAssignableFrom(obj.getClass())) {
-                                      return false;
+                                      return $OptionType.none();
+                                  } else {
+                                      ${if (i == 1) xs"""
+                                        return unapply.apply(obj).transform(u1 -> ((Pattern<U1, ?>) p1).apply(u1).map(_1 -> (T1) u1));
+                                      """ else xs"""
+                                        final Tuple$i<${(1 to i).gen(j => s"U$j")(", ")}> unapplied = unapply.apply(obj);
+                                        return unapplied.transform((${(1 to i).gen(j => s"u$j")(", ")}) ->
+                                                ${(1 until i).gen(j => s"((Pattern<U$j, ?>) p$j).apply(u$j).flatMap(_$j ->")("\n")}
+                                                ((Pattern<U$i, ?>) p$i).apply(u$i).map(_$i -> ($resultType) unapplied)
+                                        ${")" * i};
+                                      """}
                                   }
-                                  $parts = unapply.apply(obj)${(i == 1).gen("._1")};
-                                  ${if (i == 1) xs"""
-                                      return ((Pattern<U1, ?>) p1).isApplicable($parts);
-                                  """ else xs"""
-                                      return
-                                              ${(1 to i).gen(j => s"((Pattern<U$j ,?>) p$j).isApplicable($parts._$j)")(" &&\n")};
-                                  """}
-                              }
-
-                              @SuppressWarnings("unchecked")
-                              @Override
-                              public $resultType apply(T obj) {
-                                  return ($resultType) $parts;
                               }
                           };
                       }
