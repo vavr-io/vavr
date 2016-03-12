@@ -11,16 +11,13 @@ import javaslang.match.model.MethodModel;
 import javaslang.match.model.TypeParameterModel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-
-// ------------
-// TODO: check generic (return) type parameters (-> e.g. wildcard is not allowed)
-// TODO: detect collisions / retry with different generic type arg names (starting with _1, _2, ...)
-// ------------
 
 /**
  * Code generator for structural pattern matching patterns.
@@ -74,51 +71,70 @@ public class Generator {
             final String unapplyRef = classModel.getClassName() + "::" + name;
             body = String.format("%s.of(%s, %s, %s)", pattern(im, arity), paramTypeName + ".class", args, unapplyRef);
         }
-        final String returnType = getReturnType(im, methodModel, arity);
+        final List<String> typeArgs = methodModel.getTypeParameters().stream()
+                .map(typeParameterModel -> mapToName(im, typeParameterModel))
+                .collect(toList());
+        final List<String> upperBoundArgs = deriveUpperBounds(typeArgs, methodModel.getReturnType().getTypeParameters().size());
+        final String returnType = genReturnType(im, methodModel, upperBoundArgs, arity);
         final String method;
-        if (methodModel.getTypeParameters().size() > 0) {
-            final String generics = getGenerics(im, methodModel);
-            final String params = getParams(im, arity);
-            method = String.format("%s %s %s(%s) {\n        return %s;\n    }", generics, returnType, name, params, body);
-        } else {
+        if (arity == 0 && methodModel.getTypeParameters().size() == 0) {
             method = String.format("final %s %s = %s;", returnType, name, body);
+        } else {
+            final String generics = genGenerics(im, methodModel, typeArgs, upperBoundArgs);
+            final String params = genParams(im, upperBoundArgs, arity);
+            method = String.format("%s %s %s(%s) {\n        return %s;\n    }", generics, returnType, name, params, body);
         }
         builder.append("    public static ").append(method).append("\n");
     }
 
+    // Introduces new upper generic type bounds for decomposed object parts
+    private static List<String> deriveUpperBounds(List<String> typeArgs, int count) {
+        final List<String> result = new ArrayList<>();
+        final Set<String> knownTypeArgs = new HashSet<>(typeArgs);
+        for (int i = 0; i < count; i++) {
+            String typeArg = "_" + (i + 1);
+            while (knownTypeArgs.contains(typeArg)) {
+                typeArg = "_" + typeArg;
+            }
+            result.add(typeArg);
+            knownTypeArgs.add(typeArg);
+        }
+        return result;
+    }
+
     // Expands the generics part of a method declaration
-    private static String getGenerics(ImportManager im, MethodModel methodModel) {
-        final List<TypeParameterModel> typeParameters = methodModel.getTypeParameters();
+    private static String genGenerics(ImportManager im, MethodModel methodModel, List<String> typeParameters, List<String> upperBoundArgs) {
         final List<TypeParameterModel> returnTypeArgs = methodModel.getReturnType().getTypeParameters();
         if (typeParameters.size() + returnTypeArgs.size() == 0) {
             return "";
         } else {
-            final List<String> result = new ArrayList<>();
-            result.addAll(typeParameters.stream()
-                    .map(typeParameterModel -> mapToName(im, typeParameterModel))
-                    .collect(toList()));
+            final List<String> result = new ArrayList<>(typeParameters);
             for (int i = 0; i < returnTypeArgs.size(); i++) {
                 final String returnTypeArg = mapToName(im, returnTypeArgs.get(i));
-                result.add("_" + (i + 1) + " extends " + returnTypeArg);
+                result.add(upperBoundArgs.get(i) + " extends " + returnTypeArg);
             }
             return result.stream().collect(joining(", ", "<", ">"));
         }
     }
 
     // Expands the return type of a method declaration
-    private static String getReturnType(ImportManager im, MethodModel methodModel, int arity) {
+    private static String genReturnType(ImportManager im, MethodModel methodModel, List<String> upperBoundArgs, int arity) {
         final List<String> resultTypes = new ArrayList<>();
-        final int typeParameterCount = methodModel.getReturnType().getTypeParameters().size();
         final String type = mapToName(im, methodModel.getParameter(0).getType());
         resultTypes.add(type);
-        for (int i = 0; i < typeParameterCount; i++) {
-            resultTypes.add("_" + (i + 1));
-        }
+        resultTypes.addAll(upperBoundArgs);
         return pattern(im, arity) + resultTypes.stream().collect(joining(", ", "<", ">"));
     }
 
-    // -- helpers
+    // Expands the parameters of a method declaration
+    private static String genParams(ImportManager im, List<String> upperBoundArgs, int arity) {
+        final String patternType = im.getType("javaslang", "API.Match.Pattern");
+        return IntStream.range(0, arity)
+                .mapToObj(i -> patternType + "<" + upperBoundArgs.get(i) + ", ?> p" + (i + 1))
+                .collect(joining(", "));
+    }
 
+    // Recursively maps generic type parameters to names according to their kind
     private static String mapToName(ImportManager im, TypeParameterModel typeParameterModel) {
         if (typeParameterModel.isType()) {
             return mapToName(im, typeParameterModel.asType());
@@ -129,6 +145,7 @@ public class Generator {
         }
     }
 
+    // Recursively maps class generics to names
     private static String mapToName(ImportManager im, ClassModel classModel) {
         final List<TypeParameterModel> typeParameters = classModel.getTypeParameters();
         final String simpleName = im.getType(classModel);
@@ -139,11 +156,6 @@ public class Generator {
                     .map(typeParam -> mapToName(im, typeParam))
                     .collect(joining(", ", "<", ">"));
         }
-    }
-
-    private static String getParams(ImportManager im, int arity) {
-        final String patternType = im.getType("javaslang", "API.Match.Pattern");
-        return IntStream.rangeClosed(1, arity).mapToObj(i -> patternType + "<_" + i + ", ?> p" + i).collect(joining(", "));
     }
 
     private static String pattern(ImportManager im, int arity) {

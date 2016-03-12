@@ -8,14 +8,15 @@ package javaslang;
 import javaslang.collection.List;
 import javaslang.control.Option;
 import javaslang.control.Option.Some;
+import javaslang.match.annotation.Unapply;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 
+import static javaslang.API.$;
 import static javaslang.API.*;
-import static javaslang.API.Match.*;
+import static javaslang.API.Match.Pattern1;
 import static javaslang.Patterns.*;
-import static javaslang.Predicates.*;
 
 public class MatchTest {
 
@@ -48,15 +49,15 @@ public class MatchTest {
 //                                     ,otherwise("many"));
 
         Match(3).of(
-            Case($(1), "one"),
-            Case($(2), "two"),
-            Case($(), "many")
+                Case($(1), "one"),
+                Case($(2), "two"),
+                Case($(), "many")
         );
 
         Match(3).of(
-            Case(1, "one"),
-            Case(2, "two"),
-            Case($(), "many")
+                Case(1, "one"),
+                Case(2, "two"),
+                Case($(), "many")
         );
 
         final Number num = Match(3).of(
@@ -220,4 +221,13 @@ public class MatchTest {
 //    static <T1> Match.Pattern3<Developer, String, Boolean, Option<Number>> Developer(Pattern<String, String> p1, Pattern<Boolean, Boolean> p2, Pattern<Option<Number>, T1> p3) {
 //        return Pattern3.of(Developer.class, p1, p2, p3, dev -> Tuple.of(dev.name, dev.isCaffeinated, dev.number));
 //    }
+
+    @javaslang.match.annotation.Patterns
+    protected static class Person_<T extends Number> {
+
+        @Unapply
+        static Tuple3<String, Boolean, Option<Number>> Developer(Developer dev) {
+            return Tuple.of(dev.getName(), dev.isCaffeinated(), dev.number());
+        }
+    }
 }

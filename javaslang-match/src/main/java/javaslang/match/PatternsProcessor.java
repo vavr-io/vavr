@@ -77,7 +77,6 @@ public class PatternsProcessor extends AbstractProcessor {
                 }
             }
         }
-        // TODO: ensure we only process @Patterns
         return true;
     }
 
@@ -86,7 +85,7 @@ public class PatternsProcessor extends AbstractProcessor {
         final Set<ClassModel> classModels = new HashSet<>();
         final javax.lang.model.util.Elements elementUtils = processingEnv.getElementUtils();
         final Messager messager = processingEnv.getMessager();
-        typeElements.stream().filter(typeElement -> PatternsChecker.isValid(typeElement, messager)).forEach(typeElement -> {
+        for (TypeElement typeElement : typeElements) {
             final ClassModel classModel = ClassModel.of(elementUtils, typeElement);
             final List<MethodModel> methodModels = classModel.getMethods().stream()
                     .filter(method -> method.isAnnotatedWith(Unapply.class))
@@ -99,7 +98,7 @@ public class PatternsProcessor extends AbstractProcessor {
                     classModels.add(classModel);
                 }
             }
-        });
+        }
         return classModels;
     }
 
@@ -119,7 +118,7 @@ public class PatternsProcessor extends AbstractProcessor {
     }
 
     private String deriveClassName(ClassModel classModel) {
-        final String className = classModel.getClassName();
+        final String className = classModel.getClassName().replaceAll("\\.", "");
         return ("$".equals(className) ? "" : className) + Patterns.class.getSimpleName();
     }
 }
