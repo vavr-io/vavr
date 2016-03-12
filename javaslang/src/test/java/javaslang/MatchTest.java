@@ -223,7 +223,7 @@ public class MatchTest {
 //    }
 
     @javaslang.match.annotation.Patterns
-    static class Person_ {
+    protected static class Person_<T extends Number> {
 
         @Unapply
         static Tuple3<String, Boolean, Option<Number>> Developer(Developer dev) {
