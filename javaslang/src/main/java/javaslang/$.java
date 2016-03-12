@@ -15,8 +15,7 @@ import javaslang.control.Validation;
 import javaslang.match.annotation.Unapply;
 import javaslang.match.annotation.Patterns;
 
-@Patterns
-class $ {
+@Patterns class $ {
 
     // -- javaslang
 

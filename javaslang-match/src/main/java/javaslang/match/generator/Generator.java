@@ -87,6 +87,7 @@ public class Generator {
         builder.append("    public static ").append(method).append("\n");
     }
 
+    // Introduces new upper generic type bounds for decomposed object parts
     private static List<String> deriveUpperBounds(List<String> typeArgs, int count) {
         final List<String> result = new ArrayList<>();
         final Set<String> knownTypeArgs = new HashSet<>(typeArgs);
@@ -108,7 +109,6 @@ public class Generator {
             return "";
         } else {
             final List<String> result = new ArrayList<>(typeParameters);
-            final Set<String> knownTypeArgs = new HashSet<>(result);
             for (int i = 0; i < returnTypeArgs.size(); i++) {
                 final String returnTypeArg = mapToName(im, returnTypeArgs.get(i));
                 result.add(upperBoundArgs.get(i) + " extends " + returnTypeArg);
@@ -126,6 +126,7 @@ public class Generator {
         return pattern(im, arity) + resultTypes.stream().collect(joining(", ", "<", ">"));
     }
 
+    // Expands the parameters of a method declaration
     private static String genParams(ImportManager im, List<String> upperBoundArgs, int arity) {
         final String patternType = im.getType("javaslang", "API.Match.Pattern");
         return IntStream.range(0, arity)
@@ -133,8 +134,7 @@ public class Generator {
                 .collect(joining(", "));
     }
 
-    // -- helpers
-
+    // Recursively maps generic type parameters to names according to their kind
     private static String mapToName(ImportManager im, TypeParameterModel typeParameterModel) {
         if (typeParameterModel.isType()) {
             return mapToName(im, typeParameterModel.asType());
@@ -145,6 +145,7 @@ public class Generator {
         }
     }
 
+    // Recursively maps class generics to names
     private static String mapToName(ImportManager im, ClassModel classModel) {
         final List<TypeParameterModel> typeParameters = classModel.getTypeParameters();
         final String simpleName = im.getType(classModel);
