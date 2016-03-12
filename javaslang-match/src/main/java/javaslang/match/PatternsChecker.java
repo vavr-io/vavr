@@ -18,7 +18,8 @@ class PatternsChecker extends BaseChecker<PatternsChecker, TypeElement> {
 
     static boolean isValid(TypeElement typeElement, Messager messager) {
         final PatternsChecker typeChecker = new PatternsChecker(typeElement, messager);
-        return typeChecker.ensure(e -> !e.isNested(), () -> "Patterns need to be defined in top-level classes.");
+        return typeChecker.ensure(e -> !e.isNested(), () -> "Patterns need to be defined in top-level classes.") &&
+                typeChecker.ensure(e -> e.elem.getTypeParameters().isEmpty(), () -> "A patterns class must not have type parameters.");
     }
 
     private PatternsChecker(TypeElement elem, Messager messager) {
