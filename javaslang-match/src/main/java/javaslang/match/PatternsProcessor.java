@@ -119,7 +119,7 @@ public class PatternsProcessor extends AbstractProcessor {
     }
 
     private String deriveClassName(ClassModel classModel) {
-        final String className = classModel.getClassName();
+        final String className = classModel.getClassName().replaceAll("\\.", "");
         return ("$".equals(className) ? "" : className) + Patterns.class.getSimpleName();
     }
 }

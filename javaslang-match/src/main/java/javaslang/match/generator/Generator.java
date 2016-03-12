@@ -77,12 +77,12 @@ public class Generator {
         final List<String> upperBoundArgs = deriveUpperBounds(typeArgs, methodModel.getReturnType().getTypeParameters().size());
         final String returnType = genReturnType(im, methodModel, upperBoundArgs, arity);
         final String method;
-        if (methodModel.getTypeParameters().size() > 0) {
+        if (arity == 0 && methodModel.getTypeParameters().size() == 0) {
+            method = String.format("final %s %s = %s;", returnType, name, body);
+        } else {
             final String generics = genGenerics(im, methodModel, typeArgs, upperBoundArgs);
             final String params = genParams(im, upperBoundArgs, arity);
             method = String.format("%s %s %s(%s) {\n        return %s;\n    }", generics, returnType, name, params, body);
-        } else {
-            method = String.format("final %s %s = %s;", returnType, name, body);
         }
         builder.append("    public static ").append(method).append("\n");
     }
