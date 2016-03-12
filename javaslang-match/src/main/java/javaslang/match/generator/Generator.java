@@ -39,7 +39,7 @@ public class Generator {
                 .filter(method -> method.isAnnotatedWith(Unapply.class))
                 .collect(toList());
         final String _package = classModel.getPackageName();
-        final ImportManager im = ImportManager.forClass(classModel);
+        final ImportManager im = ImportManager.forClass(classModel, "javaslang.API.Match");
         final String methods = generate(im, classModel, methodModels);
         return (_package.isEmpty() ? "" : "package " + _package + ";\n\n") +
                 im.getImports() +
