@@ -10,10 +10,9 @@
         <version>2.0.0-RC5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>javaslang</artifactId>
-    <packaging>jar</packaging>
-    <name>Javaslang</name>
-    <description>Javaslang is a Java standard library extension built for Java 8 and above.</description>
+    <artifactId>javaslang-benchmark</artifactId>
+    <name>Javaslang Benchmark</name>
+    <description>Benchmarks for Javaslang.</description>
     <url>http://javaslang.io</url>
     <licenses>
         <license>
@@ -25,9 +24,8 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>javaslang-match</artifactId>
+            <artifactId>javaslang</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -35,8 +33,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -50,24 +53,26 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-            </plugin>
-
         </plugins>
     </build>
     <profiles>
-
-
+        <profile>
+            <id>benchmark</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.19.1</version>
+                        <configuration>
+                            <includes>
+                                <include>**/*Benchmark.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <!-- Use `mvn clean test -DskipGen` to skip the code generator -->
             <id>gen</id>
@@ -81,10 +86,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-clean-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>net.alchim31.maven</groupId>
-                        <artifactId>scala-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>

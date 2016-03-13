@@ -41,6 +41,7 @@ Note: The maven build currently needs to be started from the javaslang root dir
         <module>javaslang-match</module>
         <module>javaslang-pure</module>
         <module>javaslang-test</module>
+        <module>javaslang-benchmark</module>
     </modules>
     <url>http://javaslang.io</url>
     <licenses>
