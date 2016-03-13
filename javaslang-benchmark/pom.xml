@@ -56,39 +56,5 @@
         </plugins>
     </build>
     <profiles>
-        <profile>
-            <id>benchmark</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.19.1</version>
-                        <configuration>
-                            <includes>
-                                <include>**/*Benchmark.java</include>
-                            </includes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <!-- Use `mvn clean test -DskipGen` to skip the code generator -->
-            <id>gen</id>
-            <activation>
-                <property>
-                    <name>!skipGen</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-clean-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
     </profiles>
 </project>
