@@ -210,13 +210,13 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     /**
-     * Traverses this tree in a specific {@link javaslang.collection.Tree.Order}.
+     * Traverses this tree values in a specific {@link javaslang.collection.Tree.Order}.
      *
      * @param order A traversal order
      * @return A new Iterator
      */
-    default Iterator<Node<T>> iterator(Order order) {
-        return traverse(order).iterator();
+    default Iterator<T> iterator(Order order) {
+        return values(order).iterator();
     }
 
     /**
