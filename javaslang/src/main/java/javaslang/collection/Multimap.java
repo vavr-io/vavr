@@ -27,33 +27,26 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     @SuppressWarnings("unchecked")
     enum ContainerType {
 
-        SET(HashSet::empty,
+        SET(
                 (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
                 (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem)
         ),
-        SORTED_SET(TreeSet::empty,
+        SORTED_SET(
                 (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
                 (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem)
         ),
-        SEQ(List::empty,
+        SEQ(
                 (Traversable<?> seq, Object elem) -> ((List<Object>) seq).append(elem),
                 (Traversable<?> seq, Object elem) -> ((List<Object>) seq).remove(elem)
         );
 
-        final Supplier<Traversable<?>> emptySupplier;
         final BiFunction<Traversable<?>, Object, Traversable<?>> add;
         final BiFunction<Traversable<?>, Object, Traversable<?>> remove;
 
-        ContainerType(Supplier<Traversable<?>> emptySupplier,
-                              BiFunction<Traversable<?>, Object, Traversable<?>> add,
+        ContainerType(BiFunction<Traversable<?>, Object, Traversable<?>> add,
                               BiFunction<Traversable<?>, Object, Traversable<?>> remove) {
-            this.emptySupplier = emptySupplier;
             this.add = add;
             this.remove = remove;
-        }
-
-        <T> Traversable<T> empty() {
-            return (Traversable<T>) emptySupplier.get();
         }
 
         <T> Traversable<T> add(Traversable<T> container, T elem) {

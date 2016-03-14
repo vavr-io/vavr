@@ -27,8 +27,8 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
                 { Multimap.ContainerType.SEQ },
-                { Multimap.ContainerType.SET }/*,
-                { Multimap.ContainerType.SORTED_SET }*/
+                { Multimap.ContainerType.SET },
+                { Multimap.ContainerType.SORTED_SET }
         });
     }
 
@@ -128,6 +128,18 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     }
 
     abstract protected String className();
+
+    protected String containerName() {
+        switch (containerType) {
+            case SEQ:
+                return "List";
+            case SET:
+                return "HashSet";
+            case SORTED_SET:
+                return "TreeSet";
+        }
+        throw new RuntimeException();
+    }
 
     abstract protected <T1, T2> Multimap<T1, T2> emptyMap();
 
@@ -741,25 +753,4 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     public void shouldFillTheSeqWith0ElementsWhenNIsNegative() {
         assertThat(mapFill(-1, () -> new Tuple2<>(1, 1))).isEqualTo(empty());
     }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void mapOfTuplesShouldReturnTheSingletonEmpty() {
-        if (!emptyMapShouldBeSingleton()) return;
-        assertThat(mapOfTuples()).isSameAs(emptyMap());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void mapOfEntriesShouldReturnTheSingletonEmpty() {
-        if (!emptyMapShouldBeSingleton()) return;
-        assertThat(mapOfEntries()).isSameAs(emptyMap());
-    }
-
-    @Test
-    public void mapOfPairsShouldReturnTheSingletonEmpty() {
-        if (!emptyMapShouldBeSingleton()) return;
-        assertThat(mapOfPairs()).isSameAs(emptyMap());
-    }
-
 }

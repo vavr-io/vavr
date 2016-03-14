@@ -26,18 +26,21 @@ import java.util.function.*;
  * @author Ruslan Sennov
  * @since 2.0.0
  */
- abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multimap<K, V>, Serializable {
+ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multimap<K, V> {
+
+    interface SerializableSupplier<T> extends Supplier<T>, Serializable {
+    }
 
     private static final long serialVersionUID = 1L;
 
-    private final Map<K, Traversable<V>> back;
-    private final Lazy<Integer> size;
+    final Map<K, Traversable<V>> back;
+    final SerializableSupplier<Traversable<?>> emptyContainer;
     private final ContainerType containerType;
 
-    AbstractMultimap(Map<K, Traversable<V>> back, ContainerType containerType) {
+    AbstractMultimap(Map<K, Traversable<V>> back, ContainerType containerType, SerializableSupplier<Traversable<?>> emptyContainer) {
         this.back = back;
-        this.size = Lazy.of(() -> back.foldLeft(0, (s, t) -> s + t._2.size()));
         this.containerType = containerType;
+        this.emptyContainer = emptyContainer;
     }
 
     abstract <K2, V2> Map<K2, V2> emptyMapSupplier();
@@ -51,9 +54,9 @@ import java.util.function.*;
         Map<K2, Traversable<V2>> back = emptyMapSupplier();
         for (Tuple2<? extends K2, ? extends V2> entry : entries) {
             if (back.containsKey(entry._1)) {
-                back = back.put(entry._1, containerType.add(back.get(entry._1).get(), entry._2));
+                back = back.put(entry._1, (Traversable<V2>) containerType.add.apply(back.get(entry._1).get(), entry._2));
             } else {
-                back = back.put(entry._1, containerType.add(containerType.empty(), entry._2));
+                back = back.put(entry._1, (Traversable<V2>) containerType.add.apply(emptyContainer.get(), entry._2));
             }
         }
         return createFromMap(back);
@@ -113,8 +116,8 @@ import java.util.function.*;
     @SuppressWarnings("unchecked")
     @Override
     public M put(K key, V value) {
-        final Traversable<V> values = back.get(key).getOrElse(containerType.empty());
-        final Traversable<V> newValues = containerType.add(values, value);
+        final Traversable<V> values = back.get(key).getOrElse((Traversable<V>) emptyContainer.get());
+        final Traversable<V> newValues = (Traversable<V>) containerType.add.apply(values, value);
         return newValues == values ? (M) this : (M) createFromMap(back.put(key, newValues));
     }
 
@@ -133,8 +136,8 @@ import java.util.function.*;
     @SuppressWarnings("unchecked")
     @Override
     public M remove(K key, V value) {
-        final Traversable<V> values = back.get(key).getOrElse(containerType.empty());
-        final Traversable<V> newValues = containerType.remove(values, value);
+        final Traversable<V> values = back.get(key).getOrElse((Traversable<V>) emptyContainer.get());
+        final Traversable<V> newValues = (Traversable<V>) containerType.remove.apply(values, value);
         return newValues == values ? (M) this : newValues.isEmpty() ? (M) createFromMap(back.remove(key)): (M) createFromMap(back.put(key, newValues));
     }
 
@@ -147,7 +150,7 @@ import java.util.function.*;
 
     @Override
     public int size() {
-        return size.get();
+        return back.foldLeft(0, (s, t) -> s + t._2.size());
     }
 
     @Override
@@ -288,6 +291,7 @@ import java.util.function.*;
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <K2 extends  K, V2 extends V> Multimap<K, V> merge(Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution) {
         Objects.requireNonNull(that, "that is null");
@@ -298,7 +302,7 @@ import java.util.function.*;
             return this;
         } else {
             Map<K, Traversable<V>> result = that.keySet().foldLeft(this.back, (map, key) -> {
-                final Traversable<V> thisValues = map.get(key).getOrElse(containerType.empty());
+                final Traversable<V> thisValues = map.get(key).getOrElse((Traversable<V>) emptyContainer.get());
                 final Traversable<V2> thatValues = that.get(key).get();
                 final Traversable<V> newValues = collisionResolution.apply(thisValues, thatValues);
                 return map.put(key, newValues);
@@ -326,7 +330,7 @@ import java.util.function.*;
 
     @Override
     public String stringPrefix() {
-        return "Multimap[" + emptyMapSupplier().stringPrefix() + "," + containerType.empty().stringPrefix() + "]";
+        return "Multimap[" + emptyMapSupplier().stringPrefix() + "," + emptyContainer.get().stringPrefix() + "]";
     }
 
     @SuppressWarnings("unchecked")
@@ -432,8 +436,10 @@ import java.util.function.*;
         final java.util.Map<K, Collection<V>> javaMap = new java.util.HashMap<>();
         for (Tuple2<K, V> t : this) {
             javaMap.computeIfAbsent(t._1, k -> {
-                if(containerType.empty() instanceof Set) {
+                if(emptyContainer.get() instanceof Set) {
                     return new java.util.HashSet<>();
+                } else if(emptyContainer.get() instanceof SortedSet) {
+                        return new java.util.TreeSet<>();
                 } else {
                     return new java.util.ArrayList<>();
                 }
