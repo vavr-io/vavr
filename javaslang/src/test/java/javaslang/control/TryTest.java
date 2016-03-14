@@ -352,22 +352,6 @@ public class TryTest extends AbstractValueTest {
         assertThat(failure().recover(x -> OK).get()).isEqualTo(OK);
     }
 
-    @Test
-    public void shouldRecoverSuccessUsingCase() {
-        final String actual = Try.of(() -> "ok")
-                .recover(Case(instanceOf(Error.class), "fixed"))
-                .get();
-        assertThat(actual).isEqualTo("ok");
-    }
-
-    @Test
-    public void shouldRecoverFailureUsingCase() {
-        final Object actual = Try.of(() -> { throw new Error("error"); })
-                .recover(Case(instanceOf(Error.class), "fixed"))
-                .get();
-        assertThat(actual).isEqualTo("fixed");
-    }
-
     // -- recoverWith
 
     @Test

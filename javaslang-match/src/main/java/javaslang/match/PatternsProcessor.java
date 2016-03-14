@@ -6,8 +6,10 @@
 package javaslang.match;
 
 import javaslang.match.annotation.Patterns;
+import javaslang.match.annotation.Unapply;
 import javaslang.match.generator.Generator;
 import javaslang.match.model.ClassModel;
+import javaslang.match.model.MethodModel;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -19,8 +21,12 @@ import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * A code generator for Javaslang <em>structural pattern matching</em> patterns.
@@ -65,37 +71,54 @@ public class PatternsProcessor extends AbstractProcessor {
                     .map(element -> (TypeElement) element)
                     .collect(Collectors.toSet());
             if (!typeElements.isEmpty()) {
-                if (roundEnv.processingOver()) {
-                    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Processing over.");
-                } else {
-                    generate(typeElements);
+                final Set<ClassModel> classModels = transform(typeElements);
+                if (!classModels.isEmpty()) {
+                    generate(classModels);
                 }
             }
         }
         return true;
     }
 
-    // Expands all @Patterns classes
-    private void generate(Set<TypeElement> typeElements) {
-        final Filer filer = processingEnv.getFiler();
+    // Verify correct usage of annotations @Patterns and @Unapply
+    private Set<ClassModel> transform(Set<TypeElement> typeElements) {
+        final Set<ClassModel> classModels = new HashSet<>();
         final javax.lang.model.util.Elements elementUtils = processingEnv.getElementUtils();
         final Messager messager = processingEnv.getMessager();
         for (TypeElement typeElement : typeElements) {
             final ClassModel classModel = ClassModel.of(elementUtils, typeElement);
-            final String className = deriveClassName(classModel);
-            Generator.generate(className, classModel, messager).ifPresent(code -> {
-                final String fqn = (classModel.hasDefaultPackage() ? "" : classModel.getPackageName() + ".") + className;
-                try (final Writer writer = filer.createSourceFile(fqn, typeElement).openWriter()) {
-                    writer.write(code);
-                } catch (IOException x) {
-                    throw new Error("Error writing " + fqn, x);
+            final List<MethodModel> methodModels = classModel.getMethods().stream()
+                    .filter(method -> method.isAnnotatedWith(Unapply.class))
+                    .collect(toList());
+            if (methodModels.isEmpty()) {
+                messager.printMessage(Diagnostic.Kind.WARNING, "No @Unapply methods found.", classModel.typeElement());
+            } else {
+                final boolean methodsValid = methodModels.stream().reduce(true, (bool, method) -> bool && UnapplyChecker.isValid(method.getExecutableElement(), messager), (b1, b2) -> b1 && b2);
+                if (methodsValid) {
+                    classModels.add(classModel);
                 }
-            });
+            }
+        }
+        return classModels;
+    }
+
+    // Expands all @Patterns classes
+    private void generate(Set<ClassModel> classModels) {
+        final Filer filer = processingEnv.getFiler();
+        for (ClassModel classModel : classModels) {
+            final String derivedClassName = deriveClassName(classModel);
+            final String code = Generator.generate(derivedClassName, classModel);
+            final String fqn = (classModel.hasDefaultPackage() ? "" : classModel.getPackageName() + ".") + derivedClassName;
+            try (final Writer writer = filer.createSourceFile(fqn, classModel.typeElement()).openWriter()) {
+                writer.write(code);
+            } catch (IOException x) {
+                throw new Error("Error writing " + fqn, x);
+            }
         }
     }
 
     private String deriveClassName(ClassModel classModel) {
-        final String className = classModel.getClassName();
+        final String className = classModel.getClassName().replaceAll("\\.", "");
         return ("$".equals(className) ? "" : className) + Patterns.class.getSimpleName();
     }
 }

@@ -8,9 +8,8 @@ package javaslang.match.generator;
 import javaslang.match.model.ClassModel;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.joining;
 
 /**
  * A <em>stateful</em> ImportManager which generates an import section of a Java class file.
@@ -18,86 +17,108 @@ import static java.util.stream.Collectors.*;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-// TODO: use Multimap (fqn without inner classes) -> (list/set of class names, incl. inner classes)
 class ImportManager {
-
-    static final int DEFAULT_WILDCARD_THRESHOLD = 5;
 
     // properties
     private final String packageNameOfClass;
-    private final Set<String> knownSimpleClassNames;
-    private final int wildcardThreshold;
+    private List<String> directImports;
 
     // mutable state
-    private Map<FQN, String> imports = new HashMap<>();
+    private Map<FQN, Import> imports = new HashMap<>();
 
-    public ImportManager(String packageNameOfClass, Set<String> knownSimpleClassNames, int wildcardThreshold) {
+    private ImportManager(String packageNameOfClass, List<String> directImports) {
         this.packageNameOfClass = packageNameOfClass;
-        this.knownSimpleClassNames = knownSimpleClassNames;
-        this.wildcardThreshold = wildcardThreshold;
+        this.directImports = directImports;
     }
 
-    public static ImportManager forClass(ClassModel classModel) {
-        return new ImportManager(classModel.getPackageName(), Collections.emptySet(), DEFAULT_WILDCARD_THRESHOLD);
+    // directImport FQN("javaslang", "Match.API") will import "javaslang.Match.API.Pattern0"
+    // otherwise "javaslang.Match" is imported and "Match.API.Pattern0" is qualified
+    public static ImportManager forClass(ClassModel classModel, String... directImports) {
+        return new ImportManager(classModel.getPackageName(), reverseSort(directImports));
     }
 
     // used by generator to register non-static imports
     public String getType(ClassModel classModel) {
         final FQN fqn = new FQN(classModel.getPackageName(), classModel.getClassName());
-        return simplify(fqn, imports, packageNameOfClass, knownSimpleClassNames);
+        return getType(fqn, imports, packageNameOfClass, directImports);
     }
 
     public String getType(String packageName, String className) {
         final FQN fqn = new FQN(packageName, className);
-        return simplify(fqn, imports, packageNameOfClass, knownSimpleClassNames);
+        return getType(fqn, imports, packageNameOfClass, directImports);
     }
 
     // finally used by generator to get the import section
     public String getImports() {
-        return optimizeImports(imports.keySet(), false, wildcardThreshold);
+        return optimizeImports(imports.values());
     }
 
-    private static String optimizeImports(Set<FQN> imports, boolean isStatic, int wildcardThreshold) {
-
-        final Map<String, Integer> counts = imports.stream()
-                .map(fqn -> fqn.packageName)
-                .collect(groupingBy(s -> s))
-                .entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().size()));
-
-        final List<String> directImports = imports.stream()
-                .filter(fqn -> counts.get(fqn.packageName) <= wildcardThreshold)
-                .map(FQN::qualifiedName)
-                .collect(toList());
-
-        final List<String> wildcardImports = counts.entrySet().stream()
-                .filter(entry -> entry.getValue() > wildcardThreshold)
-                .map(entry -> entry.getKey() + ".*")
-                .collect(toList());
-
-        final List<String> result = new ArrayList<>(directImports);
-        result.addAll(wildcardImports);
-
-        final String prefix = "import " + (isStatic ? "static " : "");
-        return result.stream().sorted().map(s -> prefix + s + ";").collect(joining("\n"));
-    }
-
-    private static String simplify(FQN fqn, Map<FQN, String> imports, String packageNameOfClass, Set<String> knownSimpleClassNames) {
+    private static String getType(FQN fqn, Map<FQN, Import> imports, String packageNameOfClass, List<String> directImports) {
         if (fqn.packageName.isEmpty() && !packageNameOfClass.isEmpty()) {
             throw new IllegalStateException("Can't import class '" + fqn.className + "' located in default package");
         } else if (fqn.packageName.equals(packageNameOfClass)) {
-            return fqn.className;
+            final Import _import = createImport(fqn, directImports);
+            if (_import.type.equals(fqn.className)) {
+                return fqn.className;
+            } else {
+                imports.put(fqn, _import);
+                return _import.type;
+            }
         } else if (imports.containsKey(fqn)) {
-            return imports.get(fqn);
-        } else if (knownSimpleClassNames.contains(fqn.className) || imports.values().contains(fqn.className)) {
-            return fqn.qualifiedName();
+            return imports.get(fqn).type;
         } else {
-            imports.put(fqn, fqn.className);
-            return fqn.className;
+            final Import _import = createImport(fqn, directImports);
+            imports.put(fqn, _import);
+            return _import.type;
         }
     }
 
-    static class FQN {
+    private static Import createImport(FQN fqn, List<String> directImports) {
+        final String qualifiedName = fqn.qualifiedName();
+        final Optional<String> directImportOption = directImports.stream()
+                .filter(directImport -> qualifiedName.equals(directImport) || qualifiedName.startsWith(directImport + "."))
+                .findFirst();
+        if (directImportOption.isPresent()) {
+            final String directImport = directImportOption.get();
+            if (qualifiedName.equals(directImport)) {
+                final String type = directImport.substring(directImport.lastIndexOf('.') + 1);
+                return new Import(directImport, type);
+            } else {
+                final String type = qualifiedName.substring(directImport.length() + 1);
+                final int index = type.indexOf(".");
+                final String firstSegment = (index < 0) ? type : type.substring(0, index);
+                return new Import(directImport + "." + firstSegment, type);
+            }
+        } else {
+            final int index = fqn.className.indexOf(".");
+            final String firstSegment = (index < 0) ? fqn.className : fqn.className.substring(0, index);
+            return new Import(fqn.packageName + "." + firstSegment, fqn.className);
+        }
+    }
+
+    private static String optimizeImports(Collection<Import> imports) {
+        return imports.stream()
+                .filter(currentImport -> !currentImport.name.startsWith("java.lang.") ||
+                        imports.stream()
+                                .filter(otherImport -> !otherImport.equals(currentImport))
+                                .map(otherImport -> otherImport.type)
+                                .filter(otherType -> otherType.equals(currentImport.type))
+                                .findFirst().isPresent())
+                .map(_import -> _import.name)
+                .distinct()
+                .sorted()
+                .map(s -> "import " + s + ";")
+                .collect(joining("\n"));
+    }
+
+    private static List<String> reverseSort(String[] strings) {
+        final String[] copy = new String[strings.length];
+        System.arraycopy(strings, 0, copy, 0, strings.length);
+        Arrays.sort(copy, (s1, s2) -> s2.compareTo(s1));
+        return Arrays.asList(copy);
+    }
+
+    private static class FQN {
 
         private final String packageName;
         private final String className;
@@ -123,7 +144,33 @@ class ImportManager {
 
         @Override
         public String toString() {
-            return qualifiedName();
+            return "FQN(" + packageName + ", " + className + ")";
+        }
+    }
+
+    private static class Import {
+
+        final String name;
+        final String type;
+
+        Import(String name, String type) {
+            this.name = name;
+            this.type = type;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return (o == this) || (o instanceof Import && toString().equals(o.toString()));
+        }
+
+        @Override
+        public int hashCode() {
+            return toString().hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return "Import(" + name + ", " + type + ")";
         }
     }
 }

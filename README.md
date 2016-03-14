@@ -57,3 +57,10 @@ mvn release:prepare
 ```
 mvn release:perform
 ```
+
+### Benchmarks
+Currently only basic microbenchmarks are available. To run
+
+```
+mvn clean test -Pbenchmark
+```
