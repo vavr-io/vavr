@@ -34,7 +34,7 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
         return new HashMultimap<>(HashMap.empty(), ContainerType.SET, HashSet::empty);
     }
 
-    static <K extends Comparable<? super K>, V> HashMultimap<K, V> emptyWithSortedSet() {
+    static <K, V extends Comparable<? super V>> HashMultimap<K, V> emptyWithSortedSet() {
         return new HashMultimap<>(HashMap.empty(), ContainerType.SORTED_SET, TreeSet::empty);
     }
 
@@ -78,7 +78,7 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
      * @param entries Multimap entries
      * @return A new Multimap containing the given entries
      */
-    static <K extends Comparable<? super K>, V> HashMultimap<K, V> ofEntriesWithSortedSet(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    static <K, V extends Comparable<? super V>> HashMultimap<K, V> ofEntriesWithSortedSet(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
         Multimap<K, V> result = emptyWithSortedSet();
         for (Tuple2<? extends K, ? extends V> entry : entries) {
@@ -202,7 +202,7 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
         return collector(HashMultimap::ofEntriesWithSet);
     }
 
-    static <K extends Comparable<? super K>, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, Multimap<K, V>> collectorWithSortedSet() {
+    static <K, V extends Comparable<? super V>> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, Multimap<K, V>> collectorWithSortedSet() {
         return collector(HashMultimap::ofEntriesWithSortedSet);
     }
 
