@@ -484,33 +484,33 @@ public class TreeTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(testee);
     }
 
-    // -- traverse
+    // -- values()
 
     @Test
-    public void shouldTraverseEmpty() {
-        assertThat(Tree.empty().traverse()).isEqualTo(empty());
+    public void shouldTraverseValuesOfEmptyTree() {
+        assertThat(Tree.empty().values()).isEqualTo(empty());
     }
 
-    // -- traverse(Order)
+    // -- values(Order)
 
     @Test
-    public void shouldTraverseTreeUsingPreOrder() {
-        assertThat(tree.traverse(Tree.Order.PRE_ORDER)).isEqualTo(Stream.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
-    }
-
-    @Test
-    public void shouldTraverseTreeUsingInOrder() {
-        assertThat(tree.traverse(Tree.Order.IN_ORDER)).isEqualTo(Stream.of(7, 4, 2, 5, 1, 8, 6, 9, 3));
+    public void shouldTraverseValuesUsingPreOrder() {
+        assertThat(tree.values(Tree.Order.PRE_ORDER)).isEqualTo(Stream.of(1, 2, 4, 7, 5, 3, 6, 8, 9));
     }
 
     @Test
-    public void shouldTraverseTreeUsingPostOrder() {
-        assertThat(tree.traverse(Tree.Order.POST_ORDER)).isEqualTo(Stream.of(7, 4, 5, 2, 8, 9, 6, 3, 1));
+    public void shouldTraverseValuesUsingInOrder() {
+        assertThat(tree.values(Tree.Order.IN_ORDER)).isEqualTo(Stream.of(7, 4, 2, 5, 1, 8, 6, 9, 3));
     }
 
     @Test
-    public void shouldTraverseTreeUsingLevelOrder() {
-        assertThat(tree.traverse(Tree.Order.LEVEL_ORDER)).isEqualTo(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
+    public void shouldTraverseValuesUsingPostOrder() {
+        assertThat(tree.values(Tree.Order.POST_ORDER)).isEqualTo(Stream.of(7, 4, 5, 2, 8, 9, 6, 3, 1));
+    }
+
+    @Test
+    public void shouldTraverseValuesUsingLevelOrder() {
+        assertThat(tree.values(Tree.Order.LEVEL_ORDER)).isEqualTo(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
     }
 
     // -- unzip
