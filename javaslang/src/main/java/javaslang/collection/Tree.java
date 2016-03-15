@@ -496,11 +496,6 @@ public interface Tree<T> extends Traversable<T> {
         return isEmpty() ? Empty.instance() : TreeModule.Map.apply((Node<T>) this, mapper);
     }
 
-    @Override
-    default API.Match<Tree<T>> match() {
-        return API.Match(this);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     default Tuple2<Seq<T>, Seq<T>> partition(Predicate<? super T> predicate) {

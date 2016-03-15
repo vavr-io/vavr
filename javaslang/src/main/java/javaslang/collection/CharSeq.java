@@ -534,11 +534,6 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public API.Match<CharSeq> match() {
-        return API.Match(this);
-    }
-
-    @Override
     public Tuple2<CharSeq, CharSeq> partition(Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {

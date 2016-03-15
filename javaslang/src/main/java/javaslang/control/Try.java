@@ -414,11 +414,6 @@ public interface Try<T> extends Value<T> {
         }
     }
 
-    @Override
-    default API.Match<Try<T>> match() {
-        return API.Match(this);
-    }
-
     /**
      * Consumes the throwable if this is a Failure.
      *

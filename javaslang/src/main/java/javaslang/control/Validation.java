@@ -567,11 +567,6 @@ public interface Validation<E, T> extends Value<T> {
     }
 
     @Override
-    default API.Match<Validation<E, T>> match() {
-        return API.Match(this);
-    }
-
-    @Override
     default Validation<E, T> peek(Consumer<? super T> action) {
         if (isValid()) {
             action.accept(get());

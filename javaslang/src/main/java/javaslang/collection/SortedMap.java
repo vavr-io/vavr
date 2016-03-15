@@ -151,9 +151,6 @@ public interface SortedMap<K, V> extends Map<K, V> {
     <V2> SortedMap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper);
 
     @Override
-    API.Match<? extends SortedMap<K, V>> match();
-
-    @Override
     SortedMap<K, V> merge(Map<? extends K, ? extends V> that);
 
     @Override

@@ -765,11 +765,6 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public API.Match<Array<T>> match() {
-        return API.Match(this);
-    }
-
-    @Override
     public Array<T> padTo(int length, T element) {
         if (length <= length()) {
             return this;

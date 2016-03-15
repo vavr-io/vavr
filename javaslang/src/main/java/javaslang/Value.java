@@ -424,29 +424,6 @@ public interface Value<T> extends Iterable<T> {
     // -- conversion methods
 
     /**
-     * Provides syntactic sugar for {@link API#Match(Object)}.
-     * <p>
-     * We write
-     *
-     * <pre><code>
-     * value.match().of(
-     *      Case(pattern, f)
-     * );
-     * </code></pre>
-     *
-     * instead of
-     *
-     * <pre><code>
-     * Match(value).of(
-     *      Case(pattern, f)
-     * );
-     * </code></pre>
-     *
-     * @return a new type-safe match builder.
-     */
-    API.Match<? extends Value<T>> match();
-
-    /**
      * Converts this to a {@link Array}.
      *
      * @return A new {@link Array}.

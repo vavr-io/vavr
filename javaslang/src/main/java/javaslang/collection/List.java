@@ -782,11 +782,6 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default API.Match<List<T>> match() {
-        return API.Match(this);
-    }
-
-    @Override
     default List<T> padTo(int length, T element) {
         if (length <= length()) {
             return this;

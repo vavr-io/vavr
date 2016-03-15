@@ -645,11 +645,6 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     @Override
-    public API.Match<LinkedHashSet<T>> match() {
-        return API.Match(this);
-    }
-
-    @Override
     public String mkString(CharSequence prefix, CharSequence delimiter, CharSequence suffix) {
         return iterator().mkString(prefix, delimiter, suffix);
     }

@@ -837,11 +837,6 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     }
 
     @Override
-    public API.Match<Queue<T>> match() {
-        return API.Match(this);
-    }
-
-    @Override
     public Queue<T> padTo(int length, T element) {
         if (length <= length()) {
             return this;

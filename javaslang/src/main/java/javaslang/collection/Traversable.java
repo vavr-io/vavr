@@ -647,9 +647,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     @Override
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
-    @Override
-    API.Match<? extends Traversable<T>> match();
-
     /**
      * Calculates the maximum of this elements according to their natural order.
      *
