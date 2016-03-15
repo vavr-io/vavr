@@ -166,4 +166,24 @@ public class APITest {
     public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndValue() {
         assertThat(Case(ignored -> false, 1).apply(null)).isEqualTo(Option.none());
     }
+
+    @Test
+    public void shouldReturnSomeWhenApplyingCaseGivenValueAndSupplier() {
+        assertThat(Case(1, () -> 1).apply(1)).isEqualTo(Option.some(1));
+    }
+
+    @Test
+    public void shouldReturnNoneWhenApplyingCaseGivenValueAndSupplier() {
+        assertThat(Case(-1, () -> 1).apply(1)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldReturnSomeWhenApplyingCaseGivenValueAndValue() {
+        assertThat(Case(1, 1).apply(1)).isEqualTo(Option.some(1));
+    }
+
+    @Test
+    public void shouldReturnNoneWhenApplyingCaseGivenValueAndValue() {
+        assertThat(Case(-1, 1).apply(1)).isEqualTo(Option.none());
+    }
 }
