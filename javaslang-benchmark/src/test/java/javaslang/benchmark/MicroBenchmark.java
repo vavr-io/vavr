@@ -144,7 +144,7 @@ public class MicroBenchmark {
 
     @Benchmark
     @Group("update")
-    public Object slangSListUpdate(BenchmarkState state) {
+    public Object slangListUpdate(BenchmarkState state) {
         return state.slangStream.update(state.containerSize / 2, 1);
     }
 
