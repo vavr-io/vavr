@@ -10,11 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public final class AssertionsExtensions {
 
-    /**
-     * This class is not intended to be instantiated.
-     */
     private AssertionsExtensions() {
-        throw new AssertionError(AssertionsExtensions.class.getName() + " is not intended to be instantiated.");
     }
 
     public static ClassAssert assertThat(Class<?> clazz) {
