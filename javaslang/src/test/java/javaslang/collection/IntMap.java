@@ -171,11 +171,6 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public API.Match<IntMap<T>> match() {
-        return API.Match(this);
-    }
-
-    @Override
     public Tuple2<IntMap<T>, IntMap<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return original.partition(p -> predicate.test(p._2)).map(IntMap::of, IntMap::of);

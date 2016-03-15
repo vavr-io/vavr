@@ -183,11 +183,6 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     @Override
-    public API.Match<Lazy<T>> match() {
-        return API.Match(this);
-    }
-
-    @Override
     public Lazy<T> peek(Consumer<? super T> action) {
         action.accept(get());
         return this;

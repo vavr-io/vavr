@@ -684,11 +684,6 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     }
 
     @Override
-    public API.Match<TreeSet<T>> match() {
-        return API.Match(this);
-    }
-
-    @Override
     public Option<T> max() {
         return tree.max();
     }

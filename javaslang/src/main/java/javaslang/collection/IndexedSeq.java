@@ -166,9 +166,6 @@ public interface IndexedSeq<T> extends Seq<T> {
     <U> IndexedSeq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    API.Match<? extends IndexedSeq<T>> match();
-
-    @Override
     IndexedSeq<T> padTo(int length, T element);
 
     @Override

@@ -220,13 +220,6 @@ public interface Either<L, R> extends Value<R> {
         }
     }
 
-    // -- Adjusted return types of Convertible methods
-
-    @Override
-    default API.Match<Either<L, R>> match() {
-        return API.Match(this);
-    }
-
     // -- Adjusted return types of Monad methods
 
     /**
@@ -543,11 +536,6 @@ public interface Either<L, R> extends Value<R> {
             }
         }
 
-        @Override
-        public API.Match<LeftProjection<L, R>> match() {
-            return API.Match(this);
-        }
-
         /**
          * Applies the given action to the value if the projected either is a Left. Otherwise nothing happens.
          *
@@ -771,11 +759,6 @@ public interface Either<L, R> extends Value<R> {
             } else {
                 return (RightProjection<L, U>) this;
             }
-        }
-
-        @Override
-        public API.Match<RightProjection<L, R>> match() {
-            return API.Match(this);
         }
 
         /**

@@ -767,11 +767,6 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public API.Match<Vector<T>> match() {
-        return API.Match(this);
-    }
-
-    @Override
     public Vector<T> padTo(int length, T element) {
         if (length <= length()) {
             return this;
