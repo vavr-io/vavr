@@ -936,11 +936,6 @@ public interface Future<T> extends Value<T> {
     }
 
     @Override
-    default API.Match<Future<T>> match() {
-        return API.Match(this);
-    }
-
-    @Override
     default Future<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         onSuccess(action::accept);

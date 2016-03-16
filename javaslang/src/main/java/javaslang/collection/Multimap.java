@@ -341,9 +341,6 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
         return (Seq<U>) iterator().map(mapper).toStream();
     }
 
-    @Override
-    API.Match<? extends Multimap<K, V>> match();
-
     /**
      * Creates a new multimap which by merging the entries of {@code this} multimap and {@code that} multimap.
      * <p>

@@ -970,11 +970,6 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
-    default API.Match<Stream<T>> match() {
-        return API.Match(this);
-    }
-
-    @Override
     default Stream<T> padTo(int length, T element) {
         if (length <= 0) {
             return this;

@@ -885,9 +885,6 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     <U> Seq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
-    API.Match<? extends Seq<T>> match();
-
-    @Override
     Tuple2<? extends Seq<T>, ? extends Seq<T>> partition(Predicate<? super T> predicate);
 
     @Override

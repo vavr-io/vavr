@@ -283,11 +283,6 @@ import java.util.function.*;
         }
     }
 
-    @Override
-    public API.Match<Multimap<K, V>> match() {
-        return API.Match(this);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public M merge(Multimap<? extends K, ? extends V> that) {

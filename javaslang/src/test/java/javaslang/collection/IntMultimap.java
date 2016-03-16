@@ -171,11 +171,6 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public API.Match<IntMultimap<T>> match() {
-        return API.Match(this);
-    }
-
-    @Override
     public Tuple2<IntMultimap<T>, IntMultimap<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return original.partition(p -> predicate.test(p._2)).map(IntMultimap::of, IntMultimap::of);

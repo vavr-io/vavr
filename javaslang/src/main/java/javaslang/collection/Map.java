@@ -312,9 +312,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
         return (Seq<U>) iterator().map(mapper).toStream();
     }
 
-    @Override
-    API.Match<? extends Map<K, V>> match();
-
     /**
      * Creates a new map which by merging the entries of {@code this} map and {@code that} map.
      * <p>

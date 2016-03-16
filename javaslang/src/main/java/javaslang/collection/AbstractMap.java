@@ -176,12 +176,6 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
 
     @SuppressWarnings("unchecked")
     @Override
-    public API.Match<M> match() {
-        return API.Match((M) this);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
     public M merge(Map<? extends K, ? extends V> that) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {

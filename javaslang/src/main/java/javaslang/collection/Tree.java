@@ -210,13 +210,13 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     /**
-     * Traverses this tree in a specific {@link javaslang.collection.Tree.Order}.
+     * Traverses this tree values in a specific {@link javaslang.collection.Tree.Order}.
      *
      * @param order A traversal order
      * @return A new Iterator
      */
     default Iterator<T> iterator(Order order) {
-        return traverse(order).iterator();
+        return values(order).iterator();
     }
 
     /**
@@ -242,37 +242,60 @@ public interface Tree<T> extends Traversable<T> {
     /**
      * Traverses this tree in {@link Order#PRE_ORDER}.
      *
-     * @return A sequence of the tree values in pre-order.
+     * @return A sequence of nodes.
      */
-    default Seq<T> traverse() {
+    default Seq<Node<T>> traverse() {
         return traverse(PRE_ORDER);
     }
 
     /**
-     * Traverses the Tree in a specific order.
+     * Traverses this tree in a specific order.
      *
      * @param order the tree traversal order
-     * @return A List containing all elements of this tree, which is List if this tree is empty.
+     * @return A sequence of nodes.
      * @throws java.lang.NullPointerException if order is null
      */
-    default Seq<T> traverse(Order order) {
+    default Seq<Node<T>> traverse(Order order) {
         Objects.requireNonNull(order, "order is null");
         if (isEmpty()) {
             return Stream.empty();
         } else {
+            final Node<T> node = (Node<T>) this;
             switch (order) {
                 case PRE_ORDER:
-                    return Traversal.preOrder(this);
+                    return Traversal.preOrder(node);
                 case IN_ORDER:
-                    return Traversal.inOrder(this);
+                    return Traversal.inOrder(node);
                 case POST_ORDER:
-                    return Traversal.postOrder(this);
+                    return Traversal.postOrder(node);
                 case LEVEL_ORDER:
-                    return Traversal.levelOrder(this);
+                    return Traversal.levelOrder(node);
                 default:
                     throw new IllegalStateException("Unknown order: " + order.name());
             }
         }
+    }
+
+    /**
+     * Traverses this tree values in {@link Order#PRE_ORDER}.
+     * Syntactic sugar for {@code traverse().map(Node::getValue)}.
+     *
+     * @return A sequence of the tree values.
+     */
+    default Seq<T> values() {
+        return traverse(PRE_ORDER).map(Node::getValue);
+    }
+
+    /**
+     * Traverses this tree values in a specific order.
+     * Syntactic sugar for {@code traverse(order).map(Node::getValue)}.
+     *
+     * @param order the tree traversal order
+     * @return A sequence of the tree values.
+     * @throws java.lang.NullPointerException if order is null
+     */
+    default Seq<T> values(Order order) {
+        return traverse(order).map(Node::getValue);
     }
 
     /**
@@ -320,7 +343,7 @@ public interface Tree<T> extends Traversable<T> {
 
     @Override
     default Seq<T> distinct() {
-        return traverse().distinct();
+        return values().distinct();
     }
 
     @Override
@@ -329,7 +352,7 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             return Stream.empty();
         } else {
-            return traverse().distinctBy(comparator);
+            return values().distinctBy(comparator);
         }
     }
 
@@ -339,7 +362,7 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             return Stream.empty();
         } else {
-            return traverse().distinctBy(keyExtractor);
+            return values().distinctBy(keyExtractor);
         }
     }
 
@@ -348,7 +371,7 @@ public interface Tree<T> extends Traversable<T> {
         if (n >= length()) {
             return Stream.empty();
         } else {
-            return traverse().drop(n);
+            return values().drop(n);
         }
     }
 
@@ -357,7 +380,7 @@ public interface Tree<T> extends Traversable<T> {
         if (n >= length()) {
             return Stream.empty();
         } else {
-            return traverse().dropRight(n);
+            return values().dropRight(n);
         }
     }
 
@@ -373,7 +396,7 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             return Stream.empty();
         } else {
-            return traverse().dropWhile(predicate);
+            return values().dropWhile(predicate);
         }
     }
 
@@ -383,7 +406,7 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             return Stream.empty();
         } else {
-            return traverse().filter(predicate);
+            return values().filter(predicate);
         }
     }
 
@@ -410,7 +433,7 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             return HashMap.empty();
         } else {
-            return (Map<C, Seq<T>>) traverse().groupBy(classifier);
+            return (Map<C, Seq<T>>) values().groupBy(classifier);
         }
     }
 
@@ -443,7 +466,7 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             throw new UnsupportedOperationException("init of empty tree");
         } else {
-            return traverse().init();
+            return values().init();
         }
     }
 
@@ -459,7 +482,7 @@ public interface Tree<T> extends Traversable<T> {
 
     @Override
     default Iterator<T> iterator() {
-        return traverse().iterator();
+        return values().iterator();
     }
 
     @Override
@@ -473,11 +496,6 @@ public interface Tree<T> extends Traversable<T> {
         return isEmpty() ? Empty.instance() : TreeModule.Map.apply((Node<T>) this, mapper);
     }
 
-    @Override
-    default API.Match<Tree<T>> match() {
-        return API.Match(this);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     default Tuple2<Seq<T>, Seq<T>> partition(Predicate<? super T> predicate) {
@@ -485,7 +503,7 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             return Tuple.of(Stream.empty(), Stream.empty());
         } else {
-            return (Tuple2<Seq<T>, Seq<T>>) traverse().partition(predicate);
+            return (Tuple2<Seq<T>, Seq<T>>) values().partition(predicate);
         }
     }
 
@@ -515,7 +533,7 @@ public interface Tree<T> extends Traversable<T> {
     @Override
     default Seq<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return traverse().retainAll(elements);
+        return values().retainAll(elements);
     }
 
     @Override
@@ -552,7 +570,7 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             return Tuple.of(Stream.empty(), Stream.empty());
         } else {
-            return (Tuple2<Seq<T>, Seq<T>>) traverse().span(predicate);
+            return (Tuple2<Seq<T>, Seq<T>>) values().span(predicate);
         }
     }
 
@@ -572,7 +590,7 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty tree");
         } else {
-            return traverse().tail();
+            return values().tail();
         }
     }
 
@@ -586,7 +604,7 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             return Stream.empty();
         } else {
-            return traverse().take(n);
+            return values().take(n);
         }
     }
 
@@ -595,20 +613,20 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             return Stream.empty();
         } else {
-            return traverse().takeRight(n);
+            return values().takeRight(n);
         }
     }
 
     @Override
     default Seq<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return traverse().takeUntil(predicate);
+        return values().takeUntil(predicate);
     }
 
     @Override
     default Seq<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return traverse().takeWhile(predicate);
+        return values().takeWhile(predicate);
     }
 
     @SuppressWarnings("unchecked")
@@ -1067,38 +1085,38 @@ interface TreeModule {
 
     final class Traversal {
 
-        static <T> Stream<T> preOrder(Tree<T> tree) {
-            return tree.getChildren().foldLeft(Stream.of(tree.getValue()),
+        static <T> Stream<Node<T>> preOrder(Node<T> node) {
+            return node.getChildren().foldLeft(Stream.of(node),
                     (acc, child) -> acc.appendAll(preOrder(child)));
         }
 
-        static <T> Stream<T> inOrder(Tree<T> tree) {
-            if (tree.isLeaf()) {
-                return Stream.of(tree.getValue());
+        static <T> Stream<Node<T>> inOrder(Node<T> node) {
+            if (node.isLeaf()) {
+                return Stream.of(node);
             } else {
-                final List<Node<T>> children = tree.getChildren();
+                final List<Node<T>> children = node.getChildren();
                 return children
                         .tail()
-                        .foldLeft(Stream.<T> empty(), (acc, child) -> acc.appendAll(inOrder(child)))
-                        .prepend(tree.getValue())
+                        .foldLeft(Stream.<Node<T>> empty(), (acc, child) -> acc.appendAll(inOrder(child)))
+                        .prepend(node)
                         .prependAll(inOrder(children.head()));
             }
         }
 
-        static <T> Stream<T> postOrder(Tree<T> tree) {
-            return tree
+        static <T> Stream<Node<T>> postOrder(Node<T> node) {
+            return node
                     .getChildren()
-                    .foldLeft(Stream.<T> empty(), (acc, child) -> acc.appendAll(postOrder(child)))
-                    .append(tree.getValue());
+                    .foldLeft(Stream.<Node<T>> empty(), (acc, child) -> acc.appendAll(postOrder(child)))
+                    .append(node);
         }
 
-        static <T> Stream<T> levelOrder(Tree<T> tree) {
-            Stream<T> result = Stream.empty();
-            final java.util.Queue<Tree<T>> queue = new java.util.LinkedList<>();
-            queue.add(tree);
+        static <T> Stream<Node<T>> levelOrder(Node<T> node) {
+            Stream<Node<T>> result = Stream.empty();
+            final java.util.Queue<Node<T>> queue = new java.util.LinkedList<>();
+            queue.add(node);
             while (!queue.isEmpty()) {
-                final Tree<T> next = queue.remove();
-                result = result.prepend(next.getValue());
+                final Node<T> next = queue.remove();
+                result = result.prepend(next);
                 queue.addAll(next.getChildren().toJavaList());
             }
             return result.reverse();

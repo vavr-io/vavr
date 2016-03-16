@@ -291,11 +291,6 @@ public interface Option<T> extends Value<T> {
         return isEmpty() ? none() : some(mapper.apply(get()));
     }
 
-    @Override
-    default API.Match<Option<T>> match() {
-        return API.Match(this);
-    }
-
     /**
      * Applies an action to this value, if this option is defined, otherwise does nothing.
      *

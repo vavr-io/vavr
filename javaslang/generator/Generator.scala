@@ -1176,14 +1176,25 @@ def generateTestClasses(): Unit = {
 
     genJavaslangFile("javaslang", s"APITest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
-      val test = im.getType("org.junit.Test")
       val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+      val test = im.getType("org.junit.Test")
+
+      val API = im.getType("javaslang.API")
+      val AssertionsExtensions = im.getType("javaslang.AssertionsExtensions")
       val ListType = im.getType("javaslang.collection.List")
+      val OptionType = im.getType("javaslang.control.Option")
 
       im.getStatic("javaslang.API.*")
 
       xs"""
         public class $className {
+
+            @$test
+            public void shouldNotBeInstantiable() {
+                $AssertionsExtensions.assertThat($API.class).isNotInstantiable();
+            }
+
+            // -- run
 
             @$test
             public void shouldRunUnitAndReturnVoid() {
@@ -1192,6 +1203,8 @@ def generateTestClasses(): Unit = {
                 Void nothing = run(() -> i[0]++);
                 $assertThat(i[0]).isEqualTo(1);
             }
+
+            // -- For
 
             ${(1 to N).gen(i => xs"""
               @$test
@@ -1204,12 +1217,54 @@ def generateTestClasses(): Unit = {
               }
             """)("\n\n")}
 
-            @Test
+            @$test
             public void shouldStreamNestedFor() {
                 final $ListType<String> result =
                         For(${im.getType("java.util.Arrays")}.asList(1, 2), i ->
                                 For(${im.getType("javaslang.collection.CharSeq")}.of('a', 'b')).yield(c -> i + ":" + c)).toList();
                 assertThat(result).isEqualTo($ListType.of("1:a", "1:b", "2:a", "2:b"));
+            }
+
+            // -- Match
+
+            @$test
+            public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndSupplier() {
+                assertThat(Case(ignored -> true, () -> 1).apply(null)).isEqualTo($OptionType.some(1));
+            }
+
+            @$test
+            public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndSupplier() {
+                assertThat(Case(ignored -> false, () -> 1).apply(null)).isEqualTo($OptionType.none());
+            }
+
+            @$test
+            public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndValue() {
+                assertThat(Case(ignored -> true, 1).apply(null)).isEqualTo($OptionType.some(1));
+            }
+
+            @$test
+            public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndValue() {
+                assertThat(Case(ignored -> false, 1).apply(null)).isEqualTo($OptionType.none());
+            }
+
+            @$test
+            public void shouldReturnSomeWhenApplyingCaseGivenValueAndSupplier() {
+                assertThat(Case(1, () -> 1).apply(1)).isEqualTo($OptionType.some(1));
+            }
+
+            @$test
+            public void shouldReturnNoneWhenApplyingCaseGivenValueAndSupplier() {
+                assertThat(Case(-1, () -> 1).apply(1)).isEqualTo($OptionType.none());
+            }
+
+            @$test
+            public void shouldReturnSomeWhenApplyingCaseGivenValueAndValue() {
+                assertThat(Case(1, 1).apply(1)).isEqualTo($OptionType.some(1));
+            }
+
+            @$test
+            public void shouldReturnNoneWhenApplyingCaseGivenValueAndValue() {
+                assertThat(Case(-1, 1).apply(1)).isEqualTo($OptionType.none());
             }
         }
       """

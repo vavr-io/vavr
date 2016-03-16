@@ -634,11 +634,6 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     }
 
     @Override
-    public API.Match<HashSet<T>> match() {
-        return API.Match(this);
-    }
-
-    @Override
     public String mkString(CharSequence prefix, CharSequence delimiter, CharSequence suffix) {
         return iterator().mkString(prefix, delimiter, suffix);
     }

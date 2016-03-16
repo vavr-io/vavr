@@ -15,9 +15,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import javaslang.collection.CharSeq;
 import javaslang.collection.List;
+import javaslang.control.Option;
 import org.junit.Test;
 
 public class APITest {
+
+    @Test
+    public void shouldNotBeInstantiable() {
+        AssertionsExtensions.assertThat(API.class).isNotInstantiable();
+    }
+
+    // -- run
 
     @Test
     public void shouldRunUnitAndReturnVoid() {
@@ -26,6 +34,8 @@ public class APITest {
         Void nothing = run(() -> i[0]++);
         assertThat(i[0]).isEqualTo(1);
     }
+
+    // -- For
 
     @Test
     public void shouldIterateFor1() {
@@ -133,5 +143,47 @@ public class APITest {
                 For(Arrays.asList(1, 2), i ->
                         For(CharSeq.of('a', 'b')).yield(c -> i + ":" + c)).toList();
         assertThat(result).isEqualTo(List.of("1:a", "1:b", "2:a", "2:b"));
+    }
+
+    // -- Match
+
+    @Test
+    public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndSupplier() {
+        assertThat(Case(ignored -> true, () -> 1).apply(null)).isEqualTo(Option.some(1));
+    }
+
+    @Test
+    public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndSupplier() {
+        assertThat(Case(ignored -> false, () -> 1).apply(null)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndValue() {
+        assertThat(Case(ignored -> true, 1).apply(null)).isEqualTo(Option.some(1));
+    }
+
+    @Test
+    public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndValue() {
+        assertThat(Case(ignored -> false, 1).apply(null)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldReturnSomeWhenApplyingCaseGivenValueAndSupplier() {
+        assertThat(Case(1, () -> 1).apply(1)).isEqualTo(Option.some(1));
+    }
+
+    @Test
+    public void shouldReturnNoneWhenApplyingCaseGivenValueAndSupplier() {
+        assertThat(Case(-1, () -> 1).apply(1)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldReturnSomeWhenApplyingCaseGivenValueAndValue() {
+        assertThat(Case(1, 1).apply(1)).isEqualTo(Option.some(1));
+    }
+
+    @Test
+    public void shouldReturnNoneWhenApplyingCaseGivenValueAndValue() {
+        assertThat(Case(-1, 1).apply(1)).isEqualTo(Option.none());
     }
 }

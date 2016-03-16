@@ -189,35 +189,7 @@ public abstract class AbstractValueTest {
         assertThat(effect[0]).isEqualTo(getPeekNonNilPerformingAnAction());
     }
 
-    // -- Conversions match(), toXxx()
-
-// TODO
-//    @Test
-//    public void shouldConvertNonEmptyValueToMatchValue() {
-//        final Value<Integer> value = of(1);
-//        final String actual = value.match()
-//                .when((Value<Integer> v) -> v.getOrElse(-1) == 1).then("ok")
-//                .getOrElse("nok");
-//        assertThat(actual).isEqualTo("ok");
-//    }
-//
-//    @Test
-//    public void shouldConvertEmptyValueToMatchValue() {
-//        final Value<Integer> value = empty();
-//        final String actual = value.match()
-//                .when(Value<Integer>::isEmpty).then("ok")
-//                .getOrElse("nok");
-//        assertThat(actual).isEqualTo("ok");
-//    }
-//
-//    @Test
-//    public void shouldConvertToCharSeq() {
-//        Value<Character> v = of('a', 'b', 'c');
-//        assertThat(Match.of(v)
-//                .whenTypeIn(Iterator.class).then(Iterator.of("ignore").toString())
-//                .getOrElse(v.toString())
-//        ).isEqualTo(v.toCharSeq().toString());
-//    }
+    // -- Conversions toXxx()
 
     @Test
     public void shouldConvertToArray() {
