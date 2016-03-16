@@ -160,6 +160,16 @@ import java.util.function.*;
 
     @SuppressWarnings("unchecked")
     @Override
+    public M distinct() {
+        if(containerType == ContainerType.SEQ) {
+            return (M) createFromEntries(iterator().distinct());
+        } else {
+            return (M) this;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public M distinctBy(Comparator<? super Tuple2<K, V>> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return (M) createFromEntries(iterator().distinctBy(comparator));

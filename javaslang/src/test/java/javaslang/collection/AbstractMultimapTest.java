@@ -753,4 +753,18 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     public void shouldFillTheSeqWith0ElementsWhenNIsNegative() {
         assertThat(mapFill(-1, () -> new Tuple2<>(1, 1))).isEqualTo(empty());
     }
+
+    /////////////////////////////////////////////////////////////////
+
+    @Test
+    public void shouldHoldEqualsElements() {
+        Multimap<Integer, String> multimap = emptyMap();
+        multimap = multimap.put(1, "a").put(1, "b").put(1, "b");
+        if(containerType == Multimap.ContainerType.SEQ) {
+            assertThat(multimap.toString()).isEqualTo(className() + "((1, a), (1, b), (1, b))");
+        } else {
+            assertThat(multimap.toString()).isEqualTo(className() + "((1, a), (1, b))");
+        }
+    }
+
 }

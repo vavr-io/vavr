@@ -26,19 +26,19 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
 
     private static final long serialVersionUID = 1L;
 
-    static <K, V> HashMultimap<K, V> emptyWithSeq() {
+    public static <K, V> HashMultimap<K, V> emptyWithSeq() {
         return new HashMultimap<>(HashMap.empty(), ContainerType.SEQ, List::empty);
     }
 
-    static <K, V> HashMultimap<K, V> emptyWithSet() {
+    public static <K, V> HashMultimap<K, V> emptyWithSet() {
         return new HashMultimap<>(HashMap.empty(), ContainerType.SET, HashSet::empty);
     }
 
-    static <K, V extends Comparable<? super V>> HashMultimap<K, V> emptyWithSortedSet() {
+    public static <K, V extends Comparable<? super V>> HashMultimap<K, V> emptyWithSortedSet() {
         return new HashMultimap<>(HashMap.empty(), ContainerType.SORTED_SET, TreeSet::empty);
     }
 
-    static <K, V> HashMultimap<K, V> emptyWithSortedSet(Comparator<? super K> comparator) {
+    public static <K, V> HashMultimap<K, V> emptyWithSortedSet(Comparator<? super V> comparator) {
         return new HashMultimap<>(HashMap.empty(), ContainerType.SORTED_SET, () -> TreeSet.empty(comparator));
     }
 
@@ -48,7 +48,7 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
      * @param entries Multimap entries
      * @return A new Multimap containing the given entries
      */
-    static <K, V> HashMultimap<K, V> ofEntriesWithSeq(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    public static <K, V> HashMultimap<K, V> ofEntriesWithSeq(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
         Multimap<K, V> result = emptyWithSeq();
         for (Tuple2<? extends K, ? extends V> entry : entries) {
@@ -63,7 +63,7 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
      * @param entries Multimap entries
      * @return A new Multimap containing the given entries
      */
-    static <K, V> HashMultimap<K, V> ofEntriesWithSet(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    public static <K, V> HashMultimap<K, V> ofEntriesWithSet(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
         Multimap<K, V> result = emptyWithSet();
         for (Tuple2<? extends K, ? extends V> entry : entries) {
@@ -78,7 +78,7 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
      * @param entries Multimap entries
      * @return A new Multimap containing the given entries
      */
-    static <K, V extends Comparable<? super V>> HashMultimap<K, V> ofEntriesWithSortedSet(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    public static <K, V extends Comparable<? super V>> HashMultimap<K, V> ofEntriesWithSortedSet(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
         Multimap<K, V> result = emptyWithSortedSet();
         for (Tuple2<? extends K, ? extends V> entry : entries) {
@@ -87,7 +87,7 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
         return (HashMultimap<K, V>) result;
     }
 
-    static <K, V> HashMultimap<K, V> ofEntriesWithSortedSet(Comparator<? super K> comparator, Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    public static <K, V> HashMultimap<K, V> ofEntriesWithSortedSet(Comparator<? super V> comparator, Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
         Multimap<K, V> result = emptyWithSortedSet(comparator);
         for (Tuple2<? extends K, ? extends V> entry : entries) {
@@ -105,9 +105,55 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
      * @return A new Multimap containing the given entries
      */
     @SafeVarargs
-    static <K, V> HashMultimap<K, V> ofEntriesWithSeq(Tuple2<? extends K, ? extends V>... entries) {
+    public static <K, V> HashMultimap<K, V> ofEntriesWithSeq(Tuple2<? extends K, ? extends V>... entries) {
         Objects.requireNonNull(entries, "entries is null");
         Multimap<K, V> result = emptyWithSeq();
+        for (Tuple2<? extends K, ? extends V> entry : entries) {
+            result = result.put(entry._1, entry._2);
+        }
+        return (HashMultimap<K, V>) result;
+    }
+
+    /**
+     * Creates a {@link HashMultimap} of the given entries with {@link Set} as values container.
+     *
+     * @param <K>     The key type
+     * @param <V>     The value type
+     * @param entries Multimap entries
+     * @return A new Multimap containing the given entries
+     */
+    @SafeVarargs
+    public static <K, V> HashMultimap<K, V> ofEntriesWithSet(Tuple2<? extends K, ? extends V>... entries) {
+        Objects.requireNonNull(entries, "entries is null");
+        Multimap<K, V> result = emptyWithSet();
+        for (Tuple2<? extends K, ? extends V> entry : entries) {
+            result = result.put(entry._1, entry._2);
+        }
+        return (HashMultimap<K, V>) result;
+    }
+
+    /**
+     * Creates a {@link HashMultimap} of the given entries with {@link SortedSet} as values container.
+     *
+     * @param <K>     The key type
+     * @param <V>     The value type
+     * @param entries Multimap entries
+     * @return A new Multimap containing the given entries
+     */
+    @SafeVarargs
+    public static <K, V extends Comparable<? super V>> HashMultimap<K, V> ofEntriesWithSortedSet(Tuple2<? extends K, ? extends V>... entries) {
+        Objects.requireNonNull(entries, "entries is null");
+        Multimap<K, V> result = emptyWithSortedSet();
+        for (Tuple2<? extends K, ? extends V> entry : entries) {
+            result = result.put(entry._1, entry._2);
+        }
+        return (HashMultimap<K, V>) result;
+    }
+
+    @SafeVarargs
+    public static <K, V> HashMultimap<K, V> ofEntriesWithSortedSet(Comparator<? super V> comparator, Tuple2<? extends K, ? extends V>... entries) {
+        Objects.requireNonNull(entries, "entries is null");
+        Multimap<K, V> result = emptyWithSortedSet(comparator);
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             result = result.put(entry._1, entry._2);
         }
@@ -123,9 +169,55 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
      * @return A new Multimap containing the given entries
      */
     @SafeVarargs
-    static <K, V> HashMultimap<K, V> ofEntriesWithSeq(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+    public static <K, V> HashMultimap<K, V> ofEntriesWithSeq(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         Objects.requireNonNull(entries, "entries is null");
         Multimap<K, V> result = emptyWithSeq();
+        for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
+            result = result.put(entry.getKey(), entry.getValue());
+        }
+        return (HashMultimap<K, V>) result;
+    }
+
+    /**
+     * Creates a {@link HashMultimap} of the given entries with {@link Set} as values container.
+     *
+     * @param <K>     The key type
+     * @param <V>     The value type
+     * @param entries Multimap entries
+     * @return A new Multimap containing the given entries
+     */
+    @SafeVarargs
+    public static <K, V> HashMultimap<K, V> ofEntriesWithSet(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+        Objects.requireNonNull(entries, "entries is null");
+        Multimap<K, V> result = emptyWithSet();
+        for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
+            result = result.put(entry.getKey(), entry.getValue());
+        }
+        return (HashMultimap<K, V>) result;
+    }
+
+    /**
+     * Creates a {@link HashMultimap} of the given entries with {@link SortedSet} as values container.
+     *
+     * @param <K>     The key type
+     * @param <V>     The value type
+     * @param entries Multimap entries
+     * @return A new Multimap containing the given entries
+     */
+    @SafeVarargs
+    public static <K, V extends Comparable<? super V>> HashMultimap<K, V> ofEntriesWithSortedSet(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+        Objects.requireNonNull(entries, "entries is null");
+        Multimap<K, V> result = emptyWithSortedSet();
+        for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
+            result = result.put(entry.getKey(), entry.getValue());
+        }
+        return (HashMultimap<K, V>) result;
+    }
+
+    @SafeVarargs
+    public static <K, V> HashMultimap<K, V> ofEntriesWithSortedSet(Comparator<? super V> comparator, java.util.Map.Entry<? extends K, ? extends V>... entries) {
+        Objects.requireNonNull(entries, "entries is null");
+        Multimap<K, V> result = emptyWithSortedSet(comparator);
         for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
             result = result.put(entry.getKey(), entry.getValue());
         }
@@ -144,9 +236,49 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
-    static <K, V> HashMultimap<K, V> tabulateWithSeq(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+    public static <K, V> HashMultimap<K, V> tabulateWithSeq(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         return ofEntriesWithSeq(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
+    }
+
+    /**
+     * Returns an {@link HashMultimap} containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1} with {@link Set} as values container.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param n   The number of elements in the Multimap
+     * @param f   The Function computing element values
+     * @return An Multimap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code f} is null
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> HashMultimap<K, V> tabulateWithSet(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return ofEntriesWithSet(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
+    }
+
+    /**
+     * Returns an {@link HashMultimap} containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1} with {@link SortedSet} as values container.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param n   The number of elements in the Multimap
+     * @param f   The Function computing element values
+     * @return An Multimap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code f} is null
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V extends Comparable<? super V>> HashMultimap<K, V> tabulateWithSortedSet(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return ofEntriesWithSortedSet(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> HashMultimap<K, V> tabulateWithSortedSet(Comparator<? super V> comparator, int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return ofEntriesWithSortedSet(comparator, Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
     }
 
     /**
@@ -160,9 +292,47 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
      * @throws NullPointerException if {@code s} is null
      */
     @SuppressWarnings("unchecked")
-    static <K, V> HashMultimap<K, V> fillWithSeq(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+    public static <K, V> HashMultimap<K, V> fillWithSeq(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
         Objects.requireNonNull(s, "s is null");
         return ofEntriesWithSeq(Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
+    }
+
+    /**
+     * Returns an {@link HashMultimap} containing {@code n} values supplied by a given Supplier {@code s} with {@link Set} as values container.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param n        The number of elements in the Multimap
+     * @param s        The Supplier computing element values
+     * @return An Multimap of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code s} is null
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> HashMultimap<K, V> fillWithSet(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+        Objects.requireNonNull(s, "s is null");
+        return ofEntriesWithSet(Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
+    }
+
+    /**
+     * Returns an {@link HashMultimap} containing {@code n} values supplied by a given Supplier {@code s} with {@link SortedSet} as values container.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param n        The number of elements in the Multimap
+     * @param s        The Supplier computing element values
+     * @return An Multimap of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code s} is null
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V extends Comparable<? super V>> HashMultimap<K, V> fillWithSortedSet(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+        Objects.requireNonNull(s, "s is null");
+        return ofEntriesWithSortedSet(Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> HashMultimap<K, V> fillWithSortedSet(Comparator<? super V> comparator, int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+        Objects.requireNonNull(s, "s is null");
+        return ofEntriesWithSortedSet(comparator, Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
     }
 
     /**
@@ -174,12 +344,67 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
      * @return A new {@link Multimap} containing the given entries
      */
     @SuppressWarnings("unchecked")
-    static <K, V> HashMultimap<K, V> withSeq(Object... pairs) {
+    public static <K, V> HashMultimap<K, V> withSeq(Object... pairs) {
         Objects.requireNonNull(pairs, "pairs is null");
         if ((pairs.length & 1) != 0) {
             throw new IllegalArgumentException("Odd length of key-value pairs list");
         }
         Multimap<K, V> result = emptyWithSeq();
+        for (int i = 0; i < pairs.length; i += 2) {
+            result = result.put((K) pairs[i], (V) pairs[i + 1]);
+        }
+        return (HashMultimap<K, V>) result;
+    }
+
+    /**
+     * Creates a {@link HashMultimap} of the given list of key-value pairs with {@link Set} as values container.
+     *
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @param pairs A list of key-value pairs
+     * @return A new {@link Multimap} containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> HashMultimap<K, V> withSet(Object... pairs) {
+        Objects.requireNonNull(pairs, "pairs is null");
+        if ((pairs.length & 1) != 0) {
+            throw new IllegalArgumentException("Odd length of key-value pairs list");
+        }
+        Multimap<K, V> result = emptyWithSet();
+        for (int i = 0; i < pairs.length; i += 2) {
+            result = result.put((K) pairs[i], (V) pairs[i + 1]);
+        }
+        return (HashMultimap<K, V>) result;
+    }
+
+    /**
+     * Creates a {@link HashMultimap} of the given list of key-value pairs with {@link SortedSet} as values container.
+     *
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @param pairs A list of key-value pairs
+     * @return A new {@link Multimap} containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V extends Comparable<? super V>> HashMultimap<K, V> withSortedSet(Object... pairs) {
+        Objects.requireNonNull(pairs, "pairs is null");
+        if ((pairs.length & 1) != 0) {
+            throw new IllegalArgumentException("Odd length of key-value pairs list");
+        }
+        Multimap<K, V> result = emptyWithSortedSet();
+        for (int i = 0; i < pairs.length; i += 2) {
+            result = result.put((K) pairs[i], (V) pairs[i + 1]);
+        }
+        return (HashMultimap<K, V>) result;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> HashMultimap<K, V> withSortedSet(Comparator<? super V> comparator, Object... pairs) {
+        Objects.requireNonNull(pairs, "pairs is null");
+        if ((pairs.length & 1) != 0) {
+            throw new IllegalArgumentException("Odd length of key-value pairs list");
+        }
+        Multimap<K, V> result = emptyWithSortedSet(comparator);
         for (int i = 0; i < pairs.length; i += 2) {
             result = result.put((K) pairs[i], (V) pairs[i + 1]);
         }
@@ -194,19 +419,19 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
      * @param <V> The value type
      * @return A {@link Multimap} Collector.
      */
-    static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, Multimap<K, V>> collectorWithSeq() {
+    public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, Multimap<K, V>> collectorWithSeq() {
         return collector(HashMultimap::ofEntriesWithSeq);
     }
 
-    static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, Multimap<K, V>> collectorWithSet() {
+    public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, Multimap<K, V>> collectorWithSet() {
         return collector(HashMultimap::ofEntriesWithSet);
     }
 
-    static <K, V extends Comparable<? super V>> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, Multimap<K, V>> collectorWithSortedSet() {
+    public static <K, V extends Comparable<? super V>> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, Multimap<K, V>> collectorWithSortedSet() {
         return collector(HashMultimap::ofEntriesWithSortedSet);
     }
 
-    static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, Multimap<K, V>> collectorWithSortedSet(Comparator<? super K> comparator) {
+    public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, Multimap<K, V>> collectorWithSortedSet(Comparator<? super V> comparator) {
         return collector(entries -> HashMultimap.ofEntriesWithSortedSet(comparator, entries));
     }
 
@@ -231,7 +456,7 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
      * @return the given {@code multimap} instance as narrowed type {@code Multimap<K, V>}.
      */
     @SuppressWarnings("unchecked")
-    static <K, V> HashMultimap<K, V> narrow(HashMultimap<? extends K, ? extends V> map) {
+    public static <K, V> HashMultimap<K, V> narrow(HashMultimap<? extends K, ? extends V> map) {
         return (HashMultimap<K, V>) map;
     }
 
@@ -255,8 +480,4 @@ public class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V
         return new HashMultimap<>(back, getContainerType(), emptyContainer);
     }
 
-    @Override
-    public HashMultimap<K, V> distinct() {
-        return this;
-    }
 }

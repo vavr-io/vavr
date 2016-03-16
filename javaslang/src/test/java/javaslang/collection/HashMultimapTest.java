@@ -47,19 +47,43 @@ public class HashMultimapTest extends AbstractMultimapTest {
     @SafeVarargs
     @Override
     protected final <K, V> Multimap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
-        return HashMultimap.ofEntriesWithSeq(entries);
+        switch (containerType) {
+            case SEQ:
+                return HashMultimap.ofEntriesWithSeq(entries);
+            case SET:
+                return HashMultimap.ofEntriesWithSet(entries);
+            case SORTED_SET:
+                return HashMultimap.ofEntriesWithSortedSet(TreeSetTest.toStringComparator(), entries);
+        }
+        throw new RuntimeException();
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
     protected final <K, V> Multimap<K, V> mapOfEntries(Map.Entry<? extends K, ? extends V>... entries) {
-        return HashMultimap.ofEntriesWithSeq(entries);
+        switch (containerType) {
+            case SEQ:
+                return HashMultimap.ofEntriesWithSeq(entries);
+            case SET:
+                return HashMultimap.ofEntriesWithSet(entries);
+            case SORTED_SET:
+                return HashMultimap.ofEntriesWithSortedSet(TreeSetTest.toStringComparator(), entries);
+        }
+        throw new RuntimeException();
     }
 
     @Override
     protected <K, V> Multimap<K, V> mapOfPairs(Object... pairs) {
-        return HashMultimap.withSeq(pairs);
+        switch (containerType) {
+            case SEQ:
+                return HashMultimap.withSeq(pairs);
+            case SET:
+                return HashMultimap.withSet(pairs);
+            case SORTED_SET:
+                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator(), pairs);
+        }
+        throw new RuntimeException();
     }
 
     @Override
@@ -70,25 +94,28 @@ public class HashMultimapTest extends AbstractMultimapTest {
 
     @Override
     protected <K, V> Multimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
-        return HashMultimap.tabulateWithSeq(n, f);
+        switch (containerType) {
+            case SEQ:
+                return HashMultimap.tabulateWithSeq(n, f);
+            case SET:
+                return HashMultimap.tabulateWithSet(n, f);
+            case SORTED_SET:
+                return HashMultimap.tabulateWithSortedSet(TreeSetTest.toStringComparator(), n, f);
+        }
+        throw new RuntimeException();
     }
 
     @Override
     protected <K, V> Multimap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
-        return HashMultimap.fillWithSeq(n, s);
-    }
-
-    /////////////////////////////////////////////////////////////////
-
-    @Test
-    public void test1() {
-        Multimap<Integer, String> multimap = emptyMap();
-        multimap = multimap.put(1, "a").put(1, "b").put(1, "b");
-        if(containerType == Multimap.ContainerType.SEQ) {
-            assertThat(multimap.toString()).isEqualTo(className() + "((1, a), (1, b), (1, b))");
-        } else {
-            assertThat(multimap.toString()).isEqualTo(className() + "((1, a), (1, b))");
+        switch (containerType) {
+            case SEQ:
+                return HashMultimap.fillWithSeq(n, s);
+            case SET:
+                return HashMultimap.fillWithSet(n, s);
+            case SORTED_SET:
+                return HashMultimap.fillWithSortedSet(TreeSetTest.toStringComparator(), n, s);
         }
+        throw new RuntimeException();
     }
 
     // -- narrow
