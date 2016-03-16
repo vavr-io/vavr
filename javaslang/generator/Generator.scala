@@ -1246,6 +1246,26 @@ def generateTestClasses(): Unit = {
             public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndValue() {
                 assertThat(Case(ignored -> false, 1).apply(null)).isEqualTo($OptionType.none());
             }
+
+            @$test
+            public void shouldReturnSomeWhenApplyingCaseGivenValueAndSupplier() {
+                assertThat(Case(1, () -> 1).apply(1)).isEqualTo($OptionType.some(1));
+            }
+
+            @$test
+            public void shouldReturnNoneWhenApplyingCaseGivenValueAndSupplier() {
+                assertThat(Case(-1, () -> 1).apply(1)).isEqualTo($OptionType.none());
+            }
+
+            @$test
+            public void shouldReturnSomeWhenApplyingCaseGivenValueAndValue() {
+                assertThat(Case(1, 1).apply(1)).isEqualTo($OptionType.some(1));
+            }
+
+            @$test
+            public void shouldReturnNoneWhenApplyingCaseGivenValueAndValue() {
+                assertThat(Case(-1, 1).apply(1)).isEqualTo($OptionType.none());
+            }
         }
       """
     })
