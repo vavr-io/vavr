@@ -672,7 +672,11 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     @Override
     public <U> Queue<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return new Queue<>(front.flatMap(mapper), rear.flatMap(mapper));
+        if (isEmpty()) {
+            return empty();
+        } else {
+            return new Queue<>(front.flatMap(mapper), rear.flatMap(mapper));
+        }
     }
 
     @Override
