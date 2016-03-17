@@ -535,6 +535,22 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 2, 3, 4).findLast(i -> i % 2 == 0)).isEqualTo(Option.of(4));
     }
 
+    // -- flatMap
+
+    @Test
+    public void shouldFlatMapEmpty() {
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(empty().flatMap(v -> of(v, 0))).isEqualTo(empty());
+        } else {
+            assertThat(empty().flatMap(v -> of(v, 0))).isSameAs(empty());
+        }
+    }
+
+    @Test
+    public void shouldFlatMapNonEmpty() {
+        assertThat(of(1, 2, 3).flatMap(v -> of(v, 0))).isEqualTo(of(1, 0, 2, 0, 3, 0));
+    }
+
     // -- fold
 
     @Test
