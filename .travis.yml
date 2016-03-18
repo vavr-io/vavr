@@ -13,5 +13,3 @@ before_install:
 after_success:
   - codecov
   - mvn clean deploy -DskipTests --settings .travis/maven-settings.xml
-  - mvn javadoc:javadoc -DskipTests
-  - .travis/deploy-javadoc-snapshot.sh
