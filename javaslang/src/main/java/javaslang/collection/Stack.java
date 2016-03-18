@@ -33,7 +33,9 @@ import javaslang.control.Option;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Stack<T> {
+public interface Stack<T> extends Seq<T> {
+
+    long serialVersionUID = 1L;
 
     /**
      * Narrows a widened {@code Stack<? extends T>} to {@code Stack<T>}
