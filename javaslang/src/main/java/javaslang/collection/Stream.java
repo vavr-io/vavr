@@ -1382,13 +1382,13 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
-    default <U> Stream<Tuple2<T, U>> zip(Iterable<U> iterable) {
+    default <U> Stream<Tuple2<T, U>> zip(Iterable<? extends U> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         return Stream.ofAll(iterator().zip(iterable));
     }
 
     @Override
-    default <U> Stream<Tuple2<T, U>> zipAll(Iterable<U> iterable, T thisElem, U thatElem) {
+    default <U> Stream<Tuple2<T, U>> zipAll(Iterable<? extends U> iterable, T thisElem, U thatElem) {
         Objects.requireNonNull(iterable, "iterable is null");
         return Stream.ofAll(iterator().zipAll(iterable, thisElem, thatElem));
     }

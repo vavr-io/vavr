@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.API;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
@@ -202,10 +201,10 @@ public interface SortedSet<T> extends Set<T> {
     <T1, T2> Tuple2<? extends SortedSet<T1>, ? extends SortedSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     @Override
-    <U> SortedSet<Tuple2<T, U>> zip(Iterable<U> that);
+    <U> SortedSet<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     @Override
-    <U> SortedSet<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+    <U> SortedSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
     SortedSet<Tuple2<T, Long>> zipWithIndex();

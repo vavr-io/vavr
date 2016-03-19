@@ -950,11 +950,11 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public <U> IndexedSeq<Tuple2<Character, U>> zip(Iterable<U> that) {
+    public <U> IndexedSeq<Tuple2<Character, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         IndexedSeq<Tuple2<Character, U>> result = Vector.empty();
         Iterator<Character> list1 = iterator();
-        java.util.Iterator<U> list2 = that.iterator();
+        java.util.Iterator<? extends U> list2 = that.iterator();
         while (list1.hasNext() && list2.hasNext()) {
             result = result.append(Tuple.of(list1.next(), list2.next()));
         }
@@ -962,11 +962,11 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public <U> IndexedSeq<Tuple2<Character, U>> zipAll(Iterable<U> that, Character thisElem, U thatElem) {
+    public <U> IndexedSeq<Tuple2<Character, U>> zipAll(Iterable<? extends U> that, Character thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         IndexedSeq<Tuple2<Character, U>> result = Vector.empty();
         Iterator<Character> list1 = iterator();
-        java.util.Iterator<U> list2 = that.iterator();
+        java.util.Iterator<? extends U> list2 = that.iterator();
         while (list1.hasNext() || list2.hasNext()) {
             final Character elem1 = list1.hasNext() ? list1.next() : thisElem;
             final U elem2 = list2.hasNext() ? list2.next() : thatElem;
