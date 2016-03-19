@@ -431,6 +431,16 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     int lastIndexWhere(Predicate<? super T> predicate, int end);
 
     /**
+     * Turns this sequence into a plain function returning an Option result.
+     *
+     * @return a function that takes an index i and returns the value of
+     * this sequence in a Some if the index is within bounds, otherwise a None.
+     */
+    default Function1<Integer, Option<T>> lift() {
+        return i -> (i >= length() || i < 0) ? Option.none() : Option.some(apply(i));
+    }
+
+    /**
      * Returns the index of the last occurrence of the given element before or at a given end index
      * or -1 if this does not contain the given element.
      *
@@ -950,4 +960,25 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     @Override
     Seq<Tuple2<T, Long>> zipWithIndex();
 
+    /**
+     * Turns this sequence from a partial function into a total function that
+     * returns defaultValue for all indexes that are out of bounds.
+     *
+     * @param defaultValue default value to return for out of bound indexes
+     * @return a total function from index to T
+     */
+    default Function1<Integer, T> withDefaultValue(T defaultValue) {
+        return i -> (i >= length() || i < 0) ? defaultValue : apply(i);
+    }
+
+    /**
+     * Turns this sequence from a partial function into a total function that
+     * returns a value computed by defaultFunction for all indexes that are out of bounds.
+     *
+     * @param defaultFunction function to evaluate for all out of bounds indexes.
+     * @return a total function from index to T
+     */
+    default Function1<Integer,T> withDefault(Function<? super Integer, ? extends T> defaultFunction)  {
+        return i -> (i >= length() || i < 0) ? defaultFunction.apply(i) : apply(i);
+    }
 }
