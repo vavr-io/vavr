@@ -910,14 +910,14 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     }
 
     @Override
-    public <U> TreeSet<Tuple2<T, U>> zip(Iterable<U> that) {
+    public <U> TreeSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final Comparator<Tuple2<T, U>> tuple2Comparator = Tuple2.comparator(tree.comparator(), naturalComparator());
         return TreeSet.ofAll(tuple2Comparator, iterator().zip(that));
     }
 
     @Override
-    public <U> TreeSet<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    public <U> TreeSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         final Comparator<Tuple2<T, U>> tuple2Comparator = Tuple2.comparator(tree.comparator(), naturalComparator());
         return TreeSet.ofAll(tuple2Comparator, iterator().zipAll(that, thisElem, thatElem));

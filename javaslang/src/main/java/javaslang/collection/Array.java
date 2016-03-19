@@ -1263,13 +1263,13 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public <U> Array<Tuple2<T, U>> zip(Iterable<U> that) {
+    public <U> Array<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         return Array.ofAll(iterator().zip(that));
     }
 
     @Override
-    public <U> Array<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    public <U> Array<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return Array.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }

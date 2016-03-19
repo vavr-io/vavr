@@ -952,10 +952,10 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     <T1, T2, T3> Tuple3<? extends Seq<T1>, ? extends Seq<T2>, ? extends Seq<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     @Override
-    <U> Seq<Tuple2<T, U>> zip(Iterable<U> that);
+    <U> Seq<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     @Override
-    <U> Seq<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+    <U> Seq<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
     Seq<Tuple2<T, Long>> zipWithIndex();

@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.API;
 import javaslang.Function1;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -244,10 +243,10 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
     <T1, T2, T3> Tuple3<? extends Set<T1>, ? extends Set<T2>, ? extends Set<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     @Override
-    <U> Set<Tuple2<T, U>> zip(Iterable<U> that);
+    <U> Set<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     @Override
-    <U> Set<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+    <U> Set<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
     Set<Tuple2<T, Long>> zipWithIndex();

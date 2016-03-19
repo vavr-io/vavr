@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.API;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -13,8 +12,16 @@ import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
 import javaslang.control.Option;
 
-import java.util.*;
-import java.util.function.*;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * {@code javaslang.collection.Iterator} is a compositional replacement for {@code java.util.Iterator}
@@ -1074,13 +1081,13 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default <U> Iterator<Tuple2<T, U>> zip(Iterable<U> that) {
+    default <U> Iterator<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
             return empty();
         } else {
             final Iterator<T> it1 = this;
-            final java.util.Iterator<U> it2 = that.iterator();
+            final java.util.Iterator<? extends U> it2 = that.iterator();
             return new AbstractIterator<Tuple2<T, U>>() {
                 @Override
                 public boolean hasNext() {
@@ -1096,9 +1103,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default <U> Iterator<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    default <U> Iterator<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        final java.util.Iterator<U> thatIt = that.iterator();
+        final java.util.Iterator<? extends U> thatIt = that.iterator();
         if (isEmpty() && !thatIt.hasNext()) {
             return empty();
         } else {

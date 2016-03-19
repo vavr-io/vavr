@@ -1159,13 +1159,13 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     }
 
     @Override
-    public <U> Queue<Tuple2<T, U>> zip(Iterable<U> that) {
+    public <U> Queue<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         return toList().zip(that).toQueue();
     }
 
     @Override
-    public <U> Queue<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    public <U> Queue<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return toList().zipAll(that, thisElem, thatElem).toQueue();
     }
