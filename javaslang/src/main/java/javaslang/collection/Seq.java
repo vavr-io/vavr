@@ -968,7 +968,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @return a total function from index to T
      */
     default Function1<Integer, T> withDefaultValue(T defaultValue) {
-        return i -> lift().apply(i).getOrElse(defaultValue);
+        return i -> (i >= length() || i < 0) ? defaultValue : apply(i);
     }
 
     /**
@@ -979,6 +979,6 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @return a total function from index to T
      */
     default Function1<Integer,T> withDefault(Function<? super Integer, ? extends T> defaultFunction)  {
-        return i -> lift().apply(i).getOrElse(() -> defaultFunction.apply(i));
+        return i -> (i >= length() || i < 0) ? defaultFunction.apply(i) : apply(i);
     }
 }
