@@ -848,13 +848,13 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     @Override
-    public <U> LinkedHashSet<Tuple2<T, U>> zip(Iterable<U> that) {
+    public <U> LinkedHashSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         return LinkedHashSet.ofAll(iterator().zip(that));
     }
 
     @Override
-    public <U> LinkedHashSet<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    public <U> LinkedHashSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return LinkedHashSet.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }

@@ -5,14 +5,17 @@
  */
 package javaslang.collection;
 
-import javaslang.API;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 
 /**
  * Interface for immutable, linear sequences.
@@ -280,10 +283,10 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> update(int index, T element);
 
     @Override
-    <U> LinearSeq<Tuple2<T, U>> zip(Iterable<U> that);
+    <U> LinearSeq<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     @Override
-    <U> LinearSeq<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+    <U> LinearSeq<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
     LinearSeq<Tuple2<T, Long>> zipWithIndex();

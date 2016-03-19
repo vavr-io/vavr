@@ -1363,13 +1363,13 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<Tuple2<T, U>> zip(Iterable<U> that) {
+    default <U> List<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         return List.ofAll(iterator().zip(that));
     }
 
     @Override
-    default <U> List<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    default <U> List<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return List.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }

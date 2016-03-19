@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.API;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.Value;
@@ -1196,7 +1195,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new traversable containing pairs consisting of corresponding elements of this traversable and {@code that} iterable.
      * @throws NullPointerException if {@code that} is null
      */
-    <U> Traversable<Tuple2<T, U>> zip(Iterable<U> that);
+    <U> Traversable<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     /**
      * Returns a traversable formed from this traversable and another Iterable by combining corresponding elements in
@@ -1220,7 +1219,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return A new traversable containing pairs consisting of corresponding elements of this traversable and that.
      * @throws NullPointerException if {@code that} is null
      */
-    <U> Traversable<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+    <U> Traversable<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     /**
      * Zips this traversable with its indices.
