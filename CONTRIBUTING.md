@@ -70,11 +70,11 @@ We following a simple git workflow/branching model:
                            |     v2.0.x
 release v2.0.0 - - - - - - + - - - + 2.0.1-SNAPSHOT
                            |       |
-                  featureA |       |
+                  bugfix1  |       |
                      |     |       |
-                  PR x---->|<------+ cherry-picking featureA
+                  PR x---->|<------+ cherry-picking bugfix1
                            |       |
-                  featureB |       |
+                  featureA |       |
                      |     |       |
                   PR x---->|       |
                            |       |
@@ -84,7 +84,7 @@ release v2.0.1 - - - - - - | - - - + 2.0.2-SNAPSHOT
 release v2.1.0 - - - - - - + - - - X - - - + 2.1.1-SNAPSHOT
                            |               |
                            |               |
-                  featureC |               |
+                  featureB |               |
                      |     |               |
                   PR x---->|               |
                           ...             ...
