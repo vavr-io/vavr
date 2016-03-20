@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import javaslang.collection.Iterator;
 import javaslang.control.Option;
 
@@ -607,37 +606,28 @@ public final class API {
     // -- static Case API
 
     // syntactic sugar for {@code Case($(predicate), f)}
-    public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, Supplier<? extends R> f) {
+    public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, Function<? super T, ? extends R> f) {
+        Objects.requireNonNull(predicate, "predicate is null");
         Objects.requireNonNull(f, "f is null");
         return new Case0<>($(predicate), f);
     }
 
-    // syntactic sugar for {@code Case($(predicate), () -> retVal)}
+    // syntactic sugar for {@code Case($(predicate), ignored -> retVal)}
     public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, R retVal) {
-        return new Case0<>($(predicate), () -> retVal);
+        Objects.requireNonNull(predicate, "predicate is null");
+        return new Case0<>($(predicate), ignored -> retVal);
     }
 
-    // syntactic sugar for {@code Case($(value), f)}
-    public static <T, R> Case<T, R> Case(T value, Supplier<? extends R> f) {
-        Objects.requireNonNull(f, "f is null");
-        return new Case0<>($(value), f);
-    }
-
-    // syntactic sugar for {@code Case($(value), () -> retVal)}
-    public static <T, R> Case<T, R> Case(T value, R retVal) {
-        return new Case0<>($(value), () -> retVal);
-    }
-
-    public static <T, R> Case<T, R> Case(Pattern0<T> pattern, Supplier<? extends R> f) {
+    public static <T, R> Case<T, R> Case(Pattern0<T> pattern, Function<? super T, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
         return new Case0<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case(Pattern0, Supplier)}
+    // syntactic sugar for {@code Case(Pattern0, ignored -> retVal)}
     public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
-        return new Case0<>(pattern, () -> retVal);
+        return new Case0<>(pattern, ignored -> retVal);
     }
 
     public static <T, T1, R> Case<T, R> Case(Pattern1<T, T1> pattern, Function<? super T1, ? extends R> f) {
@@ -825,16 +815,16 @@ public final class API {
         public static final class Case0<T, R> implements Case<T, R> {
 
             private final Pattern0<T> pattern;
-            private final Supplier<? extends R> f;
+            private final Function<? super T, ? extends R> f;
 
-            private Case0(Pattern0<T> pattern, Supplier<? extends R> f) {
+            private Case0(Pattern0<T> pattern, Function<? super T, ? extends R> f) {
                 this.pattern = pattern;
                 this.f = f;
             }
 
             @Override
             public Option<R> apply(T o) {
-                return pattern.apply(o).map(ignored -> f.get());
+                return pattern.apply(o).map(f);
             }
         }
 
