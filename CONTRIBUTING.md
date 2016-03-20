@@ -59,3 +59,87 @@ Just a few notes here. In general it is good to look at existing code to get a c
 * Commits are coarsely granular grouped by feature/change.
 * Commits do not mix change sets of different domains/purpose.
 * Commit messages provide enough detail to extract a changelog for a new release.
+
+### Branching Model
+
+We following a simple git workflow/branching model:
+
+```java
+                         master
+                           |
+                           |     v2.0.x
+release v2.0.0 - - - - - - + - - - + 2.0.1-SNAPSHOT
+                           |       |
+                  featureA |       |
+                     |     |       |
+                  PR x---->|<------+ cherry-picking featureA
+                           |       |
+                  featureB |       |
+                     |     |       |
+                  PR x---->|       |
+                           |       |
+release v2.0.1 - - - - - - | - - - + 2.0.2-SNAPSHOT
+                           |       |
+                           |       |     v2.1.x
+release v2.1.0 - - - - - - + - - - X - - - + 2.1.1-SNAPSHOT
+                           |               |
+                           |               |
+                  featureC |               |
+                     |     |               |
+                  PR x---->|               |
+                          ...             ...
+```
+
+### Major release
+
+#### Performing a release
+
+Performing a release requires admin-rights.
+
+1. get a fresh copy of the repo `git clone https://github.com/javaslang/javaslang.git`
+2. perform the release
+
+```bash
+mvn release:clean
+mvn release:prepare
+mvn release:perform
+```
+
+3. Go to `http://oss.sonatype.org` and stage the release.
+
+#### Post-Release steps (e.g. for release v2.1.0)
+
+1. [CAUTION] Delete the old maintenance branch (e.g. v2.0.x)
+
+```bash
+git push origin :v2.0.x
+```
+
+2. Create the new _maintenance branch_ (e.g. v2.1.x) based on the new release tag (e.g. v2.1.0)
+
+```bash
+git checkout origin/master
+git fetch origin
+git branch v2.1.x v2.1.0
+git checkout v2.1.x
+git push origin v2.1.x
+```
+
+3. Update the version of the _maintenance branch_
+
+```bash
+mvn versions:set -DnewVersion=2.1.1-SNAPSHOT
+```
+
+When a maintenance release is performed, we increase the last digit of the new development version of the maintenance branch (e.g. 2.1.2-SNAPSHOT).
+
+#### Merging specific commits into the maintenance branch
+
+Pull requests are merged into master. Only specific commits are merged from master into the maintenance branch.
+
+```bash
+git checkout v2.1.x
+git log --pretty=oneline --abbrev-commit
+# pick a commit from the log, e.g. a741cf1
+git cherry-pick a741cf1
+```
