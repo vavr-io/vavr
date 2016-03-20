@@ -16,7 +16,7 @@ import java.time.Year;
 
 import static javaslang.API.$;
 import static javaslang.API.*;
-import static javaslang.MatchTestDeveloper$Patterns.Developer;
+import static javaslang.MatchTest_DeveloperPatterns.Developer;
 import static javaslang.Patterns.*;
 import static javaslang.Predicates.instanceOf;
 import static javaslang.Predicates.is;
