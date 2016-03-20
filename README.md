@@ -14,51 +14,18 @@ To stay up to date please follow the [blog](http://blog.javaslang.io).
 
 See [User Guide](http://docs.javaslang.io)
 
-## Release Management
+### Useful Maven Goals
 
-See http://central.sonatype.org/pages/ossrh-guide.html
-
-Sonatype-Nexus specific maven configuration: `~/.m2/settings.xml`
-
-```xml
-<settings>
-  <servers>
-    <server>
-      <id>sonatype-nexus-snapshots</id>
-      <username>your-jira-id</username>
-      <password>your-jira-pwd</password>
-    </server>
-    <server>
-      <id>sonatype-nexus-staging</id>
-      <username>your-jira-id</username>
-      <password>your-jira-pwd</password>
-    </server>
-  </servers>
-</settings>
-```
-
-### Deploy a snapshot
-
-```
-mvn clean deploy
-```
-
-The snaphot is deployed to https://oss.sonatype.org/content/repositories/snapshots/
-
-### Prepare a release
-
-```
-mvn release:clean
-mvn release:prepare
-```
-
-### Stage a release
-
-```
-mvn release:perform
-```
+* Executing tests: `mvn clean test`
+* Executing doclint: `mvn javadoc:javadoc`
+* Executing code coverage report: `mvn -P ci clean test jacoco:report`
+* Create -javadoc.jar: `mvn javadoc:jar`
+* Create -source.jar: `mvn source:jar`
+* Update version properties: `mvn versions:update-properties`
+* Check for new plugin version: `mvn versions:display-plugin-updates`
 
 ### Benchmarks
+
 Currently only basic microbenchmarks are available. To run
 
 ```

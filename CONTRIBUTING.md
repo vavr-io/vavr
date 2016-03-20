@@ -1,3 +1,9 @@
+# How to Contribute
+
+Javaslang needs to be compiled with **jdk 1.8.0_40** at minimum, which fixes many type inference bugs of the java compiler.
+
+https://help.github.com/articles/fork-a-repo[Fork] the GitHub, send a https://help.github.com/articles/using-pull-requests[pull request] and keep your fork in https://help.github.com/articles/syncing-a-fork/[sync] with the upstream repository.
+
 ## IDE
 
 We use recent IDE version to develop Javaslang. IntelliJ IDEA is preferred over Eclipse.
@@ -53,6 +59,47 @@ Just a few notes here. In general it is good to look at existing code to get a c
 * Javaslang has no dependencies other than Java.
 * Unit tests depend solely on junit and assertj.
 * Benchmarks are done with JMH
+
+## Build
+
+### Useful Maven Goals
+
+* Executing tests: `mvn clean test`
+* Executing doclint: `mvn javadoc:javadoc`
+* Executing code coverage report: `mvn -P ci clean test jacoco:report`
+* Create -javadoc.jar: `mvn javadoc:jar`
+* Create -source.jar: `mvn source:jar`
+* Update version properties: `mvn versions:update-properties`
+* Check for new plugin version: `mvn versions:display-plugin-updates`
+
+### Benchmarks
+
+mvn clean test -Pbenchmark
+
+### Releasing
+
+See http://central.sonatype.org/pages/ossrh-guide.html
+
+Sonatype-Nexus specific maven configuration: `~/.m2/settings.xml`
+
+```xml
+<settings>
+  <servers>
+    <server>
+      <id>sonatype-nexus-snapshots</id>
+      <username>your-jira-id</username>
+      <password>your-jira-pwd</password>
+    </server>
+    <server>
+      <id>sonatype-nexus-staging</id>
+      <username>your-jira-id</username>
+      <password>your-jira-pwd</password>
+    </server>
+  </servers>
+</settings>
+```
+
+Note: Detailed information about performing a release can be found in the SCM section.
 
 ## SCM
 
