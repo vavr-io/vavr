@@ -99,11 +99,11 @@ Performing a release requires admin-rights.
 1. get a fresh copy of the repo `git clone https://github.com/javaslang/javaslang.git`
 2. perform the release
 
-```bash
-mvn release:clean
-mvn release:prepare
-mvn release:perform
-```
+    ```bash
+    mvn release:clean
+    mvn release:prepare
+    mvn release:perform
+    ```
 
 3. Go to `http://oss.sonatype.org` and stage the release.
 
@@ -111,25 +111,25 @@ mvn release:perform
 
 1. [CAUTION] Delete the old maintenance branch (e.g. v2.0.x)
 
-```bash
-git push origin :v2.0.x
-```
+    ```bash
+    git push origin :v2.0.x
+    ```
 
 2. Create the new _maintenance branch_ (e.g. v2.1.x) based on the new release tag (e.g. v2.1.0)
 
-```bash
-git checkout origin/master
-git fetch origin
-git branch v2.1.x v2.1.0
-git checkout v2.1.x
-git push origin v2.1.x
-```
+    ```bash
+    git checkout origin/master
+    git fetch origin
+    git branch v2.1.x v2.1.0
+    git checkout v2.1.x
+    git push origin v2.1.x
+    ```
 
 3. Update the version of the _maintenance branch_
 
-```bash
-mvn versions:set -DnewVersion=2.1.1-SNAPSHOT
-```
+    ```bash
+    mvn versions:set -DnewVersion=2.1.1-SNAPSHOT
+    ```
 
 When a maintenance release is performed, we increase the last digit of the new development version of the maintenance branch (e.g. 2.1.2-SNAPSHOT).
 
