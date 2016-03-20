@@ -1,4 +1,4 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.javaslang/javaslang/badge.png)](https://maven-badges.herokuapp.com/maven-central/com.javaslang/javaslang)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.javaslang/javaslang/badge.png)](https://maven-badges.herokuapp.com/maven-central/io.javaslang/javaslang)
 [![Build Status](https://travis-ci.org/javaslang/javaslang.png)](https://travis-ci.org/javaslang/javaslang)
 [![Coverage Status](https://codecov.io/github/javaslang/javaslang/coverage.png?branch=master)](https://codecov.io/github/javaslang/javaslang?branch=master)
 [![Gitter Chat](https://badges.gitter.im/Join%20Chat.png)](https://gitter.im/javaslang/javaslang)
@@ -8,7 +8,7 @@
 Feature-rich & self-contained functional programming in Java&trade; 8 and above.
 Javaslang is a functional library for Java 8+ that provides persistent data types and functional control structures. Because Javaslang does not depend on any libraries (other than the JVM) you can easily add it as standalone .jar to your classpath.
 
-There's also a [blog](http://blog.javaslang.io).
+To stay up to date please follow the [blog](http://blog.javaslang.io).
 
 ## Using Javaslang
 
