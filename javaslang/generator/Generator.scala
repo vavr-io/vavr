@@ -46,7 +46,6 @@ def generateMainClasses(): Unit = {
 
       val Objects = im.getType("java.util.Objects")
       val OptionType = im.getType("javaslang.control.Option")
-      val SupplierType = im.getType("java.util.function.Supplier")
       val FunctionType = im.getType("java.util.function.Function")
       val BiFunctionType = im.getType("java.util.function.BiFunction")
       val PredicateType = im.getType("java.util.function.Predicate")
@@ -189,37 +188,28 @@ def generateMainClasses(): Unit = {
           // -- static Case API
 
           // syntactic sugar for {@code Case($$(predicate), f)}
-          public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, Supplier<? extends R> f) {
-              Objects.requireNonNull(f, "f is null");
+          public static <T, R> Case<T, R> Case($PredicateType<? super T> predicate, $FunctionType<? super T, ? extends R> f) {
+              $Objects.requireNonNull(predicate, "predicate is null");
+              $Objects.requireNonNull(f, "f is null");
               return new Case0<>($$(predicate), f);
           }
 
-          // syntactic sugar for {@code Case($$(predicate), () -> retVal)}
-          public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, R retVal) {
-              return new Case0<>($$(predicate), () -> retVal);
+          // syntactic sugar for {@code Case($$(predicate), ignored -> retVal)}
+          public static <T, R> Case<T, R> Case($PredicateType<? super T> predicate, R retVal) {
+              $Objects.requireNonNull(predicate, "predicate is null");
+              return new Case0<>($$(predicate), ignored -> retVal);
           }
 
-          // syntactic sugar for {@code Case($$(value), f)}
-          public static <T, R> Case<T, R> Case(T value, $SupplierType<? extends R> f) {
-              Objects.requireNonNull(f, "f is null");
-              return new Case0<>($$(value), f);
-          }
-
-          // syntactic sugar for {@code Case($$(value), () -> retVal)}
-          public static <T, R> Case<T, R> Case(T value, R retVal) {
-              return new Case0<>($$(value), () -> retVal);
-          }
-
-          public static <T, R> Case<T, R> Case(Pattern0<T> pattern, $SupplierType<? extends R> f) {
-              Objects.requireNonNull(pattern, "pattern is null");
-              Objects.requireNonNull(f, "f is null");
+          public static <T, R> Case<T, R> Case(Pattern0<T> pattern, $FunctionType<? super T, ? extends R> f) {
+              $Objects.requireNonNull(pattern, "pattern is null");
+              $Objects.requireNonNull(f, "f is null");
               return new Case0<>(pattern, f);
           }
 
-          // syntactic sugar for {@link #Case(Pattern0, $SupplierType)}
+          // syntactic sugar for {@code Case(Pattern0, ignored -> retVal)}
           public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
-              Objects.requireNonNull(pattern, "pattern is null");
-              return new Case0<>(pattern, () -> retVal);
+              $Objects.requireNonNull(pattern, "pattern is null");
+              return new Case0<>(pattern, ignored -> retVal);
           }
 
           ${(1 to N).gen(i => {
@@ -335,16 +325,16 @@ def generateMainClasses(): Unit = {
               public static final class Case0<T, R> implements Case<T, R> {
 
                   private final Pattern0<T> pattern;
-                  private final Supplier<? extends R> f;
+                  private final $FunctionType<? super T, ? extends R> f;
 
-                  private Case0(Pattern0<T> pattern, Supplier<? extends R> f) {
+                  private Case0(Pattern0<T> pattern, $FunctionType<? super T, ? extends R> f) {
                       this.pattern = pattern;
                       this.f = f;
                   }
 
                   @Override
                   public Option<R> apply(T o) {
-                      return pattern.apply(o).map(ignored -> f.get());
+                      return pattern.apply(o).map(f);
                   }
               }
 
@@ -1229,12 +1219,12 @@ def generateTestClasses(): Unit = {
 
             @$test
             public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndSupplier() {
-                assertThat(Case(ignored -> true, () -> 1).apply(null)).isEqualTo($OptionType.some(1));
+                assertThat(Case(ignored -> true, ignored -> 1).apply(null)).isEqualTo($OptionType.some(1));
             }
 
             @$test
             public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndSupplier() {
-                assertThat(Case(ignored -> false, () -> 1).apply(null)).isEqualTo($OptionType.none());
+                assertThat(Case(ignored -> false, ignored -> 1).apply(null)).isEqualTo($OptionType.none());
             }
 
             @$test
@@ -1247,25 +1237,6 @@ def generateTestClasses(): Unit = {
                 assertThat(Case(ignored -> false, 1).apply(null)).isEqualTo($OptionType.none());
             }
 
-            @$test
-            public void shouldReturnSomeWhenApplyingCaseGivenValueAndSupplier() {
-                assertThat(Case(1, () -> 1).apply(1)).isEqualTo($OptionType.some(1));
-            }
-
-            @$test
-            public void shouldReturnNoneWhenApplyingCaseGivenValueAndSupplier() {
-                assertThat(Case(-1, () -> 1).apply(1)).isEqualTo($OptionType.none());
-            }
-
-            @$test
-            public void shouldReturnSomeWhenApplyingCaseGivenValueAndValue() {
-                assertThat(Case(1, 1).apply(1)).isEqualTo($OptionType.some(1));
-            }
-
-            @$test
-            public void shouldReturnNoneWhenApplyingCaseGivenValueAndValue() {
-                assertThat(Case(-1, 1).apply(1)).isEqualTo($OptionType.none());
-            }
         }
       """
     })

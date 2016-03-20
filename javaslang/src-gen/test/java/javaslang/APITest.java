@@ -149,12 +149,12 @@ public class APITest {
 
     @Test
     public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndSupplier() {
-        assertThat(Case(ignored -> true, () -> 1).apply(null)).isEqualTo(Option.some(1));
+        assertThat(Case(ignored -> true, ignored -> 1).apply(null)).isEqualTo(Option.some(1));
     }
 
     @Test
     public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndSupplier() {
-        assertThat(Case(ignored -> false, () -> 1).apply(null)).isEqualTo(Option.none());
+        assertThat(Case(ignored -> false, ignored -> 1).apply(null)).isEqualTo(Option.none());
     }
 
     @Test
@@ -167,23 +167,4 @@ public class APITest {
         assertThat(Case(ignored -> false, 1).apply(null)).isEqualTo(Option.none());
     }
 
-    @Test
-    public void shouldReturnSomeWhenApplyingCaseGivenValueAndSupplier() {
-        assertThat(Case(1, () -> 1).apply(1)).isEqualTo(Option.some(1));
-    }
-
-    @Test
-    public void shouldReturnNoneWhenApplyingCaseGivenValueAndSupplier() {
-        assertThat(Case(-1, () -> 1).apply(1)).isEqualTo(Option.none());
-    }
-
-    @Test
-    public void shouldReturnSomeWhenApplyingCaseGivenValueAndValue() {
-        assertThat(Case(1, 1).apply(1)).isEqualTo(Option.some(1));
-    }
-
-    @Test
-    public void shouldReturnNoneWhenApplyingCaseGivenValueAndValue() {
-        assertThat(Case(-1, 1).apply(1)).isEqualTo(Option.none());
-    }
 }
