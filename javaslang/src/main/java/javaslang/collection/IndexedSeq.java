@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.API;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
@@ -13,7 +12,11 @@ import javaslang.control.Option;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.IntUnaryOperator;
+import java.util.function.Predicate;
 
 /**
  * Interface for immutable, indexed sequences.
@@ -343,10 +346,10 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> update(int index, T element);
 
     @Override
-    <U> IndexedSeq<Tuple2<T, U>> zip(Iterable<U> that);
+    <U> IndexedSeq<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     @Override
-    <U> IndexedSeq<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem);
+    <U> IndexedSeq<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
     IndexedSeq<Tuple2<T, Long>> zipWithIndex();

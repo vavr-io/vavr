@@ -5,14 +5,21 @@
  */
 package javaslang.collection;
 
-import javaslang.API;
 import javaslang.Function1;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
 
-import java.util.*;
-import java.util.function.*;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * An immutable {@code Map} interface.
@@ -296,6 +303,15 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     }
 
     /**
+     * Turns this map into a plain function returning an Option result.
+     *
+     * @return a function that takes a key k and returns its value in a Some if found, otherwise a None.
+     */
+    default Function1<K, Option<V>> lift() {
+        return this::get;
+    }
+
+    /**
      * Maps the {@code Map} entries to a sequence of values.
      * <p>
      * Please use {@link #map(BiFunction)} if the result has to be of type {@code Map}.
@@ -415,13 +431,13 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     }
 
     @Override
-    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zip(Iterable<U> that) {
+    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         return Stream.ofAll(iterator().zip(that));
     }
 
     @Override
-    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zipAll(Iterable<U> that, Tuple2<K, V> thisElem, U thatElem) {
+    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zipAll(Iterable<? extends U> that, Tuple2<K, V> thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return Stream.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
@@ -444,4 +460,26 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
         }
     }
 
+    /**
+     * Turns this map from a partial function into a total function that
+     * returns defaultValue for all keys absent from the map.
+     *
+     * @param defaultValue default value to return for all keys not present in the map
+     * @return a total function from K to T
+     */
+    default Function1<K, V> withDefaultValue(V defaultValue) {
+        return k -> get(k).getOrElse(defaultValue);
+    }
+
+    /**
+     * Turns this map from a partial function into a total function that
+     * returns a value computed by defaultFunction for all keys
+     * absent from the map.
+     *
+     * @param defaultFunction function to evaluate for all keys not present in the map
+     * @return a total function from K to T
+     */
+    default Function1<K,V> withDefault(Function<? super K, ? extends V> defaultFunction)  {
+        return k -> get(k).getOrElse(() -> defaultFunction.apply(k));
+    }
 }

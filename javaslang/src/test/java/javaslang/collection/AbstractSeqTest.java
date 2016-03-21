@@ -5,8 +5,10 @@
  */
 package javaslang.collection;
 
+import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.control.Option;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -1528,4 +1530,27 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3, 4).endsWith(Stream.of(2, 3, 5))).isFalse();
     }
 
+    @Test
+    public void lift() {
+        Function1<Integer, Option<String>> lifted = of("a", "b", "c").lift();
+        assertThat(lifted.apply(1).get()).isEqualTo("b");
+        assertThat(lifted.apply(-1).isEmpty()).isTrue();
+        assertThat(lifted.apply(3).isEmpty()).isTrue();
+    }
+
+    @Test
+    public void withDefaultValue() {
+        Function1<Integer, String> withDef = of("a", "b", "c").withDefaultValue("z");
+        assertThat(withDef.apply(2)).isEqualTo("c");
+        assertThat(withDef.apply(-1)).isEqualTo("z");
+        assertThat(withDef.apply(3)).isEqualTo("z");
+    }
+
+    @Test
+    public void withDefault() {
+        Function1<Integer, String> withDef = of("a", "b", "c").withDefault(Object::toString);
+        assertThat(withDef.apply(2)).isEqualTo("c");
+        assertThat(withDef.apply(-1)).isEqualTo("-1");
+        assertThat(withDef.apply(3)).isEqualTo("3");
+    }
 }

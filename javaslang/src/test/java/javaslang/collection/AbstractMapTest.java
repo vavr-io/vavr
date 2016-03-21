@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
@@ -756,6 +757,27 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void mapOfPairsShouldReturnTheSingletonEmpty() {
         if (!emptyMapShouldBeSingleton()) return;
         assertThat(mapOfPairs()).isSameAs(emptyMap());
+    }
+
+    @Test
+    public void lift() {
+        Function1<String, Option<Integer>> lifted = mapOf("A", 1).lift();
+        assertThat(lifted.apply("A").get()).isEqualTo(1);
+        assertThat(lifted.apply("a").isEmpty()).isTrue();
+    }
+
+    @Test
+    public void withDefaultValue() {
+        Function1<String, Integer> withDef = mapOf("A", 1).withDefaultValue(2);
+        assertThat(withDef.apply("A")).isEqualTo(1);
+        assertThat(withDef.apply("a")).isEqualTo(2);
+    }
+
+    @Test
+    public void withDefault() {
+        Function1<String, Integer> withDef = mapOf("A", 1).withDefault(String::length);
+        assertThat(withDef.apply("A")).isEqualTo(1);
+        assertThat(withDef.apply("aaa")).isEqualTo(3);
     }
 
 }

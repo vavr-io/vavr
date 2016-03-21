@@ -654,7 +654,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default <U> Tree<Tuple2<T, U>> zip(Iterable<U> that) {
+    default <U> Tree<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
             return Empty.instance();
@@ -664,12 +664,12 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default <U> Tree<Tuple2<T, U>> zipAll(Iterable<U> that, T thisElem, U thatElem) {
+    default <U> Tree<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
             return Iterator.ofAll(that).map(elem -> Tuple.of(thisElem, elem)).toTree();
         } else {
-            final java.util.Iterator<U> thatIter = that.iterator();
+            final java.util.Iterator<? extends U> thatIter = that.iterator();
             final Tree<Tuple2<T, U>> tree = ZipAll.apply((Node<T>) this, thatIter, thatElem);
             if (thatIter.hasNext()) {
                 final Iterable<Node<Tuple2<T, U>>> remainder = Iterator
@@ -1152,7 +1152,7 @@ interface TreeModule {
     final class Zip {
 
         @SuppressWarnings("unchecked")
-        static <T, U> Tree<Tuple2<T, U>> apply(Node<T> node, java.util.Iterator<U> that) {
+        static <T, U> Tree<Tuple2<T, U>> apply(Node<T> node, java.util.Iterator<? extends U> that) {
             if (!that.hasNext()) {
                 return Empty.instance();
             } else {
@@ -1169,7 +1169,7 @@ interface TreeModule {
     final class ZipAll {
 
         @SuppressWarnings("unchecked")
-        static <T, U> Tree<Tuple2<T, U>> apply(Node<T> node, java.util.Iterator<U> that, U thatElem) {
+        static <T, U> Tree<Tuple2<T, U>> apply(Node<T> node, java.util.Iterator<? extends U> that, U thatElem) {
             if (!that.hasNext()) {
                 return node.map(value -> Tuple.of(value, thatElem));
             } else {

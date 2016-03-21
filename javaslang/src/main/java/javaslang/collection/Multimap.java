@@ -445,13 +445,13 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     }
 
     @Override
-    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zip(Iterable<U> that) {
+    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         return Stream.ofAll(iterator().zip(that));
     }
 
     @Override
-    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zipAll(Iterable<U> that, Tuple2<K, V> thisElem, U thatElem) {
+    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zipAll(Iterable<? extends U> that, Tuple2<K, V> thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return Stream.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
