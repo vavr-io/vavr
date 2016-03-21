@@ -186,7 +186,7 @@ Pull requests are merged into master. Only specific commits are merged from mast
 
 ```bash
 git checkout v2.1.x
-git log --pretty=oneline --abbrev-commit
-# pick a commit from the log, e.g. a741cf1
+git log --date-order --date=iso --graph --full-history --all --pretty=format:'%x08%x09%C(red)%h %C(cyan)%ad%x08%x08%x08%x08%x08%x08%x08%x08%x08%x08%x08%x08%x08%x08%x08 %C(bold green)%aN%C(reset)%C(bold yellow)%d %C(reset)%s'
+# pick one or more commits from the log, e.g. a741cf1.
 git cherry-pick a741cf1
 ```
