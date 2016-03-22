@@ -36,7 +36,7 @@ import java.util.function.Supplier;
  * </pre>
  *
  * If the result of compute() is Right(1), the value is Right(2).<br>
- * If the result of compute() is Left("error), the value is Left("error").
+ * If the result of compute() is Left("error"), the value is Left("error").
  *
  * @param <L> The type of the Left value of an Either.
  * @param <R> The type of the Right value of an Either.
