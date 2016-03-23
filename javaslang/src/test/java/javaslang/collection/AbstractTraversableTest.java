@@ -587,7 +587,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldFoldLeftNonNil() {
-        assertThat(of("a", "b", "c").foldLeft("", (xs, x) -> xs + x)).isEqualTo("abc");
+        assertThat(of("a", "b", "c").foldLeft("!", (xs, x) -> xs + x)).isEqualTo("!abc");
     }
 
     // -- foldRight
@@ -604,7 +604,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldFoldRightNonNil() {
-        assertThat(of("a", "b", "c").foldRight("", (x, xs) -> x + xs)).isEqualTo("abc");
+        assertThat(of("a", "b", "c").foldRight("!", (x, xs) -> x + xs)).isEqualTo("abc!");
     }
 
     // -- hasDefiniteSize
