@@ -87,21 +87,41 @@ public final class API {
     //
 
     /**
-     * Runs a {@code unit} of work and returns {@code Void}. This is helpful when a return value is expected,
-     * e.g. by {@code Match}:
+     * Lifts the {@link Runnable} to a value by returning the given {@code unit} of work.
+     * The given {@code Runnable} is not evaluated.
+     * <p>
+     * <strong>Motivation:</strong>
+     * <p>
+     * Lifting a {@code Runnable} is helpful in situations where an argument may be a value or a functional
+     * interface:
+     *
+     * <pre><code>R m(T t);
+     * R m(Function&lt;T, U&gt; f)</code></pre>
+     *
+     * Here Java does not allow to call
+     *
+     * <pre><code>// Error: m(T) cannot be applied to m(&lt;lambda expression&gt;)
+     * m(() -> {});</code></pre>
+     *
+     * Solution: we lift the {@code Runnable}:
+     *
+     * <pre><code>m(run(() -&gt; {}));</code></pre>
+     *
+     * Please note that {@code run()} does not evaluate the given Runnable.
+     *
+     * <strong>Example:</strong>
      *
      * <pre><code>Match(i).of(
      *     Case(0, run(() -&gt; System.out.println("zero"))),
      *     Case(1, run(() -&gt; System.out.println("one"))),
      *     Case($(), run(() -&gt; System.out.println("many")))
-     * )</code></pre>
+     * ).run();</code></pre>
      *
-     * @param unit A block of code to be run.
-     * @return the single instance of {@code Void}, namely {@code null}
+     * @param unit A block of code represented by a {@code Runnable} lambda or a method reference.
+     * @return the given {@code unit}
      */
-    public static Void run(Runnable unit) {
-        unit.run();
-        return null;
+    public static Runnable run(Runnable unit) {
+        return unit;
     }
 
     //

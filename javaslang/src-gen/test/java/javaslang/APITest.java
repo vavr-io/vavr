@@ -28,10 +28,9 @@ public class APITest {
     // -- run
 
     @Test
-    public void shouldRunUnitAndReturnVoid() {
+    public void shouldRunUnit() {
         int[] i = { 0 };
-        @SuppressWarnings("unused")
-        Void nothing = run(() -> i[0]++);
+        run(() -> i[0]++).run();
         assertThat(i[0]).isEqualTo(1);
     }
 
