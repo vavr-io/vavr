@@ -20,6 +20,7 @@ import static javaslang.MatchTest_DeveloperPatterns.Developer;
 import static javaslang.Patterns.*;
 import static javaslang.Predicates.instanceOf;
 import static javaslang.Predicates.is;
+import static javaslang.Predicates.isIn;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MatchTest {
@@ -255,6 +256,63 @@ public class MatchTest {
         );
         assertThat(actual).isEqualTo("Some(1)::List(Some(2.0))");
     }
+    
+     // -- run
+
+     @Test
+     public void shouldRunUnitOfWork() {
+
+         class OuterWorld {
+
+             String effect = null;
+
+             void displayHelp() {
+                 effect = "help";
+             }
+
+             void displayVersion() {
+                 effect = "version";
+             }
+         }
+
+         final OuterWorld outerWorld = new OuterWorld();
+
+         Match("-v").of(
+                 Case(isIn("-h", "--help"), o -> run(outerWorld::displayHelp)),
+                 Case(isIn("-v", "--version"), o -> run(outerWorld::displayVersion)),
+                 Case($(), o -> { throw new IllegalArgumentException(); })
+         );
+
+         assertThat(outerWorld.effect).isEqualTo("version");
+     }
+
+     @Test
+     public void shouldRunWithInferredArguments() {
+
+         class OuterWorld {
+
+             Number effect = null;
+
+             void writeInt(int i) {
+                 effect = i;
+             }
+
+             void writeDouble(double d) {
+                 effect = d;
+             }
+         }
+
+         final OuterWorld outerWorld = new OuterWorld();
+         final Object obj = .1d;
+
+         Match(obj).of(
+                 Case(instanceOf(Integer.class), i -> run(() -> outerWorld.writeInt(i))),
+                 Case(instanceOf(Double.class), d -> run(() -> outerWorld.writeDouble(d))),
+                 Case($(), o -> { throw new NumberFormatException(); })
+         );
+
+         assertThat(outerWorld.effect).isEqualTo(.1d);
+     }
 
     // -- Developer
 
