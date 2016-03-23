@@ -119,6 +119,46 @@ Note: The maven build currently needs to be started from the javaslang root dir
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven.clean.plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>clean-generated-sources</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>clean</goal>
+                            </goals>
+                            <configuration>
+                                <filesets>
+                                    <fileset>
+                                        <directory>${project.basedir}/src-gen</directory>
+                                    </fileset>
+                                </filesets>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <version>${scala.maven.version}</version>
+                    <configuration>
+                        <scalaVersion>${scala.version}</scalaVersion>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>script</goal>
+                            </goals>
+                            <configuration>
+                                <scriptFile>${project.basedir}/generator/Generator.scala</scriptFile>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
                     <version>${maven.release.version}</version>
                     <configuration>
@@ -222,59 +262,29 @@ Note: The maven build currently needs to be started from the javaslang root dir
         </pluginManagement>
     </build>
     <profiles>
+        <!-- A profile for benchmarks -->
         <profile>
-            <!-- Use `mvn clean test -DskipGen` to skip the code generator -->
-            <id>gen</id>
-            <activation>
-                <property>
-                    <name>!skipGen</name>
-                </property>
-            </activation>
+            <id>benchmark</id>
+            <modules>
+                <module>javaslang</module>
+                <module>javaslang-match</module>
+                <module>javaslang-pure</module>
+                <module>javaslang-test</module>
+                <module>javaslang-benchmark</module>
+            </modules>
             <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-clean-plugin</artifactId>
-                            <version>${maven.clean.plugin}</version>
-                            <executions>
-                                <execution>
-                                    <id>clean-generated-sources</id>
-                                    <phase>generate-sources</phase>
-                                    <goals>
-                                        <goal>clean</goal>
-                                    </goals>
-                                    <configuration>
-                                        <filesets>
-                                            <fileset>
-                                                <directory>${project.basedir}/src-gen</directory>
-                                            </fileset>
-                                        </filesets>
-                                    </configuration>
-                                </execution>
-                            </executions>
-                        </plugin>
-                        <plugin>
-                            <groupId>net.alchim31.maven</groupId>
-                            <artifactId>scala-maven-plugin</artifactId>
-                            <version>${scala.maven.version}</version>
-                            <configuration>
-                                <scalaVersion>${scala.version}</scalaVersion>
-                            </configuration>
-                            <executions>
-                                <execution>
-                                    <phase>generate-sources</phase>
-                                    <goals>
-                                        <goal>script</goal>
-                                    </goals>
-                                    <configuration>
-                                        <scriptFile>${project.basedir}/generator/Generator.scala</scriptFile>
-                                    </configuration>
-                                </execution>
-                            </executions>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.19.1</version>
+                        <configuration>
+                            <includes>
+                                <include>**/*Benchmark.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
         <!-- A profile for code coverage analysis in ci environments -->
@@ -416,30 +426,6 @@ Note: The maven build currently needs to be started from the javaslang root dir
                         </plugin>
                     </plugins>
                 </pluginManagement>
-            </build>
-        </profile>
-        <profile>
-            <id>benchmark</id>
-            <modules>
-                <module>javaslang</module>
-                <module>javaslang-match</module>
-                <module>javaslang-pure</module>
-                <module>javaslang-test</module>
-                <module>javaslang-benchmark</module>
-            </modules>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.19.1</version>
-                        <configuration>
-                            <includes>
-                                <include>**/*Benchmark.java</include>
-                            </includes>
-                        </configuration>
-                    </plugin>
-                </plugins>
             </build>
         </profile>
     </profiles>
