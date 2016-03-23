@@ -289,6 +289,35 @@ public class MatchTest {
         assertThat(outerWorld.effect).isEqualTo("version");
     }
 
+    @Test
+    public void shouldRunWithInferredArguments() {
+
+        class OuterWorld {
+
+            Number effect = null;
+
+            void writeInt(int i) {
+                effect = i;
+            }
+
+            void writeDouble(double d) {
+                effect = d;
+            }
+
+        }
+
+        final OuterWorld outerWorld = new OuterWorld();
+        final Object obj = .1d;
+
+        Match(obj).of(
+                Case(instanceOf(Integer.class), i -> run(() -> outerWorld.writeInt(i))),
+                Case(instanceOf(Double.class), d -> run(() -> outerWorld.writeDouble(d))),
+                Case($(), run(() -> { throw new NumberFormatException(); }))
+        ).run();
+
+        assertThat(outerWorld.effect).isEqualTo(.1d);
+    }
+
     // -- Developer
 
     @Test

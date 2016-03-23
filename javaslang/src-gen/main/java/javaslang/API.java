@@ -101,7 +101,7 @@ public final class API {
      * Here Java does not allow to call
      *
      * <pre><code>// Error: m(T) cannot be applied to m(&lt;lambda expression&gt;)
-     * m(() -> {});</code></pre>
+     * m(() -&gt; {});</code></pre>
      *
      * Solution: we lift the {@code Runnable}:
      *
