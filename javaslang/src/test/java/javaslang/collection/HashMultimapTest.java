@@ -21,11 +21,11 @@ public class HashMultimapTest extends AbstractMultimapTest {
     protected <T1, T2> Multimap<T1, T2> emptyMap() {
         switch (containerType) {
             case SEQ:
-                return HashMultimap.emptyWithSeq();
+                return HashMultimap.withSeq().empty();
             case SET:
-                return HashMultimap.emptyWithSet();
+                return HashMultimap.withSet().empty();
             case SORTED_SET:
-                return HashMultimap.emptyWithSortedSet(TreeSetTest.toStringComparator());
+                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).empty();
         }
         throw new RuntimeException();
     }
@@ -34,11 +34,11 @@ public class HashMultimapTest extends AbstractMultimapTest {
     protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Multimap<Integer, T>> mapCollector() {
         switch (containerType) {
             case SEQ:
-                return HashMultimap.collectorWithSeq();
+                return HashMultimap.withSeq().collector();
             case SET:
-                return HashMultimap.collectorWithSet();
+                return HashMultimap.withSet().collector();
             case SORTED_SET:
-                return HashMultimap.collectorWithSortedSet(TreeSetTest.toStringComparator());
+                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).collector();
         }
         throw new RuntimeException();
     }
@@ -49,11 +49,11 @@ public class HashMultimapTest extends AbstractMultimapTest {
     protected final <K, V> Multimap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
         switch (containerType) {
             case SEQ:
-                return HashMultimap.ofEntriesWithSeq(entries);
+                return HashMultimap.withSeq().ofEntries(entries);
             case SET:
-                return HashMultimap.ofEntriesWithSet(entries);
+                return HashMultimap.withSet().ofEntries(entries);
             case SORTED_SET:
-                return HashMultimap.ofEntriesWithSortedSet(TreeSetTest.toStringComparator(), entries);
+                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).ofEntries(entries);
         }
         throw new RuntimeException();
     }
@@ -64,11 +64,11 @@ public class HashMultimapTest extends AbstractMultimapTest {
     protected final <K, V> Multimap<K, V> mapOfEntries(Map.Entry<? extends K, ? extends V>... entries) {
         switch (containerType) {
             case SEQ:
-                return HashMultimap.ofEntriesWithSeq(entries);
+                return HashMultimap.withSeq().ofEntries(entries);
             case SET:
-                return HashMultimap.ofEntriesWithSet(entries);
+                return HashMultimap.withSet().ofEntries(entries);
             case SORTED_SET:
-                return HashMultimap.ofEntriesWithSortedSet(TreeSetTest.toStringComparator(), entries);
+                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).ofEntries(entries);
         }
         throw new RuntimeException();
     }
@@ -77,11 +77,11 @@ public class HashMultimapTest extends AbstractMultimapTest {
     protected <K, V> Multimap<K, V> mapOfPairs(Object... pairs) {
         switch (containerType) {
             case SEQ:
-                return HashMultimap.withSeq(pairs);
+                return HashMultimap.withSeq().of(pairs);
             case SET:
-                return HashMultimap.withSet(pairs);
+                return HashMultimap.withSet().of(pairs);
             case SORTED_SET:
-                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator(), pairs);
+                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).of(pairs);
         }
         throw new RuntimeException();
     }
@@ -96,11 +96,11 @@ public class HashMultimapTest extends AbstractMultimapTest {
     protected <K, V> Multimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         switch (containerType) {
             case SEQ:
-                return HashMultimap.tabulateWithSeq(n, f);
+                return HashMultimap.withSeq().tabulate(n, f);
             case SET:
-                return HashMultimap.tabulateWithSet(n, f);
+                return HashMultimap.withSet().tabulate(n, f);
             case SORTED_SET:
-                return HashMultimap.tabulateWithSortedSet(TreeSetTest.toStringComparator(), n, f);
+                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).tabulate(n, f);
         }
         throw new RuntimeException();
     }
@@ -109,11 +109,11 @@ public class HashMultimapTest extends AbstractMultimapTest {
     protected <K, V> Multimap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
         switch (containerType) {
             case SEQ:
-                return HashMultimap.fillWithSeq(n, s);
+                return HashMultimap.withSeq().fill(n, s);
             case SET:
-                return HashMultimap.fillWithSet(n, s);
+                return HashMultimap.withSet().fill(n, s);
             case SORTED_SET:
-                return HashMultimap.fillWithSortedSet(TreeSetTest.toStringComparator(), n, s);
+                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).fill(n, s);
         }
         throw new RuntimeException();
     }
