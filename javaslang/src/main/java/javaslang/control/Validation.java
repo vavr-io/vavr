@@ -47,6 +47,10 @@ import java.util.function.Supplier;
  *
  * Validation&lt;List&lt;String&gt;,String&gt; result = valid1.combine(valid2).ap((name,age) -&gt; "Name: "+name+" Age: "+age);
  * Validation&lt;List&lt;String&gt;,Person&gt; result2 = valid1.combine(valid2).combine(valid3).ap(f);
+ *
+ * <b>Another form of combining validations:</b>
+ *
+ * Validation&lt;List&lt;String&gt;,Person&gt; result3 = Validation.combine(valid1, valid2, valid3).ap(f);
  * </code>
  * </pre>
  *
