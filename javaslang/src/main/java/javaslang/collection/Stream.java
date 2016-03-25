@@ -267,11 +267,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
             @Override
             public T next() {
-                if(hasNext()) {
-                    return elements[i++];
-                } else {
-                    throw new NoSuchElementException();
-                }
+                return elements[i++];
             }
         });
     }
