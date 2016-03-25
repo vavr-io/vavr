@@ -1095,7 +1095,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
             init = init.put(init.size(), t);
             if (predicate.test(t)) {
                 if (init.size() == length()) {
-                    Tuple.of(this, empty());
+                    return Tuple.of(this, empty());
                 } else {
                     return Tuple.of(new Vector<>(init), drop(init.size()));
                 }
