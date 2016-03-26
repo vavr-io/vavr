@@ -42,8 +42,9 @@ public class APITest {
         final List<Integer> result = For(
             List.of(1, 2, 3)
         ).yield(i1 -> i1).toList();
+        assertThat(result.length()).isEqualTo((int) Math.pow(3, 1));
         assertThat(result.head()).isEqualTo(1);
-        assertThat(result.tail().head()).isEqualTo(2);
+        assertThat(result.last()).isEqualTo(3 * 1);
     }
 
     @Test
@@ -52,8 +53,9 @@ public class APITest {
             List.of(1, 2, 3),
             List.of(1, 2, 3)
         ).yield((i1, i2) -> i1 + i2).toList();
+        assertThat(result.length()).isEqualTo((int) Math.pow(3, 2));
         assertThat(result.head()).isEqualTo(2);
-        assertThat(result.tail().head()).isEqualTo(3);
+        assertThat(result.last()).isEqualTo(3 * 2);
     }
 
     @Test
@@ -63,8 +65,9 @@ public class APITest {
             List.of(1, 2, 3),
             List.of(1, 2, 3)
         ).yield((i1, i2, i3) -> i1 + i2 + i3).toList();
+        assertThat(result.length()).isEqualTo((int) Math.pow(3, 3));
         assertThat(result.head()).isEqualTo(3);
-        assertThat(result.tail().head()).isEqualTo(4);
+        assertThat(result.last()).isEqualTo(3 * 3);
     }
 
     @Test
@@ -75,8 +78,9 @@ public class APITest {
             List.of(1, 2, 3),
             List.of(1, 2, 3)
         ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4).toList();
+        assertThat(result.length()).isEqualTo((int) Math.pow(3, 4));
         assertThat(result.head()).isEqualTo(4);
-        assertThat(result.tail().head()).isEqualTo(5);
+        assertThat(result.last()).isEqualTo(3 * 4);
     }
 
     @Test
@@ -88,8 +92,9 @@ public class APITest {
             List.of(1, 2, 3),
             List.of(1, 2, 3)
         ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5).toList();
+        assertThat(result.length()).isEqualTo((int) Math.pow(3, 5));
         assertThat(result.head()).isEqualTo(5);
-        assertThat(result.tail().head()).isEqualTo(6);
+        assertThat(result.last()).isEqualTo(3 * 5);
     }
 
     @Test
@@ -102,8 +107,9 @@ public class APITest {
             List.of(1, 2, 3),
             List.of(1, 2, 3)
         ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6).toList();
+        assertThat(result.length()).isEqualTo((int) Math.pow(3, 6));
         assertThat(result.head()).isEqualTo(6);
-        assertThat(result.tail().head()).isEqualTo(7);
+        assertThat(result.last()).isEqualTo(3 * 6);
     }
 
     @Test
@@ -117,8 +123,9 @@ public class APITest {
             List.of(1, 2, 3),
             List.of(1, 2, 3)
         ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7).toList();
+        assertThat(result.length()).isEqualTo((int) Math.pow(3, 7));
         assertThat(result.head()).isEqualTo(7);
-        assertThat(result.tail().head()).isEqualTo(8);
+        assertThat(result.last()).isEqualTo(3 * 7);
     }
 
     @Test
@@ -133,12 +140,13 @@ public class APITest {
             List.of(1, 2, 3),
             List.of(1, 2, 3)
         ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8).toList();
+        assertThat(result.length()).isEqualTo((int) Math.pow(3, 8));
         assertThat(result.head()).isEqualTo(8);
-        assertThat(result.tail().head()).isEqualTo(9);
+        assertThat(result.last()).isEqualTo(3 * 8);
     }
 
     @Test
-    public void shouldStreamNestedFor() {
+    public void shouldIterateNestedFor() {
         final List<String> result =
                 For(Arrays.asList(1, 2), i ->
                         For(CharSeq.of('a', 'b')).yield(c -> i + ":" + c)).toList();
