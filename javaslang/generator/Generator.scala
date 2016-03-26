@@ -50,6 +50,7 @@ def generateMainClasses(): Unit = {
       val BiFunctionType = im.getType("java.util.function.BiFunction")
       val PredicateType = im.getType("java.util.function.Predicate")
       val IteratorType = im.getType("javaslang.collection.Iterator")
+      val StreamType = im.getType("javaslang.collection.Stream")
 
       im.getStatic("javaslang.API.Match.*")
 
@@ -64,9 +65,9 @@ def generateMainClasses(): Unit = {
            * e.g. by {@code Match}:
            *
            * <pre><code>Match(i).of(
-           *     Case(0, run(() -&gt; System.out.println("zero"))),
-           *     Case(1, run(() -&gt; System.out.println("one"))),
-           *     Case($$(), run(() -&gt; System.out.println("many")))
+           *     Case(is(0), i -> run(() -&gt; System.out.println("zero"))),
+           *     Case(is(1), i -> run(() -&gt; System.out.println("one"))),
+           *     Case($$(), o -> run(() -&gt; System.out.println("many")))
            * )</code></pre>
            *
            * @param unit A block of code to be run.
@@ -110,6 +111,7 @@ def generateMainClasses(): Unit = {
           ${(1 to N).gen(i => {
             val generics = (1 to i).gen(j => s"T$j")(", ")
             val params = (1 to i).gen(j => s"Iterable<T$j> ts$j")(", ")
+            val TraversableType = if (i == 1) IteratorType else StreamType
             xs"""
               /$javadoc
                * Creates a {@code For}-comprehension of ${i.numerus("Iterable")}.
@@ -119,7 +121,7 @@ def generateMainClasses(): Unit = {
                */
               public static <$generics> For$i<$generics> For($params) {
                   ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")("\n")}
-                  return new For$i<>(${(1 to i).gen(j => s"$IteratorType.ofAll(ts$j)")(", ")});
+                  return new For$i<>(${(1 to i).gen(j => s"$TraversableType.ofAll(ts$j)")(", ")});
               }
             """
           })("\n\n")}
@@ -132,32 +134,34 @@ def generateMainClasses(): Unit = {
               case _ => s"Function$i"
             }
             val args = (1 to i).gen(j => s"? super T$j")(", ")
+            val TraversableType = if (i == 1) IteratorType else StreamType
             xs"""
               /$javadoc
                * For-comprehension with ${i.numerus("Iterable")}.
                */
               public static class For$i<$generics> {
 
-                  ${(1 to i).gen(j => xs"""private final $IteratorType<T$j> stream$j;""")("\n")}
+                  ${(1 to i).gen(j => xs"""private final $TraversableType<T$j> ts$j;""")("\n")}
 
-                  private For$i(${(1 to i).gen(j => s"$IteratorType<T$j> stream$j")(", ")}) {
-                      ${(1 to i).gen(j => xs"""this.stream$j = stream$j;""")("\n")}
+                  private For$i(${(1 to i).gen(j => s"$TraversableType<T$j> ts$j")(", ")}) {
+                      ${(1 to i).gen(j => xs"""this.ts$j = ts$j;""")("\n")}
                   }
 
                   /$javadoc
                    * Yields a result for elements of the cross product of the underlying Iterables.
                    *
                    * @param f a function that maps an element of the cross product to a result
-                   * @param <R> type of the resulting Stream elements
-                   * @return a Stream of mapped results
+                   * @param <R> type of the resulting {@code Iterator} elements
+                   * @return an {@code Iterator} of mapped results
                    */
                   public <R> $IteratorType<R> yield($functionType<$args, ? extends R> f) {
                       $Objects.requireNonNull(f, "f is null");
                       ${if (i == 1) xs"""
-                        return stream1.map(f::apply);
+                        return ts1.map(f);
                       """ else xs"""
-                        return
-                            ${(1 until i).gen(j => s"stream$j.flatMap(t$j ->")("\n")} stream$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")}))${")" * (i - 1)};
+                        final $StreamType<R> stream =
+                            ${(1 until i).gen(j => s"ts$j.flatMap(t$j ->")("\n")} ts$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")}))${")" * (i - 1)};
+                        return stream.iterator();
                       """}
                   }
               }
@@ -1202,13 +1206,14 @@ def generateTestClasses(): Unit = {
                   final $ListType<Integer> result = For(
                       ${(1 to i).gen(j => s"$ListType.of(1, 2, 3)")(",\n")}
                   ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")}).toList();
+                  $assertThat(result.length()).isEqualTo((int) Math.pow(3, $i));
                   $assertThat(result.head()).isEqualTo($i);
-                  $assertThat(result.tail().head()).isEqualTo(${i + 1});
+                  $assertThat(result.last()).isEqualTo(3 * $i);
               }
             """)("\n\n")}
 
             @$test
-            public void shouldStreamNestedFor() {
+            public void shouldIterateNestedFor() {
                 final $ListType<String> result =
                         For(${im.getType("java.util.Arrays")}.asList(1, 2), i ->
                                 For(${im.getType("javaslang.collection.CharSeq")}.of('a', 'b')).yield(c -> i + ":" + c)).toList();
