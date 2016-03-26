@@ -16,7 +16,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import javaslang.collection.Iterator;
-import javaslang.collection.Stream;
 import javaslang.control.Option;
 
 /**
@@ -140,7 +139,7 @@ public final class API {
      */
     public static <T1> For1<T1> For(Iterable<T1> ts1) {
         Objects.requireNonNull(ts1, "ts1 is null");
-        return new For1<>(Iterator.ofAll(ts1));
+        return new For1<>(ts1);
     }
 
     /**
@@ -155,7 +154,7 @@ public final class API {
     public static <T1, T2> For2<T1, T2> For(Iterable<T1> ts1, Iterable<T2> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
-        return new For2<>(Stream.ofAll(ts1), Stream.ofAll(ts2));
+        return new For2<>(ts1, ts2);
     }
 
     /**
@@ -173,7 +172,7 @@ public final class API {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
-        return new For3<>(Stream.ofAll(ts1), Stream.ofAll(ts2), Stream.ofAll(ts3));
+        return new For3<>(ts1, ts2, ts3);
     }
 
     /**
@@ -194,7 +193,7 @@ public final class API {
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
         Objects.requireNonNull(ts4, "ts4 is null");
-        return new For4<>(Stream.ofAll(ts1), Stream.ofAll(ts2), Stream.ofAll(ts3), Stream.ofAll(ts4));
+        return new For4<>(ts1, ts2, ts3, ts4);
     }
 
     /**
@@ -218,7 +217,7 @@ public final class API {
         Objects.requireNonNull(ts3, "ts3 is null");
         Objects.requireNonNull(ts4, "ts4 is null");
         Objects.requireNonNull(ts5, "ts5 is null");
-        return new For5<>(Stream.ofAll(ts1), Stream.ofAll(ts2), Stream.ofAll(ts3), Stream.ofAll(ts4), Stream.ofAll(ts5));
+        return new For5<>(ts1, ts2, ts3, ts4, ts5);
     }
 
     /**
@@ -245,7 +244,7 @@ public final class API {
         Objects.requireNonNull(ts4, "ts4 is null");
         Objects.requireNonNull(ts5, "ts5 is null");
         Objects.requireNonNull(ts6, "ts6 is null");
-        return new For6<>(Stream.ofAll(ts1), Stream.ofAll(ts2), Stream.ofAll(ts3), Stream.ofAll(ts4), Stream.ofAll(ts5), Stream.ofAll(ts6));
+        return new For6<>(ts1, ts2, ts3, ts4, ts5, ts6);
     }
 
     /**
@@ -275,7 +274,7 @@ public final class API {
         Objects.requireNonNull(ts5, "ts5 is null");
         Objects.requireNonNull(ts6, "ts6 is null");
         Objects.requireNonNull(ts7, "ts7 is null");
-        return new For7<>(Stream.ofAll(ts1), Stream.ofAll(ts2), Stream.ofAll(ts3), Stream.ofAll(ts4), Stream.ofAll(ts5), Stream.ofAll(ts6), Stream.ofAll(ts7));
+        return new For7<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7);
     }
 
     /**
@@ -308,7 +307,7 @@ public final class API {
         Objects.requireNonNull(ts6, "ts6 is null");
         Objects.requireNonNull(ts7, "ts7 is null");
         Objects.requireNonNull(ts8, "ts8 is null");
-        return new For8<>(Stream.ofAll(ts1), Stream.ofAll(ts2), Stream.ofAll(ts3), Stream.ofAll(ts4), Stream.ofAll(ts5), Stream.ofAll(ts6), Stream.ofAll(ts7), Stream.ofAll(ts8));
+        return new For8<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7, ts8);
     }
 
     /**
@@ -316,9 +315,9 @@ public final class API {
      */
     public static class For1<T1> {
 
-        private final Iterator<T1> ts1;
+        private final Iterable<T1> ts1;
 
-        private For1(Iterator<T1> ts1) {
+        private For1(Iterable<T1> ts1) {
             this.ts1 = ts1;
         }
 
@@ -331,7 +330,7 @@ public final class API {
          */
         public <R> Iterator<R> yield(Function<? super T1, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
-            return ts1.map(f);
+            return Iterator.ofAll(ts1).map(f);
         }
     }
 
@@ -340,10 +339,10 @@ public final class API {
      */
     public static class For2<T1, T2> {
 
-        private final Stream<T1> ts1;
-        private final Stream<T2> ts2;
+        private final Iterable<T1> ts1;
+        private final Iterable<T2> ts2;
 
-        private For2(Stream<T1> ts1, Stream<T2> ts2) {
+        private For2(Iterable<T1> ts1, Iterable<T2> ts2) {
             this.ts1 = ts1;
             this.ts2 = ts2;
         }
@@ -357,9 +356,9 @@ public final class API {
          */
         public <R> Iterator<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
-            final Stream<R> stream =
-                ts1.flatMap(t1 -> ts2.map(t2 -> f.apply(t1, t2)));
-            return stream.iterator();
+            return
+                Iterator.ofAll(ts1).flatMap(t1 ->
+                Iterator.ofAll(ts2).map(t2 -> f.apply(t1, t2)));
         }
     }
 
@@ -368,11 +367,11 @@ public final class API {
      */
     public static class For3<T1, T2, T3> {
 
-        private final Stream<T1> ts1;
-        private final Stream<T2> ts2;
-        private final Stream<T3> ts3;
+        private final Iterable<T1> ts1;
+        private final Iterable<T2> ts2;
+        private final Iterable<T3> ts3;
 
-        private For3(Stream<T1> ts1, Stream<T2> ts2, Stream<T3> ts3) {
+        private For3(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -387,10 +386,10 @@ public final class API {
          */
         public <R> Iterator<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
-            final Stream<R> stream =
-                ts1.flatMap(t1 ->
-                ts2.flatMap(t2 -> ts3.map(t3 -> f.apply(t1, t2, t3))));
-            return stream.iterator();
+            return
+                Iterator.ofAll(ts1).flatMap(t1 ->
+                Iterator.ofAll(ts2).flatMap(t2 ->
+                Iterator.ofAll(ts3).map(t3 -> f.apply(t1, t2, t3))));
         }
     }
 
@@ -399,12 +398,12 @@ public final class API {
      */
     public static class For4<T1, T2, T3, T4> {
 
-        private final Stream<T1> ts1;
-        private final Stream<T2> ts2;
-        private final Stream<T3> ts3;
-        private final Stream<T4> ts4;
+        private final Iterable<T1> ts1;
+        private final Iterable<T2> ts2;
+        private final Iterable<T3> ts3;
+        private final Iterable<T4> ts4;
 
-        private For4(Stream<T1> ts1, Stream<T2> ts2, Stream<T3> ts3, Stream<T4> ts4) {
+        private For4(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -420,11 +419,11 @@ public final class API {
          */
         public <R> Iterator<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
-            final Stream<R> stream =
-                ts1.flatMap(t1 ->
-                ts2.flatMap(t2 ->
-                ts3.flatMap(t3 -> ts4.map(t4 -> f.apply(t1, t2, t3, t4)))));
-            return stream.iterator();
+            return
+                Iterator.ofAll(ts1).flatMap(t1 ->
+                Iterator.ofAll(ts2).flatMap(t2 ->
+                Iterator.ofAll(ts3).flatMap(t3 ->
+                Iterator.ofAll(ts4).map(t4 -> f.apply(t1, t2, t3, t4)))));
         }
     }
 
@@ -433,13 +432,13 @@ public final class API {
      */
     public static class For5<T1, T2, T3, T4, T5> {
 
-        private final Stream<T1> ts1;
-        private final Stream<T2> ts2;
-        private final Stream<T3> ts3;
-        private final Stream<T4> ts4;
-        private final Stream<T5> ts5;
+        private final Iterable<T1> ts1;
+        private final Iterable<T2> ts2;
+        private final Iterable<T3> ts3;
+        private final Iterable<T4> ts4;
+        private final Iterable<T5> ts5;
 
-        private For5(Stream<T1> ts1, Stream<T2> ts2, Stream<T3> ts3, Stream<T4> ts4, Stream<T5> ts5) {
+        private For5(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -456,12 +455,12 @@ public final class API {
          */
         public <R> Iterator<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
-            final Stream<R> stream =
-                ts1.flatMap(t1 ->
-                ts2.flatMap(t2 ->
-                ts3.flatMap(t3 ->
-                ts4.flatMap(t4 -> ts5.map(t5 -> f.apply(t1, t2, t3, t4, t5))))));
-            return stream.iterator();
+            return
+                Iterator.ofAll(ts1).flatMap(t1 ->
+                Iterator.ofAll(ts2).flatMap(t2 ->
+                Iterator.ofAll(ts3).flatMap(t3 ->
+                Iterator.ofAll(ts4).flatMap(t4 ->
+                Iterator.ofAll(ts5).map(t5 -> f.apply(t1, t2, t3, t4, t5))))));
         }
     }
 
@@ -470,14 +469,14 @@ public final class API {
      */
     public static class For6<T1, T2, T3, T4, T5, T6> {
 
-        private final Stream<T1> ts1;
-        private final Stream<T2> ts2;
-        private final Stream<T3> ts3;
-        private final Stream<T4> ts4;
-        private final Stream<T5> ts5;
-        private final Stream<T6> ts6;
+        private final Iterable<T1> ts1;
+        private final Iterable<T2> ts2;
+        private final Iterable<T3> ts3;
+        private final Iterable<T4> ts4;
+        private final Iterable<T5> ts5;
+        private final Iterable<T6> ts6;
 
-        private For6(Stream<T1> ts1, Stream<T2> ts2, Stream<T3> ts3, Stream<T4> ts4, Stream<T5> ts5, Stream<T6> ts6) {
+        private For6(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5, Iterable<T6> ts6) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -495,13 +494,13 @@ public final class API {
          */
         public <R> Iterator<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
-            final Stream<R> stream =
-                ts1.flatMap(t1 ->
-                ts2.flatMap(t2 ->
-                ts3.flatMap(t3 ->
-                ts4.flatMap(t4 ->
-                ts5.flatMap(t5 -> ts6.map(t6 -> f.apply(t1, t2, t3, t4, t5, t6)))))));
-            return stream.iterator();
+            return
+                Iterator.ofAll(ts1).flatMap(t1 ->
+                Iterator.ofAll(ts2).flatMap(t2 ->
+                Iterator.ofAll(ts3).flatMap(t3 ->
+                Iterator.ofAll(ts4).flatMap(t4 ->
+                Iterator.ofAll(ts5).flatMap(t5 ->
+                Iterator.ofAll(ts6).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6)))))));
         }
     }
 
@@ -510,15 +509,15 @@ public final class API {
      */
     public static class For7<T1, T2, T3, T4, T5, T6, T7> {
 
-        private final Stream<T1> ts1;
-        private final Stream<T2> ts2;
-        private final Stream<T3> ts3;
-        private final Stream<T4> ts4;
-        private final Stream<T5> ts5;
-        private final Stream<T6> ts6;
-        private final Stream<T7> ts7;
+        private final Iterable<T1> ts1;
+        private final Iterable<T2> ts2;
+        private final Iterable<T3> ts3;
+        private final Iterable<T4> ts4;
+        private final Iterable<T5> ts5;
+        private final Iterable<T6> ts6;
+        private final Iterable<T7> ts7;
 
-        private For7(Stream<T1> ts1, Stream<T2> ts2, Stream<T3> ts3, Stream<T4> ts4, Stream<T5> ts5, Stream<T6> ts6, Stream<T7> ts7) {
+        private For7(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5, Iterable<T6> ts6, Iterable<T7> ts7) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -537,14 +536,14 @@ public final class API {
          */
         public <R> Iterator<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
-            final Stream<R> stream =
-                ts1.flatMap(t1 ->
-                ts2.flatMap(t2 ->
-                ts3.flatMap(t3 ->
-                ts4.flatMap(t4 ->
-                ts5.flatMap(t5 ->
-                ts6.flatMap(t6 -> ts7.map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7))))))));
-            return stream.iterator();
+            return
+                Iterator.ofAll(ts1).flatMap(t1 ->
+                Iterator.ofAll(ts2).flatMap(t2 ->
+                Iterator.ofAll(ts3).flatMap(t3 ->
+                Iterator.ofAll(ts4).flatMap(t4 ->
+                Iterator.ofAll(ts5).flatMap(t5 ->
+                Iterator.ofAll(ts6).flatMap(t6 ->
+                Iterator.ofAll(ts7).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7))))))));
         }
     }
 
@@ -553,16 +552,16 @@ public final class API {
      */
     public static class For8<T1, T2, T3, T4, T5, T6, T7, T8> {
 
-        private final Stream<T1> ts1;
-        private final Stream<T2> ts2;
-        private final Stream<T3> ts3;
-        private final Stream<T4> ts4;
-        private final Stream<T5> ts5;
-        private final Stream<T6> ts6;
-        private final Stream<T7> ts7;
-        private final Stream<T8> ts8;
+        private final Iterable<T1> ts1;
+        private final Iterable<T2> ts2;
+        private final Iterable<T3> ts3;
+        private final Iterable<T4> ts4;
+        private final Iterable<T5> ts5;
+        private final Iterable<T6> ts6;
+        private final Iterable<T7> ts7;
+        private final Iterable<T8> ts8;
 
-        private For8(Stream<T1> ts1, Stream<T2> ts2, Stream<T3> ts3, Stream<T4> ts4, Stream<T5> ts5, Stream<T6> ts6, Stream<T7> ts7, Stream<T8> ts8) {
+        private For8(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5, Iterable<T6> ts6, Iterable<T7> ts7, Iterable<T8> ts8) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -582,15 +581,15 @@ public final class API {
          */
         public <R> Iterator<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
-            final Stream<R> stream =
-                ts1.flatMap(t1 ->
-                ts2.flatMap(t2 ->
-                ts3.flatMap(t3 ->
-                ts4.flatMap(t4 ->
-                ts5.flatMap(t5 ->
-                ts6.flatMap(t6 ->
-                ts7.flatMap(t7 -> ts8.map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8)))))))));
-            return stream.iterator();
+            return
+                Iterator.ofAll(ts1).flatMap(t1 ->
+                Iterator.ofAll(ts2).flatMap(t2 ->
+                Iterator.ofAll(ts3).flatMap(t3 ->
+                Iterator.ofAll(ts4).flatMap(t4 ->
+                Iterator.ofAll(ts5).flatMap(t5 ->
+                Iterator.ofAll(ts6).flatMap(t6 ->
+                Iterator.ofAll(ts7).flatMap(t7 ->
+                Iterator.ofAll(ts8).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8)))))))));
         }
     }
 

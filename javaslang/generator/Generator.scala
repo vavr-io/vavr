@@ -50,7 +50,6 @@ def generateMainClasses(): Unit = {
       val BiFunctionType = im.getType("java.util.function.BiFunction")
       val PredicateType = im.getType("java.util.function.Predicate")
       val IteratorType = im.getType("javaslang.collection.Iterator")
-      val StreamType = im.getType("javaslang.collection.Stream")
 
       im.getStatic("javaslang.API.Match.*")
 
@@ -111,7 +110,6 @@ def generateMainClasses(): Unit = {
           ${(1 to N).gen(i => {
             val generics = (1 to i).gen(j => s"T$j")(", ")
             val params = (1 to i).gen(j => s"Iterable<T$j> ts$j")(", ")
-            val TraversableType = if (i == 1) IteratorType else StreamType
             xs"""
               /$javadoc
                * Creates a {@code For}-comprehension of ${i.numerus("Iterable")}.
@@ -121,7 +119,7 @@ def generateMainClasses(): Unit = {
                */
               public static <$generics> For$i<$generics> For($params) {
                   ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")("\n")}
-                  return new For$i<>(${(1 to i).gen(j => s"$TraversableType.ofAll(ts$j)")(", ")});
+                  return new For$i<>(${(1 to i).gen(j => s"ts$j")(", ")});
               }
             """
           })("\n\n")}
@@ -134,16 +132,15 @@ def generateMainClasses(): Unit = {
               case _ => s"Function$i"
             }
             val args = (1 to i).gen(j => s"? super T$j")(", ")
-            val TraversableType = if (i == 1) IteratorType else StreamType
             xs"""
               /$javadoc
                * For-comprehension with ${i.numerus("Iterable")}.
                */
               public static class For$i<$generics> {
 
-                  ${(1 to i).gen(j => xs"""private final $TraversableType<T$j> ts$j;""")("\n")}
+                  ${(1 to i).gen(j => xs"""private final Iterable<T$j> ts$j;""")("\n")}
 
-                  private For$i(${(1 to i).gen(j => s"$TraversableType<T$j> ts$j")(", ")}) {
+                  private For$i(${(1 to i).gen(j => s"Iterable<T$j> ts$j")(", ")}) {
                       ${(1 to i).gen(j => xs"""this.ts$j = ts$j;""")("\n")}
                   }
 
@@ -157,11 +154,11 @@ def generateMainClasses(): Unit = {
                   public <R> $IteratorType<R> yield($functionType<$args, ? extends R> f) {
                       $Objects.requireNonNull(f, "f is null");
                       ${if (i == 1) xs"""
-                        return ts1.map(f);
+                        return $IteratorType.ofAll(ts1).map(f);
                       """ else xs"""
-                        final $StreamType<R> stream =
-                            ${(1 until i).gen(j => s"ts$j.flatMap(t$j ->")("\n")} ts$i.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")}))${")" * (i - 1)};
-                        return stream.iterator();
+                        return
+                            ${(1 until i).gen(j => s"$IteratorType.ofAll(ts$j).flatMap(t$j ->")("\n")}
+                            $IteratorType.ofAll(ts$i).map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")}))${")" * (i - 1)};
                       """}
                   }
               }
