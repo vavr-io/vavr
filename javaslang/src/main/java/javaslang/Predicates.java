@@ -15,6 +15,7 @@ import java.util.function.Predicate;
  * {@link javaslang.API.Match}.
  *
  * @author Daniel Dietrich
+ * @author Grzegorz Piwowarek
  * @since 2.0.0
  */
 public final class Predicates {
@@ -117,5 +118,24 @@ public final class Predicates {
     public static <T> Predicate<T> noneOf(Predicate<? super T>... predicates) {
         Objects.requireNonNull(predicates, "predicates is null");
         return anyOf(predicates).negate();
+    }
+
+
+    /**
+     * Creates a {@code Predicate} that tests, if an object is null
+     * @param <T> value type
+     * @return A new {@code Predicate}
+     */
+    public static <T> Predicate<T> isNull() {
+        return Objects::isNull;
+    }
+
+    /**
+     * Creates a {@code Predicate} that tests, if an object is not null
+     * @param <T> value type
+     * @return A new {@code Predicate}
+     */
+    public static <T> Predicate<T> isNotNull() {
+        return Objects::nonNull;
     }
 }
