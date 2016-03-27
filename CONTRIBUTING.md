@@ -2,7 +2,7 @@
 
 Javaslang needs to be compiled with **jdk 1.8.0_40** at minimum, which fixes many type inference bugs of the java compiler.
 
-https://help.github.com/articles/fork-a-repo[Fork] the GitHub, send a https://help.github.com/articles/using-pull-requests[pull request] and keep your fork in https://help.github.com/articles/syncing-a-fork/[sync] with the upstream repository.
+[Fork](https://help.github.com/articles/fork-a-repo) the GitHub, send a [pull request](https://help.github.com/articles/using-pull-requests) and keep your fork in [sync](https://help.github.com/articles/syncing-a-fork/) with the upstream repository.
 
 ## IDE
 
