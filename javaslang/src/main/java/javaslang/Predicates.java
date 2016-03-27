@@ -69,6 +69,24 @@ public final class Predicates {
         return obj -> List.of(values).find(value -> Objects.equals(value, obj)).isDefined();
     }
 
+    /**
+     * Creates a {@code Predicate} that tests, if an object is null
+     * @param <T> value type
+     * @return A new {@code Predicate}
+     */
+    public static <T> Predicate<T> isNull() {
+        return Objects::isNull;
+    }
+
+    /**
+     * Creates a {@code Predicate} that tests, if an object is not null
+     * @param <T> value type
+     * @return A new {@code Predicate}
+     */
+    public static <T> Predicate<T> isNotNull() {
+        return Objects::nonNull;
+    }
+
     // -- Predicate combinators
 
     /**
@@ -118,24 +136,5 @@ public final class Predicates {
     public static <T> Predicate<T> noneOf(Predicate<? super T>... predicates) {
         Objects.requireNonNull(predicates, "predicates is null");
         return anyOf(predicates).negate();
-    }
-
-
-    /**
-     * Creates a {@code Predicate} that tests, if an object is null
-     * @param <T> value type
-     * @return A new {@code Predicate}
-     */
-    public static <T> Predicate<T> isNull() {
-        return Objects::isNull;
-    }
-
-    /**
-     * Creates a {@code Predicate} that tests, if an object is not null
-     * @param <T> value type
-     * @return A new {@code Predicate}
-     */
-    public static <T> Predicate<T> isNotNull() {
-        return Objects::nonNull;
     }
 }
