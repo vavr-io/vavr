@@ -5,7 +5,6 @@
  */
 package javaslang.concurrent;
 
-import javaslang.API;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
@@ -271,7 +270,7 @@ public interface Future<T> extends Value<T> {
     static <T> Future<T> fromTry(ExecutorService executorService, Try<? extends T> result) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(result, "result is null");
-        return Promise.<T> fromTry(executorService, result).future();
+        return Promise.fromTry(executorService, result).future();
     }
 
     /**
@@ -353,7 +352,7 @@ public interface Future<T> extends Value<T> {
         if (!futures.iterator().hasNext()) {
             throw new NoSuchElementException("Future.reduce on empty futures");
         } else {
-            return Future.<T> sequence(futures).map(seq -> seq.reduceLeft(f));
+            return Future.sequence(futures).map(seq -> seq.reduceLeft(f));
         }
     }
 
