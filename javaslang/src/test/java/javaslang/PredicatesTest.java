@@ -107,4 +107,28 @@ public class PredicatesTest {
         assertThat(noneOf(P1, P2).test(2)).isFalse();
     }
 
+    // -- isNull
+
+    @Test
+    public void shouldTestIsNull_PositiveCase() {
+        assertThat(isNull().test(null)).isTrue();
+    }
+
+    @Test
+    public void shouldTestIsNull_NegativeCase() {
+        assertThat(isNull().test("")).isFalse();
+    }
+
+    // -- isNotNull
+
+    @Test
+    public void shouldTestIsNotNull_PositiveCase() {
+        assertThat(isNotNull().test("")).isTrue();
+    }
+
+    @Test
+    public void shouldTestIsNotNull_NegativeCase() {
+        assertThat(isNotNull().test(null)).isFalse();
+    }
+
 }
