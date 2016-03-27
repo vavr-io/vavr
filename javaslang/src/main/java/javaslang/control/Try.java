@@ -5,7 +5,6 @@
  */
 package javaslang.control;
 
-import javaslang.API;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
