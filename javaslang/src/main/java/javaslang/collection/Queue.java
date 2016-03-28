@@ -49,8 +49,6 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     private final List<T> front;
     private final List<T> rear;
 
-    private final Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
-
     /**
      * Creates a Queue consisting of a front List and a rear List.
      * <p>
@@ -1152,10 +1150,11 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
         return toList().update(index, element).toQueue();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <U> Queue<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
-        return toList().zip(that).toQueue();
+        return toList().zip((Iterable<U>) that).toQueue();
     }
 
     @Override
@@ -1179,7 +1178,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
             return true;
         } else if (o instanceof Queue) {
             final Queue<?> that = (Queue<?>) o;
-            return this.hashCode() == that.hashCode() && this.toList().equals(that.toList());
+            return this.toList().equals(that.toList());
         } else {
             return false;
         }
@@ -1187,7 +1186,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
 
     @Override
     public int hashCode() {
-        return hashCode.get();
+        return toList().hashCode();
     }
 
     @Override

@@ -372,8 +372,6 @@ interface RedBlackTreeModule {
         final Empty<T> empty;
         final int size;
 
-        private final int hashCode;
-
         // This is no public API! The RedBlackTree takes care of passing the correct Comparator.
         Node(Color color, int blackHeight, RedBlackTree<T> left, T value, RedBlackTree<T> right, Empty<T> empty) {
             this.color = color;
@@ -382,7 +380,6 @@ interface RedBlackTreeModule {
             this.value = value;
             this.right = right;
             this.empty = empty;
-            this.hashCode = 31 * 31 * Objects.hashCode(this.value) + 31 * Objects.hashCode(this.left) + Objects.hashCode(this.right);
             this.size = left.size() + right.size() + 1;
         }
 
@@ -456,14 +453,7 @@ interface RedBlackTreeModule {
                 return true;
             } else if (o instanceof Node) {
                 final Node<?> that = (Node<?>) o;
-                final Iterator<?> iter1 = this.iterator();
-                final Iterator<?> iter2 = that.iterator();
-                while (iter1.hasNext() && iter2.hasNext()) {
-                    if (!Objects.equals(iter1.next(), iter2.next())) {
-                        return false;
-                    }
-                }
-                return iter1.hasNext() == iter2.hasNext();
+                return Collections.equals(this, that);
             } else {
                 return false;
             }
@@ -471,7 +461,9 @@ interface RedBlackTreeModule {
 
         @Override
         public int hashCode() {
-            return hashCode;
+            // DEV-NOTE: Using `Objects.hash(this.value, this.left, this.right)` would leak the tree structure to the outside.
+            //           We just want to hash the values in the right order.
+            return Collections.hash(this);
         }
 
         @Override

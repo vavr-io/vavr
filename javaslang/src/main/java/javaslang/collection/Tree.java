@@ -5,7 +5,9 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.Empty;
 import javaslang.collection.Tree.Node;
@@ -709,8 +711,6 @@ public interface Tree<T> extends Traversable<T> {
 
         private final T value;
         private final List<Node<T>> children;
-        private final Lazy<Integer> size;
-        private final int hashCode;
 
         /**
          * Constructs a rose tree branch.
@@ -724,8 +724,6 @@ public interface Tree<T> extends Traversable<T> {
             Objects.requireNonNull(children, "children is null");
             this.value = value;
             this.children = children;
-            this.size = Lazy.of(() -> 1 + children.foldLeft(0, (acc, child) -> acc + child.length()));
-            this.hashCode = 31 * 31 + 31 * Objects.hashCode(value) + Objects.hashCode(children);
         }
 
         @Override
@@ -750,7 +748,7 @@ public interface Tree<T> extends Traversable<T> {
 
         @Override
         public int size() {
-            return size.get();
+            return 1 + children.foldLeft(0, (acc, child) -> acc + child.length());
         }
 
         @Override
@@ -768,7 +766,7 @@ public interface Tree<T> extends Traversable<T> {
 
         @Override
         public int hashCode() {
-            return hashCode;
+            return Objects.hash(value, children);
         }
 
         @Override

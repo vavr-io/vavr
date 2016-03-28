@@ -529,8 +529,7 @@ public interface Either<L, R> extends Value<R> {
         public <U> LeftProjection<U, R> map(Function<? super L, ? extends U> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isLeft()) {
-                // Eclipse needs a cast but JDK does not compile with cast
-                return either.mapLeft(mapper).left();
+                return either.mapLeft((Function<L, U>) mapper).left();
             } else {
                 return (LeftProjection<U, R>) this;
             }
@@ -580,7 +579,7 @@ public interface Either<L, R> extends Value<R> {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(either);
+            return either.hashCode();
         }
 
         @Override
@@ -754,8 +753,7 @@ public interface Either<L, R> extends Value<R> {
         public <U> RightProjection<L, U> map(Function<? super R, ? extends U> mapper) {
             Objects.requireNonNull(mapper, "mapper is null");
             if (either.isRight()) {
-                // Eclipse needs a cast but JDK does not compile with cast
-                return either.map(mapper).right();
+                return either.map((Function<R, U>) mapper).right();
             } else {
                 return (RightProjection<L, U>) this;
             }
@@ -801,7 +799,7 @@ public interface Either<L, R> extends Value<R> {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(either);
+            return either.hashCode();
         }
 
         @Override

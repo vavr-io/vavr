@@ -11,9 +11,7 @@ import javaslang.Value;
 import javaslang.control.Option;
 
 import java.math.BigInteger;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -22,8 +20,6 @@ import java.util.function.Predicate;
 /**
  * An interface for inherently recursive, multi-valued data structures. The order of elements is determined by
  * {@link Iterable#iterator()}, which may vary each time it is called.
- * <p>
- * Implementations of {@code Traversable} should calculate the {@code hashCode} via {@link #hash(Iterable)}.
  *
  * <p>
  * Basic operations:
@@ -138,55 +134,6 @@ import java.util.function.Predicate;
  * @since 1.1.0
  */
 public interface Traversable<T> extends Foldable<T>, Value<T> {
-
-    /**
-     * Used by collections to compute the hashCode only once.
-     * <p>
-     * Idiom:
-     * <pre>
-     * <code>
-     * class MyCollection implements Serializable {
-     *
-     *     // Not allowed to be serialized!
-     *     private final transient Lazy&lt;Integer&gt; hashCode = Lazy.of(() -&gt; Traversable.hash(this));
-     *
-     *     &#64;Override
-     *     public int hashCode() {
-     *         return hashCode.get();
-     *     }
-     * }
-     * </code>
-     * </pre>
-     *
-     * <strong>Note:</strong> In the case of an empty collection, such as {@code Nil} it is recommended to
-     * directly return {@code Traversable.hash(this)} instead of asking a {@code Lazy} value:
-     * <pre>
-     * <code>
-     * interface List&lt;T&gt; {
-     *
-     *     class Nil&lt;T&gt; {
-     *
-     *         &#64;Override
-     *         public int hashCode() {
-     *             return Traversable.hash(this);
-     *         }
-     *     }
-     * }
-     * </code>
-     * </pre>
-     *
-     * @param <T>     Component type
-     * @param objects An Iterable
-     * @return The hashCode of the given Iterable
-     * @throws NullPointerException if objects is null
-     */
-    static <T> int hash(Iterable<? extends T> objects) {
-        int hashCode = 1;
-        for (Object o : objects) {
-            hashCode = 31 * hashCode + Objects.hashCode(o);
-        }
-        return hashCode;
-    }
 
     /**
      * Narrows a widened {@code Traversable<? extends T>} to {@code Traversable<T>}

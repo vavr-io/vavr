@@ -29,7 +29,6 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     private static final Array<?> EMPTY = new Array<>(new Object[0]);
 
     private final Object[] back;
-    private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
 
     private Array(Object[] back) {
         this.back = back;
@@ -1284,7 +1283,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public int hashCode() {
-        return hashCode.get();
+        return Objects.hash(back);
     }
 
     @Override

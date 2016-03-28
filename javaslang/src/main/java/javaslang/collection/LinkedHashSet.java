@@ -870,7 +870,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
             return true;
         } else if (o instanceof LinkedHashSet) {
             final LinkedHashSet<?> that = (LinkedHashSet<?>) o;
-            return this.length() == that.length() && ((LinkedHashSet<Object>) this).containsAll(that);
+            return this.map.equals(that.map);
         } else {
             return false;
         }

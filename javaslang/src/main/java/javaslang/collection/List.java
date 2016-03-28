@@ -1463,7 +1463,6 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         private final T head;
         private final List<T> tail;
         private final int length;
-        private final int hashCode;
 
         /**
          * Creates a List consisting of a head value and a trailing List.
@@ -1475,7 +1474,6 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
             this.head = head;
             this.tail = tail;
             this.length = 1 + tail.length();
-            this.hashCode = 31 * Objects.hashCode(head) + Objects.hashCode(tail);
         }
 
         @Override
@@ -1521,7 +1519,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
         @Override
         public int hashCode() {
-            return hashCode;
+            return Objects.hash(head, tail);
         }
 
         @Override

@@ -6,7 +6,6 @@
 package javaslang.collection;
 
 import javaslang.Kind2;
-import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
@@ -32,11 +31,9 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
     private static final HashMap<?, ?> EMPTY = new HashMap<>(HashArrayMappedTrie.empty());
 
     private final HashArrayMappedTrie<K, V> trie;
-    private final transient Lazy<Integer> hash;
 
     private HashMap(HashArrayMappedTrie<K, V> trie) {
         this.trie = trie;
-        this.hash = Lazy.of(() -> Traversable.hash(trie::iterator));
     }
 
     /**
@@ -375,7 +372,7 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
 
     @Override
     public int hashCode() {
-        return hash.get();
+        return trie.hashCode();
     }
 
     @Override
@@ -384,7 +381,7 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
             return true;
         } else if (o instanceof HashMap) {
             final HashMap<?, ?> that = (HashMap<?, ?>) o;
-            return this.corresponds(that, Objects::equals);
+            return this.trie.equals(that.trie);
         } else {
             return false;
         }
