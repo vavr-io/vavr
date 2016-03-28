@@ -30,7 +30,6 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     private final HashArrayMappedTrie<Integer, T> trie;
     private final int indexShift;
-    private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
 
     private Vector(HashArrayMappedTrie<Integer, T> trie) {
         this(0, trie);
@@ -1292,17 +1291,8 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         if (o == this) {
             return true;
         } else if (o instanceof Vector) {
-            Vector<?> vector1 = this;
-            Vector<?> vector2 = (Vector<?>) o;
-            while (!vector1.isEmpty() && !vector2.isEmpty()) {
-                final boolean isEqual = Objects.equals(vector1.head(), vector2.head());
-                if (!isEqual) {
-                    return false;
-                }
-                vector1 = vector1.tail();
-                vector2 = vector2.tail();
-            }
-            return vector1.isEmpty() && vector2.isEmpty();
+            final Vector<?> that = (Vector<?>) o;
+            return Collections.equals(this, that);
         } else {
             return false;
         }
@@ -1310,7 +1300,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public int hashCode() {
-        return hashCode.get();
+        return Collections.hash(this);
     }
 
     @Override

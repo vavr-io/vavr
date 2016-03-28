@@ -18,6 +18,27 @@ import java.util.function.Supplier;
  */
 final class Collections {
 
+    // checks, if the *elements* of the given iterables are equal
+    static boolean equals(Iterable<?> iterable1, Iterable<?> iterable2) {
+        java.util.Iterator<?> iter1 = iterable1.iterator();
+        java.util.Iterator<?> iter2 = iterable2.iterator();
+        while (iter1.hasNext() && iter2.hasNext()) {
+            if (!Objects.equals(iter1.next(), iter2.next())) {
+                return false;
+            }
+        }
+        return iter1.hasNext() == iter2.hasNext();
+    }
+
+    // hashes the elements of an iterable
+    static int hash(Iterable<?> iterable) {
+        int hashCode = 1;
+        for (Object o : iterable) {
+            hashCode = 31 * hashCode + Objects.hashCode(o);
+        }
+        return hashCode;
+    }
+
     static <T, U, C extends Iterable<U>, R extends Traversable<U>> R scanLeft(
             Iterable<? extends T> elements,
             U zero, BiFunction<? super U, ? super T, ? extends U> operation,
