@@ -40,8 +40,8 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
                 (Traversable<?> seq, Object elem) -> ((List<Object>) seq).remove(elem)
         );
 
-        final BiFunction<Traversable<?>, Object, Traversable<?>> add;
-        final BiFunction<Traversable<?>, Object, Traversable<?>> remove;
+        private final BiFunction<Traversable<?>, Object, Traversable<?>> add;
+        private final BiFunction<Traversable<?>, Object, Traversable<?>> remove;
 
         ContainerType(BiFunction<Traversable<?>, Object, Traversable<?>> add,
                               BiFunction<Traversable<?>, Object, Traversable<?>> remove) {
@@ -49,11 +49,11 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
             this.remove = remove;
         }
 
-        <T> Traversable<T> add(Traversable<T> container, T elem) {
+        <T> Traversable<T> add(Traversable<?> container, T elem) {
             return (Traversable<T>) add.apply(container, elem);
         }
 
-        <T> Traversable<T> remove(Traversable<T> container, T elem) {
+        <T> Traversable<T> remove(Traversable<?> container, T elem) {
             return (Traversable<T>) remove.apply(container, elem);
         }
     }

@@ -33,8 +33,8 @@ import java.util.function.*;
 
     private static final long serialVersionUID = 1L;
 
-    final Map<K, Traversable<V>> back;
-    final SerializableSupplier<Traversable<?>> emptyContainer;
+    protected final Map<K, Traversable<V>> back;
+    protected final SerializableSupplier<Traversable<?>> emptyContainer;
     private final ContainerType containerType;
 
     AbstractMultimap(Map<K, Traversable<V>> back, ContainerType containerType, SerializableSupplier<Traversable<?>> emptyContainer) {
@@ -43,20 +43,20 @@ import java.util.function.*;
         this.emptyContainer = emptyContainer;
     }
 
-    abstract <K2, V2> Map<K2, V2> emptyMapSupplier();
+    protected abstract <K2, V2> Map<K2, V2> emptyMapSupplier();
 
-    abstract <K2, V2> Multimap<K2, V2> emptyInstance();
+    protected abstract <K2, V2> Multimap<K2, V2> emptyInstance();
 
-    abstract <K2, V2> Multimap<K2, V2> createFromMap(Map<K2, Traversable<V2>> back);
+    protected abstract <K2, V2> Multimap<K2, V2> createFromMap(Map<K2, Traversable<V2>> back);
 
     @SuppressWarnings("unchecked")
     private <K2, V2> Multimap<K2, V2> createFromEntries(Iterable<? extends Tuple2<? extends K2, ? extends V2>> entries) {
         Map<K2, Traversable<V2>> back = emptyMapSupplier();
         for (Tuple2<? extends K2, ? extends V2> entry : entries) {
             if (back.containsKey(entry._1)) {
-                back = back.put(entry._1, (Traversable<V2>) containerType.add.apply(back.get(entry._1).get(), entry._2));
+                back = back.put(entry._1, containerType.add(back.get(entry._1).get(), entry._2));
             } else {
-                back = back.put(entry._1, (Traversable<V2>) containerType.add.apply(emptyContainer.get(), entry._2));
+                back = back.put(entry._1, containerType.add(emptyContainer.get(), entry._2));
             }
         }
         return createFromMap(back);
@@ -117,7 +117,7 @@ import java.util.function.*;
     @Override
     public M put(K key, V value) {
         final Traversable<V> values = back.get(key).getOrElse((Traversable<V>) emptyContainer.get());
-        final Traversable<V> newValues = (Traversable<V>) containerType.add.apply(values, value);
+        final Traversable<V> newValues = containerType.add(values, value);
         return newValues == values ? (M) this : (M) createFromMap(back.put(key, newValues));
     }
 
@@ -137,7 +137,7 @@ import java.util.function.*;
     @Override
     public M remove(K key, V value) {
         final Traversable<V> values = back.get(key).getOrElse((Traversable<V>) emptyContainer.get());
-        final Traversable<V> newValues = (Traversable<V>) containerType.remove.apply(values, value);
+        final Traversable<V> newValues = containerType.remove(values, value);
         return newValues == values ? (M) this : newValues.isEmpty() ? (M) createFromMap(back.remove(key)): (M) createFromMap(back.put(key, newValues));
     }
 
@@ -427,6 +427,18 @@ import java.util.function.*;
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof Multimap) {
+            final Multimap<?, ?> that = (Multimap<?, ?>) o;
+            return this.corresponds(that, Objects::equals);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public int hashCode() {
         return back.hashCode();
     }
@@ -439,16 +451,18 @@ import java.util.function.*;
     @Override
     public java.util.Map<K, Collection<V>> toJavaMap() {
         final java.util.Map<K, Collection<V>> javaMap = new java.util.HashMap<>();
+        final Supplier<Collection<V>> javaContainerSupplier;
+        if (containerType == ContainerType.SEQ) {
+            javaContainerSupplier = java.util.ArrayList::new;
+        } else if (containerType == ContainerType.SET) {
+            javaContainerSupplier = java.util.HashSet::new;
+        } else if (containerType == ContainerType.SORTED_SET) {
+            javaContainerSupplier = java.util.TreeSet::new;
+        } else {
+            throw new IllegalStateException("Unknown ContainerType: " + containerType);
+        }
         for (Tuple2<K, V> t : this) {
-            javaMap.computeIfAbsent(t._1, k -> {
-                if(emptyContainer.get() instanceof Set) {
-                    return new java.util.HashSet<>();
-                } else if(emptyContainer.get() instanceof SortedSet) {
-                        return new java.util.TreeSet<>();
-                } else {
-                    return new java.util.ArrayList<>();
-                }
-            }).add(t._2);
+            javaMap.computeIfAbsent(t._1, k -> javaContainerSupplier.get()).add(t._2);
         }
         return javaMap;
     }

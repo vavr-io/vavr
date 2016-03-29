@@ -144,18 +144,18 @@ public class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, LinkedHashM
     }
 
     @Override
-    <K2, V2> Map<K2, V2> emptyMapSupplier() {
+    protected <K2, V2> Map<K2, V2> emptyMapSupplier() {
         return LinkedHashMap.empty();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    <K2, V2> LinkedHashMultimap<K2, V2> emptyInstance() {
+    protected <K2, V2> LinkedHashMultimap<K2, V2> emptyInstance() {
         return new LinkedHashMultimap<>(LinkedHashMap.empty(), getContainerType(), emptyContainer);
     }
 
     @Override
-    <K2, V2> LinkedHashMultimap<K2, V2> createFromMap(Map<K2, Traversable<V2>> back) {
+    protected <K2, V2> LinkedHashMultimap<K2, V2> createFromMap(Map<K2, Traversable<V2>> back) {
         return new LinkedHashMultimap<>(back, getContainerType(), emptyContainer);
     }
 

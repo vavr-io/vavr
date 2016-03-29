@@ -148,18 +148,18 @@ public class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultimap<K, V
     }
 
     @Override
-    <K2, V2> Map<K2, V2> emptyMapSupplier() {
+    protected <K2, V2> Map<K2, V2> emptyMapSupplier() {
         return TreeMap.empty(Comparators.naturalComparator());
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    <K2, V2> TreeMultimap<K2, V2> emptyInstance() {
+    protected <K2, V2> TreeMultimap<K2, V2> emptyInstance() {
         return new TreeMultimap<>(emptyMapSupplier(), getContainerType(), emptyContainer);
     }
 
     @Override
-    <K2, V2> TreeMultimap<K2, V2> createFromMap(Map<K2, Traversable<V2>> back) {
+    protected <K2, V2> TreeMultimap<K2, V2> createFromMap(Map<K2, Traversable<V2>> back) {
         return new TreeMultimap<>(back, getContainerType(), emptyContainer);
     }
 
