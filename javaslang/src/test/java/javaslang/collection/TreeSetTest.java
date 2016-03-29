@@ -157,7 +157,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
         return (i1, i2) -> Integer.compare(i2, i1);
     }
 
-    private static Comparator<Object> toStringComparator() {
+    static Comparator<Object> toStringComparator() {
         return (Comparator<Object> & Serializable) (o1, o2) -> String.valueOf(o1).compareTo(String.valueOf(o2));
     }
 

@@ -911,14 +911,13 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     default Stream<T> insertAll(int index, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
         } else if (index == 0) {
-            return isEmpty() ? Stream.ofAll(elements) : Stream.ofAll((Iterable<T>) elements).appendAll(this);
+            return isEmpty() ? Stream.ofAll(elements) : Stream.ofAll(elements).appendAll(this);
         } else if (isEmpty()) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on Nil");
         } else {
@@ -1031,11 +1030,10 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         return cons(element, () -> this);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     default Stream<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.ofAll((Iterable<T>) elements).appendAll(this);
+        return Stream.ofAll(elements).appendAll(this);
     }
 
     @Override
@@ -1082,11 +1080,11 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         return filter(e -> !Objects.equals(e, removed));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     default Stream<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final Stream<T> distinct = Stream.ofAll((Iterable<T>) elements).distinct();
+
+        final Stream<T> distinct = Stream.ofAll(elements).distinct();
         return filter(e -> !distinct.contains(e));
     }
 
@@ -1115,14 +1113,14 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     default Stream<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
+
         if (isEmpty()) {
             return this;
         } else {
-            final Stream<T> retained = Stream.ofAll((Iterable<T>) elements).distinct();
+            final Stream<T> retained = Stream.ofAll(elements).distinct();
             return filter(retained::contains);
         }
     }
