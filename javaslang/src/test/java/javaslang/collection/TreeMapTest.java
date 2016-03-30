@@ -66,7 +66,7 @@ public class TreeMapTest extends AbstractSortedMapTest {
 
     @Override
     protected <K, V> TreeMap<K, V> mapOfPairs(Object... pairs) {
-        return TreeMap.of(pairs);
+        return TreeMap.of(naturalComparator(), pairs);
     }
 
     @Override

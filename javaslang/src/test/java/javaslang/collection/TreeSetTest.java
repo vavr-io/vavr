@@ -15,11 +15,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static javaslang.collection.Comparators.naturalComparator;
+
 public class TreeSetTest extends AbstractSortedSetTest {
 
     @Override
     protected <T> Collector<T, ArrayList<T>, ? extends TreeSet<T>> collector() {
-        return TreeSet.collector();
+        return TreeSet.collector(naturalComparator());
     }
 
     @Override

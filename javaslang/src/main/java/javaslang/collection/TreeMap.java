@@ -43,20 +43,36 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a
      * {@link javaslang.collection.TreeMap}.
+     * <p>
+     * The natural comparator is used to compare TreeMap keys.
      *
      * @param <K> The key type
      * @param <V> The value type
      * @return A {@link TreeMap} Collector.
      */
-    public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, TreeMap<K, V>> collector() {
+    public static <K extends Comparable<? super K>, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, TreeMap<K, V>> collector() {
+        return collector((Comparator<? super K> & Serializable) K::compareTo);
+    }
+
+    /**
+     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a
+     * {@link javaslang.collection.TreeMap}.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param keyComparator A key comparator
+     * @return A {@link javaslang.collection.TreeMap} Collector.
+     */
+    public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, TreeMap<K, V>> collector(Comparator<? super K> keyComparator) {
+        Objects.requireNonNull(keyComparator, "keyComparator is null");
         final Supplier<ArrayList<Tuple2<K, V>>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<Tuple2<K, V>>, Tuple2<K, V>> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<Tuple2<K, V>>> combiner = (left, right) -> {
             left.addAll(right);
             return left;
         };
-        final Comparator<? super K> comparator = naturalComparator();
-        final Function<ArrayList<Tuple2<K, V>>, TreeMap<K, V>> finisher = list -> TreeMap.ofEntries(comparator, list);
+        final Function<ArrayList<Tuple2<K, V>>, TreeMap<K, V>> finisher = list -> TreeMap.ofEntries(keyComparator, list);
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
@@ -123,12 +139,18 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * @return A new Map containing the given entries
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> TreeMap<K, V> of(Object... pairs) {
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Object... pairs) {
+        return of((Comparator<? super K> & Serializable) K::compareTo, pairs);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, Object... pairs) {
+        Objects.requireNonNull(keyComparator, "keyComparator is null");
         Objects.requireNonNull(pairs, "pairs is null");
         if ((pairs.length & 1) != 0) {
             throw new IllegalArgumentException("Odd length of key-value pairs list");
         }
-        RedBlackTree<Tuple2<K, V>> result = RedBlackTree.empty();
+        RedBlackTree<Tuple2<K, V>> result = RedBlackTree.empty(new EntryComparator<>(keyComparator));
         for (int i = 0; i < pairs.length; i += 2) {
             result = result.insert(Tuple.of((K) pairs[i], (V) pairs[i + 1]));
         }
@@ -190,7 +212,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * @param keyComparator The comparator used to sort the entries by their key.
      * @return A new Map containing the given entry
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K key, V value) {
+    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K key, V value) {
         Objects.requireNonNull(keyComparator, "keyComparator is null");
         return TreeMap.<K, V> empty(keyComparator).put(key, value);
     }
