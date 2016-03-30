@@ -29,23 +29,23 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
 
     private static final long serialVersionUID = 1L;
 
-    public static <K extends Comparable<K>, V> Builder<K, V> withSeq() {
+    public static <V> Builder<V> withSeq() {
         return new Builder<>(ContainerType.SEQ, List::empty);
     }
 
-    public static <K extends Comparable<K>, V> Builder<K, V> withSet() {
+    public static <V> Builder<V> withSet() {
         return new Builder<>(ContainerType.SET, HashSet::empty);
     }
 
-    public static <K extends Comparable<K>, V extends Comparable<? super V>> Builder<K, V> withSortedSet() {
+    public static <V extends Comparable<? super V>> Builder<V> withSortedSet() {
         return new Builder<>(ContainerType.SORTED_SET, TreeSet::empty);
     }
 
-    public static <K extends Comparable<K>, V> Builder<K, V> withSortedSet(Comparator<? super V> comparator) {
+    public static <V> Builder<V> withSortedSet(Comparator<? super V> comparator) {
         return new Builder<>(ContainerType.SORTED_SET, () -> TreeSet.empty(comparator));
     }
 
-    public static class Builder<K, V> {
+    public static class Builder<V> {
 
         private final ContainerType containerType;
         private final SerializableSupplier<Traversable<?>> emptyContainer;
@@ -55,76 +55,122 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
             this.emptyContainer = emptyContainer;
         }
 
-        public <K2> Builder<K2, V> withKeyComparator(Comparator<K2> comparator) {
-            return new Builder<>(containerType, emptyContainer);
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> empty() {
+            return empty((Comparator<? super K> & Serializable) K::compareTo);
         }
 
-        public <K2, V2> TreeMultimap<K2, V2> empty() {
-            return new TreeMultimap<>(TreeMap.empty(Comparators.naturalComparator()), containerType, emptyContainer);
+        public <K, V2 extends V> TreeMultimap<K, V2> empty(Comparator<? super K> keyComparator) {
+            Objects.requireNonNull(keyComparator, "keyComparator is null");
+            return new TreeMultimap<>(TreeMap.empty(keyComparator), containerType, emptyContainer);
         }
 
-        public <K2 extends K, V2 extends V> TreeMultimap<K2, V2> ofEntries(Iterable<? extends Tuple2<? extends K2, ? extends V2>> entries) {
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V2>> entries) {
+            return ofEntries((Comparator<? super K> & Serializable) K::compareTo, entries);
+        }
+
+        public <K, V2 extends V> TreeMultimap<K, V2> ofEntries(Comparator<? super K> keyComparator, Iterable<? extends Tuple2<? extends K, ? extends V2>> entries) {
+            Objects.requireNonNull(keyComparator, "keyComparator is null");
             Objects.requireNonNull(entries, "entries is null");
-            Multimap<K2, V2> result = empty();
-            for (Tuple2<? extends K2, ? extends V2> entry : entries) {
+            Multimap<K, V2> result = empty(keyComparator);
+            for (Tuple2<? extends K, ? extends V2> entry : entries) {
                 result = result.put(entry._1, entry._2);
             }
-            return (TreeMultimap<K2, V2>) result;
+            return (TreeMultimap<K, V2>) result;
         }
 
+        @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
-        public final <K2 extends K, V2 extends V> TreeMultimap<K2, V2> ofEntries(Tuple2<? extends K2, ? extends V2>... entries) {
+        public final <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> ofEntries(Tuple2<? extends K, ? extends V2>... entries) {
+            return ofEntries((Comparator<? super K> & Serializable) K::compareTo, entries);
+        }
+
+        @SuppressWarnings({ "unchecked", "varargs" })
+        @SafeVarargs
+        public final <K, V2 extends V> TreeMultimap<K, V2> ofEntries(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V2>... entries) {
+            Objects.requireNonNull(keyComparator, "keyComparator is null");
             Objects.requireNonNull(entries, "entries is null");
-            Multimap<K2, V2> result = empty();
-            for (Tuple2<? extends K2, ? extends V2> entry : entries) {
+            Multimap<K, V2> result = empty(keyComparator);
+            for (Tuple2<? extends K, ? extends V2> entry : entries) {
                 result = result.put(entry._1, entry._2);
             }
-            return (TreeMultimap<K2, V2>) result;
+            return (TreeMultimap<K, V2>) result;
         }
 
+        @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
-        public final <K2 extends K, V2 extends V> TreeMultimap<K2, V2> ofEntries(java.util.Map.Entry<? extends K2, ? extends V2>... entries) {
+        public final <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> ofEntries(java.util.Map.Entry<? extends K, ? extends V2>... entries) {
+            return ofEntries((Comparator<? super K> & Serializable) K::compareTo, entries);
+        }
+
+        @SuppressWarnings({ "unchecked", "varargs" })
+        @SafeVarargs
+        public final <K, V2 extends V> TreeMultimap<K, V2> ofEntries(Comparator<? super K> keyComparator, java.util.Map.Entry<? extends K, ? extends V2>... entries) {
+            Objects.requireNonNull(keyComparator, "keyComparator is null");
             Objects.requireNonNull(entries, "entries is null");
-            Multimap<K2, V2> result = empty();
-            for (java.util.Map.Entry<? extends K2, ? extends V2> entry : entries) {
+            Multimap<K, V2> result = empty(keyComparator);
+            for (java.util.Map.Entry<? extends K, ? extends V2> entry : entries) {
                 result = result.put(entry.getKey(), entry.getValue());
             }
-            return (TreeMultimap<K2, V2>) result;
+            return (TreeMultimap<K, V2>) result;
         }
 
         @SuppressWarnings("unchecked")
-        public <K2 extends K, V2 extends V> TreeMultimap<K2, V2> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K2, ? extends V2>> f) {
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V2>> f) {
+            return tabulate((Comparator<? super K> & Serializable) K::compareTo, n, f);
+        }
+
+        @SuppressWarnings("unchecked")
+        public <K, V2 extends V> TreeMultimap<K, V2> tabulate(Comparator<? super K> keyComparator, int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V2>> f) {
+            Objects.requireNonNull(keyComparator, "keyComparator is null");
             Objects.requireNonNull(f, "f is null");
-            return ofEntries(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K2, V2>>) f));
+            return ofEntries(keyComparator, Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V2>>) f));
         }
 
         @SuppressWarnings("unchecked")
-        public <K2 extends K, V2 extends V> TreeMultimap<K2, V2> fill(int n, Supplier<? extends Tuple2<? extends K2, ? extends V2>> s) {
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V2>> s) {
+            return fill((Comparator<? super K> & Serializable) K::compareTo, n, s);
+        }
+
+        @SuppressWarnings("unchecked")
+        public <K, V2 extends V> TreeMultimap<K, V2> fill(Comparator<? super K> keyComparator, int n, Supplier<? extends Tuple2<? extends K, ? extends V2>> s) {
+            Objects.requireNonNull(keyComparator, "keyComparator is null");
             Objects.requireNonNull(s, "s is null");
-            return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K2, V2>>) s));
+            return ofEntries(keyComparator, Collections.fill(n, (Supplier<? extends Tuple2<K, V2>>) s));
         }
 
         @SuppressWarnings("unchecked")
-        public <K2 extends K, V2 extends V> TreeMultimap<K2, V2> of(Object... pairs) {
+        public final <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(Object... pairs) {
+            return of((Comparator<? super K> & Serializable) K::compareTo, pairs);
+        }
+
+        @SuppressWarnings("unchecked")
+        public final <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, Object... pairs) {
+            Objects.requireNonNull(keyComparator, "keyComparator is null");
             Objects.requireNonNull(pairs, "pairs is null");
             if ((pairs.length & 1) != 0) {
                 throw new IllegalArgumentException("Odd length of key-value pairs list");
             }
-            Multimap<K2, V2> result = empty();
+            TreeMultimap<K, V2> result = empty(keyComparator);
             for (int i = 0; i < pairs.length; i += 2) {
-                result = result.put((K2) pairs[i], (V2) pairs[i + 1]);
+                result = result.put((K) pairs[i], (V2) pairs[i + 1]);
             }
-            return (TreeMultimap<K2, V2>) result;
+            return result;
         }
 
-        public <K2 extends K, V2 extends V> Collector<Tuple2<K2, V2>, ArrayList<Tuple2<K2, V2>>, Multimap<K2, V2>> collector() {
-            final Supplier<ArrayList<Tuple2<K2, V2>>> supplier = ArrayList::new;
-            final BiConsumer<ArrayList<Tuple2<K2, V2>>, Tuple2<K2, V2>> accumulator = ArrayList::add;
-            final BinaryOperator<ArrayList<Tuple2<K2, V2>>> combiner = (left, right) -> {
+        public <K extends Comparable<? super K>, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, TreeMultimap<K, V2>> collector() {
+            return collector((Comparator<? super K> & Serializable) K::compareTo);
+        }
+
+        public <K, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, TreeMultimap<K, V2>> collector(Comparator<? super K> keyComparator) {
+            Objects.requireNonNull(keyComparator, "keyComparator is null");
+            final Supplier<ArrayList<Tuple2<K, V2>>> supplier = ArrayList::new;
+            final BiConsumer<ArrayList<Tuple2<K, V2>>, Tuple2<K, V2>> accumulator = ArrayList::add;
+            final BinaryOperator<ArrayList<Tuple2<K, V2>>> combiner = (left, right) -> {
                 left.addAll(right);
                 return left;
             };
-            return Collector.of(supplier, accumulator, combiner, this::ofEntries);
+            final Function<ArrayList<Tuple2<K, V2>>, TreeMultimap<K, V2>> finisher = list -> ofEntries(keyComparator, list);
+            return Collector.of(supplier, accumulator, combiner, finisher);
         }
     }
 
