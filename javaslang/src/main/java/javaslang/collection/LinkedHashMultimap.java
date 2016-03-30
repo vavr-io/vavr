@@ -25,7 +25,7 @@ import java.util.stream.Collector;
  * @author Ruslan Sennov
  * @since 2.0.0
  */
-public class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, LinkedHashMultimap<K, V>> implements Serializable {
+public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, LinkedHashMultimap<K, V>> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

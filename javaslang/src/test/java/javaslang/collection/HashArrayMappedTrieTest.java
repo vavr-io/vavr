@@ -66,7 +66,7 @@ public class HashArrayMappedTrieTest {
         testBigData(5000, t -> Tuple.of(new WeakInteger(t._1), t._2));
     }
 
-    private <K extends Comparable<K>, V> void testBigData(int count, Function<Tuple2<Integer, Integer>, Tuple2<K, V>> mapper) {
+    private <K extends Comparable<? super K>, V> void testBigData(int count, Function<Tuple2<Integer, Integer>, Tuple2<K, V>> mapper) {
         Comparator<K, V> cmp = new Comparator<>();
         java.util.Map<K, V> rnd = rnd(count, mapper);
         for (java.util.Map.Entry<K, V> e : rnd.entrySet()) {
