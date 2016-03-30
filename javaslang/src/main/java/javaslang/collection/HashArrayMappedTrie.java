@@ -143,27 +143,14 @@ interface HashArrayMappedTrieModule {
                 return true;
             } else if (o instanceof HashArrayMappedTrie) {
                 final HashArrayMappedTrie<Object, ?> that = (HashArrayMappedTrie<Object, ?>) o;
-                if (this.size() != that.size()) {
-                    return false;
-                } else {
-                    for (Tuple2<K, V> entry : this) {
-                        Option<?> value = that.get(entry._1);
-                        if (value.isEmpty() || !Objects.equals(entry._2, value.get())) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }
+                return (this.size() == that.size()) && Collections.equals(this, that);
             } else {
                 return false;
             }
         }
 
         @Override
-        public final int hashCode() {
-            // TODO: better hash algorithm to reduce collisions (e.g. (0 -> 1, 1 -> 2) and (0 -> 2, 1 -> 3) collide)
-            return iterator().foldLeft(0, (hash, entry) -> hash ^ entry.hashCode());
-        }
+        public abstract int hashCode();
 
         @Override
         public final String toString() {
@@ -214,6 +201,11 @@ interface HashArrayMappedTrieModule {
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
             return Iterator.empty();
+        }
+
+        @Override
+        public int hashCode() {
+            return 0;
         }
 
         /**
@@ -312,6 +304,11 @@ interface HashArrayMappedTrieModule {
         public Iterator<Tuple2<K, V>> iterator() {
             Tuple2<K, V> tuple = Tuple.of(key, value);
             return Iterator.of(tuple);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(hash, value);
         }
 
         @Override
@@ -443,6 +440,11 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
+        public int hashCode() {
+            return Objects.hash(hash, value, tail);
+        }
+
+        @Override
         int hash() {
             return hash;
         }
@@ -562,6 +564,11 @@ interface HashArrayMappedTrieModule {
         public Iterator<Tuple2<K, V>> iterator() {
             return Iterator.concat(Array.wrap(subNodes));
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(subNodes);
+        }
     }
 
     /**
@@ -641,6 +648,11 @@ interface HashArrayMappedTrieModule {
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
             return Iterator.concat(Array.wrap(subNodes));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(subNodes);
         }
     }
 }
