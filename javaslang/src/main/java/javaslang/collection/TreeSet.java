@@ -39,18 +39,33 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.TreeSet}.
+     * <p>
+     * The natural comparator is used to compare TreeSet elements.
      *
      * @param <T> Component type of the List.
      * @return A javaslang.collection.List Collector.
      */
-    public static <T> Collector<T, ArrayList<T>, TreeSet<T>> collector() {
+    public static <T extends Comparable<? super T>> Collector<T, ArrayList<T>, TreeSet<T>> collector() {
+        return collector((Comparator<? super T> & Serializable) T::compareTo);
+    }
+
+    /**
+     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.TreeSet}.
+     *
+     * @param <T> Component type of the List.
+     * @param comparator An element comparator
+     * @return A javaslang.collection.List Collector.
+     */
+    public static <T> Collector<T, ArrayList<T>, TreeSet<T>> collector(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
             left.addAll(right);
             return left;
         };
-        final Function<ArrayList<T>, TreeSet<T>> finisher = list -> TreeSet.ofAll(naturalComparator(), list);
+        final Function<ArrayList<T>, TreeSet<T>> finisher = list -> TreeSet.ofAll(comparator, list);
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 

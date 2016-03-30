@@ -23,11 +23,11 @@ public class TreeMultimapTest extends AbstractMultimapTest {
     protected <T1, T2> Multimap<T1, T2> emptyMap() {
         switch (containerType) {
             case SEQ:
-                return TreeMultimap.withSeq().withKeyComparator(naturalComparator()).empty();
+                return TreeMultimap.withSeq().empty(naturalComparator());
             case SET:
-                return TreeMultimap.withSet().withKeyComparator(naturalComparator()).empty();
+                return TreeMultimap.withSet().empty(naturalComparator());
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).withKeyComparator(naturalComparator()).empty();
+                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).empty(naturalComparator());
         }
         throw new RuntimeException();
     }
@@ -36,11 +36,11 @@ public class TreeMultimapTest extends AbstractMultimapTest {
     protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Multimap<Integer, T>> mapCollector() {
         switch (containerType) {
             case SEQ:
-                return TreeMultimap.withSeq().withKeyComparator(naturalComparator()).collector();
+                return TreeMultimap.withSeq().collector(naturalComparator());
             case SET:
-                return TreeMultimap.withSet().withKeyComparator(naturalComparator()).collector();
+                return TreeMultimap.withSet().collector(naturalComparator());
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).withKeyComparator(naturalComparator()).collector();
+                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).collector(naturalComparator());
         }
         throw new RuntimeException();
     }
@@ -51,11 +51,11 @@ public class TreeMultimapTest extends AbstractMultimapTest {
     protected final <K, V> Multimap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
         switch (containerType) {
             case SEQ:
-                return TreeMultimap.withSeq().withKeyComparator(naturalComparator()).ofEntries(entries);
+                return TreeMultimap.withSeq().ofEntries(naturalComparator(), entries);
             case SET:
-                return TreeMultimap.withSet().withKeyComparator(naturalComparator()).ofEntries(entries);
+                return TreeMultimap.withSet().ofEntries(naturalComparator(), entries);
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).withKeyComparator(naturalComparator()).ofEntries(entries);
+                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).ofEntries(naturalComparator(), entries);
         }
         throw new RuntimeException();
     }
@@ -66,11 +66,11 @@ public class TreeMultimapTest extends AbstractMultimapTest {
     protected final <K, V> Multimap<K, V> mapOfEntries(Map.Entry<? extends K, ? extends V>... entries) {
         switch (containerType) {
             case SEQ:
-                return TreeMultimap.withSeq().withKeyComparator(naturalComparator()).ofEntries(entries);
+                return TreeMultimap.withSeq().ofEntries(naturalComparator(), entries);
             case SET:
-                return TreeMultimap.withSet().withKeyComparator(naturalComparator()).ofEntries(entries);
+                return TreeMultimap.withSet().ofEntries(naturalComparator(), entries);
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).withKeyComparator(naturalComparator()).ofEntries(entries);
+                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).ofEntries(naturalComparator(), entries);
         }
         throw new RuntimeException();
     }
@@ -79,11 +79,11 @@ public class TreeMultimapTest extends AbstractMultimapTest {
     protected <K, V> Multimap<K, V> mapOfPairs(Object... pairs) {
         switch (containerType) {
             case SEQ:
-                return TreeMultimap.withSeq().withKeyComparator(naturalComparator()).of(pairs);
+                return TreeMultimap.withSeq().of(naturalComparator(), pairs);
             case SET:
-                return TreeMultimap.withSet().withKeyComparator(naturalComparator()).of(pairs);
+                return TreeMultimap.withSet().of(naturalComparator(), pairs);
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).withKeyComparator(naturalComparator()).of(pairs);
+                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).of(naturalComparator(), pairs);
         }
         throw new RuntimeException();
     }
@@ -98,11 +98,11 @@ public class TreeMultimapTest extends AbstractMultimapTest {
     protected <K, V> Multimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         switch (containerType) {
             case SEQ:
-                return TreeMultimap.withSeq().withKeyComparator(naturalComparator()).tabulate(n, f);
+                return TreeMultimap.withSeq().tabulate(naturalComparator(), n, f);
             case SET:
-                return TreeMultimap.withSet().withKeyComparator(naturalComparator()).tabulate(n, f);
+                return TreeMultimap.withSet().tabulate(naturalComparator(), n, f);
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).withKeyComparator(naturalComparator()).tabulate(n, f);
+                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).tabulate(naturalComparator(), n, f);
         }
         throw new RuntimeException();
     }
@@ -111,11 +111,11 @@ public class TreeMultimapTest extends AbstractMultimapTest {
     protected <K, V> Multimap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
         switch (containerType) {
             case SEQ:
-                return TreeMultimap.withSeq().withKeyComparator(naturalComparator()).fill(n, s);
+                return TreeMultimap.withSeq().fill(naturalComparator(), n, s);
             case SET:
-                return TreeMultimap.withSet().withKeyComparator(naturalComparator()).fill(n, s);
+                return TreeMultimap.withSet().fill(naturalComparator(), n, s);
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).withKeyComparator(naturalComparator()).fill(n, s);
+                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).fill(naturalComparator(), n, s);
         }
         throw new RuntimeException();
     }
