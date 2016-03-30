@@ -849,6 +849,14 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     }
 
     @Override
+    public Queue<T> leftPadTo(int length, T element) {
+        if (length <= length()) {
+            return this;
+        }
+        return toList().leftPadTo(length, element).toQueue();
+    }
+
+    @Override
     public Queue<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = from < 0 ? 0 : from;
         replaced = replaced < 0 ? 0 : replaced;

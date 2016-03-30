@@ -498,11 +498,26 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
             return this;
         }
         final StringBuilder sb = new StringBuilder(back);
-        final int limit = length - back.length();
-        for (int i = 0; i < limit; i++) {
-            sb.append(element);
-        }
+        sb.append(padding(element, length - back.length()));
         return new CharSeq(sb.toString());
+    }
+
+    @Override
+    public CharSeq leftPadTo(int length, Character element) {
+        if (length <= back.length()) {
+            return this;
+        }
+        final StringBuilder sb = new StringBuilder(padding(element, length - back.length()));
+        sb.append(back);
+        return new CharSeq(sb.toString());
+    }
+
+    private static StringBuilder padding(Character element, int limit) {
+        final StringBuilder padding = new StringBuilder();
+        for (int i = 0; i < limit; i++) {
+            padding.append(element);
+        }
+        return padding;
     }
 
     @Override

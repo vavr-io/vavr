@@ -487,6 +487,16 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     Seq<T> padTo(int length, T element);
 
     /**
+     * A copy of this sequence with an element prepended until a given target length is reached.
+     *
+     * @param length  the target length
+     * @param element the padding element
+     * @return a new sequence consisting of all elements of this sequence prepended by the minimal number
+     * of occurrences of <code>element</code> so that the resulting sequence has a length of at least <code>length</code>.
+     */
+    Seq<T> leftPadTo(int length, T element);
+
+    /**
      * Produces a new list where a slice of elements in this list is replaced by another sequence.
      *
      * @param from     the index of the first replaced element

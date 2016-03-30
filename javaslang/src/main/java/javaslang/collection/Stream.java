@@ -980,6 +980,17 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
+    default Stream<T> leftPadTo(int length, T element) {
+        if (length <= 1) {
+            return this;
+        } else if (isEmpty()) {
+            return Stream.ofAll(Iterator.continually(element).take(length));
+        } else {
+            return cons(element, () -> this.leftPadTo(length - 1, element));
+        }
+    }
+
+    @Override
     default Stream<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = from < 0 ? 0 : from;
         replaced = replaced < 0 ? 0 : replaced;

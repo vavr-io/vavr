@@ -791,6 +791,15 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default List<T> leftPadTo(int length, T element) {
+        if (length <= length()) {
+            return this;
+        } else {
+            return prependAll(Iterator.continually(element).take(length - length()));
+        }
+    }
+
+    @Override
     default List<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = from < 0 ? 0 : from;
         replaced = replaced < 0 ? 0 : replaced;

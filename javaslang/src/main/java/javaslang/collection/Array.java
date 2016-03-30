@@ -774,6 +774,15 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
+    public Array<T> leftPadTo(int length, T element) {
+        if (length <= length()) {
+            return this;
+        } else {
+            return prependAll(Iterator.continually(element).take(length - length()));
+        }
+    }
+
+    @Override
     public Array<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = from < 0 ? 0 : from;
         replaced = replaced < 0 ? 0 : replaced;
