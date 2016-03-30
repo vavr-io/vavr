@@ -191,4 +191,12 @@ public class LinkedHashSetTest extends AbstractSetTest {
         assertThat(transformed).isEqualTo("42");
     }
 
+    // -- replace(old, new)
+
+    @Override
+    @Test
+    public void shouldReplaceElementOfNonNilUsingCurrNewWhenOneOccurrenceExists() {
+        assertThat(of(0, 1, 2).replace(1, 3)).isEqualTo(of(0, 2, 3));
+    }
+
 }

@@ -681,6 +681,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
         return (that == map) ? this : new LinkedHashSet<>(that);
     }
 
+    // DEV-NOTE: replace does not preserve the order, the new element may already be in the set
     @Override
     public LinkedHashSet<T> replace(T currentElement, T newElement) {
         if (map.containsKey(currentElement)) {
@@ -725,7 +726,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     @Override
     public <U> LinkedHashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, LinkedHashSet.empty(), LinkedHashSet::add, Function.identity());
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, LinkedHashSet::ofAll);
     }
 
     @Override
