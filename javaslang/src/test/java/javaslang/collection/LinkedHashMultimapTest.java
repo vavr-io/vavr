@@ -14,7 +14,7 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
 
     @Override
     protected String className() {
-        return "Multimap[LinkedHashMap," + containerName() + "]";
+        return "LinkedHashMultimap[" + containerName() + "]";
     }
 
     @Override

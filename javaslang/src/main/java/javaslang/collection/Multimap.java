@@ -5,12 +5,14 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Function1;
+import javaslang.Kind2;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.control.Option;
 
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.Collector;
 
 /**
  * An immutable {@code Multimap} interface.

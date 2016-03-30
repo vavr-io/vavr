@@ -16,7 +16,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
 
     @Override
     protected String className() {
-        return "Multimap[TreeMap," + containerName() + "]";
+        return "TreeMultimap[" + containerName() + "]";
     }
 
     @Override

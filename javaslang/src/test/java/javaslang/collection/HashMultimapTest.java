@@ -14,7 +14,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
 
     @Override
     protected String className() {
-        return "Multimap[HashMap," + containerName() + "]";
+        return "HashMultimap[" + containerName() + "]";
     }
 
     @Override

@@ -5,8 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.API;
-import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
@@ -333,11 +331,6 @@ import java.util.function.*;
         return (M) this;
     }
 
-    @Override
-    public String stringPrefix() {
-        return "Multimap[" + emptyMapSupplier().stringPrefix() + "," + emptyContainer.get().stringPrefix() + "]";
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public M replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
@@ -426,13 +419,14 @@ import java.util.function.*;
         return taken.length() == length() ? (M) this : (M) taken;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (o == this) {
             return true;
-        } else if (o instanceof Multimap) {
-            final Multimap<?, ?> that = (Multimap<?, ?>) o;
-            return this.corresponds(that, Objects::equals);
+        } else if (o != null && getClass().isAssignableFrom(o.getClass())) {
+            final AbstractMultimap<?, ?, ?> that = (AbstractMultimap<?, ?, ?>) o;
+            return this.back.equals(that.back);
         } else {
             return false;
         }
@@ -441,6 +435,11 @@ import java.util.function.*;
     @Override
     public int hashCode() {
         return back.hashCode();
+    }
+
+    @Override
+    public String stringPrefix() {
+        return getClass().getSimpleName() + "[" + emptyContainer.get().stringPrefix() + "]";
     }
 
     @Override
