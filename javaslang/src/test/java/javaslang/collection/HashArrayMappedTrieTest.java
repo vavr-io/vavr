@@ -10,6 +10,7 @@ import javaslang.Tuple2;
 import javaslang.control.Option;
 import org.junit.Test;
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -152,7 +153,20 @@ public class HashArrayMappedTrieTest {
 
     @Test
     public void shouldCalculateDifferentHashCodesForDifferentHAMT() {
-        assertThat(of(1, 2).hashCode() != of(2, 3).hashCode()).isTrue();
+        assertThat(of(1, 2).hashCode()).isNotEqualTo(of(2, 3).hashCode());
+    }
+
+    @Test
+    public void test() {
+        System.out.printf("#(0): %d%n", Objects.hash(0));
+        System.out.printf("#(0, 1): %d%n", Objects.hash(0, 1));
+        System.out.printf("#(1): %d%n", Objects.hash(1));
+        System.out.printf("#(1, 2): %d%n", Objects.hash(1, 2));
+        System.out.printf("#(2): %d%n", Objects.hash(2));
+        System.out.printf("#(2, 3): %d%n", Objects.hash(2, 3));
+        System.out.printf("0 ^ #(1, 2): %d%n", (0 ^ Objects.hash(1, 2)));
+        System.out.printf("0 ^ #(2, 3): %d%n", (0 ^ Objects.hash(2, 3)));
+
     }
 
     @Test

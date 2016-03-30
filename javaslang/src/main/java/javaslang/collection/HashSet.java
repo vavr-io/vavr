@@ -30,11 +30,9 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     private static final HashSet<?> EMPTY = new HashSet<>(HashArrayMappedTrie.empty());
 
     private final HashArrayMappedTrie<T, T> tree;
-    private final transient Lazy<Integer> hash;
 
     private HashSet(HashArrayMappedTrie<T, T> tree) {
         this.tree = tree;
-        this.hash = Lazy.of(() -> Traversable.hash(tree::iterator));
     }
 
     @SuppressWarnings("unchecked")
@@ -854,7 +852,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
 
     @Override
     public int hashCode() {
-        return hash.get();
+        return tree.hashCode();
     }
 
     @SuppressWarnings("unchecked")
@@ -864,7 +862,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
             return true;
         } else if (o instanceof HashSet) {
             final HashSet<?> that = (HashSet<?>) o;
-            return this.length() == that.length() && ((HashSet<Object>) this).containsAll(that);
+            return this.tree.equals(that.tree);
         } else {
             return false;
         }

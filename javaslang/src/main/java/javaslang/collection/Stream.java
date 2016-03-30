@@ -1510,7 +1510,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
         @Override
         public int hashCode() {
-            return Traversable.hash(this);
+            return 1;
         }
 
         @Override
@@ -1586,7 +1586,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
         @Override
         public int hashCode() {
-            return Traversable.hash(this);
+            return Collections.hash(this);
         }
 
         @Override

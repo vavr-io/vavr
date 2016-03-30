@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Lazy;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.HashArrayMappedTrieModule.EmptyNode;
@@ -137,19 +136,14 @@ interface HashArrayMappedTrieModule {
             return modify(0, Objects.hashCode(key), key, null, REMOVE);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public boolean equals(Object o) {
+        public final boolean equals(Object o) {
             if (o == this) {
                 return true;
             } else if (o instanceof HashArrayMappedTrie) {
-                final Iterator<?> iter1 = this.iterator();
-                final Iterator<?> iter2 = ((HashArrayMappedTrie<?, ?>) o).iterator();
-                while (iter1.hasNext() && iter2.hasNext()) {
-                    if (!Objects.equals(iter1.next(), iter2.next())) {
-                        return false;
-                    }
-                }
-                return !iter1.hasNext() && !iter2.hasNext();
+                final HashArrayMappedTrie<Object, ?> that = (HashArrayMappedTrie<Object, ?>) o;
+                return (this.size() == that.size()) && Collections.equals(this, that);
             } else {
                 return false;
             }
@@ -159,7 +153,7 @@ interface HashArrayMappedTrieModule {
         public abstract int hashCode();
 
         @Override
-        public String toString() {
+        public final String toString() {
             return iterator().map(t -> t._1 + " -> " + t._2).mkString("HashArrayMappedTrie(", ", ", ")");
         }
     }
@@ -195,11 +189,6 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        public int hashCode() {
-            return 0;
-        }
-
-        @Override
         public boolean isEmpty() {
             return true;
         }
@@ -212,6 +201,11 @@ interface HashArrayMappedTrieModule {
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
             return Iterator.empty();
+        }
+
+        @Override
+        public int hashCode() {
+            return 0;
         }
 
         /**
@@ -276,13 +270,11 @@ interface HashArrayMappedTrieModule {
         private final int hash;
         private final K key;
         private final V value;
-        private final int hashCode;
 
         LeafSingleton(int hash, K key, V value) {
             this.hash = hash;
             this.key = key;
             this.value = value;
-            this.hashCode = Objects.hash(key, value);
         }
 
         @Override
@@ -316,7 +308,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public int hashCode() {
-            return hashCode;
+            return Objects.hash(hash, value);
         }
 
         @Override
@@ -350,7 +342,6 @@ interface HashArrayMappedTrieModule {
         private final V value;
         private final int size;
         private final LeafNode<K, V> tail;
-        private final int hashCode;
 
         LeafList(int hash, K key, V value, LeafNode<K, V> tail) {
             this.hash = hash;
@@ -358,7 +349,6 @@ interface HashArrayMappedTrieModule {
             this.value = value;
             this.size = 1 + tail.size();
             this.tail = tail;
-            this.hashCode = Objects.hash(key, value, tail);
         }
 
         @Override
@@ -422,11 +412,6 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        public int hashCode() {
-            return hashCode;
-        }
-
-        @Override
         public int size() {
             return size;
         }
@@ -452,6 +437,11 @@ interface HashArrayMappedTrieModule {
                     return tuple;
                 }
             };
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(hash, value, tail);
         }
 
         @Override
@@ -483,13 +473,11 @@ interface HashArrayMappedTrieModule {
         private final int bitmap;
         private final int size;
         private final Object[] subNodes;
-        private final Lazy<Integer> hashCode;
 
         IndexedNode(int bitmap, int size, Object[] subNodes) {
             this.bitmap = bitmap;
             this.size = size;
             this.subNodes = subNodes;
-            this.hashCode = Lazy.of(() -> Objects.hash(subNodes));
         }
 
         @SuppressWarnings("unchecked")
@@ -542,11 +530,6 @@ interface HashArrayMappedTrieModule {
             }
         }
 
-        @Override
-        public int hashCode() {
-            return hashCode.get();
-        }
-
         private ArrayNode<K, V> expand(int frag, AbstractNode<K, V> child, int mask, Object[] subNodes) {
             int bit = mask;
             int count = 0;
@@ -581,6 +564,11 @@ interface HashArrayMappedTrieModule {
         public Iterator<Tuple2<K, V>> iterator() {
             return Iterator.concat(Array.wrap(subNodes));
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(subNodes);
+        }
     }
 
     /**
@@ -593,7 +581,6 @@ interface HashArrayMappedTrieModule {
 
         private static final long serialVersionUID = 1L;
 
-        private final transient Lazy<Integer> hashCode = Lazy.of(() -> Traversable.hash(this));
         private final Object[] subNodes;
         private final int count;
         private final int size;
@@ -631,11 +618,6 @@ interface HashArrayMappedTrieModule {
             }
         }
 
-        @Override
-        public int hashCode() {
-            return hashCode.get();
-        }
-
         @SuppressWarnings("unchecked")
         private IndexedNode<K, V> pack(int idx, Object[] elements) {
             Object[] arr = new Object[count - 1];
@@ -666,6 +648,11 @@ interface HashArrayMappedTrieModule {
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
             return Iterator.concat(Array.wrap(subNodes));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(subNodes);
         }
     }
 }
