@@ -279,7 +279,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         Option<V> lookup(int shift, int keyHashCode, K key) {
-            if (Objects.equals(key, this.key)) {
+            if (keyHashCode == hash && Objects.equals(key, this.key)) {
                 return Option.some(value);
             } else {
                 return Option.none();
@@ -288,7 +288,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         AbstractNode<K, V> modify(int shift, int keyHashCode, K key, V value, Action action) {
-            if (Objects.equals(key, this.key)) {
+            if (keyHashCode == hash && Objects.equals(key, this.key)) {
                 return (action == REMOVE) ? EmptyNode.instance() : new LeafSingleton<>(hash, key, value);
             } else {
                 return (action == REMOVE) ? this : mergeLeaves(shift, this, new LeafSingleton<>(keyHashCode, key, value));
