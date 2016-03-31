@@ -144,7 +144,8 @@ release v2.1.0 - - - - - - + - - - X - - - + 2.1.1-SNAPSHOT
 Performing a release requires admin-rights.
 
 1. get a fresh copy of the repo `git clone https://github.com/javaslang/javaslang.git`
-2. perform the release
+2  run `mvn clean test` and(!) `mvn javadoc:javadoc` to ensure all is working fine
+3. perform the release
 
     ```bash
     mvn release:clean
@@ -152,7 +153,7 @@ Performing a release requires admin-rights.
     mvn release:perform
     ```
 
-3. Go to `http://oss.sonatype.org` and stage the release.
+4. Go to `http://oss.sonatype.org` and stage the release.
 
 #### Post-Release steps (e.g. for release v2.1.0)
 
