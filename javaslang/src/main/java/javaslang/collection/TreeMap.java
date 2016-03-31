@@ -502,12 +502,6 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
         return map(keyComparator(), (k, v) -> Tuple.of(k, valueMapper.apply(v)));
     }
 
-    // DEV-NOTE: this overridden method fixes compilation failure in IntelliJ Idea 2016.1
-    @Override
-    public <U extends V> TreeMap<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
-        return super.merge(that, collisionResolution);
-    }
-
     @Override
     public TreeMap<K, V> put(K key, V value) {
         return new TreeMap<>(entries.insert(new Tuple2<>(key, value)));
