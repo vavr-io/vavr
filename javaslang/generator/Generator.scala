@@ -65,9 +65,9 @@ def generateMainClasses(): Unit = {
            * e.g. by {@code Match}:
            *
            * <pre><code>Match(i).of(
-           *     Case(is(0), i -> run(() -&gt; System.out.println("zero"))),
-           *     Case(is(1), i -> run(() -&gt; System.out.println("one"))),
-           *     Case($$(), o -> run(() -&gt; System.out.println("many")))
+           *     Case(is(0), i -&gt; run(() -&gt; System.out.println("zero"))),
+           *     Case(is(1), i -&gt; run(() -&gt; System.out.println("one"))),
+           *     Case($$(), o -&gt; run(() -&gt; System.out.println("many")))
            * )</code></pre>
            *
            * @param unit A block of code to be run.
