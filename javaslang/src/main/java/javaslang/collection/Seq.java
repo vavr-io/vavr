@@ -478,6 +478,8 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
 
     /**
      * A copy of this sequence with an element appended until a given target length is reached.
+     * <p>
+     * Note: lazily-evaluated Seq implementations need to process all elements in order to gather the overall length.
      *
      * @param length  the target length
      * @param element the padding element
@@ -488,6 +490,8 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
 
     /**
      * A copy of this sequence with an element prepended until a given target length is reached.
+     * <p>
+     * Note: lazily-evaluated Seq implementations need to process all elements in order to gather the overall length.
      *
      * @param length  the target length
      * @param element the padding element
