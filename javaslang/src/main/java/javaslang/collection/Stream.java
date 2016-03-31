@@ -979,14 +979,12 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         }
     }
 
-    @Override
     default Stream<T> leftPadTo(int length, T element) {
-        if (length <= 1) {
+        final int actualLength = length();
+        if (length <= actualLength) {
             return this;
-        } else if (isEmpty()) {
-            return Stream.ofAll(Iterator.continually(element).take(length));
         } else {
-            return cons(element, () -> this.leftPadTo(length - 1, element));
+            return Stream.ofAll(Iterator.continually(element).take(length - actualLength)).appendAll(this);
         }
     }
 

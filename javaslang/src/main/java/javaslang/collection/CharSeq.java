@@ -506,7 +506,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         if (length <= back.length()) {
             return this;
         }
-        final StringBuilder sb = new StringBuilder(padding(element, length - back.length())).append(back);
+        final StringBuilder sb = padding(element, length - back.length()).append(back);
         return new CharSeq(sb.toString());
     }
 
