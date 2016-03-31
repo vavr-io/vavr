@@ -13,6 +13,8 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.Year;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static javaslang.API.$;
 import static javaslang.API.*;
@@ -53,13 +55,6 @@ public class MatchTest {
     @Test
     public void shouldMatchAnyReturningAppliedFunction() {
         assertThat(Case($(), o -> 1).apply(new Object())).isEqualTo(Option.of(1));
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowOnMatchAnyIfFunctionIsNull() {
-        Match(new Object()).of(
-                Case($(), null)
-        );
     }
 
     @Test
@@ -301,6 +296,45 @@ public class MatchTest {
             static Tuple3<String, Boolean, Option<Number>> Developer(Developer dev) {
                 return Tuple.of(dev.getName(), dev.isCaffeinated(), dev.number());
             }
+        }
+    }
+
+    // Ambiguity check
+
+    @Test
+    public void shouldNotAmbiguous() {
+
+        final Option<String> ok = Option.of("ok");
+
+        { // value
+            // Case("1", o -> "ok"); // Not possible, would lead to ambiguities (see below)
+            assertThat(Case("1", () -> "ok").apply("1")).isEqualTo(ok);
+            assertThat(Case("1", "ok").apply("1")).isEqualTo(ok);
+        }
+
+        { // predicate as variable
+            Predicate<String> p = s -> true;
+            assertThat(Case(p, o -> "ok").apply("1")).isEqualTo(ok); // ambiguous, if Case(T, Function<T, R>) present
+            assertThat(Case(p, () -> "ok").apply("1")).isEqualTo(ok);
+            assertThat(Case(p, "ok").apply("1")).isEqualTo(ok);
+        }
+
+        { // predicate as lambda
+            assertThat(Case(o -> true, o -> "ok").apply("1")).isEqualTo(ok); // ambiguous, if Case(T, Function<T, R>) present
+            assertThat(Case(o -> true, () -> "ok").apply("1")).isEqualTo(ok);
+            assertThat(Case(o -> true, "ok").apply("1")).isEqualTo(ok);
+        }
+
+        { // $(predicate)
+            assertThat(Case($(o -> true), o -> "ok").apply("1")).isEqualTo(ok); // ambiguous, if Case(T, Function<T, R>) present
+            assertThat(Case($(o -> true), () -> "ok").apply("1")).isEqualTo(ok);
+            assertThat(Case($(o -> true), "ok").apply("1")).isEqualTo(ok);
+        }
+
+        { // $(value)
+            assertThat(Case($("1"), o -> "ok").apply("1")).isEqualTo(ok); // ambiguous, if Case(T, Function<T, R>) present
+            assertThat(Case($("1"), () -> "ok").apply("1")).isEqualTo(ok);
+            assertThat(Case($("1"), "ok").apply("1")).isEqualTo(ok);
         }
     }
 }

@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import javaslang.collection.Iterator;
 import javaslang.control.Option;
 
@@ -612,18 +613,39 @@ public final class API {
 
     // -- static Case API
 
-    // syntactic sugar for {@code Case($(predicate), f)}
+    // - Value
+
+    // Note: The signature `<T, R> Case<T, R> Case(T value, $FunctionType<? super T, ? extends R> f)` leads to ambiguities!
+
+    public static <T, R> Case<T, R> Case(T value, Supplier<? extends R> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new Case0<>($(value), ignored -> supplier.get());
+    }
+
+    public static <T, R> Case<T, R> Case(T value, R retVal) {
+        return new Case0<>($(value), ignored -> retVal);
+    }
+
+    // - Predicate
+
     public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, Function<? super T, ? extends R> f) {
         Objects.requireNonNull(predicate, "predicate is null");
         Objects.requireNonNull(f, "f is null");
         return new Case0<>($(predicate), f);
     }
 
-    // syntactic sugar for {@code Case($(predicate), ignored -> retVal)}
+    public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, Supplier<? extends R> supplier) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new Case0<>($(predicate), ignored -> supplier.get());
+    }
+
     public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, R retVal) {
         Objects.requireNonNull(predicate, "predicate is null");
         return new Case0<>($(predicate), ignored -> retVal);
     }
+
+    // - Pattern0
 
     public static <T, R> Case<T, R> Case(Pattern0<T> pattern, Function<? super T, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -631,11 +653,18 @@ public final class API {
         return new Case0<>(pattern, f);
     }
 
-    // syntactic sugar for {@code Case(Pattern0, ignored -> retVal)}
+    public static <T, R> Case<T, R> Case(Pattern0<T> pattern, Supplier<? extends R> supplier) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new Case0<>(pattern, ignored -> supplier.get());
+    }
+
     public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case0<>(pattern, ignored -> retVal);
     }
+
+    // - Pattern1
 
     public static <T, T1, R> Case<T, R> Case(Pattern1<T, T1> pattern, Function<? super T1, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -643,11 +672,18 @@ public final class API {
         return new Case1<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case(Pattern1, Function)}
+    public static <T, T1, R> Case<T, R> Case(Pattern1<T, T1> pattern, Supplier<? extends R> supplier) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new Case1<>(pattern, _1 -> supplier.get());
+    }
+
     public static <T, T1, R> Case<T, R> Case(Pattern1<T, T1> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case1<>(pattern, _1 -> retVal);
     }
+
+    // - Pattern2
 
     public static <T, T1, T2, R> Case<T, R> Case(Pattern2<T, T1, T2> pattern, BiFunction<? super T1, ? super T2, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -655,11 +691,18 @@ public final class API {
         return new Case2<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case(Pattern2, BiFunction)}
+    public static <T, T1, T2, R> Case<T, R> Case(Pattern2<T, T1, T2> pattern, Supplier<? extends R> supplier) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new Case2<>(pattern, (_1, _2) -> supplier.get());
+    }
+
     public static <T, T1, T2, R> Case<T, R> Case(Pattern2<T, T1, T2> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case2<>(pattern, (_1, _2) -> retVal);
     }
+
+    // - Pattern3
 
     public static <T, T1, T2, T3, R> Case<T, R> Case(Pattern3<T, T1, T2, T3> pattern, Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -667,11 +710,18 @@ public final class API {
         return new Case3<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case(Pattern3, Function3)}
+    public static <T, T1, T2, T3, R> Case<T, R> Case(Pattern3<T, T1, T2, T3> pattern, Supplier<? extends R> supplier) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new Case3<>(pattern, (_1, _2, _3) -> supplier.get());
+    }
+
     public static <T, T1, T2, T3, R> Case<T, R> Case(Pattern3<T, T1, T2, T3> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case3<>(pattern, (_1, _2, _3) -> retVal);
     }
+
+    // - Pattern4
 
     public static <T, T1, T2, T3, T4, R> Case<T, R> Case(Pattern4<T, T1, T2, T3, T4> pattern, Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -679,11 +729,18 @@ public final class API {
         return new Case4<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case(Pattern4, Function4)}
+    public static <T, T1, T2, T3, T4, R> Case<T, R> Case(Pattern4<T, T1, T2, T3, T4> pattern, Supplier<? extends R> supplier) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new Case4<>(pattern, (_1, _2, _3, _4) -> supplier.get());
+    }
+
     public static <T, T1, T2, T3, T4, R> Case<T, R> Case(Pattern4<T, T1, T2, T3, T4> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case4<>(pattern, (_1, _2, _3, _4) -> retVal);
     }
+
+    // - Pattern5
 
     public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(Pattern5<T, T1, T2, T3, T4, T5> pattern, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -691,11 +748,18 @@ public final class API {
         return new Case5<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case(Pattern5, Function5)}
+    public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(Pattern5<T, T1, T2, T3, T4, T5> pattern, Supplier<? extends R> supplier) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new Case5<>(pattern, (_1, _2, _3, _4, _5) -> supplier.get());
+    }
+
     public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(Pattern5<T, T1, T2, T3, T4, T5> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case5<>(pattern, (_1, _2, _3, _4, _5) -> retVal);
     }
+
+    // - Pattern6
 
     public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -703,11 +767,18 @@ public final class API {
         return new Case6<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case(Pattern6, Function6)}
+    public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, Supplier<? extends R> supplier) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new Case6<>(pattern, (_1, _2, _3, _4, _5, _6) -> supplier.get());
+    }
+
     public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case6<>(pattern, (_1, _2, _3, _4, _5, _6) -> retVal);
     }
+
+    // - Pattern7
 
     public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -715,11 +786,18 @@ public final class API {
         return new Case7<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case(Pattern7, Function7)}
+    public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, Supplier<? extends R> supplier) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new Case7<>(pattern, (_1, _2, _3, _4, _5, _6, _7) -> supplier.get());
+    }
+
     public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case7<>(pattern, (_1, _2, _3, _4, _5, _6, _7) -> retVal);
     }
+
+    // - Pattern8
 
     public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -727,7 +805,12 @@ public final class API {
         return new Case8<>(pattern, f);
     }
 
-    // syntactic sugar for {@link #Case(Pattern8, Function8)}
+    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, Supplier<? extends R> supplier) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new Case8<>(pattern, (_1, _2, _3, _4, _5, _6, _7, _8) -> supplier.get());
+    }
+
     public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case8<>(pattern, (_1, _2, _3, _4, _5, _6, _7, _8) -> retVal);
