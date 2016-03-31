@@ -973,7 +973,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         if (length <= 0) {
             return this;
         } else if (isEmpty()) {
-            return Stream.ofAll(Iterator.continually(element).take(length));
+            return Stream.continually(element).take(length);
         } else {
             return cons(head(), () -> tail().padTo(length - 1, element));
         }
@@ -984,7 +984,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         if (length <= actualLength) {
             return this;
         } else {
-            return Stream.ofAll(Iterator.continually(element).take(length - actualLength)).appendAll(this);
+            return Stream.continually(element).take(length - actualLength).appendAll(this);
         }
     }
 
