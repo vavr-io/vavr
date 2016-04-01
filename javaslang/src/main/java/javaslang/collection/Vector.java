@@ -768,19 +768,21 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> padTo(int length, T element) {
-        if (length <= length()) {
+        final int actualLength = length();
+        if (length <= actualLength) {
             return this;
         } else {
-            return appendAll(Iterator.continually(element).take(length - length()));
+            return appendAll(Iterator.continually(element).take(length - actualLength));
         }
     }
 
     @Override
     public Vector<T> leftPadTo(int length, T element) {
-        if (length <= length()) {
+        final int actualLength = length();
+        if (length <= actualLength) {
             return this;
         } else {
-            return prependAll(Iterator.continually(element).take(length - length()));
+            return prependAll(Iterator.continually(element).take(length - actualLength));
         }
     }
 

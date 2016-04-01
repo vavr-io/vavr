@@ -494,20 +494,24 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public CharSeq padTo(int length, Character element) {
-        if (length <= back.length()) {
+        final int actualLength = back.length();
+        if (length <= actualLength) {
             return this;
+        } else {
+            final StringBuilder sb = new StringBuilder(back).append(padding(element, length - actualLength));
+            return new CharSeq(sb.toString());
         }
-        final StringBuilder sb = new StringBuilder(back).append(padding(element, length - back.length()));
-        return new CharSeq(sb.toString());
     }
 
     @Override
     public CharSeq leftPadTo(int length, Character element) {
-        if (length <= back.length()) {
+        final int actualLength = back.length();
+        if (length <= actualLength) {
             return this;
+        } else {
+            final StringBuilder sb = padding(element, length - actualLength).append(back);
+            return new CharSeq(sb.toString());
         }
-        final StringBuilder sb = padding(element, length - back.length()).append(back);
-        return new CharSeq(sb.toString());
     }
 
     private static StringBuilder padding(Character element, int limit) {
