@@ -9,6 +9,7 @@ import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -63,6 +64,40 @@ public interface Arbitrary<T> {
     Gen<T> apply(int size);
 
     /**
+     * Returns an Arbitrary based on this Arbitrary which produces unique values.
+     *
+     * @return A new generator
+     */
+    default Arbitrary<T> distinct() {
+        return distinctBy(Function.identity());
+    }
+
+
+    /**
+     * Returns an Arbitrary based on this Arbitrary which produces unique values based on the given comparator.
+     *
+     * @param comparator A comparator
+     * @return A new generator
+     */
+    default Arbitrary<T> distinctBy(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        final java.util.Set<T> seen = new java.util.TreeSet<>(comparator);
+        return filter(seen::add);
+    }
+
+    /**
+     * Returns an Arbitrary based on this Arbitrary which produces unique values based on the given function.
+     *
+     * @param keyExtractor A function
+     * @return A new generator
+     */
+    default <U> Arbitrary<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
+        final java.util.Set<U> seen = new java.util.HashSet<>();
+        return filter(t -> seen.add(keyExtractor.apply(t)));
+    }
+
+    /**
      * Returns an Arbitrary based on this Arbitrary which produces values that fulfill the given predicate.
      *
      * @param predicate A predicate
@@ -84,6 +119,17 @@ public interface Arbitrary<T> {
             final Gen<T> gen = apply(size);
             return random -> mapper.apply(gen.apply(random)).apply(size).apply(random);
         };
+    }
+
+    /**
+     * Intersperses values from this arbitrary instance with those of another.
+     *
+     * @param other another T arbitrary to accept values from.
+     * @return A new T arbitrary
+     */
+    default Arbitrary<T> intersperse(Arbitrary<T> other) {
+        Objects.requireNonNull(other, "other is null");
+        return size -> this.apply(size).intersperse(other.apply(size));
     }
 
     /**
@@ -117,7 +163,30 @@ public interface Arbitrary<T> {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
-    
+
+    /**
+     * Generates an arbitrary value from a fixed set of values
+     *
+     * @param values A fixed set of values
+     * @param <U> Type of generator value
+     * @return A new generator
+     */
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    static <U> Arbitrary<U> fixed(U... values) {
+        return forAll(Gen.choose(values));
+    }
+
+    /**
+     * Generates an arbitrary value from a given generator
+     * @param generator A generator to produce arbitrary values
+     * @param <U> Type of generator value
+     * @return A new generator
+     */
+    static <U> Arbitrary<U> forAll(Gen<U> generator) {
+      return size -> generator;
+    }
+
     /**
      * Generates arbitrary integer values.
      *
