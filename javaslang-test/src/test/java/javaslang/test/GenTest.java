@@ -44,6 +44,14 @@ public class GenTest {
         assertThat(gen.apply(RANDOM)).isEqualTo(3);
     }
 
+    @Test
+    public void shouldCreateGenOfFixedValues() {
+        final Gen<Integer> gen = Gen.fixed(1,2,3);
+        assertThat(gen.apply(RANDOM)).isIn(1,2,3);
+        assertThat(gen.apply(RANDOM)).isIn(1,2,3);
+        assertThat(gen.apply(RANDOM)).isIn(1,2,3);
+    }
+
     // -- random number generator (rng)
 
     @Test
