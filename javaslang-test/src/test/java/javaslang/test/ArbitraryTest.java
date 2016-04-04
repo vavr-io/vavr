@@ -11,6 +11,7 @@ import javaslang.collection.List;
 import javaslang.collection.Stream;
 import org.junit.Test;
 
+import java.util.Comparator;
 import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -103,7 +104,7 @@ public class ArbitraryTest {
     }
 
     @Test
-    public void shouldCreateDistinctArbitrary() {
+    public void shouldCreateNonDistinctArbitrary() {
         final Gen<String> arbitrary = Arbitrary.string(Gen.choose('a', 'b')).apply(2);
 
         Stream.range(0, 100)
@@ -113,12 +114,32 @@ public class ArbitraryTest {
               .forEach((key, value) -> assertThat(value.length())
                   .describedAs(key)
                   .isGreaterThan(1));
+    }
+
+    @Test
+    public void shouldCreateDistinctArbitrary() {
 
         final Gen<String> distinctArbitrary = Arbitrary.string(Gen.choose('a', 'b')).distinct().apply(100);
 
         Stream.range(0, 10000)
               .toList()
               .map(i -> distinctArbitrary.apply(RANDOM))
+              .groupBy(Function1.identity())
+              .forEach((key, value) -> assertThat(value.length())
+                  .describedAs(key)
+                  .isEqualTo(1));
+
+    }
+
+    @Test
+    public void shouldCreateDistinctByArbitrary() {
+
+        final Gen<String> distinctByArbitrary = Arbitrary.string(Gen.choose('a', 'b'))
+                                                         .distinctBy(Comparator.naturalOrder()).apply(100);
+
+        Stream.range(0, 10000)
+              .toList()
+              .map(i -> distinctByArbitrary.apply(RANDOM))
               .groupBy(Function1.identity())
               .forEach((key, value) -> assertThat(value.length())
                   .describedAs(key)
