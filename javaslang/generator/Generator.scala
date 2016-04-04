@@ -721,9 +721,8 @@ def generateMainClasses(): Unit = {
                    *
                    ${(1 to j).gen(k => s"* @param t$k argument $k")("\n")}
                    * @return a partial application of this function
-                   * ${checked.gen("@throws Throwable if something goes wrong partially applying this function to the given arguments")}
                    */
-                  default $name${i - j}<$resultFunctionGenerics, R> apply($partialApplicationArgs)${checked.gen(" throws Throwable")} {
+                  default $name${i - j}<$resultFunctionGenerics, R> apply($partialApplicationArgs) {
                       return ($resultFunctionArgs) -> apply($fixedApplyArgs, $variableApplyArgs);
                   }
                 """
