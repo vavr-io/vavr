@@ -5,6 +5,7 @@
  */
 package javaslang.test;
 
+import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
@@ -99,6 +100,30 @@ public class ArbitraryTest {
         for (int i = 0; i < 100; i++) {
             assertThat(arbitrary.apply(RANDOM)).isIn("test", "content");
         }
+    }
+
+    @Test
+    public void shouldCreateDistinctArbitrary() {
+        final Gen<String> arbitrary = Arbitrary.string(Gen.choose('a', 'b')).apply(2);
+
+        Stream.range(0, 100)
+              .toList()
+              .map(i -> arbitrary.apply(RANDOM))
+              .groupBy(Function1.identity())
+              .forEach((key, value) -> assertThat(value.length())
+                  .describedAs(key)
+                  .isGreaterThan(1));
+
+        final Gen<String> distinctArbitrary = Arbitrary.string(Gen.choose('a', 'b')).distinct().apply(100);
+
+        Stream.range(0, 10000)
+              .toList()
+              .map(i -> distinctArbitrary.apply(RANDOM))
+              .groupBy(Function1.identity())
+              .forEach((key, value) -> assertThat(value.length())
+                  .describedAs(key)
+                  .isEqualTo(1));
+
     }
 
     @Test
