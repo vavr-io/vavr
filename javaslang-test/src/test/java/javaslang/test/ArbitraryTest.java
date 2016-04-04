@@ -94,6 +94,25 @@ public class ArbitraryTest {
     }
 
     @Test
+    public void shouldCreateFixedContentArbitrary() {
+        final Gen<String> arbitrary = Arbitrary.fixed("test", "content").apply(10);
+        for (int i = 0; i < 100; i++) {
+            assertThat(arbitrary.apply(RANDOM)).isIn("test", "content");
+        }
+    }
+
+    @Test
+    public void shouldCreateCharArrayArbitrary() {
+        final Gen<String> arbitrary = Arbitrary.string(Gen.choose("test".toCharArray()))
+                                               .filter(s -> !"".equals(s))
+                                               .apply(1);
+
+        for (int i = 0; i < 100; i++) {
+            assertThat(arbitrary.apply(RANDOM)).isIn("t", "e", "s");
+        }
+    }
+
+    @Test
     public void shouldCreateArbitraryStreamAndEvaluateAllElements() {
         final Arbitrary<Stream<Integer>> arbitrary = Arbitrary.stream(Arbitrary.integer());
         final Stream<Integer> actual = arbitrary.apply(10).apply(new Random() {
