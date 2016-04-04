@@ -102,6 +102,17 @@ public class ArbitraryTest {
     }
 
     @Test
+    public void shouldCreateInterspersedFixedContentArbitrary() {
+        final Gen<String> arbitrary = Arbitrary.fixed("test")
+                                               .intersperse(Arbitrary.fixed("content"))
+                                               .apply(10);
+
+        for (int i = 0; i < 100; i++) {
+            assertThat(arbitrary.apply(RANDOM)).isIn("test", "content");
+        }
+    }
+
+    @Test
     public void shouldCreateCharArrayArbitrary() {
         final Gen<String> arbitrary = Arbitrary.string(Gen.choose("test".toCharArray()))
                                                .filter(s -> !"".equals(s))
