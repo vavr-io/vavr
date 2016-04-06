@@ -18,7 +18,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <T1, T2> LinkedHashMap<T1, T2> emptyMap() {
+    protected <T1 extends Comparable<? super T1>, T2> LinkedHashMap<T1, T2> emptyMap() {
         return LinkedHashMap.empty();
     }
 
@@ -30,19 +30,19 @@ public class LinkedHashMapTest extends AbstractMapTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> LinkedHashMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
+    protected final <K extends Comparable<? super K>, V> LinkedHashMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
         return LinkedHashMap.ofEntries(entries);
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> LinkedHashMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+    protected final <K extends Comparable<? super K>, V> LinkedHashMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         return LinkedHashMap.ofEntries(entries);
     }
 
     @Override
-    protected <K, V> LinkedHashMap<K, V> mapOfPairs(Object... pairs) {
+    protected <K extends Comparable<? super K>, V> LinkedHashMap<K, V> mapOfPairs(Object... pairs) {
         return LinkedHashMap.of(pairs);
     }
 
@@ -52,12 +52,12 @@ public class LinkedHashMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <K, V> LinkedHashMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+    protected <K extends Comparable<? super K>, V> LinkedHashMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         return LinkedHashMap.tabulate(n, f);
     }
 
     @Override
-    protected <K, V> LinkedHashMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+    protected <K extends Comparable<? super K>, V> LinkedHashMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
         return LinkedHashMap.fill(n, s);
     }
 

@@ -29,8 +29,8 @@ public class TreeMapTest extends AbstractSortedMapTest {
     }
 
     @Override
-    protected <T1, T2> TreeMap<T1, T2> emptyMap() {
-        return TreeMap.empty(naturalComparator());
+    protected <T1 extends Comparable<? super T1>, T2> TreeMap<T1, T2> emptyMap() {
+        return TreeMap.empty();
     }
 
     @Override
@@ -51,20 +51,20 @@ public class TreeMapTest extends AbstractSortedMapTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> TreeMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
-        return TreeMap.ofEntries(naturalComparator(), entries);
+    protected final <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
+        return TreeMap.ofEntries(entries);
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> TreeMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        return TreeMap.ofEntries(naturalComparator(), entries);
+    protected final <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+        return TreeMap.ofEntries(entries);
     }
 
     @Override
-    protected <K, V> TreeMap<K, V> mapOfPairs(Object... pairs) {
-        return TreeMap.of(naturalComparator(), pairs);
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfPairs(Object... pairs) {
+        return TreeMap.of(pairs);
     }
 
     @Override
@@ -73,13 +73,13 @@ public class TreeMapTest extends AbstractSortedMapTest {
     }
 
     @Override
-    protected <K, V> TreeMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
-        return TreeMap.tabulate(toStringComparator(), n, f);
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+        return TreeMap.tabulate(n, f);
     }
 
     @Override
-    protected <K, V> TreeMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
-        return TreeMap.fill(toStringComparator(), n, s);
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+        return TreeMap.fill(n, s);
     }
 
     // -- static narrow
