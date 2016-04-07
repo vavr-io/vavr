@@ -61,31 +61,31 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
 
         public <K, V2 extends V> HashMultimap<K, V2> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V2>> entries) {
             Objects.requireNonNull(entries, "entries is null");
-            Multimap<K, V2> result = empty();
+            HashMultimap<K, V2> result = empty();
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
                 result = result.put(entry._1, entry._2);
             }
-            return (HashMultimap<K, V2>) result;
+            return result;
         }
 
         @SafeVarargs
         public final <K, V2 extends V> HashMultimap<K, V2> ofEntries(Tuple2<? extends K, ? extends V2>... entries) {
             Objects.requireNonNull(entries, "entries is null");
-            Multimap<K, V2> result = empty();
+            HashMultimap<K, V2> result = empty();
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
                 result = result.put(entry._1, entry._2);
             }
-            return (HashMultimap<K, V2>) result;
+            return result;
         }
 
         @SafeVarargs
         public final <K, V2 extends V> HashMultimap<K, V2> ofEntries(java.util.Map.Entry<? extends K, ? extends V2>... entries) {
             Objects.requireNonNull(entries, "entries is null");
-            Multimap<K, V2> result = empty();
+            HashMultimap<K, V2> result = empty();
             for (java.util.Map.Entry<? extends K, ? extends V2> entry : entries) {
                 result = result.put(entry.getKey(), entry.getValue());
             }
-            return (HashMultimap<K, V2>) result;
+            return result;
         }
 
         @SuppressWarnings("unchecked")
@@ -100,17 +100,27 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
             return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K, V2>>) s));
         }
 
+        public <K, V2 extends V> HashMultimap<K, V2> of(K key, V2 value) {
+            final HashMultimap<K, V2> e = empty();
+            return e.put(key, value);
+        }
+
+        public <K, V2 extends V> HashMultimap<K, V2> of(Tuple2<? extends K, ? extends V2> entry) {
+            final HashMultimap<K, V2> e = empty();
+            return e.put(entry._1, entry._2);
+        }
+
         @SuppressWarnings("unchecked")
         public <K, V2 extends V> HashMultimap<K, V2> of(Object... pairs) {
             Objects.requireNonNull(pairs, "pairs is null");
             if ((pairs.length & 1) != 0) {
                 throw new IllegalArgumentException("Odd length of key-value pairs list");
             }
-            Multimap<K, V2> result = empty();
+            HashMultimap<K, V2> result = empty();
             for (int i = 0; i < pairs.length; i += 2) {
                 result = result.put((K) pairs[i], (V2) pairs[i + 1]);
             }
-            return (HashMultimap<K, V2>) result;
+            return result;
         }
 
         public <K, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, Multimap<K, V2>> collector() {

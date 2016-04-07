@@ -88,8 +88,7 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
 
     @Override
     protected <K extends Comparable<K>, V> Multimap<K, V> mapOf(K key, V value) {
-        final Multimap<K, V> map = emptyMap();
-        return map.put(key, value);
+        return LinkedHashMultimap.withSeq().of(key, value);
     }
 
     @Override

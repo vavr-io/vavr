@@ -71,11 +71,11 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
         public <K, V2 extends V> TreeMultimap<K, V2> ofEntries(Comparator<? super K> keyComparator, Iterable<? extends Tuple2<? extends K, ? extends V2>> entries) {
             Objects.requireNonNull(keyComparator, "keyComparator is null");
             Objects.requireNonNull(entries, "entries is null");
-            Multimap<K, V2> result = empty(keyComparator);
+            TreeMultimap<K, V2> result = empty(keyComparator);
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
                 result = result.put(entry._1, entry._2);
             }
-            return (TreeMultimap<K, V2>) result;
+            return result;
         }
 
         @SuppressWarnings({ "unchecked", "varargs" })
@@ -89,11 +89,11 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
         public final <K, V2 extends V> TreeMultimap<K, V2> ofEntries(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V2>... entries) {
             Objects.requireNonNull(keyComparator, "keyComparator is null");
             Objects.requireNonNull(entries, "entries is null");
-            Multimap<K, V2> result = empty(keyComparator);
+            TreeMultimap<K, V2> result = empty(keyComparator);
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
                 result = result.put(entry._1, entry._2);
             }
-            return (TreeMultimap<K, V2>) result;
+            return result;
         }
 
         @SuppressWarnings({ "unchecked", "varargs" })
@@ -107,11 +107,11 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
         public final <K, V2 extends V> TreeMultimap<K, V2> ofEntries(Comparator<? super K> keyComparator, java.util.Map.Entry<? extends K, ? extends V2>... entries) {
             Objects.requireNonNull(keyComparator, "keyComparator is null");
             Objects.requireNonNull(entries, "entries is null");
-            Multimap<K, V2> result = empty(keyComparator);
+            TreeMultimap<K, V2> result = empty(keyComparator);
             for (java.util.Map.Entry<? extends K, ? extends V2> entry : entries) {
                 result = result.put(entry.getKey(), entry.getValue());
             }
-            return (TreeMultimap<K, V2>) result;
+            return result;
         }
 
         @SuppressWarnings("unchecked")
@@ -136,6 +136,24 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
             Objects.requireNonNull(keyComparator, "keyComparator is null");
             Objects.requireNonNull(s, "s is null");
             return ofEntries(keyComparator, Collections.fill(n, (Supplier<? extends Tuple2<K, V2>>) s));
+        }
+
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K key, V2 value) {
+            return of((Comparator<? super K> & Serializable) K::compareTo, key, value);
+        }
+
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(Tuple2<? extends K, ? extends V2> entry) {
+            return of((Comparator<? super K> & Serializable) K::compareTo, entry);
+        }
+
+        public <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, K key, V2 value) {
+            final TreeMultimap<K, V2> e = empty(keyComparator);
+            return e.put(key, value);
+        }
+
+        public <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V2> entry) {
+            final TreeMultimap<K, V2> e = empty(keyComparator);
+            return e.put(entry._1, entry._2);
         }
 
         @SuppressWarnings("unchecked")
