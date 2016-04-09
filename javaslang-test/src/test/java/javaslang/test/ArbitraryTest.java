@@ -7,6 +7,7 @@ package javaslang.test;
 
 import javaslang.Function1;
 import javaslang.Tuple;
+import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 import org.junit.Test;
@@ -156,6 +157,23 @@ public class ArbitraryTest {
         for (int i = 0; i < 100; i++) {
             assertThat(arbitrary.apply(RANDOM)).isIn("test", "content");
         }
+    }
+
+    @Test
+    public void shouldCreateInterspersedFixedContentArbitraryWithConstantOrder() {
+
+        final Gen<String> arbitrary = Arbitrary.of("test")
+                                               .intersperse(Arbitrary.of("content"))
+                                               .apply(10);
+
+        Iterator<Stream<String>> generatedStringPairss = Stream.range(0, 10)
+                                                               .map(i -> arbitrary.apply(RANDOM))
+                                                               .grouped(2);
+
+        for (Stream<String> stringPairs : generatedStringPairss) {
+            assertThat(stringPairs.mkString(",")).isEqualTo("test,content");
+        }
+
     }
 
     @Test

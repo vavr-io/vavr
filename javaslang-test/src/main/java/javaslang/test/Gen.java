@@ -299,7 +299,7 @@ public interface Gen<T> {
    */
     default Gen<T> intersperse(Gen<T> other) {
         java.util.Iterator<Gen<T>> iter = new java.util.Iterator<Gen<T>>() {
-            boolean genSwitch = true;
+            boolean genSwitch = false;
 
             @Override
             public boolean hasNext() {
