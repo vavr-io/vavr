@@ -18,7 +18,7 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
-    protected <T1, T2> Multimap<T1, T2> emptyMap() {
+    protected <T1 extends Comparable<T1>, T2> Multimap<T1, T2> emptyMap() {
         switch (containerType) {
             case SEQ:
                 return LinkedHashMultimap.withSeq().empty();
@@ -46,7 +46,7 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> Multimap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
+    protected final <K extends Comparable<K>, V> Multimap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
         switch (containerType) {
             case SEQ:
                 return LinkedHashMultimap.withSeq().ofEntries(entries);
@@ -61,7 +61,7 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> Multimap<K, V> mapOfEntries(Map.Entry<? extends K, ? extends V>... entries) {
+    protected final <K extends Comparable<K>, V> Multimap<K, V> mapOfEntries(Map.Entry<? extends K, ? extends V>... entries) {
         switch (containerType) {
             case SEQ:
                 return LinkedHashMultimap.withSeq().ofEntries(entries);
@@ -74,7 +74,7 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
-    protected <K, V> Multimap<K, V> mapOfPairs(Object... pairs) {
+    protected <K extends Comparable<K>, V> Multimap<K, V> mapOfPairs(Object... pairs) {
         switch (containerType) {
             case SEQ:
                 return LinkedHashMultimap.withSeq().of(pairs);
@@ -87,13 +87,12 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
-    protected <K, V> Multimap<K, V> mapOf(K key, V value) {
-        final Multimap<K, V> map = emptyMap();
-        return map.put(key, value);
+    protected <K extends Comparable<K>, V> Multimap<K, V> mapOf(K key, V value) {
+        return LinkedHashMultimap.withSeq().of(key, value);
     }
 
     @Override
-    protected <K, V> Multimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+    protected <K extends Comparable<K>, V> Multimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         switch (containerType) {
             case SEQ:
                 return LinkedHashMultimap.withSeq().tabulate(n, f);
@@ -106,7 +105,7 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
-    protected <K, V> Multimap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+    protected <K extends Comparable<K>, V> Multimap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
         switch (containerType) {
             case SEQ:
                 return LinkedHashMultimap.withSeq().fill(n, s);

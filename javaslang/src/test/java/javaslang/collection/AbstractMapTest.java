@@ -120,7 +120,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     abstract protected String className();
 
-    abstract protected <T1, T2> Map<T1, T2> emptyMap();
+    abstract protected <T1 extends Comparable<? super T1>, T2> Map<T1, T2> emptyMap();
 
     protected boolean emptyMapShouldBeSingleton() {
         return true;
@@ -129,18 +129,18 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     abstract protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector();
 
     @SuppressWarnings("unchecked")
-    abstract protected <K, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries);
+    abstract protected <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries);
 
     @SuppressWarnings("unchecked")
-    abstract protected <K, V> Map<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries);
+    abstract protected <K extends Comparable<? super K>, V> Map<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries);
 
-    abstract protected <K, V> Map<K, V> mapOfPairs(Object... pairs);
+    abstract protected <K extends Comparable<? super K>, V> Map<K, V> mapOfPairs(Object... pairs);
 
     abstract protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value);
 
-    abstract protected <K, V> Map<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f);
+    abstract protected <K extends Comparable<? super K>, V> Map<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f);
 
-    abstract protected <K, V> Map<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s);
+    abstract protected <K extends Comparable<? super K>, V> Map<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s);
 
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
@@ -246,7 +246,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldBeTheSame() {
-        assertThat(mapOf(1, 2)).isEqualTo(emptyMap().put(1, 2));
+        assertThat(mapOf(1, 2)).isEqualTo(emptyInt().put(1, 2));
     }
 
     private static java.util.Map.Entry<String, Integer> entry(String key, Integer value) {
@@ -257,13 +257,13 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldConstructFromEntries() {
         Map<String, Integer> map = mapOfEntries(entry("1", 1), entry("2", 2), entry("3", 3));
-        assertThat(map).isEqualTo(emptyMap().put("1", 1).put("2", 2).put("3", 3));
+        assertThat(map).isEqualTo(this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3));
     }
 
     @Test
     public void shouldConstructFromPairs() {
         Map<String, Integer> map = mapOfPairs("1", 1, "2", 2, "3", 3);
-        assertThat(map).isEqualTo(emptyMap().put("1", 1).put("2", 2).put("3", 3));
+        assertThat(map).isEqualTo(this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -276,33 +276,33 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldMakeString() {
         assertThat(emptyMap().toString()).isEqualTo(className() + "()");
-        assertThat(emptyMap().put(1, 2).toString()).isEqualTo(className() + "(" + Tuple.of(1, 2) + ")");
+        assertThat(emptyInt().put(1, 2).toString()).isEqualTo(className() + "(" + Tuple.of(1, 2) + ")");
     }
 
     // -- apply
 
     @Test
     public void shouldApplyExistingKey() {
-        assertThat(emptyMap().put(1, 2).apply(1)).isEqualTo(2);
+        assertThat(emptyInt().put(1, 2).apply(1)).isEqualTo(2);
     }
 
     @Test(expected = NoSuchElementException.class)
     public void shouldApplyNonExistingKey() {
-        emptyMap().put(1, 2).apply(3);
+        emptyInt().put(1, 2).apply(3);
     }
 
     // -- contains
 
     @Test
     public void shouldFindKey() {
-        assertThat(emptyMap().put(1, 2).containsKey(1)).isTrue();
-        assertThat(emptyMap().put(1, 2).containsKey(2)).isFalse();
+        assertThat(emptyInt().put(1, 2).containsKey(1)).isTrue();
+        assertThat(emptyInt().put(1, 2).containsKey(2)).isFalse();
     }
 
     @Test
     public void shouldFindValue() {
-        assertThat(emptyMap().put(1, 2).containsValue(2)).isTrue();
-        assertThat(emptyMap().put(1, 2).containsValue(1)).isFalse();
+        assertThat(emptyInt().put(1, 2).containsValue(2)).isTrue();
+        assertThat(emptyInt().put(1, 2).containsValue(1)).isFalse();
     }
 
     @Test
@@ -375,12 +375,12 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldReturnTuple2SetOfANonEmptyMap() {
-        assertThat(emptyMap().put(1, "1").put(2, "2").toSet()).isEqualTo(HashSet.of(Tuple.of(1, "1"), Tuple.of(2, "2")));
+        assertThat(emptyInt().put(1, "1").put(2, "2").toSet()).isEqualTo(HashSet.of(Tuple.of(1, "1"), Tuple.of(2, "2")));
     }
 
     @Test
     public void shouldReturnModifiedValuesMap() {
-        assertThat(emptyIntString().put(1, "1").put(2, "2").mapValues(Integer::parseInt)).isEqualTo(emptyMap().put(1, 1).put(2, 2));
+        assertThat(emptyIntString().put(1, "1").put(2, "2").mapValues(Integer::parseInt)).isEqualTo(emptyInt().put(1, 1).put(2, 2));
     }
 
     @Test
@@ -416,8 +416,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldIgnoreOrderOfEntriesWhenComparingForEquality() {
-        final Map<?, ?> map1 = emptyMap().put(1, 'a').put(2, 'b').put(3, 'c');
-        final Map<?, ?> map2 = emptyMap().put(3, 'c').put(2, 'b').put(1, 'a').remove(2).put(2, 'b');
+        final Map<?, ?> map1 = emptyInt().put(1, 'a').put(2, 'b').put(3, 'c');
+        final Map<?, ?> map2 = emptyInt().put(3, 'c').put(2, 'b').put(1, 'a').remove(2).put(2, 'b');
         assertThat(map1).isEqualTo(map2);
     }
 
@@ -433,7 +433,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldRemoveKey() {
         Map<Integer, Object> src = emptyInt().put(1, 'a').put(2, 'b').put(3, 'c');
-        assertThat(src.remove(2)).isEqualTo(emptyMap().put(1, 'a').put(3, 'c'));
+        assertThat(src.remove(2)).isEqualTo(emptyInt().put(1, 'a').put(3, 'c'));
         assertThat(src.remove(33)).isSameAs(src);
     }
 
@@ -442,7 +442,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldRemoveAllKeys() {
         Map<Integer, Object> src = emptyInt().put(1, 'a').put(2, 'b').put(3, 'c');
-        assertThat(src.removeAll(List.of(1, 3))).isEqualTo(emptyMap().put(2, 'b'));
+        assertThat(src.removeAll(List.of(1, 3))).isEqualTo(emptyInt().put(2, 'b'));
         assertThat(src.removeAll(List.of(33))).isSameAs(src);
         assertThat(src.removeAll(List.empty())).isSameAs(src);
     }
@@ -491,13 +491,13 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipNils() {
-        final Seq<Tuple2<Tuple2<Object, Object>, Object>> actual = emptyMap().zip(List.empty());
+        final Seq<Tuple2<Tuple2<Integer, Object>, Object>> actual = emptyInt().zip(List.empty());
         assertThat(actual).isEqualTo(Stream.empty());
     }
 
     @Test
     public void shouldZipEmptyAndNonNil() {
-        final Seq<Tuple2<Tuple2<Object, Object>, Integer>> actual = emptyMap().zip(List.of(1));
+        final Seq<Tuple2<Tuple2<Integer, Object>, Integer>> actual = emptyInt().zip(List.of(1));
         assertThat(actual).isEqualTo(Stream.empty());
     }
 
@@ -564,25 +564,25 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipAllNils() {
-        final Seq<Tuple2<Tuple2<Object, Object>, Object>> actual = emptyMap().zipAll(empty(), null, null);
+        final Seq<Tuple2<Tuple2<Integer, Object>, Object>> actual = emptyInt().zipAll(empty(), null, null);
         assertThat(actual).isEqualTo(Stream.empty());
     }
 
     @Test
     public void shouldZipAllEmptyAndNonNil() {
-        final Seq<Tuple2<Tuple2<Object, Object>, Object>> actual = emptyMap().zipAll(List.of(1), null, null);
+        final Seq<Tuple2<Tuple2<Integer, Object>, Object>> actual = emptyInt().zipAll(List.of(1), null, null);
         assertThat(actual).isEqualTo(Stream.of(Tuple.of(null, 1)));
     }
 
     @Test
     public void shouldZipAllNonEmptyAndNil() {
-        final Seq<Tuple2<Tuple2<Object, Object>, Object>> actual = emptyMap().put(0, 1).zipAll(empty(), null, null);
+        final Seq<Tuple2<Tuple2<Integer, Object>, Object>> actual = emptyInt().put(0, 1).zipAll(empty(), null, null);
         assertThat(actual).isEqualTo(Stream.of(Tuple.of(Tuple.of(0, 1), null)));
     }
 
     @Test
     public void shouldZipAllNonNilsIfThisIsSmaller() {
-        final Seq<Tuple2<Tuple2<Object, Object>, String>> actual = emptyMap()
+        final Seq<Tuple2<Tuple2<Integer, Integer>, String>> actual = emptyIntInt()
                 .put(1, 1)
                 .put(2, 2)
                 .zipAll(of("a", "b", "c"), Tuple.of(9, 10), "z");
@@ -593,7 +593,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipAllNonNilsIfThisIsMoreSmaller() {
-        final Seq<Tuple2<Tuple2<Object, Object>, String>> actual = emptyMap()
+        final Seq<Tuple2<Tuple2<Integer, Integer>, String>> actual = emptyIntInt()
                 .put(1, 1)
                 .put(2, 2)
                 .zipAll(of("a", "b", "c", "d"), Tuple.of(9, 10), "z");
@@ -604,7 +604,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipAllNonNilsIfThatIsSmaller() {
-        final Seq<Tuple2<Tuple2<Object, Object>, String>> actual = emptyMap()
+        final Seq<Tuple2<Tuple2<Integer, Integer>, String>> actual = emptyIntInt()
                 .put(1, 1)
                 .put(2, 2)
                 .put(3, 3)
@@ -616,7 +616,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipAllNonNilsIfThatIsMoreSmaller() {
-        final Seq<Tuple2<Tuple2<Object, Object>, String>> actual = emptyMap()
+        final Seq<Tuple2<Tuple2<Integer, Integer>, String>> actual = emptyIntInt()
                 .put(1, 1)
                 .put(2, 2)
                 .put(3, 3)
@@ -629,7 +629,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipAllNonNilsOfSameSize() {
-        final Seq<Tuple2<Tuple2<Object, Object>, String>> actual = emptyMap()
+        final Seq<Tuple2<Tuple2<Integer, Integer>, String>> actual = emptyIntInt()
                 .put(1, 1)
                 .put(2, 2)
                 .put(3, 3)
@@ -648,7 +648,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Override
     public void shouldComputeDistinctOfNonEmptyTraversable() {
-        final Map<Object, Object> testee = emptyMap().put(1, 1).put(2, 2).put(3, 3);
+        final Map<Integer, Object> testee = emptyInt().put(1, 1).put(2, 2).put(3, 3);
         assertThat(testee.distinct()).isEqualTo(testee);
     }
 
@@ -697,7 +697,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldTabulateTheSeq() {
         Function<Number, Tuple2<Long, Float>> f = i -> new Tuple2<>(i.longValue(), i.floatValue());
-        Map<Number, Number> map = mapTabulate(3, f);
+        Map<Long, Float> map = mapTabulate(3, f);
         assertThat(map).isEqualTo(mapOfTuples(new Tuple2<>(0l, 0f), new Tuple2<>(1l, 1f), new Tuple2<>(2l, 2f)));
     }
 
@@ -706,7 +706,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldTabulateTheSeqCallingTheFunctionInTheRightOrder() {
         java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 0, 1, 1, 2, 2));
         Function<Integer, Tuple2<Long, Float>> f = i -> new Tuple2<>(ints.remove().longValue(), ints.remove().floatValue());
-        Map<Number, Number> map = mapTabulate(3, f);
+        Map<Long, Float> map = mapTabulate(3, f);
         assertThat(map).isEqualTo(mapOfTuples(new Tuple2<>(0l, 0f), new Tuple2<>(1l, 1f), new Tuple2<>(2l, 2f)));
     }
 
@@ -725,7 +725,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldFillTheSeqCallingTheSupplierInTheRightOrder() {
         java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 0, 1, 1, 2, 2));
         Supplier<Tuple2<Long, Float>> s = () -> new Tuple2<>(ints.remove().longValue(), ints.remove().floatValue());
-        Map<Number, Number> actual = mapFill(3, s);
+        Map<Long, Float> actual = mapFill(3, s);
         assertThat(actual).isEqualTo(mapOfTuples(new Tuple2<>(0l, 0f), new Tuple2<>(1l, 1f), new Tuple2<>(2l, 2f)));
     }
 

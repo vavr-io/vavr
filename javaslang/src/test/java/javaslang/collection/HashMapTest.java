@@ -22,7 +22,7 @@ public class HashMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <T1, T2> HashMap<T1, T2> emptyMap() {
+    protected <T1 extends Comparable<? super T1>, T2> Map<T1, T2> emptyMap() {
         return HashMap.empty();
     }
 
@@ -34,19 +34,19 @@ public class HashMapTest extends AbstractMapTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> HashMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
+    protected final <K extends Comparable<? super K>, V> HashMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
         return HashMap.ofEntries(entries);
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K, V> HashMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+    protected final <K extends Comparable<? super K>, V> HashMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         return HashMap.ofEntries(entries);
     }
 
     @Override
-    protected <K, V> HashMap<K, V> mapOfPairs(Object... pairs) {
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOfPairs(Object... pairs) {
         return HashMap.of(pairs);
     }
 
@@ -57,12 +57,12 @@ public class HashMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <K, V> HashMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         return HashMap.tabulate(n, f);
     }
 
     @Override
-    protected <K, V> HashMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
         return HashMap.fill(n, s);
     }
 
