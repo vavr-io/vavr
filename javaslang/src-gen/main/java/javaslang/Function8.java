@@ -125,7 +125,6 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
      *
      * @param t1 argument 1
      * @return a partial application of this function
-     * 
      */
     default Function7<T2, T3, T4, T5, T6, T7, T8, R> apply(T1 t1) {
         return (T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
@@ -137,7 +136,6 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
      * @param t1 argument 1
      * @param t2 argument 2
      * @return a partial application of this function
-     * 
      */
     default Function6<T3, T4, T5, T6, T7, T8, R> apply(T1 t1, T2 t2) {
         return (T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
@@ -150,7 +148,6 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
      * @param t2 argument 2
      * @param t3 argument 3
      * @return a partial application of this function
-     * 
      */
     default Function5<T4, T5, T6, T7, T8, R> apply(T1 t1, T2 t2, T3 t3) {
         return (T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
@@ -164,7 +161,6 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
      * @param t3 argument 3
      * @param t4 argument 4
      * @return a partial application of this function
-     * 
      */
     default Function4<T5, T6, T7, T8, R> apply(T1 t1, T2 t2, T3 t3, T4 t4) {
         return (T5 t5, T6 t6, T7 t7, T8 t8) -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
@@ -179,7 +175,6 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
      * @param t4 argument 4
      * @param t5 argument 5
      * @return a partial application of this function
-     * 
      */
     default Function3<T6, T7, T8, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) {
         return (T6 t6, T7 t7, T8 t8) -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
@@ -195,7 +190,6 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
      * @param t5 argument 5
      * @param t6 argument 6
      * @return a partial application of this function
-     * 
      */
     default Function2<T7, T8, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) {
         return (T7 t7, T8 t8) -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
@@ -212,7 +206,6 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
      * @param t6 argument 6
      * @param t7 argument 7
      * @return a partial application of this function
-     * 
      */
     default Function1<T8, R> apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) {
         return (T8 t8) -> apply(t1, t2, t3, t4, t5, t6, t7, t8);

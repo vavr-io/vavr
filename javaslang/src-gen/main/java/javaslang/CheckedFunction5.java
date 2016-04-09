@@ -112,9 +112,8 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends λ<R> {
      *
      * @param t1 argument 1
      * @return a partial application of this function
-     * @throws Throwable if something goes wrong partially applying this function to the given arguments
      */
-    default CheckedFunction4<T2, T3, T4, T5, R> apply(T1 t1) throws Throwable {
+    default CheckedFunction4<T2, T3, T4, T5, R> apply(T1 t1) {
         return (T2 t2, T3 t3, T4 t4, T5 t5) -> apply(t1, t2, t3, t4, t5);
     }
 
@@ -124,9 +123,8 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends λ<R> {
      * @param t1 argument 1
      * @param t2 argument 2
      * @return a partial application of this function
-     * @throws Throwable if something goes wrong partially applying this function to the given arguments
      */
-    default CheckedFunction3<T3, T4, T5, R> apply(T1 t1, T2 t2) throws Throwable {
+    default CheckedFunction3<T3, T4, T5, R> apply(T1 t1, T2 t2) {
         return (T3 t3, T4 t4, T5 t5) -> apply(t1, t2, t3, t4, t5);
     }
 
@@ -137,9 +135,8 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends λ<R> {
      * @param t2 argument 2
      * @param t3 argument 3
      * @return a partial application of this function
-     * @throws Throwable if something goes wrong partially applying this function to the given arguments
      */
-    default CheckedFunction2<T4, T5, R> apply(T1 t1, T2 t2, T3 t3) throws Throwable {
+    default CheckedFunction2<T4, T5, R> apply(T1 t1, T2 t2, T3 t3) {
         return (T4 t4, T5 t5) -> apply(t1, t2, t3, t4, t5);
     }
 
@@ -151,9 +148,8 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends λ<R> {
      * @param t3 argument 3
      * @param t4 argument 4
      * @return a partial application of this function
-     * @throws Throwable if something goes wrong partially applying this function to the given arguments
      */
-    default CheckedFunction1<T5, R> apply(T1 t1, T2 t2, T3 t3, T4 t4) throws Throwable {
+    default CheckedFunction1<T5, R> apply(T1 t1, T2 t2, T3 t3, T4 t4) {
         return (T5 t5) -> apply(t1, t2, t3, t4, t5);
     }
 
