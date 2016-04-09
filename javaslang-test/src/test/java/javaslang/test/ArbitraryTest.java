@@ -97,7 +97,7 @@ public class ArbitraryTest {
 
     @Test
     public void shouldCreateFixedContentArbitrary() {
-        final Gen<String> arbitrary = Arbitrary.fixed("test", "content").apply(10);
+        final Gen<String> arbitrary = Arbitrary.of("test", "content").apply(10);
         for (int i = 0; i < 100; i++) {
             assertThat(arbitrary.apply(RANDOM)).isIn("test", "content");
         }
@@ -149,8 +149,8 @@ public class ArbitraryTest {
 
     @Test
     public void shouldCreateInterspersedFixedContentArbitrary() {
-        final Gen<String> arbitrary = Arbitrary.fixed("test")
-                                               .intersperse(Arbitrary.fixed("content"))
+        final Gen<String> arbitrary = Arbitrary.of("test")
+                                               .intersperse(Arbitrary.of("content"))
                                                .apply(10);
 
         for (int i = 0; i < 100; i++) {

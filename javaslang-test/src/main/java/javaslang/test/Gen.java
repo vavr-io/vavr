@@ -5,7 +5,6 @@
  */
 package javaslang.test;
 
-import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -13,7 +12,6 @@ import javaslang.collection.Stream;
 
 import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -300,8 +298,20 @@ public interface Gen<T> {
    * @return A new T generator
    */
     default Gen<T> intersperse(Gen<T> other) {
-        AtomicReference<Tuple2<Gen<T>, Gen<T>>> interspersedReference = new AtomicReference<>(Tuple.of(other, this));
-        return random -> interspersedReference.updateAndGet(generators -> Tuple.of(generators._2, generators._1))._1.apply(random);
+        java.util.Iterator<Gen<T>> iter = new java.util.Iterator<Gen<T>>() {
+            boolean genSwitch = true;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Gen<T> next() {
+                return (genSwitch = !genSwitch) ? Gen.this : other;
+            }
+        };
+        return random -> iter.next().apply(random);
     }
 
     /**

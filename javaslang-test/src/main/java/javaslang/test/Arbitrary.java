@@ -173,8 +173,8 @@ public interface Arbitrary<T> {
      */
     @SafeVarargs
     @SuppressWarnings("varargs")
-    static <U> Arbitrary<U> fixed(U... values) {
-        return forAll(Gen.choose(values));
+    static <U> Arbitrary<U> of(U... values) {
+        return ofAll(Gen.choose(values));
     }
 
     /**
@@ -183,7 +183,7 @@ public interface Arbitrary<T> {
      * @param <U> Type of generator value
      * @return A new generator
      */
-    static <U> Arbitrary<U> forAll(Gen<U> generator) {
+    static <U> Arbitrary<U> ofAll(Gen<U> generator) {
       return size -> generator;
     }
 
