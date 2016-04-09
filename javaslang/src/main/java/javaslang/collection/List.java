@@ -783,10 +783,21 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> padTo(int length, T element) {
-        if (length <= length()) {
+        final int actualLength = length();
+        if (length <= actualLength) {
             return this;
         } else {
-            return appendAll(Iterator.continually(element).take(length - length()));
+            return appendAll(Iterator.continually(element).take(length - actualLength));
+        }
+    }
+
+    @Override
+    default List<T> leftPadTo(int length, T element) {
+        final int actualLength = length();
+        if (length <= actualLength) {
+            return this;
+        } else {
+            return prependAll(Iterator.continually(element).take(length - actualLength));
         }
     }
 

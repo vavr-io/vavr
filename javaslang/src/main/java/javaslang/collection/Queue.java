@@ -840,10 +840,22 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
 
     @Override
     public Queue<T> padTo(int length, T element) {
-        if (length <= length()) {
+        final int actualLength = length();
+        if (length <= actualLength) {
             return this;
+        } else {
+            return toList().padTo(length, element).toQueue();
         }
-        return toList().padTo(length, element).toQueue();
+    }
+
+    @Override
+    public Queue<T> leftPadTo(int length, T element) {
+        final int actualLength = length();
+        if (length <= actualLength) {
+            return this;
+        } else {
+            return toList().leftPadTo(length, element).toQueue();
+        }
     }
 
     @Override

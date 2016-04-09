@@ -765,10 +765,21 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public Array<T> padTo(int length, T element) {
-        if (length <= length()) {
+        final int actualLength = length();
+        if (length <= actualLength) {
             return this;
         } else {
-            return appendAll(Iterator.continually(element).take(length - length()));
+            return appendAll(Iterator.continually(element).take(length - actualLength));
+        }
+    }
+
+    @Override
+    public Array<T> leftPadTo(int length, T element) {
+        final int actualLength = length();
+        if (length <= actualLength) {
+            return this;
+        } else {
+            return prependAll(Iterator.continually(element).take(length - actualLength));
         }
     }
 
