@@ -243,6 +243,18 @@ public class TreeTest extends AbstractTraversableTest {
     public void shouldNotGetValueOfNonNil() {
         assertThat(tree.getValue()).isEqualTo(1);
     }
+    
+    // -- size
+
+    @Test
+    public void shouldCalculateSizeOfALeaf() {
+        assertThat($(0).size()).isEqualTo(1);
+    }
+    
+    @Test
+    public void shouldCalculateSizeOfNestedNodes() {
+        assertThat(tree.size()).isEqualTo(9);
+    }
 
     // -- isEmpty
 
@@ -259,7 +271,7 @@ public class TreeTest extends AbstractTraversableTest {
     // -- isLeaf
 
     @Test
-    public void shouldIdentifiyLeafAsLeaf() {
+    public void shouldIdentifyLeafAsLeaf() {
         assertThat($(0).isLeaf()).isTrue();
     }
 
@@ -269,14 +281,14 @@ public class TreeTest extends AbstractTraversableTest {
     }
 
     @Test
-    public void shouldIdentifiyNilAsNonLeaf() {
+    public void shouldIdentifyNilAsNonLeaf() {
         assertThat(Tree.empty().isLeaf()).isFalse();
     }
 
     // -- isBranch
 
     @Test
-    public void shouldIdentifiyLeafAsNonBranch() {
+    public void shouldIdentifyLeafAsNonBranch() {
         assertThat($(0).isBranch()).isFalse();
     }
 
@@ -286,7 +298,7 @@ public class TreeTest extends AbstractTraversableTest {
     }
 
     @Test
-    public void shouldIdentifiyNilAsNonBranch() {
+    public void shouldIdentifyNilAsNonBranch() {
         assertThat(Tree.empty().isBranch()).isFalse();
     }
 
@@ -312,7 +324,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     // -- branchCount
 
-    @Test
+    @Test   
     public void shouldCountBranchesOfNil() {
         assertThat(Tree.empty().branchCount()).isEqualTo(0);
     }
