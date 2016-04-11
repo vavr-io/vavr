@@ -2130,15 +2130,18 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see java.util.regex.Pattern
      */
-    public CharSeq[] split(String regex, int limit) {
+    public IndexedSeq<CharSeq> split(String regex, int limit) {
         final String[] javaStrings = back.split(regex, limit);
-        final CharSeq[] strings = new CharSeq[javaStrings.length];
-        for (int i = 0; i < strings.length; i++) {
-            strings[i] = of(javaStrings[i]);
-        }
-        return strings;
-    }
+        final IndexedSeq<CharSeq> result = Vector.empty();
 
+
+        for (int i = 0; i < javaStrings.length; i++) {
+            result.append(CharSeq.of(javaStrings[i]));
+
+        }
+
+        return result;
+    }
     /**
      * Splits this string around matches of the given <a
      * href="../util/regex/Pattern.html#sum">regular expression</a>.
@@ -2168,7 +2171,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see java.util.regex.Pattern
      */
-    public CharSeq[] split(String regex) {
+    public IndexedSeq<CharSeq> split(String regex) {
         return split(regex, 0);
     }
 
