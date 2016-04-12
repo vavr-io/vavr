@@ -2125,7 +2125,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      *
      * @param regex the delimiting regular expression
      * @param limit the result threshold, as described above
-     * @return the array of strings computed by splitting this string
+     * @return a sequence of CharSeq computed by splitting this string
      * around matches of the given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see java.util.regex.Pattern
@@ -2146,7 +2146,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * <p> This method works as if by invoking the two-argument {@link
      * #split(String, int) split} method with the given expression and a limit
      * argument of zero.  Trailing empty strings are therefore not included in
-     * the resulting array.
+     * the resulting {@link javaslang.collection.Seq}.
      *
      * <p> The string {@code "boo:and:foo"}, for example, yields the following
      * results with these expressions:
@@ -2163,7 +2163,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * </table></blockquote>
      *
      * @param regex the delimiting regular expression
-     * @return the array of strings computed by splitting this string
+     * @return a sequence of CharSeq computed by splitting this string
      * around matches of the given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see java.util.regex.Pattern
