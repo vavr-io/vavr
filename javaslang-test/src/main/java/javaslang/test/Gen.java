@@ -7,6 +7,7 @@ package javaslang.test;
 
 import javaslang.Tuple2;
 import javaslang.collection.Iterator;
+import javaslang.collection.List;
 import javaslang.collection.Stream;
 
 import java.util.Objects;
@@ -160,6 +161,18 @@ public interface Gen<T> {
     }
 
     /**
+     * Chooses a char from all chars in the array
+     *
+     * @param characters array with the characters to choose from
+     * @return A new array generator
+     */
+    static Gen<Character> choose(char[] characters) {
+        Objects.requireNonNull(characters, "characters is null");
+        Character[] validCharacters = List.ofAll(characters).toJavaArray(Character.class);
+        return choose(validCharacters);
+    }
+
+    /**
      * Chooses an enum value from all the enum constants defined in the enumerated type.
      *
      * @param clazz Enum class
@@ -178,7 +191,9 @@ public interface Gen<T> {
      * @param <T>    value type
      * @return A new array generator
      */
-    static <T> Gen<T> choose(T[] values) {
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    static <T> Gen<T> choose(T... values) {
         Objects.requireNonNull(values, "values is null");
         if (values.length == 0) {
             return Gen.fail("Empty array");
@@ -186,7 +201,6 @@ public interface Gen<T> {
             return random -> Gen.choose(0, values.length - 1).map(i -> values[i]).apply(random);
         }
     }
-
 
     /**
      * Chooses a value from all values in the iterable
@@ -275,6 +289,29 @@ public interface Gen<T> {
         }
         final int size = stream.map(t -> t._1).sum().intValue();
         return choose(1, size).flatMap(n -> new Frequency().gen(n, stream));
+    }
+
+  /**
+   * Intersperse values from this generator instance with those of another.
+   *
+   * @param other another T generator to accept values from.
+   * @return A new T generator
+   */
+    default Gen<T> intersperse(Gen<T> other) {
+        java.util.Iterator<Gen<T>> iter = new java.util.Iterator<Gen<T>>() {
+            boolean genSwitch = false;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Gen<T> next() {
+                return (genSwitch = !genSwitch) ? Gen.this : other;
+            }
+        };
+        return random -> iter.next().apply(random);
     }
 
     /**
