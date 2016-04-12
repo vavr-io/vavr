@@ -2132,16 +2132,13 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      */
     public Seq<CharSeq> split(String regex, int limit) {
         final String[] javaStrings = back.split(regex, limit);
-        final IndexedSeq<CharSeq> result = Vector.empty();
-
-
-        for (int i = 0; i < javaStrings.length; i++) {
-            result.append(CharSeq.of(javaStrings[i]));
-
+        final CharSeq[] strings = new CharSeq[javaStrings.length];
+        for (int i = 0; i < strings.length; i++) {
+            strings[i] = of(javaStrings[i]);
         }
-
-        return result;
+        return Vector.of(strings);
     }
+
     /**
      * Splits this string around matches of the given <a
      * href="../util/regex/Pattern.html#sum">regular expression</a>.
