@@ -2125,7 +2125,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      *
      * @param regex the delimiting regular expression
      * @param limit the result threshold, as described above
-     * @return a sequence of CharSeq computed by splitting this string
+     * @return  the Seq of strings computed by splitting this string
      * around matches of the given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see java.util.regex.Pattern
@@ -2163,7 +2163,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * </table></blockquote>
      *
      * @param regex the delimiting regular expression
-     * @return a sequence of CharSeq computed by splitting this string
+     * @return  the Seq of strings computed by splitting this string
      * around matches of the given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see java.util.regex.Pattern
