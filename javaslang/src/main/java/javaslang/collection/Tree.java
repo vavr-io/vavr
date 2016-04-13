@@ -11,12 +11,32 @@ import javaslang.Tuple3;
 import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.Empty;
 import javaslang.collection.Tree.Node;
-import javaslang.collection.TreeModule.*;
+import javaslang.collection.TreeModule.FlatMap;
+import javaslang.collection.TreeModule.Replace;
+import javaslang.collection.TreeModule.Traversal;
+import javaslang.collection.TreeModule.Unzip;
+import javaslang.collection.TreeModule.Zip;
+import javaslang.collection.TreeModule.ZipAll;
 import javaslang.control.Option;
 
-import java.io.*;
-import java.util.*;
-import java.util.function.*;
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static javaslang.collection.Tree.Order.PRE_ORDER;
@@ -26,6 +46,7 @@ import static javaslang.collection.Tree.Order.PRE_ORDER;
  *
  * @param <T> component type of this Tree
  * @author Daniel Dietrich
+ * @author Grzegorz Piwowarek
  * @since 1.1.0
  */
 public interface Tree<T> extends Traversable<T> {
@@ -222,13 +243,6 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     /**
-     * Returns the number of nodes (including root and leafs).
-     *
-     * @return The size of the tree.
-     */
-    int size();
-
-    /**
      * Transforms this {@code Tree}.
      *
      * @param f   A transformation
@@ -334,11 +348,7 @@ public interface Tree<T> extends Traversable<T> {
      * @return The number of nodes of this tree.
      */
     default int nodeCount() {
-        if (isEmpty()) {
-            return 0;
-        } else {
-            return 1 + getChildren().foldLeft(0, (count, child) -> count + child.nodeCount());
-        }
+        return length();
     }
 
     // -- Methods inherited from Traversable
@@ -487,12 +497,7 @@ public interface Tree<T> extends Traversable<T> {
         return values().iterator();
     }
 
-    @Override
-    default int length() {
-        return size();
-    }
-
-    @Override
+        @Override
     default <U> Tree<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Empty.instance() : TreeModule.Map.apply((Node<T>) this, mapper);
@@ -717,6 +722,8 @@ public interface Tree<T> extends Traversable<T> {
         private final T value;
         private final List<Node<T>> children;
 
+        private final int size;
+
         /**
          * Constructs a rose tree branch.
          *
@@ -729,6 +736,7 @@ public interface Tree<T> extends Traversable<T> {
             Objects.requireNonNull(children, "children is null");
             this.value = value;
             this.children = children;
+            this.size = 1 + this.children.foldLeft(0, (acc, child) -> acc + child.size);
         }
 
         @Override
@@ -747,13 +755,13 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public boolean isLeaf() {
-            return children.isEmpty();
+        public int length() {
+            return size;
         }
 
         @Override
-        public int size() {
-            return 1 + children.foldLeft(0, (acc, child) -> acc + child.length());
+        public boolean isLeaf() {
+            return size == 1;
         }
 
         @Override
@@ -937,13 +945,13 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
-        public boolean isLeaf() {
-            return false;
+        public int length() {
+            return 0;
         }
 
         @Override
-        public int size() {
-            return 0;
+        public boolean isLeaf() {
+            return false;
         }
 
         @Override
