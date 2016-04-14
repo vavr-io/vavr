@@ -68,11 +68,11 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
     public M drop(long n) {
         if (n <= 0) {
             return (M) this;
-        }
-        if (n >= length()) {
+        } else if (n >= length()) {
             return emptyInstance();
+        } else {
+            return createFromEntries(iterator().drop(n));
         }
-        return createFromEntries(iterator().drop(n));
     }
 
     @SuppressWarnings("unchecked")
@@ -80,11 +80,11 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
     public M dropRight(long n) {
         if (n <= 0) {
             return (M) this;
-        }
-        if (n >= length()) {
+        } else if (n >= length()) {
             return emptyInstance();
+        } else {
+            return createFromEntries(iterator().dropRight(n));
         }
-        return createFromEntries(iterator().dropRight(n));
     }
 
     @Override
@@ -123,20 +123,20 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
         return sliding(size, size);
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
+    public abstract M init();
+
     @Override
     public Option<M> initOption() {
-        return isEmpty() ? Option.none() : Option.some((M) init());
+        return isEmpty() ? Option.none() : Option.some(init());
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
+    public abstract M tail();
+
     @Override
     public Option<M> tailOption() {
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.some((M) tail());
-        }
+        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @SuppressWarnings("unchecked")
@@ -227,7 +227,7 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
     public M replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
         Objects.requireNonNull(newElement, "newElement is null");
-        return containsKey(currentElement._1) ? (M) remove(currentElement._1).put(newElement) : (M) this;
+        return (M) (containsKey(currentElement._1) ? remove(currentElement._1).put(newElement) : this);
     }
 
     @Override

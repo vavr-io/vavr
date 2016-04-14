@@ -11,32 +11,12 @@ import javaslang.Tuple3;
 import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.Empty;
 import javaslang.collection.Tree.Node;
-import javaslang.collection.TreeModule.FlatMap;
-import javaslang.collection.TreeModule.Replace;
-import javaslang.collection.TreeModule.Traversal;
-import javaslang.collection.TreeModule.Unzip;
-import javaslang.collection.TreeModule.Zip;
-import javaslang.collection.TreeModule.ZipAll;
+import javaslang.collection.TreeModule.*;
 import javaslang.control.Option;
 
-import java.io.IOException;
-import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.io.*;
+import java.util.*;
+import java.util.function.*;
 import java.util.stream.Collector;
 
 import static javaslang.collection.Tree.Order.PRE_ORDER;
@@ -466,11 +446,6 @@ public interface Tree<T> extends Traversable<T> {
         } else {
             return iterator().next();
         }
-    }
-
-    @Override
-    default Option<T> headOption() {
-        return isEmpty() ? Option.none() : Option.some(head());
     }
 
     @Override
@@ -1152,7 +1127,6 @@ interface TreeModule {
             final Node<T3> node3 = new Node<>(value._3, children.map(t -> t._3));
             return Tuple.of(node1, node2, node3);
         }
-
     }
 
     final class Zip {

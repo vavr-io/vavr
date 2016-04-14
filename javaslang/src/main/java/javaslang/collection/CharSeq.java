@@ -417,11 +417,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public Option<CharSeq> initOption() {
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.some(init());
-        }
+        return isEmpty() ? Option.none() : Option.some(init());
     }
 
     @Override
@@ -858,11 +854,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public Option<CharSeq> tailOption() {
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.some(CharSeq.of(back.substring(1)));
-        }
+        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @Override
@@ -1073,15 +1065,6 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
             throw new NoSuchElementException("head of empty string");
         } else {
             return back.charAt(0);
-        }
-    }
-
-    @Override
-    public Option<Character> headOption() {
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.some(back.charAt(0));
         }
     }
 

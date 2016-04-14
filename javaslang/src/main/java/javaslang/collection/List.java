@@ -5,36 +5,15 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
-import javaslang.Kind1;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.collection.List.Nil;
 import javaslang.collection.ListModule.Combinations;
 import javaslang.collection.ListModule.SplitAt;
 import javaslang.control.Option;
 
-import java.io.IOException;
-import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.ListIterator;
-import java.util.NavigableSet;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.io.*;
+import java.util.*;
+import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
@@ -141,6 +120,9 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     static <T> List<T> empty() {
         return Nil.instance();
     }
+
+    @Override
+    boolean isEmpty();
 
     /**
      * Narrows a widened {@code List<? extends T>} to {@code List<T>}
@@ -693,11 +675,6 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default boolean hasDefiniteSize() {
         return true;
-    }
-
-    @Override
-    default Option<T> headOption() {
-        return isEmpty() ? Option.none() : Option.some(head());
     }
 
     @Override

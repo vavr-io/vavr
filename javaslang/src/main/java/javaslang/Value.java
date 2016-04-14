@@ -116,7 +116,7 @@ public interface Value<T> extends Iterable<T> {
      * collections are covariant.
      *
      * @param value A {@code Value}.
-     * @param <T>  Component type of the {@code Value}.
+     * @param <T>   Component type of the {@code Value}.
      * @return the given {@code value} instance as narrowed type {@code Value<T>}.
      */
     @SuppressWarnings("unchecked")
@@ -636,7 +636,7 @@ public interface Value<T> extends Iterable<T> {
         if (this instanceof Option) {
             return (Option<T>) this;
         } else {
-            return isEmpty() ? Option.none() : Option.some(get());
+            return getOption();
         }
     }
 
@@ -783,7 +783,6 @@ public interface Value<T> extends Iterable<T> {
      */
     @Override
     String toString();
-
 }
 
 interface ValueModule {

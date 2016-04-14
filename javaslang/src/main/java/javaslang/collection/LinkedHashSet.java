@@ -593,11 +593,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
 
     @Override
     public Option<LinkedHashSet<T>> initOption() {
-        if (map.isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.some(init());
-        }
+        return isEmpty() ? Option.none() : Option.some(init());
     }
 
     @Override
@@ -756,11 +752,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
 
     @Override
     public Option<LinkedHashSet<T>> tailOption() {
-        if (map.isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.some(tail());
-        }
+        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @Override
