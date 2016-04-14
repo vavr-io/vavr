@@ -245,7 +245,6 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         return Collections.fill(n, s, Array.empty(), Array::of);
     }
 
-
     public static Array<Character> range(char from, char toExclusive) {
         return Array.ofAll(Iterator.range(from, toExclusive));
     }
@@ -642,11 +641,6 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public Option<T> headOption() {
-        return isEmpty() ? Option.none() : Option.some(head());
-    }
-
-    @Override
     public int indexOf(T element, int from) {
         for (int i = from; i < length(); i++) {
             if (Objects.equals(get(i), element)) {
@@ -668,11 +662,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public Option<Array<T>> initOption() {
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.some(init());
-        }
+        return isEmpty() ? Option.none() : Option.some(init());
     }
 
     @Override

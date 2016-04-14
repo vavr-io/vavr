@@ -457,11 +457,6 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Option<T> headOption() {
-        return isEmpty() ? Option.none() : Option.some(head());
-    }
-
-    @Override
     default Seq<T> init() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("init of empty tree");
@@ -1146,7 +1141,6 @@ interface TreeModule {
             final Node<T3> node3 = new Node<>(value._3, children.map(t -> t._3));
             return Tuple.of(node1, node2, node3);
         }
-
     }
 
     final class Zip {

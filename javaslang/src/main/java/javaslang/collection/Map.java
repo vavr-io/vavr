@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.API;
 import javaslang.Function1;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -269,11 +268,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     @Override
     default boolean hasDefiniteSize() {
         return true;
-    }
-
-    @Override
-    default Option<Tuple2<K, V>> headOption() {
-        return isEmpty() ? Option.none() : Option.some(head());
     }
 
     @Override

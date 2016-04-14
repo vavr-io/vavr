@@ -5,15 +5,15 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Function1;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.control.Option;
 
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * Interface for immutable sequential data structures.
@@ -431,6 +431,19 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     int lastIndexWhere(Predicate<? super T> predicate, int end);
 
     /**
+<<<<<<< HEAD
+=======
+     * Turns this sequence into a plain function returning an Option result.
+     *
+     * @return a function that takes an index i and returns the value of
+     * this sequence in a Some if the index is within bounds, otherwise a None.
+     */
+    default Function1<Integer, Option<T>> lift() {
+        return i -> (i >= 0 && i < length()) ? Option.some(apply(i)) : Option.none();
+    }
+
+    /**
+>>>>>>> b7be4fc... Unified creations of `Option` throughout the code
      * Returns the index of the last occurrence of the given element before or at a given end index
      * or -1 if this does not contain the given element.
      *
@@ -588,7 +601,6 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @return a new Seq
      */
     Seq<T> removeLast(Predicate<T> predicate);
-
 
     /**
      * Reverses the order of elements.

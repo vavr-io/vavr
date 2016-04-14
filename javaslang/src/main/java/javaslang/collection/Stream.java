@@ -864,11 +864,6 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
-    default Option<T> headOption() {
-        return isEmpty() ? Option.none() : Option.some(head());
-    }
-
-    @Override
     default int indexOf(T element, int from) {
         int index = 0;
         for (Stream<T> stream = this; !stream.isEmpty(); stream = stream.tail(), index++) {
@@ -1455,7 +1450,6 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         }
     }
 
-
     /**
      * The empty Stream.
      * <p>
@@ -1635,7 +1629,6 @@ interface StreamModule {
         private void readObject(ObjectInputStream stream) throws InvalidObjectException {
             throw new InvalidObjectException("Proxy required");
         }
-
     }
 
     final class AppendElements<T> extends Cons<T> implements Serializable {
@@ -1683,7 +1676,6 @@ interface StreamModule {
         private void readObject(ObjectInputStream stream) throws InvalidObjectException {
             throw new InvalidObjectException("Proxy required");
         }
-
     }
 
     /**

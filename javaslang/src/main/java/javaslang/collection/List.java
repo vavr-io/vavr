@@ -121,6 +121,9 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         return Nil.instance();
     }
 
+    @Override
+    boolean isEmpty();
+
     /**
      * Narrows a widened {@code List<? extends T>} to {@code List<T>}
      * by performing a type safe-cast. This is eligible because immutable/read-only
@@ -672,11 +675,6 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default boolean hasDefiniteSize() {
         return true;
-    }
-
-    @Override
-    default Option<T> headOption() {
-        return isEmpty() ? Option.none() : Option.some(head());
     }
 
     @Override

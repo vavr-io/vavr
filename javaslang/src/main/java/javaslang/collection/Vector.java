@@ -608,15 +608,6 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Option<T> headOption() {
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.some(get(0));
-        }
-    }
-
-    @Override
     public <C> Map<C, Vector<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
         return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, Vector.ofAll(it)));
@@ -652,11 +643,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Option<? extends Vector<T>> initOption() {
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.some(init());
-        }
+        return isEmpty() ? Option.none() : Option.some(init());
     }
 
     @Override
@@ -918,7 +905,6 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
             }
         }
         return result.size() == length() ? this : wrap(result);
-
     }
 
     @Override
@@ -1151,11 +1137,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Option<Vector<T>> tailOption() {
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.some(tail());
-        }
+        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @Override
