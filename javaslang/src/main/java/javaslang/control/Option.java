@@ -134,7 +134,7 @@ public interface Option<T> extends Value<T> {
      */
     static <T> Option<T> when(boolean condition, Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return condition ? of(supplier.get()) : none();
+        return condition ? some(supplier.get()) : none();
     }
 
     /**
