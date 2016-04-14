@@ -180,7 +180,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     /**
      * Removes the key-value pair from this multimap if it is present.
      *
-     * @param key key whose mapping is to be removed from the multimap
+     * @param key   key whose mapping is to be removed from the multimap
      * @param value value whose mapping is to be removed from the multimap
      * @return A new Multimap containing these elements without the entry
      * specified by that key and value.
@@ -303,11 +303,6 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     }
 
     @Override
-    default Option<Tuple2<K, V>> headOption() {
-        return isEmpty() ? Option.none() : Option.some(head());
-    }
-
-    @Override
     Multimap<K, V> init();
 
     @Override
@@ -361,14 +356,14 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * The collision resolution function will always take the first argument from <code>this</code> multimap
      * and the second from <code>that</code> multimap.
      *
-     * @param <K2>                 key type of that Multimap
-     * @param <V2>                 value type of that Multimap
+     * @param <K2>                key type of that Multimap
+     * @param <V2>                value type of that Multimap
      * @param that                the other multimap
      * @param collisionResolution the collision resolution function
      * @return A merged multimap
      * @throws NullPointerException if that multimap or the given collision resolution function is null
      */
-    <K2 extends  K, V2 extends V> Multimap<K, V> merge(Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution);
+    <K2 extends K, V2 extends V> Multimap<K, V> merge(Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution);
 
     @Override
     Tuple2<? extends Multimap<K, V>, ? extends Multimap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate);
@@ -475,5 +470,4 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
             action.accept(t._1, t._2);
         }
     }
-
 }

@@ -10,16 +10,8 @@ import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
 
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.*;
+import java.util.function.*;
 
 /**
  * An immutable {@code Map} interface.
@@ -279,11 +271,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     }
 
     @Override
-    default Option<Tuple2<K, V>> headOption() {
-        return isEmpty() ? Option.none() : Option.some(head());
-    }
-
-    @Override
     Map<K, V> init();
 
     @Override
@@ -479,7 +466,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @param defaultFunction function to evaluate for all keys not present in the map
      * @return a total function from K to T
      */
-    default Function1<K,V> withDefault(Function<? super K, ? extends V> defaultFunction)  {
+    default Function1<K, V> withDefault(Function<? super K, ? extends V> defaultFunction) {
         return k -> get(k).getOrElse(() -> defaultFunction.apply(k));
     }
 }

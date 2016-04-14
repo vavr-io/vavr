@@ -11,11 +11,10 @@ import javaslang.Value;
 import javaslang.control.Option;
 
 import java.math.BigInteger;
-import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.*;
 
 /**
  * An interface for inherently recursive, multi-valued data structures. The order of elements is determined by
@@ -475,7 +474,9 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      *
      * @return {@code Some(element)} or {@code None} if this is empty.
      */
-    Option<T> headOption();
+    default Option<T> headOption() {
+        return isEmpty() ? Option.none() : Option.some(head());
+    }
 
     /**
      * Dual of {@linkplain #tail()}, returning all elements except the last.
@@ -490,7 +491,9 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      *
      * @return {@code Some(traversable)} or {@code None} if this is empty.
      */
-    Option<? extends Traversable<T>> initOption();
+    default Option<? extends Traversable<T>> initOption() {
+        return isEmpty() ? Option.none() : Option.some(init());
+    }
 
     /**
      * Checks if this Traversable is empty.
@@ -498,7 +501,9 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return true, if this Traversable contains no elements, false otherwise.
      */
     @Override
-    boolean isEmpty();
+    default boolean isEmpty() {
+        return length() == 0;
+    }
 
     /**
      * Each of Javaslang's collections may contain more than one element.

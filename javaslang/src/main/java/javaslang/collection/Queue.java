@@ -577,7 +577,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      * @return {@code None} if this Queue is empty, otherwise a {@code Some} containing the first element
      */
     public Option<T> peekOption() {
-        return isEmpty() ? Option.none() : Option.some(front.head());
+        return isEmpty() ? Option.none() : Option.some(peek());
     }
 
     // -- Adjusted return types of Seq methods
@@ -723,11 +723,6 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
         } else {
             return front.head();
         }
-    }
-
-    @Override
-    public Option<T> headOption() {
-        return isEmpty() ? Option.none() : Option.some(front.head());
     }
 
     @Override

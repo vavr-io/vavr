@@ -24,7 +24,7 @@ import java.util.function.*;
  * @author Ruslan Sennov
  * @since 2.0.0
  */
- abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multimap<K, V> {
+abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multimap<K, V> {
 
     interface SerializableSupplier<T> extends Supplier<T>, Serializable {
     }
@@ -81,7 +81,7 @@ import java.util.function.*;
     @Override
     public <K2, V2> Multimap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(this.<K2, V2>emptyInstance(), (acc, entry) -> {
+        return foldLeft(this.emptyInstance(), (acc, entry) -> {
             for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
                 acc = acc.put(mappedEntry);
             }
@@ -102,7 +102,7 @@ import java.util.function.*;
     @Override
     public <K2, V2> Multimap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(this.<K2, V2>emptyInstance(), (acc, entry) -> acc.put(mapper.apply(entry._1, entry._2)));
+        return foldLeft(this.emptyInstance(), (acc, entry) -> acc.put(mapper.apply(entry._1, entry._2)));
     }
 
     @Override
@@ -116,7 +116,7 @@ import java.util.function.*;
     public M put(K key, V value) {
         final Traversable<V> values = back.get(key).getOrElse((Traversable<V>) emptyContainer.get());
         final Traversable<V> newValues = containerType.add(values, value);
-        return newValues == values ? (M) this : (M) createFromMap(back.put(key, newValues));
+        return (M) (newValues == values ? this : createFromMap(back.put(key, newValues)));
     }
 
     @Override
@@ -128,7 +128,7 @@ import java.util.function.*;
     @SuppressWarnings("unchecked")
     @Override
     public M remove(K key) {
-        return back.containsKey(key) ? (M) createFromMap(back.remove(key)) : (M) this;
+        return (M) (back.containsKey(key) ? createFromMap(back.remove(key)) : this);
     }
 
     @SuppressWarnings("unchecked")
@@ -136,14 +136,20 @@ import java.util.function.*;
     public M remove(K key, V value) {
         final Traversable<V> values = back.get(key).getOrElse((Traversable<V>) emptyContainer.get());
         final Traversable<V> newValues = containerType.remove(values, value);
-        return newValues == values ? (M) this : newValues.isEmpty() ? (M) createFromMap(back.remove(key)): (M) createFromMap(back.put(key, newValues));
+        if (newValues == values) {
+            return (M) this;
+        } else if (newValues.isEmpty()) {
+            return (M) createFromMap(back.remove(key));
+        } else {
+            return (M) createFromMap(back.put(key, newValues));
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public M removeAll(Iterable<? extends K> keys) {
         Map<K, Traversable<V>> result = back.removeAll(keys);
-        return result == back ? (M) this : (M) createFromMap(result);
+        return (M) (result == back ? this : createFromMap(result));
     }
 
     @Override
@@ -159,11 +165,7 @@ import java.util.function.*;
     @SuppressWarnings("unchecked")
     @Override
     public M distinct() {
-        if(containerType == ContainerType.SEQ) {
-            return (M) createFromEntries(iterator().distinct());
-        } else {
-            return (M) this;
-        }
+        return (M) (containerType == ContainerType.SEQ ? createFromEntries(iterator().distinct()) : this);
     }
 
     @SuppressWarnings("unchecked")
@@ -184,11 +186,11 @@ import java.util.function.*;
     public M drop(long n) {
         if (n <= 0) {
             return (M) this;
-        }
-        if (n >= length()) {
+        } else if (n >= length()) {
             return (M) this.emptyInstance();
+        } else {
+            return (M) createFromEntries(iterator().drop(n));
         }
-        return (M) createFromEntries(iterator().drop(n));
     }
 
     @SuppressWarnings("unchecked")
@@ -196,11 +198,11 @@ import java.util.function.*;
     public M dropRight(long n) {
         if (n <= 0) {
             return (M) this;
-        }
-        if (n >= length()) {
+        } else if (n >= length()) {
             return (M) this.emptyInstance();
+        } else {
+            return (M) createFromEntries(iterator().dropRight(n));
         }
-        return (M) createFromEntries(iterator().dropRight(n));
     }
 
     @Override
@@ -258,7 +260,7 @@ import java.util.function.*;
 
     @SuppressWarnings("unchecked")
     @Override
-    public Option<Multimap<K, V>> initOption() {
+    public Option<M> initOption() {
         return isEmpty() ? Option.none() : Option.some(init());
     }
 
@@ -273,12 +275,8 @@ import java.util.function.*;
     }
 
     @Override
-    public Option<Multimap<K, V>> tailOption() {
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.some(tail());
-        }
+    public Option<M> tailOption() {
+        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @SuppressWarnings("unchecked")
@@ -296,7 +294,7 @@ import java.util.function.*;
 
     @SuppressWarnings("unchecked")
     @Override
-    public <K2 extends  K, V2 extends V> Multimap<K, V> merge(Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution) {
+    public <K2 extends K, V2 extends V> Multimap<K, V> merge(Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         if (isEmpty()) {
@@ -336,7 +334,7 @@ import java.util.function.*;
     public M replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
         Objects.requireNonNull(newElement, "newElement is null");
-        return containsKey(currentElement._1) ? (M) remove(currentElement._1).put(newElement) : (M) this;
+        return (M) (containsKey(currentElement._1) ? remove(currentElement._1).put(newElement) : this);
     }
 
     @Override
@@ -355,7 +353,7 @@ import java.util.function.*;
     @Override
     public M scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return (M) Collections.scanLeft(this, zero, operation, Queue.<Tuple2<K, V>>empty(), Queue::append, this::createFromEntries);
+        return (M) Collections.scanLeft(this, zero, operation, Queue.empty(), Queue::append, this::createFromEntries);
     }
 
     @Override
@@ -388,21 +386,13 @@ import java.util.function.*;
     @SuppressWarnings("unchecked")
     @Override
     public M take(long n) {
-        if (size() <= n) {
-            return (M) this;
-        } else {
-            return (M) createFromEntries(iterator().take(n));
-        }
+        return (M) (size() <= n ? this : createFromEntries(iterator().take(n)));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public M takeRight(long n) {
-        if (size() <= n) {
-            return (M) this;
-        } else {
-            return (M) createFromEntries(iterator().takeRight(n));
-        }
+        return (M) (size() <= n ? this : createFromEntries(iterator().takeRight(n)));
     }
 
     @Override
@@ -416,9 +406,8 @@ import java.util.function.*;
     public M takeWhile(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Multimap<K, V> taken = createFromEntries(iterator().takeWhile(predicate));
-        return taken.length() == length() ? (M) this : (M) taken;
+        return (M) (taken.length() == length() ? this : taken);
     }
-
 
     @Override
     public boolean equals(Object o) {

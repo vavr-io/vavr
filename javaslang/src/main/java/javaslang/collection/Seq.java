@@ -5,15 +5,15 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Function1;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.control.Option;
 
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * Interface for immutable sequential data structures.
@@ -437,7 +437,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * this sequence in a Some if the index is within bounds, otherwise a None.
      */
     default Function1<Integer, Option<T>> lift() {
-        return i -> (i >= length() || i < 0) ? Option.none() : Option.some(apply(i));
+        return i -> (i >= 0 && i < length()) ? Option.some(apply(i)) : Option.none();
     }
 
     /**
@@ -612,7 +612,6 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @return a new Seq
      */
     Seq<T> removeLast(Predicate<T> predicate);
-
 
     /**
      * Reverses the order of elements.
@@ -982,7 +981,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @return a total function from index to T
      */
     default Function1<Integer, T> withDefaultValue(T defaultValue) {
-        return i -> (i >= length() || i < 0) ? defaultValue : apply(i);
+        return i -> (i >= 0 && i < length()) ? apply(i) : defaultValue;
     }
 
     /**
@@ -992,7 +991,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @param defaultFunction function to evaluate for all out of bounds indexes.
      * @return a total function from index to T
      */
-    default Function1<Integer,T> withDefault(Function<? super Integer, ? extends T> defaultFunction)  {
-        return i -> (i >= length() || i < 0) ? defaultFunction.apply(i) : apply(i);
+    default Function1<Integer, T> withDefault(Function<? super Integer, ? extends T> defaultFunction) {
+        return i -> (i >= 0 && i < length()) ? apply(i) : defaultFunction.apply(i);
     }
 }
