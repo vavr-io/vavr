@@ -15,6 +15,7 @@ import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Generators are the building blocks for providing arbitrary objects.
@@ -298,20 +299,16 @@ public interface Gen<T> {
    * @return A new T generator
    */
     default Gen<T> intersperse(Gen<T> other) {
-        java.util.Iterator<Gen<T>> iter = new java.util.Iterator<Gen<T>>() {
+        Supplier<Gen<T>> iter = new Supplier<Gen<T>>() {
             boolean genSwitch = false;
 
             @Override
-            public boolean hasNext() {
-                return true;
-            }
-
-            @Override
-            public Gen<T> next() {
-                return (genSwitch = !genSwitch) ? Gen.this : other;
+            public Gen<T> get() {
+                genSwitch = !genSwitch;
+                return genSwitch ? Gen.this : other;
             }
         };
-        return random -> iter.next().apply(random);
+        return random -> iter.get().apply(random);
     }
 
     /**

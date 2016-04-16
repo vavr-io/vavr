@@ -29,6 +29,14 @@ public class GenTest {
     // -- of
 
     @Test
+    public void shouldIntersperseMultipleGeneratos() throws Exception {
+        Gen<Integer> gen = Gen.of(0).intersperse(Gen.of(1));
+        assertThat(gen.apply(RANDOM)).isEqualTo(0);
+        assertThat(gen.apply(RANDOM)).isEqualTo(1);
+        assertThat(gen.apply(RANDOM)).isEqualTo(0);
+        assertThat(gen.apply(RANDOM)).isEqualTo(1);
+    }
+    @Test
     public void shouldCreateConstantGenOfElement() {
         final Gen<Integer> gen = Gen.of(1);
         assertThat(gen.apply(RANDOM)).isEqualTo(1);
