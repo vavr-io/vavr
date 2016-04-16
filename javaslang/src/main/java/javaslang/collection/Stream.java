@@ -1656,7 +1656,7 @@ interface StreamModule {
 
         @Override
         public Stream<T> appendAll(Iterable<? extends T> elements) {
-            Objects.requireNonNull(queue, "elements is null");
+            Objects.requireNonNull(elements, "elements is null");
             return isEmpty() ? Stream.ofAll(queue) : new AppendElements<>(head, queue.appendAll(elements), tail);
         }
 

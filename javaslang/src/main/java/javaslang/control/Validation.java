@@ -439,8 +439,8 @@ public interface Validation<E, T> extends Value<T> {
      * @throws NullPointerException if fInvalid or fValid is null
      */
     default <U> U fold(Function<? super E, ? extends U> fInvalid, Function<? super T, ? extends U> fValid) {
-        Objects.requireNonNull(fInvalid, "function fInvalid null");
-        Objects.requireNonNull(fValid, "function fValid null");
+        Objects.requireNonNull(fInvalid, "fInvalid is null");
+        Objects.requireNonNull(fValid, "fValid is null");
         if (isInvalid()) {
             E error = this.getError();
             return fInvalid.apply(error);
@@ -468,7 +468,7 @@ public interface Validation<E, T> extends Value<T> {
 
     @Override
     default <U> Validation<E, U> map(Function<? super T, ? extends U> f) {
-        Objects.requireNonNull(f, "function f is null");
+        Objects.requireNonNull(f, "f is null");
         if (isInvalid()) {
             return Validation.invalid(this.getError());
         } else {
@@ -513,7 +513,7 @@ public interface Validation<E, T> extends Value<T> {
      * @throws NullPointerException if mapping operation f is null
      */
     default <U> Validation<U, T> leftMap(Function<? super E, ? extends U> f) {
-        Objects.requireNonNull(f, "function f is null");
+        Objects.requireNonNull(f, "f is null");
         if (isInvalid()) {
             E error = this.getError();
             return Validation.invalid(f.apply(error));
