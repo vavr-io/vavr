@@ -5,23 +5,12 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.collection.IteratorModule.ConcatIterator;
-import javaslang.collection.IteratorModule.DistinctIterator;
+import javaslang.*;
+import javaslang.collection.IteratorModule.*;
 import javaslang.control.Option;
 
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
 
 /**
  * {@code javaslang.collection.Iterator} is a compositional replacement for {@code java.util.Iterator}
@@ -1558,7 +1547,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             throw new NoSuchElementException("reduceRight on Nil");
         } else {
             Stream<T> reversed = Stream.ofAll(this).reverse();
-            return reversed.tail().foldLeft(reversed.head(), (xs, x) -> op.apply(x, xs));
+            return reversed.reduceLeft((xs, x) -> op.apply(x, xs));
         }
     }
 
@@ -1617,12 +1606,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     default Iterator<T> retainAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        // DEV-NOTE: Only Eclipse does need this unchecked cast, IntelliJ and javac are fine.
-        return hasNext() ? filter(HashSet.ofAll((Iterable<T>) elements)::contains) : empty();
+        return Collections.retainAll(this, elements);
     }
 
     @Override

@@ -5,25 +5,19 @@
  */
 package javaslang.collection;
 
-import javaslang.AbstractValueTest;
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import javaslang.*;
 import javaslang.control.Option;
 import org.junit.Test;
 
 import java.io.*;
-import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.math.*;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collector;
 
 import static java.lang.System.lineSeparator;
-import static javaslang.Serializables.deserialize;
-import static javaslang.Serializables.serialize;
-import static org.assertj.core.api.Assertions.fail;
-import static org.assertj.core.api.Assertions.within;
+import static javaslang.Serializables.*;
+import static org.assertj.core.api.Assertions.*;
 
 public abstract class AbstractTraversableTest extends AbstractValueTest {
 
@@ -243,6 +237,12 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     }
 
     // -- containsAll
+
+    @Test
+    public void shouldHandleDuplicates() {
+        final boolean actual = of(1, 2, 3, 2, 3, 1).containsAll(of(1, 2, 2));
+        assertThat(actual).isTrue();
+    }
 
     @Test
     public void shouldRecognizeNilNotContainsAllElements() {
@@ -1326,34 +1326,45 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldRetainAllElementsFromNil() {
+        Traversable<Object> src = empty();
+        Traversable<Object> expected = src;
+        Traversable<Object> actual = src.retainAll(of(1, 2, 3));
         if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(empty().retainAll(of(1, 2, 3))).isEqualTo(empty());
+            assertThat(actual).isEqualTo(expected);
         } else {
-            assertThat(empty().retainAll(of(1, 2, 3))).isSameAs(empty());
+            assertThat(actual).isSameAs(expected);
         }
     }
 
     @Test
     public void shouldRetainAllExistingElementsFromNonNil() {
-        assertThat(of(1, 2, 3, 1, 2, 3).retainAll(of(1, 2))).isEqualTo(of(1, 2, 1, 2));
+        Traversable<Integer> src = of(1, 2, 3, 2, 1, 3);
+        Traversable<Integer> expected = of(1, 2, 2, 1);
+        Traversable<Integer> actual = src.retainAll(of(1, 2));
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldRetainAllElementsFromNonNil() {
+        Traversable<Integer> src = of(1, 2, 1, 2, 2);
+        Traversable<Integer> expected = of(1, 2, 1, 2, 2);
+        Traversable<Integer> actual = src.retainAll(of(1, 2));
         if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(of(1, 2, 1, 2, 2).retainAll(of(1, 2))).isEqualTo(of(1, 2, 1, 2, 2));
+            assertThat(actual).isEqualTo(expected);
         } else {
-            final Traversable<Integer> src = of(1, 2, 1, 2, 2);
-            assertThat(src.retainAll(of(1, 2))).isSameAs(src);
+            assertThat(actual).isSameAs(src);
         }
     }
 
     @Test
     public void shouldNotRetainAllNonExistingElementsFromNonNil() {
+        Traversable<Integer> src = of(1, 2, 3);
+        Traversable<Object> expected = empty();
+        Traversable<Integer> actual = src.retainAll(of(4, 5));
         if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(of(1, 2, 3).retainAll(of(4, 5))).isEqualTo(empty());
+            assertThat(actual).isEqualTo(expected);
         } else {
-            assertThat(of(1, 2, 3).retainAll(of(4, 5))).isSameAs(empty());
+            assertThat(actual).isSameAs(expected);
         }
     }
 

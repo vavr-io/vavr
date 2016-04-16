@@ -7,8 +7,7 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.collection.List.Nil;
-import javaslang.collection.ListModule.Combinations;
-import javaslang.collection.ListModule.SplitAt;
+import javaslang.collection.ListModule.*;
 import javaslang.control.Option;
 
 import java.io.*;
@@ -167,7 +166,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @SafeVarargs
     static <T> List<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        List<T> result = Nil.<T> instance();
+        List<T> result = Nil.instance();
         for (int i = elements.length - 1; i >= 0; i--) {
             result = result.prepend(elements[i]);
         }
@@ -624,7 +623,14 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     default List<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final List<T> filtered = foldLeft(List.<T> empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs);
-        return this.length() == filtered.length() ? this : filtered.reverse();
+
+        if (filtered.isEmpty()) {
+            return List.empty();
+        } else if (filtered.length() == length()) {
+            return this;
+        } else {
+            return filtered.reverse();
+        }
     }
 
     @Override
@@ -748,9 +754,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> intersperse(T element) {
-        return isEmpty()
-                ? Nil.instance()
-                : foldRight(empty(), (x, xs) -> xs.isEmpty() ? xs.prepend(x) : xs.prepend(element).prepend(x));
+        return ofAll(iterator().intersperse(element));
     }
 
     @Override
@@ -812,11 +816,15 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final java.util.List<T> left = new ArrayList<>(), right = new ArrayList<>();
+        List<T> left = empty(), right = empty();
         for (T t : this) {
-            (predicate.test(t) ? left : right).add(t);
+            if (predicate.test(t)) {
+                left = left.prepend(t);
+            } else {
+                right = right.prepend(t);
+            }
         }
-        return Tuple.of(List.ofAll(left), List.ofAll(right));
+        return Tuple.of(left.reverse(), right.reverse());
     }
 
     @Override
@@ -875,7 +883,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default Option<List<T>> popOption() {
-        return isEmpty() ? Option.none() : Option.some(tail());
+        return isEmpty() ? Option.none() : Option.some(pop());
     }
 
     @Override
@@ -888,7 +896,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default Option<Tuple2<T, List<T>>> pop2Option() {
-        return isEmpty() ? Option.none() : Option.some(Tuple.of(head(), tail()));
+        return isEmpty() ? Option.none() : Option.some(Tuple.of(head(), pop()));
     }
 
     @Override
@@ -997,33 +1005,13 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> removeAll(T removed) {
-        List<T> result = Nil.instance();
-        boolean found = false;
-        for (T element : this) {
-            if (element.equals(removed)) {
-                found = true;
-            } else {
-                result = result.prepend(element);
-            }
-        }
-        return found ? result.reverse() : this;
+    default List<T> removeAll(T element) {
+        return Collections.removeAll(this, element);
     }
 
     @Override
     default List<T> removeAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        final List<T> removed = List.ofAll(elements).distinct();
-        List<T> result = Nil.instance();
-        boolean found = false;
-        for (T element : this) {
-            if (removed.contains(element)) {
-                found = true;
-            } else {
-                result = result.prepend(element);
-            }
-        }
-        return found ? result.reverse() : this;
+        return Collections.removeAll(this, elements);
     }
 
     @Override
@@ -1063,15 +1051,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> retainAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        final List<T> kept = List.ofAll(elements).distinct();
-        List<T> result = Nil.instance();
-        for (T element : this) {
-            if (kept.contains(element)) {
-                result = result.prepend(element);
-            }
-        }
-        return result.size() == size() ? this : result.reverse();
+        return Collections.retainAll(this, elements);
     }
 
     @Override

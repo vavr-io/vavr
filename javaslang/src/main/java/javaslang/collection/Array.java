@@ -11,7 +11,6 @@ import javaslang.control.Option;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.HashSet;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -593,7 +592,9 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
                 list.add(t);
             }
         }
-        if (list.size() == back.length) {
+        if (list.isEmpty()) {
+            return empty();
+        } else if (list.size() == size()) {
             return this;
         } else {
             return list.isEmpty() ? empty() : wrap(list.toArray());
@@ -899,38 +900,12 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public Array<T> removeAll(T element) {
-        final java.util.List<T> list = new ArrayList<>();
-        for (int i = 0; i < length(); i++) {
-            T value = get(i);
-            if (!element.equals(value)) {
-                list.add(value);
-            }
-        }
-        if (list.size() == length()) {
-            return this;
-        } else {
-            return wrap(list.toArray());
-        }
+        return Collections.removeAll(this, element);
     }
 
     @Override
     public Array<T> removeAll(Iterable<? extends T> elements) {
-        final java.util.Set<T> removed = new HashSet<>();
-        for (T element : elements) {
-            removed.add(element);
-        }
-        final java.util.List<T> list = new ArrayList<>();
-        for (int i = 0; i < length(); i++) {
-            T value = get(i);
-            if (!removed.contains(value)) {
-                list.add(value);
-            }
-        }
-        if (list.size() == length()) {
-            return this;
-        } else {
-            return wrap(list.toArray());
-        }
+        return Collections.removeAll(this, elements);
     }
 
     @Override
@@ -971,23 +946,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public Array<T> retainAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        final java.util.Set<T> kept = new HashSet<>();
-        for (T element : elements) {
-            kept.add(element);
-        }
-        final java.util.List<T> list = new ArrayList<>();
-        for (int i = 0; i < length(); i++) {
-            T value = get(i);
-            if (kept.contains(value)) {
-                list.add(value);
-            }
-        }
-        if (list.size() == length()) {
-            return this;
-        } else {
-            return wrap(list.toArray());
-        }
+        return Collections.retainAll(this, elements);
     }
 
     @Override

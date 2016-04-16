@@ -5,19 +5,12 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.*;
+import java.util.function.*;
 
 public class IntMap<T> implements Traversable<T>, Serializable {
 
@@ -25,8 +18,12 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     private final Map<Integer, T> original;
 
+    private static final IntMap<?> EMPTY = new IntMap<>(HashMap.empty());
+
+    @SuppressWarnings("unchecked")
     public static <T> IntMap<T> of(Map<Integer, T> original) {
-        return new IntMap<>(original);
+        return original.isEmpty() ? (IntMap<T>) EMPTY
+                                  : new IntMap<>(original);
     }
 
     private IntMap(Map<Integer, T> original) {

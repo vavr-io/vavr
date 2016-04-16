@@ -9,10 +9,7 @@ import javaslang.*;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -731,21 +728,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     @Override
     public TreeSet<T> removeAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty()) {
-            return this;
-        } else {
-            RedBlackTree<T> that = tree;
-            final java.util.Iterator<? extends T> iter = elements.iterator();
-            while (!that.isEmpty() && iter.hasNext()) {
-                that = that.delete(iter.next());
-            }
-            if (that == tree) {
-                return this;
-            } else {
-                return new TreeSet<>(that);
-            }
-        }
+        return Collections.removeAll(this, elements);
     }
 
     @Override
@@ -765,14 +748,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     @Override
     public TreeSet<T> retainAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty()) {
-            return this;
-        } else {
-            final RedBlackTree<T> kept = RedBlackTree.ofAll(tree.comparator(), elements);
-            final RedBlackTree<T> newTree = tree.intersection(kept);
-            return newTree.size() == tree.size() ? this : new TreeSet<>(tree.intersection(kept));
-        }
+        return Collections.retainAll(this, elements);
     }
 
     @Override

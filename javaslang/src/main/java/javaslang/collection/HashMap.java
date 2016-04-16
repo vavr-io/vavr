@@ -5,15 +5,11 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind2;
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -225,7 +221,7 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
             for (Tuple2<? extends K, ? extends V> entry : entries) {
                 trie = trie.put(entry._1, entry._2);
             }
-            return wrap(trie);
+            return trie.isEmpty() ? empty() : wrap(trie);
         }
     }
 
@@ -331,7 +327,14 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
         for (K key : keys) {
             result = result.remove(key);
         }
-        return result.size() == trie.size() ? this : wrap(result);
+
+        if (result.isEmpty()) {
+            return empty();
+        } else if (result.size() == trie.size()) {
+            return this;
+        } else {
+            return wrap(result);
+        }
     }
 
     @Override

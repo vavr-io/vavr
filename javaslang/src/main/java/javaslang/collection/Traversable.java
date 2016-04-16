@@ -5,15 +5,11 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.math.BigInteger;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 
 /**
@@ -205,10 +201,9 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return true, if this List contains all given elements, false otherwise.
      * @throws NullPointerException if {@code elements} is null
      */
-
     default boolean containsAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        return List.ofAll(elements).distinct().find(e -> !this.contains(e)).isEmpty();
+        HashSet<T> uniqueElements = HashSet.ofAll(elements);
+        return toSet().intersect(uniqueElements).size() == uniqueElements.size();
     }
 
     /**

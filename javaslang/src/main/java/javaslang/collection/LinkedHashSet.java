@@ -9,10 +9,7 @@ import javaslang.*;
 import javaslang.control.Option;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -669,12 +666,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
 
     @Override
     public LinkedHashSet<T> removeAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        LinkedHashMap<T, T> that = map;
-        for (T element : elements) {
-            that = that.remove(element);
-        }
-        return (that == map) ? this : new LinkedHashSet<>(that);
+        return Collections.removeAll(this, elements);
     }
 
     // DEV-NOTE: replace does not preserve the order, the new element may already be in the set
@@ -694,15 +686,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
 
     @Override
     public LinkedHashSet<T> retainAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        final LinkedHashMap<T, T> kept = addAll(LinkedHashMap.empty(), elements);
-        LinkedHashMap<T, T> that = LinkedHashMap.empty();
-        for (T element : this) {
-            if (kept.containsKey(element)) {
-                that = that.put(element, element);
-            }
-        }
-        return that.isEmpty() ? empty() : that.size() == size() ? this : new LinkedHashSet<>(that);
+        return Collections.retainAll(this, elements);
     }
 
     @Override
