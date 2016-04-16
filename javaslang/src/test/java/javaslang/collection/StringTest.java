@@ -199,12 +199,12 @@ public class StringTest {
 
     @Test
     public void split() {
-        assertThat(CharSeq.of("123").split("2")).isEqualTo(Vector.of(CharSeq.of("1"), CharSeq.of("3")));
+        assertThat(CharSeq.of("123").split("2")).isEqualTo(Array.of(CharSeq.of("1"), CharSeq.of("3")));
     }
 
     @Test
     public void splitLim() {
-        assertThat(CharSeq.of("123").split("2", 2)).isEqualTo(Vector.of(CharSeq.of("1"), CharSeq.of("3")));
+        assertThat(CharSeq.of("123").split("2", 2)).isEqualTo(Array.of(CharSeq.of("1"), CharSeq.of("3")));
     }
 
     @Test
