@@ -36,7 +36,7 @@ public interface Foldable<T> {
      * @throws NullPointerException if {@code combine} is null
      */
     default T fold(T zero, BiFunction<? super T, ? super T, ? extends T> combine) {
-        Objects.requireNonNull(combine, "fold combine is null");
+        Objects.requireNonNull(combine, "combine is null");
         return foldLeft(zero, combine);
     }
 

@@ -268,7 +268,7 @@ public interface Either<L, R> extends Value<R> {
      */
     @SuppressWarnings("unchecked")
     default <U> Either<U, R> mapLeft(Function<? super L, ? extends U> leftMapper) {
-        Objects.requireNonNull(leftMapper, "mapper is null");
+        Objects.requireNonNull(leftMapper, "leftMapper is null");
         if (isLeft()) {
             return Either.left(leftMapper.apply(getLeft()));
         } else {
