@@ -560,16 +560,19 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public Vector<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
+        HashArrayMappedTrie<Integer, T> filtered = HashArrayMappedTrie.empty();
         for (T t : this) {
             if (predicate.test(t)) {
-                trie = trie.put(trie.size(), t);
+                filtered = filtered.put(filtered.size(), t);
             }
         }
-        if (trie.size() == length()) {
+
+        if (filtered.isEmpty()) {
+            return Vector.empty();
+        } else if (filtered.size() == size()) {
             return this;
         } else {
-            return wrap(trie);
+            return wrap(filtered);
         }
     }
 
@@ -907,34 +910,12 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> removeAll(T element) {
-        HashArrayMappedTrie<Integer, T> result = HashArrayMappedTrie.empty();
-        for (int i = 0; i < length(); i++) {
-            final T value = get(i);
-            if (!element.equals(value)) {
-                result = result.put(result.size(), value);
-            }
-        }
-        return result.size() == length() ? this : wrap(result);
+        return Collections.removeAll(this, element);
     }
 
     @Override
     public Vector<T> removeAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        HashArrayMappedTrie<T, T> removed = HashArrayMappedTrie.empty();
-        for (T element : elements) {
-            removed = removed.put(element, element);
-        }
-        HashArrayMappedTrie<Integer, T> result = HashArrayMappedTrie.empty();
-        boolean found = false;
-        for (int i = 0; i < length(); i++) {
-            T element = get(i);
-            if (removed.get(element).isDefined()) {
-                found = true;
-            } else {
-                result = result.put(result.size(), element);
-            }
-        }
-        return found ? wrap(result) : this;
+        return Collections.removeAll(this, elements);
     }
 
     @Override
@@ -973,19 +954,9 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         return changed ? wrap(trie) : this;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Vector<T> retainAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        // TODO(Eclipse bug): remove cast + SuppressWarnings
-        final Vector<T> kept = (Vector<T>) (Object) Vector.ofAll(elements).distinct();
-        HashArrayMappedTrie<Integer, T> result = HashArrayMappedTrie.empty();
-        for (T element : this) {
-            if (kept.contains(element)) {
-                result = result.put(result.size(), element);
-            }
-        }
-        return result.size() == trie.size() ? this : wrap(result);
+        return Collections.retainAll(this, elements);
     }
 
     @Override

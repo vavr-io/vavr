@@ -9,8 +9,7 @@ import javaslang.*;
 import javaslang.collection.CharSeqModule.Combinations;
 import javaslang.control.Option;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.*;
@@ -359,7 +358,13 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
                 sb.append(ch);
             }
         }
-        return sb.length() == 0 ? EMPTY : sb.length() == length() ? this : of(sb);
+        if (sb.length() == 0) {
+            return EMPTY;
+        } else if (sb.length() == length()) {
+            return this;
+        } else {
+            return of(sb);
+        }
     }
 
     @Override
@@ -650,28 +655,12 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public CharSeq removeAll(Character element) {
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length(); i++) {
-            final char c = get(i);
-            if (c != element) {
-                sb.append(c);
-            }
-        }
-        return sb.length() == 0 ? EMPTY : sb.length() == length() ? this : of(sb);
+        return Collections.removeAll(this, element);
     }
 
     @Override
     public CharSeq removeAll(Iterable<? extends Character> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        final Set<Character> distinct = HashSet.ofAll(elements);
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length(); i++) {
-            final char c = get(i);
-            if (!distinct.contains(c)) {
-                sb.append(c);
-            }
-        }
-        return sb.length() == 0 ? EMPTY : sb.length() == length() ? this : of(sb);
+        return Collections.removeAll(this, elements);
     }
 
     @Override
@@ -708,16 +697,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public CharSeq retainAll(Iterable<? extends Character> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        final Set<Character> kept = HashSet.ofAll(elements);
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length(); i++) {
-            final char c = get(i);
-            if (kept.contains(c)) {
-                sb.append(c);
-            }
-        }
-        return sb.length() == 0 ? EMPTY : of(sb);
+        return Collections.retainAll(this, elements);
     }
 
     @Override

@@ -664,7 +664,14 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     public Queue<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final List<T> filtered = toList().filter(predicate);
-        return filtered.length() == length() ? this : filtered.toQueue();
+
+        if (filtered.isEmpty()) {
+            return Queue.empty();
+        } else if (filtered.length() == length()) {
+            return this;
+        } else {
+            return filtered.toQueue();
+        }
     }
 
     @Override
@@ -919,17 +926,12 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
 
     @Override
     public Queue<T> removeAll(T element) {
-        final List<T> newFront = front.removeAll(element);
-        final List<T> newRear = rear.removeAll(element);
-        return newFront.length() + newRear.length() == length() ? this : new Queue<>(newFront, newRear);
+        return Collections.removeAll(this, element);
     }
 
     @Override
     public Queue<T> removeAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        final List<T> newFront = front.removeAll(elements);
-        final List<T> newRear = rear.removeAll(elements);
-        return newFront.length() + newRear.length() == length() ? this : new Queue<>(newFront, newRear);
+        return Collections.removeAll(this, elements);
     }
 
     @Override
@@ -952,12 +954,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
 
     @Override
     public Queue<T> retainAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        final List<T> newFront = front.retainAll(elements);
-        final List<T> newRear = rear.retainAll(elements);
-        return newFront.size() + newRear.size() == 0 ? empty()
-                : newFront.size() + newRear.size() == size() ? this
-                : new Queue<>(newFront, newRear);
+        return Collections.retainAll(this, elements);
     }
 
     @Override

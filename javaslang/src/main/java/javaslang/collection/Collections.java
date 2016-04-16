@@ -6,9 +6,7 @@
 package javaslang.collection;
 
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 /**
  * Internal class, containing helpers.
@@ -17,6 +15,25 @@ import java.util.function.Supplier;
  * @since 2.0.0
  */
 final class Collections {
+    @SuppressWarnings("unchecked")
+    static <C extends Traversable<T>, T> C removeAll(C collection, T element) {
+        Objects.requireNonNull(element, "element is null");
+        return removeAll(collection, List.of(element));
+    }
+
+    @SuppressWarnings("unchecked")
+    static <C extends Traversable<T>, T> C removeAll(C collection, Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        final Set<T> removed = HashSet.ofAll(elements);
+        return (C) collection.filter(e -> !removed.contains(e));
+    }
+
+    @SuppressWarnings("unchecked")
+    static <C extends Traversable<T>, T> C retainAll(C collection, Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        final Set<T> removed = HashSet.ofAll(elements);
+        return (C) collection.filter(removed::contains);
+    }
 
     // checks, if the *elements* of the given iterables are equal
     static boolean equals(Iterable<?> iterable1, Iterable<?> iterable2) {

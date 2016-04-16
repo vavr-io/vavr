@@ -5,16 +5,11 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind2;
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -588,7 +583,8 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             tree = tree.insert((Tuple2<K, V>) entry);
         }
-        return new TreeMap<>(tree);
+        return tree.isEmpty() ? (TreeMap<K, V>) TreeMap.empty()
+                              : new TreeMap<>(tree);
     }
 
     // -- Object

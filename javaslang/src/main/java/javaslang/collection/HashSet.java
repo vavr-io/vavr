@@ -9,10 +9,7 @@ import javaslang.*;
 import javaslang.control.Option;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -525,7 +522,14 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     public HashSet<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final HashSet<T> filtered = HashSet.ofAll(iterator().filter(predicate));
-        return filtered.length() == length() ? this : filtered;
+
+        if (filtered.isEmpty()) {
+            return empty();
+        } else if (filtered.length() == length()) {
+            return this;
+        } else {
+            return filtered;
+        }
     }
 
     @Override
@@ -593,7 +597,13 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
         if (isEmpty() || elements.isEmpty()) {
             return empty();
         } else {
-            return retainAll(elements);
+            int size = size();
+            if (size <= elements.size()) {
+                return retainAll(elements);
+            } else {
+                HashSet<T> results = HashSet.<T> ofAll(elements).retainAll(this);
+                return (size == results.size()) ? this : results;
+            }
         }
     }
 
@@ -660,12 +670,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
 
     @Override
     public HashSet<T> removeAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        HashArrayMappedTrie<T, T> trie = tree;
-        for (T element : elements) {
-            trie = trie.remove(element);
-        }
-        return (trie == tree) ? this : new HashSet<>(trie);
+        return Collections.removeAll(this, elements);
     }
 
     @Override
@@ -684,15 +689,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
 
     @Override
     public HashSet<T> retainAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        final HashArrayMappedTrie<T, T> kept = addAll(HashArrayMappedTrie.empty(), elements);
-        HashArrayMappedTrie<T, T> that = HashArrayMappedTrie.empty();
-        for (T element : this) {
-            if (kept.containsKey(element)) {
-                that = that.put(element, element);
-            }
-        }
-        return that.isEmpty() ? empty() : that.size() == size() ? this : new HashSet<>(that);
+        return Collections.retainAll(this, elements);
     }
 
     @Override

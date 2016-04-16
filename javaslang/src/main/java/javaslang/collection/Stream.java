@@ -6,8 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.collection.Stream.Cons;
-import javaslang.collection.Stream.Empty;
+import javaslang.collection.Stream.*;
 import javaslang.collection.StreamModule.*;
 import javaslang.control.Option;
 
@@ -802,7 +801,8 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
             stream = stream.tail();
         }
         final Stream<T> finalStream = stream;
-        return stream.isEmpty() ? stream : cons(stream.head(), () -> finalStream.tail().filter(predicate));
+        return stream.isEmpty() ? Stream.empty()
+                                : cons(stream.head(), () -> finalStream.tail().filter(predicate));
     }
 
     @Override
@@ -1080,16 +1080,13 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> removeAll(T removed) {
-        return filter(e -> !Objects.equals(e, removed));
+    default Stream<T> removeAll(T element) {
+        return Collections.removeAll(this, element);
     }
 
     @Override
     default Stream<T> removeAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-
-        final Stream<T> distinct = Stream.ofAll(elements).distinct();
-        return filter(e -> !distinct.contains(e));
+        return Collections.removeAll(this, elements);
     }
 
     @Override
@@ -1119,14 +1116,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
     @Override
     default Stream<T> retainAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-
-        if (isEmpty()) {
-            return this;
-        } else {
-            final Stream<T> retained = Stream.ofAll(elements).distinct();
-            return filter(retained::contains);
-        }
+        return Collections.retainAll(this, elements);
     }
 
     @Override
