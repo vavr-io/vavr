@@ -366,6 +366,7 @@ public interface IndexedSeq<T> extends Seq<T> {
      * the return value will be &gt;= 0 if and only if the element is found.
      * @throws ClassCastException if T cannot be cast to {@code Comparable<? super T>}
      */
+    @Override
     @SuppressWarnings("unchecked")
     default int search(T element) {
         IntUnaryOperator comparison = midIndex -> {
@@ -387,6 +388,7 @@ public interface IndexedSeq<T> extends Seq<T> {
      * element would be inserted into the sequence. Note that this guarantees that
      * the return value will be &gt;= 0 if and only if the element is found.
      */
+    @Override
     default int search(T element, Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         IntUnaryOperator comparison = midIndex -> {

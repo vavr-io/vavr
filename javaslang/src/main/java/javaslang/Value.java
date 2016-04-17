@@ -240,6 +240,7 @@ public interface Value<T> extends Iterable<T> {
      * @param action A {@code Consumer}
      * @throws NullPointerException if {@code action} is null
      */
+    @Override
     default void forEach(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         for (T t : this) {

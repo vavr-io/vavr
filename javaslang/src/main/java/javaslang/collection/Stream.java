@@ -974,6 +974,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         }
     }
 
+    @Override
     default Stream<T> leftPadTo(int length, T element) {
         final int actualLength = length();
         if (length <= actualLength) {

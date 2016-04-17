@@ -155,6 +155,7 @@ public interface Option<T> extends Value<T> {
      *
      * @return true, if this {@code Option} is empty, false otherwise
      */
+    @Override
     boolean isEmpty();
 
     /**
@@ -178,6 +179,7 @@ public interface Option<T> extends Value<T> {
         return true;
     }
 
+    @Override
     T get();
 
     @Override
@@ -193,6 +195,7 @@ public interface Option<T> extends Value<T> {
      * @param other An alternative value
      * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
      */
+    @Override
     default T getOrElse(T other) {
         return isEmpty() ? other : get();
     }
@@ -230,6 +233,7 @@ public interface Option<T> extends Value<T> {
      * @param supplier An alternative value supplier
      * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
      */
+    @Override
     default T getOrElse(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? supplier.get() : get();
@@ -243,6 +247,7 @@ public interface Option<T> extends Value<T> {
      * @return This value, if this Option is defined, otherwise throws X
      * @throws X a throwable
      */
+    @Override
     default <X extends Throwable> T getOrElseThrow(Supplier<X> exceptionSupplier) throws X {
         Objects.requireNonNull(exceptionSupplier, "exceptionSupplier is null");
         if (isEmpty()) {
