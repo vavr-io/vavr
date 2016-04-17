@@ -681,6 +681,20 @@ public class TryTest extends AbstractValueTest {
         success().filter(s -> false).get();
     }
 
+    @Test
+    public void shouldFilterNonMatchingPredicateAndDefaultThrowableSupplierOnSuccess()
+    {
+        assertThat(success().filter(s -> false).getCause())
+                .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    public void shouldFilterNonMatchingPredicateAndCustomThrowableSupplierOnSuccess()
+    {
+        assertThat(success().filter(s -> false, () -> new IllegalArgumentException()).getCause())
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @Test(expected = RuntimeException.class)
     public void shouldFilterWithExceptionOnSuccess() {
         success().filter(s -> {
