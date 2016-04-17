@@ -76,7 +76,7 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
     static <R> Function0<Option<R>> lift(Function0<R> partialFunction) {
-        return () -> Try.of(() -> partialFunction.apply()).getOption();
+        return () -> Try.of(partialFunction::apply).getOption();
     }
 
     /**

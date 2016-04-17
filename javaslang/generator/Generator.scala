@@ -686,7 +686,13 @@ def generateMainClasses(): Unit = {
                *         if the function is defined for the given arguments, and {@code None} otherwise.
                */
               static $fullGenerics ${im.getType(s"javaslang.Function$i")}$genericsOptionReturnType lift($className$fullGenerics partialFunction) {
-                  return ($params) -> ${im.getType("javaslang.control.Try")}.of(() -> partialFunction.apply($params)).getOption();
+                  ${
+                    val supplier = if (i == 0) "partialFunction::apply" else s"() -> partialFunction.apply($params)"
+                    val lambdaArgs = if (i == 1) params else s"($params)"
+                    xs"""
+                      return $lambdaArgs -> ${im.getType("javaslang.control.Try")}.of($supplier).getOption();
+                    """
+                  }
               }
 
               ${(i == 1).gen(xs"""
@@ -770,8 +776,8 @@ def generateMainClasses(): Unit = {
                           case (true, 1) => s"t -> $Try.of(() -> this.apply(t)).get()"
                           case (true, _) => s"t -> $Try.of(() -> tupled.apply(t)).get()"
                           case (false, 0) => s"this::apply"
-                          case (false, 1) => s"this::apply"
-                          case (false, _) => s"tupled::apply"
+                          case (false, 1) => s"this"
+                          case (false, _) => s"tupled"
                         }
                         val forNull = (checked, i) match {
                           case (true, 1) => s"$Try.of(() -> apply(null))::get"
@@ -781,18 +787,11 @@ def generateMainClasses(): Unit = {
                         if (i == 0) xs"""
                           return ($className$fullGenerics & Memoized) Lazy.of($mappingFunction)::get;
                         """ else if (i == 1) xs"""
-                          final Lazy<R> forNull = Lazy.of($forNull);
                           final Object lock = new Object();
                           final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.HashMap")}<>();
                           return ($className$fullGenerics & Memoized) t1 -> {
-                              if (t1 == null) {
-                                  return forNull.get();
-                              } else {
-                                  final R result;
-                                  synchronized (lock) {
-                                      result = cache.computeIfAbsent(t1, $mappingFunction);
-                                  }
-                                  return result;
+                              synchronized (lock) {
+                                  return cache.computeIfAbsent(t1, $mappingFunction);
                               }
                           };
                         """ else xs"""
@@ -800,11 +799,9 @@ def generateMainClasses(): Unit = {
                           final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.HashMap")}<>();
                           final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
                           return ($className$fullGenerics & Memoized) ($params) -> {
-                              final R result;
                               synchronized (lock) {
-                                  result = cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
+                                  return cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
                               }
-                              return result;
                           };
                         """
                       }

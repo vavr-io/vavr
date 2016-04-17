@@ -240,11 +240,9 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
             final Map<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> cache = new HashMap<>();
             final Function1<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> tupled = tupled();
             return (Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> & Memoized) (t1, t2, t3, t4, t5, t6, t7, t8) -> {
-                final R result;
                 synchronized (lock) {
-                    result = cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8), tupled::apply);
+                    return cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8), tupled);
                 }
-                return result;
             };
         }
     }

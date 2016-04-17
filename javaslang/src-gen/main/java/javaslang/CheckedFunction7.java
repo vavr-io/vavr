@@ -219,11 +219,9 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
             final Map<Tuple7<T1, T2, T3, T4, T5, T6, T7>, R> cache = new HashMap<>();
             final CheckedFunction1<Tuple7<T1, T2, T3, T4, T5, T6, T7>, R> tupled = tupled();
             return (CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> & Memoized) (t1, t2, t3, t4, t5, t6, t7) -> {
-                final R result;
                 synchronized (lock) {
-                    result = cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5, t6, t7), t -> Try.of(() -> tupled.apply(t)).get());
+                    return cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5, t6, t7), t -> Try.of(() -> tupled.apply(t)).get());
                 }
-                return result;
             };
         }
     }

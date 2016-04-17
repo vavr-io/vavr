@@ -150,11 +150,9 @@ public interface Function3<T1, T2, T3, R> extends λ<R> {
             final Map<Tuple3<T1, T2, T3>, R> cache = new HashMap<>();
             final Function1<Tuple3<T1, T2, T3>, R> tupled = tupled();
             return (Function3<T1, T2, T3, R> & Memoized) (t1, t2, t3) -> {
-                final R result;
                 synchronized (lock) {
-                    result = cache.computeIfAbsent(Tuple.of(t1, t2, t3), tupled::apply);
+                    return cache.computeIfAbsent(Tuple.of(t1, t2, t3), tupled);
                 }
-                return result;
             };
         }
     }

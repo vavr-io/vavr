@@ -166,11 +166,9 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
             final Map<Tuple4<T1, T2, T3, T4>, R> cache = new HashMap<>();
             final Function1<Tuple4<T1, T2, T3, T4>, R> tupled = tupled();
             return (Function4<T1, T2, T3, T4, R> & Memoized) (t1, t2, t3, t4) -> {
-                final R result;
                 synchronized (lock) {
-                    result = cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4), tupled::apply);
+                    return cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4), tupled);
                 }
-                return result;
             };
         }
     }
