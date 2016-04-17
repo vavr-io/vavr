@@ -9,16 +9,11 @@ import javaslang.API;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
-import javaslang.collection.Seq;
+import javaslang.collection.*;
 
 import java.io.Serializable;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -136,6 +131,18 @@ public interface Option<T> extends Value<T> {
     static <T> Option<T> when(boolean condition, Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return condition ? some(supplier.get()) : none();
+    }
+
+    /**
+     * Creates {@code Some} of value if condition is true, or {@code None} in other case
+     *
+     * @param <T>       type of the optional value
+     * @param condition A boolean value
+     * @param value     An optional value, may be {@code null}
+     * @return return {@code Some} of value if condition is true, or {@code None} in other case
+     */
+    static <T> Option<T> when(boolean condition, T value) {
+        return condition ? some(value) : none();
     }
 
     /**
