@@ -238,7 +238,8 @@ public interface Try<T> extends Value<T> {
     }
 
     /**
-     * Shortcut for {@code filterTry(predicate::test, throwableSupplier)}, see {@link #filterTry(CheckedPredicate)}}.
+     * Shortcut for {@code filterTry(predicate::test, throwableSupplier)}, see
+     * {@link #filterTry(CheckedPredicate, Supplier)}}.
      *
      * @param predicate A predicate
      * @return a {@code Try} instance
@@ -246,7 +247,7 @@ public interface Try<T> extends Value<T> {
      */
     default Try<T> filter(Predicate<? super T> predicate, Supplier<? extends Throwable> throwableSupplier) {
         Objects.requireNonNull(predicate, "predicate is null");
-        Objects.requireNonNull(predicate, "throwableSupplier is null");
+        Objects.requireNonNull(throwableSupplier, "throwableSupplier is null");
         return filterTry(predicate::test, throwableSupplier);
     }
 
