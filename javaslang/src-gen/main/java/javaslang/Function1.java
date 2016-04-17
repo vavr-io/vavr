@@ -80,7 +80,7 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
     static <T1, R> Function1<T1, Option<R>> lift(Function1<T1, R> partialFunction) {
-        return (t1) -> Try.of(() -> partialFunction.apply(t1)).getOption();
+        return t1 -> Try.of(() -> partialFunction.apply(t1)).getOption();
     }
 
     /**
@@ -127,18 +127,11 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
         if (isMemoized()) {
             return this;
         } else {
-            final Lazy<R> forNull = Lazy.of(() -> apply(null));
             final Object lock = new Object();
             final Map<T1, R> cache = new HashMap<>();
             return (Function1<T1, R> & Memoized) t1 -> {
-                if (t1 == null) {
-                    return forNull.get();
-                } else {
-                    final R result;
-                    synchronized (lock) {
-                        result = cache.computeIfAbsent(t1, this::apply);
-                    }
-                    return result;
+                synchronized (lock) {
+                    return cache.computeIfAbsent(t1, this);
                 }
             };
         }

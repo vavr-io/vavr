@@ -74,7 +74,7 @@ public interface CheckedFunction0<R> extends λ<R> {
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
     static <R> Function0<Option<R>> lift(CheckedFunction0<R> partialFunction) {
-        return () -> Try.of(() -> partialFunction.apply()).getOption();
+        return () -> Try.of(partialFunction::apply).getOption();
     }
 
     /**

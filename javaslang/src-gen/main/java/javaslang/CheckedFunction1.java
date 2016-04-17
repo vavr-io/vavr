@@ -79,7 +79,7 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
     static <T1, R> Function1<T1, Option<R>> lift(CheckedFunction1<T1, R> partialFunction) {
-        return (t1) -> Try.of(() -> partialFunction.apply(t1)).getOption();
+        return t1 -> Try.of(() -> partialFunction.apply(t1)).getOption();
     }
 
     /**
@@ -126,18 +126,11 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
         if (isMemoized()) {
             return this;
         } else {
-            final Lazy<R> forNull = Lazy.of(Try.of(() -> apply(null))::get);
             final Object lock = new Object();
             final Map<T1, R> cache = new HashMap<>();
             return (CheckedFunction1<T1, R> & Memoized) t1 -> {
-                if (t1 == null) {
-                    return forNull.get();
-                } else {
-                    final R result;
-                    synchronized (lock) {
-                        result = cache.computeIfAbsent(t1, t -> Try.of(() -> this.apply(t)).get());
-                    }
-                    return result;
+                synchronized (lock) {
+                    return cache.computeIfAbsent(t1, t -> Try.of(() -> this.apply(t)).get());
                 }
             };
         }
