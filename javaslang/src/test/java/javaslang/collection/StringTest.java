@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.control.Option;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -115,41 +116,57 @@ public class StringTest {
     @Test
     public void indexOf() {
         assertThat(CharSeq.of("123").indexOf('2')).isEqualTo(1);
+
+        assertThat(CharSeq.of("123").indexOfOption('2')).isEqualTo(Option.some(1));
     }
 
     @Test
     public void indexOfOffset() {
         assertThat(CharSeq.of("123").indexOf('2', 1)).isEqualTo(1);
+
+        assertThat(CharSeq.of("123").indexOfOption('2', 1)).isEqualTo(Option.some(1));
     }
 
     @Test
     public void lastIndexOf() {
         assertThat(CharSeq.of("123").lastIndexOf('2')).isEqualTo(1);
+
+        assertThat(CharSeq.of("123").lastIndexOfOption('2')).isEqualTo(Option.some(1));
     }
 
     @Test
     public void lastIndexOfOffset() {
         assertThat(CharSeq.of("123").lastIndexOf('2', 1)).isEqualTo(1);
+
+        assertThat(CharSeq.of("123").lastIndexOfOption('2', 1)).isEqualTo(Option.some(1));
     }
 
     @Test
     public void indexOfSeq() {
         assertThat(CharSeq.of("123").indexOf(CharSeq.of("2"))).isEqualTo(1);
+
+        assertThat(CharSeq.of("123").indexOfOption(CharSeq.of("2"))).isEqualTo(Option.some(1));
     }
 
     @Test
     public void indexOfSeqOffset() {
         assertThat(CharSeq.of("123").indexOf(CharSeq.of("2"), 1)).isEqualTo(1);
+
+        assertThat(CharSeq.of("123").indexOfOption(CharSeq.of("2"), 1)).isEqualTo(Option.some(1));
     }
 
     @Test
     public void lastIndexOfSeq() {
         assertThat(CharSeq.of("123").lastIndexOf(CharSeq.of("2"))).isEqualTo(1);
+
+        assertThat(CharSeq.of("123").lastIndexOfOption(CharSeq.of("2"))).isEqualTo(Option.some(1));
     }
 
     @Test
     public void lastIndexOfSeqOffset() {
         assertThat(CharSeq.of("123").lastIndexOf(CharSeq.of("2"), 1)).isEqualTo(1);
+
+        assertThat(CharSeq.of("123").lastIndexOfOption(CharSeq.of("2"), 1)).isEqualTo(Option.some(1));
     }
 
     @Test

@@ -10,10 +10,8 @@ import javaslang.control.Option;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
 import java.util.stream.Collector;
 
 public class QueueTest extends AbstractLinearSeqTest {
@@ -280,21 +278,29 @@ public class QueueTest extends AbstractLinearSeqTest {
     @Test
     public void shouldNotFindIndexOfElementWhenStartIsGreaterEnc() {
         assertThat(enqueued().indexOf(2, 2)).isEqualTo(-1);
+
+        assertThat(enqueued().indexOfOption(2, 2)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldFindIndexOfFirstElementEnc() {
         assertThat(enqueued().indexOf(1)).isEqualTo(0);
+
+        assertThat(enqueued().indexOfOption(1)).isEqualTo(Option.some(0));
     }
 
     @Test
     public void shouldFindIndexOfInnerElementEnc() {
         assertThat(enqueued().indexOf(2)).isEqualTo(1);
+
+        assertThat(enqueued().indexOfOption(2)).isEqualTo(Option.some(1));
     }
 
     @Test
     public void shouldFindIndexOfLastElementEnc() {
         assertThat(enqueued().indexOf(3)).isEqualTo(2);
+
+        assertThat(enqueued().indexOfOption(3)).isEqualTo(Option.some(2));
     }
 
     // -- lastIndexOf
@@ -302,6 +308,8 @@ public class QueueTest extends AbstractLinearSeqTest {
     @Test
     public void shouldNotFindLastIndexOfElementWhenEndIdLessEnc() {
         assertThat(enqueued().lastIndexOf(3, 1)).isEqualTo(-1);
+
+        assertThat(enqueued().lastIndexOfOption(3, 1)).isEqualTo((Option.none()));
     }
 
     @Test
@@ -312,6 +320,8 @@ public class QueueTest extends AbstractLinearSeqTest {
     @Test
     public void shouldFindLastIndexOfElementWithEndEnc() {
         assertThat(enqueued().lastIndexOf(1, 1)).isEqualTo(0);
+
+        assertThat(enqueued().lastIndexOfOption(1, 1)).isEqualTo(Option.some(0));
     }
 
     // -- transform()

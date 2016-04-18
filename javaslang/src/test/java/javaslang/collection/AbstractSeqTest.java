@@ -5,9 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import javaslang.*;
 import javaslang.control.Option;
 import org.junit.Test;
 
@@ -338,26 +336,36 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldNotFindIndexOfElementWhenSeqIsEmpty() {
         assertThat(empty().indexOf(1)).isEqualTo(-1);
+
+        assertThat(empty().indexOfOption(1)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldNotFindIndexOfElementWhenStartIsGreater() {
         assertThat(of(1, 2, 3, 4).indexOf(2, 2)).isEqualTo(-1);
+
+        assertThat(of(1, 2, 3, 4).indexOfOption(2, 2)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldFindIndexOfFirstElement() {
         assertThat(of(1, 2, 3).indexOf(1)).isEqualTo(0);
+
+        assertThat(of(1, 2, 3).indexOfOption(1)).isEqualTo(Option.some(0));
     }
 
     @Test
     public void shouldFindIndexOfInnerElement() {
         assertThat(of(1, 2, 3).indexOf(2)).isEqualTo(1);
+
+        assertThat(of(1, 2, 3).indexOfOption(2)).isEqualTo(Option.some(1));
     }
 
     @Test
     public void shouldFindIndexOfLastElement() {
         assertThat(of(1, 2, 3).indexOf(3)).isEqualTo(2);
+
+        assertThat(of(1, 2, 3).indexOfOption(3)).isEqualTo(Option.some(2));
     }
 
     // -- indexOfSlice
@@ -365,26 +373,36 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldNotFindIndexOfSliceWhenSeqIsEmpty() {
         assertThat(empty().indexOfSlice(of(2, 3))).isEqualTo(-1);
+
+        assertThat(empty().indexOfSliceOption(of(2, 3))).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldNotFindIndexOfSliceWhenStartIsGreater() {
         assertThat(of(1, 2, 3, 4).indexOfSlice(of(2, 3), 2)).isEqualTo(-1);
+
+        assertThat(of(1, 2, 3, 4).indexOfSliceOption(of(2, 3), 2)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldFindIndexOfFirstSlice() {
         assertThat(of(1, 2, 3, 4).indexOfSlice(of(1, 2))).isEqualTo(0);
+
+        assertThat(of(1, 2, 3, 4).indexOfSliceOption(of(1, 2))).isEqualTo(Option.some(0));
     }
 
     @Test
     public void shouldFindIndexOfInnerSlice() {
         assertThat(of(1, 2, 3, 4).indexOfSlice(of(2, 3))).isEqualTo(1);
+
+        assertThat(of(1, 2, 3, 4).indexOfSliceOption(of(2, 3))).isEqualTo(Option.some(1));
     }
 
     @Test
     public void shouldFindIndexOfLastSlice() {
         assertThat(of(1, 2, 3).indexOfSlice(of(2, 3))).isEqualTo(1);
+
+        assertThat(of(1, 2, 3).indexOfSliceOption(of(2, 3))).isEqualTo(Option.some(1));
     }
 
     // -- lastIndexOf
@@ -392,21 +410,29 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldNotFindLastIndexOfElementWhenSeqIsEmpty() {
         assertThat(empty().lastIndexOf(1)).isEqualTo(-1);
+
+        assertThat(empty().lastIndexOfOption(1)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldNotFindLastIndexOfElementWhenEndIdLess() {
         assertThat(of(1, 2, 3, 4).lastIndexOf(3, 1)).isEqualTo(-1);
+
+        assertThat(of(1, 2, 3, 4).lastIndexOfOption(3, 1)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldFindLastIndexOfElement() {
         assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOf(1)).isEqualTo(3);
+
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfOption(1)).isEqualTo(Option.some(3));
     }
 
     @Test
     public void shouldFindLastIndexOfElementWithEnd() {
         assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOf(1, 1)).isEqualTo(0);
+
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfOption(1, 1)).isEqualTo(Option.some(0));
     }
 
     // -- lastIndexOfSlice
@@ -414,11 +440,15 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldNotFindLastIndexOfSliceWhenSeqIsEmpty() {
         assertThat(empty().lastIndexOfSlice(of(2, 3))).isEqualTo(-1);
+
+        assertThat(empty().lastIndexOfSliceOption(of(2, 3))).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldNotFindLastIndexOfSliceWhenEndIdLess() {
         assertThat(of(1, 2, 3, 4, 5).lastIndexOfSlice(of(3, 4), 1)).isEqualTo(-1);
+
+        assertThat(of(1, 2, 3, 4, 5).lastIndexOfSliceOption(of(3, 4), 1)).isEqualTo(Option.none());
     }
 
     @Test
@@ -427,6 +457,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3, 1, 2).lastIndexOfSlice(of(2))).isEqualTo(4);
         assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSlice(of(2, 3))).isEqualTo(4);
         assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(1, 2, 3))).isEqualTo(3);
+
+        assertThat(of(1, 2, 3, 1, 2).lastIndexOfSliceOption(empty())).isEqualTo(Option.some(5));
+        assertThat(of(1, 2, 3, 1, 2).lastIndexOfSliceOption(of(2))).isEqualTo(Option.some(4));
+        assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSliceOption(of(2, 3))).isEqualTo(Option.some(4));
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(of(1, 2, 3))).isEqualTo(Option.some(3));
     }
 
     @Test
@@ -440,6 +475,16 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(2, 3), 2)).isEqualTo(1);
         assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSlice(of(2, 3), 2)).isEqualTo(1);
         assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSlice(of(1, 2, 3), 2)).isEqualTo(0);
+
+        assertThat(empty().lastIndexOfSliceOption(empty(), -1)).isEqualTo(Option.none());
+        assertThat(empty().lastIndexOfSliceOption(empty(), 0)).isEqualTo(Option.some(0));
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(empty(), -1)).isEqualTo(Option.none());
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(empty(), 2)).isEqualTo(Option.some(2));
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(of(2), -1)).isEqualTo(Option.none());
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(of(2), 2)).isEqualTo(Option.some(1));
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(of(2, 3), 2)).isEqualTo(Option.some(1));
+        assertThat(of(1, 2, 3, 1, 2, 3, 4).lastIndexOfSliceOption(of(2, 3), 2)).isEqualTo(Option.some(1));
+        assertThat(of(1, 2, 3, 1, 2, 3).lastIndexOfSliceOption(of(1, 2, 3), 2)).isEqualTo(Option.some(0));
     }
 
     // -- indexWhere
@@ -454,6 +499,15 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 1, 3)).isEqualTo(5);
         assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 2, 3)).isEqualTo(6);
         assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhere(i -> i == 8, 3)).isEqualTo(-1);
+
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 0)).isEqualTo(Option.some(0));
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 1)).isEqualTo(Option.some(1));
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 2)).isEqualTo(Option.some(2));
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 8)).isEqualTo(Option.none());
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 0, 3)).isEqualTo(Option.some(4));
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 1, 3)).isEqualTo(Option.some(5));
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 2, 3)).isEqualTo(Option.some(6));
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 8, 3)).isEqualTo(Option.none());
     }
 
     @Test(expected = NullPointerException.class)
@@ -478,6 +532,15 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 1, 3)).isEqualTo(1);
         assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 2, 3)).isEqualTo(2);
         assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhere(i -> i == 8, 3)).isEqualTo(-1);
+
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 0)).isEqualTo(Option.some(4));
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 1)).isEqualTo(Option.some(5));
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 2)).isEqualTo(Option.some(6));
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 8)).isEqualTo(Option.none());
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 0, 3)).isEqualTo(Option.some(0));
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 1, 3)).isEqualTo(Option.some(1));
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 2, 3)).isEqualTo(Option.some(2));
+        assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 8, 3)).isEqualTo(Option.none());
     }
 
     @Test(expected = NullPointerException.class)

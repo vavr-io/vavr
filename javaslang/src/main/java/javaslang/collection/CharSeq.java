@@ -1605,6 +1605,16 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     /**
+     * Returns the index of the first occurrence of the given element as an {@code Option}.
+     *
+     * @param ch a character (Unicode code point).
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    Option<Integer> indexOfOption(int ch) {
+        return Collections.indexOption(indexOf(ch));
+    }
+
+    /**
      * Returns the index within this string of the first occurrence of the
      * specified character, starting the search at the specified index.
      * <p>
@@ -1648,6 +1658,18 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     /**
+     * Returns the index of the first occurrence of the given element as an {@code Option},
+     * starting the search at the specified index.
+     *
+     * @param ch        a character (Unicode code point).
+     * @param fromIndex the index to start the search from.
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    Option<Integer> indexOfOption(int ch, int fromIndex) {
+        return Collections.indexOption(indexOf(ch, fromIndex));
+    }
+
+    /**
      * Returns the index within this string of the last occurrence of
      * the specified character. For values of {@code ch} in the
      * range from 0 to 0xFFFF (inclusive), the index (in Unicode code
@@ -1672,6 +1694,16 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      */
     public int lastIndexOf(int ch) {
         return back.lastIndexOf(ch);
+    }
+
+    /**
+     * Returns the index of the last occurrence of the given element as an {@code Option}.
+     *
+     * @param ch a character (Unicode code point).
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    Option<Integer> lastIndexOfOption(int ch) {
+        return Collections.indexOption(lastIndexOf(ch));
     }
 
     /**
@@ -1713,6 +1745,18 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     /**
+     * Returns the index of the last occurrence of the given element as an {@code Option},
+     * starting the search at the specified index.
+     *
+     * @param ch        a character (Unicode code point).
+     * @param fromIndex the index to start the search from.
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    Option<Integer> lastIndexOfOption(int ch, int fromIndex) {
+        return Collections.indexOption(lastIndexOf(ch, fromIndex));
+    }
+
+    /**
      * Returns the index within this string of the first occurrence of the
      * specified substring.
      *
@@ -1728,6 +1772,16 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      */
     public int indexOf(CharSeq str) {
         return back.indexOf(str.back);
+    }
+
+    /**
+     * Returns the index of the first occurrence of the given element as an {@code Option}.
+     *
+     * @param str the substring to search for.
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    Option<Integer> indexOfOption(CharSeq str) {
+        return Collections.indexOption(indexOf(str));
     }
 
     /**
@@ -1751,6 +1805,18 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     /**
+     * Returns the index of the first occurrence of the given element as an {@code Option},
+     * starting the search at the specified index.
+     *
+     * @param str       the substring to search for.
+     * @param fromIndex the index from which to start the search.
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    Option<Integer> indexOfOption(CharSeq str, int fromIndex) {
+        return Collections.indexOption(indexOf(str, fromIndex));
+    }
+
+    /**
      * Returns the index within this string of the last occurrence of the
      * specified substring.  The last occurrence of the empty string ""
      * is considered to occur at the index value {@code this.length()}.
@@ -1767,6 +1833,16 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      */
     public int lastIndexOf(CharSeq str) {
         return back.lastIndexOf(str.back);
+    }
+
+    /**
+     * Returns the index of the last occurrence of the given element as an {@code Option}.
+     *
+     * @param str the substring to search for.
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    Option<Integer> lastIndexOfOption(CharSeq str) {
+        return Collections.indexOption(lastIndexOf(str));
     }
 
     /**
@@ -1787,6 +1863,18 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      */
     public int lastIndexOf(CharSeq str, int fromIndex) {
         return back.lastIndexOf(str.back, fromIndex);
+    }
+
+    /**
+     * Returns the index of the last occurrence of the given element as an {@code Option},
+     * starting the search at the specified index.
+     *
+     * @param str       the substring to search for.
+     * @param fromIndex the index to start the search from.
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    Option<Integer> lastIndexOfOption(CharSeq str, int fromIndex) {
+        return Collections.indexOption(lastIndexOf(str, fromIndex));
     }
 
     /**
