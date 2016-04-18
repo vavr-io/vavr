@@ -5,13 +5,12 @@
  */
 package javaslang.control;
 
-import javaslang.AbstractValueTest;
-import javaslang.Serializables;
+import javaslang.*;
 import javaslang.collection.Seq;
 import org.junit.Test;
 
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.*;
 
 public class OptionTest extends AbstractValueTest {
 
@@ -72,11 +71,13 @@ public class OptionTest extends AbstractValueTest {
     @Test
     public void shouldWrapIfTrue() {
         assertThat(Option.some(null)).isEqualTo(Option.when(true, () -> null));
+        assertThat(Option.some(null)).isEqualTo(Option.when(true, (Object) null));
     }
 
     @Test
     public void shouldNotWrapIfFalse() {
         assertThat(Option.none()).isEqualTo(Option.when(false, () -> null));
+        assertThat(Option.none()).isEqualTo(Option.when(false, (Object) null));
     }
 
     @Test
@@ -87,8 +88,8 @@ public class OptionTest extends AbstractValueTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void shouldThrowExceptionOnNull() {
-        assertThat(Option.none()).isEqualTo(Option.when(false, null));
+    public void shouldThrowExceptionOnWhenWithProvider() {
+        assertThat(Option.none()).isEqualTo(Option.when(false, (Supplier<?>) null));
     }
 
     @Test

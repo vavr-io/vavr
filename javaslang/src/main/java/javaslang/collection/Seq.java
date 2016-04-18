@@ -5,14 +5,10 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.control.Option;
 
-import java.util.Comparator;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 
 /**
@@ -172,7 +168,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     /**
      * Tests whether this sequence contains a given sequence as a slice.
      * <p>
-     * Note: may not terminate for infinite-sized collections.
+     * Note: may not terminate for infinite sequences.
      *
      * @param that the sequence to test
      * @return true if this sequence contains a slice with the same elements as that, otherwise false.
@@ -244,7 +240,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * Note: If the both the receiver object this and the argument that are infinite sequences this method may not terminate.
      *
      * @param that the sequence to test
-     * @return true if this sequence has that as a suffix, false otherwise..
+     * @return true if this sequence has that as a suffix, false otherwise.
      */
     default boolean endsWith(Seq<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
@@ -278,6 +274,16 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     }
 
     /**
+     * Returns the index of the first occurrence of the given element as an {@code Option}
+     *
+     * @param element an element
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    default Option<Integer> indexOfOption(T element) {
+        return Collections.indexOption(indexOf(element));
+    }
+
+    /**
      * Returns the index of the first occurrence of the given element after or at some start index
      * or -1 if this does not contain the given element.
      *
@@ -288,9 +294,21 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     int indexOf(T element, int from);
 
     /**
+     * Returns the index of the first occurrence of the given element,
+     * after or at some start index as an {@code Option}
+     *
+     * @param element an element
+     * @param from    start index
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    default Option<Integer> indexOfOption(T element, int from) {
+        return Collections.indexOption(indexOf(element, from));
+    }
+
+    /**
      * Finds first index where this sequence contains a given sequence as a slice.
      * <p>
-     * Note: may not terminate for infinite-sized collections.
+     * Note: may not terminate for infinite sequences.
      *
      * @param that the sequence to test
      * @return the first index such that the elements of this sequence starting at this index match
@@ -298,14 +316,24 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @throws NullPointerException if {@code that} is null.
      */
     default int indexOfSlice(Iterable<? extends T> that) {
-        Objects.requireNonNull(that, "that is null");
         return indexOfSlice(that, 0);
     }
 
     /**
-     * Finds first index after or at a start index where this sequence contains a given sequence as a slice.
+     * Finds first index where this sequence contains a given sequence as an {@code Option} of a slice.
      * <p>
-     * Note: may not terminate for infinite-sized collections.
+     * Note: may not terminate for infinite sequences.
+     *
+     * @param that the sequence to test
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    default Option<Integer> indexOfSliceOption(Iterable<? extends T> that) {
+        return Collections.indexOption(indexOfSlice(that));
+    }
+
+    /**
+     * Finds first index after or at a start index where this sequence contains a given sequence as a slice.
+     * Note: may not terminate for infinite sequences.
      *
      * @param that the sequence to test
      * @param from the start index
@@ -337,14 +365,36 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     }
 
     /**
+     * Finds first index after or at a start index where this sequence contains a given sequence as an {@code Option} of a slice.
+     * Note: may not terminate for infinite sequences.
+     *
+     * @param that the sequence to test
+     * @param from the start index
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    default Option<Integer> indexOfSliceOption(Iterable<? extends T> that, int from) {
+        return Collections.indexOption(indexOfSlice(that, from));
+    }
+
+    /**
      * Finds index of first element satisfying some predicate.
      *
-     * @param p the predicate used to test elements.
+     * @param predicate the predicate used to test elements.
      * @return the index of the first element of this Seq that satisfies the given
      * {@code predicate}, or {@code -1}, if none exists.
      */
-    default int indexWhere(Predicate<? super T> p) {
-        return indexWhere(p, 0);
+    default int indexWhere(Predicate<? super T> predicate) {
+        return indexWhere(predicate, 0);
+    }
+
+    /**
+     * Finds index of first element satisfying some predicate as an {@code Option}.
+     *
+     * @param predicate the predicate used to test elements.
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    default Option<Integer> indexWhereOption(Predicate<? super T> predicate) {
+        return Collections.indexOption(indexWhere(predicate));
     }
 
     /**
@@ -357,6 +407,18 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * satisfies the given {@code predicate}, or {@code -1}, if none exists.
      */
     int indexWhere(Predicate<? super T> predicate, int from);
+
+    /**
+     * Finds index of the first element satisfying some predicate after or at
+     * some start index as an {@code Option}.
+     *
+     * @param predicate the predicate used to test elements.
+     * @param from      the start index
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    default Option<Integer> indexWhereOption(Predicate<? super T> predicate, int from) {
+        return Collections.indexOption(indexWhere(predicate, from));
+    }
 
     /**
      * Inserts the given element at the specified index.
@@ -409,6 +471,16 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     }
 
     /**
+     * Returns the index of the last occurrence of the given element as an {@code Option}.
+     *
+     * @param element an element
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    default Option<Integer> lastIndexOfOption(T element) {
+        return Collections.indexOption(lastIndexOf(element));
+    }
+
+    /**
      * Finds index of last element satisfying some predicate.
      *
      * @param predicate the predicate used to test elements.
@@ -417,6 +489,16 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      */
     default int lastIndexWhere(Predicate<? super T> predicate) {
         return lastIndexWhere(predicate, length() - 1);
+    }
+
+    /**
+     * Finds index of last element satisfying some predicate as an {@code Option}.
+     *
+     * @param predicate the predicate used to test elements.
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    default Option<Integer> lastIndexWhereOption(Predicate<? super T> predicate) {
+        return Collections.indexOption(lastIndexWhere(predicate));
     }
 
     /**
@@ -429,6 +511,17 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * satisfies the given {@code predicate}, or {@code -1}, if none exists.
      */
     int lastIndexWhere(Predicate<? super T> predicate, int end);
+
+    /**
+     * Finds index of last element satisfying some predicate before or at given end index as an {@code Option}.
+     *
+     * @param predicate the predicate used to test elements.
+     * @param end       the maximum index of the search
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    default Option<Integer> lastIndexWhereOption(Predicate<? super T> predicate, int end) {
+        return Collections.indexOption(lastIndexWhere(predicate, end));
+    }
 
     /**
      * Turns this sequence into a plain function returning an Option result.
@@ -451,9 +544,20 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     int lastIndexOf(T element, int end);
 
     /**
+     * Returns the index of the last occurrence of the given element before or at a given end index as an {@code Option}.
+     *
+     * @param element an element
+     * @param end     the end index
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    default Option<Integer> lastIndexOfOption(T element, int end) {
+        return Collections.indexOption(lastIndexOf(element, end));
+    }
+
+    /**
      * Finds last index where this sequence contains a given sequence as a slice.
      * <p>
-     * Note: will not terminate for infinite-sized collections.
+     * Note: will not terminate for infinite sequences.
      *
      * @param that the sequence to test
      * @return the last index such that the elements of this sequence starting a this index match the elements
@@ -461,8 +565,17 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @throws NullPointerException if {@code that} is null.
      */
     default int lastIndexOfSlice(Iterable<? extends T> that) {
-        Objects.requireNonNull(that, "that is null");
         return lastIndexOfSlice(that, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Finds last index where this sequence contains a given sequence as a slice as an {@code Option}.
+     *
+     * @param that the sequence to test
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    default Option<Integer> lastIndexOfSliceOption(Iterable<? extends T> that) {
+        return Collections.indexOption(lastIndexOfSlice(that));
     }
 
     /**
@@ -475,6 +588,17 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * @throws NullPointerException if {@code that} is null.
      */
     int lastIndexOfSlice(Iterable<? extends T> that, int end);
+
+    /**
+     * Finds last index before or at a given end index where this sequence contains a given sequence as a slice as an {@code Option}.
+     *
+     * @param that the sequence to test
+     * @param end  the end index
+     * @return {@code Some(index)} or {@code None} if not found.
+     */
+    default Option<Integer> lastIndexOfSliceOption(Iterable<? extends T> that, int end) {
+        return Collections.indexOption(lastIndexOfSlice(that, end));
+    }
 
     /**
      * A copy of this sequence with an element appended until a given target length is reached.
@@ -632,8 +756,8 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
 
     /**
      * Computes length of longest segment whose elements all satisfy some predicate.
-     *
-     * Note: may not terminate for infinite-sized collections.
+     * <p>
+     * Note: may not terminate for infinite sequences.
      *
      * @param predicate the predicate used to test elements.
      * @param from      the index where the search starts.

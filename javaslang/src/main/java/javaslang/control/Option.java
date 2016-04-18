@@ -8,16 +8,11 @@ package javaslang.control;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
-import javaslang.collection.Seq;
+import javaslang.collection.*;
 
 import java.io.Serializable;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -138,6 +133,18 @@ public interface Option<T> extends Value<T> {
     }
 
     /**
+     * Creates {@code Some} of value if condition is true, or {@code None} in other case
+     *
+     * @param <T>       type of the optional value
+     * @param condition A boolean value
+     * @param value     An optional value, may be {@code null}
+     * @return return {@code Some} of value if condition is true, or {@code None} in other case
+     */
+    static <T> Option<T> when(boolean condition, T value) {
+        return condition ? some(value) : none();
+    }
+
+    /**
      * Wraps a Java Optional to a new Option
      *
      * @param optional a given optional to wrap in {@code Option}
@@ -155,6 +162,7 @@ public interface Option<T> extends Value<T> {
      *
      * @return true, if this {@code Option} is empty, false otherwise
      */
+    @Override
     boolean isEmpty();
 
     /**
@@ -178,6 +186,7 @@ public interface Option<T> extends Value<T> {
         return true;
     }
 
+    @Override
     T get();
 
     @Override
@@ -193,6 +202,7 @@ public interface Option<T> extends Value<T> {
      * @param other An alternative value
      * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
      */
+    @Override
     default T getOrElse(T other) {
         return isEmpty() ? other : get();
     }
@@ -230,6 +240,7 @@ public interface Option<T> extends Value<T> {
      * @param supplier An alternative value supplier
      * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
      */
+    @Override
     default T getOrElse(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? supplier.get() : get();
@@ -243,6 +254,7 @@ public interface Option<T> extends Value<T> {
      * @return This value, if this Option is defined, otherwise throws X
      * @throws X a throwable
      */
+    @Override
     default <X extends Throwable> T getOrElseThrow(Supplier<X> exceptionSupplier) throws X {
         Objects.requireNonNull(exceptionSupplier, "exceptionSupplier is null");
         if (isEmpty()) {

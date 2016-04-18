@@ -5,21 +5,17 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import javaslang.*;
 import javaslang.control.Option;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-import static javaslang.Serializables.deserialize;
-import static javaslang.Serializables.serialize;
+import static javaslang.Serializables.*;
 import static javaslang.collection.CharSeq.*;
 
 public class CharSeqTest {
@@ -1971,29 +1967,42 @@ public class CharSeqTest {
     @Test
     public void shouldNotFindIndexOfElementWhenSeqIsEmpty() {
         assertThat(empty().indexOf(1)).isEqualTo(-1);
+
+        assertThat(empty().indexOfOption(1)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldNotFindIndexOfElementWhenStartIsGreater() {
         assertThat(of('1', '2', '3', '4').indexOf(2, 2)).isEqualTo(-1);
+
+        assertThat(of('1', '2', '3', '4').indexOfOption(2, 2)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldFindIndexOfFirstElement() {
         assertThat(of('1', '2', '3').indexOf('1')).isEqualTo(0);
         assertThat(of('1', '2', '3').indexOf(Character.valueOf('1'))).isEqualTo(0);
+
+        assertThat(of('1', '2', '3').indexOfOption('1')).isEqualTo(Option.some(0));
+        assertThat(of('1', '2', '3').indexOfOption(Character.valueOf('1'))).isEqualTo(Option.some(0));
     }
 
     @Test
     public void shouldFindIndexOfInnerElement() {
         assertThat(of('1', '2', '3').indexOf('2')).isEqualTo(1);
         assertThat(of('1', '2', '3').indexOf(Character.valueOf('2'))).isEqualTo(1);
+
+        assertThat(of('1', '2', '3').indexOfOption('2')).isEqualTo(Option.some(1));
+        assertThat(of('1', '2', '3').indexOfOption(Character.valueOf('2'))).isEqualTo(Option.some(1));
     }
 
     @Test
     public void shouldFindIndexOfLastElement() {
         assertThat(of('1', '2', '3').indexOf('3')).isEqualTo(2);
         assertThat(of('1', '2', '3').indexOf(Character.valueOf('3'))).isEqualTo(2);
+
+        assertThat(of('1', '2', '3').indexOfOption('3')).isEqualTo(Option.some(2));
+        assertThat(of('1', '2', '3').indexOfOption(Character.valueOf('3'))).isEqualTo(Option.some(2));
     }
 
     // -- indexOfSlice
@@ -2001,26 +2010,36 @@ public class CharSeqTest {
     @Test
     public void shouldNotFindIndexOfSliceWhenSeqIsEmpty() {
         assertThat(empty().indexOfSlice(of('2', '3'))).isEqualTo(-1);
+
+        assertThat(empty().indexOfSliceOption(of('2', '3'))).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldNotFindIndexOfSliceWhenStartIsGreater() {
         assertThat(of('1', '2', '3', '4').indexOfSlice(of('2', '3'), 2)).isEqualTo(-1);
+
+        assertThat(of('1', '2', '3', '4').indexOfSliceOption(of('2', '3'), 2)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldFindIndexOfFirstSlice() {
         assertThat(of('1', '2', '3', '4').indexOfSlice(of('1', '2'))).isEqualTo(0);
+
+        assertThat(of('1', '2', '3', '4').indexOfSliceOption(of('1', '2'))).isEqualTo(Option.some(0));
     }
 
     @Test
     public void shouldFindIndexOfInnerSlice() {
         assertThat(of('1', '2', '3', '4').indexOfSlice(of('2', '3'))).isEqualTo(1);
+
+        assertThat(of('1', '2', '3', '4').indexOfSliceOption(of('2', '3'))).isEqualTo(Option.some(1));
     }
 
     @Test
     public void shouldFindIndexOfLastSlice() {
         assertThat(of('1', '2', '3').indexOfSlice(of('2', '3'))).isEqualTo(1);
+
+        assertThat(of('1', '2', '3').indexOfSliceOption(of('2', '3'))).isEqualTo(Option.some(1));
     }
 
     // -- lastIndexOf
@@ -2028,23 +2047,33 @@ public class CharSeqTest {
     @Test
     public void shouldNotFindLastIndexOfElementWhenSeqIsEmpty() {
         assertThat(empty().lastIndexOf(1)).isEqualTo(-1);
+
+        assertThat(empty().lastIndexOfOption(1)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldNotFindLastIndexOfElementWhenEndIdLess() {
         assertThat(of('1', '2', '3', '4').lastIndexOf(3, 1)).isEqualTo(-1);
+
+        assertThat(of('1', '2', '3', '4').lastIndexOfOption(3, 1)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldFindLastIndexOfElement() {
         assertThat(of('1', '2', '3', '1', '2', '3').lastIndexOf('1')).isEqualTo(3);
         assertThat(of('1', '2', '3', '1', '2', '3').lastIndexOf(Character.valueOf('1'))).isEqualTo(3);
+
+        assertThat(of('1', '2', '3', '1', '2', '3').lastIndexOfOption('1')).isEqualTo(Option.some(3));
+        assertThat(of('1', '2', '3', '1', '2', '3').lastIndexOfOption(Character.valueOf('1'))).isEqualTo(Option.some(3));
     }
 
     @Test
     public void shouldFindLastIndexOfElementWithEnd() {
         assertThat(of('1', '2', '3', '1', '2', '3').lastIndexOf('1', 1)).isEqualTo(0);
         assertThat(of('1', '2', '3', '1', '2', '3').lastIndexOf(Character.valueOf('1'), 1)).isEqualTo(0);
+
+        assertThat(of('1', '2', '3', '1', '2', '3').lastIndexOfOption('1', 1)).isEqualTo(Option.some(0));
+        assertThat(of('1', '2', '3', '1', '2', '3').lastIndexOfOption(Character.valueOf('1'), 1)).isEqualTo(Option.some(0));
     }
 
     // -- lastIndexOfSlice
@@ -2052,11 +2081,15 @@ public class CharSeqTest {
     @Test
     public void shouldNotFindLastIndexOfSliceWhenSeqIsEmpty() {
         assertThat(empty().lastIndexOfSlice(of('2', '3'))).isEqualTo(-1);
+
+        assertThat(empty().lastIndexOfSliceOption(of('2', '3'))).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldNotFindLastIndexOfSliceWhenEndIdLess() {
         assertThat(of('1', '2', '3', '4', '5').lastIndexOfSlice(of('3', '4'), 1)).isEqualTo(-1);
+
+        assertThat(of('1', '2', '3', '4', '5').lastIndexOfSliceOption(of('3', '4'), 1)).isEqualTo(Option.none());
     }
 
     @Test
@@ -2064,6 +2097,10 @@ public class CharSeqTest {
         assertThat(of('1', '2', '3', '1', '2').lastIndexOfSlice(empty())).isEqualTo(5);
         assertThat(of('1', '2', '3', '1', '2').lastIndexOfSlice(of('2'))).isEqualTo(4);
         assertThat(of('1', '2', '3', '1', '2', '3', '4').lastIndexOfSlice(of('2', '3'))).isEqualTo(4);
+
+        assertThat(of('1', '2', '3', '1', '2').lastIndexOfSliceOption(empty())).isEqualTo(Option.some(5));
+        assertThat(of('1', '2', '3', '1', '2').lastIndexOfSliceOption(of('2'))).isEqualTo(Option.some(4));
+        assertThat(of('1', '2', '3', '1', '2', '3', '4').lastIndexOfSliceOption(of('2', '3'))).isEqualTo(Option.some(4));
     }
 
     @Test
@@ -2071,8 +2108,12 @@ public class CharSeqTest {
         assertThat(of('1', '2', '3', '1', '2', '3').lastIndexOfSlice(empty(), 2)).isEqualTo(2);
         assertThat(of('1', '2', '3', '1', '2', '3').lastIndexOfSlice(of('2'), 2)).isEqualTo(1);
         assertThat(of('1', '2', '3', '1', '2', '3').lastIndexOfSlice(of('2', '3'), 2)).isEqualTo(1);
-        assertThat(of('1', '2', '3', '1', '2', '3', '4').lastIndexOfSlice(of('2', '3'), 2))
-                .isEqualTo(1);
+        assertThat(of('1', '2', '3', '1', '2', '3', '4').lastIndexOfSlice(of('2', '3'), 2)).isEqualTo(1);
+
+        assertThat(of('1', '2', '3', '1', '2', '3').lastIndexOfSliceOption(empty(), 2)).isEqualTo(Option.some(2));
+        assertThat(of('1', '2', '3', '1', '2', '3').lastIndexOfSliceOption(of('2'), 2)).isEqualTo(Option.some(1));
+        assertThat(of('1', '2', '3', '1', '2', '3').lastIndexOfSliceOption(of('2', '3'), 2)).isEqualTo(Option.some(1));
+        assertThat(of('1', '2', '3', '1', '2', '3', '4').lastIndexOfSliceOption(of('2', '3'), 2)).isEqualTo(Option.some(1));
     }
 
     // -- insert
@@ -2613,27 +2654,27 @@ public class CharSeqTest {
     // -- removeAt(index)
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldRemoveIndxAtNil() {
+    public void shouldRemoveIndexAtNil() {
         empty().removeAt(1);
     }
 
     @Test
-    public void shouldRemoveIndxAtSingleton() {
+    public void shouldRemoveIndexAtSingleton() {
         assertThat(of('1').removeAt(0)).isSameAs(empty());
     }
 
     @Test
-    public void shouldRemoveIndxAtNonNil() {
+    public void shouldRemoveIndexAtNonNil() {
         assertThat(of('1', '2', '3').removeAt(1)).isEqualTo(of('1', '3'));
     }
 
     @Test
-    public void shouldRemoveIndxAtBegin() {
+    public void shouldRemoveIndexAtBegin() {
         assertThat(of('1', '2', '3').removeAt(0)).isEqualTo(of('2', '3'));
     }
 
     @Test
-    public void shouldRemoveIndxAtEnd() {
+    public void shouldRemoveIndexAtEnd() {
         assertThat(of('1', '2', '3').removeAt(2)).isEqualTo(of('1', '2'));
     }
 

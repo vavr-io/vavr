@@ -5,6 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.control.Option;
+
 import java.util.Objects;
 import java.util.function.*;
 
@@ -33,6 +35,10 @@ final class Collections {
         Objects.requireNonNull(elements, "elements is null");
         final Set<T> removed = HashSet.ofAll(elements);
         return (C) collection.filter(removed::contains);
+    }
+
+    static Option<Integer> indexOption(int index) {
+        return Option.when(index >= 0, index);
     }
 
     // checks, if the *elements* of the given iterables are equal
