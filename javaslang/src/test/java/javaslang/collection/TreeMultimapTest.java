@@ -20,6 +20,11 @@ public class TreeMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
+    <T1, T2> Map<T1, T2> javaEmptyMap() {
+        return new java.util.TreeMap<>();
+    }
+
+    @Override
     protected <T1 extends Comparable<T1>, T2> Multimap<T1, T2> emptyMap() {
         switch (containerType) {
             case SEQ:

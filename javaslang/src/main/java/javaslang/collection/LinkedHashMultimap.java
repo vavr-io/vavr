@@ -23,7 +23,7 @@ import java.util.stream.Collector;
  * @param <K> Key type
  * @param <V> Value type
  * @author Ruslan Sennov
- * @since 2.0.0
+ * @since 2.1.0
  */
 public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, LinkedHashMultimap<K, V>> implements Serializable {
 

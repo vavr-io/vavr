@@ -20,7 +20,7 @@ import java.util.function.*;
  * @param <K> Key type
  * @param <V> Value type
  * @author Ruslan Sennov
- * @since 2.0.0
+ * @since 2.1.0
  */
 public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, Traversable<V>>, Kind2<Multimap<?, ?>, K, V> {
 
