@@ -22,6 +22,11 @@ public class HashMapTest extends AbstractMapTest {
     }
 
     @Override
+    <T1, T2> java.util.Map<T1, T2> javaEmptyMap() {
+        return new java.util.HashMap<>();
+    }
+
+    @Override
     protected <T1 extends Comparable<? super T1>, T2> Map<T1, T2> emptyMap() {
         return HashMap.empty();
     }

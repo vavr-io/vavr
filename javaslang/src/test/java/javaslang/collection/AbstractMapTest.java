@@ -120,6 +120,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     abstract protected String className();
 
+    abstract <T1, T2> java.util.Map<T1, T2> javaEmptyMap();
+
     abstract protected <T1 extends Comparable<? super T1>, T2> Map<T1, T2> emptyMap();
 
     protected boolean emptyMapShouldBeSingleton() {
@@ -277,6 +279,18 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldMakeString() {
         assertThat(emptyMap().toString()).isEqualTo(className() + "()");
         assertThat(emptyInt().put(1, 2).toString()).isEqualTo(className() + "(" + Tuple.of(1, 2) + ")");
+    }
+
+    // -- toJavaMap
+
+    @Test
+    public void shouldConvertToJavaMap() {
+        Map<String, Integer> javaslang = mapOfPairs("1", 1, "2", 2, "3", 3);
+        java.util.Map<String, Integer> java = javaEmptyMap();
+        java.put("1", 1);
+        java.put("2", 2);
+        java.put("3", 3);
+        assertThat(javaslang.toJavaMap()).isEqualTo(java);
     }
 
     // -- apply

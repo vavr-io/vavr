@@ -18,6 +18,11 @@ public class LinkedHashMapTest extends AbstractMapTest {
     }
 
     @Override
+    <T1, T2> java.util.Map<T1, T2> javaEmptyMap() {
+        return new java.util.LinkedHashMap<>();
+    }
+
+    @Override
     protected <T1 extends Comparable<? super T1>, T2> LinkedHashMap<T1, T2> emptyMap() {
         return LinkedHashMap.empty();
     }
