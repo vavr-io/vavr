@@ -5,17 +5,15 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import javaslang.*;
 import javaslang.collection.HashArrayMappedTrieModule.EmptyNode;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
-import static javaslang.collection.HashArrayMappedTrieModule.Action.PUT;
-import static javaslang.collection.HashArrayMappedTrieModule.Action.REMOVE;
+import static java.lang.Integer.bitCount;
+import static javaslang.collection.HashArrayMappedTrieModule.Action.*;
 
 /**
  * An immutable <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
@@ -63,21 +61,8 @@ interface HashArrayMappedTrieModule {
 
         static final int SIZE = 5;
         static final int BUCKET_SIZE = 1 << SIZE;
-        static final int MAX_INDEX_NODE = BUCKET_SIZE / 2;
-        static final int MIN_ARRAY_NODE = BUCKET_SIZE / 4;
-
-        private static final int M1 = 0x55555555;
-        private static final int M2 = 0x33333333;
-        private static final int M4 = 0x0f0f0f0f;
-
-        static int bitCount(int x) {
-            x = x - ((x >> 1) & M1);
-            x = (x & M2) + ((x >> 2) & M2);
-            x = (x + (x >> 4)) & M4;
-            x = x + (x >> 8);
-            x = x + (x >> 16);
-            return x & 0x7f;
-        }
+        static final int MAX_INDEX_NODE = BUCKET_SIZE >> 1;
+        static final int MIN_ARRAY_NODE = BUCKET_SIZE >> 2;
 
         static int hashFragment(int shift, int hash) {
             return (hash >>> shift) & (BUCKET_SIZE - 1);
@@ -212,7 +197,7 @@ interface HashArrayMappedTrieModule {
          * Instance control for object serialization.
          *
          * @return The singleton instance of EmptyNode.
-         * @see java.io.Serializable
+         * @see Serializable
          */
         private Object readResolve() {
             return INSTANCE;
@@ -279,11 +264,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         Option<V> lookup(int shift, int keyHashCode, K key) {
-            if (keyHashCode == hash && Objects.equals(key, this.key)) {
-                return Option.some(value);
-            } else {
-                return Option.none();
-            }
+            return Option.when(keyHashCode == hash && Objects.equals(key, this.key), value);
         }
 
         @Override
@@ -374,13 +355,13 @@ interface HashArrayMappedTrieModule {
         }
 
         private static <K, V> AbstractNode<K, V> mergeNodes(LeafNode<K, V> leaf1, LeafNode<K, V> leaf2) {
-            if(leaf2 == null) {
+            if (leaf2 == null) {
                 return leaf1;
             }
-            if(leaf1 instanceof LeafSingleton) {
+            if (leaf1 instanceof LeafSingleton) {
                 return new LeafList<>(leaf1.hash(), leaf1.key(), leaf1.value(), leaf2);
             }
-            if(leaf2 instanceof LeafSingleton) {
+            if (leaf2 instanceof LeafSingleton) {
                 return new LeafList<>(leaf2.hash(), leaf2.key(), leaf2.value(), leaf1);
             }
             LeafNode<K, V> result = leaf1;
