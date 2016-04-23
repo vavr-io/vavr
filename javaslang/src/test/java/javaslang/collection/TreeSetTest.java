@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.control.Option;
 import org.junit.Test;
 
 import java.io.Serializable;
@@ -153,6 +154,32 @@ public class TreeSetTest extends AbstractSortedSetTest {
         assertThat(transformed).isEqualTo("42");
     }
 
+    @Test
+    public void shouldReturnMinMax() {
+        TreeSet<Integer> unit = TreeSet.of(1, 2, 3, 4, 5);
+        assertThat(unit.min()).isEqualTo(Option.of(1));
+        assertThat(unit.max()).isEqualTo(Option.of(5));
+    }
+
+    @Test
+    public void shouldReturnMinMaxAsPerTreeSetComparator() {
+        TreeSet<Integer> unit = TreeSet.of(Comparators.naturalComparator().reversed(), 1, 2, 3, 4, 5);
+        assertThat(unit.min()).isEqualTo(Option.of(5));
+        assertThat(unit.max()).isEqualTo(Option.of(1));
+    }
+
+    @Test
+    public void shouldReturnLast() {
+        TreeSet<Integer> unit = TreeSet.of(1, 2, 3, 4, 5);
+        assertThat(unit.last()).isEqualTo(5);
+    }
+
+    @Test
+    public void shouldReturnLastAsPerTreeSetComparator() {
+        TreeSet<Integer> unit = TreeSet.ofAll(Comparators.naturalComparator().reversed(), List.of(1, 2, 3, 4, 5));
+        assertThat(unit.last()).isEqualTo(1);
+    }
+
     // -- helpers
 
     private static Comparator<Integer> inverseIntComparator() {
@@ -248,4 +275,5 @@ public class TreeSetTest extends AbstractSortedSetTest {
     protected TreeSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return TreeSet.rangeClosedBy(from, toInclusive, step);
     }
+
 }

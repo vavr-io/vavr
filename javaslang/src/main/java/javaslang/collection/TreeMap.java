@@ -5,12 +5,21 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Kind2;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.*;
-import java.util.function.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static javaslang.collection.Comparators.naturalComparator;
@@ -447,6 +456,15 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
     }
 
     @Override
+    public Tuple2<K, V> last() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("last of empty TreeMap");
+        } else {
+            return entries.max().get();
+        }
+    }
+
+    @Override
     public TreeMap<K, V> init() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("init of empty TreeMap");
@@ -454,6 +472,16 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
             final Tuple2<K, V> max = entries.max().get();
             return new TreeMap<>(entries.delete(max));
         }
+    }
+
+    @Override
+    public Option<Tuple2<K, V>> max() {
+        return entries.max();
+    }
+
+    @Override
+    public Option<Tuple2<K, V>> min() {
+        return entries.min();
     }
 
     @Override
@@ -477,6 +505,98 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
         return TreeSet.ofAll(keyComparator(), iterator().map(Tuple2::_1));
     }
 
+    @Override
+    public Iterator<Tuple2<K, V>> descendingIterator() {
+        return entries.descendingIterator();
+    }
+
+    @Override
+    public SortedSet<K> descendingKeySet() {
+        return descendingMap().keySet();
+    }
+
+    @Override
+    public SortedMap<K, V> descendingMap() {
+        return new TreeMap<>(entries.descendingTree());
+    }
+
+    @Override
+    public SortedMap<K, V> subMap(Option<K> fromKey, boolean fromInclusive, Option<K> toKey, boolean toInclusive) {
+        return new TreeMap<>(
+                entries.subTree(
+                    fromKey.map(k -> Tuple.of(k, null)), fromInclusive,
+                    toKey.map(k -> Tuple.of(k, null)), toInclusive));
+    }
+
+    @Override
+    public SortedMap<K, V> subMap(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
+        return subMap(Option.some(fromKey), fromInclusive, Option.some(toKey), toInclusive);
+    }
+
+    @Override
+    public SortedMap<K, V> subMap(K fromKey, K toKey) {
+        return subMap(fromKey, true, toKey, false);
+    }
+
+    @Override
+    public SortedMap<K, V> headMap(K toKey, boolean inclusive) {
+        return subMap(Option.none(), true, Option.some(toKey), inclusive);
+    }
+
+    @Override
+    public SortedMap<K, V> headMap(K toKey) {
+        return headMap(toKey, false);
+    }
+
+    @Override
+    public SortedMap<K, V> tailMap(K fromKey, boolean inclusive) {
+        return subMap(Option.some(fromKey), inclusive, Option.none(), true);
+    }
+
+    @Override
+    public SortedMap<K, V> tailMap(K fromKey) {
+        return tailMap(fromKey, true);
+    }
+
+    @Override
+    public Option<Tuple2<K, V>> floor(K key) {
+        return entries.floor(Tuple.of(key, null));
+    }
+
+    @Override
+    public Option<K> floorKey(K key) {
+        return floor(key).map(e -> e._1);
+    }
+
+    @Override
+    public Option<Tuple2<K, V>> ceiling(K key) {
+        return entries.ceiling(Tuple.of(key, null));
+    }
+
+    @Override
+    public Option<K> ceilingKey(K key) {
+        return ceiling(key).map(e -> e._1);
+    }
+
+    @Override
+    public Option<Tuple2<K, V>> lower(K key) {
+        return entries.lower(Tuple.of(key, null));
+    }
+
+    @Override
+    public Option<K> lowerKey(K key) {
+        return lower(key).map(e -> e._1);
+    }
+
+    @Override
+    public Option<Tuple2<K, V>> higher(K key) {
+        return entries.higher(Tuple.of(key, null));
+    }
+
+    @Override
+    public Option<K> higherKey(K key) {
+        return higher(key).map(e -> e._1);
+    }
 
     @Override
     public <K2, V2> TreeMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
@@ -622,8 +742,7 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
      * @param <K> key type
      * @param <V> value type, needed at compile time for the Comparator interface
      */
-    static class EntryComparator<K, V> implements Comparator<Tuple2<K, V>>, Serializable {
-
+    private static class EntryComparator<K, V> implements Comparator<Tuple2<K, V>>, Serializable {
         private static final long serialVersionUID = 1L;
 
         final Comparator<K> keyComparator;
@@ -637,5 +756,29 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
         public int compare(Tuple2<K, V> e1, Tuple2<K, V> e2) {
             return keyComparator.compare(e1._1, e2._1);
         }
+
+        @Override
+        public Comparator<Tuple2<K, V>> reversed() {
+            return new DescendingEntryComparator<>(keyComparator);
+        }
     }
+
+    private static class DescendingEntryComparator<K, V> extends EntryComparator<K, V> {
+        private static final long serialVersionUID = 1L;
+
+        DescendingEntryComparator(Comparator<? super K> keyComparator) {
+            super(keyComparator);
+        }
+
+        @Override
+        public int compare(Tuple2<K, V> e1, Tuple2<K, V> e2) {
+            return keyComparator.compare(e2._1, e1._1);
+        }
+
+        @Override
+        public Comparator<Tuple2<K, V>> reversed() {
+            return new EntryComparator<>(keyComparator);
+        }
+    }
+
 }

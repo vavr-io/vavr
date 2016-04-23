@@ -594,7 +594,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
     /**
-     * Calculates the maximum of this elements according to their natural order.
+     * Calculates the maximum element of this traversable according to the underlying {@link Comparator} if it exists, or their natural order if not.
      *
      * @return {@code Some(maximum)} of this elements or {@code None} if this is empty or this elements are not comparable
      */
@@ -654,7 +654,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
-     * Calculates the minimum of this elements according to their natural order.
+     * Calculates the minimum element of this traversable according to the underlying {@link Comparator} if it exists, or their natural order if not.
      *
      * @return {@code Some(minimum)} of this elements or {@code None} if this is empty or this elements are not comparable
      */

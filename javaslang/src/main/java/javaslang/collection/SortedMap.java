@@ -9,7 +9,6 @@ import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.util.Comparator;
-import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -138,10 +137,193 @@ public interface SortedMap<K, V> extends Map<K, V> {
     @Override
     SortedSet<K> keySet();
 
-    @Override
-    default Tuple2<K, V> last() {
-        return max().getOrElseThrow(() -> new NoSuchElementException("last on empty SortedMap"));
-    }
+    /**
+     * Returns a descending iterator that iterates elements in the reversed order induced by the key Comparator.
+     *
+     * @return
+     */
+    Iterator<Tuple2<K, V>> descendingIterator();
+
+    /**
+     * Returns a reverse order {@link SortedSet} of the keys contained in this map.
+     * <p>
+     * The returned set has the ordering equivalent to {@link Comparator#reversed()} of the key's comparator.
+     *
+     * @return The keys in descending order.
+     */
+    SortedSet<K> descendingKeySet();
+
+    /**
+     * Returns a reverse order map with the contents of this map.
+     * <p>
+     * The returned set has the ordering equivalent to {@link Comparator#reversed()} of the key's comparator.
+     *
+     * @return a reverse order map of this map
+     */
+    SortedMap<K, V> descendingMap();
+
+    /**
+     * Returns a map with entries whose keys range from {@code fromKey} to {@code toKey}.
+     * The {@code fromInclusive} and {@code toInclusive} flags control whether the lower and upper endpoints are
+     * inclusive or exclusive.
+     * <p>
+     * If {@code fromKey} is {@link Option#none()}, then it assumes {@link SortedMap#min()} inclusive,
+     * and the {@code fromInclusive} flag is ignored.
+     * <p>
+     * If {@code toKey} is {@link Option#none()}, then it assumes {@link SortedMap#max()} inclusive,
+     * and the {@code toInclusive} flag is ignored.
+     * <p>
+     * If {@code fromKey} is equal to {@code toKey}, then an empty map is returned
+     * unless both {@code fromInclusive} and {@code toInclusive} are {@code true}.
+     *
+     * @param fromKey       the low endpoint of the keys in the returned map.
+     *                      If {@link Option#none()} then it assumes {@code fromKey} is {@link SortedMap#min()} inclusive
+     *                      and ignores the {@code fromInclusive} flag.
+     *                      If {@code fromKey} is lower than {@link SortedMap#min()}, then the low endpoint is {@link SortedMap#min()} inclusive.
+     * @param fromInclusive {@code true} if the low endpoint is included, {@code false} if excluded
+     * @param toKey         the high endpoint of the keys in the returned map.
+     *                      If {@link Option#none()} then it assumes {@code toKey} is {@link SortedMap#max()} inclusive
+     *                      and ignores the {@code toInclusive} flag
+     *                      If {@code toKey} is lower than {@link SortedMap#max()}, then the high endpoint is {@link SortedMap#max()} inclusive.
+     * @param toInclusive   {@code true} if the high endpoint is included, {@code false} if excluded
+     * @return a map with entries with keys between {@code fromKey} to {@code toKey}
+     * @throws IllegalArgumentException If {@code fromKey} value is greater than {@code toKey} value
+     */
+    SortedMap<K, V> subMap(Option<K> fromKey, boolean fromInclusive, Option<K> toKey, boolean toInclusive);
+
+    /**
+     * Returns a map with entries whose keys range from {@code fromKey} to {@code toKey}.
+     * The {@code fromInclusive} and {@code toInclusive} flags control whether the lower and upper endpoints are
+     * inclusive or exclusive.
+     * <p>
+     * If {@code fromKey} is equal to {@code toKey}, then an empty map is returned
+     * unless both {@code fromInclusive} and {@code toInclusive} are {@code true}.
+     *
+     * @param fromKey       the low endpoint of the keys in the returned map.
+     *                      If {@code fromKey} is lower than {@link SortedMap#min()}, then the low endpoint is {@link SortedMap#min()} inclusive.
+     * @param fromInclusive {@code true} if the low endpoint is included, {@code false} if excluded
+     * @param toKey         the high endpoint of the keys in the returned map.
+     *                      If {@code toKey} is lower than {@link SortedMap#max()}, then the high endpoint is {@link SortedMap#max()} inclusive.
+     * @param toInclusive   {@code true} if the high endpoint is included, {@code false} if excluded
+     * @return a map with entries with keys between {@code fromKey} to {@code toKey}
+     * @throws IllegalArgumentException If {@code fromKey} value is greater than {@code toKey} value
+     */
+    SortedMap<K, V> subMap(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive);
+
+    /**
+     * Returns a map with entries whose keys range from {@code fromKey} inclusive to {@code toKey} exclusive.
+     * <p>
+     * If {@code fromKey} is equal to {@code toKey}, then it returns an empty map.
+     *
+     * @param fromKey       the low endpoint of the keys in the returned map.
+     *                      If {@code fromKey} is lower than {@link SortedMap#min()}, then the low endpoint is {@link SortedMap#min()} inclusive.
+     * @param toKey         the high endpoint of the keys in the returned map.
+     *                      If {@code toKey} is lower than {@link SortedMap#max()}, then the high endpoint is {@link SortedMap#max()} inclusive.
+     * @return a map with entries with keys between {@code fromKey} to {@code toKey}
+     * @throws IllegalArgumentException If {@code fromKey} value is greater than {@code toKey} value
+     */
+    SortedMap<K, V> subMap(K fromKey, K toKey);
+
+    /**
+     * Returns a map whose keys are less than or equal to the given {@code toKey} if {@code inclusive} is {@code true},
+     * or excluding the {@code toKey} if {@code inclusive} is {@code false}.
+     *
+     * @param toKey         the high endpoint of the keys in the returned map.
+     * @param inclusive     {@code true} if the high endpoint is included, {@code false} if excluded
+     * @return a map with entries with keys less than or equal to the given {@code toKey}
+     */
+    SortedMap<K, V> headMap(K toKey, boolean inclusive);
+
+    /**
+     * Returns a map whose keys are strictly less than the given {@code toKey}.
+     *
+     * @param toKey         the high endpoint (exclusive) of the keys in the returned map.
+     * @return a map with entries with keys less than or equal to the given {@code toKey}
+     */
+    SortedMap<K, V> headMap(K toKey);
+
+    /**
+     * Returns a map whose keys are greater than or equal to the given {@code fromKey} if {@code inclusive} is {@code true},
+     * or excluding the {@code fromKey} if {@code inclusive} is {@code false}.
+     *
+     * @param fromKey       the low endpoint of the keys in the returned map.
+     *                      If {@code null} then all elements are returned.
+     * @return a map with entries with keys greater than or equal to the given {@code fromKey}
+     */
+    SortedMap<K, V> tailMap(K fromKey, boolean inclusive);
+
+    /**
+     * Returns a map whose keys are greater than or equal to the given {@code fromKey} (inclusive)
+     *
+     * @param fromKey       the low endpoint (inclusive) of the keys in the returned map.
+     *                      If {@code null} then all elements are returned.
+     * @return a map with entries with keys greater than or equal to the given {@code fromKey}
+     */
+    SortedMap<K, V> tailMap(K fromKey);
+
+    /**
+     * Returns the element with the highest key lower than or equal to the given {@code key}, or {@link Option#none()} if not found.
+     *
+     * @param key the key
+     * @return the floor entry for the {@code key}, or {@link Option#none()} if not found
+     */
+    Option<Tuple2<K, V>> floor(K key);
+
+    /**
+     * Returns the highest key lower than or equal to the given {@code key}, or {@link Option#none()} if not found.
+     *
+     * @param key the key
+     * @return the floor for the {@code key}, or {@link Option#none()} if not found.
+     */
+    Option<K> floorKey(K key);
+
+    /**
+     * Returns the element with the lowest key greater than or equal to the given {@code key}, or {@link Option#none()} if not found.
+     *
+     * @param key the key
+     * @return the ceiling entry for the {@code key}, or {@link Option#none()} if not found.
+     */
+    Option<Tuple2<K, V>> ceiling(K key);
+
+    /**
+     * Returns the lowest key greater than or equal to the given {@code key}, or {@link Option#none()} if not found.
+     *
+     * @param key the key
+     * @return the ceiling for the {@code key}, or {@link Option#none()} if not found.
+     */
+    Option<K> ceilingKey(K key);
+
+    /**
+     * Returns the element with the highest key lower than the given {@code key}, or {@link Option#none()} if not found.
+     *
+     * @param key the key
+     * @return the highest entry lower than the given {@code key}, or {@link Option#none()} if not found
+     */
+    Option<Tuple2<K, V>> lower(K key);
+
+    /**
+     * Returns the highest key lower than the given {@code key}, or {@link Option#none()} if not found.
+     *
+     * @param key the key
+     * @return the highest key lower thant the given {@code key}, or {@link Option#none()} if not found.
+     */
+    Option<K> lowerKey(K key);
+
+    /**
+     * Returns the element with the lowest key higher than the given {@code key}, or {@link Option#none()} if not found.
+     *
+     * @param key the key
+     * @return the lowest entry higher than the given {@code key}, or {@link Option#none()} if not found
+     */
+    Option<Tuple2<K, V>> higher(K key);
+
+    /**
+     * Returns the lowest key higher than the given {@code key}, or {@link Option#none()} if not found.
+     *
+     * @param key the key
+     * @return the lowest key higher thant the given {@code key}, or {@link Option#none()} if not found.
+     */
+    Option<K> higherKey(K key);
 
     @Override
     <K2, V2> SortedMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
