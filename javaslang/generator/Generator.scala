@@ -1096,7 +1096,7 @@ def generateMainClasses(): Unit = {
 
             @Override
             public String toString() {
-                return ${if (i == 0) "\"()\"" else s"""String.format("(${(1 to i).gen(_ => s"%s")(", ")})", ${(1 to i).gen(j => s"_$j")(", ")})"""};
+                return ${if (i == 0) "\"()\"" else s""""(" + ${(1 to i).gen(j => s"_$j")(" + \", \"+ ")} + ")""""};
             }
 
             ${(i == 0).gen(xs"""

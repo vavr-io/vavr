@@ -785,7 +785,7 @@ public interface Tree<T> extends Traversable<T> {
             if (tree.isLeaf()) {
                 return value;
             } else {
-                return String.format("(%s %s)", value, tree.getChildren().map(Node::toLispString).mkString(" "));
+                return "(" + value + " " + (tree.getChildren().map(Node::toLispString).mkString(" ")) + ")";
             }
         }
 

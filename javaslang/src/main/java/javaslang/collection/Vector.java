@@ -1090,8 +1090,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public Vector<T> subSequence(int beginIndex, int endIndex) {
         if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
-            throw new IndexOutOfBoundsException(
-                    String.format("slice(%s, %s) on List of length %s", beginIndex, endIndex, length()));
+            throw new IndexOutOfBoundsException("slice(" + beginIndex + ", " + endIndex + ") on Vector of length " + length());
         }
         if (beginIndex == endIndex) {
             return Vector.empty();

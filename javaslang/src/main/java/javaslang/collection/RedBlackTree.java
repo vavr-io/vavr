@@ -834,8 +834,7 @@ interface RedBlackTreeModule {
                     }
                 }
             }
-            throw new IllegalStateException(
-                    String.format("unbalancedLeft(%s, %s, %s, %s, %s)", color, blackHeight, left, value, right));
+            throw new IllegalStateException("unbalancedLeft(" + color + ", " + blackHeight + ", " + left + ", " + value + ", " + right + ")");
         }
 
         private static <T> Tuple2<Node<T>, Boolean> unbalancedRight(Color color, int blackHeight, RedBlackTree<T> left,
@@ -856,8 +855,7 @@ interface RedBlackTreeModule {
                     }
                 }
             }
-            throw new IllegalStateException(
-                    String.format("unbalancedRight(%s, %s, %s, %s, %s)", color, blackHeight, left, value, right));
+            throw new IllegalStateException("unbalancedRight(" + color + ", " + blackHeight + ", " + left + ", " + value + ", " + right + ")");
         }
     }
 

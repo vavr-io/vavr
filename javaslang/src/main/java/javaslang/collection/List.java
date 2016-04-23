@@ -661,7 +661,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         for (int i = index - 1; i >= 0; i--) {
             list = list.tail();
             if (list.isEmpty()) {
-                throw new IndexOutOfBoundsException(String.format("get(%s) on List of length %s", index, index - i));
+                throw new IndexOutOfBoundsException("get(" + index + ") on List of length " + (index - i));
             }
         }
         return list.head();
@@ -1198,8 +1198,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         List<T> result = this;
         for (int i = 0; i < beginIndex; i++, result = result.tail()) {
             if (result.isEmpty()) {
-                throw new IndexOutOfBoundsException(
-                        String.format("subSequence(%s) on List of length %s", beginIndex, i));
+                throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ") on List of length " + i);
             }
         }
         return result;
@@ -1208,15 +1207,13 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default List<T> subSequence(int beginIndex, int endIndex) {
         if (beginIndex < 0 || beginIndex > endIndex) {
-            throw new IndexOutOfBoundsException(
-                    String.format("subSequence(%s, %s) on List of length %s", beginIndex, endIndex, length()));
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on List of length " + length());
         }
         List<T> result = Nil.instance();
         List<T> list = this;
         for (int i = 0; i < endIndex; i++, list = list.tail()) {
             if (list.isEmpty()) {
-                throw new IndexOutOfBoundsException(
-                        String.format("subSequence(%s, %s) on List of length %s", beginIndex, endIndex, i));
+                throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on List of length " + i);
             }
             if (i >= beginIndex) {
                 result = result.prepend(list.head());
