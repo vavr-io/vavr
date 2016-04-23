@@ -841,7 +841,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         for (int i = index - 1; i >= 0; i--) {
             stream = stream.tail();
             if (stream.isEmpty()) {
-                throw new IndexOutOfBoundsException(String.format("get(%s) on Stream of size %s", index, index - i));
+                throw new IndexOutOfBoundsException("get(" + index + ") on Stream of size " + (index - i));
             }
         }
         return stream.head();
@@ -1238,8 +1238,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         Stream<T> result = this;
         for (int i = 0; i < beginIndex; i++, result = result.tail()) {
             if (result.isEmpty()) {
-                throw new IndexOutOfBoundsException(
-                        String.format("subSequence(%s) on Stream of size %s", beginIndex, i));
+                throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ") on Stream of size " + i);
             }
         }
         return result;
@@ -1248,7 +1247,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     @Override
     default Stream<T> subSequence(int beginIndex, int endIndex) {
         if (beginIndex < 0 || beginIndex > endIndex) {
-            throw new IndexOutOfBoundsException(String.format("subSequence(%s, %s)", beginIndex, endIndex));
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ")");
         }
         if (beginIndex == endIndex) {
             return Empty.instance();

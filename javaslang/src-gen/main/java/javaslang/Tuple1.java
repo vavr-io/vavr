@@ -139,7 +139,7 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
 
     @Override
     public String toString() {
-        return String.format("(%s)", _1);
+        return "(" + _1 + ")";
     }
 
 }

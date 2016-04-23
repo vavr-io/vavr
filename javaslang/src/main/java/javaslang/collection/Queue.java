@@ -702,7 +702,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
                 final int reverseRearIndex = rearLength - rearIndex - 1;
                 return rear.get(reverseRearIndex);
             } else {
-                throw new IndexOutOfBoundsException(String.format("get(%s) on Queue of length %s", index, length()));
+                throw new IndexOutOfBoundsException("get(" + index + ") on Queue of length " + length());
             }
         }
     }
@@ -775,8 +775,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
                 final int reverseRearIndex = rearLength - rearIndex;
                 return new Queue<>(front, rear.insert(reverseRearIndex, element));
             } else {
-                throw new IndexOutOfBoundsException(
-                        String.format("insert(%s, e) on Queue of length %s", index, length()));
+                throw new IndexOutOfBoundsException("insert(" + index + ", e) on Queue of length " + length());
             }
         }
     }
@@ -797,8 +796,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
                 final int reverseRearIndex = rearLength - rearIndex;
                 return new Queue<>(front, rear.insertAll(reverseRearIndex, List.ofAll(elements).reverse()));
             } else {
-                throw new IndexOutOfBoundsException(
-                        String.format("insertAll(%s, e) on Queue of length %s", index, length()));
+                throw new IndexOutOfBoundsException("insertAll(" + index + ", e) on Queue of length " + length());
             }
         }
     }

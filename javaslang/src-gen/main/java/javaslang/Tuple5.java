@@ -344,7 +344,7 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
 
     @Override
     public String toString() {
-        return String.format("(%s, %s, %s, %s, %s)", _1, _2, _3, _4, _5);
+        return "(" + _1 + ", " + _2 + ", " + _3 + ", " + _4 + ", " + _5 + ")";
     }
 
 }

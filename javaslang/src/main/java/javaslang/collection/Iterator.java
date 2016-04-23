@@ -1666,7 +1666,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     @Override
     default Iterator<Seq<T>> sliding(long size, long step) {
         if (size <= 0 || step <= 0) {
-            throw new IllegalArgumentException(String.format("size: %s or step: %s not positive", size, step));
+            throw new IllegalArgumentException("size: " + size + " or step: " + step + " not positive");
         }
         if (!hasNext()) {
             return empty();

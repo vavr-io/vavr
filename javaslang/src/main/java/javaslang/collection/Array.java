@@ -1085,8 +1085,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     @Override
     public Array<T> subSequence(int beginIndex, int endIndex) {
         if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
-            throw new IndexOutOfBoundsException(
-                    String.format("subSequence(%s, %s) on List of length %s", beginIndex, endIndex, length()));
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on List of length " + length());
         }
         if (beginIndex == endIndex) {
             return Array.empty();
