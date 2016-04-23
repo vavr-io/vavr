@@ -254,7 +254,7 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2
 
     @Override
     public String toString() {
-        return "(" + _1 + ", "+ _2 + ", "+ _3 + ")";
+        return "(" + _1 + ", " + _2 + ", " + _3 + ")";
     }
 
 }
