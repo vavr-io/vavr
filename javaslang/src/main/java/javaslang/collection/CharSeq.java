@@ -13,6 +13,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.*;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collector;
 
@@ -130,7 +131,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      */
     public static CharSeq tabulate(int n, Function<? super Integer, ? extends Character> f) {
         Objects.requireNonNull(f, "f is null");
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; i++) {
             sb.append(f.apply(i));
         }
@@ -546,7 +547,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         final StringBuilder left = new StringBuilder();
         final StringBuilder right = new StringBuilder();
         for (int i = 0; i < length(); i++) {
-            Character t = get(i);
+            final Character t = get(i);
             (predicate.test(t) ? left : right).append(t);
         }
         if (left.length() == 0) {
@@ -607,7 +608,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         final StringBuilder sb = new StringBuilder();
         boolean found = false;
         for (int i = 0; i < length(); i++) {
-            char c = get(i);
+            final char c = get(i);
             if (!found && c == element) {
                 found = true;
             } else {
@@ -850,7 +851,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         Objects.requireNonNull(predicate, "predicate is null");
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length(); i++) {
-            char c = get(i);
+            final char c = get(i);
             if (!predicate.test(c)) {
                 break;
             }
@@ -922,8 +923,8 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     public <U> IndexedSeq<Tuple2<Character, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         IndexedSeq<Tuple2<Character, U>> result = Vector.empty();
-        Iterator<Character> list1 = iterator();
-        java.util.Iterator<? extends U> list2 = that.iterator();
+        final Iterator<Character> list1 = iterator();
+        final java.util.Iterator<? extends U> list2 = that.iterator();
         while (list1.hasNext() && list2.hasNext()) {
             result = result.append(Tuple.of(list1.next(), list2.next()));
         }
@@ -934,8 +935,8 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     public <U> IndexedSeq<Tuple2<Character, U>> zipAll(Iterable<? extends U> that, Character thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         IndexedSeq<Tuple2<Character, U>> result = Vector.empty();
-        Iterator<Character> list1 = iterator();
-        java.util.Iterator<? extends U> list2 = that.iterator();
+        final Iterator<Character> list1 = iterator();
+        final java.util.Iterator<? extends U> list2 = that.iterator();
         while (list1.hasNext() || list2.hasNext()) {
             final Character elem1 = list1.hasNext() ? list1.next() : thisElem;
             final U elem2 = list2.hasNext() ? list2.next() : thatElem;
@@ -987,7 +988,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         }
         final StringBuilder left = new StringBuilder();
         for (int i = 0; i < length(); i++) {
-            Character t = get(i);
+            final Character t = get(i);
             if (!predicate.test(t)) {
                 left.append(t);
             } else {
@@ -1005,7 +1006,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         }
         final StringBuilder left = new StringBuilder();
         for (int i = 0; i < length(); i++) {
-            Character t = get(i);
+            final Character t = get(i);
             left.append(t);
             if (predicate.test(t)) {
                 break;
@@ -1060,7 +1061,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     //
     //
-    // java.lang.CharSequence
+    // CharSequence
     //
     //
 
@@ -1331,10 +1332,10 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * <li> The two characters are the same (as compared by the
      * {@code ==} operator)
      * <li> Applying the method {@link
-     * java.lang.Character#toUpperCase(char)} to each character
+     * Character#toUpperCase(char)} to each character
      * produces the same result
      * <li> Applying the method {@link
-     * java.lang.Character#toLowerCase(char)} to each character
+     * Character#toLowerCase(char)} to each character
      * produces the same result
      * </ul>
      *
@@ -1513,7 +1514,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         if (endIndex > length()) {
             throw new IndexOutOfBoundsException("endIndex " + endIndex + " > length " + length());
         }
-        int subLen = endIndex - beginIndex;
+        final int subLen = endIndex - beginIndex;
         if (subLen < 0) {
             throw new IndexOutOfBoundsException("beginIndex " + beginIndex + " > endIndex " + endIndex);
         }
@@ -1974,7 +1975,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * same result as the expression
      *
      * <blockquote>
-     * {@link java.util.regex.Pattern}.{@link java.util.regex.Pattern#matches(String, CharSequence)
+     * {@link Pattern}.{@link Pattern#matches(String, CharSequence)
      * matches(<i>regex</i>, <i>str</i>)}
      * </blockquote>
      *
@@ -1982,7 +1983,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return {@code true} if, and only if, this string matches the
      * given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
-     * @see java.util.regex.Pattern
+     * @see Pattern
      */
     public boolean matches(String regex) {
         return back.matches(regex);
@@ -2010,9 +2011,9 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      *
      * <blockquote>
      * <code>
-     * {@link java.util.regex.Pattern}.{@link
-     * java.util.regex.Pattern#compile compile}(<i>regex</i>).{@link
-     * java.util.regex.Pattern#matcher(java.lang.CharSequence) matcher}(<i>str</i>).{@link
+     * {@link Pattern}.{@link
+     * Pattern#compile compile}(<i>regex</i>).{@link
+     * Pattern#matcher(CharSequence) matcher}(<i>str</i>).{@link
      * java.util.regex.Matcher#replaceFirst replaceFirst}(<i>repl</i>)
      * </code>
      * </blockquote>
@@ -2029,7 +2030,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @param replacement the string to be substituted for the first match
      * @return The resulting {@code CharSeq}
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
-     * @see java.util.regex.Pattern
+     * @see Pattern
      */
     public CharSeq replaceFirst(String regex, String replacement) {
         return CharSeq.of(back.replaceFirst(regex, replacement));
@@ -2046,9 +2047,9 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      *
      * <blockquote>
      * <code>
-     * {@link java.util.regex.Pattern}.{@link
-     * java.util.regex.Pattern#compile compile}(<i>regex</i>).{@link
-     * java.util.regex.Pattern#matcher(java.lang.CharSequence) matcher}(<i>str</i>).{@link
+     * {@link Pattern}.{@link
+     * Pattern#compile compile}(<i>regex</i>).{@link
+     * Pattern#matcher(CharSequence) matcher}(<i>str</i>).{@link
      * java.util.regex.Matcher#replaceAll replaceAll}(<i>repl</i>)
      * </code>
      * </blockquote>
@@ -2065,7 +2066,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @param replacement the string to be substituted for each match
      * @return The resulting {@code CharSeq}
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
-     * @see java.util.regex.Pattern
+     * @see Pattern
      */
     public CharSeq replaceAll(String regex, String replacement) {
         return CharSeq.of(back.replaceAll(regex, replacement));
@@ -2148,9 +2149,9 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      *
      * <blockquote>
      * <code>
-     * {@link java.util.regex.Pattern}.{@link
-     * java.util.regex.Pattern#compile compile}(<i>regex</i>).{@link
-     * java.util.regex.Pattern#split(java.lang.CharSequence, int) split}(<i>str</i>,&nbsp;<i>n</i>)
+     * {@link Pattern}.{@link
+     * Pattern#compile compile}(<i>regex</i>).{@link
+     * Pattern#split(CharSequence, int) split}(<i>str</i>,&nbsp;<i>n</i>)
      * </code>
      * </blockquote>
      *
@@ -2159,10 +2160,14 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return the Seq of strings computed by splitting this string
      * around matches of the given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
-     * @see java.util.regex.Pattern
+     * @see Pattern
      */
-    public Seq<CharSeq> split(String regex, int limit) {
-        Array<String> split = Array.wrap(back.split(regex, limit));
+    @Deprecated(/* Use splitSeq instead, will be removed in 3.0.0 */)
+    public CharSeq[] split(String regex, int limit) {
+        return splitSeq(regex, limit).toJavaArray(CharSeq.class);
+    }
+    public Seq<CharSeq> splitSeq(String regex, int limit) {
+        final Seq<String> split = Array.wrap(back.split(regex, limit));
         return split.map(CharSeq::of);
     }
 
@@ -2171,7 +2176,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * href="../util/regex/Pattern.html#sum">regular expression</a>.
      *
      * <p> This method works as if by invoking the two-argument {@link
-     * #split(String, int) split} method with the given expression and a limit
+     * #splitSeq(String, int) splitSeq} method with the given expression and a limit
      * argument of zero.  Trailing empty strings are therefore not included in
      * the resulting {@link javaslang.collection.Seq}.
      *
@@ -2193,16 +2198,20 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return the Seq of strings computed by splitting this string
      * around matches of the given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
-     * @see java.util.regex.Pattern
+     * @see Pattern
      */
-    public Seq<CharSeq> split(String regex) {
-        return split(regex, 0);
+    @Deprecated(/* Use splitSeq instead, will be removed in 3.0.0 */)
+    public CharSeq[] split(String regex) {
+        return splitSeq(regex, 0).toJavaArray(CharSeq.class);
+    }
+    public Seq<CharSeq> splitSeq(String regex) {
+        return splitSeq(regex, 0);
     }
 
     /**
      * Converts all of the characters in this {@code CharSeq} to lower
      * case using the rules of the given {@code Locale}.  Case mapping is based
-     * on the Unicode Standard version specified by the {@link java.lang.Character Character}
+     * on the Unicode Standard version specified by the {@link Character Character}
      * class. Since case mappings are not always 1:1 char mappings, the resulting
      * {@code CharSeq} may be a different length than the original {@code CharSeq}.
      * <p>
@@ -2281,7 +2290,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     /**
      * Converts all of the characters in this {@code CharSeq} to upper
      * case using the rules of the given {@code Locale}. Case mapping is based
-     * on the Unicode Standard version specified by the {@link java.lang.Character Character}
+     * on the Unicode Standard version specified by the {@link Character Character}
      * class. Since case mappings are not always 1:1 char mappings, the resulting
      * {@code CharSeq} may be a different length than the original {@code CharSeq}.
      * <p>
