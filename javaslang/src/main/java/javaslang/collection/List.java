@@ -546,7 +546,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default List<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return foldRight(ofAll(elements), (x, xs) -> xs.prepend(x));
+        return ofAll(elements).prependAll(this);
     }
 
     @Override
@@ -1056,7 +1056,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> reverse() {
-        return isEmpty() ? this : foldLeft(empty(), List::prepend);
+        return (length() <= 1) ? this : foldLeft(empty(), List::prepend);
     }
 
     @Override
