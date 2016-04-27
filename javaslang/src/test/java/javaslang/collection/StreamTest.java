@@ -586,6 +586,11 @@ public class StreamTest extends AbstractLinearSeqTest {
 
     }
 
+    @Test
+    public void shouldReturnStringAsStreamOfCharacterValues() {
+        assertThat(Stream.ofString("123qazWER")).containsExactly('1', '2', '3', 'q', 'a', 'z', 'W', 'E', 'R');
+    }
+
     private boolean hiddenThrow(final int i) {
         if (i == 0) {
             return true;

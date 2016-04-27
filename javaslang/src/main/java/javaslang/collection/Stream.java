@@ -351,6 +351,17 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     /**
+     * Creates a Stream based on the string characters.
+     *
+     * @param value string value
+     * @return A new Stream of Character values
+     */
+    static Stream<Character> ofString(String value) {
+        Objects.requireNonNull(value, "string value is null");
+        return Stream.ofAll(value.toCharArray());
+    }
+
+    /**
      * Creates a Stream based on the elements of a double array.
      *
      * @param array a double array
