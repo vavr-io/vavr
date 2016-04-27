@@ -173,7 +173,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     /**
      * Creates an Iterator based on the given Iterable. This is a convenience method for
-     * {@code Iterator.of(iterable.iterator()}.
+     * {@code Iterator.ofAll(iterable.iterator()}.
      *
      * @param iterable A {@link Iterable}
      * @param <T>      Component type.

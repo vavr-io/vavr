@@ -157,10 +157,10 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     }
 
     /**
-     * Creates a Seq based on the elements of a boolean array.
+     * Creates a Queue based on the elements of a boolean array.
      *
      * @param array a boolean array
-     * @return A new Seq of Boolean values
+     * @return A new Queue of Boolean values
      * @throws NullPointerException if array is null
      */
     public static Queue<Boolean> ofAll(boolean[] array) {

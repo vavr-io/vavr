@@ -7,15 +7,14 @@ package javaslang.collection;
 
 import javaslang.control.Option;
 
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BiFunction;
 
 /**
- * Interface of folable data structures.
+ * Interface of foldable data structures.
  * <p>
  * <strong>Example:</strong>
- *
+ * <p>
  * <pre><code>
  * // = "123"
  * Stream.of("1", "2", "3").fold("", (a1, a2) -&gt; a1 + a2);

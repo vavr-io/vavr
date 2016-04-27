@@ -45,7 +45,7 @@ public final class Predicates {
      * Hint: Use {@code is(null)} instead of introducing a new predicate {@code isNull()}
      *
      * @param value A value, may be null
-     * @param <T> value type
+     * @param <T>   value type
      * @return A new {@code Predicate}
      */
     public static <T> Predicate<T> is(T value) {
@@ -57,7 +57,7 @@ public final class Predicates {
      * using {@link Objects#equals(Object, Object)} for comparison.
      *
      * @param values an array of values of type T
-     * @param <T> value type
+     * @param <T>    value type
      * @return A new {@code Predicate}
      * @throws NullPointerException if {@code values} is null
      */
@@ -71,6 +71,7 @@ public final class Predicates {
 
     /**
      * Creates a {@code Predicate} that tests, if an object is null
+     *
      * @param <T> value type
      * @return A new {@code Predicate}
      */
@@ -80,6 +81,7 @@ public final class Predicates {
 
     /**
      * Creates a {@code Predicate} that tests, if an object is not null
+     *
      * @param <T> value type
      * @return A new {@code Predicate}
      */
@@ -95,7 +97,7 @@ public final class Predicates {
      * By definition {@code allOf} is satisfied if the given {@code predicates} are empty.
      *
      * @param predicates An array of predicates
-     * @param <T> clojure over tested object types
+     * @param <T>        closure over tested object types
      * @return A new {@code Predicate}
      */
     // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
@@ -110,7 +112,7 @@ public final class Predicates {
      * A combinator that checks if <strong>at least one</strong> of the given {@code predicates} is satisfies.
      *
      * @param predicates An array of predicates
-     * @param <T> clojure over tested object types
+     * @param <T>        closure over tested object types
      * @return A new {@code Predicate}
      */
     // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
@@ -127,7 +129,7 @@ public final class Predicates {
      * Naturally {@code noneOf} is satisfied if the given {@code predicates} are empty.
      *
      * @param predicates An array of predicates
-     * @param <T> clojure over tested object types
+     * @param <T>        closure over tested object types
      * @return A new {@code Predicate}
      */
     // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
