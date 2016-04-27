@@ -16,8 +16,8 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.collection.Tree.Order.PRE_ORDER;
 import static javaslang.collection.Tree.*;
+import static javaslang.collection.Tree.Order.PRE_ORDER;
 
 /**
  * A general Tree interface.
@@ -709,7 +709,7 @@ public interface Tree<T> extends Traversable<T> {
             Objects.requireNonNull(children, "children is null");
             this.value = value;
             this.children = children;
-            this.size = 1 + this.children.foldLeft(0, (acc, child) -> acc + child.size);
+            this.size = children.foldLeft(1, (acc, child) -> acc + child.size);
         }
 
         @Override
