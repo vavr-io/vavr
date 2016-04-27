@@ -15,6 +15,8 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+import static javaslang.collection.Iterator.*;
+
 public class IteratorTest extends AbstractTraversableTest {
 
     @Override
@@ -177,7 +179,7 @@ public class IteratorTest extends AbstractTraversableTest {
     @Test
     public void shouldNarrowIterator() {
         final Iterator<Double> doubles = of(1.0d);
-        final Iterator<Number> numbers = Iterator.narrow(doubles);
+        final Iterator<Number> numbers = narrow(doubles);
         final int actual = numbers.concat(Iterator.of(new BigDecimal("2.0"))).sum().intValue();
         assertThat(actual).isEqualTo(3);
     }
@@ -234,26 +236,26 @@ public class IteratorTest extends AbstractTraversableTest {
     @Test
     public void shouldConcatEmptyIterableIterable() {
         final Iterable<Iterable<Integer>> empty = List.empty();
-        assertThat(Iterator.concat(empty)).isSameAs(Iterator.empty());
+        assertThat(concat(empty)).isSameAs(Iterator.empty());
 
     }
 
     @Test
     public void shouldConcatNonEmptyIterableIterable() {
         final Iterable<Iterable<Integer>> itIt = List.of(List.of(1, 2), List.of(3));
-        assertThat(Iterator.concat(itIt)).isEqualTo(Iterator.of(1, 2, 3));
+        assertThat(concat(itIt)).isEqualTo(Iterator.of(1, 2, 3));
 
     }
 
     @Test
     public void shouldConcatEmptyArrayIterable() {
-        assertThat(Iterator.concat()).isSameAs(Iterator.empty());
+        assertThat(concat()).isSameAs(Iterator.empty());
 
     }
 
     @Test
     public void shouldConcatNonEmptyArrayIterable() {
-        assertThat(Iterator.concat(List.of(1, 2), List.of(3))).isEqualTo(Iterator.of(1, 2, 3));
+        assertThat(concat(List.of(1, 2), List.of(3))).isEqualTo(Iterator.of(1, 2, 3));
 
     }
 
@@ -288,13 +290,13 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldGenerateIntStream() {
-        assertThat(Iterator.from(-1).take(3)).isEqualTo(Iterator.of(-1, 0, 1));
+        assertThat(from(-1).take(3)).isEqualTo(Iterator.of(-1, 0, 1));
     }
 
     @Test
     public void shouldGenerateOverflowingIntStream() {
         //noinspection NumericOverflow
-        assertThat(Iterator.from(Integer.MAX_VALUE).take(2))
+        assertThat(from(Integer.MAX_VALUE).take(2))
                 .isEqualTo(Iterator.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 1));
     }
 
@@ -302,13 +304,13 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldGenerateIntStreamWithStep() {
-        assertThat(Iterator.from(-1, 6).take(3)).isEqualTo(Iterator.of(-1, 5, 11));
+        assertThat(from(-1, 6).take(3)).isEqualTo(Iterator.of(-1, 5, 11));
     }
 
     @Test
     public void shouldGenerateOverflowingIntStreamWithStep() {
         //noinspection NumericOverflow
-        assertThat(Iterator.from(Integer.MAX_VALUE, 2).take(2))
+        assertThat(from(Integer.MAX_VALUE, 2).take(2))
                 .isEqualTo(Iterator.of(Integer.MAX_VALUE, Integer.MAX_VALUE + 2));
     }
 
@@ -316,40 +318,40 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldGenerateLongStream() {
-        assertThat(Iterator.from(-1L).take(3)).isEqualTo(Iterator.of(-1L, 0L, 1L));
+        assertThat(from(-1L).take(3)).isEqualTo(Iterator.of(-1L, 0L, 1L));
     }
 
     @Test
     public void shouldGenerateOverflowingLongStream() {
         //noinspection NumericOverflow
-        assertThat(Iterator.from(Long.MAX_VALUE).take(2)).isEqualTo(Iterator.of(Long.MAX_VALUE, Long.MAX_VALUE + 1));
+        assertThat(from(Long.MAX_VALUE).take(2)).isEqualTo(Iterator.of(Long.MAX_VALUE, Long.MAX_VALUE + 1));
     }
 
     // -- static from(long, long)
 
     @Test
     public void shouldGenerateLongStreamWithStep() {
-        assertThat(Iterator.from(-1L, 5L).take(3)).isEqualTo(Iterator.of(-1L, 4L, 9L));
+        assertThat(from(-1L, 5L).take(3)).isEqualTo(Iterator.of(-1L, 4L, 9L));
     }
 
     @Test
     public void shouldGenerateOverflowingLongStreamWithStep() {
         //noinspection NumericOverflow
-        assertThat(Iterator.from(Long.MAX_VALUE, 2).take(2)).isEqualTo(Iterator.of(Long.MAX_VALUE, Long.MAX_VALUE + 2));
+        assertThat(from(Long.MAX_VALUE, 2).take(2)).isEqualTo(Iterator.of(Long.MAX_VALUE, Long.MAX_VALUE + 2));
     }
 
     // -- static continually(Supplier)
 
     @Test
     public void shouldGenerateInfiniteStreamBasedOnSupplier() {
-        assertThat(Iterator.continually(() -> 1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
+        assertThat(continually(() -> 1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
     }
 
     // -- static iterate(T, Function)
 
     @Test
     public void shouldGenerateInfiniteStreamBasedOnSupplierWithAccessToPreviousValue() {
-        assertThat(Iterator.iterate(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
+        assertThat(iterate(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
     }
 
     // ++++++ OBJECT ++++++
@@ -397,6 +399,30 @@ public class IteratorTest extends AbstractTraversableTest {
         final Seq<?> actual = of('a', 'b', 'c').groupBy(c -> 1).map(e -> Tuple.of(e._1, List.ofAll(e._2)));
         final Seq<?> expected = HashMap.of(1, List.ofAll(of('a', 'b', 'c'))).toList();
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateDoubleRangeByFromInfinity() {
+        assertThat(rangeBy(Double.NEGATIVE_INFINITY, 0.0, 1.0)).startsWith(Double.NEGATIVE_INFINITY, -Double.MAX_VALUE);
+        assertThat(rangeBy(Double.POSITIVE_INFINITY, 0.0, -1.0)).startsWith(Double.POSITIVE_INFINITY, Double.MAX_VALUE);
+    }
+
+    @Test
+    public void shouldCreateDoubleRangeClosedByFromInfinity() {
+        assertThat(rangeClosedBy(Double.NEGATIVE_INFINITY, 0.0, 1.0)).startsWith(Double.NEGATIVE_INFINITY, -Double.MAX_VALUE);
+        assertThat(rangeClosedBy(Double.POSITIVE_INFINITY, 0.0, -1.0)).startsWith(Double.POSITIVE_INFINITY, Double.MAX_VALUE);
+    }
+
+    @Test
+    public void shouldCreateDoubleRangeByFromMaxToInfinity() {
+        assertThat(rangeBy(Double.MAX_VALUE, Double.POSITIVE_INFINITY, 3E307)).isEqualTo(of(Double.MAX_VALUE));
+        assertThat(rangeBy(-Double.MAX_VALUE, Double.NEGATIVE_INFINITY, -3E307)).isEqualTo(of(-Double.MAX_VALUE));
+    }
+
+    @Test
+    public void shouldCreateDoubleRangeClosedByFromMaxToInfinity() {
+        assertThat(rangeClosedBy(Double.MAX_VALUE, Double.POSITIVE_INFINITY, 3E307)).isEqualTo(of(Double.MAX_VALUE));
+        assertThat(rangeClosedBy(-Double.MAX_VALUE, Double.NEGATIVE_INFINITY, -3E307)).isEqualTo(of(-Double.MAX_VALUE));
     }
 
     // -- serialization/deserialization
