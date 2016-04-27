@@ -107,7 +107,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     /**
      * Creates a Array of the given elements.
-     *
+     * <p>
      * The resulting Array has the same iteration order as the given iterable of elements
      * if the iteration order of the elements is stable.
      *
@@ -134,7 +134,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      */
     public static Array<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -145,7 +145,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      */
     public static Array<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -156,7 +156,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      */
     public static Array<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -167,7 +167,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      */
     public static Array<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -178,7 +178,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      */
     public static Array<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -189,7 +189,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      */
     public static Array<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -200,7 +200,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      */
     public static Array<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -211,7 +211,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      */
     public static Array<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Array.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -226,7 +226,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      */
     public static <T> Array<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return Collections.tabulate(n, f, Array.empty(), Array::of);
+        return Collections.tabulate(n, f, empty(), Array::of);
     }
 
     /**
@@ -240,19 +240,19 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      */
     public static <T> Array<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return Collections.fill(n, s, Array.empty(), Array::of);
+        return Collections.fill(n, s, empty(), Array::of);
     }
 
     public static Array<Character> range(char from, char toExclusive) {
-        return Array.ofAll(Iterator.range(from, toExclusive));
+        return ofAll(Iterator.range(from, toExclusive));
     }
 
     public static Array<Character> rangeBy(char from, char toExclusive, int step) {
-        return Array.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     public static Array<Double> rangeBy(double from, double toExclusive, double step) {
-        return Array.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -272,7 +272,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
      */
     public static Array<Integer> range(int from, int toExclusive) {
-        return Array.ofAll(Iterator.range(from, toExclusive));
+        return ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -298,7 +298,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Array<Integer> rangeBy(int from, int toExclusive, int step) {
-        return Array.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -318,7 +318,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
      */
     public static Array<Long> range(long from, long toExclusive) {
-        return Array.ofAll(Iterator.range(from, toExclusive));
+        return ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -344,19 +344,19 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Array<Long> rangeBy(long from, long toExclusive, long step) {
-        return Array.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     public static Array<Character> rangeClosed(char from, char toInclusive) {
-        return Array.ofAll(Iterator.rangeClosed(from, toInclusive));
+        return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     public static Array<Character> rangeClosedBy(char from, char toInclusive, int step) {
-        return Array.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     public static Array<Double> rangeClosedBy(double from, double toInclusive, double step) {
-        return Array.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -376,7 +376,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @return a range of int values as specified or the empty range if {@code from > toInclusive}
      */
     public static Array<Integer> rangeClosed(int from, int toInclusive) {
-        return Array.ofAll(Iterator.rangeClosed(from, toInclusive));
+        return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -402,7 +402,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Array<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        return Array.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -422,7 +422,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @return a range of long values as specified or the empty range if {@code from > toInclusive}
      */
     public static Array<Long> rangeClosed(long from, long toInclusive) {
-        return Array.ofAll(Iterator.rangeClosed(from, toInclusive));
+        return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -448,7 +448,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Array<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        return Array.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     @Override
@@ -465,7 +465,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         if (source.length == 0) {
             return this;
         } else {
-            Object[] arr = Arrays.copyOf(back, back.length + source.length);
+            final Object[] arr = Arrays.copyOf(back, back.length + source.length);
             System.arraycopy(source, 0, arr, back.length, source.length);
             return wrap(arr);
         }
@@ -501,7 +501,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public Array<Array<T>> combinations() {
-        return Array.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
+        return rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
 
     @Override
@@ -511,7 +511,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public Iterator<Array<T>> crossProduct(int power) {
-        return Collections.crossProduct(Array.empty(), this, power);
+        return Collections.crossProduct(empty(), this, power);
     }
 
     @SuppressWarnings("unchecked")
@@ -621,7 +621,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     public <C> Map<C, Array<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return foldLeft(HashMap.empty(), (map, t) -> {
             final C key = classifier.apply(t);
-            final Array<T> values = map.get(key).map(ts -> ts.append(t)).getOrElse(Array.of(t));
+            final Array<T> values = map.get(key).map(ts -> ts.append(t)).getOrElse(of(t));
             return map.put(key, values);
         });
     }
@@ -705,7 +705,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         if (list.length == 0) {
             return this;
         } else {
-            Object[] arr = new Object[back.length + list.length];
+            final Object[] arr = new Object[back.length + list.length];
             System.arraycopy(back, 0, arr, 0, index);
             System.arraycopy(list, 0, arr, index, list.length);
             System.arraycopy(back, index, arr, index + list.length, back.length - index);
@@ -791,7 +791,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         for (T t : this) {
             (predicate.test(t) ? left : right).add(t);
         }
-        return Tuple.of(Array.ofAll(left), Array.ofAll(right));
+        return Tuple.of(ofAll(left), ofAll(right));
     }
 
     @Override
@@ -810,7 +810,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         } else {
             final Array<T> tail = tail();
             if (tail.isEmpty()) {
-                return Array.of(this);
+                return of(this);
             } else {
                 final Array<Array<T>> zero = empty();
                 return distinct().foldLeft(zero, (xs, x) -> {
@@ -982,7 +982,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     @Override
     public Array<T> slice(long beginIndex, long endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
-            return Array.empty();
+            return empty();
         }
         if (beginIndex <= 0 && endIndex >= length()) {
             return this;
@@ -1088,7 +1088,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
             throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on List of length " + length());
         }
         if (beginIndex == endIndex) {
-            return Array.empty();
+            return empty();
         }
         final Object[] arr = new Object[endIndex - beginIndex];
         System.arraycopy(back, beginIndex, arr, 0, arr.length);
@@ -1167,7 +1167,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public <U> Array<U> unit(Iterable<? extends U> iterable) {
-        return Array.ofAll(iterable);
+        return ofAll(iterable);
     }
 
     @Override
@@ -1223,18 +1223,18 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     @Override
     public <U> Array<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
-        return Array.ofAll(iterator().zip(that));
+        return ofAll(iterator().zip(that));
     }
 
     @Override
     public <U> Array<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        return Array.ofAll(iterator().zipAll(that, thisElem, thatElem));
+        return ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
 
     @Override
     public Array<Tuple2<T, Long>> zipWithIndex() {
-        return Array.ofAll(iterator().zipWithIndex());
+        return ofAll(iterator().zipWithIndex());
     }
 
     @Override

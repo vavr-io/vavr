@@ -5,20 +5,14 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.control.Option;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.IterableAssert;
-import org.assertj.core.api.ObjectAssert;
+import org.assertj.core.api.*;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
 import java.util.stream.Collector;
 
 public class IteratorTest extends AbstractTraversableTest {
@@ -35,7 +29,7 @@ public class IteratorTest extends AbstractTraversableTest {
                     Assertions.assertThat(wrapIterator(opt1)).isEqualTo(wrapIterator(opt2));
                     return this;
                 } else {
-                    Iterable<T> iterable = (Iterable<T>) expected;
+                    final Iterable<T> iterable = (Iterable<T>) expected;
                     Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll(iterable));
                     return this;
                 }
@@ -239,14 +233,14 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldConcatEmptyIterableIterable() {
-        Iterable<Iterable<Integer>> empty = List.empty();
+        final Iterable<Iterable<Integer>> empty = List.empty();
         assertThat(Iterator.concat(empty)).isSameAs(Iterator.empty());
 
     }
 
     @Test
     public void shouldConcatNonEmptyIterableIterable() {
-        Iterable<Iterable<Integer>> itIt = List.of(List.of(1, 2), List.of(3));
+        final Iterable<Iterable<Integer>> itIt = List.of(List.of(1, 2), List.of(3));
         assertThat(Iterator.concat(itIt)).isEqualTo(Iterator.of(1, 2, 3));
 
     }
@@ -267,13 +261,13 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldConcatThisNonEmptyWithEmpty() {
-        Iterator<Integer> it = Iterator.of(1);
+        final Iterator<Integer> it = Iterator.of(1);
         assertThat(it.concat(Iterator.<Integer> empty())).isSameAs(it);
     }
 
     @Test
     public void shouldConcatThisEmptyWithNonEmpty() {
-        Iterator<Integer> it = Iterator.of(1);
+        final Iterator<Integer> it = Iterator.of(1);
         assertThat(Iterator.<Integer> empty().concat(it)).isSameAs(it);
     }
 
@@ -286,7 +280,7 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldTransform() {
-        Iterator<?> it = Iterator.of(1, 2).transform(ii -> ii.drop(1));
+        final Iterator<?> it = Iterator.of(1, 2).transform(ii -> ii.drop(1));
         assertThat(it).isEqualTo(Iterator.of(2));
     }
 

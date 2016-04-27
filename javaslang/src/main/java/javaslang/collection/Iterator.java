@@ -29,7 +29,7 @@ import java.util.function.*;
  * <p>
  * <strong>Caution: Other methods than {@code hasNext} and {@code next} can be called only once (exclusively).
  * More specifically, after calling a method it cannot be guaranteed that the next call will succeed.</strong>
- *
+ * <p>
  * An Iterator that can be only used once because it is a traversal pointer into a collection, and not a collection
  * itself.
  *
@@ -152,7 +152,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static <T> Iterator<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements.length == 0) {
-            return Iterator.empty();
+            return empty();
         } else {
             return new AbstractIterator<T>() {
 
@@ -185,7 +185,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (iterable instanceof Iterator) {
             return (Iterator<T>) iterable;
         } else {
-            return Iterator.ofAll(iterable.iterator());
+            return ofAll(iterable.iterator());
         }
     }
 
@@ -447,7 +447,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return a range of characters as specified or the empty range if {@code from >= toExclusive}
      */
     static Iterator<Character> range(char from, char toExclusive) {
-        return Iterator.rangeBy(from, toExclusive, 1);
+        return rangeBy(from, toExclusive, 1);
     }
 
     /**
@@ -471,7 +471,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Character> rangeBy(char from, char toExclusive, int step) {
-        return Iterator.rangeBy((int) from, (int) toExclusive, step).map(i -> (char) i.shortValue());
+        return rangeBy((int) from, (int) toExclusive, step).map(i -> (char) i.shortValue());
     }
 
     static Iterator<Double> rangeBy(double from, double toExclusive, double step) {
@@ -484,7 +484,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (step * (from - toExclusive) >= 0) {
-            return Iterator.empty();
+            return empty();
         } else {
             return new AbstractIterator<Double>() {
 
@@ -532,7 +532,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
      */
     static Iterator<Integer> range(int from, int toExclusive) {
-        return Iterator.rangeBy(from, toExclusive, 1);
+        return rangeBy(from, toExclusive, 1);
     }
 
     /**
@@ -557,7 +557,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static Iterator<Integer> rangeBy(int from, int toExclusive, int step) {
         final int one = step > 0 ? 1 : -1;
-        return Iterator.rangeClosedBy(from, toExclusive - one, step);
+        return rangeClosedBy(from, toExclusive - one, step);
     }
 
     /**
@@ -577,7 +577,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
      */
     static Iterator<Long> range(long from, long toExclusive) {
-        return Iterator.rangeBy(from, toExclusive, 1);
+        return rangeBy(from, toExclusive, 1);
     }
 
     /**
@@ -602,7 +602,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static Iterator<Long> rangeBy(long from, long toExclusive, long step) {
         final int one = step > 0 ? 1 : -1;
-        return Iterator.rangeClosedBy(from, toExclusive - one, step);
+        return rangeClosedBy(from, toExclusive - one, step);
     }
 
     /**
@@ -621,7 +621,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return a range of characters as specified or the empty range if {@code from > toInclusive}
      */
     static Iterator<Character> rangeClosed(char from, char toInclusive) {
-        return Iterator.rangeClosedBy(from, toInclusive, 1);
+        return rangeClosedBy(from, toInclusive, 1);
     }
 
     /**
@@ -645,7 +645,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Character> rangeClosedBy(char from, char toInclusive, int step) {
-        return Iterator.rangeClosedBy((int) from, (int) toInclusive, step).map(i -> (char) i.shortValue());
+        return rangeClosedBy((int) from, (int) toInclusive, step).map(i -> (char) i.shortValue());
     }
 
     static Iterator<Double> rangeClosedBy(double from, double toInclusive, double step) {
@@ -658,9 +658,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
-            return Iterator.of(from);
+            return of(from);
         } else if (step * (from - toInclusive) > 0) {
-            return Iterator.empty();
+            return empty();
         } else {
             return new AbstractIterator<Double>() {
 
@@ -708,7 +708,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return a range of int values as specified or the empty range if {@code from > toInclusive}
      */
     static Iterator<Integer> rangeClosed(int from, int toInclusive) {
-        return Iterator.rangeClosedBy(from, toInclusive, 1);
+        return rangeClosedBy(from, toInclusive, 1);
     }
 
     /**
@@ -735,9 +735,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
-            return Iterator.of(from);
+            return of(from);
         } else if (Integer.signum(step) * Integer.signum(from - toInclusive) > 0) {
-            return Iterator.empty();
+            return empty();
         } else {
             return new AbstractIterator<Integer>() {
 
@@ -780,7 +780,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return a range of long values as specified or the empty range if {@code from > toInclusive}
      */
     static Iterator<Long> rangeClosed(long from, long toInclusive) {
-        return Iterator.rangeClosedBy(from, toInclusive, 1L);
+        return rangeClosedBy(from, toInclusive, 1L);
     }
 
     /**
@@ -807,9 +807,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (step == 0L) {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
-            return Iterator.of(from);
+            return of(from);
         } else if (Long.signum(step) * Long.signum(from - toInclusive) > 0L) {
-            return Iterator.empty();
+            return empty();
         } else {
             return new AbstractIterator<Long>() {
 
@@ -879,7 +879,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
             @Override
             public Integer getNext() {
-                int result = next;
+                final int result = next;
                 next += step;
                 return result;
             }
@@ -930,7 +930,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
             @Override
             public Long getNext() {
-                long result = next;
+                final long result = next;
                 next += step;
                 return result;
             }
@@ -980,7 +980,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
             @Override
             public T getNext() {
-                T result = next;
+                final T result = next;
                 next = f.apply(next);
                 return result;
             }
@@ -1016,9 +1016,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (!that.hasNext()) {
             return this;
         } else if (!hasNext()) {
-            return Iterator.ofAll(that);
+            return ofAll(that);
         } else {
-            return Iterator.concat(this, Iterator.ofAll(that));
+            return concat(this, ofAll(that));
         }
     }
 
@@ -1107,8 +1107,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
                 @Override
                 public Tuple2<T, U> getNext() {
-                    T v1 = thisIt.hasNext() ? thisIt.next() : thisElem;
-                    U v2 = thatIt.hasNext() ? thatIt.next() : thatElem;
+                    final T v1 = thisIt.hasNext() ? thisIt.next() : thisElem;
+                    final U v2 = thatIt.hasNext() ? thatIt.next() : thatElem;
                     return Tuple.of(v1, v2);
                 }
             };
@@ -1248,7 +1248,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
                 @Override
                 public T getNext() {
-                    Tuple2<T, Queue<T>> t = queue.append(that.next()).dequeue();
+                    final Tuple2<T, Queue<T>> t = queue.append(that.next()).dequeue();
                     queue = t._2;
                     return t._1;
                 }
@@ -1324,7 +1324,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
                 @Override
                 public T getNext() {
-                    T result = next.get();
+                    final T result = next.get();
                     next = Option.none();
                     return result;
                 }
@@ -1398,7 +1398,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (!hasNext()) {
             return HashMap.empty();
         } else {
-            Map<C, Stream<T>> streams = foldLeft(HashMap.empty(), (map, entry) -> {
+            final Map<C, Stream<T>> streams = foldLeft(HashMap.empty(), (map, entry) -> {
                 final C key = classifier.apply(entry);
                 final Stream<T> values = map.get(key).map(entries -> entries.append(entry)).getOrElse(Stream.of(entry));
                 return map.put(key, values);
@@ -1535,7 +1535,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (isEmpty()) {
             throw new NoSuchElementException("reduceLeft on Nil");
         } else {
-            Stream<T> stream = Stream.ofAll(this);
+            final Stream<T> stream = Stream.ofAll(this);
             return stream.tail().foldLeft(stream.head(), op);
         }
     }
@@ -1546,7 +1546,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (isEmpty()) {
             throw new NoSuchElementException("reduceRight on Nil");
         } else {
-            Stream<T> reversed = Stream.ofAll(this).reverse();
+            final Stream<T> reversed = Stream.ofAll(this).reverse();
             return reversed.reduceLeft((xs, x) -> op.apply(x, xs));
         }
     }
@@ -1620,7 +1620,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     default <U> Iterator<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         if (isEmpty()) {
-            return Iterator.of(zero);
+            return of(zero);
         } else {
             final Iterator<T> that = this;
             return new AbstractIterator<U>() {
@@ -1652,7 +1652,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     default <U> Iterator<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         if (isEmpty()) {
-            return Iterator.of(zero);
+            return of(zero);
         } else {
             return Collections.scanRight(this, zero, operation, Stream.empty(), Stream::prepend, Stream::iterator);
         }
@@ -1702,7 +1702,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
-            Stream<T> that = Stream.ofAll(this);
+            final Stream<T> that = Stream.ofAll(this);
             return Tuple.of(that.iterator().takeWhile(predicate), that.iterator().dropWhile(predicate));
         }
     }
@@ -1710,7 +1710,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     @Override
     default Spliterator<T> spliterator() {
         // the focus of the Stream API is on random-access collections of *known size*
-        Stream<T> stream = Stream.ofAll(this);
+        final Stream<T> stream = Stream.ofAll(this);
         return Spliterators.spliterator(stream.iterator(), stream.length(),
                 Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }

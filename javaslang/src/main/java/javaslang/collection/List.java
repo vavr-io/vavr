@@ -40,7 +40,7 @@ import java.util.stream.Collector;
  * List.rangeClosed(0, 3)        // = 0, 1, 2, 3
  * </code>
  * </pre>
- *
+ * <p>
  * Note: A {@code List} is primary a {@code Seq} and extends {@code Stack} for technical reasons (so {@code Stack} does not need to wrap {@code List}).
  * <p>
  * If operating on a {@code List}, please prefer
@@ -50,9 +50,9 @@ import java.util.stream.Collector;
  * <li>{@link #tail()} over {@link #pop()}</li>
  * <li>{@link #tailOption()} over {@link #popOption()}</li>
  * </ul>
- *
+ * <p>
  * Factory method applications:
- *
+ * <p>
  * <pre>
  * <code>
  * List&lt;Integer&gt;       s1 = List.of(1);
@@ -69,16 +69,16 @@ import java.util.stream.Collector;
  * List&lt;Integer[]&gt;     s7 = List.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
  * </code>
  * </pre>
- *
+ * <p>
  * Example: Converting a String to digits
- *
+ * <p>
  * <pre>
  * <code>
  * // = List(1, 2, 3)
  * List.of("123".toCharArray()).map(c -&gt; Character.digit(c, 10))
  * </code>
  * </pre>
- *
+ * <p>
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 7 ff.). Cambridge, 2003.
  *
  * @param <T> Component type of the List
@@ -221,7 +221,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      */
     static List<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -232,7 +232,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      */
     static List<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -243,7 +243,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      */
     static List<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -254,7 +254,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      */
     static List<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -265,7 +265,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      */
     static List<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -276,7 +276,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      */
     static List<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -287,7 +287,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      */
     static List<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -298,7 +298,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      */
     static List<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
-        return List.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -313,7 +313,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      */
     static <T> List<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return Collections.tabulate(n, f, List.empty(), List::of);
+        return Collections.tabulate(n, f, empty(), List::of);
     }
 
     /**
@@ -327,19 +327,19 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      */
     static <T> List<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return Collections.fill(n, s, List.empty(), List::of);
+        return Collections.fill(n, s, empty(), List::of);
     }
 
     static List<Character> range(char from, char toExclusive) {
-        return List.ofAll(Iterator.range(from, toExclusive));
+        return ofAll(Iterator.range(from, toExclusive));
     }
 
     static List<Character> rangeBy(char from, char toExclusive, int step) {
-        return List.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     static List<Double> rangeBy(double from, double toExclusive, double step) {
-        return List.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -359,7 +359,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
      */
     static List<Integer> range(int from, int toExclusive) {
-        return List.ofAll(Iterator.range(from, toExclusive));
+        return ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -385,7 +385,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static List<Integer> rangeBy(int from, int toExclusive, int step) {
-        return List.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -405,7 +405,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
      */
     static List<Long> range(long from, long toExclusive) {
-        return List.ofAll(Iterator.range(from, toExclusive));
+        return ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -431,19 +431,19 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static List<Long> rangeBy(long from, long toExclusive, long step) {
-        return List.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     static List<Character> rangeClosed(char from, char toInclusive) {
-        return List.ofAll(Iterator.rangeClosed(from, toInclusive));
+        return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     static List<Character> rangeClosedBy(char from, char toInclusive, int step) {
-        return List.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     static List<Double> rangeClosedBy(double from, double toInclusive, double step) {
-        return List.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -463,7 +463,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return a range of int values as specified or the empty range if {@code from > toInclusive}
      */
     static List<Integer> rangeClosed(int from, int toInclusive) {
-        return List.ofAll(Iterator.rangeClosed(from, toInclusive));
+        return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -489,7 +489,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static List<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        return List.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -509,7 +509,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return a range of long values as specified or the empty range if {@code from > toInclusive}
      */
     static List<Long> rangeClosed(long from, long toInclusive) {
-        return List.ofAll(Iterator.rangeClosed(from, toInclusive));
+        return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -535,23 +535,23 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static List<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        return List.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     @Override
     default List<T> append(T element) {
-        return foldRight(List.of(element), (x, xs) -> xs.prepend(x));
+        return foldRight(of(element), (x, xs) -> xs.prepend(x));
     }
 
     @Override
     default List<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return foldRight(List.ofAll(elements), (x, xs) -> xs.prepend(x));
+        return foldRight(ofAll(elements), (x, xs) -> xs.prepend(x));
     }
 
     @Override
     default List<List<T>> combinations() {
-        return List.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
+        return rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
 
     @Override
@@ -561,7 +561,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default Iterator<List<T>> crossProduct(int power) {
-        return Collections.crossProduct(List.empty(), this, power);
+        return Collections.crossProduct(empty(), this, power);
     }
 
     @Override
@@ -600,7 +600,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         if (n >= length()) {
             return empty();
         }
-        return List.ofAll(iterator().dropRight(n));
+        return ofAll(iterator().dropRight(n));
     }
 
     @Override
@@ -622,10 +622,10 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default List<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final List<T> filtered = foldLeft(List.<T> empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs);
+        final List<T> filtered = foldLeft(empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs);
 
         if (filtered.isEmpty()) {
-            return List.empty();
+            return empty();
         } else if (filtered.length() == length()) {
             return this;
         } else {
@@ -670,7 +670,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, List.ofAll(it)));
+        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, ofAll(it)));
     }
 
     @Override
@@ -862,7 +862,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         } else {
             final List<T> tail = tail();
             if (tail.isEmpty()) {
-                return List.of(this);
+                return of(this);
             } else {
                 final List<List<T>> zero = Nil.instance();
                 return distinct().foldLeft(zero, (xs, x) -> {
@@ -907,7 +907,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default List<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return isEmpty() ? List.ofAll(elements) : List.ofAll(elements).reverse().foldLeft(this, List::prepend);
+        return isEmpty() ? ofAll(elements) : ofAll(elements).reverse().foldLeft(this, List::prepend);
     }
 
     @Override
@@ -963,7 +963,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default List<T> removeFirst(Predicate<T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        List<T> init = List.empty();
+        List<T> init = empty();
         List<T> tail = this;
         while (!tail.isEmpty() && !predicate.test(tail.head())) {
             init = init.prepend(tail.head());
@@ -1067,13 +1067,13 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+        return Collections.scanLeft(this, zero, operation, empty(), List::prepend, List::reverse);
     }
 
     @Override
     default <U> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, empty(), List::prepend, Function.identity());
     }
 
     @Override
@@ -1107,13 +1107,13 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> sorted() {
-        return isEmpty() ? this : toJavaStream().sorted().collect(List.collector());
+        return isEmpty() ? this : toJavaStream().sorted().collect(collector());
     }
 
     @Override
     default List<T> sorted(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return isEmpty() ? this : toJavaStream().sorted(comparator).collect(List.collector());
+        return isEmpty() ? this : toJavaStream().sorted(comparator).collect(collector());
     }
 
     @Override
@@ -1133,7 +1133,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     default Tuple2<List<T>, List<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<T>, Iterator<T>> itt = iterator().span(predicate);
-        return Tuple.of(List.ofAll(itt._1), List.ofAll(itt._2));
+        return Tuple.of(ofAll(itt._1), ofAll(itt._2));
     }
 
     @Override
@@ -1288,7 +1288,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default <U> List<U> unit(Iterable<? extends U> iterable) {
-        return List.ofAll(iterable);
+        return ofAll(iterable);
     }
 
     @Override
@@ -1351,18 +1351,18 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default <U> List<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
-        return List.ofAll(iterator().zip(that));
+        return ofAll(iterator().zip(that));
     }
 
     @Override
     default <U> List<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        return List.ofAll(iterator().zipAll(that, thisElem, thatElem));
+        return ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
 
     @Override
     default List<Tuple2<T, Long>> zipWithIndex() {
-        return List.ofAll(iterator().zipWithIndex());
+        return ofAll(iterator().zipWithIndex());
     }
 
     /**
