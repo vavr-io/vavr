@@ -6,9 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.control.Option;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
@@ -40,7 +38,7 @@ import java.util.stream.Collector;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable {
+public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements LinearSeq<T>, Kind1<Queue<T>, T> {
 
     private static final long serialVersionUID = 1L;
 
@@ -490,94 +488,14 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     }
 
     /**
-     * Removes an element from this Queue.
-     *
-     * @return a tuple containing the first element and the remaining elements of this Queue
-     * @throws java.util.NoSuchElementException if this Queue is empty
-     */
-    public Tuple2<T, Queue<T>> dequeue() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("dequeue of empty Queue");
-        } else {
-            return Tuple.of(head(), tail());
-        }
-    }
-
-    /**
-     * Removes an element from this Queue.
-     *
-     * @return {@code None} if this Queue is empty, otherwise {@code Some} {@code Tuple} containing the first element and the remaining elements of this Queue
-     */
-    public Option<Tuple2<T, Queue<T>>> dequeueOption() {
-        return isEmpty() ? Option.none() : Option.some(dequeue());
-    }
-
-    /**
      * Enqueues a new element.
      *
      * @param element The new element
      * @return a new {@code Queue} instance, containing the new element
      */
+    @Override
     public Queue<T> enqueue(T element) {
         return new Queue<>(front, rear.prepend(element));
-    }
-
-    /**
-     * Enqueues the given elements. A queue has FIFO order, i.e. the first of the given elements is
-     * the first which will be retrieved.
-     *
-     * @param elements Elements, may be empty
-     * @return a new {@code Queue} instance, containing the new elements
-     * @throws NullPointerException if elements is null
-     */
-    @SuppressWarnings("unchecked")
-    public Queue<T> enqueue(T... elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        List<T> temp = rear;
-        for (T element : elements) {
-            temp = temp.prepend(element);
-        }
-        return new Queue<>(front, temp);
-    }
-
-    /**
-     * Enqueues the given elements. A queue has FIFO order, i.e. the first of the given elements is
-     * the first which will be retrieved.
-     *
-     * @param elements An Iterable of elements, may be empty
-     * @return a new {@code Queue} instance, containing the new elements
-     * @throws NullPointerException if elements is null
-     */
-    public Queue<T> enqueueAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        List<T> temp = rear;
-        for (T element : elements) {
-            temp = temp.prepend(element);
-        }
-        return new Queue<>(front, temp);
-    }
-
-    /**
-     * Returns the first element without modifying the Queue.
-     *
-     * @return the first element
-     * @throws java.util.NoSuchElementException if this Queue is empty
-     */
-    public T peek() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("peek of empty Queue");
-        } else {
-            return front.head();
-        }
-    }
-
-    /**
-     * Returns the first element without modifying the Queue.
-     *
-     * @return {@code None} if this Queue is empty, otherwise a {@code Some} containing the first element
-     */
-    public Option<T> peekOption() {
-        return isEmpty() ? Option.none() : Option.some(peek());
     }
 
     // -- Adjusted return types of Seq methods
@@ -589,18 +507,17 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
 
     @Override
     public Queue<T> appendAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return enqueueAll(elements);
     }
 
     @Override
     public Queue<Queue<T>> combinations() {
-        return toList().combinations().map(Queue::ofAll).toQueue();
+        return ofAll(toList().combinations().map(Queue::ofAll));
     }
 
     @Override
     public Queue<Queue<T>> combinations(int k) {
-        return toList().combinations(k).map(Queue::ofAll).toQueue();
+        return ofAll(toList().combinations(k).map(Queue::ofAll));
     }
 
     @Override
@@ -610,19 +527,19 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
 
     @Override
     public Queue<T> distinct() {
-        return toList().distinct().toQueue();
+        return ofAll(toList().distinct());
     }
 
     @Override
     public Queue<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return toList().distinctBy(comparator).toQueue();
+        return ofAll(toList().distinctBy(comparator));
     }
 
     @Override
     public <U> Queue<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return toList().distinctBy(keyExtractor).toQueue();
+        return ofAll(toList().distinctBy(keyExtractor));
     }
 
     @Override
@@ -657,7 +574,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     public Queue<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final List<T> dropped = toList().dropWhile(predicate);
-        return dropped.length() == length() ? this : dropped.toQueue();
+        return ofAll(dropped.length() == length() ? this : dropped);
     }
 
     @Override
@@ -670,7 +587,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
         } else if (filtered.length() == length()) {
             return this;
         } else {
-            return filtered.toQueue();
+            return ofAll(filtered);
         }
     }
 
@@ -726,7 +643,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     @Override
     public T head() {
         if (isEmpty()) {
-            throw new NoSuchElementException("head of empty queue");
+            throw new NoSuchElementException("head of empty " + stringPrefix());
         } else {
             return front.head();
         }
@@ -747,17 +664,12 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     @Override
     public Queue<T> init() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("init of empty Queue");
+            throw new UnsupportedOperationException("init of empty " + stringPrefix());
         } else if (rear.isEmpty()) {
             return new Queue<>(front.init(), rear);
         } else {
             return new Queue<>(front, rear.tail());
         }
-    }
-
-    @Override
-    public Option<Queue<T>> initOption() {
-        return isEmpty() ? Option.none() : Option.some(init());
     }
 
     @Override
@@ -844,7 +756,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
         if (length <= actualLength) {
             return this;
         } else {
-            return toList().padTo(length, element).toQueue();
+            return ofAll(toList().padTo(length, element));
         }
     }
 
@@ -854,7 +766,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
         if (length <= actualLength) {
             return this;
         } else {
-            return toList().leftPadTo(length, element).toQueue();
+            return ofAll(toList().leftPadTo(length, element));
         }
     }
 
@@ -875,17 +787,8 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     }
 
     @Override
-    public Queue<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        if (!isEmpty()) {
-            action.accept(head());
-        }
-        return this;
-    }
-
-    @Override
     public Queue<Queue<T>> permutations() {
-        return toList().permutations().map(List::toQueue).toQueue();
+        return ofAll(toList().permutations().map(List::toQueue));
     }
 
     @Override
@@ -902,34 +805,29 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     @Override
     public Queue<T> remove(T element) {
         final List<T> removed = toList().remove(element);
-        return removed.length() == length() ? this : removed.toQueue();
+        return ofAll(removed.length() == length() ? this : removed);
     }
 
     @Override
     public Queue<T> removeFirst(Predicate<T> predicate) {
         final List<T> removed = toList().removeFirst(predicate);
-        return removed.length() == length() ? this : removed.toQueue();
+        return ofAll(removed.length() == length() ? this : removed);
     }
 
     @Override
     public Queue<T> removeLast(Predicate<T> predicate) {
         final List<T> removed = toList().removeLast(predicate);
-        return removed.length() == length() ? this : removed.toQueue();
+        return ofAll(removed.length() == length() ? this : removed);
     }
 
     @Override
     public Queue<T> removeAt(int index) {
-        return toList().removeAt(index).toQueue();
+        return ofAll(toList().removeAt(index));
     }
 
     @Override
     public Queue<T> removeAll(T element) {
         return Collections.removeAll(this, element);
-    }
-
-    @Override
-    public Queue<T> removeAll(Iterable<? extends T> elements) {
-        return Collections.removeAll(this, elements);
     }
 
     @Override
@@ -951,13 +849,8 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     }
 
     @Override
-    public Queue<T> retainAll(Iterable<? extends T> elements) {
-        return Collections.retainAll(this, elements);
-    }
-
-    @Override
     public Queue<T> reverse() {
-        return isEmpty() ? this : toList().reverse().toQueue();
+        return isEmpty() ? this : ofAll(toList().reverse());
     }
 
     @Override
@@ -981,7 +874,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
 
     @Override
     public Queue<T> slice(long beginIndex, long endIndex) {
-        return toList().slice(beginIndex, endIndex).toQueue();
+        return ofAll(toList().slice(beginIndex, endIndex));
     }
 
     @Override
@@ -996,13 +889,13 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
 
     @Override
     public Queue<T> sorted() {
-        return toList().sorted().toQueue();
+        return ofAll(toList().sorted());
     }
 
     @Override
     public Queue<T> sorted(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return toList().sorted(comparator).toQueue();
+        return ofAll(toList().sorted(comparator));
     }
 
     @Override
@@ -1051,26 +944,21 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
 
     @Override
     public Queue<T> subSequence(int beginIndex) {
-        return toList().subSequence(beginIndex).toQueue();
+        return ofAll(toList().subSequence(beginIndex));
     }
 
     @Override
     public Queue<T> subSequence(int beginIndex, int endIndex) {
-        return toList().subSequence(beginIndex, endIndex).toQueue();
+        return ofAll(toList().subSequence(beginIndex, endIndex));
     }
 
     @Override
     public Queue<T> tail() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("tail of empty Queue");
+            throw new UnsupportedOperationException("tail of empty " + stringPrefix());
         } else {
             return new Queue<>(front.tail(), rear);
         }
-    }
-
-    @Override
-    public Option<Queue<T>> tailOption() {
-        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @Override
@@ -1112,14 +1000,8 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     @Override
     public Queue<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return takeWhile(predicate.negate());
-    }
-
-    @Override
-    public Queue<T> takeWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final List<T> taken = toList().takeWhile(predicate);
-        return taken.length() == length() ? this : taken.toQueue();
+        final List<T> taken = toList().takeUntil(predicate);
+        return taken.length() == length() ? this : ofAll(taken);
     }
 
     /**
@@ -1155,46 +1037,29 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
 
     @Override
     public Queue<T> update(int index, T element) {
-        return toList().update(index, element).toQueue();
+        return ofAll(toList().update(index, element));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <U> Queue<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
-        return toList().zip((Iterable<U>) that).toQueue();
+        return ofAll(toList().zip((Iterable<U>) that));
     }
 
     @Override
     public <U> Queue<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        return toList().zipAll(that, thisElem, thatElem).toQueue();
+        return ofAll(toList().zipAll(that, thisElem, thatElem));
     }
 
     @Override
     public Queue<Tuple2<T, Long>> zipWithIndex() {
-        return toList().zipWithIndex().toQueue();
+        return ofAll(toList().zipWithIndex());
     }
 
     private Object readResolve() {
         return isEmpty() ? EMPTY : this;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof Queue) {
-            final Queue<?> that = (Queue<?>) o;
-            return this.toList().equals(that.toList());
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return toList().hashCode();
     }
 
     @Override
@@ -1203,7 +1068,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     }
 
     @Override
-    public String toString() {
-        return mkString(stringPrefix() + "(", ", ", ")");
+    public boolean equals(Object o) {
+        return o == this || o instanceof Queue && Collections.equals(this, (Iterable) o);
     }
 }
