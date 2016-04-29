@@ -44,5 +44,34 @@ final class Comparators {
      */
     @FunctionalInterface
     interface SerializableComparator<T> extends Comparator<T>, Serializable {
+        long serialVersionUID = 1L;
+
+        static <T> SerializableComparator<T> of(Comparator<T> comparator) {
+            return comparator::compare;
+        }
+
+        default boolean isLess(T o1, T o2) {
+            return compare(o1, o2) < 0;
+        }
+
+        default boolean isLessOrEqual(T o1, T o2) {
+            return compare(o1, o2) <= 0;
+        }
+
+        default boolean isEqual(T o1, T o2) {
+            return compare(o1, o2) == 0;
+        }
+
+        default boolean isNotEqual(T o1, T o2) {
+            return compare(o1, o2) != 0;
+        }
+
+        default boolean isGreaterOrEqual(T o1, T o2) {
+            return compare(o1, o2) >= 0;
+        }
+
+        default boolean isGreater(T o1, T o2) {
+            return compare(o1, o2) > 0;
+        }
     }
 }
