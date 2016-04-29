@@ -5,6 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.Function1;
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
@@ -15,84 +17,128 @@ import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+import static javaslang.collection.Comparators.naturalComparator;
+
 /**
  * An immutable {@code BitSet} implementation.
  *
  * @author Ruslan Sennov
  * @since 2.1.0
  */
-public interface BitSet extends SortedSet<Integer> {
+public abstract class BitSet<T> implements SortedSet<T> {
+
+    private static final long serialVersionUID = 1L;
+
+    public static class Builder<T> {
+
+        final static Builder<Integer> DEFAULT = new Builder<>(i -> i, i -> i);
+
+        final Function<Integer, T> fromInt;
+        final Function<T, Integer> toInt;
+
+        Builder(Function<Integer, T> fromInt, Function<T, Integer> toInt) {
+            this.fromInt = fromInt;
+            this.toInt = toInt;
+        }
+
+        public Collector<T, ArrayList<T>, BitSet<T>> collector() {
+            final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
+                left.addAll(right);
+                return left;
+            };
+            return Collector.of(ArrayList::new, ArrayList::add, combiner, this::ofAll);
+        }
+
+        public BitSet<T> empty() {
+            return new BitSetModule.BitSet1<>(this, 0L);
+        }
+
+        public BitSet<T> ofAll(Iterable<? extends T> values) {
+            Objects.requireNonNull(values, "values is null");
+            return empty().addAll(values);
+        }
+    }
+
+    public static <T> Builder<T> withRelations(Function<Integer, T> fromInt, Function<T, Integer> toInt) {
+        return new Builder<>(fromInt, toInt);
+    }
+
+    public static <T extends Enum<T>> Builder<T> withEnum(Class<T> clz) {
+        final Function<Integer, T> f1 = Function1.<Integer, T>of(i -> {
+            for (T t : clz.getEnumConstants()) {
+                if (t.ordinal() == i) {
+                    return t;
+                }
+            }
+            throw new RuntimeException("bad BitSet");
+        }).memoized();
+        final Function<T, Integer> f2 = Enum<T>::ordinal;
+        return new Builder<>(f1, f2);
+    }
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.BitSet}.
-     * <p>
-     * The natural comparator is used to compare TreeSet elements.
      *
      * @return A javaslang.collection.List Collector.
      */
-    static Collector<Integer, ArrayList<Integer>, BitSet> collector() {
-        final BinaryOperator<ArrayList<Integer>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
-        };
-        return Collector.of(ArrayList::new, ArrayList::add, combiner, BitSet::ofAll);
+    public static Collector<Integer, ArrayList<Integer>, BitSet<Integer>> collector() {
+        return Builder.DEFAULT.collector();
     }
 
-    static BitSet empty() {
-        return BitSetModule.EMPTY;
+    public static BitSet<Integer> empty() {
+        return Builder.DEFAULT.empty();
     }
 
-    static BitSet of(Integer value) {
-        if(value < Long.SIZE) {
-            return new BitSetModule.BitSet1(value);
+    static BitSet<Integer> of(Integer value) {
+        if(value < BitSetModule.BITS_PER_WORD) {
+            return new BitSetModule.BitSet1<>(Builder.DEFAULT, value);
+        } else if(value < 2 * BitSetModule.BITS_PER_WORD) {
+            return new BitSetModule.BitSet2<>(Builder.DEFAULT, 0L, value);
+        } else {
+            return empty().add(value);
         }
-        if(value < 2 * Long.SIZE) {
-            return new BitSetModule.BitSet2(0L, value);
-        }
-        return empty().add(value);
     }
 
-    static BitSet of(Integer... values) {
+    static BitSet<Integer> of(Integer... values) {
         if(values.length == 0) {
             return empty();
-        }
-        if(values.length == 1) {
+        } else if(values.length == 1) {
             return of(values[0]);
+        } else {
+            return empty().addAll(Array.wrap(values));
         }
-        return empty().addAll(Iterator.of(values));
     }
 
     /**
      * Returns a BitSet containing {@code n} values of a given Function {@code f}
      * over a range of integer values from 0 to {@code n - 1}.
      *
-     * @param n          The number of elements in the BitSet
-     * @param f          The Function computing element values
+     * @param n The number of elements in the BitSet
+     * @param f The Function computing element values
      * @return A BitSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} are null
      */
-    static BitSet tabulate(int n, Function<Integer, Integer> f) {
+    static BitSet<Integer> tabulate(int n, Function<Integer, Integer> f) {
         Objects.requireNonNull(f, "f is null");
-        return Collections.tabulate(n, f, BitSet.empty(), BitSet::of);
+        return empty().addAll(Collections.tabulate(n, f));
     }
 
     /**
      * Returns a BitSet containing {@code n} values supplied by a given Supplier {@code s}.
      *
-     * @param n          The number of elements in the BitSet
-     * @param s          The Supplier computing element values
+     * @param n The number of elements in the BitSet
+     * @param s The Supplier computing element values
      * @return A BitSet of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} are null
      */
-    static BitSet fill(int n, Supplier<Integer> s) {
+    static BitSet<Integer> fill(int n, Supplier<Integer> s) {
         Objects.requireNonNull(s, "s is null");
-        return Collections.fill(n, s, BitSet.empty(), BitSet::of);
+        return empty().addAll(Collections.fill(n, s));
     }
 
-    static BitSet ofAll(Iterable<Integer> values) {
-        Objects.requireNonNull(values, "values is null");
-        return Iterator.ofAll(values).foldLeft(BitSet.empty(), BitSet::add);
+    static BitSet<Integer> ofAll(Iterable<Integer> values) {
+        return Builder.DEFAULT.ofAll(values);
     }
 
     /**
@@ -101,7 +147,7 @@ public interface BitSet extends SortedSet<Integer> {
      * @param array an int array
      * @return A new BitSet of Integer values
      */
-    static BitSet ofAll(int[] array) {
+    static BitSet<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
         return BitSet.ofAll(Iterator.ofAll(array));
     }
@@ -113,7 +159,7 @@ public interface BitSet extends SortedSet<Integer> {
      * @param toExclusive the last number + 1
      * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
      */
-    static BitSet range(int from, int toExclusive) {
+    static BitSet<Integer> range(int from, int toExclusive) {
         return BitSet.ofAll(Iterator.range(from, toExclusive));
     }
 
@@ -129,7 +175,7 @@ public interface BitSet extends SortedSet<Integer> {
      * {@code from <= toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static BitSet rangeBy(int from, int toExclusive, int step) {
+    static BitSet<Integer> rangeBy(int from, int toExclusive, int step) {
         return BitSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
@@ -140,7 +186,7 @@ public interface BitSet extends SortedSet<Integer> {
      * @param toInclusive the last number
      * @return a range of int values as specified or the empty range if {@code from > toInclusive}
      */
-    static BitSet rangeClosed(int from, int toInclusive) {
+    static BitSet<Integer> rangeClosed(int from, int toInclusive) {
         return BitSet.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
@@ -156,355 +202,425 @@ public interface BitSet extends SortedSet<Integer> {
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static BitSet rangeClosedBy(int from, int toInclusive, int step) {
+    static BitSet<Integer> rangeClosedBy(int from, int toInclusive, int step) {
         return BitSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
-    @Override
-    BitSet add(Integer element);
+    final Builder<T> builder;
+
+    BitSet(Builder<T> builder) {
+        this.builder = builder;
+    }
 
     @Override
-    default BitSet addAll(Iterable<? extends Integer> elements) {
-        BitSet result = this;
-        for (Integer element : elements) {
-            result = result.add(element);
+    public abstract BitSet<T> add(T element);
+
+    @Override
+    public abstract BitSet<T> addAll(Iterable<? extends T> elements);
+
+    @Override
+    public abstract BitSet<T> diff(Set<? extends T> elements);
+
+    @Override
+    public BitSet<T> distinct() {
+        return this;
+    }
+
+    @Override
+    public BitSet<T> distinctBy(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return builder.ofAll(iterator().distinctBy(comparator));
+    }
+
+    @Override
+    public <U> BitSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
+        return builder.ofAll(iterator().distinctBy(keyExtractor));
+    }
+
+    @Override
+    public BitSet<T> drop(long n) {
+        if (n <= 0) {
+            return this;
+        } else if (n >= length()) {
+            return builder.empty();
+        } else {
+            return builder.ofAll(iterator().drop(n));
         }
-        return result;
     }
 
     @Override
-    BitSet diff(Set<? extends Integer> elements);
+    public BitSet<T> dropRight(long n) {
+        if (n <= 0) {
+            return this;
+        } else if (n >= length()) {
+            return builder.empty();
+        } else {
+            return builder.ofAll(iterator().dropRight(n));
+        }
+    }
 
     @Override
-    BitSet distinct();
+    public BitSet<T> dropUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropWhile(predicate.negate());
+    }
 
     @Override
-    BitSet distinctBy(Comparator<? super Integer> comparator);
+    public BitSet<T> dropWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        final BitSet<T> bitSet = builder.ofAll(iterator().dropWhile(predicate));
+        return (bitSet.length() == length()) ? this : bitSet;
+    }
 
     @Override
-    <U> BitSet distinctBy(Function<? super Integer, ? extends U> keyExtractor);
+    public BitSet<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        final BitSet<T> bitSet = builder.ofAll(iterator().filter(predicate));
+        return (bitSet.length() == length()) ? this : bitSet;
+    }
 
     @Override
-    BitSet drop(long n);
+    public <U> SortedSet<U> flatMap(Comparator<? super U> comparator, Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return TreeSet.ofAll(comparator, iterator().flatMap(mapper));
+    }
 
     @Override
-    BitSet dropRight(long n);
+    public <U> SortedSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return TreeSet.ofAll(naturalComparator(), iterator().flatMap(mapper));
+    }
 
     @Override
-    BitSet dropUntil(Predicate<? super Integer> predicate);
+    public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return iterator().foldRight(zero, f);
+    }
 
     @Override
-    BitSet dropWhile(Predicate<? super Integer> predicate);
+    public <C> Map<C, BitSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
+        Objects.requireNonNull(classifier, "classifier is null");
+        return iterator().groupBy(classifier).map((key, iterator) -> Tuple.of(key, builder.ofAll(iterator)));
+    }
 
     @Override
-    BitSet filter(Predicate<? super Integer> predicate);
+    public Iterator<BitSet<T>> grouped(long size) {
+        return sliding(size, size);
+    }
 
     @Override
-    <U> SortedSet<U> flatMap(Function<? super Integer, ? extends Iterable<? extends U>> mapper);
-
-    @Override
-    <U> U foldRight(U zero, BiFunction<? super Integer, ? super U, ? extends U> f);
-
-    @Override
-    <C> Map<C, BitSet> groupBy(Function<? super Integer, ? extends C> classifier);
-
-    @Override
-    Iterator<BitSet> grouped(long size);
-
-    @Override
-    default boolean hasDefiniteSize() {
+    public boolean hasDefiniteSize() {
         return true;
     }
 
     @Override
-    Integer head();
+    public abstract BitSet<T> init();
 
     @Override
-    BitSet init();
+    public Option<BitSet<T>> initOption() {
+        return isEmpty() ? Option.none() : Option.some(init());
+    }
 
     @Override
-    Option<BitSet> initOption();
-
-    @Override
-    default boolean isTraversableAgain() {
+    public boolean isTraversableAgain() {
         return true;
     }
 
     @Override
-    Iterator<Integer> iterator();
+    public abstract Iterator<T> iterator();
 
     @Override
-    int length();
+    public BitSet<T> intersect(Set<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        if (isEmpty() || elements.isEmpty()) {
+            return builder.empty();
+        } else {
+            int size = size();
+            if (size <= elements.size()) {
+                return retainAll(elements);
+            } else {
+                BitSet<T> results = builder.ofAll(elements).retainAll(this);
+                return (size == results.size()) ? this : results;
+            }
+        }
+    }
 
     @Override
-    BitSet intersect(Set<? extends Integer> elements);
+    public Tuple2<BitSet<T>, BitSet<T>> partition(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return iterator().partition(predicate).map(builder::ofAll, builder::ofAll);
+    }
 
     @Override
-    <U> SortedSet<U> map(Function<? super Integer, ? extends U> mapper);
+    public BitSet<T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+        if (!isEmpty()) {
+            action.accept(head());
+        }
+        return this;
+    }
 
     @Override
-    Tuple2<BitSet, BitSet> partition(Predicate<? super Integer> predicate);
-
-    @Override
-    BitSet peek(Consumer<? super Integer> action);
-
-    @Override
-    default String stringPrefix() {
+    public String stringPrefix() {
         return "BitSet";
     }
 
     @Override
-    default Comparator<Integer> comparator() {
-        return Integer::compare;
+    public Comparator<T> comparator() {
+        return (t1, t2) -> Integer.compare(builder.toInt.apply(t1), builder.toInt.apply(t2));
     }
 
     @Override
-    <U> SortedSet<U> flatMap(Comparator<? super U> comparator, Function<? super Integer, ? extends Iterable<? extends U>> mapper);
+    public <U> SortedSet<U> map(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return TreeSet.ofAll(comparator, iterator().map(mapper));
+    }
 
     @Override
-    <U> SortedSet<U> map(Comparator<? super U> comparator, Function<? super Integer, ? extends U> mapper);
+    public <U> SortedSet<U> map(Function<? super T, ? extends U> mapper) {
+        return map(naturalComparator(), mapper);
+    }
 
     @Override
-    BitSet remove(Integer element);
+    public abstract BitSet<T> remove(T element);
 
     @Override
-    default BitSet removeAll(Iterable<? extends Integer> elements) {
-        BitSet result = this;
-        for (Integer element : elements) {
-            result = result.remove(element);
+    public abstract BitSet<T> removeAll(Iterable<? extends T> elements);
+
+    @Override
+    public abstract BitSet<T> replace(T currentElement, T newElement);
+
+    @Override
+    public BitSet<T> replaceAll(T currentElement, T newElement) {
+        // a set has only one occurrence
+        return replace(currentElement, newElement);
+    }
+
+    @Override
+    public abstract BitSet<T> retainAll(Iterable<? extends T> elements);
+
+    @Override
+    public BitSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Collections.scanLeft(this, zero, operation, new java.util.ArrayList<T>(), (arr, t) -> {
+            arr.add(t);
+            return arr;
+        }, builder::ofAll);
+    }
+
+    @Override
+    public <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+        return Collections.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
+            c.add(u);
+            return c;
+        }, HashSet::ofAll);
+    }
+
+    @Override
+    public <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+        return Collections.scanRight(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
+            c.add(u);
+            return c;
+        }, HashSet::ofAll);
+    }
+
+    @Override
+    public Iterator<BitSet<T>> sliding(long size) {
+        return sliding(size, 1);
+    }
+
+    @Override
+    public Iterator<BitSet<T>> sliding(long size, long step) {
+        return iterator().sliding(size, step).map(builder::ofAll);
+    }
+
+    @Override
+    public Tuple2<BitSet<T>, BitSet<T>> span(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return iterator().span(predicate).map(builder::ofAll, builder::ofAll);
+    }
+
+    @Override
+    public abstract BitSet<T> tail();
+
+    @Override
+    public Option<BitSet<T>> tailOption() {
+        return isEmpty() ? Option.none() : Option.some(tail());
+    }
+
+    @Override
+    public BitSet<T> take(long n) {
+        if (n <= 0) {
+            return builder.empty();
+        } else if (n >= length()) {
+            return this;
+        } else {
+            return builder.ofAll(iterator().take(n));
         }
-        return result;
     }
 
     @Override
-    BitSet replace(Integer currentElement, Integer newElement);
+    public abstract BitSet<T> takeRight(long n);
 
     @Override
-    BitSet replaceAll(Integer currentElement, Integer newElement);
+    public abstract BitSet<T> takeUntil(Predicate<? super T> predicate);
 
     @Override
-    BitSet retainAll(Iterable<? extends Integer> elements);
+    public abstract BitSet<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
-    BitSet scan(Integer zero, BiFunction<? super Integer, ? super Integer, ? extends Integer> operation);
+    public java.util.SortedSet<T> toJavaSet() {
+        return toJavaSet(() -> new java.util.TreeSet<>(comparator()));
+    }
 
     @Override
-    <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super Integer, ? extends U> operation);
+    public abstract BitSet<T> union(Set<? extends T> elements);
+
+    // TODO
+    @Override
+    public <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(
+            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        return iterator().unzip(unzipper).map(i1 -> TreeSet.ofAll(naturalComparator(), i1),
+                i2 -> TreeSet.ofAll(naturalComparator(), i2));
+    }
+
+    // TODO
+    @Override
+    public <T1, T2, T3> Tuple3<TreeSet<T1>, TreeSet<T2>, TreeSet<T3>> unzip3(
+            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        return iterator().unzip3(unzipper).map(
+                i1 -> TreeSet.ofAll(naturalComparator(), i1),
+                i2 -> TreeSet.ofAll(naturalComparator(), i2),
+                i3 -> TreeSet.ofAll(naturalComparator(), i3));
+    }
 
     @Override
-    <U> Set<U> scanRight(U zero, BiFunction<? super Integer, ? super U, ? extends U> operation);
+    public abstract <U> SortedSet<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     @Override
-    Iterator<BitSet> sliding(long size);
+    public abstract <U> SortedSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
-    Iterator<BitSet> sliding(long size, long step);
-
-    @Override
-    Tuple2<BitSet, BitSet> span(Predicate<? super Integer> predicate);
-
-    @Override
-    BitSet tail();
-
-    @Override
-    Option<BitSet> tailOption();
-
-    @Override
-    BitSet take(long n);
-
-    @Override
-    BitSet takeRight(long n);
-
-    @Override
-    BitSet takeUntil(Predicate<? super Integer> predicate);
-
-    @Override
-    BitSet takeWhile(Predicate<? super Integer> predicate);
-
-    @Override
-    java.util.SortedSet<Integer> toJavaSet();
-
-    @Override
-    BitSet union(Set<? extends Integer> elements);
-
-    @Override
-    <T1, T2> Tuple2<? extends SortedSet<T1>, ? extends SortedSet<T2>> unzip(Function<? super Integer, Tuple2<? extends T1, ? extends T2>> unzipper);
-
-    @Override
-    <T1, T2, T3> Tuple3<? extends SortedSet<T1>, ? extends SortedSet<T2>, ? extends SortedSet<T3>> unzip3(Function<? super Integer, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
-
-    @Override
-    <U> SortedSet<Tuple2<Integer, U>> zip(Iterable<? extends U> that);
-
-    @Override
-    <U> SortedSet<Tuple2<Integer, U>> zipAll(Iterable<? extends U> that, Integer thisElem, U thatElem);
-
-    @Override
-    SortedSet<Tuple2<Integer, Long>> zipWithIndex();
+    public abstract SortedSet<Tuple2<T, Long>> zipWithIndex();
 }
 
 interface BitSetModule {
 
-    BitSet EMPTY = new BitSet1(0);
+    int ADDRESS_BITS_PER_WORD = 6;
+    int BITS_PER_WORD = 64;
 
-    abstract class AbstractBitSet implements BitSet {
+    abstract class AbstractBitSet<T> extends BitSet<T> {
 
-        abstract BitSet updateWord(int index, long word);
+        private static final long serialVersionUID = 1L;
 
-        abstract int nWords();
-
-        abstract long word(int index);
-
-        BitSet fromBitMaskNoCopy(long[] elements) {
-            final int len = elements.length;
-            if (len == 0) {
-                return EMPTY;
-            }
-            if (len == 1) {
-                return new BitSet1(elements[0]);
-            }
-            if (len == 2) {
-                return new BitSet2(elements[0], elements[1]);
-            }
-            return new BitSetN(elements);
+        AbstractBitSet(Builder<T> builder) {
+            super(builder);
         }
 
-        long[] updateArray(long[] elements, int index, long word) {
-            int len = elements.length;
-            while (len > 0 && (elements[len - 1] == 0L || word == 0L && index == len - 1)) {
-                len--;
+        abstract int getWordsNum();
+
+        abstract long[] copyExpand(int wordsNum);
+
+        abstract long getWord(int index);
+
+        BitSet<T> fromBitMaskNoCopy(long[] elements) {
+            final int len = elements.length;
+            if (len == 0) {
+                return builder.empty();
             }
+            if (len == 1) {
+                return new BitSet1<>(builder, elements[0]);
+            }
+            if (len == 2) {
+                return new BitSet2<>(builder, elements[0], elements[1]);
+            }
+            return new BitSetN<>(builder, elements);
+        }
+
+        private void setElement(long[] words, int element) {
+            final int index = element >> ADDRESS_BITS_PER_WORD;
+            words[index] |= (1L << element);
+        }
+
+        private void unsetElement(long[] words, int element) {
+            final int index = element >> ADDRESS_BITS_PER_WORD;
+            words[index] &= ~(1L << element);
+        }
+
+        long[] shrink(long[] elements) {
+            int len = elements.length;
             int newlen = len;
-            if (index >= newlen && word != 0L) {
-                newlen = index + 1;
+            while (newlen > 0 && elements[newlen - 1] == 0) {
+                newlen--;
             }
             long[] newelems = new long[newlen];
             System.arraycopy(elements, 0, newelems, 0, len);
-            if (index < newlen) {
-                newelems[index] = word;
-            } else {
-                if (word != 0L) {
-                    throw new IndexOutOfBoundsException();
-                }
-            }
             return newelems;
         }
 
         @Override
-        public BitSet add(Integer element) {
-            if (element < 0) {
-                throw new IllegalArgumentException("bitset element must be >= 0");
-            }
-            if (contains(element)) {
+        public BitSet<T> add(T t) {
+            if (contains(t)) {
                 return this;
             } else {
-                final int index = element >> 6;
-                return updateWord(index, word(index) | (1L << element));
+                final int element = builder.toInt.apply(t);
+                if (element < 0) {
+                    throw new IllegalArgumentException("bitset element must be >= 0");
+                }
+                final long[] copy = copyExpand(element >> ADDRESS_BITS_PER_WORD);
+                setElement(copy, element);
+                return fromBitMaskNoCopy(copy);
             }
         }
 
         @Override
-        public <U> SortedSet<U> flatMap(Comparator<? super U> comparator, Function<? super Integer, ? extends Iterable<? extends U>> mapper) {
-            return null;
+        @SuppressWarnings("unchecked")
+        public BitSet<T> addAll(Iterable<? extends T> elements) {
+            final Stream<Integer> source = Stream.ofAll(elements).map(builder.toInt);
+            final long[] copy = copyExpand(source.max().getOrElse(0) >> ADDRESS_BITS_PER_WORD);
+            source.forEach(element -> {
+                if (element < 0) {
+                    throw new IllegalArgumentException("bitset element must be >= 0");
+                }
+                setElement(copy, element);
+            });
+            return fromBitMaskNoCopy(copy);
         }
 
         @Override
-        public <U> SortedSet<U> map(Comparator<? super U> comparator, Function<? super Integer, ? extends U> mapper) {
-            return null;
-        }
-
-        @Override
-        public boolean contains(Integer element) {
+        public boolean contains(T t) {
+            final int element = builder.toInt.apply(t);
             if (element < 0) {
                 throw new IllegalArgumentException("bitset element must be >= 0");
             }
-            final int index = element >> 6;
-            return (word(index) & (1L << element)) != 0;
+            final int index = element >> ADDRESS_BITS_PER_WORD;
+            return (getWord(index) & (1L << element)) != 0;
         }
 
         @Override
-        public BitSet diff(Set<? extends Integer> elements) {
+        public BitSet<T> diff(Set<? extends T> elements) {
             return null;
         }
 
         @Override
-        public BitSet distinct() {
+        public T head() {
             return null;
         }
 
         @Override
-        public BitSet distinctBy(Comparator<? super Integer> comparator) {
+        public BitSet<T> init() {
             return null;
         }
 
         @Override
-        public <U> BitSet distinctBy(Function<? super Integer, ? extends U> keyExtractor) {
-            return null;
-        }
-
-        @Override
-        public BitSet drop(long n) {
-            return null;
-        }
-
-        @Override
-        public BitSet dropRight(long n) {
-            return null;
-        }
-
-        @Override
-        public BitSet dropUntil(Predicate<? super Integer> predicate) {
-            return null;
-        }
-
-        @Override
-        public BitSet dropWhile(Predicate<? super Integer> predicate) {
-            return null;
-        }
-
-        @Override
-        public BitSet filter(Predicate<? super Integer> predicate) {
-            return null;
-        }
-
-        @Override
-        public <U> SortedSet<U> flatMap(Function<? super Integer, ? extends Iterable<? extends U>> mapper) {
-            return null;
-        }
-
-        @Override
-        public <U> U foldRight(U zero, BiFunction<? super Integer, ? super U, ? extends U> f) {
-            return null;
-        }
-
-        @Override
-        public <C> Map<C, BitSet> groupBy(Function<? super Integer, ? extends C> classifier) {
-            return null;
-        }
-
-        @Override
-        public Iterator<BitSet> grouped(long size) {
-            return null;
-        }
-
-        @Override
-        public Integer head() {
-            return null;
-        }
-
-        @Override
-        public BitSet init() {
-            return null;
-        }
-
-        @Override
-        public Option<BitSet> initOption() {
-            return null;
-        }
-
-        @Override
-        public Iterator<Integer> iterator() {
-            return null;
+        public Iterator<T> iterator() {
+            return Stream.range(0, getWordsNum() << ADDRESS_BITS_PER_WORD)
+                    .filter(i -> (getWord(i >> ADDRESS_BITS_PER_WORD) & (1L << i)) != 0)
+                    .map(builder.fromInt)
+                    .iterator();
         }
 
         @Override
@@ -513,231 +629,190 @@ interface BitSetModule {
         }
 
         @Override
-        public BitSet intersect(Set<? extends Integer> elements) {
-            return null;
-        }
-
-        @Override
-        public <U> SortedSet<U> map(Function<? super Integer, ? extends U> mapper) {
-            return null;
-        }
-
-        @Override
-        public Tuple2<BitSet, BitSet> partition(Predicate<? super Integer> predicate) {
-            return null;
-        }
-
-        @Override
-        public BitSet peek(Consumer<? super Integer> action) {
-            return null;
-        }
-
-        @Override
-        public BitSet remove(Integer element) {
-            if (element < 0) {
-                throw new IllegalArgumentException("bitset element must be >= 0");
-            }
-            if (contains(element)) {
-                final int idx = element >> 6;
-                return updateWord(idx, word(idx) & ~(1L << element));
+        public BitSet<T> remove(T t) {
+            if (contains(t)) {
+                final int element = builder.toInt.apply(t);
+                final long[] copy = copyExpand(getWordsNum());
+                unsetElement(copy, element);
+                return fromBitMaskNoCopy(shrink(copy));
             } else {
                 return this;
             }
         }
 
         @Override
-        public BitSet replace(Integer currentElement, Integer newElement) {
+        @SuppressWarnings("unchecked")
+        public BitSet<T> removeAll(Iterable<? extends T> elements) {
+            final Stream<Integer> source = Stream.ofAll(elements).map(builder.toInt);
+            final long[] copy = copyExpand(getWordsNum());
+            source.forEach(element -> {
+                unsetElement(copy, element);
+            });
+            return fromBitMaskNoCopy(shrink(copy));
+        }
+
+        @Override
+        public BitSet<T> replace(T currentElement, T newElement) {
             return null;
         }
 
         @Override
-        public BitSet replaceAll(Integer currentElement, Integer newElement) {
+        public BitSet<T> retainAll(Iterable<? extends T> elements) {
             return null;
         }
 
         @Override
-        public BitSet retainAll(Iterable<? extends Integer> elements) {
+        public BitSet<T> tail() {
             return null;
         }
 
         @Override
-        public BitSet scan(Integer zero, BiFunction<? super Integer, ? super Integer, ? extends Integer> operation) {
+        public BitSet<T> takeRight(long n) {
             return null;
         }
 
         @Override
-        public <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super Integer, ? extends U> operation) {
+        public BitSet<T> takeUntil(Predicate<? super T> predicate) {
             return null;
         }
 
         @Override
-        public <U> Set<U> scanRight(U zero, BiFunction<? super Integer, ? super U, ? extends U> operation) {
+        public BitSet<T> takeWhile(Predicate<? super T> predicate) {
             return null;
         }
 
         @Override
-        public Iterator<BitSet> sliding(long size) {
+        public BitSet<T> union(Set<? extends T> elements) {
             return null;
         }
 
         @Override
-        public Iterator<BitSet> sliding(long size, long step) {
+        public <U> SortedSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
             return null;
         }
 
         @Override
-        public Tuple2<BitSet, BitSet> span(Predicate<? super Integer> predicate) {
+        public <U> SortedSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
             return null;
         }
 
         @Override
-        public BitSet tail() {
-            return null;
-        }
-
-        @Override
-        public Option<BitSet> tailOption() {
-            return null;
-        }
-
-        @Override
-        public BitSet take(long n) {
-            return null;
-        }
-
-        @Override
-        public BitSet takeRight(long n) {
-            return null;
-        }
-
-        @Override
-        public BitSet takeUntil(Predicate<? super Integer> predicate) {
-            return null;
-        }
-
-        @Override
-        public BitSet takeWhile(Predicate<? super Integer> predicate) {
-            return null;
-        }
-
-        @Override
-        public java.util.SortedSet<Integer> toJavaSet() {
-            return null;
-        }
-
-        @Override
-        public BitSet union(Set<? extends Integer> elements) {
-            return null;
-        }
-
-        @Override
-        public <T1, T2> Tuple2<? extends SortedSet<T1>, ? extends SortedSet<T2>> unzip(Function<? super Integer, Tuple2<? extends T1, ? extends T2>> unzipper) {
-            return null;
-        }
-
-        @Override
-        public <T1, T2, T3> Tuple3<? extends SortedSet<T1>, ? extends SortedSet<T2>, ? extends SortedSet<T3>> unzip3(Function<? super Integer, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-            return null;
-        }
-
-        @Override
-        public <U> SortedSet<Tuple2<Integer, U>> zip(Iterable<? extends U> that) {
-            return null;
-        }
-
-        @Override
-        public <U> SortedSet<Tuple2<Integer, U>> zipAll(Iterable<? extends U> that, Integer thisElem, U thatElem) {
-            return null;
-        }
-
-        @Override
-        public SortedSet<Tuple2<Integer, Long>> zipWithIndex() {
+        public SortedSet<Tuple2<T, Long>> zipWithIndex() {
             return null;
         }
     }
 
-    class BitSet1 extends AbstractBitSet {
+    class BitSet1<T> extends AbstractBitSet<T> {
+
+        private static final long serialVersionUID = 1L;
 
         private final long elements;
 
-        BitSet1(long elements) {
+        BitSet1(Builder<T> builder, long elements) {
+            super(builder);
             this.elements = elements;
         }
 
         @Override
-        BitSet updateWord(int index, long word) {
-            if (index == 0) {
-                return new BitSet1(word);
-            }
-            if (index == 1) {
-                return new BitSet2(elements, word);
-            }
-            return fromBitMaskNoCopy(updateArray(new long[] { elements }, index, word));
-        }
-
-        @Override
-        int nWords() {
+        int getWordsNum() {
             return 1;
         }
 
         @Override
-        long word(int index) {
-            return index < 1 ? elements : 0L;
+        long[] copyExpand(int wordsNum) {
+            if(wordsNum < 1) {
+                wordsNum = 1;
+            }
+            long[] arr = new long[wordsNum];
+            arr[0] = elements;
+            return arr;
+        }
+
+        @Override
+        long getWord(int index) {
+            if (index == 0) {
+                return elements;
+            } else {
+                return 0L;
+            }
         }
     }
 
-    class BitSet2 extends AbstractBitSet {
+    class BitSet2<T> extends AbstractBitSet<T> {
+
+        private static final long serialVersionUID = 1L;
 
         private final long elements1, elements2;
 
-        BitSet2(long elements1, long elements2) {
+        BitSet2(Builder<T> builder, long elements1, long elements2) {
+            super(builder);
             this.elements1 = elements1;
             this.elements2 = elements2;
         }
 
         @Override
-        BitSet updateWord(int index, long word) {
-            if (index == 0) {
-                return new BitSet2(word, elements1);
-            }
-            if (index == 1) {
-                return new BitSet2(elements1, word);
-            }
-            return fromBitMaskNoCopy(updateArray(new long[] { elements1, elements2 }, index, word));
-        }
-
-        @Override
-        int nWords() {
+        int getWordsNum() {
             return 2;
         }
 
         @Override
-        long word(int index) {
-            return index == 0 ? elements1 : index == 1 ? elements2 : 0L;
+        long[] copyExpand(int wordsNum) {
+            if(wordsNum < 2) {
+                wordsNum = 2;
+            }
+            long[] arr = new long[wordsNum];
+            arr[0] = elements1;
+            arr[1] = elements2;
+            return arr;
+        }
+
+        @Override
+        long getWord(int index) {
+            if (index == 0) {
+                return elements1;
+            } else {
+                if (index == 1) {
+                    return elements2;
+                } else {
+                    return 0L;
+                }
+            }
         }
     }
 
-    class BitSetN extends AbstractBitSet {
+    class BitSetN<T> extends AbstractBitSet<T> {
+
+        private static final long serialVersionUID = 1L;
 
         private final long[] elements;
 
-        BitSetN(long[] elements) {
+        BitSetN(Builder<T> builder, long[] elements) {
+            super(builder);
             this.elements = elements;
         }
 
         @Override
-        BitSet updateWord(int index, long word) {
-            return fromBitMaskNoCopy(updateArray(elements, index, word));
-        }
-
-        @Override
-        int nWords() {
+        int getWordsNum() {
             return elements.length;
         }
 
         @Override
-        long word(int index) {
-            return index < elements.length ? elements[index] : 0L;
+        long[] copyExpand(int wordsNum) {
+            if(wordsNum < elements.length) {
+                wordsNum = elements.length;
+            }
+            long[] arr = new long[wordsNum];
+            System.arraycopy(elements, 0, arr, 0, elements.length);
+            return arr;
+        }
+
+        @Override
+        long getWord(int index) {
+            if (index < elements.length) {
+                return elements[index];
+            } else {
+                return 0L;
+            }
         }
     }
 }
