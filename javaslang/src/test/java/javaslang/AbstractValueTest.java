@@ -14,9 +14,7 @@ import javaslang.collection.Queue;
 import javaslang.collection.Set;
 import javaslang.collection.Stack;
 import javaslang.collection.Vector;
-import javaslang.control.Either;
-import javaslang.control.Option;
-import javaslang.control.Try;
+import javaslang.control.*;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
@@ -522,4 +520,16 @@ public abstract class AbstractValueTest {
         assertThat(of(1, 2, 3).corresponds(of(1, 2, 3), (i1, i2) -> i1 == i2 + 1)).isFalse();
     }
 
+    @Test
+    public void shouldHaveAReasonableToString() {
+        final Value<Integer> value = of(1, 2);
+        value.toList(); // evaluate all elements (e.g. for Stream)
+        final String actual = value.toString();
+
+        if (value.isSingleValued()) {
+            assertThat(actual).contains("1");
+        } else {
+            assertThat(actual).contains("1", "2");
+        }
+    }
 }

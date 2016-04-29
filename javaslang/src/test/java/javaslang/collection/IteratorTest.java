@@ -5,9 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.control.Option;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
@@ -108,11 +106,6 @@ public class IteratorTest extends AbstractTraversableTest {
         return Iterator.of(elements);
     }
 
-    @Test(expected = NoSuchElementException.class)
-    public void shouldFailOfEmptyArgList() {
-        of().next();
-    }
-
     @Override
     protected <T> Iterator<T> ofAll(Iterable<? extends T> elements) {
         return Iterator.ofAll(elements);
@@ -176,6 +169,11 @@ public class IteratorTest extends AbstractTraversableTest {
     @Override
     protected int getPeekNonNilPerformingAnAction() {
         return 3;
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailOfEmptyArgList() {
+        of().next();
     }
 
     // -- static narrow()
@@ -425,4 +423,8 @@ public class IteratorTest extends AbstractTraversableTest {
         // iterators are intermediate objects and not serializable/deserializable
     }
 
+    @Test
+    public void shouldHaveAReasonableToString() {
+        // iterators are intermediate objects and should not have an equals, hashCode or toString
+    }
 }
