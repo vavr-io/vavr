@@ -6,15 +6,21 @@
 package javaslang;
 
 import javaslang.collection.*;
-import javaslang.control.Either;
-import javaslang.control.Option;
-import javaslang.control.Try;
+import javaslang.collection.HashMap;
+import javaslang.collection.HashSet;
+import javaslang.collection.Iterator;
+import javaslang.collection.List;
+import javaslang.collection.Map;
+import javaslang.collection.Queue;
+import javaslang.collection.Set;
+import javaslang.collection.SortedSet;
+import javaslang.collection.Stack;
+import javaslang.collection.TreeSet;
+import javaslang.collection.Vector;
+import javaslang.control.*;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Optional;
+import java.io.*;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.StreamSupport;
 
@@ -26,9 +32,9 @@ import java.util.stream.StreamSupport;
  * How the empty state is interpreted depends on the context, i.e. it may be <em>undefined</em>, <em>failed</em>,
  * <em>no elements</em>, etc.
  * <p>
- *
+ * <p>
  * Basic operations:
- *
+ * <p>
  * <ul>
  * <li>{@link #get()}</li>
  * <li>{@link #getOption()}</li>
@@ -40,16 +46,16 @@ import java.util.stream.StreamSupport;
  * <li>{@link #map(Function)}</li>
  * <li>{@link #stringPrefix()}</li>
  * </ul>
- *
+ * <p>
  * Equality checks:
- *
+ * <p>
  * <ul>
  * <li>{@link #corresponds(Iterable, BiPredicate)}</li>
  * <li>{@link #eq(Object)}</li>
  * </ul>
- *
+ * <p>
  * Iterable extensions:
- *
+ * <p>
  * <ul>
  * <li>{@link #contains(Object)}</li>
  * <li>{@link #exists(Predicate)}</li>
@@ -57,9 +63,9 @@ import java.util.stream.StreamSupport;
  * <li>{@link #forEach(Consumer)}</li>
  * <li>{@link #iterator()}</li>
  * </ul>
- *
+ * <p>
  * Side-effects:
- *
+ * <p>
  * <ul>
  * <li>{@link #out(PrintStream)}</li>
  * <li>{@link #out(PrintWriter)}</li>
@@ -67,9 +73,9 @@ import java.util.stream.StreamSupport;
  * <li>{@link #stderr()}</li>
  * <li>{@link #stdout()}</li>
  * </ul>
- *
+ * <p>
  * Type conversion:
- *
+ * <p>
  * <ul>
  * <li>{@link #toArray()}</li>
  * <li>{@link #toCharSeq()}</li>
@@ -93,6 +99,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toRight(Object)}</li>
  * <li>{@link #toRight(Supplier)}</li>
  * <li>{@link #toSet()}</li>
+ * <li>{@link #toSortedSet(Comparator)}</li>
  * <li>{@link #toStack()}</li>
  * <li>{@link #toStream()}</li>
  * <li>{@link #toString()}</li>
@@ -101,7 +108,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toTry(Supplier)}</li>
  * <li>{@link #toVector()}</li>
  * </ul>
- *
+ * <p>
  * <strong>Please note:</strong> flatMap signatures are manifold and have to be declared by subclasses of Value.
  *
  * @param <T> The type of the wrapped value.
@@ -163,16 +170,16 @@ public interface Value<T> extends Iterable<T> {
      * In a nutshell: eq checks <strong>congruence of structures</strong> and <strong>equality of contained values</strong>.
      * <p>
      * Example:
-     *
+     * <p>
      * <pre><code>
      * // ((1, 2), ((3))) =&gt; structure: (()(())) values: 1, 2, 3
      * final Value&lt;?&gt; i1 = List.of(List.of(1, 2), Arrays.asList(List.of(3)));
      * final Value&lt;?&gt; i2 = Queue.of(Stream.of(1, 2), List.of(Lazy.of(() -&gt; 3)));
      * assertThat(i1.eq(i2)).isTrue();
      * </code></pre>
-     *
+     * <p>
      * Semantics:
-     *
+     * <p>
      * <pre><code>
      * o == this             : true
      * o instanceof Value    : iterable elements are eq, non-iterable elements equals, for all (o1, o2) in (this, o)
@@ -684,6 +691,15 @@ public interface Value<T> extends Iterable<T> {
      */
     default Set<T> toSet() {
         return ValueModule.toTraversable(this, HashSet.empty(), HashSet::of, HashSet::ofAll);
+    }
+
+    /**
+     * Converts this to a {@link SortedSet}.
+     *
+     * @return A new {@link TreeSet}.
+     */
+    default SortedSet<T> toSortedSet(Comparator<? super T> comparator) {
+        return ValueModule.toTraversable(this, TreeSet.empty(comparator), value -> TreeSet.of(comparator, value), values -> TreeSet.ofAll(comparator, values));
     }
 
     /**
