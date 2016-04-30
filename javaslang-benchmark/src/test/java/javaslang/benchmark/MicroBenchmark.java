@@ -1,19 +1,11 @@
 package javaslang.benchmark;
 
-import javaslang.collection.List;
-import javaslang.collection.Queue;
-import javaslang.collection.Stream;
-import javaslang.collection.Vector;
+import javaslang.collection.*;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
-import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.openjdk.jmh.runner.options.TimeValue;
+import org.openjdk.jmh.runner.options.*;
 
-
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
@@ -51,9 +43,8 @@ public class MicroBenchmark {
     // http://hg.openjdk.java.net/code-tools/jmh/file/tip/jmh-samples/src/main/java/org/openjdk/jmh/samples/
     @State(Scope.Thread)
     public static class BenchmarkState {
-        @Param({"1", "100", "10000"})
+        @Param({ "1", "100", "10000" })
         int containerSize;
-
 
         List<Integer> slangList = List.empty();
         Vector<Integer> slangVector = Vector.empty();
@@ -62,7 +53,6 @@ public class MicroBenchmark {
 
         @Setup(Level.Trial)
         public void initialize() {
-            Random rand = new Random();
             slangList = slangList.padTo(containerSize, 0);
             slangVector = slangVector.padTo(containerSize, 0);
             slangQueue = slangQueue.padTo(containerSize, 0);
