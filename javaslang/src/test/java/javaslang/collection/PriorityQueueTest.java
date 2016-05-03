@@ -224,35 +224,49 @@ public class PriorityQueueTest extends AbstractTraversableTest {
 
     @Test
     public void shouldBehaveExactlyLikeAnotherPriorityQueue() {
-        final Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            final Random random = getRandom(-1);
 
-        final java.util.PriorityQueue<Integer> mutablePriorityQueue = new java.util.PriorityQueue<>();
-        javaslang.collection.PriorityQueue<Integer> functionalPriorityQueue = javaslang.collection.PriorityQueue.empty();
+            final java.util.PriorityQueue<Integer> mutablePriorityQueue = new java.util.PriorityQueue<>();
+            javaslang.collection.PriorityQueue<Integer> functionalPriorityQueue = javaslang.collection.PriorityQueue.empty();
 
-        for (int i = 0; i < 1_000_000; i++) {
+            for (int j = 0; j < 100_000; j++) {
             /* Insert */
-            if (random.nextInt() % 3 == 0) {
+                if (random.nextInt() % 3 == 0) {
+                    assertMinimumsAreEqual(mutablePriorityQueue, functionalPriorityQueue);
+
+                    final int value = random.nextInt();
+                    mutablePriorityQueue.add(value);
+                    functionalPriorityQueue = functionalPriorityQueue.enqueue(value);
+                }
+
                 assertMinimumsAreEqual(mutablePriorityQueue, functionalPriorityQueue);
-
-                final int value = random.nextInt();
-                mutablePriorityQueue.add(value);
-                functionalPriorityQueue = functionalPriorityQueue.enqueue(value);
-            }
-
-            assertMinimumsAreEqual(mutablePriorityQueue, functionalPriorityQueue);
 
             /* Delete */
-            if (random.nextInt() % 5 == 0) {
-                if (!mutablePriorityQueue.isEmpty()) { mutablePriorityQueue.poll(); }
-                if (!functionalPriorityQueue.isEmpty()) { functionalPriorityQueue = functionalPriorityQueue.tail(); }
+                if (random.nextInt() % 5 == 0) {
+                    if (!mutablePriorityQueue.isEmpty()) { mutablePriorityQueue.poll(); }
+                    if (!functionalPriorityQueue.isEmpty()) { functionalPriorityQueue = functionalPriorityQueue.tail(); }
 
-                assertMinimumsAreEqual(mutablePriorityQueue, functionalPriorityQueue);
+                    assertMinimumsAreEqual(mutablePriorityQueue, functionalPriorityQueue);
+                }
             }
-        }
 
-        final Collection<Integer> oldValues = mutablePriorityQueue.stream().sorted().collect(toList());
-        final Collection<Integer> newValues = functionalPriorityQueue.toJavaList();
-        assertThat(oldValues).isEqualTo(newValues);
+            final Collection<Integer> oldValues = mutablePriorityQueue.stream().sorted().collect(toList());
+            final Collection<Integer> newValues = functionalPriorityQueue.toJavaList();
+            assertThat(oldValues).isEqualTo(newValues);
+        }
+    }
+
+    private Random getRandom(int seed) {
+        if (seed >= 0) {
+            return new Random(seed);
+        } else {
+            final Random random = new Random();
+            seed = random.nextInt();
+            System.out.println("using seed: " + seed);
+            random.setSeed(seed);
+            return random;
+        }
     }
 
     private void assertMinimumsAreEqual(java.util.PriorityQueue<Integer> oldQueue, PriorityQueue<Integer> newQueue) {

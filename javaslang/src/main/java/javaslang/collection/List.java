@@ -938,22 +938,21 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> remove(T element) {
-        List<T> preceding = Nil.instance();
-        List<T> tail = this;
+        final Deque<T> preceding = new ArrayDeque<>(size());
+        List<T> result = this;
         boolean found = false;
-        while (!found && !tail.isEmpty()) {
-            final T head = tail.head();
+        while (!found && !result.isEmpty()) {
+            final T head = result.head();
             if (head.equals(element)) {
                 found = true;
             } else {
-                preceding = preceding.prepend(head);
+                preceding.addFirst(head);
             }
-            tail = tail.tail();
+            result = result.tail();
         }
         if (!found) {
             return this;
         }
-        List<T> result = tail;
         for (T next : preceding) {
             result = result.prepend(next);
         }

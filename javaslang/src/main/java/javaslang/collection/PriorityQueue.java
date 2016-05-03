@@ -7,7 +7,7 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.collection.Comparators.SerializableComparator;
-import javaslang.collection.Tree.Node;
+import javaslang.collection.PriorityQueue.PriorityQueueHelper.*;
 
 import java.io.Serializable;
 import java.util.*;
@@ -25,21 +25,17 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     private static final long serialVersionUID = 1L;
 
     private final SerializableComparator<? super T> comparator;
-    private final List<Node<Ranked<T>>> forest;
+    private final List<Node<T>> forest;
     private final int size;
 
-    private PriorityQueue(SerializableComparator<? super T> comparator, List<Node<Ranked<T>>> forest, int size) {
+    private PriorityQueue(SerializableComparator<? super T> comparator, List<Node<T>> forest, int size) {
         this.comparator = comparator;
         this.forest = forest;
         this.size = size;
     }
 
-    private PriorityQueue<T> with(List<Node<Ranked<T>>> forest, int size) {
+    private PriorityQueue<T> with(List<Node<T>> forest, int size) {
         return new PriorityQueue<>(this.comparator, forest, size);
-    }
-
-    private PriorityQueue<T> with(SerializableComparator<? super T> comparator) {
-        return new PriorityQueue<>(comparator, this.forest, this.size);
     }
 
     /**
@@ -50,8 +46,8 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
      */
     @Override
     public PriorityQueue<T> enqueue(T element) {
-        final List<Node<Ranked<T>>> insert = insert(comparator, forest, element);
-        return with(insert, size + 1);
+        final List<Node<T>> result = insert(comparator, element, forest);
+        return with(result, size + 1);
     }
 
     /**
@@ -77,8 +73,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
         if (isEmpty()) {
             throw new NoSuchElementException("head of empty " + stringPrefix());
         } else {
-            final T currentMin = root(forest.head());
-            return findMin(comparator, forest, currentMin);
+            return findMin(comparator, forest).root;
         }
     }
 
@@ -93,19 +88,28 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty " + stringPrefix());
         } else {
-            final List<Node<Ranked<T>>> forest = deleteMin(comparator, this.forest);
-            return with(forest, this.size - 1);
+            return dequeue()._2;
+        }
+    }
+
+    @Override
+    public Tuple2<T, PriorityQueue<T>> dequeue() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("dequeue of empty " + stringPrefix());
+        } else {
+            final Tuple2<T, List<Node<T>>> dequeue = deleteMin(comparator, this.forest);
+            return Tuple.of(dequeue._1, with(dequeue._2, this.size - 1));
         }
     }
 
     public PriorityQueue<T> merge(PriorityQueue<T> target) {
-        final List<Node<Ranked<T>>> meld = meld(comparator, this.forest, target.forest);
+        final List<Node<T>> meld = meld(comparator, this.forest, target.forest);
         return with(meld, this.size + target.size);
     }
 
     @Override
     public boolean isEmpty() {
-        return forest.isEmpty();
+        return size == 0;
     }
 
     /**
@@ -179,10 +183,15 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     public static <T> PriorityQueue<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
 
-        final List<T> values = List.ofAll(elements);
         final SerializableComparator<? super T> serializableComparator = SerializableComparator.of(comparator);
 
-        return new PriorityQueue<>(serializableComparator, asForest(serializableComparator, values), values.size());
+        int size = 0;
+        List<Node<T>> forest = List.empty();
+        for (T value : elements) {
+            forest = insert(serializableComparator, value, forest);
+            size++;
+        }
+        return new PriorityQueue<>(serializableComparator, forest, size);
     }
 
     /**
@@ -219,29 +228,29 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     @Override
     public List<T> toList() {
         List<T> results = List.empty();
-        for (PriorityQueue<T> queue = this; !queue.isEmpty(); queue = queue.tail()) {
-            results = results.prepend(queue.head());
+        for (PriorityQueue<T> queue = this; !queue.isEmpty(); ) {
+            final Tuple2<T, PriorityQueue<T>> dequeue = queue.dequeue();
+            results = results.prepend(dequeue._1);
+            queue = dequeue._2;
         }
         return results.reverse();
     }
 
     @Override
     public PriorityQueue<T> distinct() {
-        return ofAll(comparator, iterator().distinctBy(comparator));
+        return distinctBy(comparator);
+    }
+
+    @Override
+    public PriorityQueue<T> distinctBy(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return ofAll(comparator, toList().distinctBy(comparator));
     }
 
     @Override
     public <U> PriorityQueue<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        final Comparator<? super T> comparator = (o1, o2) -> (keyExtractor.apply(o1) == keyExtractor.apply(o2)) ? 0 : -1;
-        return distinctBy(comparator);
-    }
-
-    @Override
-    @SuppressWarnings("TrivialMethodReference")
-    public PriorityQueue<T> distinctBy(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        return with(comparator::compare).distinct();
+        return ofAll(comparator, toList().distinctBy(keyExtractor));
     }
 
     @Override
@@ -511,45 +520,110 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
 
     protected static class PriorityQueueHelper {
         /* Based on http://www.brics.dk/RS/96/37/BRICS-RS-96-37.pdf */
+        protected static class Node<T> implements Serializable {
+            private static final long serialVersionUID = 1L;
 
-        /*
-       * fun deleteMin [] = raise EMPTY
-       * * | deleteMin ts =
-       * *     let fun getMin [t]=(t, [])
-       * *           | getMin (t :: ts) =
-       * *               let val (t', ts') = getMin ts
-       * *               in if Elem.leq(root t, root t') then (t, ts)
-       * *                  else                              (t', t :: ts') end
-       * *         fun split (ts,xs,[]) = (ts, xs)
-       * *           | split (ts,xs,t :: c) =
-       * *               if rank t = 0 then split (ts,root t :: xs,c)
-       * *               else               split (t :: ts,xs,c)
-       * *         val (Node (x,r,c), ts) = getMin ts
-       * *         val (ts',xs') = split ([],[],c)
-       * * in fold insert xs' (meld (ts, ts')) end
-       * */
-        protected static <T> List<Node<Ranked<T>>> deleteMin(SerializableComparator<? super T> comparator, List<Node<Ranked<T>>> forest) {
-            if (forest.isEmpty()) {
-                throw new NoSuchElementException();
-            } else {
-                /* get the minimum tree and the rest of the forest */
-                final Node<Ranked<T>> minTree = forest.reduce((t1, t2) -> comparator.isLessOrEqual(root(t1), root(t2)) ? t1 : t2); // TODO could we use PriorityQueue here instead ... no, really
-                final List<Node<Ranked<T>>> forestTail = (minTree == forest.head()) ? forest.tail() : forest.remove(minTree);
+            protected final T root;
+            protected final int rank;
+            protected final List<Node<T>> children;
 
-                final List<Node<Ranked<T>>> newForest = rebuild(comparator, minTree.getChildren());
-                return meld(comparator, newForest, forestTail);
+            private Node(T root, int rank, List<Node<T>> children) {
+                this.root = root;
+                this.rank = rank;
+                this.children = children;
+
+                assert children.forAll(c -> c.rank < this.rank);
+            }
+
+            protected static <T> Node<T> of(T value, int rank, List<Node<T>> children) {
+                return new Node<>(value, rank, children);
+            }
+
+            protected static <T> Node<T> of(T value) {
+                return of(value, 0, List.empty());
+            }
+
+            /**
+             * fun link (t1 as Node (x1,r1,c1), t2 as Node (x2,r2,c2)) = (∗ r1 = r2 ∗)
+             * *  if Elem.leq (x1,x2) then Node (x1,r1+1,t2 :: c1)
+             * *  else                     Node (x2,r2+1,t1 :: c2
+             */
+            protected Node<T> link(SerializableComparator<? super T> comparator, Node<T> tree) {
+                assert rank == tree.rank;
+
+                return comparator.isLessOrEqual(this.root, tree.root)
+                        ? of(this.root, this.rank + 1, tree.append(this.children))
+                        : of(tree.root, tree.rank + 1, this.append(tree.children));
+            }
+
+            /**
+             * fun skewLink (t0 as Node (x0,r0, _), t1 as Node (x1,r1,c1), t2 as Node (x2,r2,c2)) =
+             * *  if Elem.leq (x1,x0) andalso Elem.leq (x1,x2) then      Node (x1,r1+1,t0 :: t2 :: c1)
+             * *  else if Elem.leq (x2,x0) andalso Elem.leq (x2,x1) then Node (x2,r2+1,t0 :: t1 :: c2)
+             * *  else                                                   Node (x0,r1+1,[t1, t2])
+             **/
+            protected Node<T> skewLink(SerializableComparator<? super T> comparator, Node<T> left, Node<T> right) {
+                assert rank == 0 && left.rank == right.rank;
+
+                if (comparator.isLessOrEqual(left.root, root) && comparator.isLessOrEqual(left.root, right.root)) {
+                    return of(left.root, left.rank + 1, append(right.append(left.children)));
+                } else {
+                    if (comparator.isLessOrEqual(right.root, root)) {
+                        assert comparator.isLessOrEqual(right.root, left.root);
+                        return of(right.root, right.rank + 1, append(left.append(right.children)));
+                    } else {
+                        assert children.isEmpty();
+                        return of(root, left.rank + 1, List.of(left, right));
+                    }
+                }
+            }
+
+            protected List<Node<T>> append(List<Node<T>> forest) {
+                return forest.prepend(this);
+            }
+
+            @Override
+            public String toString() {
+                return "Node(" + root + ", " + rank + ", " + children + ')';
             }
         }
 
-        /* Separate the rank 0 trees from the rest, rebuild the 0 rank ones and merge them back */
-        private static <T> List<Node<Ranked<T>>> rebuild(SerializableComparator<? super T> comparator, List<Node<Ranked<T>>> forest) {
-            List<Node<Ranked<T>>> nonZeroRank = List.empty(), zeroRank = List.empty();
+        /**
+         * fun deleteMin [] = raise EMPTY
+         * * | deleteMin ts =
+         * *     val (Node (x,r,c), ts) = getMin ts
+         * *     val (ts',xs') = split ([],[],c)
+         * *     in fold insert xs' (meld (ts, ts')) end
+         **/
+        static <T> Tuple2<T, List<Node<T>>> deleteMin(SerializableComparator<? super T> comparator, List<Node<T>> forest) {
+            if (forest.isEmpty()) {
+                throw new NoSuchElementException();
+            } else {
+            /* get the minimum tree and the rest of the forest */
+                final Node<T> minTree = findMin(comparator, forest);
+                final List<Node<T>> forestTail = (minTree == forest.head()) ? forest.tail() : forest.remove(minTree);
+
+                final List<Node<T>> newForest = rebuild(comparator, minTree.children);
+                return Tuple.of(minTree.root, meld(comparator, newForest, forestTail));
+            }
+        }
+
+        /**
+         * Separate the rank 0 trees from the rest, rebuild the 0 rank ones and merge them back
+         * <p>
+         * fun split (ts,xs,[]) = (ts, xs)
+         * * | split (ts,xs,t :: c) =
+         * *     if rank t = 0 then split (ts,root t :: xs,c)
+         * *     else               split (t :: ts,xs,c)
+         */
+        static <T> List<Node<T>> rebuild(SerializableComparator<? super T> comparator, List<Node<T>> forest) {
+            List<Node<T>> nonZeroRank = List.empty(), zeroRank = List.empty();
             for (; !forest.isEmpty(); forest = forest.tail()) {
-                final Node<Ranked<T>> initialForestHead = forest.head();
-                if (rank(initialForestHead) == 0) {
-                    zeroRank = insert(comparator, zeroRank, root(initialForestHead));
+                final Node<T> initialForestHead = forest.head();
+                if (initialForestHead.rank == 0) {
+                    zeroRank = insert(comparator, initialForestHead.root, zeroRank);
                 } else {
-                    nonZeroRank = concat(initialForestHead, nonZeroRank);
+                    nonZeroRank = initialForestHead.append(nonZeroRank);
                 }
             }
             return meld(comparator, nonZeroRank, zeroRank);
@@ -561,26 +635,20 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
          * *     else                      Node (x,0,[]) :: ts
          * * | insert (x, ts) =            Node (x,0,[]) :: ts
          **/
-        protected static <T> List<Node<Ranked<T>>> insert(SerializableComparator<? super T> comparator, List<Node<Ranked<T>>> forest, T element) {
-            Node<Ranked<T>> tree = Tree.of(Ranked.of(element, 0));
-            if (forest.size() >= 3) {
-                final Node<Ranked<T>> t1 = forest.head(), t2 = forest.get(1);
-                if (rank(t1) == rank(t2)) {
-                    forest = forest.drop(2);
-                    tree = skewLink(comparator, tree, t1, t2);
+        static <T> List<Node<T>> insert(SerializableComparator<? super T> comparator, T element, List<Node<T>> forest) {
+            final Node<T> tree = Node.of(element);
+            if (forest.size() >= 2) {
+                final List<Node<T>> tail = forest.tail();
+                final Node<T> t1 = forest.head(), t2 = tail.head();
+                if (t1.rank == t2.rank) {
+                    return tree.skewLink(comparator, t1, t2).append(tail.tail());
                 }
             }
-            return concat(tree, forest);
+            return tree.append(forest);
         }
 
-        protected static <T> List<Node<Ranked<T>>> asForest(SerializableComparator<? super T> comparator, Traversable<? extends T> targetValues) {
-            return targetValues.foldLeft(List.empty(), (f, e) -> insert(comparator, f, e));
-        }
-
-        /**
-         * fun meld (ts, ts') = meldUniq (uniqify ts, uniqify ts')
-         **/
-        protected static <T> List<Node<Ranked<T>>> meld(SerializableComparator<? super T> comparator, List<Node<Ranked<T>>> source, List<Node<Ranked<T>>> target) {
+        /** fun meld (ts, ts') = meldUniq (uniqify ts, uniqify ts') */
+        static <T> List<Node<T>> meld(SerializableComparator<? super T> comparator, List<Node<T>> source, List<Node<T>> target) {
             return meldUnique(comparator, uniqify(comparator, source), uniqify(comparator, target));
         }
 
@@ -588,9 +656,9 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
          * fun uniqify [] = []
          * *  | uniqify (t :: ts) = ins (t, ts) (∗ eliminate initial duplicate ∗)
          **/
-        private static <T> List<Node<Ranked<T>>> uniqify(SerializableComparator<? super T> comparator, List<Node<Ranked<T>>> forest) {
+        static <T> List<Node<T>> uniqify(SerializableComparator<? super T> comparator, List<Node<T>> forest) {
             return forest.isEmpty()
-                    ? List.empty()
+                    ? forest
                     : ins(comparator, forest.head(), forest.tail());
         }
 
@@ -600,12 +668,11 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
          * *     if rank t < rank t' then t :: t' :: ts
          * *     else                     ins (link (t, t'), ts)
          */
-        private static <T> List<Node<Ranked<T>>> ins(SerializableComparator<? super T> comparator, Node<Ranked<T>> tree, List<Node<Ranked<T>>> forest) {
-            while (!forest.isEmpty() && rank(tree) >= rank(forest.head())) {
-                tree = link(comparator, tree, forest.head());
-                forest = forest.tail();
+        static <T> List<Node<T>> ins(SerializableComparator<? super T> comparator, Node<T> tree, List<Node<T>> forest) {
+            for (; !forest.isEmpty() && tree.rank >= forest.head().rank; forest = forest.tail()) {
+                tree = tree.link(comparator, forest.head());
             }
-            return concat(tree, forest);
+            return tree.append(forest);
         }
 
         /**
@@ -616,122 +683,52 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
          * *      else if rank t2 < rank t1 then t2 :: meldUniq (t1 :: ts1, ts2)
          * *      else                           ins (link (t1, t2), meldUniq (ts1, ts2))
          **/
-        private static <T> List<Node<Ranked<T>>> meldUnique(SerializableComparator<? super T> comparator, List<Node<Ranked<T>>> forest1, List<Node<Ranked<T>>> forest2) {
+        static <T> List<Node<T>> meldUnique(SerializableComparator<? super T> comparator, List<Node<T>> forest1, List<Node<T>> forest2) { // TODO eliminate recursion somehow
             if (forest1.isEmpty()) {
                 return forest2;
             } else if (forest2.isEmpty()) {
                 return forest1;
             } else {
-                final Node<Ranked<T>> tree1 = forest1.head(), tree2 = forest2.head();
+                final Node<T> tree1 = forest1.head(), tree2 = forest2.head();
 
-                if (rank(tree1) < rank(tree2)) {
-                    final List<Node<Ranked<T>>> tail = meldUnique(comparator, forest1.tail(), forest2);
-                    return concat(tree1, tail);
-                } else if (rank(tree1) > rank(tree2)) {
-                    final List<Node<Ranked<T>>> tail = meldUnique(comparator, forest1, forest2.tail());
-                    return concat(tree2, tail);
+                final Node<T> tree;
+                final List<Node<T>> forest;
+                if (tree1.rank == tree2.rank) {
+                    tree = tree1.link(comparator, tree2);
+                    forest = meldUnique(comparator, forest1.tail(), forest2.tail());
                 } else {
-                    final Node<Ranked<T>> link = link(comparator, tree1, tree2);
-                    final List<Node<Ranked<T>>> tail = meldUnique(comparator, forest1.tail(), forest2.tail());
-                    return ins(comparator, link, tail);
+                    if (tree1.rank < tree2.rank) {
+                        tree = tree1;
+                        forest = meldUnique(comparator, forest1.tail(), forest2);
+                        assert forest.isEmpty() || tree1.rank < forest.head().rank;
+                    } else {
+                        tree = tree2;
+                        forest = meldUnique(comparator, forest1, forest2.tail());
+                        assert forest.isEmpty() || tree2.rank < forest.head().rank;
+                    }
                 }
+                return ins(comparator, tree, forest);
             }
         }
 
         /**
-         * fun link (t1 as Node (x1,r1,c1), t2 as Node (x2,r2,c2)) = (∗ r1 = r2 ∗)
-         * *  if Elem.leq (x1,x2) then Node (x1,r1+1,t2 :: c1)
-         * *  else                     Node (x2,r2+1,t1 :: c2
-         */
-        private static <T> Node<Ranked<T>> link(SerializableComparator<? super T> comparator, Node<Ranked<T>> tree1, Node<Ranked<T>> tree2) {
-            final T root1 = root(tree1), root2 = root(tree2);
-
-            final Ranked<T> ranked;
-            final List<Node<Ranked<T>>> children;
-            if (comparator.isLessOrEqual(root1, root2)) {
-                ranked = Ranked.of(root1, rank(tree1) + 1);
-                children = concat(tree2, tree1.getChildren());
-            } else {
-                ranked = Ranked.of(root2, rank(tree2) + 1);
-                children = concat(tree1, tree2.getChildren());
-            }
-            return Tree.of(ranked, children);
-        }
-
-        /**
-         * fun skewLink (t0 as Node (x0,r0, _), t1 as Node (x1,r1,c1), t2 as Node (x2,r2,c2)) =
-         * *  if Elem.leq (x1,x0) andalso Elem.leq (x1,x2) then      Node (x1,r1+1,t0 :: t2 :: c1)
-         * *  else if Elem.leq (x2,x0) andalso Elem.leq (x2,x1) then Node (x2,r2+1,t0 :: t1 :: c2)
-         * *  else                                                   Node (x0,r1+1,[t1, t2])
-         **/
-        private static <T> Node<Ranked<T>> skewLink(SerializableComparator<? super T> comparator, Node<Ranked<T>> tree0, Node<Ranked<T>> tree1, Node<Ranked<T>> tree2) {
-            final T root0 = root(tree0), root1 = root(tree1), root2 = root(tree2);
-
-            final Ranked<T> ranked;
-            final List<Node<Ranked<T>>> children;
-            if (comparator.isLessOrEqual(root1, root0) && comparator.isLessOrEqual(root1, root2)) {
-                ranked = Ranked.of(root1, rank(tree1) + 1);
-                children = concat(tree0, concat(tree2, tree1.getChildren()));
-            } else if (comparator.isLessOrEqual(root2, root0) && comparator.isLessOrEqual(root2, root1)) {
-                ranked = Ranked.of(root2, rank(tree2) + 1);
-                children = concat(tree0, concat(tree1, tree2.getChildren()));
-            } else {
-                ranked = Ranked.of(root0, rank(tree1) + 1);
-                children = List.of(tree1, tree2);
-            }
-            return Tree.of(ranked, children);
-        }
-
-        /**
+         * Find the minimum root in the forest
+         * <p>
          * fun findMin [] = raise EMPTY
          * * | findMin [t] = root t
          * * | findMin (t :: ts) =
          * *     let val x = findMin ts
          * *     in if Elem.leq (root t, x) then root t else x end
          */
-        protected static <T> T findMin(SerializableComparator<? super T> comparator, List<Node<Ranked<T>>> forest, T currentMin) {
-            while (forest.size() > 1) {
-                forest = forest.tail();
-                currentMin = min(comparator, currentMin, root(forest.head()));
+        static <T> Node<T> findMin(SerializableComparator<? super T> comparator, List<Node<T>> forest) {
+            final Iterator<Node<T>> iterator = forest.iterator();
+            Node<T> min = iterator.next();
+            for (Node<T> node : iterator) {
+                if (comparator.isLess(node.root, min.root)) {
+                    min = node;
+                }
             }
-            return currentMin;
-        }
-
-        private static <T> T min(SerializableComparator<? super T> comparator, T value1, T value2) {
-            return comparator.isLessOrEqual(value1, value2) ? value1 : value2;
-        }
-
-        protected static <T> T root(Node<Ranked<T>> tree) {
-            return tree.getValue().value;
-        }
-
-        private static <T> int rank(Node<Ranked<T>> tree) {
-            return tree.getValue().rank;
-        }
-
-        private static <T> List<T> concat(T head, List<T> rest) {
-            return rest.prepend(head);
-        }
-
-        protected static class Ranked<T> implements Serializable {
-            private static final long serialVersionUID = 1L;
-
-            final T value;
-            final int rank;
-
-            Ranked(T value, int rank) {
-                this.value = value;
-                this.rank = rank;
-            }
-
-            static <T> Ranked<T> of(T value, int rank) {
-                return new Ranked<>(value, rank);
-            }
-
-            @Override
-            public String toString() {
-                return "Ranked(" + value + ", " + rank + ')';
-            }
+            return min;
         }
     }
 }
