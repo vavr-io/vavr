@@ -11,6 +11,7 @@ import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
@@ -30,14 +31,16 @@ public abstract class BitSet<T> implements SortedSet<T> {
 
     private static final long serialVersionUID = 1L;
 
-    public static class Builder<T> {
+    public static class Builder<T> implements Serializable {
+
+        private static final long serialVersionUID = 1L;
 
         final static Builder<Integer> DEFAULT = new Builder<>(i -> i, i -> i);
 
         final Function<Integer, T> fromInt;
         final Function<T, Integer> toInt;
 
-        Builder(Function<Integer, T> fromInt, Function<T, Integer> toInt) {
+        Builder(Function1<Integer, T> fromInt, Function1<T, Integer> toInt) {
             this.fromInt = fromInt;
             this.toInt = toInt;
         }
@@ -57,9 +60,9 @@ public abstract class BitSet<T> implements SortedSet<T> {
         public BitSet<T> of(T t) {
             final int value = toInt.apply(t);
             if(value < BitSetModule.BITS_PER_WORD) {
-                return new BitSetModule.BitSet1<>(this, value);
+                return new BitSetModule.BitSet1<>(this, 1L << value);
             } else if(value < 2 * BitSetModule.BITS_PER_WORD) {
-                return new BitSetModule.BitSet2<>(this, 0L, value);
+                return new BitSetModule.BitSet2<>(this, 0L, 1L << value);
             } else {
                 return empty().add(t);
             }
@@ -93,13 +96,13 @@ public abstract class BitSet<T> implements SortedSet<T> {
         }
     }
 
-    public static <T> Builder<T> withRelations(Function<Integer, T> fromInt, Function<T, Integer> toInt) {
+    public static <T> Builder<T> withRelations(Function1<Integer, T> fromInt, Function1<T, Integer> toInt) {
         return new Builder<>(fromInt, toInt);
     }
 
     public static <T extends Enum<T>> Builder<T> withEnum(Class<T> clz) {
-        final Function<Integer, T> fromInt = i -> clz.getEnumConstants()[i];
-        final Function<T, Integer> toInt = Enum<T>::ordinal;
+        final Function1<Integer, T> fromInt = i -> clz.getEnumConstants()[i];
+        final Function1<T, Integer> toInt = Enum<T>::ordinal;
         return new Builder<>(fromInt, toInt);
     }
 
@@ -382,6 +385,11 @@ public abstract class BitSet<T> implements SortedSet<T> {
     }
 
     @Override
+    public String toString() {
+        return mkString(stringPrefix() + "(", ", ", ")");
+    }
+
+    @Override
     public Comparator<T> comparator() {
         return (t1, t2) -> Integer.compare(builder.toInt.apply(t1), builder.toInt.apply(t2));
     }
@@ -466,7 +474,11 @@ public abstract class BitSet<T> implements SortedSet<T> {
 
     @Override
     public BitSet<T> tail() {
-        return remove(head());
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("tail of empty BitSet");
+        } else {
+            return remove(head());
+        }
     }
 
     @Override
@@ -748,6 +760,18 @@ interface BitSetModule {
             }
             throw new NoSuchElementException("head of empty BitSet");
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (o instanceof BitSet1) {
+                final BitSet1<?> that = (BitSet1<?>) o;
+                return this.elements == that.elements;
+            } else {
+                return false;
+            }
+        }
     }
 
     class BitSet2<T> extends AbstractBitSet<T> {
@@ -800,6 +824,18 @@ interface BitSetModule {
             }
             throw new NoSuchElementException("head of empty BitSet");
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (o instanceof BitSet2) {
+                final BitSet2<?> that = (BitSet2<?>) o;
+                return this.elements1 == that.elements1 && this.elements2 == that.elements2;
+            } else {
+                return false;
+            }
+        }
     }
 
     class BitSetN<T> extends AbstractBitSet<T> {
@@ -847,6 +883,27 @@ interface BitSetModule {
                 offset += BITS_PER_WORD;
             }
             throw new NoSuchElementException("head of empty BitSet");
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            } else if (o instanceof BitSetN) {
+                final BitSetN<?> that = (BitSetN<?>) o;
+                if (this.elements.length != that.elements.length) {
+                    return false;
+                } else {
+                    for (int i = 0; i < this.elements.length; i++) {
+                        if (this.elements[i] != that.elements[i]) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            } else {
+                return false;
+            }
         }
     }
 }
