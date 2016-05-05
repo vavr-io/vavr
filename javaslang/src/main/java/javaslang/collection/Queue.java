@@ -17,7 +17,7 @@ import java.util.stream.Collector;
  * An immutable {@code Queue} stores elements allowing a first-in-first-out (FIFO) retrieval.
  * <p>
  * Queue API:
- *
+ * <p>
  * <ul>
  * <li>{@link #dequeue()}</li>
  * <li>{@link #dequeueOption()}</li>
@@ -27,7 +27,7 @@ import java.util.stream.Collector;
  * <li>{@link #peek()}</li>
  * <li>{@link #peekOption()}</li>
  * </ul>
- *
+ * <p>
  * A Queue internally consists of a front List containing the front elements of the Queue in the correct order and a
  * rear List containing the rear elements of the Queue in reverse order.
  * <p>
@@ -116,7 +116,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      * @return A new Queue instance containing the given element
      */
     public static <T> Queue<T> of(T element) {
-        return Queue.ofAll(List.of(element));
+        return ofAll(List.of(element));
     }
 
     /**
@@ -131,7 +131,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     @SafeVarargs
     public static <T> Queue<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Queue.ofAll(List.of(elements));
+        return ofAll(List.of(elements));
     }
 
     /**
@@ -157,15 +157,15 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     }
 
     /**
-     * Creates a Seq based on the elements of a boolean array.
+     * Creates a Queue based on the elements of a boolean array.
      *
      * @param array a boolean array
-     * @return A new Seq of Boolean values
+     * @return A new Queue of Boolean values
      * @throws NullPointerException if array is null
      */
     public static Queue<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Queue.ofAll(List.ofAll(array));
+        return ofAll(List.ofAll(array));
     }
 
     /**
@@ -177,7 +177,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      */
     public static Queue<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Queue.ofAll(List.ofAll(array));
+        return ofAll(List.ofAll(array));
     }
 
     /**
@@ -189,7 +189,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      */
     public static Queue<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Queue.ofAll(List.ofAll(array));
+        return ofAll(List.ofAll(array));
     }
 
     /**
@@ -201,7 +201,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      */
     public static Queue<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Queue.ofAll(List.ofAll(array));
+        return ofAll(List.ofAll(array));
     }
 
     /**
@@ -213,7 +213,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      */
     public static Queue<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Queue.ofAll(List.ofAll(array));
+        return ofAll(List.ofAll(array));
     }
 
     /**
@@ -225,7 +225,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      */
     public static Queue<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Queue.ofAll(List.ofAll(array));
+        return ofAll(List.ofAll(array));
     }
 
     /**
@@ -237,7 +237,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      */
     public static Queue<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Queue.ofAll(List.ofAll(array));
+        return ofAll(List.ofAll(array));
     }
 
     /**
@@ -249,7 +249,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      */
     public static Queue<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Queue.ofAll(List.ofAll(array));
+        return ofAll(List.ofAll(array));
     }
 
     /**
@@ -264,7 +264,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      */
     public static <T> Queue<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return Collections.tabulate(n, f, Queue.empty(), Queue::of);
+        return Collections.tabulate(n, f, empty(), Queue::of);
     }
 
     /**
@@ -278,19 +278,19 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      */
     public static <T> Queue<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return Collections.fill(n, s, Queue.empty(), Queue::of);
+        return Collections.fill(n, s, empty(), Queue::of);
     }
 
     public static Queue<Character> range(char from, char toExclusive) {
-        return Queue.ofAll(Iterator.range(from, toExclusive));
+        return ofAll(Iterator.range(from, toExclusive));
     }
 
     public static Queue<Character> rangeBy(char from, char toExclusive, int step) {
-        return Queue.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     public static Queue<Double> rangeBy(double from, double toExclusive, double step) {
-        return Queue.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -310,7 +310,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      * @return a range of int values as specified or {@code Nil} if {@code from >= toExclusive}
      */
     public static Queue<Integer> range(int from, int toExclusive) {
-        return Queue.ofAll(Iterator.range(from, toExclusive));
+        return ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -336,7 +336,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Queue<Integer> rangeBy(int from, int toExclusive, int step) {
-        return Queue.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -356,7 +356,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      * @return a range of long values as specified or {@code Nil} if {@code from >= toExclusive}
      */
     public static Queue<Long> range(long from, long toExclusive) {
-        return Queue.ofAll(Iterator.range(from, toExclusive));
+        return ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -382,19 +382,19 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Queue<Long> rangeBy(long from, long toExclusive, long step) {
-        return Queue.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     public static Queue<Character> rangeClosed(char from, char toInclusive) {
-        return Queue.ofAll(Iterator.rangeClosed(from, toInclusive));
+        return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     public static Queue<Character> rangeClosedBy(char from, char toInclusive, int step) {
-        return Queue.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     public static Queue<Double> rangeClosedBy(double from, double toInclusive, double step) {
-        return Queue.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -414,7 +414,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      * @return a range of int values as specified or {@code Nil} if {@code from > toInclusive}
      */
     public static Queue<Integer> rangeClosed(int from, int toInclusive) {
-        return Queue.ofAll(Iterator.rangeClosed(from, toInclusive));
+        return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -440,7 +440,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Queue<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        return Queue.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -460,7 +460,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      * @return a range of long values as specified or {@code Nil} if {@code from > toInclusive}
      */
     public static Queue<Long> rangeClosed(long from, long toInclusive) {
-        return Queue.ofAll(Iterator.rangeClosed(from, toInclusive));
+        return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -486,7 +486,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Queue<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        return Queue.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -605,7 +605,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
 
     @Override
     public Iterator<Queue<T>> crossProduct(int power) {
-        return Collections.crossProduct(Queue.empty(), this, power);
+        return Collections.crossProduct(empty(), this, power);
     }
 
     @Override
@@ -666,7 +666,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
         final List<T> filtered = toList().filter(predicate);
 
         if (filtered.isEmpty()) {
-            return Queue.empty();
+            return empty();
         } else if (filtered.length() == length()) {
             return this;
         } else {
@@ -710,7 +710,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     @Override
     public <C> Map<C, Queue<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, Queue.ofAll(it)));
+        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, ofAll(it)));
     }
 
     @Override
@@ -969,14 +969,14 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
     public <U> Queue<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         // prepends to the rear-list in O(1)
-        return Collections.scanLeft(this, zero, operation, Queue.empty(), Queue::append, Function.identity());
+        return Collections.scanLeft(this, zero, operation, empty(), Queue::append, Function.identity());
     }
 
     @Override
     public <U> Queue<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         // add elements in reverse order in O(1) and creates a Queue instance in O(1)
         final List<U> list = Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
-        return Queue.ofAll(list);
+        return ofAll(list);
     }
 
     @Override
@@ -1137,7 +1137,7 @@ public class Queue<T> implements Kind1<Queue<?>, T>, LinearSeq<T>, Serializable 
 
     @Override
     public <U> Queue<U> unit(Iterable<? extends U> iterable) {
-        return Queue.ofAll(iterable);
+        return ofAll(iterable);
     }
 
     @Override

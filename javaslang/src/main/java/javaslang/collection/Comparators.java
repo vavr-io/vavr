@@ -46,8 +46,13 @@ final class Comparators {
     interface SerializableComparator<T> extends Comparator<T>, Serializable {
         long serialVersionUID = 1L;
 
+        @SuppressWarnings("TrivialMethodReference")
         static <T> SerializableComparator<T> of(Comparator<T> comparator) {
-            return comparator::compare;
+            if (comparator instanceof SerializableComparator) {
+                return ((SerializableComparator<T>) comparator);
+            } else {
+                return comparator::compare;
+            }
         }
 
         default boolean isLess(T o1, T o2) {

@@ -5,12 +5,9 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.collection.List.Nil;
-import javaslang.collection.Tree.Empty;
-import javaslang.collection.Tree.Node;
+import javaslang.collection.Tree.*;
 import javaslang.collection.TreeModule.*;
 import javaslang.control.Option;
 
@@ -19,6 +16,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+import static javaslang.collection.Tree.*;
 import static javaslang.collection.Tree.Order.PRE_ORDER;
 
 /**
@@ -124,7 +122,7 @@ public interface Tree<T> extends Traversable<T> {
     @SafeVarargs
     static <T> Tree<T> of(T... values) {
         Objects.requireNonNull(values, "values is null");
-        List<T> list = List.of(values);
+        final List<T> list = List.of(values);
         return list.isEmpty() ? Empty.instance() : new Node<>(list.head(), list.tail().map(Tree::of));
     }
 
@@ -162,7 +160,7 @@ public interface Tree<T> extends Traversable<T> {
      */
     static <T> Tree<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return Collections.tabulate(n, f, Tree.empty(), Tree::of);
+        return Collections.tabulate(n, f, empty(), Tree::of);
     }
 
     /**
@@ -176,7 +174,7 @@ public interface Tree<T> extends Traversable<T> {
      */
     static <T> Tree<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return Collections.fill(n, s, Tree.empty(), Tree::of);
+        return Collections.fill(n, s, empty(), Tree::of);
     }
 
     /**
@@ -213,7 +211,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     /**
-     * Traverses this tree values in a specific {@link javaslang.collection.Tree.Order}.
+     * Traverses this tree values in a specific {@link Order}.
      *
      * @param order A traversal order
      * @return A new Iterator
@@ -472,7 +470,7 @@ public interface Tree<T> extends Traversable<T> {
         return values().iterator();
     }
 
-        @Override
+    @Override
     default <U> Tree<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Empty.instance() : TreeModule.Map.apply((Node<T>) this, mapper);
@@ -656,7 +654,7 @@ public interface Tree<T> extends Traversable<T> {
             if (thatIter.hasNext()) {
                 final Iterable<Node<Tuple2<T, U>>> remainder = Iterator
                         .ofAll(thatIter)
-                        .map(elem -> Tree.of(Tuple.of(thisElem, elem)));
+                        .map(elem -> of(Tuple.of(thisElem, elem)));
                 return new Node<>(tree.getValue(), tree.getChildren().appendAll(remainder));
             } else {
                 return tree;
@@ -711,7 +709,7 @@ public interface Tree<T> extends Traversable<T> {
             Objects.requireNonNull(children, "children is null");
             this.value = value;
             this.children = children;
-            this.size = 1 + this.children.foldLeft(0, (acc, child) -> acc + child.size);
+            this.size = children.foldLeft(1, (acc, child) -> acc + child.size);
         }
 
         @Override
@@ -764,7 +762,7 @@ public interface Tree<T> extends Traversable<T> {
 
         @Override
         public String draw() {
-            StringBuilder builder = new StringBuilder();
+            final StringBuilder builder = new StringBuilder();
             drawAux("", builder);
             return builder.toString();
         }
@@ -978,7 +976,7 @@ public interface Tree<T> extends Traversable<T> {
      * 7       8   9
      * </code>
      * </pre>
-     *
+     * <p>
      * See also
      * <ul>
      * <li><a href="http://en.wikipedia.org/wiki/Tree_traversal">Tree traversal</a> (wikipedia)</li>
@@ -1021,15 +1019,15 @@ interface TreeModule {
 
         @SuppressWarnings("unchecked")
         static <T, U> Tree<U> apply(Node<T> node, Function<? super T, ? extends Iterable<? extends U>> mapper) {
-            final Tree<U> mapped = Tree.ofAll(mapper.apply(node.getValue()));
+            final Tree<U> mapped = ofAll(mapper.apply(node.getValue()));
             if (mapped.isEmpty()) {
-                return Tree.empty();
+                return empty();
             } else {
                 final List<Node<U>> children = (List<Node<U>>) (Object) node
                         .getChildren()
                         .map(child -> FlatMap.apply(child, mapper))
                         .filter(Tree::nonEmpty);
-                return Tree.of(mapped.getValue(), children.prependAll(mapped.getChildren()));
+                return of(mapped.getValue(), children.prependAll(mapped.getChildren()));
             }
         }
     }
