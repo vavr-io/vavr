@@ -1,5 +1,7 @@
 package javaslang.collection;
 
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
 import java.io.Serializable;
@@ -46,6 +48,22 @@ public class BitSetTest extends AbstractSortedSetTest {
         }
     }
 
+    @Override
+    protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
+        return new IterableAssert<T>(actual) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public IterableAssert<T> isEqualTo(Object obj) {
+                if(obj instanceof BitSet || actual instanceof BitSet) {
+                    Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll((Iterable<T>) obj));
+                } else {
+                    super.isEqualTo(obj);
+                }
+                return this;
+            }
+        };
+    }
+
     private <T> BitSet.Builder<T> bsBuilder() {
         Mapper<T> mapper = new Mapper<>();
         return BitSet.withRelations(mapper::fromInt, mapper::toInt);
@@ -62,18 +80,23 @@ public class BitSetTest extends AbstractSortedSetTest {
     }
 
     @Override
+    protected boolean emptyShouldBeSingleton() {
+        return false;
+    }
+
+    @Override
     protected <T> BitSet<T> of(T element) {
         return this.<T>bsBuilder().of(element);
     }
 
     @Override
-    protected <T> Set<T> of(T... elements) {
+    protected <T> BitSet<T> of(T... elements) {
         return this.<T>bsBuilder().of(elements);
     }
 
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
-        return false;
+        return true;
     }
 
     @Override
@@ -82,127 +105,127 @@ public class BitSetTest extends AbstractSortedSetTest {
     }
 
     @Override
-    protected <T> Traversable<T> ofAll(Iterable<? extends T> elements) {
+    protected <T> BitSet<T> ofAll(Iterable<? extends T> elements) {
         return this.<T>bsBuilder().ofAll(elements);
     }
 
     @Override
-    protected Traversable<Boolean> ofAll(boolean[] array) {
+    protected BitSet<Boolean> ofAll(boolean[] array) {
+        return BitSet.ofAll(array);
+    }
+
+    @Override
+    protected BitSet<Byte> ofAll(byte[] array) {
+        return BitSet.ofAll(array);
+    }
+
+    @Override
+    protected BitSet<Character> ofAll(char[] array) {
+        return BitSet.ofAll(array);
+    }
+
+    @Override
+    protected BitSet<Double> ofAll(double[] array) {
         return null;
     }
 
     @Override
-    protected Traversable<Byte> ofAll(byte[] array) {
+    protected BitSet<Float> ofAll(float[] array) {
         return null;
     }
 
     @Override
-    protected Traversable<Character> ofAll(char[] array) {
-        return null;
+    protected BitSet<Integer> ofAll(int[] array) {
+        return BitSet.ofAll(array);
     }
 
     @Override
-    protected Traversable<Double> ofAll(double[] array) {
-        return null;
+    protected BitSet<Long> ofAll(long[] array) {
+        return BitSet.ofAll(array);
     }
 
     @Override
-    protected Traversable<Float> ofAll(float[] array) {
-        return null;
+    protected BitSet<Short> ofAll(short[] array) {
+        return BitSet.ofAll(array);
     }
 
     @Override
-    protected Traversable<Integer> ofAll(int[] array) {
-        return null;
-    }
-
-    @Override
-    protected Traversable<Long> ofAll(long[] array) {
-        return null;
-    }
-
-    @Override
-    protected Traversable<Short> ofAll(short[] array) {
-        return null;
-    }
-
-    @Override
-    protected <T> Traversable<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+    protected <T> BitSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         return this.<T>bsBuilder().tabulate(n, f);
     }
 
     @Override
-    protected <T> Traversable<T> fill(int n, Supplier<? extends T> s) {
+    protected <T> BitSet<T> fill(int n, Supplier<? extends T> s) {
         return this.<T>bsBuilder().fill(n, s);
     }
 
     @Override
-    protected Traversable<Character> range(char from, char toExclusive) {
+    protected BitSet<Character> range(char from, char toExclusive) {
         return null;
     }
 
     @Override
-    protected Traversable<Character> rangeBy(char from, char toExclusive, int step) {
+    protected BitSet<Character> rangeBy(char from, char toExclusive, int step) {
         return null;
     }
 
     @Override
-    protected Traversable<Double> rangeBy(double from, double toExclusive, double step) {
+    protected BitSet<Double> rangeBy(double from, double toExclusive, double step) {
         return null;
     }
 
     @Override
-    protected Traversable<Integer> range(int from, int toExclusive) {
+    protected BitSet<Integer> range(int from, int toExclusive) {
+        return BitSet.range(from, toExclusive);
+    }
+
+    @Override
+    protected BitSet<Integer> rangeBy(int from, int toExclusive, int step) {
+        return BitSet.rangeBy(from, toExclusive, step);
+    }
+
+    @Override
+    protected BitSet<Long> range(long from, long toExclusive) {
         return null;
     }
 
     @Override
-    protected Traversable<Integer> rangeBy(int from, int toExclusive, int step) {
+    protected BitSet<Long> rangeBy(long from, long toExclusive, long step) {
         return null;
     }
 
     @Override
-    protected Traversable<Long> range(long from, long toExclusive) {
+    protected BitSet<Character> rangeClosed(char from, char toInclusive) {
+        return BitSet.rangeClosed(from, toInclusive);
+    }
+
+    @Override
+    protected BitSet<Character> rangeClosedBy(char from, char toInclusive, int step) {
+        return BitSet.rangeClosedBy(from, toInclusive, step);
+    }
+
+    @Override
+    protected BitSet<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return null;
     }
 
     @Override
-    protected Traversable<Long> rangeBy(long from, long toExclusive, long step) {
+    protected BitSet<Integer> rangeClosed(int from, int toInclusive) {
+        return null;//BitSet.rangeClosed(from, toInclusive);
+    }
+
+    @Override
+    protected BitSet<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+        return BitSet.rangeClosedBy(from, toInclusive, step);
+    }
+
+    @Override
+    protected BitSet<Long> rangeClosed(long from, long toInclusive) {
         return null;
     }
 
     @Override
-    protected Traversable<Character> rangeClosed(char from, char toInclusive) {
-        return null;
-    }
-
-    @Override
-    protected Traversable<Character> rangeClosedBy(char from, char toInclusive, int step) {
-        return null;
-    }
-
-    @Override
-    protected Traversable<Double> rangeClosedBy(double from, double toInclusive, double step) {
-        return null;
-    }
-
-    @Override
-    protected Traversable<Integer> rangeClosed(int from, int toInclusive) {
-        return null;
-    }
-
-    @Override
-    protected Traversable<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        return null;
-    }
-
-    @Override
-    protected Traversable<Long> rangeClosed(long from, long toInclusive) {
-        return null;
-    }
-
-    @Override
-    protected Traversable<Long> rangeClosedBy(long from, long toInclusive, long step) {
+    protected BitSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return null;
     }
 
