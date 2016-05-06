@@ -5,20 +5,14 @@
  */
 package javaslang.collection;
 
-import static javaslang.collection.RedBlackTree.Color.BLACK;
-import static javaslang.collection.RedBlackTree.Color.RED;
+import javaslang.*;
+import javaslang.collection.RedBlackTreeModule.*;
+import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.collection.RedBlackTreeModule.Empty;
-import javaslang.collection.RedBlackTreeModule.Node;
-import javaslang.control.Option;
+import static javaslang.collection.RedBlackTree.Color.*;
 
 /**
  * Purely functional Red/Black Tree, inspired by <a href="https://github.com/kazu-yamamoto/llrbtree/blob/master/Data/Set/RBTree.hs">Kazu Yamamoto's Haskell implementation</a>.
@@ -268,7 +262,7 @@ interface RedBlackTree<T> extends Iterable<T> {
      * Internally an in-order traversal of the RedBlackTree is performed.
      * <p>
      * Example:
-     *
+     * <p>
      * <pre><code>
      *       4
      *      / \
@@ -276,7 +270,7 @@ interface RedBlackTree<T> extends Iterable<T> {
      *    / \ / \
      *   1  3 5  7
      * </code></pre>
-     *
+     * <p>
      * Iteration order: 1, 2, 3, 4, 5, 6, 7
      * <p>
      * See also <a href="http://n00tc0d3r.blogspot.de/2013/08/implement-iterator-for-binarytree-i-in.html">Implement Iterator for BinaryTree I (In-order)</a>.

@@ -328,9 +328,9 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Checks, this {@code Value} is empty, i.e. if the underlying value is absent.
+     * Checks whether this {@code Value} is empty, i.e. if the underlying value is absent.
      *
-     * @return false, if no underlying value is present, true otherwise.
+     * @return true, if no underlying value is present, false otherwise.
      */
     boolean isEmpty();
 

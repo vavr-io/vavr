@@ -4,7 +4,7 @@ import javaslang.Tuple2;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.results.RunResult;
-import org.openjdk.jmh.runner.*;
+import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.*;
 import scala.math.Ordering;
 import scala.math.Ordering$;

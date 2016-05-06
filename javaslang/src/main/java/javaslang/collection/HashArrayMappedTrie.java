@@ -77,20 +77,20 @@ interface HashArrayMappedTrieModule {
         }
 
         static Object[] update(Object[] arr, int index, Object newElement) {
-            Object[] newArr = Arrays.copyOf(arr, arr.length);
+            final Object[] newArr = Arrays.copyOf(arr, arr.length);
             newArr[index] = newElement;
             return newArr;
         }
 
         static Object[] remove(Object[] arr, int index) {
-            Object[] newArr = new Object[arr.length - 1];
+            final Object[] newArr = new Object[arr.length - 1];
             System.arraycopy(arr, 0, newArr, 0, index);
             System.arraycopy(arr, index + 1, newArr, index, arr.length - index - 1);
             return newArr;
         }
 
         static Object[] insert(Object[] arr, int index, Object newElem) {
-            Object[] newArr = new Object[arr.length + 1];
+            final Object[] newArr = new Object[arr.length + 1];
             System.arraycopy(arr, 0, newArr, 0, index);
             newArr[index] = newElem;
             System.arraycopy(arr, index, newArr, index + 1, arr.length - index);
@@ -228,7 +228,7 @@ interface HashArrayMappedTrieModule {
             final int subH2 = hashFragment(shift, h2);
             final int newBitmap = toBitmap(subH1) | toBitmap(subH2);
             if (subH1 == subH2) {
-                AbstractNode<K, V> newLeaves = mergeLeaves(shift + SIZE, leaf1, leaf2);
+                final AbstractNode<K, V> newLeaves = mergeLeaves(shift + SIZE, leaf1, leaf2);
                 return new IndexedNode<>(newBitmap, newLeaves.size(), new Object[] { newLeaves });
             } else {
                 return new IndexedNode<>(newBitmap, leaf1.size() + leaf2.size(),
@@ -283,7 +283,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public Iterator<Tuple2<K, V>> iterator() {
-            Tuple2<K, V> tuple = Tuple.of(key, value);
+            final Tuple2<K, V> tuple = Tuple.of(key, value);
             return Iterator.of(tuple);
         }
 
@@ -343,7 +343,7 @@ interface HashArrayMappedTrieModule {
         @Override
         AbstractNode<K, V> modify(int shift, int keyHashCode, K key, V value, Action action) {
             if (keyHashCode == hash) {
-                AbstractNode<K, V> filtered = removeElement(key);
+                final AbstractNode<K, V> filtered = removeElement(key);
                 if (action == REMOVE) {
                     return filtered;
                 } else {
@@ -409,7 +409,7 @@ interface HashArrayMappedTrieModule {
 
                 @Override
                 public Tuple2<K, V> getNext() {
-                    Tuple2<K, V> tuple = Tuple.of(node.key(), node.value());
+                    final Tuple2<K, V> tuple = Tuple.of(node.key(), node.value());
                     if (node instanceof LeafSingleton) {
                         node = null;
                     } else {
@@ -464,10 +464,10 @@ interface HashArrayMappedTrieModule {
         @SuppressWarnings("unchecked")
         @Override
         Option<V> lookup(int shift, int keyHashCode, K key) {
-            int frag = hashFragment(shift, keyHashCode);
-            int bit = toBitmap(frag);
+            final int frag = hashFragment(shift, keyHashCode);
+            final int bit = toBitmap(frag);
             if ((bitmap & bit) != 0) {
-                AbstractNode<K, V> n = (AbstractNode<K, V>) subNodes[fromBitmap(bitmap, bit)];
+                final AbstractNode<K, V> n = (AbstractNode<K, V>) subNodes[fromBitmap(bitmap, bit)];
                 return n.lookup(shift + SIZE, keyHashCode, key);
             } else {
                 return Option.none();
@@ -483,11 +483,11 @@ interface HashArrayMappedTrieModule {
             final int mask = bitmap;
             final boolean exists = (mask & bit) != 0;
             final AbstractNode<K, V> atIndx = exists ? (AbstractNode<K, V>) subNodes[index] : null;
-            AbstractNode<K, V> child = exists ? atIndx.modify(shift + SIZE, keyHashCode, key, value, action)
+            final AbstractNode<K, V> child = exists ? atIndx.modify(shift + SIZE, keyHashCode, key, value, action)
                     : EmptyNode.<K, V> instance().modify(shift + SIZE, keyHashCode, key, value, action);
-            boolean removed = exists && child.isEmpty();
-            boolean added = !exists && !child.isEmpty();
-            int newBitmap = removed ? mask & ~bit : added ? mask | bit : mask;
+            final boolean removed = exists && child.isEmpty();
+            final boolean added = !exists && !child.isEmpty();
+            final int newBitmap = removed ? mask & ~bit : added ? mask | bit : mask;
             if (newBitmap == 0) {
                 return EmptyNode.instance();
             } else if (removed) {
@@ -575,17 +575,17 @@ interface HashArrayMappedTrieModule {
         @SuppressWarnings("unchecked")
         @Override
         Option<V> lookup(int shift, int keyHashCode, K key) {
-            int frag = hashFragment(shift, keyHashCode);
-            AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
+            final int frag = hashFragment(shift, keyHashCode);
+            final AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
             return child.lookup(shift + SIZE, keyHashCode, key);
         }
 
         @SuppressWarnings("unchecked")
         @Override
         AbstractNode<K, V> modify(int shift, int keyHashCode, K key, V value, Action action) {
-            int frag = hashFragment(shift, keyHashCode);
-            AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
-            AbstractNode<K, V> newChild = child.modify(shift + SIZE, keyHashCode, key, value, action);
+            final int frag = hashFragment(shift, keyHashCode);
+            final AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
+            final AbstractNode<K, V> newChild = child.modify(shift + SIZE, keyHashCode, key, value, action);
             if (child.isEmpty() && !newChild.isEmpty()) {
                 return new ArrayNode<>(count + 1, size + newChild.size(), update(subNodes, frag, newChild));
             } else if (!child.isEmpty() && newChild.isEmpty()) {
@@ -601,12 +601,12 @@ interface HashArrayMappedTrieModule {
 
         @SuppressWarnings("unchecked")
         private IndexedNode<K, V> pack(int idx, Object[] elements) {
-            Object[] arr = new Object[count - 1];
+            final Object[] arr = new Object[count - 1];
             int bitmap = 0;
             int size = 0;
             int ptr = 0;
             for (int i = 0; i < BUCKET_SIZE; i++) {
-                AbstractNode<K, V> elem = (AbstractNode<K, V>) elements[i];
+                final AbstractNode<K, V> elem = (AbstractNode<K, V>) elements[i];
                 if (i != idx && !elem.isEmpty()) {
                     size += elem.size();
                     arr[ptr++] = elem;

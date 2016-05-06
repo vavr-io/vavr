@@ -5,17 +5,11 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import javaslang.*;
 import javaslang.control.Option;
 
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
+import java.util.*;
+import java.util.function.*;
 
 /**
  * Interface for immutable, linear sequences.
@@ -306,8 +300,8 @@ public interface LinearSeq<T> extends Seq<T> {
     @Override
     @SuppressWarnings("unchecked")
     default int search(T element) {
-        ToIntFunction<T> comparison = current -> {
-            Comparable<T> comparable = (Comparable<T>) element;
+        final ToIntFunction<T> comparison = current -> {
+            final Comparable<T> comparable = (Comparable<T>) element;
             return comparable.compareTo(current);
         };
         return LinearSeqModule.Search.linearSearch(this, comparison);
@@ -328,7 +322,7 @@ public interface LinearSeq<T> extends Seq<T> {
     @Override
     default int search(T element, Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        ToIntFunction<T> comparison = current -> comparator.compare(element, current);
+        final ToIntFunction<T> comparison = current -> comparator.compare(element, current);
         return LinearSeqModule.Search.linearSearch(this, comparison);
     }
 
@@ -344,13 +338,13 @@ interface LinearSeqModule {
                 return slice.isEmpty() ? 0 : -1;
             }
             if (slice.isEmpty()) {
-                int len = t.length();
+                final int len = t.length();
                 return len < end ? len : end;
             }
             int p = 0;
             int result = -1;
             while (t.length() >= slice.length()) {
-                Tuple2<LinearSeq<T>, Integer> r = findSlice(t, slice);
+                final Tuple2<LinearSeq<T>, Integer> r = findSlice(t, slice);
                 if (r == null) {
                     return result;
                 }
@@ -382,7 +376,7 @@ interface LinearSeqModule {
         static <T> int linearSearch(LinearSeq<T> seq, ToIntFunction<T> comparison) {
             int idx = 0;
             for (T current : seq) {
-                int cmp = comparison.applyAsInt(current);
+                final int cmp = comparison.applyAsInt(current);
                 if (cmp == 0) {
                     return idx;
                 } else if (cmp < 0) {

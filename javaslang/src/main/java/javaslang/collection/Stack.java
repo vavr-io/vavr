@@ -14,7 +14,7 @@ import javaslang.control.Option;
  * {@link List} extends {@code Stack}, so use one of {@code List}'s static factory methods to obtain a {@code Stack}.
  * <p>
  * Stack API:
- *
+ * <p>
  * <ul>
  * <li>{@link #peek()}</li>
  * <li>{@link #peekOption()}</li>
@@ -26,14 +26,14 @@ import javaslang.control.Option;
  * <li>{@link #push(Object[])}</li>
  * <li>{@link #pushAll(Iterable)}</li>
  * </ul>
- *
+ * <p>
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 7 ff.). Cambridge, 2003.
  *
  * @param <T> component type
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface Stack<T> {
+public interface Stack<T> extends Traversable<T> {
 
     /**
      * Narrows a widened {@code Stack<? extends T>} to {@code Stack<T>}

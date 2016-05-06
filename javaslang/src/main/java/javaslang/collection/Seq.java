@@ -15,13 +15,13 @@ import java.util.function.*;
  * Interface for immutable sequential data structures.
  * <p>
  * Creation:
- *
+ * <p>
  * <ul>
  * <li>{@link #unit(Iterable)}</li>
  * </ul>
- *
+ * <p>
  * Filtering:
- *
+ * <p>
  * <ul>
  * <li>{@link #remove(Object)}</li>
  * <li>{@link #removeAll(Object)}</li>
@@ -30,9 +30,9 @@ import java.util.function.*;
  * <li>{@link #removeFirst(Predicate)}</li>
  * <li>{@link #removeLast(Predicate)}</li>
  * </ul>
- *
+ * <p>
  * Mutation:
- *
+ * <p>
  * <ul>
  * <li>{@link #append(Object)}</li>
  * <li>{@link #appendAll(Iterable)}</li>
@@ -42,9 +42,9 @@ import java.util.function.*;
  * <li>{@link #prependAll(Iterable)}</li>
  * <li>{@link #update(int, Object)}</li>
  * </ul>
- *
+ * <p>
  * Selection:
- *
+ * <p>
  * <ul>
  * <li>{@link #get(int)}</li>
  * <li>{@link #indexOf(Object)}</li>
@@ -55,9 +55,9 @@ import java.util.function.*;
  * <li>{@link #subSequence(int)}</li>
  * <li>{@link #subSequence(int, int)}</li>
  * </ul>
- *
+ * <p>
  * Transformation:
- *
+ * <p>
  * <ul>
  * <li>{@link #crossProduct()}</li>
  * <li>{@link #crossProduct(int)}</li>
@@ -76,9 +76,9 @@ import java.util.function.*;
  * <li>{@link #zipAll(Iterable, Object, Object)}</li>
  * <li>{@link #zipWithIndex()}</li>
  * </ul>
- *
+ * <p>
  * Traversal:
- *
+ * <p>
  * <ul>
  * <li>{@link #iterator(int)}</li>
  * </ul>
@@ -244,8 +244,8 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      */
     default boolean endsWith(Seq<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
-        Iterator<T> i = this.iterator().drop(length() - that.length());
-        Iterator<? extends T> j = that.iterator();
+        final Iterator<T> i = this.iterator().drop(length() - that.length());
+        final Iterator<? extends T> j = that.iterator();
         while (i.hasNext() && j.hasNext()) {
             if (!Objects.equals(i.next(), j.next())) {
                 return false;
@@ -351,7 +351,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
                 if (from <= 0 && checkPrefix(t, slice)) {
                     return 0;
                 }
-                int idx = indexOfSlice(t.tail(), slice, from - 1);
+                final int idx = indexOfSlice(t.tail(), slice, from - 1);
                 return idx >= 0 ? idx + 1 : -1;
             }
 
@@ -659,7 +659,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
 
     /**
      * Returns the length of the longest prefix whose elements all satisfy some predicate.
-     *
+     * <p>
      * Note: may not terminate for infinite-sized collections.
      *
      * @param predicate the predicate used to test elements.
@@ -771,7 +771,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * {@code beginIndex} and extends to the element at index {@code endIndex - 1}.
      * <p>
      * Examples:
-     *
+     * <p>
      * <pre>
      * <code>
      * List.of(1, 2, 3, 4).slice(1, 3); // = (2, 3)
@@ -781,7 +781,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * List.of(1, 2).slice(-10, 10);    // = (1, 2)
      * </code>
      * </pre>
-     *
+     * <p>
      * See also {@link #subSequence(int, int)} which throws in some cases instead of returning a sequence.
      *
      * @param beginIndex the beginning index, inclusive
@@ -873,9 +873,9 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      */
     default boolean startsWith(Iterable<? extends T> that, int offset) {
         Objects.requireNonNull(that, "that is null");
-        if (offset < 0) return false;
-        Iterator<T> i = this.iterator().drop(offset);
-        java.util.Iterator<? extends T> j = that.iterator();
+        if (offset < 0) { return false; }
+        final Iterator<T> i = this.iterator().drop(offset);
+        final java.util.Iterator<? extends T> j = that.iterator();
         while (i.hasNext() && j.hasNext()) {
             if (!Objects.equals(i.next(), j.next())) {
                 return false;
@@ -889,7 +889,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * {@code beginIndex} and extends to the end of this Seq.
      * <p>
      * Examples:
-     *
+     * <p>
      * <pre>
      * <code>
      * List.of(1, 2).subSequence(0);     // = (1, 2)
@@ -899,7 +899,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * List.of(1, 2).subSequence(-10);   // throws IndexOutOfBoundsException
      * </code>
      * </pre>
-     *
+     * <p>
      * See also {@link #drop(long)} which is similar but does not throw.
      *
      * @param beginIndex the beginning index, inclusive
@@ -914,7 +914,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * {@code beginIndex} and extends to the element at index {@code endIndex - 1}.
      * <p>
      * Examples:
-     *
+     * <p>
      * <pre>
      * <code>
      * List.of(1, 2, 3, 4).subSequence(1, 3); // = (2, 3)
@@ -925,7 +925,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * List.of(1, 2).subSequence(0, 10);      // throws IndexOutOfBoundsException
      * </code>
      * </pre>
-     *
+     * <p>
      * See also {@link #slice(long, long)} which returns an empty sequence instead of throwing.
      *
      * @param beginIndex the beginning index, inclusive

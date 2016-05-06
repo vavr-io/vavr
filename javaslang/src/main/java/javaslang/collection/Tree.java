@@ -16,8 +16,8 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.collection.Tree.*;
 import static javaslang.collection.Tree.Order.PRE_ORDER;
+import static javaslang.collection.Tree.*;
 
 /**
  * A general Tree interface.
