@@ -10,6 +10,7 @@ import javaslang.collection.HashMap;
 import javaslang.collection.HashSet;
 import javaslang.collection.List;
 import javaslang.collection.Map;
+import javaslang.collection.PriorityQueue;
 import javaslang.collection.Queue;
 import javaslang.collection.Set;
 import javaslang.collection.Stack;
@@ -239,6 +240,17 @@ public abstract class AbstractValueTest {
             assertThat(queue).isEqualTo(Queue.of(1));
         } else {
             assertThat(queue).isEqualTo(Queue.of(1, 2, 3));
+        }
+    }
+
+    @Test
+    public void shouldConvertToSortedQueue() {
+        final Value<Integer> value = of(1, 3, 2);
+        final PriorityQueue<Integer> queue = value.toSortedQueue(Comparator.naturalOrder());
+        if (value.isSingleValued()) {
+            assertThat(queue).isEqualTo(PriorityQueue.of(1));
+        } else {
+            assertThat(queue).isEqualTo(PriorityQueue.of(1, 2, 3));
         }
     }
 

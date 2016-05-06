@@ -315,7 +315,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldComputeDistinctByOfNonEmptyTraversableUsingComparator() {
         final Comparator<String> comparator = (s1, s2) -> (s1.charAt(1)) - (s2.charAt(1));
-        assertThat(of("1a", "2a", "3a", "3b", "4b", "5c").distinctBy(comparator)).isEqualTo(of("1a", "3b", "5c"));
+
+        final Traversable<String> distinct = of("1a", "2a", "3a", "3b", "4b", "5c").distinctBy(comparator).map(s -> s.substring(1));
+        assertThat(distinct).isEqualTo(of("a", "b", "c"));
     }
 
     // -- distinct(Function)
@@ -331,8 +333,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeDistinctByOfNonEmptyTraversableUsingKeyExtractor() {
-        assertThat(of("1a", "2a", "3a", "3b", "4b", "5c").distinctBy(c -> c.charAt(1)))
-                .isEqualTo(of("1a", "3b", "5c"));
+        final Function<String, Character> function = c -> c.charAt(1);
+        final Traversable<String> distinct = of("1a", "2a", "3a", "3b", "4b", "5c").distinctBy(function).map(s -> s.substring(1));
+        assertThat(distinct).isEqualTo(of("a", "b", "c"));
     }
 
     // -- drop
@@ -1418,6 +1421,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         final List<NonComparable> actual = List.ofAll(testee.scan(new NonComparable("x"), (u1, u2) -> new NonComparable(u1.value + u2.value)));
         final List<NonComparable> expected = List.of("x", "xa").map(NonComparable::new);
         assertThat(actual).containsAll(expected);
+        assertThat(expected).containsAll(actual);
         assertThat(actual.length()).isEqualTo(expected.length());
     }
 
@@ -1427,6 +1431,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         final List<NonComparable> actual = List.ofAll(testee.scanLeft(new NonComparable("x"), (u1, u2) -> new NonComparable(u1.value + u2.value)));
         final List<NonComparable> expected = List.of("x", "xa").map(NonComparable::new);
         assertThat(actual).containsAll(expected);
+        assertThat(expected).containsAll(actual);
         assertThat(actual.length()).isEqualTo(expected.length());
     }
 
@@ -1436,6 +1441,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         final List<NonComparable> actual = List.ofAll(testee.scanRight(new NonComparable("x"), (u1, u2) -> new NonComparable(u1.value + u2.value)));
         final List<NonComparable> expected = List.of("ax", "x").map(NonComparable::new);
         assertThat(actual).containsAll(expected);
+        assertThat(expected).containsAll(actual);
         assertThat(actual.length()).isEqualTo(expected.length());
     }
 
@@ -2145,8 +2151,8 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldPreserveSingletonInstanceOnDeserialization() {
-        final boolean actual = deserialize(serialize(empty())) == empty();
-        assertThat(actual).isTrue();
+        final Object actual = deserialize(serialize(empty()));
+        assertThat(actual).isSameAs(empty());
     }
 
     @Test
@@ -2235,13 +2241,13 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void ofShouldReturnTheSingletonEmpty() {
-        if (!emptyShouldBeSingleton()) return;
+        if (!emptyShouldBeSingleton()) { return; }
         assertThat(of()).isSameAs(empty());
     }
 
     @Test
     public void ofAllShouldReturnTheSingletonEmpty() {
-        if (!emptyShouldBeSingleton()) return;
+        if (!emptyShouldBeSingleton()) { return; }
         assertThat(ofAll(Iterator.empty())).isSameAs(empty());
     }
 
