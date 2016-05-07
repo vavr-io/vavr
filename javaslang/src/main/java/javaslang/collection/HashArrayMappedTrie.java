@@ -29,6 +29,10 @@ interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
 
     boolean isEmpty();
 
+    default boolean isNotEmpty() {
+        return !isEmpty();
+    }
+
     int size();
 
     Option<V> get(K key);
@@ -486,7 +490,7 @@ interface HashArrayMappedTrieModule {
             final AbstractNode<K, V> child = exists ? atIndx.modify(shift + SIZE, keyHashCode, key, value, action)
                     : EmptyNode.<K, V> instance().modify(shift + SIZE, keyHashCode, key, value, action);
             final boolean removed = exists && child.isEmpty();
-            final boolean added = !exists && !child.isEmpty();
+            final boolean added = !exists && child.isNotEmpty();
             final int newBitmap = removed ? mask & ~bit : added ? mask | bit : mask;
             if (newBitmap == 0) {
                 return EmptyNode.instance();
@@ -586,9 +590,9 @@ interface HashArrayMappedTrieModule {
             final int frag = hashFragment(shift, keyHashCode);
             final AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
             final AbstractNode<K, V> newChild = child.modify(shift + SIZE, keyHashCode, key, value, action);
-            if (child.isEmpty() && !newChild.isEmpty()) {
+            if (child.isEmpty() && newChild.isNotEmpty()) {
                 return new ArrayNode<>(count + 1, size + newChild.size(), update(subNodes, frag, newChild));
-            } else if (!child.isEmpty() && newChild.isEmpty()) {
+            } else if (child.isNotEmpty() && newChild.isEmpty()) {
                 if (count - 1 <= MIN_ARRAY_NODE) {
                     return pack(frag, subNodes);
                 } else {
@@ -607,7 +611,7 @@ interface HashArrayMappedTrieModule {
             int ptr = 0;
             for (int i = 0; i < BUCKET_SIZE; i++) {
                 final AbstractNode<K, V> elem = (AbstractNode<K, V>) elements[i];
-                if (i != idx && !elem.isEmpty()) {
+                if (i != idx && elem.isNotEmpty()) {
                     size += elem.size();
                     arr[ptr++] = elem;
                     bitmap = bitmap | (1 << i);

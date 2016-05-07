@@ -46,11 +46,13 @@ public class RedBlackTreeTest {
     @Test
     public void shouldRecognizeEmptyTree() {
         assertThat(RedBlackTree.empty().isEmpty()).isTrue();
+        assertThat(RedBlackTree.empty().isNotEmpty()).isFalse();
     }
 
     @Test
     public void shouldRecognizeNonEmptyTree() {
         assertThat(RedBlackTree.of(1).isEmpty()).isFalse();
+        assertThat(RedBlackTree.of(1).isNotEmpty()).isTrue();
     }
 
     // contains

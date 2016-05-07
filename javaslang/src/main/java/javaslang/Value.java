@@ -43,6 +43,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #getOrElse(Supplier)}</li>
  * <li>{@link #getOrElseThrow(Supplier)}</li>
  * <li>{@link #isEmpty()}</li>
+ * <li>{@link #isNotEmpty()}</li>
  * <li>{@link #isSingleValued()}</li>
  * <li>{@link #map(Function)}</li>
  * <li>{@link #stringPrefix()}</li>
@@ -333,6 +334,15 @@ public interface Value<T> extends Iterable<T> {
      * @return true, if no underlying value is present, false otherwise.
      */
     boolean isEmpty();
+
+    /**
+     * Checks whether this {@code Value} is not empty, i.e. if the underlying value is present.
+     *
+     * @return false, if no underlying value is present, true otherwise.
+     */
+    default boolean isNotEmpty() {
+        return !isEmpty();
+    }
 
     /**
      * States whether this is a single-valued type.
@@ -835,7 +845,7 @@ interface ValueModule {
     }
 
     static <T extends java.util.Collection<V>, V> T toJavaCollection(Value<V> value, T empty) {
-        if (!value.isEmpty()) {
+        if (value.isNotEmpty()) {
             if (value.isSingleValued()) {
                 empty.add(value.get());
             } else {

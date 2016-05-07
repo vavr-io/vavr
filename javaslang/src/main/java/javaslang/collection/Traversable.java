@@ -27,6 +27,7 @@ import java.util.function.*;
  * <li>{@link #init()}</li>
  * <li>{@link #initOption()}</li>
  * <li>{@link #isEmpty()}</li>
+ * <li>{@link #isNotEmpty()}</li>
  * <li>{@link #last()}</li>
  * <li>{@link #lastOption()}</li>
  * <li>{@link #length()}</li>
@@ -501,6 +502,15 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
+     * Checks if this Traversable is not empty.
+     *
+     * @return whether this Traversable contains any elements.
+     */
+    default boolean isNotEmpty() {
+        return !isEmpty();
+    }
+
+    /**
      * Each of Javaslang's collections may contain more than one element.
      *
      * @return {@code false}
@@ -533,7 +543,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
 
             @Override
             public boolean hasNext() {
-                return !traversable.isEmpty();
+                return traversable.isNotEmpty();
             }
 
             @Override

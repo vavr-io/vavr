@@ -160,7 +160,10 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldCalculateIsEmpty() {
         assertThat(empty().isEmpty()).isTrue();
+        assertThat(empty().isNotEmpty()).isFalse();
+
         assertThat(of(1).isEmpty()).isFalse();
+        assertThat(of(1).isNotEmpty()).isTrue();
     }
 
     // -- peek

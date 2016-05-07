@@ -22,7 +22,7 @@ public class StackTest {
         Stack<Number> numbers = Stack.narrow(doubles);
         numbers = numbers.push(new BigDecimal("2.0"));
         int sum = 0;
-        while (!numbers.isEmpty()) {
+        while (numbers.isNotEmpty()) {
             final Tuple2<Number, ? extends Stack<Number>> t = numbers.pop2();
             sum += t._1.intValue();
             numbers = t._2;

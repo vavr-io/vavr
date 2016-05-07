@@ -724,7 +724,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
                 @Override
                 public boolean hasNext() {
-                    return !stream.isEmpty() || i > 0;
+                    return stream.isNotEmpty() || i > 0;
                 }
 
                 @Override
@@ -762,7 +762,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     @Override
     default Stream<T> drop(long n) {
         Stream<T> stream = this;
-        while (n-- > 0 && !stream.isEmpty()) {
+        while (n-- > 0 && stream.isNotEmpty()) {
             stream = stream.tail();
         }
         return stream;
@@ -787,7 +787,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     default Stream<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         Stream<T> stream = this;
-        while (!stream.isEmpty() && predicate.test(stream.head())) {
+        while (stream.isNotEmpty() && predicate.test(stream.head())) {
             stream = stream.tail();
         }
         return stream;
@@ -797,7 +797,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     default Stream<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         Stream<T> stream = this;
-        while (!stream.isEmpty() && !predicate.test(stream.head())) {
+        while (stream.isNotEmpty() && !predicate.test(stream.head())) {
             stream = stream.tail();
         }
         final Stream<T> finalStream = stream;
@@ -866,7 +866,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     @Override
     default int indexOf(T element, int from) {
         int index = 0;
-        for (Stream<T> stream = this; !stream.isEmpty(); stream = stream.tail(), index++) {
+        for (Stream<T> stream = this; stream.isNotEmpty(); stream = stream.tail(), index++) {
             if (index >= from && Objects.equals(stream.head(), element)) {
                 return index;
             }
@@ -940,7 +940,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     @Override
     default int lastIndexOf(T element, int end) {
         int result = -1, index = 0;
-        for (Stream<T> stream = this; index <= end && !stream.isEmpty(); stream = stream.tail(), index++) {
+        for (Stream<T> stream = this; index <= end && stream.isNotEmpty(); stream = stream.tail(), index++) {
             if (Objects.equals(stream.head(), element)) {
                 result = index;
             }
@@ -1283,7 +1283,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     default Stream<T> takeRight(long n) {
         Stream<T> right = this;
         Stream<T> remaining = drop(n);
-        while (!remaining.isEmpty()) {
+        while (remaining.isNotEmpty()) {
             right = right.tail();
             remaining = remaining.tail();
         }
@@ -1563,7 +1563,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
             } else if (o instanceof Stream) {
                 Stream<?> stream1 = this;
                 Stream<?> stream2 = (Stream<?>) o;
-                while (!stream1.isEmpty() && !stream2.isEmpty()) {
+                while (stream1.isNotEmpty() && stream2.isNotEmpty()) {
                     final boolean isEqual = Objects.equals(stream1.head(), stream2.head());
                     if (!isEqual) {
                         return false;
@@ -1586,12 +1586,12 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         public String toString() {
             final StringBuilder builder = new StringBuilder(stringPrefix()).append("(");
             Stream<T> stream = this;
-            while (stream != null && !stream.isEmpty()) {
+            while (stream != null && stream.isNotEmpty()) {
                 final Cons<T> cons = (Cons<T>) stream;
                 builder.append(cons.head);
                 if (cons.tail.isEvaluated()) {
                     stream = stream.tail();
-                    if (!stream.isEmpty()) {
+                    if (stream.isNotEmpty()) {
                         builder.append(", ");
                     }
                 } else {
@@ -1711,7 +1711,7 @@ interface StreamModule {
         private void writeObject(ObjectOutputStream s) throws IOException {
             s.defaultWriteObject();
             s.writeInt(stream.length());
-            for (Stream<T> l = stream; !l.isEmpty(); l = l.tail()) {
+            for (Stream<T> l = stream; l.isNotEmpty(); l = l.tail()) {
                 s.writeObject(l.head());
             }
         }
@@ -1819,7 +1819,7 @@ interface StreamModule {
 
         @Override
         public boolean hasNext() {
-            return !current.get().isEmpty();
+            return current.get().isNotEmpty();
         }
 
         @Override

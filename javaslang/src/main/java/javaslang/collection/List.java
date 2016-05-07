@@ -586,7 +586,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default List<T> drop(long n) {
         List<T> list = this;
-        for (long i = n; i > 0 && !list.isEmpty(); i--) {
+        for (long i = n; i > 0 && list.isNotEmpty(); i--) {
             list = list.tail();
         }
         return list;
@@ -613,7 +613,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     default List<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         List<T> list = this;
-        while (!list.isEmpty() && predicate.test(list.head())) {
+        while (list.isNotEmpty() && predicate.test(list.head())) {
             list = list.tail();
         }
         return list;
@@ -686,7 +686,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default int indexOf(T element, int from) {
         int index = 0;
-        for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
+        for (List<T> list = this; list.isNotEmpty(); list = list.tail(), index++) {
             if (index >= from && Objects.equals(list.head(), element)) {
                 return index;
             }
@@ -765,7 +765,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default int lastIndexOf(T element, int end) {
         int result = -1, index = 0;
-        for (List<T> list = this; index <= end && !list.isEmpty(); list = list.tail(), index++) {
+        for (List<T> list = this; index <= end && list.isNotEmpty(); list = list.tail(), index++) {
             if (Objects.equals(list.head(), element)) {
                 result = index;
             }
@@ -941,7 +941,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         final Deque<T> preceding = new ArrayDeque<>(size());
         List<T> result = this;
         boolean found = false;
-        while (!found && !result.isEmpty()) {
+        while (!found && result.isNotEmpty()) {
             final T head = result.head();
             if (head.equals(element)) {
                 found = true;
@@ -964,7 +964,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         Objects.requireNonNull(predicate, "predicate is null");
         List<T> init = empty();
         List<T> tail = this;
-        while (!tail.isEmpty() && !predicate.test(tail.head())) {
+        while (tail.isNotEmpty() && !predicate.test(tail.head())) {
             init = init.prepend(tail.head());
             tail = tail.tail();
         }
@@ -992,7 +992,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         }
         List<T> init = Nil.instance();
         List<T> tail = this;
-        while (index > 0 && !tail.isEmpty()) {
+        while (index > 0 && tail.isNotEmpty()) {
             init = init.prepend(tail.head());
             tail = tail.tail();
             index--;
@@ -1017,7 +1017,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     default List<T> replace(T currentElement, T newElement) {
         List<T> preceding = Nil.instance();
         List<T> tail = this;
-        while (!tail.isEmpty() && !Objects.equals(tail.head(), currentElement)) {
+        while (tail.isNotEmpty() && !Objects.equals(tail.head(), currentElement)) {
             preceding = preceding.prepend(tail.head());
             tail = tail.tail();
         }
@@ -1036,7 +1036,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     default List<T> replaceAll(T currentElement, T newElement) {
         List<T> result = Nil.instance();
         boolean changed = false;
-        for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
+        for (List<T> list = this; list.isNotEmpty(); list = list.tail()) {
             final T head = list.head();
             if (Objects.equals(head, currentElement)) {
                 result = result.prepend(newElement);
@@ -1142,7 +1142,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         } else {
             List<T> init = Nil.instance();
             List<T> tail = this;
-            while (n > 0 && !tail.isEmpty()) {
+            while (n > 0 && tail.isNotEmpty()) {
                 init = init.prepend(tail.head());
                 tail = tail.tail();
                 n--;
@@ -1266,7 +1266,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     default List<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         List<T> result = Nil.instance();
-        for (List<T> list = this; !list.isEmpty() && predicate.test(list.head()); list = list.tail()) {
+        for (List<T> list = this; list.isNotEmpty() && predicate.test(list.head()); list = list.tail()) {
             result = result.prepend(list.head());
         }
         return result.length() == length() ? this : result.reverse();
@@ -1491,7 +1491,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
             } else if (o instanceof List) {
                 List<?> list1 = this;
                 List<?> list2 = (List<?>) o;
-                while (!list1.isEmpty() && !list2.isEmpty()) {
+                while (list1.isNotEmpty() && list2.isNotEmpty()) {
                     final boolean isEqual = Objects.equals(list1.head(), list2.head());
                     if (!isEqual) {
                         return false;
@@ -1575,7 +1575,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
             private void writeObject(ObjectOutputStream s) throws IOException {
                 s.defaultWriteObject();
                 s.writeInt(list.length());
-                for (List<T> l = list; !l.isEmpty(); l = l.tail()) {
+                for (List<T> l = list; l.isNotEmpty(); l = l.tail()) {
                     s.writeObject(l.head());
                 }
             }
@@ -1640,7 +1640,7 @@ interface ListModule {
             Objects.requireNonNull(predicate, "predicate is null");
             List<T> init = Nil.instance();
             List<T> tail = source;
-            while (!tail.isEmpty() && !predicate.test(tail.head())) {
+            while (tail.isNotEmpty() && !predicate.test(tail.head())) {
                 init = init.prepend(tail.head());
                 tail = tail.tail();
             }

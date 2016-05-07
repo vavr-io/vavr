@@ -633,6 +633,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldReturnNoneWhenCallingHeadOptionOnNil() {
         assertThat(empty().headOption().isEmpty()).isTrue();
+        assertThat(empty().headOption().isNotEmpty()).isFalse();
     }
 
     @Test
@@ -678,6 +679,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldGroupedNil() {
         assertThat(empty().grouped(1).isEmpty()).isTrue();
+        assertThat(empty().grouped(1).isNotEmpty()).isFalse();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -716,6 +718,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldReturnNoneWhenCallingInitOptionOnNil() {
         assertThat(empty().initOption().isEmpty()).isTrue();
+        assertThat(empty().initOption().isNotEmpty()).isFalse();
     }
 
     @Test
@@ -728,11 +731,13 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldRecognizeNil() {
         assertThat(empty().isEmpty()).isTrue();
+        assertThat(empty().isNotEmpty()).isFalse();
     }
 
     @Test
     public void shouldRecognizeNonNil() {
         assertThat(of(1).isEmpty()).isFalse();
+        assertThat(of(1).isNotEmpty()).isTrue();
     }
 
     // -- isTraversableAgain
@@ -823,6 +828,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldReturnNoneWhenCallingLastOptionOnNil() {
         assertThat(empty().lastOption().isEmpty()).isTrue();
+        assertThat(empty().lastOption().isNotEmpty()).isFalse();
     }
 
     @Test
@@ -1504,6 +1510,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldSlideNilBySizeAndStep() {
         assertThat(empty().sliding(1, 1).isEmpty()).isTrue();
+        assertThat(empty().sliding(1, 1).isNotEmpty()).isFalse();
     }
 
     @Test
@@ -1861,6 +1868,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldReturnNoneWhenCallingTailOptionOnNil() {
         assertThat(empty().tailOption().isEmpty()).isTrue();
+        assertThat(empty().tailOption().isNotEmpty()).isFalse();
     }
 
     @Test

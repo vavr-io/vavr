@@ -93,7 +93,7 @@ public interface LinearSeq<T> extends Seq<T> {
         Objects.requireNonNull(predicate, "predicate is null");
         int i = from;
         LinearSeq<T> these = drop(from);
-        while (!these.isEmpty()) {
+        while (these.isNotEmpty()) {
             if (predicate.test(these.head())) {
                 return i;
             }
@@ -129,7 +129,7 @@ public interface LinearSeq<T> extends Seq<T> {
         int i = 0;
         LinearSeq<T> these = this;
         int last = -1;
-        while (!these.isEmpty() && i <= end) {
+        while (these.isNotEmpty() && i <= end) {
             if (predicate.test(these.head())) {
                 last = i;
             }
@@ -212,7 +212,7 @@ public interface LinearSeq<T> extends Seq<T> {
         Objects.requireNonNull(predicate, "predicate is null");
         int i = 0;
         LinearSeq<T> these = this.drop(from);
-        while (!these.isEmpty() && predicate.test(these.head())) {
+        while (these.isNotEmpty() && predicate.test(these.head())) {
             i++;
             these = these.tail();
         }

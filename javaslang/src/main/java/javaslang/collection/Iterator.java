@@ -1667,7 +1667,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
                 @Override
                 public boolean hasNext() {
-                    while (next == null && !that.isEmpty()) {
+                    while (next == null && that.isNotEmpty()) {
                         final Tuple2<Stream<T>, Stream<T>> split = that.splitAt(size);
                         next = split._1.toVector();
                         that = split._2.isEmpty() ? Stream.empty() : that.drop(step);
@@ -1843,7 +1843,7 @@ interface IteratorModule {
 
         @Override
         public boolean hasNext() {
-            while (!current.hasNext() && !iterators.isEmpty()) {
+            while (!current.hasNext() && iterators.isNotEmpty()) {
                 current = iterators.next();
             }
             return current.hasNext();

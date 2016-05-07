@@ -834,7 +834,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         List<T> list = List.ofAll(elements);
         final int newIndexShift = indexShift - list.length();
         HashArrayMappedTrie<Integer, T> newTrie = trie;
-        for (int i = newIndexShift; !list.isEmpty(); i++) {
+        for (int i = newIndexShift; list.isNotEmpty(); i++) {
             newTrie = newTrie.put(i, list.head());
             list = list.tail();
         }

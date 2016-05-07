@@ -357,7 +357,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
 
             private boolean checkPrefix(Seq<T> t, Seq<T> prefix) {
                 return prefix.isEmpty() ||
-                        (!t.isEmpty() && Objects.equals(t.head(), prefix.head()) && checkPrefix(t.tail(), prefix.tail()));
+                        (t.isNotEmpty() && Objects.equals(t.head(), prefix.head()) && checkPrefix(t.tail(), prefix.tail()));
             }
         }
 

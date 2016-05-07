@@ -769,7 +769,7 @@ public interface Tree<T> extends Traversable<T> {
 
         private void drawAux(String indent, StringBuilder builder) {
             builder.append(value);
-            for (List<Node<T>> it = children; !it.isEmpty(); it = it.tail()) {
+            for (List<Node<T>> it = children; it.isNotEmpty(); it = it.tail()) {
                 final boolean isLast = it.tail().isEmpty();
                 builder.append('\n')
                         .append(indent)

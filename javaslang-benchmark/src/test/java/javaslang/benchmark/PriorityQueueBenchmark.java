@@ -188,7 +188,7 @@ public class PriorityQueueBenchmark {
             javaslang.collection.PriorityQueue<Integer> q = state.slangQueuePersistent;
 
             final Collection<Integer> result = new ArrayList<>(CONTAINER_SIZE);
-            while (!q.isEmpty()) {
+            while (q.isNotEmpty()) {
                 final Tuple2<Integer, javaslang.collection.PriorityQueue<Integer>> dequeue = q.dequeue();
                 result.add(dequeue._1);
                 q = dequeue._2;
@@ -253,7 +253,7 @@ public class PriorityQueueBenchmark {
             assertEquals(q.size(), CONTAINER_SIZE);
 
             final Collection<Integer> result = new ArrayList<>(CONTAINER_SIZE);
-            while (!q.isEmpty()) {
+            while (q.isNotEmpty()) {
                 final Tuple2<Integer, javaslang.collection.PriorityQueue<Integer>> dequeue = q.dequeue();
                 result.add(dequeue._1);
                 q = dequeue._2;

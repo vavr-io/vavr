@@ -228,7 +228,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     @Override
     public List<T> toList() {
         List<T> results = List.empty();
-        for (PriorityQueue<T> queue = this; !queue.isEmpty(); ) {
+        for (PriorityQueue<T> queue = this; queue.isNotEmpty(); ) {
             final Tuple2<T, PriorityQueue<T>> dequeue = queue.dequeue();
             results = results.prepend(dequeue._1);
             queue = dequeue._2;
@@ -256,7 +256,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     @Override
     public PriorityQueue<T> drop(long n) {
         PriorityQueue<T> result = this;
-        for (long i = n; i > 0 && !result.isEmpty(); i--) {
+        for (long i = n; i > 0 && result.isNotEmpty(); i--) {
             result = result.tail();
         }
         return result;
@@ -283,7 +283,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     public PriorityQueue<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         PriorityQueue<T> result = this;
-        while (!result.isEmpty() && predicate.test(result.head())) {
+        while (result.isNotEmpty() && predicate.test(result.head())) {
             result = result.tail();
         }
         return result;
@@ -618,7 +618,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
          */
         static <T> List<Node<T>> rebuild(SerializableComparator<? super T> comparator, List<Node<T>> forest) {
             List<Node<T>> nonZeroRank = List.empty(), zeroRank = List.empty();
-            for (; !forest.isEmpty(); forest = forest.tail()) {
+            for (; forest.isNotEmpty(); forest = forest.tail()) {
                 final Node<T> initialForestHead = forest.head();
                 if (initialForestHead.rank == 0) {
                     zeroRank = insert(comparator, initialForestHead.root, zeroRank);
@@ -669,7 +669,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
          * *     else                     ins (link (t, t'), ts)
          */
         static <T> List<Node<T>> ins(SerializableComparator<? super T> comparator, Node<T> tree, List<Node<T>> forest) {
-            for (; !forest.isEmpty() && tree.rank >= forest.head().rank; forest = forest.tail()) {
+            for (; forest.isNotEmpty() && tree.rank >= forest.head().rank; forest = forest.tail()) {
                 tree = tree.link(comparator, forest.head());
             }
             return tree.append(forest);

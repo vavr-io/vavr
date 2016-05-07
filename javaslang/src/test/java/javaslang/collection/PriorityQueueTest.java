@@ -245,7 +245,7 @@ public class PriorityQueueTest extends AbstractTraversableTest {
             /* Delete */
                 if (random.nextInt() % 5 == 0) {
                     if (!mutablePriorityQueue.isEmpty()) { mutablePriorityQueue.poll(); }
-                    if (!functionalPriorityQueue.isEmpty()) { functionalPriorityQueue = functionalPriorityQueue.tail(); }
+                    if (functionalPriorityQueue.isNotEmpty()) { functionalPriorityQueue = functionalPriorityQueue.tail(); }
 
                     assertMinimumsAreEqual(mutablePriorityQueue, functionalPriorityQueue);
                 }
@@ -271,7 +271,7 @@ public class PriorityQueueTest extends AbstractTraversableTest {
 
     private void assertMinimumsAreEqual(java.util.PriorityQueue<Integer> oldQueue, PriorityQueue<Integer> newQueue) {
         assertThat(oldQueue.isEmpty()).isEqualTo(newQueue.isEmpty());
-        if (!newQueue.isEmpty()) {
+        if (newQueue.isNotEmpty()) {
             assertThat(oldQueue.peek()).isEqualTo(newQueue.head());
         }
     }
