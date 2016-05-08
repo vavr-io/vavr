@@ -33,8 +33,7 @@ import javaslang.match.annotation.Patterns;
     // -- javaslang.collection
 
     // List
-    @Unapply static <T> Tuple2<T, List<T>> List(List.Cons<T> cons) { return Tuple.of(cons.head(), cons.tail()); }
-    @Unapply static <T> Tuple0 List(List.Nil<T> nil) { return Tuple.empty(); }
+    @Unapply static <T> Tuple2<T, List<T>> List(List<T> cons) { return Tuple.of(cons.head(), cons.tail()); }
 
     // Stream
     @Unapply static <T> Tuple2<T, Stream<T>> Stream(Stream.Cons<T> cons) { return Tuple.of(cons.head(), cons.tail()); }

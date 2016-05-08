@@ -6,7 +6,6 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.*;
 import javaslang.collection.TreeModule.*;
 import javaslang.control.Option;
@@ -905,7 +904,7 @@ public interface Tree<T> extends Traversable<T> {
 
         @Override
         public List<Node<T>> getChildren() {
-            return Nil.instance();
+            return List.empty();
         }
 
         @Override

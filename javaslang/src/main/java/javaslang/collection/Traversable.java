@@ -526,10 +526,8 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     @Override
     default Iterator<T> iterator() {
-        final Traversable<T> that = this;
         return new AbstractIterator<T>() {
-
-            Traversable<T> traversable = that;
+            Traversable<T> traversable = Traversable.this;
 
             @Override
             public boolean hasNext() {

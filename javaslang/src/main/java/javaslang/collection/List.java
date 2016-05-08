@@ -6,31 +6,27 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.collection.List.Nil;
 import javaslang.collection.ListModule.*;
 import javaslang.control.Option;
 
-import java.io.*;
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
+
+import static javaslang.collection.List.empty;
 
 /**
  * An immutable {@code List} is an eager sequence of elements. Its immutability makes it suitable for concurrent programming.
  * <p>
  * A {@code List} is composed of a {@code head} element and a {@code tail} {@code List}.
  * <p>
- * There are two implementations of the {@code List} interface:
- * <ul>
- * <li>{@link Nil}, which represents the empty {@code List}.</li>
- * <li>{@link Cons}, which represents a {@code List} containing one or more elements.</li>
- * </ul>
  * Methods to obtain a {@code List}:
  * <pre>
  * <code>
  * // factory methods
- * List.empty()                        // = List.of() = Nil.instance()
- * List.of(x)                          // = new Cons&lt;&gt;(x, Nil.instance())
+ * List.empty()                        // = List.of()
+ * List.of(x)                          // = new Cons&lt;&gt;(x, empty())
  * List.of(Object...)                  // e.g. List.of(1, 2, 3)
  * List.ofAll(Iterable)                // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
  * List.ofAll(&lt;primitive array&gt;) // e.g. List.of(new int[] {1, 2, 3}) = 1, 2, 3
@@ -85,9 +81,80 @@ import java.util.stream.Collector;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
+public final class List<T> implements Stack<T>, LinearSeq<T>, Kind1<List<?>, T>, Serializable {
+    private static final long serialVersionUID = 1L;
 
-    long serialVersionUID = 1L;
+    private static final List<?> EMPTY = new List<>(null, null, 0);
+
+    private final T head;
+    private final List<T> tail;
+    private final int length;
+
+    /**
+     * Creates a List consisting of a head value and a trailing List.
+     *
+     * @param head The head
+     * @param tail The tail
+     */
+    private List(T head, List<T> tail, int length) {
+        this.head = head;
+        this.tail = tail;
+        this.length = length;
+    }
+
+    private List(T head, List<T> tail) {
+        this(head, tail, 1 + tail.length);
+    }
+
+    @Override
+    public T head() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("head of empty " + stringPrefix());
+        } else {
+            return head;
+        }
+    }
+
+    public List<T> tail() {
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("tail of empty " + stringPrefix());
+        } else {
+            return tail;
+        }
+    }
+
+    @Override
+    public Option<List<T>> tailOption() {
+        return isEmpty() ? Option.none() : Option.some(tail());
+    }
+
+    @Override
+    public int length() {
+        return length;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return length() == 0;
+    }
+
+    @Override
+    public List<T> init() {
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("init of empty list");
+        } else {
+            return dropRight(1);
+        }
+    }
+
+    @Override
+    public Option<List<T>> initOption() {
+        return isEmpty() ? Option.none() : Option.some(init());
+    }
+
+    private Object readResolve() {
+        return isEmpty() ? EMPTY : this;
+    }
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -96,7 +163,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param <T> Component type of the List.
      * @return A javaslang.collection.List Collector.
      */
-    static <T> Collector<T, ArrayList<T>, List<T>> collector() {
+    public static <T> Collector<T, ArrayList<T>, List<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
@@ -108,20 +175,15 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     /**
-     * Returns the single instance of Nil. Convenience method for {@code Nil.instance()} .
-     * <p>
-     * Note: this method intentionally returns type {@code List} and not {@code Nil}. This comes handy when folding.
-     * If you explicitly need type {@code Nil} use {@linkplain Nil#instance()}.
+     * Returns the empty List.
      *
-     * @param <T> Component type of Nil, determined by type inference in the particular context.
-     * @return The empty list.
+     * @param <T> Component type
+     * @return The empty List.
      */
-    static <T> List<T> empty() {
-        return Nil.instance();
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> empty() {
+        return (List<T>) EMPTY;
     }
-
-    @Override
-    boolean isEmpty();
 
     /**
      * Narrows a widened {@code List<? extends T>} to {@code List<T>}
@@ -133,7 +195,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return the given {@code list} instance as narrowed type {@code List<T>}.
      */
     @SuppressWarnings("unchecked")
-    static <T> List<T> narrow(List<? extends T> list) {
+    public static <T> List<T> narrow(List<? extends T> list) {
         return (List<T>) list;
     }
 
@@ -144,8 +206,8 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param <T>     The component type
      * @return A new List instance containing the given element
      */
-    static <T> List<T> of(T element) {
-        return new Cons<>(element, Nil.instance());
+    public static <T> List<T> of(T element) {
+        return new List<>(element, empty());
     }
 
     /**
@@ -153,8 +215,8 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * <pre>
      * <code>
      *   List.of(1, 2, 3, 4)
-     * = Nil.instance().prepend(4).prepend(3).prepend(2).prepend(1)
-     * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))
+     * = List.empty().prepend(4).prepend(3).prepend(2).prepend(1)
+     * = new List(1, new List(2, new List(3, new List(4, List.empty()))))
      * </code>
      * </pre>
      *
@@ -164,9 +226,9 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    static <T> List<T> of(T... elements) {
+    public static <T> List<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        List<T> result = Nil.instance();
+        List<T> result = empty();
         for (int i = elements.length - 1; i >= 0; i--) {
             result = result.prepend(elements[i]);
         }
@@ -185,27 +247,26 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
-    static <T> List<T> ofAll(Iterable<? extends T> elements) {
+    public static <T> List<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof List) {
             return (List<T>) elements;
         } else if (elements instanceof java.util.List) {
-            List<T> result = Nil.instance();
+            List<T> result = empty();
             final java.util.List<T> list = (java.util.List<T>) elements;
-            final ListIterator<T> iterator = list.listIterator(list.size());
-            while (iterator.hasPrevious()) {
+            for (final ListIterator<T> iterator = list.listIterator(list.size()); iterator.hasPrevious(); ) {
                 result = result.prepend(iterator.previous());
             }
             return result;
         } else if (elements instanceof NavigableSet) {
-            List<T> result = Nil.instance();
+            List<T> result = empty();
             final java.util.Iterator<T> iterator = ((NavigableSet<T>) elements).descendingIterator();
             while (iterator.hasNext()) {
                 result = result.prepend(iterator.next());
             }
             return result;
         } else {
-            List<T> result = Nil.instance();
+            List<T> result = empty();
             for (T element : elements) {
                 result = result.prepend(element);
             }
@@ -219,7 +280,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array a boolean array
      * @return A new List of Boolean values
      */
-    static List<Boolean> ofAll(boolean[] array) {
+    public static List<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -230,7 +291,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array a byte array
      * @return A new List of Byte values
      */
-    static List<Byte> ofAll(byte[] array) {
+    public static List<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -241,7 +302,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array a char array
      * @return A new List of Character values
      */
-    static List<Character> ofAll(char[] array) {
+    public static List<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -252,7 +313,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array a double array
      * @return A new List of Double values
      */
-    static List<Double> ofAll(double[] array) {
+    public static List<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -263,7 +324,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array a float array
      * @return A new List of Float values
      */
-    static List<Float> ofAll(float[] array) {
+    public static List<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -274,7 +335,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array an int array
      * @return A new List of Integer values
      */
-    static List<Integer> ofAll(int[] array) {
+    public static List<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -285,7 +346,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array a long array
      * @return A new List of Long values
      */
-    static List<Long> ofAll(long[] array) {
+    public static List<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -296,7 +357,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array a short array
      * @return A new List of Short values
      */
-    static List<Short> ofAll(short[] array) {
+    public static List<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -311,7 +372,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return A List consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    static <T> List<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+    public static <T> List<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return Collections.tabulate(n, f, empty(), List::of);
     }
@@ -325,20 +386,20 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return A List of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    static <T> List<T> fill(int n, Supplier<? extends T> s) {
+    public static <T> List<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return Collections.fill(n, s, empty(), List::of);
     }
 
-    static List<Character> range(char from, char toExclusive) {
+    public static List<Character> range(char from, char toExclusive) {
         return ofAll(Iterator.range(from, toExclusive));
     }
 
-    static List<Character> rangeBy(char from, char toExclusive, int step) {
+    public static List<Character> rangeBy(char from, char toExclusive, int step) {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
-    static List<Double> rangeBy(double from, double toExclusive, double step) {
+    public static List<Double> rangeBy(double from, double toExclusive, double step) {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
@@ -358,7 +419,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param toExclusive the last number + 1
      * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
      */
-    static List<Integer> range(int from, int toExclusive) {
+    public static List<Integer> range(int from, int toExclusive) {
         return ofAll(Iterator.range(from, toExclusive));
     }
 
@@ -384,7 +445,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * {@code from <= toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static List<Integer> rangeBy(int from, int toExclusive, int step) {
+    public static List<Integer> rangeBy(int from, int toExclusive, int step) {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
@@ -404,7 +465,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param toExclusive the last number + 1
      * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
      */
-    static List<Long> range(long from, long toExclusive) {
+    public static List<Long> range(long from, long toExclusive) {
         return ofAll(Iterator.range(from, toExclusive));
     }
 
@@ -430,19 +491,19 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * {@code from <= toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static List<Long> rangeBy(long from, long toExclusive, long step) {
+    public static List<Long> rangeBy(long from, long toExclusive, long step) {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
-    static List<Character> rangeClosed(char from, char toInclusive) {
+    public static List<Character> rangeClosed(char from, char toInclusive) {
         return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
-    static List<Character> rangeClosedBy(char from, char toInclusive, int step) {
+    public static List<Character> rangeClosedBy(char from, char toInclusive, int step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
-    static List<Double> rangeClosedBy(double from, double toInclusive, double step) {
+    public static List<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
@@ -462,7 +523,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param toInclusive the last number
      * @return a range of int values as specified or the empty range if {@code from > toInclusive}
      */
-    static List<Integer> rangeClosed(int from, int toInclusive) {
+    public static List<Integer> rangeClosed(int from, int toInclusive) {
         return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
@@ -488,7 +549,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static List<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+    public static List<Integer> rangeClosedBy(int from, int toInclusive, int step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
@@ -508,7 +569,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param toInclusive the last number
      * @return a range of long values as specified or the empty range if {@code from > toInclusive}
      */
-    static List<Long> rangeClosed(long from, long toInclusive) {
+    public static List<Long> rangeClosed(long from, long toInclusive) {
         return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
@@ -534,57 +595,57 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * {@code from < toInclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
-    static List<Long> rangeClosedBy(long from, long toInclusive, long step) {
+    public static List<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     @Override
-    default List<T> append(T element) {
+    public List<T> append(T element) {
         return foldRight(of(element), (x, xs) -> xs.prepend(x));
     }
 
     @Override
-    default List<T> appendAll(Iterable<? extends T> elements) {
+    public List<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(elements).prependAll(this);
     }
 
     @Override
-    default List<List<T>> combinations() {
+    public List<List<T>> combinations() {
         return rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
 
     @Override
-    default List<List<T>> combinations(int k) {
+    public List<List<T>> combinations(int k) {
         return Combinations.apply(this, Math.max(k, 0));
     }
 
     @Override
-    default Iterator<List<T>> crossProduct(int power) {
+    public Iterator<List<T>> crossProduct(int power) {
         return Collections.crossProduct(empty(), this, power);
     }
 
     @Override
-    default List<T> distinct() {
+    public List<T> distinct() {
         return distinctBy(Function.identity());
     }
 
     @Override
-    default List<T> distinctBy(Comparator<? super T> comparator) {
+    public List<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         final java.util.Set<T> seen = new java.util.TreeSet<>(comparator);
         return filter(seen::add);
     }
 
     @Override
-    default <U> List<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+    public <U> List<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         final java.util.Set<U> seen = new java.util.HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
 
     @Override
-    default List<T> drop(long n) {
+    public List<T> drop(long n) {
         List<T> list = this;
         for (long i = n; i > 0 && !list.isEmpty(); i--) {
             list = list.tail();
@@ -593,7 +654,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> dropRight(long n) {
+    public List<T> dropRight(long n) {
         if (n <= 0) {
             return this;
         }
@@ -604,13 +665,13 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> dropUntil(Predicate<? super T> predicate) {
+    public List<T> dropUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
     @Override
-    default List<T> dropWhile(Predicate<? super T> predicate) {
+    public List<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         List<T> list = this;
         while (!list.isEmpty() && predicate.test(list.head())) {
@@ -620,7 +681,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> filter(Predicate<? super T> predicate) {
+    public List<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final List<T> filtered = foldLeft(empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs);
 
@@ -634,7 +695,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U> List<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -650,7 +711,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default T get(int index) {
+    public T get(int index) {
         if (isEmpty()) {
             throw new IndexOutOfBoundsException("get(" + index + ") on Nil");
         }
@@ -668,23 +729,23 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
+    public <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
         Objects.requireNonNull(classifier, "classifier is null");
         return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, ofAll(it)));
     }
 
     @Override
-    default Iterator<List<T>> grouped(long size) {
+    public Iterator<List<T>> grouped(long size) {
         return sliding(size, size);
     }
 
     @Override
-    default boolean hasDefiniteSize() {
+    public boolean hasDefiniteSize() {
         return true;
     }
 
     @Override
-    default int indexOf(T element, int from) {
+    public int indexOf(T element, int from) {
         int index = 0;
         for (List<T> list = this; !list.isEmpty(); list = list.tail(), index++) {
             if (index >= from && Objects.equals(list.head(), element)) {
@@ -695,28 +756,11 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> init() {
-        if (isEmpty()) {
-            throw new UnsupportedOperationException("init of empty list");
-        } else {
-            return dropRight(1);
-        }
-    }
-
-    @Override
-    default Option<List<T>> initOption() {
-        return isEmpty() ? Option.none() : Option.some(init());
-    }
-
-    @Override
-    int length();
-
-    @Override
-    default List<T> insert(int index, T element) {
+    public List<T> insert(int index, T element) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e)");
         }
-        List<T> preceding = Nil.instance();
+        List<T> preceding = empty();
         List<T> tail = this;
         for (int i = index; i > 0; i--, tail = tail.tail()) {
             if (tail.isEmpty()) {
@@ -732,12 +776,12 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> insertAll(int index, Iterable<? extends T> elements) {
+    public List<T> insertAll(int index, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
         }
-        List<T> preceding = Nil.instance();
+        List<T> preceding = empty();
         List<T> tail = this;
         for (int i = index; i > 0; i--, tail = tail.tail()) {
             if (tail.isEmpty()) {
@@ -753,17 +797,17 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> intersperse(T element) {
+    public List<T> intersperse(T element) {
         return ofAll(iterator().intersperse(element));
     }
 
     @Override
-    default boolean isTraversableAgain() {
+    public boolean isTraversableAgain() {
         return true;
     }
 
     @Override
-    default int lastIndexOf(T element, int end) {
+    public int lastIndexOf(T element, int end) {
         int result = -1, index = 0;
         for (List<T> list = this; index <= end && !list.isEmpty(); list = list.tail(), index++) {
             if (Objects.equals(list.head(), element)) {
@@ -774,7 +818,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<U> map(Function<? super T, ? extends U> mapper) {
+    public <U> List<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         List<U> list = empty();
         for (T t : this) {
@@ -784,7 +828,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> padTo(int length, T element) {
+    public List<T> padTo(int length, T element) {
         final int actualLength = length();
         if (length <= actualLength) {
             return this;
@@ -794,7 +838,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> leftPadTo(int length, T element) {
+    public List<T> leftPadTo(int length, T element) {
         final int actualLength = length();
         if (length <= actualLength) {
             return this;
@@ -804,7 +848,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> patch(int from, Iterable<? extends T> that, int replaced) {
+    public List<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = from < 0 ? 0 : from;
         replaced = replaced < 0 ? 0 : replaced;
         List<T> result = take(from).appendAll(that);
@@ -814,7 +858,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate) {
+    public Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         List<T> left = empty(), right = empty();
         for (T t : this) {
@@ -828,7 +872,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default T peek() {
+    public T peek() {
         if (isEmpty()) {
             throw new NoSuchElementException("peek of empty list");
         }
@@ -836,7 +880,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Option<T> peekOption() {
+    public Option<T> peekOption() {
         return isEmpty() ? Option.none() : Option.some(head());
     }
 
@@ -847,7 +891,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return this {@code List}
      */
     @Override
-    default List<T> peek(Consumer<? super T> action) {
+    public List<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
@@ -856,25 +900,24 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<List<T>> permutations() {
+    public List<List<T>> permutations() {
         if (isEmpty()) {
-            return Nil.instance();
+            return empty();
+        } else if (length() == 1) {
+            return of(this);
         } else {
-            final List<T> tail = tail();
-            if (tail.isEmpty()) {
-                return of(this);
-            } else {
-                final List<List<T>> zero = Nil.instance();
-                return distinct().foldLeft(zero, (xs, x) -> {
-                    final Function<List<T>, List<T>> prepend = l -> l.prepend(x);
-                    return xs.appendAll(remove(x).permutations().map(prepend));
-                });
+            List<List<T>> results = empty();
+            for (T t : distinct()) {
+                for (List<T> ts : remove(t).permutations()) {
+                    results = results.append(of(t).appendAll(ts));
+                }
             }
+            return results;
         }
     }
 
     @Override
-    default List<T> pop() {
+    public List<T> pop() {
         if (isEmpty()) {
             throw new NoSuchElementException("pop of empty list");
         }
@@ -882,12 +925,12 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Option<List<T>> popOption() {
+    public Option<List<T>> popOption() {
         return isEmpty() ? Option.none() : Option.some(pop());
     }
 
     @Override
-    default Tuple2<T, List<T>> pop2() {
+    public Tuple2<T, List<T>> pop2() {
         if (isEmpty()) {
             throw new NoSuchElementException("pop2 of empty list");
         }
@@ -895,29 +938,29 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Option<Tuple2<T, List<T>>> pop2Option() {
+    public Option<Tuple2<T, List<T>>> pop2Option() {
         return isEmpty() ? Option.none() : Option.some(Tuple.of(head(), pop()));
     }
 
     @Override
-    default List<T> prepend(T element) {
-        return new Cons<>(element, this);
+    public List<T> prepend(T element) {
+        return new List<>(element, this);
     }
 
     @Override
-    default List<T> prependAll(Iterable<? extends T> elements) {
+    public List<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return isEmpty() ? ofAll(elements) : ofAll(elements).reverse().foldLeft(this, List::prepend);
     }
 
     @Override
-    default List<T> push(T element) {
-        return new Cons<>(element, this);
+    public List<T> push(T element) {
+        return new List<>(element, this);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    default List<T> push(T... elements) {
+    public List<T> push(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> result = this;
         for (T element : elements) {
@@ -927,7 +970,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> pushAll(Iterable<T> elements) {
+    public List<T> pushAll(Iterable<T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> result = this;
         for (T element : elements) {
@@ -937,7 +980,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> remove(T element) {
+    public List<T> remove(T element) {
         final Deque<T> preceding = new ArrayDeque<>(size());
         List<T> result = this;
         boolean found = false;
@@ -960,7 +1003,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> removeFirst(Predicate<T> predicate) {
+    public List<T> removeFirst(Predicate<T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         List<T> init = empty();
         List<T> tail = this;
@@ -976,21 +1019,21 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> removeLast(Predicate<T> predicate) {
+    public List<T> removeLast(Predicate<T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final List<T> removedAndReversed = reverse().removeFirst(predicate);
         return removedAndReversed.length() == length() ? this : removedAndReversed.reverse();
     }
 
     @Override
-    default List<T> removeAt(int index) {
+    public List<T> removeAt(int index) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("removeAt(" + index + ")");
         }
         if (isEmpty()) {
             throw new IndexOutOfBoundsException("removeAt(" + index + ") on Nil");
         }
-        List<T> init = Nil.instance();
+        List<T> init = empty();
         List<T> tail = this;
         while (index > 0 && !tail.isEmpty()) {
             init = init.prepend(tail.head());
@@ -1004,18 +1047,18 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> removeAll(T element) {
+    public List<T> removeAll(T element) {
         return Collections.removeAll(this, element);
     }
 
     @Override
-    default List<T> removeAll(Iterable<? extends T> elements) {
+    public List<T> removeAll(Iterable<? extends T> elements) {
         return Collections.removeAll(this, elements);
     }
 
     @Override
-    default List<T> replace(T currentElement, T newElement) {
-        List<T> preceding = Nil.instance();
+    public List<T> replace(T currentElement, T newElement) {
+        List<T> preceding = empty();
         List<T> tail = this;
         while (!tail.isEmpty() && !Objects.equals(tail.head(), currentElement)) {
             preceding = preceding.prepend(tail.head());
@@ -1033,8 +1076,8 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> replaceAll(T currentElement, T newElement) {
-        List<T> result = Nil.instance();
+    public List<T> replaceAll(T currentElement, T newElement) {
+        List<T> result = empty();
         boolean changed = false;
         for (List<T> list = this; !list.isEmpty(); list = list.tail()) {
             final T head = list.head();
@@ -1049,38 +1092,38 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> retainAll(Iterable<? extends T> elements) {
+    public List<T> retainAll(Iterable<? extends T> elements) {
         return Collections.retainAll(this, elements);
     }
 
     @Override
-    default List<T> reverse() {
+    public List<T> reverse() {
         return (length() <= 1) ? this : foldLeft(empty(), List::prepend);
     }
 
     @Override
-    default List<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+    public List<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    default <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+    public <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         return Collections.scanLeft(this, zero, operation, empty(), List::prepend, List::reverse);
     }
 
     @Override
-    default <U> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+    public <U> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         return Collections.scanRight(this, zero, operation, empty(), List::prepend, Function.identity());
     }
 
     @Override
-    default List<T> slice(long beginIndex, long endIndex) {
+    public List<T> slice(long beginIndex, long endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
             return empty();
         } else {
-            List<T> result = Nil.instance();
+            List<T> result = empty();
             List<T> list = this;
             final long lowerBound = Math.max(beginIndex, 0);
             final long upperBound = Math.min(endIndex, length());
@@ -1095,33 +1138,33 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Iterator<List<T>> sliding(long size) {
+    public Iterator<List<T>> sliding(long size) {
         return sliding(size, 1);
     }
 
     @Override
-    default Iterator<List<T>> sliding(long size, long step) {
+    public Iterator<List<T>> sliding(long size, long step) {
         return iterator().sliding(size, step).map(List::ofAll);
     }
 
     @Override
-    default List<T> sorted() {
+    public List<T> sorted() {
         return isEmpty() ? this : toJavaStream().sorted().collect(collector());
     }
 
     @Override
-    default List<T> sorted(Comparator<? super T> comparator) {
+    public List<T> sorted(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return isEmpty() ? this : toJavaStream().sorted(comparator).collect(collector());
     }
 
     @Override
-    default <U extends Comparable<? super U>> List<T> sortBy(Function<? super T, ? extends U> mapper) {
+    public <U extends Comparable<? super U>> List<T> sortBy(Function<? super T, ? extends U> mapper) {
         return sortBy(U::compareTo, mapper);
     }
 
     @Override
-    default <U> List<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
+    public <U> List<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
         final Function<? super T, ? extends U> domain = Function1.of(mapper::apply).memoized();
         return toJavaStream()
                 .sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
@@ -1129,18 +1172,18 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> span(Predicate<? super T> predicate) {
+    public Tuple2<List<T>, List<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<T>, Iterator<T>> itt = iterator().span(predicate);
         return Tuple.of(ofAll(itt._1), ofAll(itt._2));
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> splitAt(long n) {
+    public Tuple2<List<T>, List<T>> splitAt(long n) {
         if (isEmpty()) {
             return Tuple.of(empty(), empty());
         } else {
-            List<T> init = Nil.instance();
+            List<T> init = empty();
             List<T> tail = this;
             while (n > 0 && !tail.isEmpty()) {
                 init = init.prepend(tail.head());
@@ -1152,7 +1195,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> splitAt(Predicate<? super T> predicate) {
+    public Tuple2<List<T>, List<T>> splitAt(Predicate<? super T> predicate) {
         if (isEmpty()) {
             return Tuple.of(empty(), empty());
         } else {
@@ -1166,7 +1209,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> splitAtInclusive(Predicate<? super T> predicate) {
+    public Tuple2<List<T>, List<T>> splitAtInclusive(Predicate<? super T> predicate) {
         if (isEmpty()) {
             return Tuple.of(empty(), empty());
         } else {
@@ -1180,17 +1223,12 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Spliterator<T> spliterator() {
+    public Spliterator<T> spliterator() {
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
     @Override
-    default String stringPrefix() {
-        return "List";
-    }
-
-    @Override
-    default List<T> subSequence(int beginIndex) {
+    public List<T> subSequence(int beginIndex) {
         if (beginIndex < 0) {
             throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
         }
@@ -1204,11 +1242,11 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> subSequence(int beginIndex, int endIndex) {
+    public List<T> subSequence(int beginIndex, int endIndex) {
         if (beginIndex < 0 || beginIndex > endIndex) {
             throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on List of length " + length());
         }
-        List<T> result = Nil.instance();
+        List<T> result = empty();
         List<T> list = this;
         for (int i = 0; i < endIndex; i++, list = list.tail()) {
             if (list.isEmpty()) {
@@ -1222,22 +1260,14 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    List<T> tail();
-
-    @Override
-    default Option<List<T>> tailOption() {
-        return isEmpty() ? Option.none() : Option.some(tail());
-    }
-
-    @Override
-    default List<T> take(long n) {
+    public List<T> take(long n) {
         if (n >= length()) {
             return this;
         }
         if (n <= 0) {
             return empty();
         }
-        List<T> result = Nil.instance();
+        List<T> result = empty();
         List<T> list = this;
         for (int i = 0; i < n; i++, list = list.tail()) {
             result = result.prepend(list.head());
@@ -1246,7 +1276,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> takeRight(long n) {
+    public List<T> takeRight(long n) {
         if (n >= length()) {
             return this;
         }
@@ -1257,15 +1287,15 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> takeUntil(Predicate<? super T> predicate) {
+    public List<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
     }
 
     @Override
-    default List<T> takeWhile(Predicate<? super T> predicate) {
+    public List<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        List<T> result = Nil.instance();
+        List<T> result = empty();
         for (List<T> list = this; !list.isEmpty() && predicate.test(list.head()); list = list.tail()) {
             result = result.prepend(list.head());
         }
@@ -1280,22 +1310,22 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> U transform(Function<? super List<T>, ? extends U> f) {
+    public <U> U transform(Function<? super List<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
     @Override
-    default <U> List<U> unit(Iterable<? extends U> iterable) {
+    public <U> List<U> unit(Iterable<? extends U> iterable) {
         return ofAll(iterable);
     }
 
     @Override
-    default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(
+    public <T1, T2> Tuple2<List<T1>, List<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        List<T1> xs = Nil.instance();
-        List<T2> ys = Nil.instance();
+        List<T1> xs = empty();
+        List<T2> ys = empty();
         for (T element : this) {
             final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(element);
             xs = xs.prepend(t._1);
@@ -1305,12 +1335,12 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <T1, T2, T3> Tuple3<List<T1>, List<T2>, List<T3>> unzip3(
+    public <T1, T2, T3> Tuple3<List<T1>, List<T2>, List<T3>> unzip3(
             Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        List<T1> xs = Nil.instance();
-        List<T2> ys = Nil.instance();
-        List<T3> zs = Nil.instance();
+        List<T1> xs = empty();
+        List<T2> ys = empty();
+        List<T3> zs = empty();
         for (T element : this) {
             final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(element);
             xs = xs.prepend(t._1);
@@ -1321,14 +1351,14 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> update(int index, T element) {
+    public List<T> update(int index, T element) {
         if (isEmpty()) {
             throw new IndexOutOfBoundsException("update(" + index + ", e) on Nil");
         }
         if (index < 0) {
             throw new IndexOutOfBoundsException("update(" + index + ", e)");
         }
-        List<T> preceding = Nil.instance();
+        List<T> preceding = empty();
         List<T> tail = this;
         for (int i = index; i > 0; i--, tail = tail.tail()) {
             if (tail.isEmpty()) {
@@ -1348,284 +1378,80 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default <U> List<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+    public <U> List<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         return ofAll(iterator().zip(that));
     }
 
     @Override
-    default <U> List<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
+    public <U> List<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
 
     @Override
-    default List<Tuple2<T, Long>> zipWithIndex() {
+    public List<Tuple2<T, Long>> zipWithIndex() {
         return ofAll(iterator().zipWithIndex());
     }
 
-    /**
-     * Representation of the singleton empty {@code List}.
-     *
-     * @param <T> Component type of the List.
-     * @since 1.1.0
-     */
-    final class Nil<T> implements List<T>, Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        private static final Nil<?> INSTANCE = new Nil<>();
-
-        // hidden
-        private Nil() {
-        }
-
-        /**
-         * Returns the singleton instance of the liked list.
-         *
-         * @param <T> Component type of the List
-         * @return the singleton instance of the linked list.
-         */
-        @SuppressWarnings("unchecked")
-        public static <T> Nil<T> instance() {
-            return (Nil<T>) INSTANCE;
-        }
-
-        @Override
-        public T head() {
-            throw new NoSuchElementException("head of empty list");
-        }
-
-        @Override
-        public int length() {
-            return 0;
-        }
-
-        @Override
-        public List<T> tail() {
-            throw new UnsupportedOperationException("tail of empty list");
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return true;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            return o == this;
-        }
-
-        @Override
-        public int hashCode() {
-            return 1;
-        }
-
-        @Override
-        public String toString() {
-            return stringPrefix() + "()";
-        }
-
-        /**
-         * Instance control for object serialization.
-         *
-         * @return The singleton instance of Nil.
-         * @see java.io.Serializable
-         */
-        private Object readResolve() {
-            return INSTANCE;
-        }
+    @Override
+    public String stringPrefix() {
+        return "List";
     }
 
-    /**
-     * Non-empty {@code List}, consisting of a {@code head} and a {@code tail}.
-     *
-     * @param <T> Component type of the List.
-     * @since 1.1.0
-     */
-    // DEV NOTE: class declared final because of serialization proxy pattern (see Effective Java, 2nd ed., p. 315)
-    final class Cons<T> implements List<T>, Serializable {
+    @Override
+    public boolean equals(Object o) {
+        return o == this || o instanceof List && Collections.equals(this, (Iterable) o);
+    }
 
-        private static final long serialVersionUID = 1L;
+    @Override
+    public int hashCode() {
+        return Collections.hash(this);
+    }
 
-        private final T head;
-        private final List<T> tail;
-        private final int length;
+    @Override
+    public String toString() {
+        return mkString(stringPrefix() + "(", ", ", ")");
+    }
 
-        /**
-         * Creates a List consisting of a head value and a trailing List.
-         *
-         * @param head The head
-         * @param tail The tail
-         */
-        private Cons(T head, List<T> tail) {
-            this.head = head;
-            this.tail = tail;
-            this.length = 1 + tail.length();
-        }
-
-        @Override
-        public T head() {
-            return head;
-        }
-
-        @Override
-        public int length() {
-            return length;
-        }
-
-        @Override
-        public List<T> tail() {
-            return tail;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof List) {
-                List<?> list1 = this;
-                List<?> list2 = (List<?>) o;
-                while (!list1.isEmpty() && !list2.isEmpty()) {
-                    final boolean isEqual = Objects.equals(list1.head(), list2.head());
-                    if (!isEqual) {
-                        return false;
-                    }
-                    list1 = list1.tail();
-                    list2 = list2.tail();
+    public Iterator<T> iterator() {
+        if (isEmpty()) {
+            return new Iterator<T>() {
+                @Override
+                public boolean hasNext() {
+                    return false;
                 }
-                return list1.isEmpty() && list2.isEmpty();
-            } else {
-                return false;
-            }
-        }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(head, tail);
-        }
-
-        @Override
-        public String toString() {
-            return mkString(stringPrefix() + "(", ", ", ")");
-        }
-
-        /**
-         * {@code writeReplace} method for the serialization proxy pattern.
-         * <p>
-         * The presence of this method causes the serialization system to emit a SerializationProxy instance instead of
-         * an instance of the enclosing class.
-         *
-         * @return A SerialiationProxy for this enclosing class.
-         */
-        private Object writeReplace() {
-            return new SerializationProxy<>(this);
-        }
-
-        /**
-         * {@code readObject} method for the serialization proxy pattern.
-         * <p>
-         * Guarantees that the serialization system will never generate a serialized instance of the enclosing class.
-         *
-         * @param stream An object serialization stream.
-         * @throws java.io.InvalidObjectException This method will throw with the message "Proxy required".
-         */
-        private void readObject(ObjectInputStream stream) throws InvalidObjectException {
-            throw new InvalidObjectException("Proxy required");
-        }
-
-        /**
-         * A serialization proxy which, in this context, is used to deserialize immutable, linked Lists with final
-         * instance fields.
-         *
-         * @param <T> The component type of the underlying list.
-         */
-        // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
-        // classes. Also, it may not be compatible with circular object graphs.
-        private static final class SerializationProxy<T> implements Serializable {
-
-            private static final long serialVersionUID = 1L;
-
-            // the instance to be serialized/deserialized
-            private transient Cons<T> list;
-
-            /**
-             * Constructor for the case of serialization, called by {@link Cons#writeReplace()}.
-             * <p/>
-             * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
-             * an instance of the enclosing class.
-             *
-             * @param list a Cons
-             */
-            SerializationProxy(Cons<T> list) {
-                this.list = list;
-            }
-
-            /**
-             * Write an object to a serialization stream.
-             *
-             * @param s An object serialization stream.
-             * @throws java.io.IOException If an error occurs writing to the stream.
-             */
-            private void writeObject(ObjectOutputStream s) throws IOException {
-                s.defaultWriteObject();
-                s.writeInt(list.length());
-                for (List<T> l = list; !l.isEmpty(); l = l.tail()) {
-                    s.writeObject(l.head());
+                @Override
+                public T next() {
+                    throw new NoSuchElementException();
                 }
-            }
+            };
+        } else {
+            return new Iterator<T>() {
+                List<T> list = List.this;
 
-            /**
-             * Read an object from a deserialization stream.
-             *
-             * @param s An object deserialization stream.
-             * @throws ClassNotFoundException If the object's class read from the stream cannot be found.
-             * @throws InvalidObjectException If the stream contains no list elements.
-             * @throws IOException            If an error occurs reading from the stream.
-             */
-            private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
-                s.defaultReadObject();
-                final int size = s.readInt();
-                if (size <= 0) {
-                    throw new InvalidObjectException("No elements");
+                @Override
+                public boolean hasNext() {
+                    return list.length != 0;
                 }
-                List<T> temp = Nil.instance();
-                for (int i = 0; i < size; i++) {
-                    @SuppressWarnings("unchecked")
-                    final T element = (T) s.readObject();
-                    temp = temp.prepend(element);
-                }
-                list = (Cons<T>) temp.reverse();
-            }
 
-            /**
-             * {@code readResolve} method for the serialization proxy pattern.
-             * <p>
-             * Returns a logically equivalent instance of the enclosing class. The presence of this method causes the
-             * serialization system to translate the serialization proxy back into an instance of the enclosing class
-             * upon deserialization.
-             *
-             * @return A deserialized instance of the enclosing class.
-             */
-            private Object readResolve() {
-                return list;
-            }
+                @Override
+                public T next() {
+                    final T result = list.head;
+                    list = list.tail;
+                    return result;
+                }
+            };
         }
     }
 }
 
 interface ListModule {
-
     interface Combinations {
-
         static <T> List<List<T>> apply(List<T> elements, int k) {
             if (k == 0) {
-                return List.of(List.empty());
+                return List.of(empty());
             } else {
                 return elements.zipWithIndex().flatMap(
                         t -> apply(elements.drop(t._2 + 1), (k - 1)).map(c -> c.prepend(t._1))
@@ -1635,10 +1461,9 @@ interface ListModule {
     }
 
     interface SplitAt {
-
         static <T> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
-            List<T> init = Nil.instance();
+            List<T> init = empty();
             List<T> tail = source;
             while (!tail.isEmpty() && !predicate.test(tail.head())) {
                 init = init.prepend(tail.head());

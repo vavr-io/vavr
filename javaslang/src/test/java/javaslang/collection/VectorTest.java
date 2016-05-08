@@ -202,46 +202,4 @@ public class VectorTest extends AbstractIndexedSeqTest {
     public void shouldStringifyNonNil() {
         assertThat(of(null, 1, 2, 3).toString()).isEqualTo("Vector(null, 1, 2, 3)");
     }
-
-    // -- Cons test
-
-    @Test(expected = InvalidObjectException.class)
-    public void shouldNotSerializeEnclosingClass() throws Throwable {
-        Serializables.callReadObject(List.of(1));
-    }
-
-    @Test(expected = InvalidObjectException.class)
-    public void shouldNotDeserializeListWithSizeLessThanOne() throws Throwable {
-        try {
-            /*
-             * This implementation is stable regarding jvm impl changes of object serialization. The index of the number
-             * of List elements is gathered dynamically.
-             */
-            final byte[] listWithOneElement = Serializables.serialize(List.of(0));
-            final byte[] listWithTwoElements = Serializables.serialize(List.of(0, 0));
-            int index = -1;
-            for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
-                final byte b1 = listWithOneElement[i];
-                final byte b2 = listWithTwoElements[i];
-                if (b1 != b2) {
-                    if (b1 != 1 || b2 != 2) {
-                        throw new IllegalStateException("Difference does not indicate number of elements.");
-                    } else {
-                        index = i;
-                    }
-                }
-            }
-            if (index == -1) {
-                throw new IllegalStateException("Hack incomplete - index not found");
-            }
-            /*
-             * Hack the serialized data and fake zero elements.
-			 */
-            listWithOneElement[index] = 0;
-            Serializables.deserialize(listWithOneElement);
-        } catch (IllegalStateException x) {
-            throw (x.getCause() != null) ? x.getCause() : x;
-        }
-    }
-
 }
