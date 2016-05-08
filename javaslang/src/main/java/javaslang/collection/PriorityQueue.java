@@ -25,16 +25,16 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     private static final long serialVersionUID = 1L;
 
     private final SerializableComparator<? super T> comparator;
-    private final List<Node<T>> forest;
+    private final Seq<Node<T>> forest;
     private final int size;
 
-    private PriorityQueue(SerializableComparator<? super T> comparator, List<Node<T>> forest, int size) {
+    private PriorityQueue(SerializableComparator<? super T> comparator, Seq<Node<T>> forest, int size) {
         this.comparator = comparator;
         this.forest = forest;
         this.size = size;
     }
 
-    private PriorityQueue<T> with(List<Node<T>> forest, int size) {
+    private PriorityQueue<T> with(Seq<Node<T>> forest, int size) {
         return new PriorityQueue<>(this.comparator, forest, size);
     }
 
@@ -46,7 +46,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
      */
     @Override
     public PriorityQueue<T> enqueue(T element) {
-        final List<Node<T>> result = insert(comparator, element, forest);
+        final Seq<Node<T>> result = insert(comparator, element, forest);
         return with(result, size + 1);
     }
 
@@ -97,13 +97,13 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
         if (isEmpty()) {
             throw new NoSuchElementException("dequeue of empty " + stringPrefix());
         } else {
-            final Tuple2<T, List<Node<T>>> dequeue = deleteMin(comparator, this.forest);
+            final Tuple2<T, Seq<Node<T>>> dequeue = deleteMin(comparator, this.forest);
             return Tuple.of(dequeue._1, with(dequeue._2, this.size - 1));
         }
     }
 
     public PriorityQueue<T> merge(PriorityQueue<T> target) {
-        final List<Node<T>> meld = meld(comparator, this.forest, target.forest);
+        final Seq<Node<T>> meld = meld(comparator, this.forest, target.forest);
         return with(meld, this.size + target.size);
     }
 
@@ -186,7 +186,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
         final SerializableComparator<? super T> serializableComparator = SerializableComparator.of(comparator);
 
         int size = 0;
-        List<Node<T>> forest = List.empty();
+        Seq<Node<T>> forest = List.empty();
         for (T value : elements) {
             forest = insert(serializableComparator, value, forest);
             size++;
@@ -244,13 +244,13 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     @Override
     public PriorityQueue<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return ofAll(comparator, toList().distinctBy(comparator));
+        return ofAll(comparator, iterator().distinctBy(comparator));
     }
 
     @Override
     public <U> PriorityQueue<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return ofAll(comparator, toList().distinctBy(keyExtractor));
+        return ofAll(comparator, iterator().distinctBy(keyExtractor));
     }
 
     @Override
@@ -525,9 +525,9 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
 
             protected final T root;
             protected final int rank;
-            protected final List<Node<T>> children;
+            protected final Seq<Node<T>> children;
 
-            private Node(T root, int rank, List<Node<T>> children) {
+            private Node(T root, int rank, Seq<Node<T>> children) {
                 this.root = root;
                 this.rank = rank;
                 this.children = children;
@@ -535,12 +535,8 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
                 assert children.forAll(c -> c.rank < this.rank);
             }
 
-            protected static <T> Node<T> of(T value, int rank, List<Node<T>> children) {
+            protected static <T> Node<T> of(T value, int rank, Seq<Node<T>> children) {
                 return new Node<>(value, rank, children);
-            }
-
-            protected static <T> Node<T> of(T value) {
-                return of(value, 0, List.empty());
             }
 
             /**
@@ -552,8 +548,8 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
                 assert rank == tree.rank;
 
                 return comparator.isLessOrEqual(this.root, tree.root)
-                        ? of(this.root, this.rank + 1, tree.append(this.children))
-                        : of(tree.root, tree.rank + 1, this.append(tree.children));
+                        ? of(this.root, this.rank + 1, tree.appendTo(this.children))
+                        : of(tree.root, tree.rank + 1, this.appendTo(tree.children));
             }
 
             /**
@@ -566,11 +562,11 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
                 assert rank == 0 && left.rank == right.rank;
 
                 if (comparator.isLessOrEqual(left.root, root) && comparator.isLessOrEqual(left.root, right.root)) {
-                    return of(left.root, left.rank + 1, append(right.append(left.children)));
+                    return of(left.root, left.rank + 1, appendTo(right.appendTo(left.children)));
                 } else {
                     if (comparator.isLessOrEqual(right.root, root)) {
                         assert comparator.isLessOrEqual(right.root, left.root);
-                        return of(right.root, right.rank + 1, append(left.append(right.children)));
+                        return of(right.root, right.rank + 1, appendTo(left.appendTo(right.children)));
                     } else {
                         assert children.isEmpty();
                         return of(root, left.rank + 1, List.of(left, right));
@@ -578,7 +574,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
                 }
             }
 
-            protected List<Node<T>> append(List<Node<T>> forest) {
+            protected Seq<Node<T>> appendTo(Seq<Node<T>> forest) {
                 return forest.prepend(this);
             }
 
@@ -595,15 +591,15 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
          * *     val (ts',xs') = split ([],[],c)
          * *     in fold insert xs' (meld (ts, ts')) end
          **/
-        static <T> Tuple2<T, List<Node<T>>> deleteMin(SerializableComparator<? super T> comparator, List<Node<T>> forest) {
+        static <T> Tuple2<T, Seq<Node<T>>> deleteMin(SerializableComparator<? super T> comparator, Seq<Node<T>> forest) {
             if (forest.isEmpty()) {
                 throw new NoSuchElementException();
             } else {
-            /* get the minimum tree and the rest of the forest */
+                /* get the minimum tree and the rest of the forest */
                 final Node<T> minTree = findMin(comparator, forest);
-                final List<Node<T>> forestTail = (minTree == forest.head()) ? forest.tail() : forest.remove(minTree);
+                final Seq<Node<T>> forestTail = (minTree == forest.head()) ? forest.tail() : forest.remove(minTree);
 
-                final List<Node<T>> newForest = rebuild(comparator, minTree.children);
+                final Seq<Node<T>> newForest = rebuild(comparator, minTree.children);
                 return Tuple.of(minTree.root, meld(comparator, newForest, forestTail));
             }
         }
@@ -616,14 +612,14 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
          * *     if rank t = 0 then split (ts,root t :: xs,c)
          * *     else               split (t :: ts,xs,c)
          */
-        static <T> List<Node<T>> rebuild(SerializableComparator<? super T> comparator, List<Node<T>> forest) {
-            List<Node<T>> nonZeroRank = List.empty(), zeroRank = List.empty();
+        static <T> Seq<Node<T>> rebuild(SerializableComparator<? super T> comparator, Seq<Node<T>> forest) {
+            Seq<Node<T>> nonZeroRank = List.empty(), zeroRank = List.empty();
             for (; !forest.isEmpty(); forest = forest.tail()) {
                 final Node<T> initialForestHead = forest.head();
                 if (initialForestHead.rank == 0) {
                     zeroRank = insert(comparator, initialForestHead.root, zeroRank);
                 } else {
-                    nonZeroRank = initialForestHead.append(nonZeroRank);
+                    nonZeroRank = initialForestHead.appendTo(nonZeroRank);
                 }
             }
             return meld(comparator, nonZeroRank, zeroRank);
@@ -635,20 +631,20 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
          * *     else                      Node (x,0,[]) :: ts
          * * | insert (x, ts) =            Node (x,0,[]) :: ts
          **/
-        static <T> List<Node<T>> insert(SerializableComparator<? super T> comparator, T element, List<Node<T>> forest) {
-            final Node<T> tree = Node.of(element);
+        static <T> Seq<Node<T>> insert(SerializableComparator<? super T> comparator, T element, Seq<Node<T>> forest) {
+            final Node<T> tree = Node.of(element, 0, List.empty());
             if (forest.size() >= 2) {
-                final List<Node<T>> tail = forest.tail();
+                final Seq<Node<T>> tail = forest.tail();
                 final Node<T> t1 = forest.head(), t2 = tail.head();
                 if (t1.rank == t2.rank) {
-                    return tree.skewLink(comparator, t1, t2).append(tail.tail());
+                    return tree.skewLink(comparator, t1, t2).appendTo(tail.tail());
                 }
             }
-            return tree.append(forest);
+            return tree.appendTo(forest);
         }
 
         /** fun meld (ts, ts') = meldUniq (uniqify ts, uniqify ts') */
-        static <T> List<Node<T>> meld(SerializableComparator<? super T> comparator, List<Node<T>> source, List<Node<T>> target) {
+        static <T> Seq<Node<T>> meld(SerializableComparator<? super T> comparator, Seq<Node<T>> source, Seq<Node<T>> target) {
             return meldUnique(comparator, uniqify(comparator, source), uniqify(comparator, target));
         }
 
@@ -656,7 +652,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
          * fun uniqify [] = []
          * *  | uniqify (t :: ts) = ins (t, ts) (∗ eliminate initial duplicate ∗)
          **/
-        static <T> List<Node<T>> uniqify(SerializableComparator<? super T> comparator, List<Node<T>> forest) {
+        static <T> Seq<Node<T>> uniqify(SerializableComparator<? super T> comparator, Seq<Node<T>> forest) {
             return forest.isEmpty()
                     ? forest
                     : ins(comparator, forest.head(), forest.tail());
@@ -668,11 +664,11 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
          * *     if rank t < rank t' then t :: t' :: ts
          * *     else                     ins (link (t, t'), ts)
          */
-        static <T> List<Node<T>> ins(SerializableComparator<? super T> comparator, Node<T> tree, List<Node<T>> forest) {
+        static <T> Seq<Node<T>> ins(SerializableComparator<? super T> comparator, Node<T> tree, Seq<Node<T>> forest) {
             for (; !forest.isEmpty() && tree.rank >= forest.head().rank; forest = forest.tail()) {
                 tree = tree.link(comparator, forest.head());
             }
-            return tree.append(forest);
+            return tree.appendTo(forest);
         }
 
         /**
@@ -683,7 +679,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
          * *      else if rank t2 < rank t1 then t2 :: meldUniq (t1 :: ts1, ts2)
          * *      else                           ins (link (t1, t2), meldUniq (ts1, ts2))
          **/
-        static <T> List<Node<T>> meldUnique(SerializableComparator<? super T> comparator, List<Node<T>> forest1, List<Node<T>> forest2) { // TODO eliminate recursion somehow
+        static <T> Seq<Node<T>> meldUnique(SerializableComparator<? super T> comparator, Seq<Node<T>> forest1, Seq<Node<T>> forest2) { // TODO eliminate recursion somehow
             if (forest1.isEmpty()) {
                 return forest2;
             } else if (forest2.isEmpty()) {
@@ -691,23 +687,21 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
             } else {
                 final Node<T> tree1 = forest1.head(), tree2 = forest2.head();
 
-                final Node<T> tree;
-                final List<Node<T>> forest;
                 if (tree1.rank == tree2.rank) {
-                    tree = tree1.link(comparator, tree2);
-                    forest = meldUnique(comparator, forest1.tail(), forest2.tail());
+                    final Node<T> tree = tree1.link(comparator, tree2);
+                    final Seq<Node<T>> forest = meldUnique(comparator, forest1.tail(), forest2.tail());
+                    return ins(comparator, tree, forest);
                 } else {
                     if (tree1.rank < tree2.rank) {
-                        tree = tree1;
-                        forest = meldUnique(comparator, forest1.tail(), forest2);
+                        final Seq<Node<T>> forest = meldUnique(comparator, forest1.tail(), forest2);
                         assert forest.isEmpty() || tree1.rank < forest.head().rank;
+                        return tree1.appendTo(forest);
                     } else {
-                        tree = tree2;
-                        forest = meldUnique(comparator, forest1, forest2.tail());
+                        final Seq<Node<T>> forest = meldUnique(comparator, forest1, forest2.tail());
                         assert forest.isEmpty() || tree2.rank < forest.head().rank;
+                        return tree2.appendTo(forest);
                     }
                 }
-                return ins(comparator, tree, forest);
             }
         }
 
@@ -720,7 +714,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
          * *     let val x = findMin ts
          * *     in if Elem.leq (root t, x) then root t else x end
          */
-        static <T> Node<T> findMin(SerializableComparator<? super T> comparator, List<Node<T>> forest) {
+        static <T> Node<T> findMin(SerializableComparator<? super T> comparator, Seq<Node<T>> forest) {
             final Iterator<Node<T>> iterator = forest.iterator();
             Node<T> min = iterator.next();
             for (Node<T> node : iterator) {

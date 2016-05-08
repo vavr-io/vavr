@@ -572,18 +572,16 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     public IndexedSeq<CharSeq> permutations() {
         if (isEmpty()) {
             return Vector.empty();
+        } else if (length() == 1) {
+            return Vector.of(this);
         } else {
-            if (length() == 1) {
-                return Vector.of(this);
-            } else {
-                IndexedSeq<CharSeq> result = Vector.empty();
-                for (Character t : distinct()) {
-                    for (CharSeq ts : remove(t).permutations()) {
-                        result = result.append(CharSeq.of(t).appendAll(ts));
-                    }
+            IndexedSeq<CharSeq> result = Vector.empty();
+            for (Character t : distinct()) {
+                for (CharSeq ts : remove(t).permutations()) {
+                    result = result.append(of(t).appendAll(ts));
                 }
-                return result;
             }
+            return result;
         }
     }
 
