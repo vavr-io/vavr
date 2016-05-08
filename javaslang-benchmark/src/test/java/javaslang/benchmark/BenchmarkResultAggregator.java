@@ -2,6 +2,7 @@ package javaslang.benchmark;
 
 import javaslang.*;
 import javaslang.collection.*;
+import org.intellij.lang.annotations.RegExp;
 import org.openjdk.jmh.results.*;
 
 import java.text.DecimalFormat;
@@ -10,19 +11,18 @@ import java.util.Collection;
 public class BenchmarkResultAggregator {
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#0.00");
 
-    public static void displayRatios(Collection<RunResult> runResultsCollection) {
+    public static void displayRatios(Collection<RunResult> runResultsCollection, @RegExp String resultFilter) {
         final Array<RunResult> runResults = Array.ofAll(runResultsCollection);
+        final Map<String, Array<RunResult>> groups = getGroupsBasedOnBenchmarkPrefix(runResults);
 
-        if (runResults.size() > 1) {
-            printHeader(runResults);
-            for (Tuple2<String, Array<RunResult>> group : getGroupsBasedOnBenchmarkPrefix(runResults)) {
-                final Multimap<Integer, Tuple2<String, Double>> results = aggregate(group._2);
-                final Multimap<String, Double> ratios = getRatios(results);
-                if (!ratios.isEmpty()) {
-                    System.out.println("Group '" + group._1 + "':");
-
-                    final Seq<String> output = getFormattedRatios(ratios);
-                    output.forEach(System.out::println);
+        for (Tuple2<String, Array<RunResult>> group : groups) {
+            final Multimap<Integer, Tuple2<String, Double>> results = aggregate(group._2);
+            final Multimap<String, Double> ratios = getRatios(results);
+            if (!ratios.isEmpty()) {
+                printHeader(runResults);
+                System.out.println("Group '" + group._1 + "':");
+                for (String line : getFormattedRatios(ratios).filter(l -> l.matches(resultFilter))) {
+                    System.out.println(line);
                 }
             }
         }
@@ -68,6 +68,7 @@ public class BenchmarkResultAggregator {
             for (Array<Tuple2<String, Double>> pairs : results.get(size).get().toArray().combinations(2)) {
                 final Tuple2<String, Double> first = pairs.get(0), second = pairs.get(1);
                 ratios = ratios.put(formatBenchmarks(first, second), formatRatios(first, second));
+                ratios = ratios.put(formatBenchmarks(second, first), formatRatios(second, first));
             }
         }
         return ratios;
