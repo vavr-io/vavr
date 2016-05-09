@@ -15,10 +15,10 @@ import java.util.function.*;
 /**
  * An interface for inherently recursive, multi-valued data structures. The order of elements is determined by
  * {@link Iterable#iterator()}, which may vary each time it is called.
- *
+ * <p>
  * <p>
  * Basic operations:
- *
+ * <p>
  * <ul>
  * <li>{@link #contains(Object)}</li>
  * <li>{@link #containsAll(Iterable)}</li>
@@ -27,6 +27,7 @@ import java.util.function.*;
  * <li>{@link #init()}</li>
  * <li>{@link #initOption()}</li>
  * <li>{@link #isEmpty()}</li>
+ * <li>{@link #isNotEmpty()}</li>
  * <li>{@link #last()}</li>
  * <li>{@link #lastOption()}</li>
  * <li>{@link #length()}</li>
@@ -34,18 +35,18 @@ import java.util.function.*;
  * <li>{@link #tail()}</li>
  * <li>{@link #tailOption()}</li>
  * </ul>
- *
+ * <p>
  * Iteration:
- *
+ * <p>
  * <ul>
  * <li>{@link #grouped(long)}</li>
  * <li>{@link #iterator()}</li>
  * <li>{@link #sliding(long)}</li>
  * <li>{@link #sliding(long, long)}</li>
  * </ul>
- *
+ * <p>
  * Numeric operations:
- *
+ * <p>
  * <ul>
  * <li>{@link #average()}</li>
  * <li>{@link #max()}</li>
@@ -57,9 +58,9 @@ import java.util.function.*;
  * <li>{@link #product()}</li>
  * <li>{@link #sum()}</li>
  * </ul>
- *
+ * <p>
  * Reduction/Folding:
- *
+ * <p>
  * <ul>
  * <li>{@link #count(Predicate)}</li>
  * <li>{@link #fold(Object, BiFunction)}</li>
@@ -75,9 +76,9 @@ import java.util.function.*;
  * <li>{@link #reduceRight(BiFunction)}</li>
  * <li>{@link #reduceRightOption(BiFunction)}</li>
  * </ul>
- *
+ * <p>
  * Selection:
- *
+ * <p>
  * <ul>
  * <li>{@link #drop(long)}</li>
  * <li>{@link #dropRight(long)}</li>
@@ -94,17 +95,17 @@ import java.util.function.*;
  * <li>{@link #takeUntil(Predicate)}</li>
  * <li>{@link #takeWhile(Predicate)}</li>
  * </ul>
- *
+ * <p>
  * Tests:
- *
+ * <p>
  * <ul>
  * <li>{@link #existsUnique(Predicate)}</li>
  * <li>{@link #hasDefiniteSize()}</li>
  * <li>{@link #isTraversableAgain()}</li>
  * </ul>
- *
+ * <p>
  * Transformation:
- *
+ * <p>
  * <ul>
  * <li>{@link #distinct()}</li>
  * <li>{@link #distinctBy(Comparator)}</li>
@@ -202,7 +203,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code elements} is null
      */
     default boolean containsAll(Iterable<? extends T> elements) {
-        HashSet<T> uniqueElements = HashSet.ofAll(elements);
+        final HashSet<T> uniqueElements = HashSet.ofAll(elements);
         return toSet().intersect(uniqueElements).size() == uniqueElements.size();
     }
 
@@ -437,7 +438,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * [1,2,3,4].grouped(5) = [[1,2,3,4]]
      * </code>
      * </pre>
-     *
+     * <p>
      * Please note that {@code grouped(int)} is a special case of {@linkplain #sliding(long, long)}, i.e.
      * {@code grouped(size)} is the same as {@code sliding(size, size)}.
      *
@@ -501,6 +502,15 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
+     * Checks if this Traversable is not empty.
+     *
+     * @return whether this Traversable contains any elements.
+     */
+    default boolean isNotEmpty() {
+        return !isEmpty();
+    }
+
+    /**
      * Each of Javaslang's collections may contain more than one element.
      *
      * @return {@code false}
@@ -533,7 +543,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
 
             @Override
             public boolean hasNext() {
-                return !traversable.isEmpty();
+                return traversable.isNotEmpty();
             }
 
             @Override
@@ -905,7 +915,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
 
     /**
      * Computes a prefix scan of the elements of the collection.
-     *
+     * <p>
      * Note: The neutral element z may be applied more than once.
      *
      * @param zero      neutral element for the operator op
@@ -918,9 +928,9 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     /**
      * Produces a collection containing cumulative results of applying the
      * operator going left to right.
-     *
+     * <p>
      * Note: will not terminate for infinite-sized collections.
-     *
+     * <p>
      * Note: might return different results for different runs, unless the
      * underlying collection type is ordered.
      *
@@ -936,9 +946,9 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * Produces a collection containing cumulative results of applying the
      * operator going right to left. The head of the collection is the last
      * cumulative result.
-     *
+     * <p>
      * Note: will not terminate for infinite-sized collections.
-     *
+     * <p>
      * Note: might return different results for different runs, unless the
      * underlying collection type is ordered.
      *

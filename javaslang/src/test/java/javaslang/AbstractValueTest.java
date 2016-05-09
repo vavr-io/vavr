@@ -160,7 +160,10 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldCalculateIsEmpty() {
         assertThat(empty().isEmpty()).isTrue();
+        assertThat(empty().isNotEmpty()).isFalse();
+
         assertThat(of(1).isEmpty()).isFalse();
+        assertThat(of(1).isNotEmpty()).isTrue();
     }
 
     // -- peek
@@ -442,44 +445,44 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldConvertToEitherLeftFromValueSupplier() {
-        Either<Integer, String> either = of(0).toLeft(() -> "fallback");
+        final Either<Integer, String> either = of(0).toLeft(() -> "fallback");
         assertThat(either.isLeft()).isTrue();
         assertThat(either.getLeft()).isEqualTo(0);
 
-        Either<Object, String> either2 = empty().toLeft(() -> "fallback");
+        final Either<Object, String> either2 = empty().toLeft(() -> "fallback");
         assertThat(either2.isRight()).isTrue();
         assertThat(either2.get()).isEqualTo("fallback");
     }
 
     @Test
     public void shouldConvertToEitherLeftFromValue() {
-        Either<Integer, String> either = of(0).toLeft("fallback");
+        final Either<Integer, String> either = of(0).toLeft("fallback");
         assertThat(either.isLeft()).isTrue();
         assertThat(either.getLeft()).isEqualTo(0);
 
-        Either<Object, String> either2 = empty().toLeft("fallback");
+        final Either<Object, String> either2 = empty().toLeft("fallback");
         assertThat(either2.isRight()).isTrue();
         assertThat(either2.get()).isEqualTo("fallback");
     }
 
     @Test
     public void shouldConvertToEitherRightFromValueSupplier() {
-        Either<String, Integer> either = of(0).toRight(() -> "fallback");
+        final Either<String, Integer> either = of(0).toRight(() -> "fallback");
         assertThat(either.isRight()).isTrue();
         assertThat(either.get()).isEqualTo(0);
 
-        Either<String, Object> either2 = empty().toRight(() -> "fallback");
+        final Either<String, Object> either2 = empty().toRight(() -> "fallback");
         assertThat(either2.isLeft()).isTrue();
         assertThat(either2.getLeft()).isEqualTo("fallback");
     }
 
     @Test
     public void shouldConvertToEitherRightFromValue() {
-        Either<String, Integer> either = of(0).toRight("fallback");
+        final Either<String, Integer> either = of(0).toRight("fallback");
         assertThat(either.isRight()).isTrue();
         assertThat(either.get()).isEqualTo(0);
 
-        Either<String, Object> either2 = empty().toRight("fallback");
+        final Either<String, Object> either2 = empty().toRight("fallback");
         assertThat(either2.isLeft()).isTrue();
         assertThat(either2.getLeft()).isEqualTo("fallback");
     }

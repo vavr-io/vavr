@@ -143,7 +143,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     /**
      * Creates a Vector of the given elements.
-     *
+     * <p>
      * The resulting vector has the same iteration order as the given iterable of elements
      * if the iteration order of the elements is stable.
      *
@@ -790,7 +790,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         Objects.requireNonNull(predicate, "predicate is null");
         final java.util.List<T> left = new ArrayList<>(), right = new ArrayList<>();
         for (int i = 0; i < length(); i++) {
-            T t = get(i);
+            final T t = get(i);
             (predicate.test(t) ? left : right).add(t);
         }
         return Tuple.of(Vector.ofAll(left), Vector.ofAll(right));
@@ -834,7 +834,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         List<T> list = List.ofAll(elements);
         final int newIndexShift = indexShift - list.length();
         HashArrayMappedTrie<Integer, T> newTrie = trie;
-        for (int i = newIndexShift; !list.isEmpty(); i++) {
+        for (int i = newIndexShift; list.isNotEmpty(); i++) {
             newTrie = newTrie.put(i, list.head());
             list = list.tail();
         }
@@ -1161,7 +1161,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         Objects.requireNonNull(predicate, "predicate is null");
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = 0; i < length(); i++) {
-            T value = get(i);
+            final T value = get(i);
             if (!predicate.test(value)) {
                 break;
             }

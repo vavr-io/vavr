@@ -400,7 +400,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         }
     }
 
-
     // -- dropUntil
 
     @Test
@@ -417,7 +416,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(of(1, 2, 3).dropUntil(ignored -> true)).isEqualTo(of(1, 2, 3));
         } else {
-            Traversable<Integer> t = of(1, 2, 3);
+            final Traversable<Integer> t = of(1, 2, 3);
             assertThat(t.dropUntil(ignored -> true)).isSameAs(t);
         }
     }
@@ -452,7 +451,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(of(1, 2, 3).dropWhile(ignored -> false)).isEqualTo(of(1, 2, 3));
         } else {
-            Traversable<Integer> t = of(1, 2, 3);
+            final Traversable<Integer> t = of(1, 2, 3);
             assertThat(t.dropWhile(ignored -> false)).isSameAs(t);
         }
     }
@@ -498,7 +497,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(of(1, 2, 3).filter(ignore -> true)).isEqualTo(of(1, 2, 3));
         } else {
-            Traversable<Integer> t = of(1, 2, 3);
+            final Traversable<Integer> t = of(1, 2, 3);
             assertThat(t.filter(ignore -> true)).isSameAs(t);
         }
     }
@@ -634,6 +633,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldReturnNoneWhenCallingHeadOptionOnNil() {
         assertThat(empty().headOption().isEmpty()).isTrue();
+        assertThat(empty().headOption().isNotEmpty()).isFalse();
     }
 
     @Test
@@ -662,24 +662,24 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldNonNilGroupByIdentity() {
-        Map<?, ?> actual = of('a', 'b', 'c').groupBy(Function.identity());
-        Map<?, ?> expected = HashMap.empty().put('a', of('a')).put('b', of('b')).put('c', of('c'));
+        final Map<?, ?> actual = of('a', 'b', 'c').groupBy(Function.identity());
+        final Map<?, ?> expected = HashMap.empty().put('a', of('a')).put('b', of('b')).put('c', of('c'));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldNonNilGroupByEqual() {
-        Map<?, ?> actual = of('a', 'b', 'c').groupBy(c -> 1);
-        Map<?, ?> expected = HashMap.empty().put(1, of('a', 'b', 'c'));
+        final Map<?, ?> actual = of('a', 'b', 'c').groupBy(c -> 1);
+        final Map<?, ?> expected = HashMap.empty().put(1, of('a', 'b', 'c'));
         assertThat(actual).isEqualTo(expected);
     }
-
 
     // -- grouped
 
     @Test
     public void shouldGroupedNil() {
         assertThat(empty().grouped(1).isEmpty()).isTrue();
+        assertThat(empty().grouped(1).isNotEmpty()).isFalse();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -718,6 +718,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldReturnNoneWhenCallingInitOptionOnNil() {
         assertThat(empty().initOption().isEmpty()).isTrue();
+        assertThat(empty().initOption().isNotEmpty()).isFalse();
     }
 
     @Test
@@ -730,11 +731,13 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldRecognizeNil() {
         assertThat(empty().isEmpty()).isTrue();
+        assertThat(empty().isNotEmpty()).isFalse();
     }
 
     @Test
     public void shouldRecognizeNonNil() {
         assertThat(of(1).isEmpty()).isFalse();
+        assertThat(of(1).isNotEmpty()).isTrue();
     }
 
     // -- isTraversableAgain
@@ -825,6 +828,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldReturnNoneWhenCallingLastOptionOnNil() {
         assertThat(empty().lastOption().isEmpty()).isTrue();
+        assertThat(empty().lastOption().isNotEmpty()).isFalse();
     }
 
     @Test
@@ -1329,9 +1333,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldRetainAllElementsFromNil() {
-        Traversable<Object> src = empty();
-        Traversable<Object> expected = src;
-        Traversable<Object> actual = src.retainAll(of(1, 2, 3));
+        final Traversable<Object> src = empty();
+        final Traversable<Object> expected = src;
+        final Traversable<Object> actual = src.retainAll(of(1, 2, 3));
         if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(actual).isEqualTo(expected);
         } else {
@@ -1341,17 +1345,17 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldRetainAllExistingElementsFromNonNil() {
-        Traversable<Integer> src = of(1, 2, 3, 2, 1, 3);
-        Traversable<Integer> expected = of(1, 2, 2, 1);
-        Traversable<Integer> actual = src.retainAll(of(1, 2));
+        final Traversable<Integer> src = of(1, 2, 3, 2, 1, 3);
+        final Traversable<Integer> expected = of(1, 2, 2, 1);
+        final Traversable<Integer> actual = src.retainAll(of(1, 2));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldRetainAllElementsFromNonNil() {
-        Traversable<Integer> src = of(1, 2, 1, 2, 2);
-        Traversable<Integer> expected = of(1, 2, 1, 2, 2);
-        Traversable<Integer> actual = src.retainAll(of(1, 2));
+        final Traversable<Integer> src = of(1, 2, 1, 2, 2);
+        final Traversable<Integer> expected = of(1, 2, 1, 2, 2);
+        final Traversable<Integer> actual = src.retainAll(of(1, 2));
         if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(actual).isEqualTo(expected);
         } else {
@@ -1361,9 +1365,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldNotRetainAllNonExistingElementsFromNonNil() {
-        Traversable<Integer> src = of(1, 2, 3);
-        Traversable<Object> expected = empty();
-        Traversable<Integer> actual = src.retainAll(of(4, 5));
+        final Traversable<Integer> src = of(1, 2, 3);
+        final Traversable<Object> expected = empty();
+        final Traversable<Integer> actual = src.retainAll(of(4, 5));
         if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(actual).isEqualTo(expected);
         } else {
@@ -1506,6 +1510,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldSlideNilBySizeAndStep() {
         assertThat(empty().sliding(1, 1).isEmpty()).isTrue();
+        assertThat(empty().sliding(1, 1).isNotEmpty()).isFalse();
     }
 
     @Test
@@ -1863,13 +1868,13 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldReturnNoneWhenCallingTailOptionOnNil() {
         assertThat(empty().tailOption().isEmpty()).isTrue();
+        assertThat(empty().tailOption().isNotEmpty()).isFalse();
     }
 
     @Test
     public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
         assertThat(of(1, 2, 3).tailOption()).isEqualTo(Option.some(of(2, 3)));
     }
-
 
     // -- unzip
 
@@ -2198,16 +2203,16 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldTabulateTheSeq() {
-        Function<Number, Integer> f = i -> i.intValue() * i.intValue();
-        Traversable<Number> actual = tabulate(3, f);
+        final Function<Number, Integer> f = i -> i.intValue() * i.intValue();
+        final Traversable<Number> actual = tabulate(3, f);
         assertThat(actual).isEqualTo(of(0, 1, 4));
     }
 
     @Test
     public void shouldTabulateTheSeqCallingTheFunctionInTheRightOrder() {
-        java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 1, 2));
-        Function<Integer, Integer> f = i -> ints.remove();
-        Traversable<Integer> actual = tabulate(3, f);
+        final java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 1, 2));
+        final Function<Integer, Integer> f = i -> ints.remove();
+        final Traversable<Integer> actual = tabulate(3, f);
         assertThat(actual).isEqualTo(of(0, 1, 2));
     }
 
@@ -2223,9 +2228,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldFillTheSeqCallingTheSupplierInTheRightOrder() {
-        java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 1));
-        Supplier<Integer> s = () -> ints.remove();
-        Traversable<Number> actual = fill(2, s);
+        final java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 1));
+        final Supplier<Integer> s = () -> ints.remove();
+        final Traversable<Number> actual = fill(2, s);
         assertThat(actual).isEqualTo(of(0, 1));
     }
 

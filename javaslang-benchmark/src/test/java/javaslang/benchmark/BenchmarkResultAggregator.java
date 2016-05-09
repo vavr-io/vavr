@@ -18,7 +18,7 @@ public class BenchmarkResultAggregator {
             for (Tuple2<String, Array<RunResult>> group : getGroupsBasedOnBenchmarkPrefix(runResults)) {
                 final Multimap<Integer, Tuple2<String, Double>> results = aggregate(group._2);
                 final Multimap<String, Double> ratios = getRatios(results);
-                if (!ratios.isEmpty()) {
+                if (ratios.isNotEmpty()) {
                     System.out.println("Group '" + group._1 + "':");
 
                     final Seq<String> output = getFormattedRatios(ratios);
@@ -29,7 +29,7 @@ public class BenchmarkResultAggregator {
     }
 
     private static void printHeader(Array<RunResult> list) {
-        if (!list.isEmpty()) {
+        if (list.isNotEmpty()) {
             final Array<Integer> containerSizes = list.map(r -> getContainerSize(r.getAggregatedResult())).distinct().sorted();
             final String header = formatList(containerSizes);
             System.out.println("\nRatios for: " + header);
