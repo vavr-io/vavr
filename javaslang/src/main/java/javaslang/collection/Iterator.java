@@ -9,8 +9,13 @@ import javaslang.*;
 import javaslang.collection.IteratorModule.*;
 import javaslang.control.Option;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.*;
+
+import static java.lang.Double.*;
+import static java.math.RoundingMode.HALF_UP;
+import static javaslang.collection.IteratorModule.BigDecimalHelper.*;
 
 /**
  * {@code javaslang.collection.Iterator} is a compositional replacement for {@code java.util.Iterator}
@@ -38,7 +43,6 @@ import java.util.function.*;
  * @since 2.0.0
  */
 public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
-
     // DEV-NOTE: we prefer returning empty() over this if !hasNext() == true in order to free memory.
 
     /**
@@ -467,7 +471,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param from        the first character
      * @param toExclusive the successor of the last character if step &gt; 0, the predecessor of the last character if step &lt; 0
      * @param step        the step
-     * @return a range of characters as specified or the empty range if {@code (from == toExclusive) || (step * (from - toExclusive) > 0)}.
+     * @return a range of characters as specified or the empty range if {@code signum(step) == signum(from - toExclusive)}.
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Character> rangeBy(char from, char toExclusive, int step) {
@@ -475,43 +479,49 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     static Iterator<Double> rangeBy(double from, double toExclusive, double step) {
-        if (Double.isNaN(from)) {
-            throw new IllegalArgumentException("from is NaN");
-        } else if (Double.isNaN(toExclusive)) {
-            throw new IllegalArgumentException("toExclusive is NaN");
-        } else if (Double.isNaN(step)) {
-            throw new IllegalArgumentException("step is NaN");
-        } else if (step == 0) {
+        final BigDecimal fromDecimal = asDecimal(from), toDecimal = asDecimal(toExclusive), stepDecimal = asDecimal(step);
+        return rangeBy(fromDecimal, toDecimal, stepDecimal).map(BigDecimal::doubleValue);
+    }
+
+    static Iterator<BigDecimal> rangeBy(BigDecimal from, BigDecimal toExclusive, BigDecimal step) {
+        if (step.signum() == 0) {
             throw new IllegalArgumentException("step cannot be 0");
-        } else if (step * (from - toExclusive) >= 0) {
+        } else if (areEqual(from, toExclusive) || step.signum() == from.subtract(toExclusive).signum()) {
             return empty();
         } else {
-            return new AbstractIterator<Double>() {
+            if (step.signum() > 0) {
+                return new AbstractIterator<BigDecimal>() {
+                    BigDecimal i = from;
 
-                double prev = Double.NaN;
-                double curr = from;
-                boolean hasNext = true;
-
-                @Override
-                public boolean hasNext() {
-                    return hasNext;
-                }
-
-                @Override
-                public Double getNext() {
-                    final double next = curr;
-                    if ((step > 0 && curr + step >= toExclusive) || (step < 0 && curr + step <= toExclusive)) {
-                        hasNext = false;
-                    } else {
-                        prev = curr;
-                        curr += step;
-                        if (curr == prev) {
-                            hasNext = false;
-                        }
+                    @Override
+                    public boolean hasNext() {
+                        return i.compareTo(toExclusive) < 0;
                     }
-                    return next;
-                }
-            };
+
+                    @Override
+                    public BigDecimal getNext() {
+                        final BigDecimal next = this.i;
+                        this.i = next.add(step);
+                        return next;
+                    }
+                };
+            } else {
+                return new AbstractIterator<BigDecimal>() {
+                    BigDecimal i = from;
+
+                    @Override
+                    public boolean hasNext() {
+                        return i.compareTo(toExclusive) > 0;
+                    }
+
+                    @Override
+                    public BigDecimal getNext() {
+                        final BigDecimal next = this.i;
+                        this.i = next.add(step);
+                        return next;
+                    }
+                };
+            }
         }
     }
 
@@ -556,8 +566,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Integer> rangeBy(int from, int toExclusive, int step) {
-        final int one = step > 0 ? 1 : -1;
-        return rangeClosedBy(from, toExclusive - one, step);
+        final int toInclusive = toExclusive - (step > 0 ? 1 : -1);
+        return rangeClosedBy(from, toInclusive, step);
     }
 
     /**
@@ -601,8 +611,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Long> rangeBy(long from, long toExclusive, long step) {
-        final int one = step > 0 ? 1 : -1;
-        return rangeClosedBy(from, toExclusive - one, step);
+        final long toInclusive = toExclusive - (step > 0 ? 1 : -1);
+        return rangeClosedBy(from, toInclusive, step);
     }
 
     /**
@@ -641,7 +651,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param from        the first character
      * @param toInclusive the last character
      * @param step        the step
-     * @return a range of characters as specified or the empty range if {@code step * (from - toInclusive) > 0}.
+     * @return a range of characters as specified or the empty range if {@code signum(step) == signum(from - toInclusive)}.
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Character> rangeClosedBy(char from, char toInclusive, int step) {
@@ -649,46 +659,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     static Iterator<Double> rangeClosedBy(double from, double toInclusive, double step) {
-        if (Double.isNaN(from)) {
-            throw new IllegalArgumentException("from is NaN");
-        } else if (Double.isNaN(toInclusive)) {
-            throw new IllegalArgumentException("toInclusive is NaN");
-        } else if (Double.isNaN(step)) {
-            throw new IllegalArgumentException("step is NaN");
-        } else if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toInclusive) {
+        if (from == toInclusive) {
             return of(from);
-        } else if (step * (from - toInclusive) > 0) {
-            return empty();
-        } else {
-            return new AbstractIterator<Double>() {
-
-                double prev = Double.NaN;
-                double curr = from;
-                boolean hasNext = true;
-
-                @Override
-                public boolean hasNext() {
-                    return hasNext;
-                }
-
-                @Override
-                public Double getNext() {
-                    final double next = curr;
-                    if ((step > 0 && curr + step > toInclusive) || (step < 0 && curr + step < toInclusive)) {
-                        hasNext = false;
-                    } else {
-                        prev = curr;
-                        curr += step;
-                        if (curr == prev) {
-                            hasNext = false;
-                        }
-                    }
-                    return next;
-                }
-            };
         }
+
+        final double toExclusive = (step > 0) ? Math.nextUp(toInclusive) : Math.nextDown(toInclusive);
+        return rangeBy(from, toExclusive, step);
     }
 
     /**
@@ -728,7 +704,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or the empty range if {@code step * (from - toInclusive) > 0}.
+     * @return a range of int values as specified or the empty range if {@code signum(step) == signum(from - toInclusive)}.
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Integer> rangeClosedBy(int from, int toInclusive, int step) {
@@ -736,30 +712,39 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
             return of(from);
-        } else if (Integer.signum(step) * Integer.signum(from - toInclusive) > 0) {
+        } else if (Integer.signum(step) == Integer.signum(from - toInclusive)) {
             return empty();
         } else {
-            return new AbstractIterator<Integer>() {
+            final int end = toInclusive - step;
+            if (step > 0) {
+                return new AbstractIterator<Integer>() {
+                    int i = from - step;
 
-                int i = from;
-                boolean hasNext = true;
-
-                @Override
-                public boolean hasNext() {
-                    return hasNext;
-                }
-
-                @Override
-                public Integer getNext() {
-                    final int next = i;
-                    if ((step > 0 && i > toInclusive - step) || (step < 0 && i < toInclusive - step)) {
-                        hasNext = false;
-                    } else {
-                        i += step;
+                    @Override
+                    public boolean hasNext() {
+                        return i <= end;
                     }
-                    return next;
-                }
-            };
+
+                    @Override
+                    public Integer getNext() {
+                        return i += step;
+                    }
+                };
+            } else {
+                return new AbstractIterator<Integer>() {
+                    int i = from - step;
+
+                    @Override
+                    public boolean hasNext() {
+                        return i >= end;
+                    }
+
+                    @Override
+                    public Integer getNext() {
+                        return i += step;
+                    }
+                };
+            }
         }
     }
 
@@ -800,38 +785,48 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param from        the first number
      * @param toInclusive the last number
      * @param step        the step
-     * @return a range of int values as specified or the empty range if {@code step * (from - toInclusive) > 0}.
+     * @return a range of int values as specified or the empty range if {@code signum(step) == signum(from - toInclusive)}.
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        if (step == 0L) {
+        if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
         } else if (from == toInclusive) {
             return of(from);
-        } else if (Long.signum(step) * Long.signum(from - toInclusive) > 0L) {
+        } else if (Long.signum(step) == Long.signum(from - toInclusive)) {
             return empty();
         } else {
-            return new AbstractIterator<Long>() {
+            final long end = toInclusive - step;
+            if (step > 0) {
+                return new AbstractIterator<Long>() {
+                    long i = from - step;
 
-                long i = from;
-                boolean hasNext = true;
-
-                @Override
-                public boolean hasNext() {
-                    return hasNext;
-                }
-
-                @Override
-                public Long getNext() {
-                    final long next = i;
-                    if ((step > 0L && i > toInclusive - step) || (step < 0L && i < toInclusive - step)) {
-                        hasNext = false;
-                    } else {
-                        i += step;
+                    @Override
+                    public boolean hasNext() {
+                        return i <= end;
                     }
-                    return next;
-                }
-            };
+
+                    @Override
+                    public Long getNext() {
+                        return i += step;
+                    }
+                };
+            } else {
+                return new AbstractIterator<Long>() {
+                    long i = from - step;
+
+                    @Override
+                    public boolean hasNext() {
+                        return i >= end;
+                    }
+
+                    @Override
+                    public Long getNext() {
+                        return i += step;
+                    }
+                };
+
+            }
         }
     }
 
@@ -1426,11 +1421,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Option<T> headOption() {
-        return hasNext() ? Option.some(next()) : Option.none();
-    }
-
-    @Override
     default Iterator<T> init() {
         if (!hasNext()) {
             throw new UnsupportedOperationException();
@@ -1558,8 +1548,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else {
             final Iterator<T> that = this;
             return new AbstractIterator<T>() {
-
-                boolean done = false;
+                boolean isFirst = true;
 
                 @Override
                 public boolean hasNext() {
@@ -1569,11 +1558,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 @Override
                 public T getNext() {
                     final T elem = that.next();
-                    if (done || !Objects.equals(currentElement, elem)) {
-                        return elem;
-                    } else {
-                        done = true;
+                    if (isFirst && Objects.equals(currentElement, elem)) {
+                        isFirst = false;
                         return newElement;
+                    } else {
+                        return elem;
                     }
                 }
             };
@@ -1681,7 +1670,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                     while (next == null && !that.isEmpty()) {
                         final Tuple2<Stream<T>, Stream<T>> split = that.splitAt(size);
                         next = split._1.toVector();
-                        that = split._2.isEmpty() ? Stream.<T> empty() : that.drop(step);
+                        that = split._2.isEmpty() ? Stream.empty() : that.drop(step);
                     }
                     return next != null;
                 }
@@ -1843,9 +1832,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 }
 
 interface IteratorModule {
-
     final class ConcatIterator<T> extends AbstractIterator<T> {
-
         private final Iterator<? extends Iterator<? extends T>> iterators;
         private Iterator<? extends T> current;
 
@@ -1869,7 +1856,6 @@ interface IteratorModule {
     }
 
     final class DistinctIterator<T, U> extends AbstractIterator<T> {
-
         private final Iterator<? extends T> that;
         private Set<U> known;
         private final Function<? super T, ? extends U> keyExtractor;
@@ -1899,6 +1885,44 @@ interface IteratorModule {
             final T result = next;
             next = null;
             return result;
+        }
+    }
+
+    final class BigDecimalHelper {
+        private static final Lazy<BigDecimal> INFINITY_DISTANCE = Lazy.of(() -> {
+            final BigDecimal two = BigDecimal.valueOf(2);
+            final BigDecimal supremum = BigDecimal.valueOf(Math.nextDown(Double.POSITIVE_INFINITY));
+            BigDecimal lowerBound = supremum;
+            BigDecimal upperBound = two.pow(Double.MAX_EXPONENT + 1);
+            while (true) {
+                final BigDecimal magicValue = lowerBound.add(upperBound).divide(two, HALF_UP);
+                if (Double.isInfinite(magicValue.doubleValue())) {
+                    if (areEqual(magicValue, upperBound)) {
+                        return magicValue.subtract(supremum);
+                    }
+                    upperBound = magicValue;
+                } else {
+                    lowerBound = magicValue;
+                }
+            }
+        });
+
+        /* scale-independent equality */
+        static boolean areEqual(BigDecimal from, BigDecimal toExclusive) {
+            return from.compareTo(toExclusive) == 0;
+        }
+
+        /* parse infinite values also */
+        static BigDecimal asDecimal(double number) {
+            if (number == NEGATIVE_INFINITY) {
+                final BigDecimal result = BigDecimal.valueOf(Math.nextUp(NEGATIVE_INFINITY));
+                return result.subtract(INFINITY_DISTANCE.get());
+            } else if (number == POSITIVE_INFINITY) {
+                final BigDecimal result = BigDecimal.valueOf(Math.nextDown(POSITIVE_INFINITY));
+                return result.add(INFINITY_DISTANCE.get());
+            } else {
+                return BigDecimal.valueOf(number);
+            }
         }
     }
 }

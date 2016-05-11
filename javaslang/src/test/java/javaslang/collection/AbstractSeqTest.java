@@ -933,6 +933,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     }
 
     @Test
+    public void shouldNotRemoveDuplicateElement() {
+        assertThat(of(1, 2, 3, 1, 2).remove(2)).isEqualTo(of(1, 3, 1, 2));
+    }
+
+    @Test
     public void shouldRemoveNonExistingElement() {
         final Seq<Integer> t = of(1, 2, 3);
         if (useIsEqualToInsteadOfIsSameAs()) {

@@ -547,29 +547,4 @@ public abstract class AbstractTraversableRangeTest extends AbstractTraversableTe
     public void shouldProhibitDoubleRangeByStepEqualNaN() {
         rangeBy(0.0, 10.0, Double.NaN);
     }
-
-    @Test
-    public void shouldCreateDoubleRangeByFromInfinity() {
-        assertThat(rangeBy(Double.NEGATIVE_INFINITY, 0.0, 1.0)).isEqualTo(of(Double.NEGATIVE_INFINITY));
-        assertThat(rangeBy(Double.POSITIVE_INFINITY, 0.0, -1.0)).isEqualTo(of(Double.POSITIVE_INFINITY));
-    }
-
-    @Test
-    public void shouldCreateDoubleRangeClosedByFromInfinity() {
-        assertThat(rangeClosedBy(Double.NEGATIVE_INFINITY, 0.0, 1.0)).isEqualTo(of(Double.NEGATIVE_INFINITY));
-        assertThat(rangeClosedBy(Double.POSITIVE_INFINITY, 0.0, -1.0)).isEqualTo(of(Double.POSITIVE_INFINITY));
-    }
-
-    @Test
-    public void shouldCreateDoubleRangeByFromMaxToInfinity() {
-        assertThat(rangeBy(Double.MAX_VALUE, Double.POSITIVE_INFINITY, 3E307)).isEqualTo(of(Double.MAX_VALUE));
-        assertThat(rangeBy(-Double.MAX_VALUE, Double.NEGATIVE_INFINITY, -3E307)).isEqualTo(of(-Double.MAX_VALUE));
-    }
-
-    @Test
-    public void shouldCreateDoubleRangeClosedByFromMaxToInfinity() {
-        assertThat(rangeClosedBy(Double.MAX_VALUE, Double.POSITIVE_INFINITY, 3E307)).isEqualTo(of(Double.MAX_VALUE, Double.POSITIVE_INFINITY));
-        assertThat(rangeClosedBy(-Double.MAX_VALUE, Double.NEGATIVE_INFINITY, -3E307)).isEqualTo(of(-Double.MAX_VALUE, Double.NEGATIVE_INFINITY));
-    }
-
 }

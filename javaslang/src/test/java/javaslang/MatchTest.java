@@ -219,6 +219,26 @@ public class MatchTest {
 
     // -- List
 
+    @Test
+    public void shouldDecomposeEmptyList() {
+        final List<Integer> list = List.empty();
+        final boolean isEmpty = Match(list).of(
+                Case(List($(), $()), (x, xs) -> false),
+                Case(List(), true)
+        );
+        assertThat(isEmpty).isTrue();
+    }
+
+    @Test
+    public void shouldDecomposeNonEmptyList() {
+        final List<Integer> list = List.of(1);
+        final boolean isNotEmpty = Match(list).of(
+                Case(List($(), $()), (x, xs) -> true),
+                Case(List(), false)
+        );
+        assertThat(isNotEmpty).isTrue();
+    }
+
     @SuppressWarnings("UnnecessaryLocalVariable")
     @Test
     public void shouldDecomposeListOfTuple3() {

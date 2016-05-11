@@ -11,6 +11,7 @@ import javaslang.collection.HashSet;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Map;
+import javaslang.collection.PriorityQueue;
 import javaslang.collection.Queue;
 import javaslang.collection.Set;
 import javaslang.collection.SortedSet;
@@ -100,6 +101,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toRight(Supplier)}</li>
  * <li>{@link #toSet()}</li>
  * <li>{@link #toSortedSet(Comparator)}</li>
+ * <li>{@link #toSortedQueue(Comparator)}</li>
  * <li>{@link #toStack()}</li>
  * <li>{@link #toStream()}</li>
  * <li>{@link #toString()}</li>
@@ -655,6 +657,22 @@ public interface Value<T> extends Iterable<T> {
      */
     default Queue<T> toQueue() {
         return ValueModule.toTraversable(this, Queue.empty(), Queue::of, Queue::ofAll);
+    }
+
+    /**
+     * Converts this to a sorted {@link Queue}.
+     *
+     * @return A new {@link Queue}.
+     */
+    default PriorityQueue<T> toSortedQueue(Comparator<? super T> comparator) {
+        if (this instanceof PriorityQueue) {
+            return (PriorityQueue<T>) this;
+        } else {
+            final PriorityQueue<T> empty = PriorityQueue.empty(comparator);
+            final Function<T, PriorityQueue<T>> of = value -> PriorityQueue.of(comparator, value);
+            final Function<Iterable<T>, PriorityQueue<T>> ofAll = values -> PriorityQueue.ofAll(comparator, values);
+            return ValueModule.toTraversable(this, empty, of, ofAll);
+        }
     }
 
     /**
