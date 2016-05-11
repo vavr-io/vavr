@@ -230,19 +230,20 @@ public class PriorityQueueTest extends AbstractTraversableTest {
             final java.util.PriorityQueue<Integer> mutablePriorityQueue = new java.util.PriorityQueue<>();
             javaslang.collection.PriorityQueue<Integer> functionalPriorityQueue = javaslang.collection.PriorityQueue.empty();
 
-            for (int j = 0; j < 100_000; j++) {
-            /* Insert */
+            final int size = 100_000;
+            for (int j = 0; j < size; j++) {
+                /* Insert */
                 if (random.nextInt() % 3 == 0) {
                     assertMinimumsAreEqual(mutablePriorityQueue, functionalPriorityQueue);
 
-                    final int value = random.nextInt();
+                    final int value = random.nextInt(size) - (size / 2);
                     mutablePriorityQueue.add(value);
                     functionalPriorityQueue = functionalPriorityQueue.enqueue(value);
                 }
 
                 assertMinimumsAreEqual(mutablePriorityQueue, functionalPriorityQueue);
 
-            /* Delete */
+                /* Delete */
                 if (random.nextInt() % 5 == 0) {
                     if (!mutablePriorityQueue.isEmpty()) { mutablePriorityQueue.poll(); }
                     if (!functionalPriorityQueue.isEmpty()) { functionalPriorityQueue = functionalPriorityQueue.tail(); }
