@@ -1,7 +1,11 @@
 package javaslang.collection;
 
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
+import org.assertj.core.api.ObjectAssert;
 import org.junit.Test;
 
 import java.io.Serializable;
@@ -55,11 +59,35 @@ public class BitSetTest extends AbstractSortedSetTest {
             @SuppressWarnings("unchecked")
             public IterableAssert<T> isEqualTo(Object obj) {
                 if(obj instanceof BitSet || actual instanceof BitSet) {
-                    Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll((Iterable<T>) obj));
+                    Assertions.assertThat(HashSet.ofAll(actual)).isEqualTo(HashSet.ofAll((Iterable<T>) obj));
                 } else {
                     super.isEqualTo(obj);
                 }
                 return this;
+            }
+        };
+    }
+
+    @Override
+    protected <T> ObjectAssert<T> assertThat(T actual) {
+        return new ObjectAssert<T>(actual) {
+            @Override
+            public ObjectAssert<T> isEqualTo(Object expected) {
+                if (actual instanceof Tuple2) {
+                    final Tuple2<?, ?> t1 = (Tuple2<?, ?>) actual;
+                    final Tuple2<?, ?> t2 = (Tuple2<?, ?>) expected;
+                    assertThat((Iterable<?>) t1._1).isEqualTo(t2._1);
+                    assertThat((Iterable<?>) t1._2).isEqualTo(t2._2);
+                    return this;
+                } else if (actual instanceof Tuple3) {
+                    final Tuple3<?, ?, ?> t1 = (Tuple3<?, ?, ?>) actual;
+                    final Tuple3<?, ?, ?> t2 = (Tuple3<?, ?, ?>) expected;
+                    assertThat((Iterable<?>) t1._1).isEqualTo(t2._1);
+                    assertThat((Iterable<?>) t1._2).isEqualTo(t2._2);
+                    return this;
+                } else {
+                    return super.isEqualTo(expected);
+                }
             }
         };
     }
@@ -126,12 +154,12 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     @Override
     protected BitSet<Double> ofAll(double[] array) {
-        return null;
+        return this.<Double>bsBuilder().ofAll(Iterator.ofAll(array));
     }
 
     @Override
     protected BitSet<Float> ofAll(float[] array) {
-        return null;
+        return this.<Float>bsBuilder().ofAll(Iterator.ofAll(array));
     }
 
     @Override
