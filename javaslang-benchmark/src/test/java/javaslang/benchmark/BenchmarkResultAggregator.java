@@ -2,41 +2,51 @@ package javaslang.benchmark;
 
 import javaslang.*;
 import javaslang.collection.*;
+import javaslang.collection.List;
+import javaslang.collection.Map;
+import org.intellij.lang.annotations.RegExp;
 import org.openjdk.jmh.results.*;
 
 import java.text.DecimalFormat;
-import java.util.Collection;
+import java.util.*;
 
 public class BenchmarkResultAggregator {
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#0.00");
 
-    public static void displayRatios(Collection<RunResult> runResultsCollection) {
-        final Array<RunResult> runResults = Array.ofAll(runResultsCollection);
+    public static void displayRatios(Collection<RunResult> runResultsCollection, @RegExp String resultFilter) {
+        final Seq<RunResult> runResults = List.ofAll(runResultsCollection);
+        final Map<String, ? extends Seq<RunResult>> groups = getGroupsBasedOnBenchmarkPrefix(runResults);
 
-        if (runResults.size() > 1) {
-            printHeader(runResults);
-            for (Tuple2<String, Array<RunResult>> group : getGroupsBasedOnBenchmarkPrefix(runResults)) {
-                final Multimap<Integer, Tuple2<String, Double>> results = aggregate(group._2);
-                final Multimap<String, Double> ratios = getRatios(results);
-                if (!ratios.isEmpty()) {
-                    System.out.println("Group '" + group._1 + "':");
+        for (Tuple2<String, ? extends Seq<RunResult>> group : groups) {
+            final Multimap<String, Tuple2<String, Double>> containerSizeGroups = groupContainerSizes(group._2);
+            final Seq<String> containerSizes = containerSizeGroups.keySet().toList().sorted();
+            final Multimap<Tuple2<String, String>, Double> ratios = allRatios(containerSizes, containerSizeGroups);
+            final Seq<Seq<String>> resultingLines = resultingLines(ratios, resultFilter);
+            final Seq<Seq<CharSeq>> linesWithHeader = resultingLines.prepend(List.of(String.format("Group '%s'", group._1)).appendAll(containerSizes)).map(l -> l.map(CharSeq::of));
 
-                    final Seq<String> output = getFormattedRatios(ratios);
-                    output.forEach(System.out::println);
-                }
+            final Seq<Integer> columnWidths = List.range(0, linesWithHeader.head().size()).map(column -> linesWithHeader.map(row -> row.get(column).size()).max().get());
+
+            final Seq<String> stringLines = linesWithHeader.map(line ->
+                    line.zipWithIndex().foldLeft("", (string, textAndPaddingIndex) -> {
+                        final CharSeq text = textAndPaddingIndex._1;
+                        final int index = textAndPaddingIndex._2.intValue();
+                        final int padding = columnWidths.get(index);
+                        if (index == 0) {
+                            return string + text.padTo(padding, ' ') + ": ";
+                        } else {
+                            return string + text.leftPadTo(padding, ' ') + " | ";
+                        }
+                    })
+            );
+
+            System.out.println("\n" + stringLines.head());
+            for (String line : stringLines.tail()) {
+                System.out.println(line);
             }
         }
     }
 
-    private static void printHeader(Array<RunResult> list) {
-        if (!list.isEmpty()) {
-            final Array<Integer> containerSizes = list.map(r -> getContainerSize(r.getAggregatedResult())).distinct().sorted();
-            final String header = formatList(containerSizes);
-            System.out.println("\nRatios for: " + header);
-        }
-    }
-
-    private static Map<String, Array<RunResult>> getGroupsBasedOnBenchmarkPrefix(Array<RunResult> runResults) {
+    private static Map<String, ? extends Seq<RunResult>> getGroupsBasedOnBenchmarkPrefix(Seq<RunResult> runResults) {
         return runResults.groupBy(r -> {
             final String[] parts = r.getParams().getBenchmark().split("\\.");
             final String enclosingClassName = parts[parts.length - 2];
@@ -44,8 +54,8 @@ public class BenchmarkResultAggregator {
         });
     }
 
-    private static Multimap<Integer, Tuple2<String, Double>> aggregate(Array<RunResult> runResults) {
-        Multimap<Integer, Tuple2<String, Double>> results = HashMultimap.withSeq().empty();
+    private static Multimap<String, Tuple2<String, Double>> groupContainerSizes(Seq<RunResult> runResults) {
+        Multimap<String, Tuple2<String, Double>> results = HashMultimap.withSeq().empty();
         for (RunResult runResult : runResults) {
             final BenchmarkResult benchmarkResult = runResult.getAggregatedResult();
             results = results.put(getContainerSize(benchmarkResult), getPrimaryResult(benchmarkResult));
@@ -53,8 +63,8 @@ public class BenchmarkResultAggregator {
         return results;
     }
 
-    private static Integer getContainerSize(BenchmarkResult benchmarkResult) {
-        return Integer.parseInt(benchmarkResult.getParams().getParam("CONTAINER_SIZE"));
+    private static String getContainerSize(BenchmarkResult benchmarkResult) {
+        return benchmarkResult.getParams().getParam("CONTAINER_SIZE");
     }
 
     private static Tuple2<String, Double> getPrimaryResult(BenchmarkResult benchmarkResult) {
@@ -62,39 +72,24 @@ public class BenchmarkResultAggregator {
         return Tuple.of(primaryResult.getLabel(), primaryResult.getScore());
     }
 
-    private static Multimap<String, Double> getRatios(Multimap<Integer, Tuple2<String, Double>> results) {
-        Multimap<String, Double> ratios = HashMultimap.withSeq().empty();
-        for (Integer size : results.keySet().toList().sorted()) {
-            for (Array<Tuple2<String, Double>> pairs : results.get(size).get().toArray().combinations(2)) {
+    private static Multimap<Tuple2<String, String>, Double> allRatios(Seq<String> containerSizes, Multimap<String, Tuple2<String, Double>> results) {
+        Multimap<Tuple2<String, String>, Double> ratios = HashMultimap.withSeq().empty();
+        for (String size : containerSizes) {
+            for (Seq<Tuple2<String, Double>> pairs : results.get(size).get().toList().combinations(2)) {
                 final Tuple2<String, Double> first = pairs.get(0), second = pairs.get(1);
-                ratios = ratios.put(formatBenchmarks(first, second), formatRatios(first, second));
+                ratios = ratios.put(Tuple.of(first._1, second._1), (first._2 / second._2));
+                ratios = ratios.put(Tuple.of(second._1, first._1), (second._2 / first._2));
             }
         }
         return ratios;
     }
 
-    private static Array<String> getFormattedRatios(Multimap<String, Double> ratios) {
-        final Array<String> sortedNames = ratios.keySet().toArray().sorted();
-        final int padLength = sortedNames.map(String::length).max().get();
-        final Array<String> output = sortedNames.map(
-                name -> {
-                    final CharSeq benchmarks = CharSeq.of(name).padTo(padLength, ' ');
-                    final String benchmarkSpeedRatios = formatList(ratios.get(name).get().map(DECIMAL_FORMAT::format));
-                    return benchmarks + ": " + benchmarkSpeedRatios;
-                }
-        );
-        return output;
-    }
-
-    private static String formatBenchmarks(Tuple2<String, Double> first, Tuple2<String, Double> second) {
-        return first._1 + "/" + second._1;
-    }
-
-    private static double formatRatios(Tuple2<String, Double> first, Tuple2<String, Double> second) {
-        return first._2 / second._2;
-    }
-
-    private static String formatList(Traversable<?> elements) {
-        return elements.mkString("[", ", ", "]");
+    private static Seq<Seq<String>> resultingLines(Multimap<Tuple2<String, String>, Double> ratiosMap, String resultFilter) {
+        final Seq<Tuple2<String, String>> sortedNames = ratiosMap.keySet().toSortedSet(Comparator.<Tuple2<String, String>, String> comparing(Tuple2::_1).thenComparing(Tuple2::_2)).toList();
+        return sortedNames.<Seq<String>> map(name -> {
+            final Traversable<Double> ratios = ratiosMap.get(name).get();
+            final Traversable<String> formattedRatios = ratios.map(r -> DECIMAL_FORMAT.format(r) + "x");
+            return List.of(name._1 + " / " + name._2).appendAll(formattedRatios);
+        }).filter(l -> l.head().matches(resultFilter));
     }
 }
