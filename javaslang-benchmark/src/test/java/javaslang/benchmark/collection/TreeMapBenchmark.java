@@ -45,10 +45,10 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode(Mode.Throughput)
-@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
+@Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 10, time = 1, timeUnit = TimeUnit.SECONDS)
 @OutputTimeUnit(TimeUnit.SECONDS)
-@Fork(value = 1, jvmArgsAppend = { "-XX:+UseG1GC", "-Xss500m", "-Xms4g", "-Xmx4g", "-ea" })
+@Fork(value = 1, jvmArgsAppend = { "-XX:+UseG1GC", "-Xss500m", "-Xms2g", "-Xmx2g", "-da" })
 @Threads(1)
 public class TreeMapBenchmark {
     private static final Ordering<Integer> SCALA_ORDERING = Ordering$.MODULE$.comparatorToOrdering(Integer::compareTo);
@@ -374,7 +374,6 @@ public class TreeMapBenchmark {
         // We will create subset with 1/3 of entries in the original map
         int keyOffset = state.numItems / 6;
         SortedMap<Integer, String> subMap = state.slangTreeMap.descendingMap().subMap(state.keysSorted.get(state.numItems - keyOffset), true, state.keysSorted.get(keyOffset), true);
-        assert subMap.size() > 0;
         List<Integer> values = List.empty();
         for (Tuple2<Integer, String> entry : subMap) {
             values.push(entry._1);

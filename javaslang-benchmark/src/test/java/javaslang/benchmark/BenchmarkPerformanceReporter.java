@@ -297,7 +297,7 @@ public class BenchmarkPerformanceReporter {
         }
 
         private String extractGroupName(String fullyQualifiedName) {
-            return CharSeq.of(fullyQualifiedName).split("\\.").last().toString();
+            return CharSeq.of(fullyQualifiedName).splitSeq("\\.").last().toString();
         }
 
         private String extractTestName(String fullName) {
