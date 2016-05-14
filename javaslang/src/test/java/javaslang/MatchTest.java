@@ -14,16 +14,12 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.Year;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static javaslang.API.$;
 import static javaslang.API.*;
 import static javaslang.MatchTest_DeveloperPatterns.Developer;
 import static javaslang.Patterns.*;
-import static javaslang.Predicates.instanceOf;
-import static javaslang.Predicates.is;
-import static javaslang.Predicates.isIn;
+import static javaslang.Predicates.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MatchTest {
