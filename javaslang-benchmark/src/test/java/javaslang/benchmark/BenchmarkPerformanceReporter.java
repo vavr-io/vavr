@@ -41,28 +41,19 @@ public class BenchmarkPerformanceReporter {
     /**
      * This class prints performance reports about the execution of individual tests, comparing their performance
      * against other implementations as required.
-     * <br>
-     * A typical JMH test is configured as follows:
-     * <pre>
-     *    \@Benchmark
-     *    \@Group("groupName")
-     *    public Object testName_Slang() {
-     *       ....
-     *    }
-     * </pre>
-     * <br>
-     * The method name is broken into two parts separated by an underscore:
-     * <ul>
-     *     <li>testName - the test name</li>
-     *     <li>Implementation - the type of implementation</li>
-     * </ul>
-     * This class relies on this naming convention to identify different implementations of the same operation.
-     *
      * @param runResults
      */
     private BenchmarkPerformanceReporter(Collection<RunResult> runResults, String targetImplementation) {
         this.runResults = runResults;
         this.targetImplementation = targetImplementation;
+    }
+
+    /**
+     * Prints all performance reports
+     */
+    public void print() {
+        printDetailedPerformanceReport();
+        printRatioPerformanceReport();
     }
 
     /**
@@ -132,6 +123,7 @@ public class BenchmarkPerformanceReporter {
         private final int groupSize;
         private final int nameSize;
         private final int implSize;
+        private final int countSize;
         private final int scoreSize;
         private final int errorSize;
         private final int unitSize;
@@ -145,6 +137,7 @@ public class BenchmarkPerformanceReporter {
             groupSize = Math.max(results.map(r -> r.getTarget().length()).max().get(), 10);
             nameSize = Math.max(results.map(r -> r.getOperation().length()).max().get(), 10);
             implSize = Math.max(results.map(r -> r.getImplementation().length()).max().get(), 10);
+            countSize = Math.max(results.map(r -> Long.toString(r.getSampleCount()).length()).max().get(), 5);
             scoreSize = Math.max(results.map(r -> r.getScoreFormatted().length()).max().get(), 15);
             errorSize = Math.max(results.map(r -> r.getScoreErrorPct().length()).max().get(), 10);
             unitSize = Math.max(results.map(r -> r.getUnit().length()).max().get(), 7);
@@ -160,11 +153,12 @@ public class BenchmarkPerformanceReporter {
 
         private void printHeader() {
             final String alternativeImplHeader = alternativeImplementations.map(type -> padRight(type, alternativeImplSize)).mkString(" ");
-            final String header = String.format("%s  %s  %s  %s  %s  ±%s %s %s",
+            final String header = String.format("%s  %s  %s  %s  %s  %s  ±%s %s %s",
                     padLeft("Target", groupSize),
                     padLeft("Operation", nameSize),
                     padLeft("Impl", implSize),
                     padRight("Params", paramKeySize),
+                    padRight("Count", countSize),
                     padRight("Score", scoreSize),
                     padRight("Error", errorSize),
                     padRight("Unit", unitSize),
@@ -184,11 +178,12 @@ public class BenchmarkPerformanceReporter {
 
         private void printDetails() {
             for (TestExecution result : results) {
-                System.out.println(String.format("%s  %s  %s  %s  %s  ±%s %s %s",
+                System.out.println(String.format("%s  %s  %s  %s  %s  %s  ±%s %s %s",
                         padLeft(result.getTarget(), groupSize),
                         padLeft(result.getOperation(), nameSize),
                         padLeft(result.getImplementation(), implSize),
                         padRight(result.getParamKey(), paramKeySize),
+                        padRight(Long.toString(result.getSampleCount()), countSize),
                         padRight(result.getScoreFormatted(), scoreSize),
                         padRight(result.getScoreErrorPct(), errorSize),
                         padRight(result.getUnit(), unitSize),
@@ -201,8 +196,7 @@ public class BenchmarkPerformanceReporter {
         private String calculatePerformanceStr(TestExecution result, List<String> alternativeImplementations, Map<String, List<TestExecution>> resultsByKey, int alternativeImplSize) {
             final String aggregateKey = result.getTestNameParamKey();
             final List<TestExecution> alternativeResults = resultsByKey.get(aggregateKey).getOrElse(List::empty);
-            List<Option<TestExecution>> map = alternativeImplementations.map(alternativeType -> alternativeResults.find(r -> alternativeType.equals(r.getImplementation())));
-            map.removeAt(0);
+
             return alternativeImplementations.map(alternativeType -> alternativeResults.find(r -> alternativeType.equals(r.getImplementation())))
                     .map(alternativeExecution -> alternativeExecution.isDefined() ? alternativeExecution.get().getScore() : 0.0)
                     .map(alternativeScore -> alternativeScore == 0 ? 1.0 : (result.getScore() / alternativeScore))
@@ -351,6 +345,7 @@ public class BenchmarkPerformanceReporter {
         private final String target;
         private final String operation;
         private final String implementation;
+        private final long sampleCount;
         private final double score;
         private final double scoreError;
         private final String unit;
@@ -364,6 +359,7 @@ public class BenchmarkPerformanceReporter {
             target = extractPart(fullName, 2);
             operation = extractPart(fullName, 1);
             implementation = extractPart(fullName, 0);
+            sampleCount = result.getSampleCount();
 
             paramKey = getParameterKey(benchmark);
             score = result.getScore();
@@ -403,6 +399,10 @@ public class BenchmarkPerformanceReporter {
 
         public String getImplementation() {
             return implementation;
+        }
+
+        public long getSampleCount() {
+            return sampleCount;
         }
 
         public double getScore() {
