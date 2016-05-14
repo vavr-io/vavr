@@ -85,7 +85,7 @@ public class BenchmarkPerformanceReporter {
         if (results.isEmpty()) {
             return;
         }
-        printDetailedPerformanceExecutionReport(results);
+        new DetailedPerformanceReport(results).print();
     }
 
     /**
@@ -100,12 +100,12 @@ public class BenchmarkPerformanceReporter {
      *     <li>Results - How many times faster implementation A is compared with B</li>
      * </ul>
      */
-    public void printPerformanceRatiosReport() {
+    public void printRatioPerformanceReport() {
         final List<TestExecution> results = mapToTestExecutions(runResults);
         if (results.isEmpty()) {
             return;
         }
-        printPerformanceRatioReport(results);
+        new RatioPerformanceReport(results).print();
     }
 
     private List<TestExecution> mapToTestExecutions(Collection<RunResult> runResults) {
@@ -116,148 +116,198 @@ public class BenchmarkPerformanceReporter {
         return executions;
     }
 
-    private void printDetailedPerformanceExecutionReport(List<TestExecution> results) {
-        final Map<String, List<TestExecution>> resultsByKey = results.groupBy(TestExecution::getTestNameParamKey);
-        final int paramKeySize = Math.max(results.map(r -> r.getParamKey().length()).max().get(), 10);
-        final int groupSize = Math.max(results.map(r -> r.getTarget().length()).max().get(), 10);
-        final int nameSize = Math.max(results.map(r -> r.getOperation().length()).max().get(), 10);
-        final int implSize = Math.max(results.map(r -> r.getImplementation().length()).max().get(), 10);
-        final int scoreSize = Math.max(results.map(r -> r.getScoreFormatted().length()).max().get(), 15);
-        final int errorSize = Math.max(results.map(r -> r.getScoreErrorPct().length()).max().get(), 10);
-        final int unitSize = Math.max(results.map(r -> r.getUnit().length()).max().get(), 7);
-
-        final List<String> alternativeImplementations = results.map(TestExecution::getImplementation).distinct().sorted();
-        final int alternativeImplSize = Math.max(alternativeImplementations.map(String::length).max().get(), 10);
-        final String alternativeImplHeader = alternativeImplementations.map(type -> padRight(type, alternativeImplSize)).mkString(" ");
-
-        final String header = String.format("%s  %s  %s  %s  %s  ±%s %s %s",
-                padLeft("Target", groupSize),
-                padLeft("Operation", nameSize),
-                padLeft("Impl", implSize),
-                padRight("Params", paramKeySize),
-                padRight("Score", scoreSize),
-                padRight("Error", errorSize),
-                padRight("Unit", unitSize),
-                alternativeImplHeader
-        );
-
-        System.out.println("\n\n\n");
-        System.out.println("Detailed Performance Execution Report");
-        System.out.println(CharSeq.of("=").repeat(header.length()));
-        System.out.println("  (Error: ±99% confidence interval, expressed as % of Score)");
-        if (!alternativeImplementations.isEmpty()) {
-            System.out.println(String.format("  (%s: read as current row implementation is x times faster than alternative implementation)", alternativeImplementations.mkString(", ")));
-        }
-        System.out.println();
-        System.out.println(header);
-        for (TestExecution result : results) {
-            System.out.println(String.format("%s  %s  %s  %s  %s  ±%s %s %s",
-                    padLeft(result.getTarget(), groupSize),
-                    padLeft(result.getOperation(), nameSize),
-                    padLeft(result.getImplementation(), implSize),
-                    padRight(result.getParamKey(), paramKeySize),
-                    padRight(result.getScoreFormatted(), scoreSize),
-                    padRight(result.getScoreErrorPct(), errorSize),
-                    padRight(result.getUnit(), unitSize),
-                    calculatePerformanceStr(result, alternativeImplementations, resultsByKey, alternativeImplSize)
-                    ));
-        }
-        System.out.println("\n");
-    }
-
-    private String calculatePerformanceStr(TestExecution result, List<String> alternativeImplementations, Map<String, List<TestExecution>> resultsByKey, int alternativeImplSize) {
-        final String aggregateKey = result.getTestNameParamKey();
-        final List<TestExecution> alternativeResults = resultsByKey.get(aggregateKey).getOrElse(List::empty);
-        List<Option<TestExecution>> map = alternativeImplementations.map(alternativeType -> alternativeResults.find(r -> alternativeType.equals(r.getImplementation())));
-        map.removeAt(0);
-        return alternativeImplementations.map(alternativeType -> alternativeResults.find(r -> alternativeType.equals(r.getImplementation())))
-                .map(alternativeExecution -> alternativeExecution.isDefined() ? alternativeExecution.get().getScore() : 0.0)
-                .map(alternativeScore -> alternativeScore == 0 ? 1.0 : (result.getScore() / alternativeScore))
-                .map(performanceImprovement -> padRight(performanceImprovement == 1.0 ? "" : PERFORMANCE_FORMAT.format(performanceImprovement) + "x", alternativeImplSize))
-                .mkString(" ");
-    }
-
-    private void printPerformanceRatioReport(List<TestExecution> results) {
-        final TreeMap<String, List<TestExecution>> resultsByKey = TreeMap.ofEntries(results.groupBy(TestExecution::getTestNameKey));
-        final int groupSize = Math.max(results.map(r -> r.getTarget().length()).max().get(), 10);
-        final int nameSize = Math.max(results.map(r -> r.getOperation().length()).max().get(), 10);
-
-        final List<String> paramKeys = results.map(TestExecution::getParamKey).distinct().sorted();
-        final int paramKeySize = Math.max(results.map(r -> r.getParamKey().length()).max().get(), 10);
-        final String paramKeyHeader = paramKeys.map(type -> padRight(type, paramKeySize)).mkString(" ");
-
-        final List<String> alternativeImplementations = results.map(TestExecution::getImplementation).distinct().sorted();
-        final int alternativeImplSize = Math.max(alternativeImplementations.map(String::length).max().get(), 10);
-        final int ratioSize = Math.max(alternativeImplSize * 2 + 1, 10);
-
-        final String header = String.format("%s  %s  %s  %s ",
-                padLeft("Target", groupSize),
-                padLeft("Operation", nameSize),
-                padRight("Ratio", ratioSize),
-                paramKeyHeader
-        );
-        System.out.println("\n\n");
-        System.out.println("Performance Ratios");
-        System.out.println(CharSeq.of("=").repeat(header.length()));
-        if (alternativeImplementations.size() < 2) {
-            System.out.println("(nothing to report, you need at least two different implementation)");
-            return;
-        }
-
-        for (String baseImpl : alternativeImplementations) {
-            System.out.println(String.format("\nRatios alternative_impl/%s", baseImpl));
-            System.out.println(header);
-            for (Tuple2<String, List<TestExecution>> execution : resultsByKey) {
-                printRatioForBaseType(baseImpl, execution._2, alternativeImplementations, paramKeys, groupSize, nameSize, ratioSize, paramKeySize);
-            }
-        }
-        System.out.println("\n");
-    }
-
-    private void printRatioForBaseType(String baseType, List<TestExecution> testExecutions, List<String> alternativeImplementations, List<String> paramKeys,
-                                       int groupSize, int nameSize, int ratioSize, int paramKeySize) {
-        List<TestExecution> baseImplExecutions = testExecutions.filter(e -> e.getImplementation().equals(baseType));
-        if (baseImplExecutions.isEmpty()) {
-            return;
-        }
-        TestExecution baseTypeExecution = baseImplExecutions.head();
-
-        for (String alternativeImpl : alternativeImplementations) {
-            if (alternativeImpl.equals(baseType)) {
-                continue;
-            }
-            List<TestExecution> alternativeExecutions = testExecutions.filter(e -> e.getImplementation().equals(alternativeImpl));
-            if (alternativeExecutions.isEmpty()) {
-                continue;
-            }
-            System.out.println(String.format("%s  %s  %s  %s ",
-                    padLeft(baseTypeExecution.getTarget(), groupSize),
-                    padLeft(baseTypeExecution.getOperation(), nameSize),
-                    padRight(String.format("%s/%s", alternativeImpl, baseType), ratioSize),
-                    calculateRatios(baseImplExecutions, alternativeExecutions, paramKeys, paramKeySize)
-                    ));
-        }
-    }
-
-    private String calculateRatios(List<TestExecution> baseImplExecutions, List<TestExecution> alternativeExecutions, List<String> paramKeys, int paramKeySize) {
-        Array<String> ratioStrs = Array.empty();
-        for (String paramKey : paramKeys) {
-            Option<TestExecution> alternativeExecution = alternativeExecutions.find(e -> e.getParamKey().equals(paramKey));
-            Option<TestExecution> baseExecution = baseImplExecutions.find(e -> e.getParamKey().equals(paramKey));
-            String paramRatio = alternativeExecution.isEmpty() || baseExecution.isEmpty() || baseExecution.get().getScore() == 0.0
-                    ? ""
-                    : PERFORMANCE_FORMAT.format(alternativeExecution.get().getScore() / baseExecution.get().getScore()) + "x";
-            ratioStrs = ratioStrs.append(padRight(paramRatio, paramKeySize));
-        }
-        return ratioStrs.mkString(" ");
-    }
-
     private String padLeft(String str, int size) {
         return str + CharSeq.repeat(' ', size - str.length());
     }
 
     private String padRight(String str, int size) {
         return CharSeq.repeat(' ', size - str.length()) + str;
+    }
+
+    private class DetailedPerformanceReport {
+        private final List<TestExecution> results;
+        private final Map<String, List<TestExecution>> resultsByKey;
+        private final int paramKeySize;
+        private final int groupSize;
+        private final int nameSize;
+        private final int implSize;
+        private final int scoreSize;
+        private final int errorSize;
+        private final int unitSize;
+        private final int alternativeImplSize;
+        private final List<String> alternativeImplementations;
+
+        public DetailedPerformanceReport(List<TestExecution> results) {
+            this.results = results;
+            resultsByKey = results.groupBy(TestExecution::getTestNameParamKey);
+            paramKeySize = Math.max(results.map(r -> r.getParamKey().length()).max().get(), 10);
+            groupSize = Math.max(results.map(r -> r.getTarget().length()).max().get(), 10);
+            nameSize = Math.max(results.map(r -> r.getOperation().length()).max().get(), 10);
+            implSize = Math.max(results.map(r -> r.getImplementation().length()).max().get(), 10);
+            scoreSize = Math.max(results.map(r -> r.getScoreFormatted().length()).max().get(), 15);
+            errorSize = Math.max(results.map(r -> r.getScoreErrorPct().length()).max().get(), 10);
+            unitSize = Math.max(results.map(r -> r.getUnit().length()).max().get(), 7);
+
+            alternativeImplementations = results.map(TestExecution::getImplementation).distinct().sorted();
+            alternativeImplSize = Math.max(alternativeImplementations.map(String::length).max().get(), 10);
+        }
+
+        public void print() {
+            printHeader();
+            printDetails();
+        }
+
+        private void printHeader() {
+            final String alternativeImplHeader = alternativeImplementations.map(type -> padRight(type, alternativeImplSize)).mkString(" ");
+            final String header = String.format("%s  %s  %s  %s  %s  ±%s %s %s",
+                    padLeft("Target", groupSize),
+                    padLeft("Operation", nameSize),
+                    padLeft("Impl", implSize),
+                    padRight("Params", paramKeySize),
+                    padRight("Score", scoreSize),
+                    padRight("Error", errorSize),
+                    padRight("Unit", unitSize),
+                    alternativeImplHeader
+            );
+
+            System.out.println("\n\n\n");
+            System.out.println("Detailed Performance Execution Report");
+            System.out.println(CharSeq.of("=").repeat(header.length()));
+            System.out.println("  (Error: ±99% confidence interval, expressed as % of Score)");
+            if (!alternativeImplementations.isEmpty()) {
+                System.out.println(String.format("  (%s: read as current row implementation is x times faster than alternative implementation)", alternativeImplementations.mkString(", ")));
+            }
+            System.out.println();
+            System.out.println(header);
+        }
+
+        private void printDetails() {
+            for (TestExecution result : results) {
+                System.out.println(String.format("%s  %s  %s  %s  %s  ±%s %s %s",
+                        padLeft(result.getTarget(), groupSize),
+                        padLeft(result.getOperation(), nameSize),
+                        padLeft(result.getImplementation(), implSize),
+                        padRight(result.getParamKey(), paramKeySize),
+                        padRight(result.getScoreFormatted(), scoreSize),
+                        padRight(result.getScoreErrorPct(), errorSize),
+                        padRight(result.getUnit(), unitSize),
+                        calculatePerformanceStr(result, alternativeImplementations, resultsByKey, alternativeImplSize)
+                ));
+            }
+            System.out.println("\n");
+        }
+
+        private String calculatePerformanceStr(TestExecution result, List<String> alternativeImplementations, Map<String, List<TestExecution>> resultsByKey, int alternativeImplSize) {
+            final String aggregateKey = result.getTestNameParamKey();
+            final List<TestExecution> alternativeResults = resultsByKey.get(aggregateKey).getOrElse(List::empty);
+            List<Option<TestExecution>> map = alternativeImplementations.map(alternativeType -> alternativeResults.find(r -> alternativeType.equals(r.getImplementation())));
+            map.removeAt(0);
+            return alternativeImplementations.map(alternativeType -> alternativeResults.find(r -> alternativeType.equals(r.getImplementation())))
+                    .map(alternativeExecution -> alternativeExecution.isDefined() ? alternativeExecution.get().getScore() : 0.0)
+                    .map(alternativeScore -> alternativeScore == 0 ? 1.0 : (result.getScore() / alternativeScore))
+                    .map(performanceImprovement -> padRight(performanceImprovement == 1.0 ? "" : PERFORMANCE_FORMAT.format(performanceImprovement) + "x", alternativeImplSize))
+                    .mkString(" ");
+        }
+    }
+
+    private class RatioPerformanceReport {
+        private final List<TestExecution> results;
+        private final TreeMap<String, List<TestExecution>> resultsByKey;
+        private final int groupSize;
+        private final int nameSize;
+        private final List<String> paramKeys;
+        private final int paramKeySize;
+        private final List<String> alternativeImplementations;
+        private final int alternativeImplSize;
+        private final int ratioSize;
+
+        public RatioPerformanceReport(List<TestExecution> results) {
+            this.results = results;
+            resultsByKey = TreeMap.ofEntries(results.groupBy(TestExecution::getTestNameKey));
+            groupSize = Math.max(results.map(r -> r.getTarget().length()).max().get(), 10);
+            nameSize = Math.max(results.map(r -> r.getOperation().length()).max().get(), 10);
+
+            paramKeys = results.map(TestExecution::getParamKey).distinct().sorted();
+            paramKeySize = Math.max(results.map(r -> r.getParamKey().length()).max().get(), 10);
+
+            alternativeImplementations = results.map(TestExecution::getImplementation).distinct().sorted();
+            alternativeImplSize = Math.max(alternativeImplementations.map(String::length).max().get(), 10);
+            ratioSize = Math.max(alternativeImplSize * 2 + 1, 10);
+        }
+
+        public void print() {
+            printHeader();
+            printReport();
+        }
+
+        private void printHeader() {
+            System.out.println("\n\n");
+            System.out.println("Performance Ratios");
+            System.out.println(CharSeq.of("=").repeat(ratioHeader().length()));
+        }
+
+        private String ratioHeader() {
+            final String paramKeyHeader = paramKeys.map(type -> padRight(type, paramKeySize)).mkString(" ");
+            return String.format("%s  %s  %s  %s ",
+                    padLeft("Target", groupSize),
+                    padLeft("Operation", nameSize),
+                    padRight("Ratio", ratioSize),
+                    paramKeyHeader
+            );
+        }
+
+        private void printReport() {
+            if (alternativeImplementations.size() < 2) {
+                System.out.println("(nothing to report, you need at least two different implementation)");
+                return;
+            }
+
+            for (String baseImpl : alternativeImplementations) {
+                System.out.println(String.format("\nRatios alternative_impl/%s", baseImpl));
+                System.out.println(ratioHeader());
+                for (Tuple2<String, List<TestExecution>> execution : resultsByKey) {
+                    printRatioForBaseType(baseImpl, execution._2);
+                }
+            }
+            System.out.println("\n");
+        }
+
+        private void printRatioForBaseType(String baseType, List<TestExecution> testExecutions) {
+            List<TestExecution> baseImplExecutions = testExecutions.filter(e -> e.getImplementation().equals(baseType));
+            if (baseImplExecutions.isEmpty()) {
+                return;
+            }
+            TestExecution baseTypeExecution = baseImplExecutions.head();
+
+            for (String alternativeImpl : alternativeImplementations) {
+                if (alternativeImpl.equals(baseType)) {
+                    continue;
+                }
+                List<TestExecution> alternativeExecutions = testExecutions.filter(e -> e.getImplementation().equals(alternativeImpl));
+                if (alternativeExecutions.isEmpty()) {
+                    continue;
+                }
+                System.out.println(String.format("%s  %s  %s  %s ",
+                        padLeft(baseTypeExecution.getTarget(), groupSize),
+                        padLeft(baseTypeExecution.getOperation(), nameSize),
+                        padRight(String.format("%s/%s", alternativeImpl, baseType), ratioSize),
+                        calculateRatios(baseImplExecutions, alternativeExecutions)
+                        ));
+            }
+        }
+
+        private String calculateRatios(List<TestExecution> baseImplExecutions, List<TestExecution> alternativeExecutions) {
+            Array<String> ratioStrs = Array.empty();
+            for (String paramKey : paramKeys) {
+                Option<TestExecution> alternativeExecution = alternativeExecutions.find(e -> e.getParamKey().equals(paramKey));
+                Option<TestExecution> baseExecution = baseImplExecutions.find(e -> e.getParamKey().equals(paramKey));
+                String paramRatio = alternativeExecution.isEmpty() || baseExecution.isEmpty() || baseExecution.get().getScore() == 0.0
+                        ? ""
+                        : PERFORMANCE_FORMAT.format(alternativeExecution.get().getScore() / baseExecution.get().getScore()) + "x";
+                ratioStrs = ratioStrs.append(padRight(paramRatio, paramKeySize));
+            }
+            return ratioStrs.mkString(" ");
+        }
     }
 
     static class TestExecution implements Comparable<TestExecution> {
