@@ -6,6 +6,7 @@
 package javaslang.benchmark;
 
 import javaslang.Function2;
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.Array;
 import javaslang.collection.CharSeq;
@@ -138,7 +139,6 @@ public class BenchmarkPerformanceReporter {
         private final int scoreSize;
         private final int errorSize;
         private final int unitSize;
-        private final int alternativeImplSize;
         private final List<String> alternativeImplementations;
 
         public DetailedPerformanceReport(List<TestExecution> results) {
@@ -154,7 +154,6 @@ public class BenchmarkPerformanceReporter {
             unitSize = Math.max(results.map(r -> r.getUnit().length()).max().get(), 7);
 
             alternativeImplementations = results.map(TestExecution::getImplementation).distinct().sorted();
-            alternativeImplSize = Math.max(alternativeImplementations.map(String::length).max().get(), 10);
         }
 
         public void print() {
@@ -163,8 +162,8 @@ public class BenchmarkPerformanceReporter {
         }
 
         private void printHeader() {
-            final String alternativeImplHeader = alternativeImplementations.map(type -> padRight(type, alternativeImplSize)).mkString(" ");
-            final String header = String.format("%s  %s  %s  %s  %s  %s  ±%s %s %s",
+            final String alternativeImplHeader = alternativeImplementations.map(altImpl -> padRight(altImpl, altImplColSize(altImpl))).mkString("  ");
+            final String header = String.format("%s  %s  %s  %s  %s  %s  ±%s %s  %s",
                     padLeft("Target", groupSize),
                     padLeft("Operation", nameSize),
                     padLeft("Impl", implSize),
@@ -201,21 +200,36 @@ public class BenchmarkPerformanceReporter {
                         padRight(result.getScoreFormatted(), scoreSize),
                         padRight(result.getScoreErrorPct(), errorSize),
                         padRight(result.getUnit(), unitSize),
-                        calculatePerformanceStr(result, alternativeImplementations, resultsByKey, alternativeImplSize)
+                        calculatePerformanceStr(result, alternativeImplementations, resultsByKey)
                 ));
             }
             System.out.println("\n");
         }
 
-        private String calculatePerformanceStr(TestExecution result, List<String> alternativeImplementations, Map<String, List<TestExecution>> resultsByKey, int alternativeImplSize) {
+        private int altImplColSize(String name) {
+            return Math.max(5, name.length());
+        }
+
+        private String calculatePerformanceStr(TestExecution result, List<String> alternativeImplementations, Map<String, List<TestExecution>> resultsByKey) {
             final String aggregateKey = result.getTestNameParamKey();
             final List<TestExecution> alternativeResults = resultsByKey.get(aggregateKey).getOrElse(List::empty);
 
-            return alternativeImplementations.map(alternativeType -> alternativeResults.find(r -> alternativeType.equals(r.getImplementation())))
-                    .map(alternativeExecution -> alternativeExecution.isDefined() ? alternativeExecution.get().getScore() : 0.0)
-                    .map(alternativeScore -> alternativeScore == 0 ? 1.0 : (result.getScore() / alternativeScore))
-                    .map(performanceImprovement -> padRight(performanceImprovement == 1.0 ? "" : PERFORMANCE_FORMAT.format(performanceImprovement) + "x", alternativeImplSize))
-                    .mkString(" ");
+            return alternativeImplementations.map(altImpl -> Tuple.of(altImpl, alternativeResults.find(r -> altImpl.equals(r.getImplementation()))))
+                    .map(alt -> Tuple.of(alt._1, calculateRatioStr(result, alt._2)))
+                    .map(alt -> padRight(alt._2, altImplColSize(alt._1)))
+                    .mkString("  ");
+        }
+
+        private String calculateRatioStr(TestExecution baseResult, Option<TestExecution> alternativeResult) {
+            if (!alternativeResult.isDefined()) {
+                return "";
+            }
+            double alternativeScore = alternativeResult.get().getScore();
+            if (alternativeScore == 0.0) {
+                return "";
+            }
+            double ratio = baseResult.getScore() / alternativeScore;
+            return ratio == 1.0 ? "" : PERFORMANCE_FORMAT.format(ratio) + "x";
         }
     }
 
