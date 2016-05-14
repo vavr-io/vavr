@@ -6,6 +6,7 @@
 package javaslang;
 
 import javaslang.collection.List;
+import javaslang.control.Either;
 import javaslang.control.Option;
 import javaslang.control.Option.Some;
 import javaslang.match.annotation.Unapply;
@@ -167,6 +168,28 @@ public class MatchTest {
                 Case(instanceOf(Integer.class), i -> 1)
         );
         assertThat(actual).isEqualTo(1);
+    }
+
+    // -- Either
+
+    @Test
+    public void shouldMatchLeft() {
+        final Either<Integer, String> either = Either.left(1);
+        final String actual = Match(either).of(
+                Case(Left($()), l -> "left: " + l),
+                Case(Right($()), r -> "right: " + r)
+        );
+        assertThat(actual).isEqualTo("left: 1");
+    }
+
+    @Test
+    public void shouldMatchRight() {
+        final Either<Integer, String> either = Either.right("a");
+        final String actual = Match(either).of(
+                Case(Left($()), l -> "left: " + l),
+                Case(Right($()), r -> "right: " + r)
+        );
+        assertThat(actual).isEqualTo("right: a");
     }
 
     // -- Option
