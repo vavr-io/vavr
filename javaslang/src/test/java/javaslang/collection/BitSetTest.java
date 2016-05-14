@@ -16,6 +16,8 @@ import java.util.stream.Collector;
 
 public class BitSetTest extends AbstractSortedSetTest {
 
+    private final static int MAX_BIT = 1_000_000;
+
     private enum E {
         V1, V2, V3
     }
@@ -39,12 +41,7 @@ public class BitSetTest extends AbstractSortedSetTest {
         synchronized Integer toInt(T value) {
             Integer i = toIntMap.get(value);
             if (i == null) {
-                if(value instanceof Integer) {
-                    i = (Integer) value;
-                    nextValue = Integer.MAX_VALUE;
-                } else {
-                    i = nextValue++;
-                }
+                i = nextValue++;
                 toIntMap.put(value, i);
                 fromIntMap.put(i, value);
             }
@@ -117,8 +114,10 @@ public class BitSetTest extends AbstractSortedSetTest {
         return this.<T>bsBuilder().of(element);
     }
 
+    @SuppressWarnings("varargs")
+    @SafeVarargs
     @Override
-    protected <T> BitSet<T> of(T... elements) {
+    protected final <T> BitSet<T> of(T... elements) {
         return this.<T>bsBuilder().of(elements);
     }
 
@@ -189,37 +188,61 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     @Override
     protected BitSet<Character> range(char from, char toExclusive) {
-        return null;
-    }
-
-    @Override
-    protected BitSet<Character> rangeBy(char from, char toExclusive, int step) {
-        return null;
-    }
-
-    @Override
-    protected BitSet<Double> rangeBy(double from, double toExclusive, double step) {
-        return null;
-    }
-
-    @Override
-    protected BitSet<Integer> range(int from, int toExclusive) {
         return BitSet.range(from, toExclusive);
     }
 
     @Override
-    protected BitSet<Integer> rangeBy(int from, int toExclusive, int step) {
+    protected BitSet<Character> rangeBy(char from, char toExclusive, int step) {
         return BitSet.rangeBy(from, toExclusive, step);
     }
 
     @Override
+    protected BitSet<Double> rangeBy(double from, double toExclusive, double step) {
+        return this.<Double>bsBuilder().ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    private static boolean badRange(int a, int b) {
+        return a < 0 || b < 0 || a > MAX_BIT || b > MAX_BIT;
+    }
+
+    private static boolean badRange(long a, long b) {
+        return a < 0 || b < 0 || a > MAX_BIT || b > MAX_BIT;
+    }
+
+    @Override
+    protected BitSet<Integer> range(int from, int toExclusive) {
+        if (badRange(from, toExclusive)) {
+            return this.<Integer>bsBuilder().ofAll(Iterator.range(from, toExclusive));
+        } else {
+            return BitSet.range(from, toExclusive);
+        }
+    }
+
+    @Override
+    protected BitSet<Integer> rangeBy(int from, int toExclusive, int step) {
+        if (badRange(from, toExclusive)) {
+            return this.<Integer>bsBuilder().ofAll(Iterator.rangeBy(from, toExclusive, step));
+        } else {
+            return BitSet.rangeBy(from, toExclusive, step);
+        }
+    }
+
+    @Override
     protected BitSet<Long> range(long from, long toExclusive) {
-        return null;
+        if (badRange(from, toExclusive)) {
+            return this.<Long>bsBuilder().ofAll(Iterator.range(from, toExclusive));
+        } else {
+            return BitSet.range(from, toExclusive);
+        }
     }
 
     @Override
     protected BitSet<Long> rangeBy(long from, long toExclusive, long step) {
-        return null;
+        if (badRange(from, toExclusive)) {
+            return this.<Long>bsBuilder().ofAll(Iterator.rangeBy(from, toExclusive, step));
+        } else {
+            return BitSet.rangeBy(from, toExclusive, step);
+        }
     }
 
     @Override
@@ -234,31 +257,49 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     @Override
     protected BitSet<Double> rangeClosedBy(double from, double toInclusive, double step) {
-        return null;
+        return this.<Double>bsBuilder().ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     @Override
     protected BitSet<Integer> rangeClosed(int from, int toInclusive) {
-        return null;//BitSet.rangeClosed(from, toInclusive);
+        if (badRange(from, toInclusive)) {
+            return this.<Integer>bsBuilder().ofAll(Iterator.rangeClosed(from, toInclusive));
+        } else {
+            return BitSet.rangeClosed(from, toInclusive);
+        }
     }
 
     @Override
     protected BitSet<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        return BitSet.rangeClosedBy(from, toInclusive, step);
+        if (badRange(from, toInclusive)) {
+            return this.<Integer>bsBuilder().ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        } else {
+            return BitSet.rangeClosedBy(from, toInclusive, step);
+        }
     }
 
     @Override
     protected BitSet<Long> rangeClosed(long from, long toInclusive) {
-        return null;
+        if (badRange(from, toInclusive)) {
+            return this.<Long>bsBuilder().ofAll(Iterator.rangeClosed(from, toInclusive));
+        } else {
+            return BitSet.rangeClosed(from, toInclusive);
+        }
     }
 
     @Override
     protected BitSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        return null;
+        if (badRange(from, toInclusive)) {
+            return this.<Long>bsBuilder().ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        } else {
+            return BitSet.rangeClosedBy(from, toInclusive, step);
+        }
     }
 
+    // BitSet specific
+
     @Test
-    public void test1() {
+    public void testNative() {
         BitSet<Integer> bs = BitSet.empty();
 
         bs = bs.add(2);
@@ -271,6 +312,9 @@ public class BitSetTest extends AbstractSortedSetTest {
         assert bs.head() == 2;
 
         bs = bs.add(300);
+        assert bs.head() == 2;
+
+        bs = bs.add(3000);
         assert bs.head() == 2;
 
         bs = bs.remove(2);
@@ -289,7 +333,7 @@ public class BitSetTest extends AbstractSortedSetTest {
     }
 
     @Test
-    public void test2() {
+    public void testEnums() {
         BitSet<E> bs = BitSet.withEnum(E.class).empty();
         bs = bs.add(E.V2);
         assert bs.head() == E.V2;
@@ -301,11 +345,18 @@ public class BitSetTest extends AbstractSortedSetTest {
         assert bs.contains(E.V3);
     }
 
-    @Test
-    public void test3() {
-        BitSet<Integer> bs = BitSet.empty();
-        assert bs.add(1).add(2).init().toList().equals(List.of(1));
-        assert bs.add(1).add(70).init().toList().equals(List.of(1));
-        assert bs.add(1).add(700).init().toList().equals(List.of(1));
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowAddNegativeElement() {
+        BitSet.empty().add(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowAddNegativeElements() {
+        BitSet.empty().addAll(List.of(-1));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowContainsNegativeElements() {
+        BitSet.empty().contains(-1);
     }
 }

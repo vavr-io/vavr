@@ -250,6 +250,14 @@ public interface BitSet<T> extends SortedSet<T> {
         return BitSet.ofAll(Iterator.range(from, toExclusive));
     }
 
+    static BitSet<Character> range(char from, char toExclusive) {
+        return BitSet.withCharacters().ofAll(Iterator.range(from, toExclusive));
+    }
+
+    static BitSet<Long> range(long from, long toExclusive) {
+        return BitSet.withLongs().ofAll(Iterator.range(from, toExclusive));
+    }
+
     /**
      * Creates a BitSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
      * with {@code step}.
@@ -264,6 +272,14 @@ public interface BitSet<T> extends SortedSet<T> {
      */
     static BitSet<Integer> rangeBy(int from, int toExclusive, int step) {
         return BitSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    static BitSet<Character> rangeBy(char from, char toExclusive, int step) {
+        return BitSet.withCharacters().ofAll(Iterator.rangeBy(from, toExclusive, step));
+    }
+
+    static BitSet<Long> rangeBy(long from, long toExclusive, long step) {
+        return BitSet.withLongs().ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -309,8 +325,6 @@ public interface BitSet<T> extends SortedSet<T> {
         return BitSet.withLongs().ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
-    Builder<T> builder();
-
     @Override
     BitSet<T> add(T element);
 
@@ -328,38 +342,16 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    default BitSet<T> distinctBy(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        return builder().ofAll(iterator().distinctBy(comparator));
-    }
+    BitSet<T> distinctBy(Comparator<? super T> comparator);
 
     @Override
-    default <U> BitSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return builder().ofAll(iterator().distinctBy(keyExtractor));
-    }
+    <U> BitSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
-    default BitSet<T> drop(long n) {
-        if (n <= 0) {
-            return this;
-        } else if (n >= length()) {
-            return builder().empty();
-        } else {
-            return builder().ofAll(iterator().drop(n));
-        }
-    }
+    BitSet<T> drop(long n);
 
     @Override
-    default BitSet<T> dropRight(long n) {
-        if (n <= 0) {
-            return this;
-        } else if (n >= length()) {
-            return builder().empty();
-        } else {
-            return builder().ofAll(iterator().dropRight(n));
-        }
-    }
+    BitSet<T> dropRight(long n);
 
     @Override
     default BitSet<T> dropUntil(Predicate<? super T> predicate) {
@@ -368,18 +360,10 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    default BitSet<T> dropWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final BitSet<T> bitSet = builder().ofAll(iterator().dropWhile(predicate));
-        return (bitSet.length() == length()) ? this : bitSet;
-    }
+    BitSet<T> dropWhile(Predicate<? super T> predicate);
 
     @Override
-    default BitSet<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final BitSet<T> bitSet = builder().ofAll(iterator().filter(predicate));
-        return (bitSet.length() == length()) ? this : bitSet;
-    }
+    BitSet<T> filter(Predicate<? super T> predicate);
 
     @Override
     default <U> SortedSet<U> flatMap(Comparator<? super U> comparator, Function<? super T, ? extends Iterable<? extends U>> mapper) {
@@ -400,10 +384,7 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    default <C> Map<C, BitSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).map((key, iterator) -> Tuple.of(key, builder().ofAll(iterator)));
-    }
+    <C> Map<C, BitSet<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
     default Iterator<BitSet<T>> grouped(long size) {
@@ -429,29 +410,10 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    Iterator<T> iterator();
+    BitSet<T> intersect(Set<? extends T> elements);
 
     @Override
-    default BitSet<T> intersect(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty() || elements.isEmpty()) {
-            return builder().empty();
-        } else {
-            int size = size();
-            if (size <= elements.size()) {
-                return retainAll(elements);
-            } else {
-                BitSet<T> results = builder().ofAll(elements).retainAll(this);
-                return (size == results.size()) ? this : results;
-            }
-        }
-    }
-
-    @Override
-    default Tuple2<BitSet<T>, BitSet<T>> partition(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return iterator().partition(predicate).map(builder()::ofAll, builder()::ofAll);
-    }
+    Tuple2<BitSet<T>, BitSet<T>> partition(Predicate<? super T> predicate);
 
     @Override
     default BitSet<T> peek(Consumer<? super T> action) {
@@ -465,11 +427,6 @@ public interface BitSet<T> extends SortedSet<T> {
     @Override
     default String stringPrefix() {
         return "BitSet";
-    }
-
-    @Override
-    default Comparator<T> comparator() {
-        return (t1, t2) -> Integer.compare(builder().toInt.apply(t1), builder().toInt.apply(t2));
     }
 
     @Override
@@ -510,13 +467,7 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    default BitSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, new java.util.ArrayList<T>(), (arr, t) -> {
-            arr.add(t);
-            return arr;
-        }, builder()::ofAll);
-    }
+    BitSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
 
     @Override
     default <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
@@ -540,15 +491,10 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    default Iterator<BitSet<T>> sliding(long size, long step) {
-        return iterator().sliding(size, step).map(builder()::ofAll);
-    }
+    Iterator<BitSet<T>> sliding(long size, long step);
 
     @Override
-    default Tuple2<BitSet<T>, BitSet<T>> span(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return iterator().span(predicate).map(builder()::ofAll, builder()::ofAll);
-    }
+    Tuple2<BitSet<T>, BitSet<T>> span(Predicate<? super T> predicate);
 
     @Override
     default BitSet<T> tail() {
@@ -565,26 +511,10 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    default BitSet<T> take(long n) {
-        if (n <= 0) {
-            return builder().empty();
-        } else if (n >= length()) {
-            return this;
-        } else {
-            return builder().ofAll(iterator().take(n));
-        }
-    }
+    BitSet<T> take(long n);
 
     @Override
-    default BitSet<T> takeRight(long n) {
-        if (n <= 0) {
-            return builder().empty();
-        } else if (n >= length()) {
-            return this;
-        } else {
-            return builder().ofAll(iterator().takeRight(n));
-        }
-    }
+    BitSet<T> takeRight(long n);
 
     @Override
     default BitSet<T> takeUntil(Predicate<? super T> predicate) {
@@ -594,11 +524,7 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    default BitSet<T> takeWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final BitSet<T> result = builder().ofAll(iterator().takeWhile(predicate));
-        return (result.length() == length()) ? this : result;
-    }
+    BitSet<T> takeWhile(Predicate<? super T> predicate);
 
     @Override
     default java.util.SortedSet<T> toJavaSet() {
@@ -671,10 +597,6 @@ interface BitSetModule {
             this.builder = builder;
         }
 
-        public Builder<T> builder() {
-            return builder;
-        }
-
         abstract int getWordsNum();
 
         abstract long[] copyExpand(int wordsNum);
@@ -721,13 +643,118 @@ interface BitSetModule {
                 return this;
             } else {
                 final int element = builder.toInt.apply(t);
-                if (element < 0) {
-                    throw new IllegalArgumentException("bitset element must be >= 0");
-                }
                 final long[] copy = copyExpand(1 + (element >> ADDRESS_BITS_PER_WORD));
                 setElement(copy, element);
                 return fromBitMaskNoCopy(copy);
             }
+        }
+
+        @Override
+        public BitSet<T> distinctBy(Comparator<? super T> comparator) {
+            Objects.requireNonNull(comparator, "comparator is null");
+            return builder.ofAll(iterator().distinctBy(comparator));
+        }
+
+        @Override
+        public <U> BitSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+            Objects.requireNonNull(keyExtractor, "keyExtractor is null");
+            return builder.ofAll(iterator().distinctBy(keyExtractor));
+        }
+
+        @Override
+        public BitSet<T> drop(long n) {
+            if (n <= 0) {
+                return this;
+            } else if (n >= length()) {
+                return builder.empty();
+            } else {
+                return builder.ofAll(iterator().drop(n));
+            }
+        }
+
+        @Override
+        public BitSet<T> dropRight(long n) {
+            if (n <= 0) {
+                return this;
+            } else if (n >= length()) {
+                return builder.empty();
+            } else {
+                return builder.ofAll(iterator().dropRight(n));
+            }
+        }
+
+        @Override
+        public BitSet<T> dropWhile(Predicate<? super T> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            final BitSet<T> bitSet = builder.ofAll(iterator().dropWhile(predicate));
+            return (bitSet.length() == length()) ? this : bitSet;
+        }
+
+        @Override
+        public BitSet<T> intersect(Set<? extends T> elements) {
+            Objects.requireNonNull(elements, "elements is null");
+            if (isEmpty() || elements.isEmpty()) {
+                return builder.empty();
+            } else {
+                int size = size();
+                if (size <= elements.size()) {
+                    return retainAll(elements);
+                } else {
+                    BitSet<T> results = builder.ofAll(elements).retainAll(this);
+                    return (size == results.size()) ? this : results;
+                }
+            }
+        }
+
+        @Override
+        public Iterator<BitSet<T>> sliding(long size, long step) {
+            return iterator().sliding(size, step).map(builder::ofAll);
+        }
+
+        @Override
+        public Tuple2<BitSet<T>, BitSet<T>> span(Predicate<? super T> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            return iterator().span(predicate).map(builder::ofAll, builder::ofAll);
+        }
+
+        @Override
+        public BitSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+            Objects.requireNonNull(operation, "operation is null");
+            return Collections.scanLeft(this, zero, operation, new java.util.ArrayList<T>(), (arr, t) -> {
+                arr.add(t);
+                return arr;
+            }, builder::ofAll);
+        }
+
+        @Override
+        public Tuple2<BitSet<T>, BitSet<T>> partition(Predicate<? super T> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            return iterator().partition(predicate).map(builder::ofAll, builder::ofAll);
+        }
+
+        @Override
+        public BitSet<T> filter(Predicate<? super T> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            final BitSet<T> bitSet = builder.ofAll(iterator().filter(predicate));
+            return (bitSet.length() == length()) ? this : bitSet;
+        }
+
+        @Override
+        public  <C> Map<C, BitSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
+            Objects.requireNonNull(classifier, "classifier is null");
+            return iterator().groupBy(classifier).map((key, iterator) -> Tuple.of(key, builder.ofAll(iterator)));
+        }
+
+        @Override
+        public Comparator<T> comparator() {
+            return (t1, t2) -> Integer.compare(builder.toInt.apply(t1), builder.toInt.apply(t2));
+        }
+
+        @Override
+        public BitSet<T> takeWhile(Predicate<? super T> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            final BitSet<T> result = builder.ofAll(iterator().takeWhile(predicate));
+            return (result.length() == length()) ? this : result;
         }
 
         @Override
@@ -780,6 +807,28 @@ interface BitSetModule {
                 len += Long.bitCount(getWord(i));
             }
             return len;
+        }
+
+        @Override
+        public BitSet<T> take(long n) {
+            if (n <= 0) {
+                return builder.empty();
+            } else if (n >= length()) {
+                return this;
+            } else {
+                return builder.ofAll(iterator().take(n));
+            }
+        }
+
+        @Override
+        public BitSet<T> takeRight(long n) {
+            if (n <= 0) {
+                return builder.empty();
+            } else if (n >= length()) {
+                return this;
+            } else {
+                return builder.ofAll(iterator().takeRight(n));
+            }
         }
 
         @Override
