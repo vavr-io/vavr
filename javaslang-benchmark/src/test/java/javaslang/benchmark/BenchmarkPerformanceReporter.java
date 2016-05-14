@@ -12,11 +12,13 @@ import javaslang.collection.CharSeq;
 import javaslang.collection.List;
 import javaslang.collection.Map;
 import javaslang.collection.TreeMap;
+import javaslang.collection.Vector;
 import javaslang.control.Option;
 import org.openjdk.jmh.infra.BenchmarkParams;
 import org.openjdk.jmh.results.BenchmarkResult;
 import org.openjdk.jmh.results.Result;
 import org.openjdk.jmh.results.RunResult;
+import org.openjdk.jmh.util.ListStatistics;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
@@ -29,23 +31,32 @@ public class BenchmarkPerformanceReporter {
     private static final DecimalFormat PCT_FORMAT = new DecimalFormat("0.00%");
     private final Collection<RunResult> runResults;
     private final String targetImplementation;
+    private final double outlierLowPct;
+    private final double outlierHighPct;
 
     public static BenchmarkPerformanceReporter of(Collection<RunResult> runResults) {
-        return of(runResults, "slang");
+        return of(runResults, "slang", 0.3, 0.1);
     }
 
-    public static BenchmarkPerformanceReporter of(Collection<RunResult> runResults, String targetImplementation) {
-        return new BenchmarkPerformanceReporter(runResults, targetImplementation);
+    public static BenchmarkPerformanceReporter of(Collection<RunResult> runResults, String targetImplementation, double outlierLowPct, double outlierHighPct) {
+        return new BenchmarkPerformanceReporter(runResults, targetImplementation, outlierLowPct, outlierHighPct);
     }
 
     /**
      * This class prints performance reports about the execution of individual tests, comparing their performance
      * against other implementations as required.
-     * @param runResults
+     *
+     * @param runResults           The results
+     * @param targetImplementation The target implementation we want to focus on in the Ratio report.
+     *                             It is case insensitive. If we enter "slang", it will match "JavaSlang" and "java_slang".
+     * @param outlierLowPct        The percentage of samples on the lower end that will be ignored from the statistics
+     * @param outlierHighPct       The percentage of samples on the higher end that will be ignored from the statistics
      */
-    private BenchmarkPerformanceReporter(Collection<RunResult> runResults, String targetImplementation) {
+    private BenchmarkPerformanceReporter(Collection<RunResult> runResults, String targetImplementation, double outlierLowPct, double outlierHighPct) {
         this.runResults = runResults;
         this.targetImplementation = targetImplementation;
+        this.outlierLowPct = outlierLowPct;
+        this.outlierHighPct = outlierHighPct;
     }
 
     /**
@@ -103,7 +114,7 @@ public class BenchmarkPerformanceReporter {
     private List<TestExecution> mapToTestExecutions(Collection<RunResult> runResults) {
         List<TestExecution> executions = List.empty();
         for (RunResult runResult : runResults) {
-            executions = executions.push(TestExecution.of(runResult.getAggregatedResult()));
+            executions = executions.push(TestExecution.of(runResult.getAggregatedResult(), outlierLowPct, outlierHighPct));
         }
         return executions;
     }
@@ -169,6 +180,9 @@ public class BenchmarkPerformanceReporter {
             System.out.println("Detailed Performance Execution Report");
             System.out.println(CharSeq.of("=").repeat(header.length()));
             System.out.println("  (Error: ±99% confidence interval, expressed as % of Score)");
+            if (outlierLowPct > 0.0 && outlierHighPct > 0.0) {
+                System.out.println(String.format("  (Outliers removed: %s low end, %s high end)", PCT_FORMAT.format(outlierLowPct), PCT_FORMAT.format(outlierHighPct)));
+            }
             if (!alternativeImplementations.isEmpty()) {
                 System.out.println(String.format("  (%s: read as current row implementation is x times faster than alternative implementation)", alternativeImplementations.mkString(", ")));
             }
@@ -242,6 +256,9 @@ public class BenchmarkPerformanceReporter {
             System.out.println("\n\n");
             System.out.println("Performance Ratios");
             System.out.println(CharSeq.of("=").repeat(ratioHeaderNumerator().length()));
+            if (outlierLowPct > 0.0 && outlierHighPct > 0.0) {
+                System.out.println(String.format("  (Outliers removed: %s low end, %s high end)", PCT_FORMAT.format(outlierLowPct), PCT_FORMAT.format(outlierHighPct)));
+            }
         }
 
         private String ratioHeaderNumerator() {
@@ -340,6 +357,8 @@ public class BenchmarkPerformanceReporter {
     }
 
     static class TestExecution implements Comparable<TestExecution> {
+        private static double outlierLowPct;
+        private static double outlierHighPct;
         private final String paramKey;
         private final String fullName;
         private final String target;
@@ -350,21 +369,37 @@ public class BenchmarkPerformanceReporter {
         private final double scoreError;
         private final String unit;
 
-        public static TestExecution of(BenchmarkResult benchmarkResult) {
-            return new TestExecution(benchmarkResult, benchmarkResult.getPrimaryResult());
+        public static TestExecution of(BenchmarkResult benchmarkResult, double outlierLowPct, double outlierHighPct) {
+            TestExecution.outlierLowPct = outlierLowPct;
+            TestExecution.outlierHighPct = outlierHighPct;
+            return new TestExecution(benchmarkResult);
         }
 
-        public TestExecution(BenchmarkResult benchmark, Result<?> result) {
+        public TestExecution(BenchmarkResult benchmark) {
+            Result primaryResult = benchmark.getPrimaryResult();
             fullName = benchmark.getParams().getBenchmark();
             target = extractPart(fullName, 2);
             operation = extractPart(fullName, 1);
             implementation = extractPart(fullName, 0);
-            sampleCount = result.getSampleCount();
-
             paramKey = getParameterKey(benchmark);
-            score = result.getScore();
-            scoreError = result.getScoreError();
-            unit = result.getScoreUnit();
+
+            ListStatistics statistics = createStatisticsWithoutOutliers(benchmark, outlierLowPct, outlierHighPct);
+            sampleCount = statistics.getN();
+            score = statistics.getMean();
+            scoreError = statistics.getMeanErrorAt(0.999);
+            unit = primaryResult.getScoreUnit();
+        }
+
+        private ListStatistics createStatisticsWithoutOutliers(BenchmarkResult benchmark, double outlierLowPct, double outlierHighPct) {
+            Vector<Double> results = benchmark.getIterationResults().stream()
+                    .map(r -> r.getPrimaryResult().getScore())
+                    .sorted()
+                    .collect(Vector.collector());
+            int size = results.size();
+            int outliersLow = (int) (size * outlierLowPct);
+            int outliersHigh = (int) (size * outlierHighPct);
+            results = results.drop(outliersLow).dropRight(outliersHigh);
+            return new ListStatistics(results.toJavaList().stream().mapToDouble(r -> r).toArray());
         }
 
         private String getParameterKey(BenchmarkResult benchmarkResult) {
