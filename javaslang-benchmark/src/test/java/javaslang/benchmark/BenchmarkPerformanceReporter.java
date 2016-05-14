@@ -5,6 +5,7 @@
  */
 package javaslang.benchmark;
 
+import javaslang.Function2;
 import javaslang.Tuple2;
 import javaslang.collection.Array;
 import javaslang.collection.CharSeq;
@@ -105,7 +106,7 @@ public class BenchmarkPerformanceReporter {
         if (results.isEmpty()) {
             return;
         }
-        new RatioPerformanceReport(results).print();
+        new RatioPerformanceReport(results, targetImplementation).print();
     }
 
     private List<TestExecution> mapToTestExecutions(Collection<RunResult> runResults) {
@@ -211,7 +212,6 @@ public class BenchmarkPerformanceReporter {
     }
 
     private class RatioPerformanceReport {
-        private final List<TestExecution> results;
         private final TreeMap<String, List<TestExecution>> resultsByKey;
         private final int groupSize;
         private final int nameSize;
@@ -220,9 +220,12 @@ public class BenchmarkPerformanceReporter {
         private final List<String> alternativeImplementations;
         private final int alternativeImplSize;
         private final int ratioSize;
+        private final List<String> targetImplementations;
+        private final String targetImplementation;
 
-        public RatioPerformanceReport(List<TestExecution> results) {
-            this.results = results;
+        public RatioPerformanceReport(List<TestExecution> results, String targetImplementation) {
+            this.targetImplementation = targetImplementation;
+
             resultsByKey = TreeMap.ofEntries(results.groupBy(TestExecution::getTestNameKey));
             groupSize = Math.max(results.map(r -> r.getTarget().length()).max().get(), 10);
             nameSize = Math.max(results.map(r -> r.getOperation().length()).max().get(), 10);
@@ -231,6 +234,7 @@ public class BenchmarkPerformanceReporter {
             paramKeySize = Math.max(results.map(r -> r.getParamKey().length()).max().get(), 10);
 
             alternativeImplementations = results.map(TestExecution::getImplementation).distinct().sorted();
+            targetImplementations = alternativeImplementations.filter(i -> i.toLowerCase().contains(targetImplementation.toLowerCase()));
             alternativeImplSize = Math.max(alternativeImplementations.map(String::length).max().get(), 10);
             ratioSize = Math.max(alternativeImplSize * 2 + 1, 10);
         }
@@ -243,10 +247,20 @@ public class BenchmarkPerformanceReporter {
         private void printHeader() {
             System.out.println("\n\n");
             System.out.println("Performance Ratios");
-            System.out.println(CharSeq.of("=").repeat(ratioHeader().length()));
+            System.out.println(CharSeq.of("=").repeat(ratioHeaderNumerator().length()));
         }
 
-        private String ratioHeader() {
+        private String ratioHeaderNumerator() {
+            final String paramKeyHeader = paramKeys.map(type -> padRight(type, paramKeySize)).mkString(" ");
+            return String.format("%s  %s  %s  %s ",
+                    padLeft("Target", groupSize),
+                    padLeft("Operation", nameSize),
+                    padLeft("Ratio", ratioSize),
+                    paramKeyHeader
+            );
+        }
+
+        private String ratioHeaderDenominator() {
             final String paramKeyHeader = paramKeys.map(type -> padRight(type, paramKeySize)).mkString(" ");
             return String.format("%s  %s  %s  %s ",
                     padLeft("Target", groupSize),
@@ -262,46 +276,67 @@ public class BenchmarkPerformanceReporter {
                 return;
             }
 
-            for (String baseImpl : alternativeImplementations) {
-                System.out.println(String.format("\nRatios alternative_impl/%s", baseImpl));
-                System.out.println(ratioHeader());
-                for (Tuple2<String, List<TestExecution>> execution : resultsByKey) {
-                    printRatioForBaseType(baseImpl, execution._2);
-                }
-            }
+            printTargetInNumerator();
+            printTargetInDenominator();
+
             System.out.println("\n");
         }
 
-        private void printRatioForBaseType(String baseType, List<TestExecution> testExecutions) {
-            List<TestExecution> baseImplExecutions = testExecutions.filter(e -> e.getImplementation().equals(baseType));
+        private void printTargetInNumerator() {
+            System.out.println(String.format("\nRatios %s / <alternative_impl>", targetImplementation));
+            System.out.println(ratioHeaderNumerator());
+            for (String targetImpl : targetImplementations) {
+                for (Tuple2<String, List<TestExecution>> execution : resultsByKey) {
+                    printRatioForBaseType(targetImpl, execution._2,
+                                                (baseImpl, alternativeImpl) -> padLeft(String.format("%s/%s", baseImpl, alternativeImpl), ratioSize),
+                                                (baseExec, alternativeExec) -> calculateRatios(baseExec, alternativeExec));
+                }
+            }
+        }
+
+        private void printTargetInDenominator() {
+            System.out.println(String.format("\nRatios <alternative_impl> / %s", targetImplementation));
+            System.out.println(ratioHeaderDenominator());
+            for (String targetImpl : targetImplementations) {
+                for (Tuple2<String, List<TestExecution>> execution : resultsByKey) {
+                    printRatioForBaseType(targetImpl, execution._2,
+                            (baseImpl, alternativeImpl) -> padRight(String.format("%s/%s", alternativeImpl, baseImpl), ratioSize),
+                            (baseExec, alternativeExec) -> calculateRatios(alternativeExec, baseExec));
+                }
+            }
+        }
+
+        private void printRatioForBaseType(String baseType, List<TestExecution> testExecutions,
+                                           Function2<String, String, String> ratioNamePrinter,
+                                           Function2<List<TestExecution>, List<TestExecution>, String> ratioCalculator) {
+            final List<TestExecution> baseImplExecutions = testExecutions.filter(e -> e.getImplementation().equals(baseType));
             if (baseImplExecutions.isEmpty()) {
                 return;
             }
-            TestExecution baseTypeExecution = baseImplExecutions.head();
+            final TestExecution baseTypeExecution = baseImplExecutions.head();
 
             for (String alternativeImpl : alternativeImplementations) {
                 if (alternativeImpl.equals(baseType)) {
                     continue;
                 }
-                List<TestExecution> alternativeExecutions = testExecutions.filter(e -> e.getImplementation().equals(alternativeImpl));
+                final List<TestExecution> alternativeExecutions = testExecutions.filter(e -> e.getImplementation().equals(alternativeImpl));
                 if (alternativeExecutions.isEmpty()) {
                     continue;
                 }
                 System.out.println(String.format("%s  %s  %s  %s ",
                         padLeft(baseTypeExecution.getTarget(), groupSize),
                         padLeft(baseTypeExecution.getOperation(), nameSize),
-                        padRight(String.format("%s/%s", alternativeImpl, baseType), ratioSize),
-                        calculateRatios(baseImplExecutions, alternativeExecutions)
-                        ));
+                        ratioNamePrinter.apply(baseType, alternativeImpl),
+                        ratioCalculator.apply(baseImplExecutions, alternativeExecutions)));
             }
         }
 
-        private String calculateRatios(List<TestExecution> baseImplExecutions, List<TestExecution> alternativeExecutions) {
+        private String calculateRatios(List<TestExecution> alternativeExecutions, List<TestExecution> baseImplExecutions) {
             Array<String> ratioStrs = Array.empty();
             for (String paramKey : paramKeys) {
-                Option<TestExecution> alternativeExecution = alternativeExecutions.find(e -> e.getParamKey().equals(paramKey));
-                Option<TestExecution> baseExecution = baseImplExecutions.find(e -> e.getParamKey().equals(paramKey));
-                String paramRatio = alternativeExecution.isEmpty() || baseExecution.isEmpty() || baseExecution.get().getScore() == 0.0
+                final Option<TestExecution> alternativeExecution = alternativeExecutions.find(e -> e.getParamKey().equals(paramKey));
+                final Option<TestExecution> baseExecution = baseImplExecutions.find(e -> e.getParamKey().equals(paramKey));
+                final String paramRatio = alternativeExecution.isEmpty() || baseExecution.isEmpty() || baseExecution.get().getScore() == 0.0
                         ? ""
                         : PERFORMANCE_FORMAT.format(alternativeExecution.get().getScore() / baseExecution.get().getScore()) + "x";
                 ratioStrs = ratioStrs.append(padRight(paramRatio, paramKeySize));
