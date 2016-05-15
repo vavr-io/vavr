@@ -1,50 +1,28 @@
-package javaslang.benchmark;
+package javaslang.benchmark.collection;
 
+import javaslang.benchmark.JmhRunner;
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
-import org.openjdk.jmh.annotations.Warmup;
-import org.openjdk.jmh.results.RunResult;
-import org.openjdk.jmh.runner.Runner;
-import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class ListBenchmark {
-    public static void main(String... args) throws Exception { /* main is more reliable than a test */
-        final Options opts = new OptionsBuilder()
-                .include(ListBenchmark.class.getSimpleName())
-                .shouldDoGC(true)
-                .shouldFailOnError(true)
-                .build();
 
-        final Collection<RunResult> results = new Runner(opts).run();
-        BenchmarkPerformanceReporter.of(results).print();
+    public static void main(String... args) { /* main is more reliable than a test */
+        JmhRunner.runAndReport(ListBenchmark.class);
     }
 
     @State(Scope.Benchmark)
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
-    @Warmup(iterations = 10, time = 500, timeUnit = TimeUnit.MILLISECONDS)
-    @Measurement(iterations = 40, time = 500, timeUnit = TimeUnit.MILLISECONDS)
-    @Fork(value = 1, jvmArgsAppend = { "-XX:+UseG1GC", "-Xss100m", "-Xms1g", "-Xmx1g", "-disableassertions" }) /* set fork to 0 if you want to debug */
     public static class Base {
-        @Param({ "10", "100", "1000", "10000" })
+        @Param({ "10", "100", })
         public int CONTAINER_SIZE;
 
         public Integer[] ELEMENTS;

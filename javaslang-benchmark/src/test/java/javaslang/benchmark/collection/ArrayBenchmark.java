@@ -1,33 +1,24 @@
-package javaslang.benchmark;
+package javaslang.benchmark.collection;
 
-import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.results.RunResult;
-import org.openjdk.jmh.runner.Runner;
-import org.openjdk.jmh.runner.options.*;
+import javaslang.benchmark.JmhRunner;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.TearDown;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
-import static javaslang.benchmark.BenchmarkResultAggregator.displayRatios;
+import java.util.Objects;
+import java.util.Random;
 
 public class ArrayBenchmark {
-    public static void main(String... args) throws Exception { /* main is more reliable than a test */
-        final Options opts = new OptionsBuilder()
-                .include(ArrayBenchmark.class.getSimpleName())
-                .shouldDoGC(false)
-                .shouldFailOnError(true)
-                .build();
 
-        final Collection<RunResult> results = new Runner(opts).run();
-        displayRatios(results, "^.*slang.*$");
+    public static void main(String... args) { /* main is more reliable than a test */
+        JmhRunner.runAndReport(ArrayBenchmark.class);
     }
 
     @State(Scope.Benchmark)
-    @BenchmarkMode(Mode.Throughput)
-    @OutputTimeUnit(TimeUnit.SECONDS)
-    @Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
-    @Measurement(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-    @Fork(value = 1, jvmArgsAppend = { "-XX:+UseG1GC", "-Xss100m", "-Xms1g", "-Xmx1g", "-disableassertions" }) /* set fork to 0 if you want to debug */
     public static class Base {
         @Param({ "10", "100", "1000" })
         public int CONTAINER_SIZE;
