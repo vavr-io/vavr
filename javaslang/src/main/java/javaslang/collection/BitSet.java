@@ -31,9 +31,7 @@ public interface BitSet<T> extends SortedSet<T> {
 
     long serialVersionUID = 1L;
 
-    class Builder<T> implements Serializable {
-
-        private static final long serialVersionUID = 1L;
+    class Builder<T> {
 
         final static Builder<Integer> DEFAULT = new Builder<>(i -> i, i -> i);
 
@@ -54,15 +52,15 @@ public interface BitSet<T> extends SortedSet<T> {
         }
 
         public BitSet<T> empty() {
-            return new BitSetModule.BitSet1<>(this, 0L);
+            return new BitSetModule.BitSet1<>(fromInt, toInt, 0L);
         }
 
         public BitSet<T> of(T t) {
             final int value = toInt.apply(t);
             if(value < BitSetModule.BITS_PER_WORD) {
-                return new BitSetModule.BitSet1<>(this, 1L << value);
+                return new BitSetModule.BitSet1<>(fromInt, toInt, 1L << value);
             } else if(value < 2 * BitSetModule.BITS_PER_WORD) {
-                return new BitSetModule.BitSet2<>(this, 0L, 1L << value);
+                return new BitSetModule.BitSet2<>(fromInt, toInt, 0L, 1L << value);
             } else {
                 return empty().add(t);
             }
@@ -71,13 +69,7 @@ public interface BitSet<T> extends SortedSet<T> {
         @SuppressWarnings("varargs")
         @SafeVarargs
         public final BitSet<T> of(T... values) {
-            if(values.length == 0) {
-                return empty();
-            } else if(values.length == 1) {
-                return of(values[0]);
-            } else {
-                return empty().addAll(Array.wrap(values));
-            }
+            return empty().addAll(Array.wrap(values));
         }
 
         public BitSet<T> ofAll(Iterable<? extends T> values) {
@@ -373,8 +365,7 @@ public interface BitSet<T> extends SortedSet<T> {
 
     @Override
     default <U> SortedSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return TreeSet.ofAll(naturalComparator(), iterator().flatMap(mapper));
+        return flatMap(naturalComparator(), mapper);
     }
 
     @Override
@@ -591,10 +582,12 @@ interface BitSetModule {
 
         private static final long serialVersionUID = 1L;
 
-        Builder<T> builder;
+        final Function1<Integer, T> fromInt;
+        final Function1<T, Integer> toInt;
 
-        AbstractBitSet(Builder<T> builder) {
-            this.builder = builder;
+        AbstractBitSet(Function1<Integer, T> fromInt, Function1<T, Integer> toInt) {
+            this.fromInt = fromInt;
+            this.toInt = toInt;
         }
 
         abstract int getWordsNum();
@@ -603,18 +596,26 @@ interface BitSetModule {
 
         abstract long getWord(int index);
 
+        BitSet<T> createEmpty() {
+            return new BitSet1<>(fromInt, toInt, 0L);
+        }
+
+        BitSet<T> createFromAll(Iterable<? extends T> values) {
+            return createEmpty().addAll(values);
+        }
+
         BitSet<T> fromBitMaskNoCopy(long[] elements) {
             final int len = elements.length;
             if (len == 0) {
-                return builder.empty();
+                return createEmpty();
             }
             if (len == 1) {
-                return new BitSet1<>(builder, elements[0]);
+                return new BitSet1<>(fromInt, toInt, elements[0]);
             }
             if (len == 2) {
-                return new BitSet2<>(builder, elements[0], elements[1]);
+                return new BitSet2<>(fromInt, toInt, elements[0], elements[1]);
             }
-            return new BitSetN<>(builder, elements);
+            return new BitSetN<>(fromInt, toInt, elements);
         }
 
         private void setElement(long[] words, int element) {
@@ -642,7 +643,7 @@ interface BitSetModule {
             if (contains(t)) {
                 return this;
             } else {
-                final int element = builder.toInt.apply(t);
+                final int element = toInt.apply(t);
                 final long[] copy = copyExpand(1 + (element >> ADDRESS_BITS_PER_WORD));
                 setElement(copy, element);
                 return fromBitMaskNoCopy(copy);
@@ -652,13 +653,13 @@ interface BitSetModule {
         @Override
         public BitSet<T> distinctBy(Comparator<? super T> comparator) {
             Objects.requireNonNull(comparator, "comparator is null");
-            return builder.ofAll(iterator().distinctBy(comparator));
+            return createFromAll(iterator().distinctBy(comparator));
         }
 
         @Override
         public <U> BitSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
             Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-            return builder.ofAll(iterator().distinctBy(keyExtractor));
+            return createFromAll(iterator().distinctBy(keyExtractor));
         }
 
         @Override
@@ -666,9 +667,9 @@ interface BitSetModule {
             if (n <= 0) {
                 return this;
             } else if (n >= length()) {
-                return builder.empty();
+                return createEmpty();
             } else {
-                return builder.ofAll(iterator().drop(n));
+                return createFromAll(iterator().drop(n));
             }
         }
 
@@ -677,16 +678,16 @@ interface BitSetModule {
             if (n <= 0) {
                 return this;
             } else if (n >= length()) {
-                return builder.empty();
+                return createEmpty();
             } else {
-                return builder.ofAll(iterator().dropRight(n));
+                return createFromAll(iterator().dropRight(n));
             }
         }
 
         @Override
         public BitSet<T> dropWhile(Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
-            final BitSet<T> bitSet = builder.ofAll(iterator().dropWhile(predicate));
+            final BitSet<T> bitSet = createFromAll(iterator().dropWhile(predicate));
             return (bitSet.length() == length()) ? this : bitSet;
         }
 
@@ -694,13 +695,13 @@ interface BitSetModule {
         public BitSet<T> intersect(Set<? extends T> elements) {
             Objects.requireNonNull(elements, "elements is null");
             if (isEmpty() || elements.isEmpty()) {
-                return builder.empty();
+                return createEmpty();
             } else {
                 int size = size();
                 if (size <= elements.size()) {
                     return retainAll(elements);
                 } else {
-                    BitSet<T> results = builder.ofAll(elements).retainAll(this);
+                    BitSet<T> results = createFromAll(elements).retainAll(this);
                     return (size == results.size()) ? this : results;
                 }
             }
@@ -708,13 +709,13 @@ interface BitSetModule {
 
         @Override
         public Iterator<BitSet<T>> sliding(long size, long step) {
-            return iterator().sliding(size, step).map(builder::ofAll);
+            return iterator().sliding(size, step).map(this::createFromAll);
         }
 
         @Override
         public Tuple2<BitSet<T>, BitSet<T>> span(Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
-            return iterator().span(predicate).map(builder::ofAll, builder::ofAll);
+            return iterator().span(predicate).map(this::createFromAll, this::createFromAll);
         }
 
         @Override
@@ -723,44 +724,44 @@ interface BitSetModule {
             return Collections.scanLeft(this, zero, operation, new java.util.ArrayList<T>(), (arr, t) -> {
                 arr.add(t);
                 return arr;
-            }, builder::ofAll);
+            }, this::createFromAll);
         }
 
         @Override
         public Tuple2<BitSet<T>, BitSet<T>> partition(Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
-            return iterator().partition(predicate).map(builder::ofAll, builder::ofAll);
+            return iterator().partition(predicate).map(this::createFromAll, this::createFromAll);
         }
 
         @Override
         public BitSet<T> filter(Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
-            final BitSet<T> bitSet = builder.ofAll(iterator().filter(predicate));
+            final BitSet<T> bitSet = createFromAll(iterator().filter(predicate));
             return (bitSet.length() == length()) ? this : bitSet;
         }
 
         @Override
         public  <C> Map<C, BitSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
             Objects.requireNonNull(classifier, "classifier is null");
-            return iterator().groupBy(classifier).map((key, iterator) -> Tuple.of(key, builder.ofAll(iterator)));
+            return iterator().groupBy(classifier).map((key, iterator) -> Tuple.of(key, createFromAll(iterator)));
         }
 
         @Override
         public Comparator<T> comparator() {
-            return (t1, t2) -> Integer.compare(builder.toInt.apply(t1), builder.toInt.apply(t2));
+            return (t1, t2) -> Integer.compare(toInt.apply(t1), toInt.apply(t2));
         }
 
         @Override
         public BitSet<T> takeWhile(Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
-            final BitSet<T> result = builder.ofAll(iterator().takeWhile(predicate));
+            final BitSet<T> result = createFromAll(iterator().takeWhile(predicate));
             return (result.length() == length()) ? this : result;
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public BitSet<T> addAll(Iterable<? extends T> elements) {
-            final Stream<Integer> source = Stream.ofAll(elements).map(builder.toInt);
+            final Stream<Integer> source = Stream.ofAll(elements).map(toInt);
             final long[] copy = copyExpand(1 + (source.max().getOrElse(0) >> ADDRESS_BITS_PER_WORD));
             source.forEach(element -> {
                 if (element < 0) {
@@ -773,7 +774,7 @@ interface BitSetModule {
 
         @Override
         public boolean contains(T t) {
-            final int element = builder.toInt.apply(t);
+            final int element = toInt.apply(t);
             if (element < 0) {
                 throw new IllegalArgumentException("bitset element must be >= 0");
             }
@@ -788,7 +789,7 @@ interface BitSetModule {
             } else {
                 final long last = getWord(getWordsNum() - 1);
                 final int element = BITS_PER_WORD * (getWordsNum() - 1) + BITS_PER_WORD - Long.numberOfLeadingZeros(last) - 1;
-                return remove(builder.fromInt.apply(element));
+                return remove(fromInt.apply(element));
             }
         }
 
@@ -796,7 +797,7 @@ interface BitSetModule {
         public Iterator<T> iterator() {
             return Stream.range(0, getWordsNum() << ADDRESS_BITS_PER_WORD)
                     .filter(i -> (getWord(i >> ADDRESS_BITS_PER_WORD) & (1L << i)) != 0)
-                    .map(builder.fromInt)
+                    .map(fromInt)
                     .iterator();
         }
 
@@ -812,29 +813,29 @@ interface BitSetModule {
         @Override
         public BitSet<T> take(long n) {
             if (n <= 0) {
-                return builder.empty();
+                return createEmpty();
             } else if (n >= length()) {
                 return this;
             } else {
-                return builder.ofAll(iterator().take(n));
+                return createFromAll(iterator().take(n));
             }
         }
 
         @Override
         public BitSet<T> takeRight(long n) {
             if (n <= 0) {
-                return builder.empty();
+                return createEmpty();
             } else if (n >= length()) {
                 return this;
             } else {
-                return builder.ofAll(iterator().takeRight(n));
+                return createFromAll(iterator().takeRight(n));
             }
         }
 
         @Override
         public BitSet<T> remove(T t) {
             if (contains(t)) {
-                final int element = builder.toInt.apply(t);
+                final int element = toInt.apply(t);
                 final long[] copy = copyExpand(getWordsNum());
                 unsetElement(copy, element);
                 return fromBitMaskNoCopy(shrink(copy));
@@ -846,7 +847,7 @@ interface BitSetModule {
         @Override
         @SuppressWarnings("unchecked")
         public BitSet<T> removeAll(Iterable<? extends T> elements) {
-            final Stream<Integer> source = Stream.ofAll(elements).map(builder.toInt);
+            final Stream<Integer> source = Stream.ofAll(elements).map(toInt);
             final long[] copy = copyExpand(getWordsNum());
             source.forEach(element -> {
                 unsetElement(copy, element);
@@ -883,8 +884,8 @@ interface BitSetModule {
 
         private final long elements;
 
-        BitSet1(Builder<T> builder, long elements) {
-            super(builder);
+        BitSet1(Function1<Integer, T> fromInt, Function1<T, Integer> toInt, long elements) {
+            super(fromInt, toInt);
             this.elements = elements;
         }
 
@@ -915,7 +916,7 @@ interface BitSetModule {
         @Override
         public T head() {
             if (elements != 0) {
-                return builder.fromInt.apply(Long.numberOfTrailingZeros(elements));
+                return fromInt.apply(Long.numberOfTrailingZeros(elements));
             }
             throw new NoSuchElementException("head of empty BitSet");
         }
@@ -927,8 +928,8 @@ interface BitSetModule {
 
         private final long elements1, elements2;
 
-        BitSet2(Builder<T> builder, long elements1, long elements2) {
-            super(builder);
+        BitSet2(Function1<Integer, T> fromInt, Function1<T, Integer> toInt, long elements1, long elements2) {
+            super(fromInt, toInt);
             this.elements1 = elements1;
             this.elements2 = elements2;
         }
@@ -965,9 +966,9 @@ interface BitSetModule {
         @Override
         public T head() {
             if (elements1 != 0) {
-                return builder.fromInt.apply(Long.numberOfTrailingZeros(elements1));
+                return fromInt.apply(Long.numberOfTrailingZeros(elements1));
             } else if (elements2 != 0) {
-                return builder.fromInt.apply(BITS_PER_WORD + Long.numberOfTrailingZeros(elements2));
+                return fromInt.apply(BITS_PER_WORD + Long.numberOfTrailingZeros(elements2));
             }
             throw new NoSuchElementException("head of empty BitSet");
         }
@@ -979,8 +980,8 @@ interface BitSetModule {
 
         private final long[] elements;
 
-        BitSetN(Builder<T> builder, long[] elements) {
-            super(builder);
+        BitSetN(Function1<Integer, T> fromInt, Function1<T, Integer> toInt, long[] elements) {
+            super(fromInt, toInt);
             this.elements = elements;
         }
 
@@ -1013,7 +1014,7 @@ interface BitSetModule {
             int offset = 0;
             for (int i = 0; i < getWordsNum(); i++) {
                 if(elements[i] != 0) {
-                    return builder.fromInt.apply(offset + Long.numberOfTrailingZeros(elements[i]));
+                    return fromInt.apply(offset + Long.numberOfTrailingZeros(elements[i]));
                 }
                 offset += BITS_PER_WORD;
             }

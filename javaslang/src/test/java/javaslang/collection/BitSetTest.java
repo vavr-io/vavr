@@ -299,37 +299,64 @@ public class BitSetTest extends AbstractSortedSetTest {
     // BitSet specific
 
     @Test
-    public void testNative() {
+    public void testBitSet1() {
         BitSet<Integer> bs = BitSet.empty();
 
         bs = bs.add(2);
-        assert bs.head() == 2;
+        assertThat(bs.head()).isEqualTo(2);
 
         bs = bs.add(4);
-        assert bs.head() == 2;
-
-        bs = bs.add(70);
-        assert bs.head() == 2;
-
-        bs = bs.add(300);
-        assert bs.head() == 2;
-
-        bs = bs.add(3000);
-        assert bs.head() == 2;
+        assertThat(bs.head()).isEqualTo(2);
 
         bs = bs.remove(2);
-        assert bs.head() == 4;
-        assert !bs.contains(2);
+        assertThat(bs.head()).isEqualTo(4);
+        assertThat(bs.contains(2)).isFalse();
 
         bs = bs.remove(4);
-        assert bs.head() == 70;
-        assert !bs.contains(4);
+        assertThat(bs.isEmpty()).isTrue();
+    }
+
+    @Test
+    public void testBitSet2() {
+        BitSet<Integer> bs = BitSet.empty();
+
+        bs = bs.add(2);
+        assertThat(bs.head()).isEqualTo(2);
+
+        bs = bs.add(70);
+        assertThat(bs.head()).isEqualTo(2);
+
+        bs = bs.remove(2);
+        assertThat(bs.head()).isEqualTo(70);
+        assertThat(bs.contains(2)).isFalse();
 
         bs = bs.remove(70);
-        assert bs.head() == 300;
-        assert !bs.contains(70);
+        assertThat(bs.isEmpty()).isTrue();
+    }
 
-        assert bs.contains(300);
+    @Test
+    public void testBitSetN() {
+        BitSet<Integer> bs = BitSet.empty();
+
+        bs = bs.add(2);
+        assertThat(bs.head()).isEqualTo(2);
+
+        bs = bs.add(700);
+        assertThat(bs.head()).isEqualTo(2);
+
+        bs = bs.remove(2);
+        assertThat(bs.head()).isEqualTo(700);
+        assertThat(bs.contains(2)).isFalse();
+
+        bs = bs.remove(700);
+        assertThat(bs.isEmpty()).isTrue();
+    }
+
+    @Test
+    public void testFactories() {
+        assertThat(BitSet.of(7).contains(7)).isTrue();     // BitSet1
+        assertThat(BitSet.of(77).contains(77)).isTrue();   // BitSet2
+        assertThat(BitSet.of(777).contains(777)).isTrue(); // BitSetN
     }
 
     @Test
