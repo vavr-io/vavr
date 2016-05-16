@@ -1,6 +1,5 @@
 package javaslang.collection;
 
-import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import org.assertj.core.api.Assertions;
@@ -13,6 +12,9 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+
+import static javaslang.Serializables.deserialize;
+import static javaslang.Serializables.serialize;
 
 public class BitSetTest extends AbstractSortedSetTest {
 
@@ -81,6 +83,7 @@ public class BitSetTest extends AbstractSortedSetTest {
                     final Tuple3<?, ?, ?> t2 = (Tuple3<?, ?, ?>) expected;
                     assertThat((Iterable<?>) t1._1).isEqualTo(t2._1);
                     assertThat((Iterable<?>) t1._2).isEqualTo(t2._2);
+                    assertThat((Iterable<?>) t1._3).isEqualTo(t2._3);
                     return this;
                 } else {
                     return super.isEqualTo(expected);
@@ -201,17 +204,17 @@ public class BitSetTest extends AbstractSortedSetTest {
         return this.<Double>bsBuilder().ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
-    private static boolean badRange(int a, int b) {
+    private static boolean isBadRange(int a, int b) {
         return a < 0 || b < 0 || a > MAX_BIT || b > MAX_BIT;
     }
 
-    private static boolean badRange(long a, long b) {
+    private static boolean isBadRange(long a, long b) {
         return a < 0 || b < 0 || a > MAX_BIT || b > MAX_BIT;
     }
 
     @Override
     protected BitSet<Integer> range(int from, int toExclusive) {
-        if (badRange(from, toExclusive)) {
+        if (isBadRange(from, toExclusive)) {
             return this.<Integer>bsBuilder().ofAll(Iterator.range(from, toExclusive));
         } else {
             return BitSet.range(from, toExclusive);
@@ -220,7 +223,7 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     @Override
     protected BitSet<Integer> rangeBy(int from, int toExclusive, int step) {
-        if (badRange(from, toExclusive)) {
+        if (isBadRange(from, toExclusive)) {
             return this.<Integer>bsBuilder().ofAll(Iterator.rangeBy(from, toExclusive, step));
         } else {
             return BitSet.rangeBy(from, toExclusive, step);
@@ -229,7 +232,7 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     @Override
     protected BitSet<Long> range(long from, long toExclusive) {
-        if (badRange(from, toExclusive)) {
+        if (isBadRange(from, toExclusive)) {
             return this.<Long>bsBuilder().ofAll(Iterator.range(from, toExclusive));
         } else {
             return BitSet.range(from, toExclusive);
@@ -238,7 +241,7 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     @Override
     protected BitSet<Long> rangeBy(long from, long toExclusive, long step) {
-        if (badRange(from, toExclusive)) {
+        if (isBadRange(from, toExclusive)) {
             return this.<Long>bsBuilder().ofAll(Iterator.rangeBy(from, toExclusive, step));
         } else {
             return BitSet.rangeBy(from, toExclusive, step);
@@ -262,7 +265,7 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     @Override
     protected BitSet<Integer> rangeClosed(int from, int toInclusive) {
-        if (badRange(from, toInclusive)) {
+        if (isBadRange(from, toInclusive)) {
             return this.<Integer>bsBuilder().ofAll(Iterator.rangeClosed(from, toInclusive));
         } else {
             return BitSet.rangeClosed(from, toInclusive);
@@ -271,7 +274,7 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     @Override
     protected BitSet<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        if (badRange(from, toInclusive)) {
+        if (isBadRange(from, toInclusive)) {
             return this.<Integer>bsBuilder().ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
         } else {
             return BitSet.rangeClosedBy(from, toInclusive, step);
@@ -280,7 +283,7 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     @Override
     protected BitSet<Long> rangeClosed(long from, long toInclusive) {
-        if (badRange(from, toInclusive)) {
+        if (isBadRange(from, toInclusive)) {
             return this.<Long>bsBuilder().ofAll(Iterator.rangeClosed(from, toInclusive));
         } else {
             return BitSet.rangeClosed(from, toInclusive);
@@ -289,7 +292,7 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     @Override
     protected BitSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        if (badRange(from, toInclusive)) {
+        if (isBadRange(from, toInclusive)) {
             return this.<Long>bsBuilder().ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
         } else {
             return BitSet.rangeClosedBy(from, toInclusive, step);
@@ -354,9 +357,9 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     @Test
     public void testFactories() {
-        assertThat(BitSet.of(7).contains(7)).isTrue();     // BitSet1
-        assertThat(BitSet.of(77).contains(77)).isTrue();   // BitSet2
-        assertThat(BitSet.of(777).contains(777)).isTrue(); // BitSetN
+        assertThat(BitSet.of(7).contains(7)).isTrue();     // BitSet1, < 64
+        assertThat(BitSet.of(77).contains(77)).isTrue();   // BitSet2, < 2*64
+        assertThat(BitSet.of(777).contains(777)).isTrue(); // BitSetN, >= 2*64
     }
 
     @Test
@@ -386,4 +389,19 @@ public class BitSetTest extends AbstractSortedSetTest {
     public void shouldThrowContainsNegativeElements() {
         BitSet.empty().contains(-1);
     }
+
+    @Test
+    public void shouldSerializeDeserializeNativeBitSet() {
+        final Object actual = deserialize(serialize(BitSet.of(1, 2, 3)));
+        final Object expected = BitSet.of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSerializeDeserializeEnumBitSet() {
+        final Object actual = deserialize(serialize(BitSet.withEnum(E.class).of(E.V1, E.V2)));
+        final Object expected = BitSet.withEnum(E.class).of(E.V1, E.V2);
+        assertThat(actual).isEqualTo(expected);
+    }
+
 }

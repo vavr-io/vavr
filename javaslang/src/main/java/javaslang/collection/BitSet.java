@@ -92,8 +92,8 @@ public interface BitSet<T> extends SortedSet<T> {
         return new Builder<>(fromInt, toInt);
     }
 
-    static <T extends Enum<T>> Builder<T> withEnum(Class<T> clz) {
-        final Function1<Integer, T> fromInt = i -> clz.getEnumConstants()[i];
+    static <T extends Enum<T>> Builder<T> withEnum(Class<T> enumClass) {
+        final Function1<Integer, T> fromInt = i -> enumClass.getEnumConstants()[i];
         final Function1<T, Integer> toInt = Enum<T>::ordinal;
         return new Builder<>(fromInt, toInt);
     }
@@ -118,7 +118,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.BitSet}.
      *
-     * @return A javaslang.collection.List Collector.
+     * @return A {@link javaslang.collection.BitSet} Collector.
      */
     static Collector<Integer, ArrayList<Integer>, BitSet<Integer>> collector() {
         return Builder.DEFAULT.collector();
@@ -143,7 +143,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param n The number of elements in the BitSet
      * @param f The Function computing element values
      * @return A BitSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
-     * @throws NullPointerException if {@code f} are null
+     * @throws NullPointerException if {@code f} is null
      */
     static BitSet<Integer> tabulate(int n, Function<Integer, Integer> f) {
         return Builder.DEFAULT.tabulate(n, f);
@@ -155,7 +155,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param n The number of elements in the BitSet
      * @param s The Supplier computing element values
      * @return A BitSet of size {@code n}, where each element contains the result supplied by {@code s}.
-     * @throws NullPointerException if {@code s} are null
+     * @throws NullPointerException if {@code s} is null
      */
     static BitSet<Integer> fill(int n, Supplier<Integer> s) {
         return Builder.DEFAULT.fill(n, s);
@@ -169,7 +169,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * Creates a BitSet based on the elements of a boolean array.
      *
      * @param array a boolean array
-     * @return A new BitSet of Boolean values
+     * @return A new BitSet of boolean values
      */
     static BitSet<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
@@ -180,7 +180,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * Creates a BitSet based on the elements of a byte array.
      *
      * @param array a byte array
-     * @return A new BitSet of Byte values
+     * @return A new BitSet of byte values
      */
     static BitSet<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
@@ -191,7 +191,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * Creates a BitSet based on the elements of a char array.
      *
      * @param array a char array
-     * @return A new BitSet of Character values
+     * @return A new BitSet of char values
      */
     static BitSet<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
@@ -202,7 +202,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * Creates a BitSet based on the elements of an int array.
      *
      * @param array an int array
-     * @return A new BitSet of Integer values
+     * @return A new BitSet of int values
      */
     static BitSet<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
@@ -213,7 +213,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * Creates a BitSet based on the elements of a long array.
      *
      * @param array a long array
-     * @return A new BitSet of Long values
+     * @return A new BitSet of long values
      */
     static BitSet<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
@@ -224,7 +224,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * Creates a BitSet based on the elements of a short array.
      *
      * @param array a short array
-     * @return A new BitSet of Short values
+     * @return A new BitSet of short values
      */
     static BitSet<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
@@ -492,7 +492,7 @@ public interface BitSet<T> extends SortedSet<T> {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty BitSet");
         } else {
-            return remove(head());
+            return drop(1);
         }
     }
 
@@ -510,8 +510,7 @@ public interface BitSet<T> extends SortedSet<T> {
     @Override
     default BitSet<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final BitSet<T> result = takeWhile(predicate.negate());
-        return (result.length() == length()) ? this : result;
+        return takeWhile(predicate.negate());
     }
 
     @Override
@@ -608,14 +607,13 @@ interface BitSetModule {
             final int len = elements.length;
             if (len == 0) {
                 return createEmpty();
-            }
-            if (len == 1) {
+            } else if (len == 1) {
                 return new BitSet1<>(fromInt, toInt, elements[0]);
-            }
-            if (len == 2) {
+            } else if (len == 2) {
                 return new BitSet2<>(fromInt, toInt, elements[0], elements[1]);
+            } else {
+                return new BitSetN<>(fromInt, toInt, elements);
             }
-            return new BitSetN<>(fromInt, toInt, elements);
         }
 
         private void setElement(long[] words, int element) {
@@ -779,7 +777,7 @@ interface BitSetModule {
                 throw new IllegalArgumentException("bitset element must be >= 0");
             }
             final int index = element >> ADDRESS_BITS_PER_WORD;
-            return (getWord(index) & (1L << element)) != 0;
+            return index < getWordsNum() && (getWord(index) & (1L << element)) != 0;
         }
 
         @Override
@@ -795,19 +793,7 @@ interface BitSetModule {
 
         @Override
         public Iterator<T> iterator() {
-            return Stream.range(0, getWordsNum() << ADDRESS_BITS_PER_WORD)
-                    .filter(i -> (getWord(i >> ADDRESS_BITS_PER_WORD) & (1L << i)) != 0)
-                    .map(fromInt)
-                    .iterator();
-        }
-
-        @Override
-        public int length() {
-            int len = 0;
-            for (int i = 0; i < getWordsNum(); i++) {
-                len += Long.bitCount(getWord(i));
-            }
-            return len;
+            return new BitSetIterator<>(this);
         }
 
         @Override
@@ -878,15 +864,45 @@ interface BitSetModule {
         }
     }
 
+    class BitSetIterator<T> extends AbstractIterator<T> {
+
+        private final AbstractBitSet<T> bitSet;
+        private long element;
+        private int index;
+
+        BitSetIterator(AbstractBitSet<T> bitSet) {
+            this.bitSet = bitSet;
+            this.element = bitSet.getWord(0);
+            this.index = 0;
+        }
+
+        @Override
+        protected T getNext() {
+            int pos = Long.numberOfTrailingZeros(element);
+            element &= ~(1L << pos);
+            return bitSet.fromInt.apply(pos + (index << ADDRESS_BITS_PER_WORD));
+        }
+
+        @Override
+        public boolean hasNext() {
+            while (element == 0 && index < bitSet.getWordsNum() - 1) {
+                element = bitSet.getWord(++index);
+            }
+            return element != 0 && index < bitSet.getWordsNum();
+        }
+    }
+
     class BitSet1<T> extends AbstractBitSet<T> {
 
         private static final long serialVersionUID = 1L;
 
         private final long elements;
+        private final int len;
 
         BitSet1(Function1<Integer, T> fromInt, Function1<T, Integer> toInt, long elements) {
             super(fromInt, toInt);
             this.elements = elements;
+            this.len = Long.bitCount(elements);
         }
 
         @Override
@@ -909,16 +925,22 @@ interface BitSetModule {
             if (index == 0) {
                 return elements;
             } else {
-                return 0L;
+                throw new IndexOutOfBoundsException();
             }
         }
 
         @Override
         public T head() {
-            if (elements != 0) {
+            if (elements == 0) {
+                throw new NoSuchElementException("head of empty BitSet");
+            } else {
                 return fromInt.apply(Long.numberOfTrailingZeros(elements));
             }
-            throw new NoSuchElementException("head of empty BitSet");
+        }
+
+        @Override
+        public int length() {
+            return len;
         }
     }
 
@@ -927,11 +949,13 @@ interface BitSetModule {
         private static final long serialVersionUID = 1L;
 
         private final long elements1, elements2;
+        private final int len;
 
         BitSet2(Function1<Integer, T> fromInt, Function1<T, Integer> toInt, long elements1, long elements2) {
             super(fromInt, toInt);
             this.elements1 = elements1;
             this.elements2 = elements2;
+            this.len = Long.bitCount(elements1) + Long.bitCount(elements2);
         }
 
         @Override
@@ -954,23 +978,29 @@ interface BitSetModule {
         long getWord(int index) {
             if (index == 0) {
                 return elements1;
+            } else if (index == 1) {
+                return elements2;
             } else {
-                if (index == 1) {
-                    return elements2;
-                } else {
-                    return 0L;
-                }
+                throw new IndexOutOfBoundsException();
             }
         }
 
         @Override
         public T head() {
-            if (elements1 != 0) {
+            if (elements1 == 0) {
+                if (elements2 == 0) {
+                    throw new NoSuchElementException("head of empty BitSet");
+                } else {
+                    return fromInt.apply(BITS_PER_WORD + Long.numberOfTrailingZeros(elements2));
+                }
+            } else {
                 return fromInt.apply(Long.numberOfTrailingZeros(elements1));
-            } else if (elements2 != 0) {
-                return fromInt.apply(BITS_PER_WORD + Long.numberOfTrailingZeros(elements2));
             }
-            throw new NoSuchElementException("head of empty BitSet");
+        }
+
+        @Override
+        public int length() {
+            return len;
         }
     }
 
@@ -979,10 +1009,20 @@ interface BitSetModule {
         private static final long serialVersionUID = 1L;
 
         private final long[] elements;
+        private final int len;
 
         BitSetN(Function1<Integer, T> fromInt, Function1<T, Integer> toInt, long[] elements) {
             super(fromInt, toInt);
             this.elements = elements;
+            this.len = calcLength(elements);
+        }
+
+        private static int calcLength(long[] elements) {
+            int len = 0;
+            for (int i = 0; i < elements.length; i++) {
+                len += Long.bitCount(elements[i]);
+            }
+            return len;
         }
 
         @Override
@@ -1005,7 +1045,7 @@ interface BitSetModule {
             if (index < elements.length) {
                 return elements[index];
             } else {
-                return 0L;
+                throw new IndexOutOfBoundsException();
             }
         }
 
@@ -1013,12 +1053,18 @@ interface BitSetModule {
         public T head() {
             int offset = 0;
             for (int i = 0; i < getWordsNum(); i++) {
-                if(elements[i] != 0) {
+                if(elements[i] == 0) {
+                    offset += BITS_PER_WORD;
+                } else {
                     return fromInt.apply(offset + Long.numberOfTrailingZeros(elements[i]));
                 }
-                offset += BITS_PER_WORD;
             }
             throw new NoSuchElementException("head of empty BitSet");
+        }
+
+        @Override
+        public int length() {
+            return len;
         }
     }
 }
