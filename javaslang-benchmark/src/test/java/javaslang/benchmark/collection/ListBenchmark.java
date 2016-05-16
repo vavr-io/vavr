@@ -17,12 +17,12 @@ import java.util.Random;
 public class ListBenchmark {
 
     public static void main(String... args) { /* main is more reliable than a test */
-        JmhRunner.runAndReport(ListBenchmark.class);
+        JmhRunner.run(ListBenchmark.class);
     }
 
     @State(Scope.Benchmark)
     public static class Base {
-        @Param({ "10", "100", })
+        @Param({ "10", "100", "1000"})
         public int CONTAINER_SIZE;
 
         public Integer[] ELEMENTS;

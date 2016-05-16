@@ -23,7 +23,7 @@ import java.util.Random;
 public class PriorityQueueBenchmark {
 
     public static void main(String... args) { /* main is more reliable than a test */
-        JmhRunner.runAndReport(PriorityQueueBenchmark.class);
+        JmhRunner.run(PriorityQueueBenchmark.class);
     }
 
     @State(Scope.Benchmark)

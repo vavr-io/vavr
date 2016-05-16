@@ -17,11 +17,15 @@ public class JmhRunner {
     private static final int QUICK_WARMUP_ITERATIONS = 5;
     private static final int QUICK_MEASUREMENT_ITERATIONS = 10;
 
-    public static void runAndReport(Class clazz) {
+    public static void run(Class clazz) {
         runAndReport(clazz, WARMUP_ITERATIONS, MEASUREMENT_ITERATIONS, Assertions.Disable);
     }
 
-    public static void devRunAndReport(Class clazz) {
+    public static void devRun(Class clazz) {
+        runAndReport(clazz, QUICK_WARMUP_ITERATIONS, QUICK_MEASUREMENT_ITERATIONS, Assertions.Disable);
+    }
+
+    public static void devRunWithAssertions(Class clazz) {
         runAndReport(clazz, QUICK_WARMUP_ITERATIONS, QUICK_MEASUREMENT_ITERATIONS, Assertions.Enable);
     }
 
@@ -42,7 +46,10 @@ public class JmhRunner {
                 .measurementTime(TimeValue.milliseconds(500))
                 .measurementIterations(measurementIterations)
                 .forks(1)
-                .jvmArgsAppend("-XX:+UseG1GC", "-Xss100m", "-Xms1g", "-Xmx1g", assertions.vmArg)
+                // We are using 4Gb and setting NewGen to 100% to avoid GC during testing.
+                // Any GC during testing will destroy the iteration, which should get ignored as an outlier
+                .jvmArgsAppend("-XX:+UseG1GC", "-Xss100m", "-Xms4g", "-Xmx4g", "-XX:+PrintGC", "-XX:MaxGCPauseMillis=1000", "-XX:+UnlockExperimentalVMOptions", "-XX:G1NewSizePercent=100", "-XX:G1MaxNewSizePercent=100", assertions.vmArg)
+//                .jvmArgsAppend("-XX:+UseG1GC", "-Xss100m", "-Xms4g", "-Xmx4g", "-XX:+PrintGC", assertions.vmArg)
                 .build();
 
         try {

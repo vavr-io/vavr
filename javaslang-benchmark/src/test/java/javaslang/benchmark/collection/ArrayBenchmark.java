@@ -15,7 +15,7 @@ import java.util.Random;
 public class ArrayBenchmark {
 
     public static void main(String... args) { /* main is more reliable than a test */
-        JmhRunner.runAndReport(ArrayBenchmark.class);
+        JmhRunner.run(ArrayBenchmark.class);
     }
 
     @State(Scope.Benchmark)
