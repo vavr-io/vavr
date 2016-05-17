@@ -6,7 +6,8 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.collection.Stream.*;
+import javaslang.collection.Stream.Cons;
+import javaslang.collection.Stream.Empty;
 import javaslang.collection.StreamModule.*;
 import javaslang.control.Option;
 
@@ -305,7 +306,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      *
      * @param <T>      Component type of the Stream.
      * @param elements An Iterable of elements.
-     * @return A list containing the given elements in the same order.
+     * @return A Stream containing the given elements in the same order.
      */
     @SuppressWarnings("unchecked")
     static <T> Stream<T> ofAll(Iterable<? extends T> elements) {
@@ -315,6 +316,18 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         } else {
             return StreamFactory.create(elements.iterator());
         }
+    }
+
+    /**
+     * Creates a Stream that contains the elements of the given {@link java.util.stream.Stream}.
+     *
+     * @param javaStream A {@link java.util.stream.Stream}
+     * @param <T>        Component type of the Stream.
+     * @return A Stream containing the given elements in the same order.
+     */
+    static <T> Stream<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+        Objects.requireNonNull(javaStream, "javaStream is null");
+        return StreamFactory.create(javaStream.iterator());
     }
 
     /**
@@ -802,7 +815,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         }
         final Stream<T> finalStream = stream;
         return stream.isEmpty() ? Stream.empty()
-                                : cons(stream.head(), () -> finalStream.tail().filter(predicate));
+                : cons(stream.head(), () -> finalStream.tail().filter(predicate));
     }
 
     @Override

@@ -168,6 +168,20 @@ public class StreamTest extends AbstractLinearSeqTest {
         return Stream.rangeClosedBy(from, toInclusive, step);
     }
 
+    // -- static ofAll(java.util.stream.Stream)
+
+    @Test
+    public void shouldCreateStreamFromEmptyJavaUtilStream() {
+        final java.util.stream.Stream<Integer> javaStream = java.util.stream.Stream.empty();
+        assertThat(Stream.ofAll(javaStream)).isEqualTo(Stream.empty());
+    }
+
+    @Test
+    public void shouldCreateStreamFromNonEmptyJavaUtilStream() {
+        final java.util.stream.Stream<Integer> javaStream = java.util.stream.Stream.of(1, 2, 3);
+        assertThat(Stream.ofAll(javaStream)).isEqualTo(Stream.of(1, 2, 3));
+    }
+
     // -- static from(int)
 
     @Test
