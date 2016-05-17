@@ -17,24 +17,24 @@ public class JmhRunner {
     private static final int QUICK_WARMUP_ITERATIONS = 5;
     private static final int QUICK_MEASUREMENT_ITERATIONS = 10;
 
-    public static void run(Class benchmarkClass) {
+    public static void run(Class<?> benchmarkClass) {
         runAndReport(benchmarkClass, WARMUP_ITERATIONS, MEASUREMENT_ITERATIONS, Assertions.Disable);
     }
 
-    public static void devRun(Class benchmarkClass) {
+    public static void devRun(Class<?> benchmarkClass) {
         runAndReport(benchmarkClass, QUICK_WARMUP_ITERATIONS, QUICK_MEASUREMENT_ITERATIONS, Assertions.Disable);
     }
 
-    public static void devRunWithAssertions(Class benchmarkClass) {
+    public static void devRunWithAssertions(Class<?> benchmarkClass) {
         runAndReport(benchmarkClass, QUICK_WARMUP_ITERATIONS, QUICK_MEASUREMENT_ITERATIONS, Assertions.Enable);
     }
 
-    private static void runAndReport(Class benchmarkClass, int warmupIterations, int measurementIterations, Assertions assertions) {
+    private static void runAndReport(Class<?> benchmarkClass, int warmupIterations, int measurementIterations, Assertions assertions) {
         Collection<RunResult> results = run(benchmarkClass, warmupIterations, measurementIterations, assertions);
         BenchmarkPerformanceReporter.of(results).print();
     }
 
-    private static Collection<RunResult> run(Class benchmarkClass, int warmupIterations, int measurementIterations, Assertions assertions) {
+    private static Collection<RunResult> run(Class<?> benchmarkClass, int warmupIterations, int measurementIterations, Assertions assertions) {
         final Options opts = new OptionsBuilder()
                 .include(benchmarkClass.getSimpleName())
                 .shouldDoGC(true)
