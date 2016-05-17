@@ -1,32 +1,47 @@
 package javaslang.benchmark;
 
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.results.RunResult;
 import org.openjdk.jmh.runner.Runner;
-import org.openjdk.jmh.runner.options.*;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
-
-import static javaslang.benchmark.BenchmarkResultAggregator.displayRatios;
 
 public class ListBenchmark {
     public static void main(String... args) throws Exception { /* main is more reliable than a test */
         final Options opts = new OptionsBuilder()
                 .include(ListBenchmark.class.getSimpleName())
-                .shouldDoGC(false)
+                .shouldDoGC(true)
                 .shouldFailOnError(true)
                 .build();
 
         final Collection<RunResult> results = new Runner(opts).run();
-        displayRatios(results, "^.*slang.*$");
+        BenchmarkPerformanceReporter.of(results).print();
     }
 
     @State(Scope.Benchmark)
     @BenchmarkMode(Mode.Throughput)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    @Warmup(iterations = 20, time = 1, timeUnit = TimeUnit.SECONDS)
-    @Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
+    @Warmup(iterations = 10, time = 500, timeUnit = TimeUnit.MILLISECONDS)
+    @Measurement(iterations = 40, time = 500, timeUnit = TimeUnit.MILLISECONDS)
     @Fork(value = 1, jvmArgsAppend = { "-XX:+UseG1GC", "-Xss100m", "-Xms1g", "-Xmx1g", "-disableassertions" }) /* set fork to 0 if you want to debug */
     public static class Base {
         @Param({ "10", "100", "1000", "10000" })
@@ -246,4 +261,5 @@ public class ListBenchmark {
             assertEquals(aggregate, state.expectedAggregate);
         }
     }
+
 }
