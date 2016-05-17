@@ -8,11 +8,13 @@ import org.assertj.core.api.ObjectAssert;
 import org.junit.Test;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 
@@ -404,4 +406,46 @@ public class BitSetTest extends AbstractSortedSetTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    public void shouldBehaveExactlyLikeAnotherBitSet() {
+        for (int i = 0; i < 10; i++) {
+            final Random random = getRandom(-1);
+
+            final java.util.BitSet mutableBitSet = new java.util.BitSet();
+            javaslang.collection.BitSet<Integer> functionalBitSet = javaslang.collection.BitSet.empty();
+
+            final int size = 5_000;
+            for (int j = 0; j < size; j++) {
+                /* Insert */
+                if (random.nextInt() % 3 == 0) {
+                    assertMinimumsAreEqual(mutableBitSet, functionalBitSet);
+
+                    final int value = random.nextInt(size);
+                    mutableBitSet.set(value);
+                    functionalBitSet = functionalBitSet.add(value);
+                }
+
+                assertMinimumsAreEqual(mutableBitSet, functionalBitSet);
+
+                /* Delete */
+                if (random.nextInt() % 5 == 0) {
+                    if (!mutableBitSet.isEmpty()) { mutableBitSet.clear(mutableBitSet.nextSetBit(0)); }
+                    if (!functionalBitSet.isEmpty()) { functionalBitSet = functionalBitSet.tail(); }
+
+                    assertMinimumsAreEqual(mutableBitSet, functionalBitSet);
+                }
+            }
+
+            final Collection<Integer> oldValues = mutableBitSet.stream().sorted().boxed().collect(toList());
+            final Collection<Integer> newValues = functionalBitSet.toJavaList();
+            assertThat(oldValues).isEqualTo(newValues);
+        }
+    }
+
+    private void assertMinimumsAreEqual(java.util.BitSet oldSet, BitSet<Integer> newSet) {
+        assertThat(oldSet.isEmpty()).isEqualTo(newSet.isEmpty());
+        if (!newSet.isEmpty()) {
+            assertThat(oldSet.nextSetBit(0)).isEqualTo(newSet.head());
+        }
+    }
 }
