@@ -31,7 +31,7 @@ public class PriorityQueueBenchmark {
         protected static final Ordering<Integer> SCALA_ORDERING = Ordering$.MODULE$.comparatorToOrdering(Integer::compareTo);
         protected static final Order<Integer> SCALAZ_ORDER = Order$.MODULE$.fromScalaOrdering(SCALA_ORDERING);
 
-        @Param({ "10", "1000", "100000" })
+        @Param({ "10", "100", "1000", "10000"})
         public int CONTAINER_SIZE;
 
         public Integer[] ELEMENTS;

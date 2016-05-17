@@ -22,7 +22,7 @@ public class ListBenchmark {
 
     @State(Scope.Benchmark)
     public static class Base {
-        @Param({ "10", "100", "1000"})
+        @Param({ "10", "100", "1000", "10000"})
         public int CONTAINER_SIZE;
 
         public Integer[] ELEMENTS;
