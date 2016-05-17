@@ -29,12 +29,12 @@ public class JmhRunner {
         runAndReport(benchmarkClass, QUICK_WARMUP_ITERATIONS, QUICK_MEASUREMENT_ITERATIONS, Assertions.Enable);
     }
 
-    private static void runAndReport(Class benchmarkClass, int warmUpIterations, int measurementIterations, Assertions assertions) {
-        Collection<RunResult> results = run(benchmarkClass, warmUpIterations, measurementIterations, assertions);
+    private static void runAndReport(Class benchmarkClass, int warmupIterations, int measurementIterations, Assertions assertions) {
+        Collection<RunResult> results = run(benchmarkClass, warmupIterations, measurementIterations, assertions);
         BenchmarkPerformanceReporter.of(results).print();
     }
 
-    private static Collection<RunResult> run(Class benchmarkClass, int warmUpIterations, int measurementIterations, Assertions assertions) {
+    private static Collection<RunResult> run(Class benchmarkClass, int warmupIterations, int measurementIterations, Assertions assertions) {
         final Options opts = new OptionsBuilder()
                 .include(benchmarkClass.getSimpleName())
                 .shouldDoGC(true)
@@ -42,7 +42,7 @@ public class JmhRunner {
                 .mode(Mode.Throughput)
                 .timeUnit(TimeUnit.SECONDS)
                 .warmupTime(TimeValue.milliseconds(500))
-                .warmupIterations(warmUpIterations)
+                .warmupIterations(warmupIterations)
                 .measurementTime(TimeValue.milliseconds(500))
                 .measurementIterations(measurementIterations)
                 .forks(1)
