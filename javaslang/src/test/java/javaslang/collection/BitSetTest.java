@@ -96,7 +96,7 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     private <T> BitSet.Builder<T> bsBuilder() {
         Mapper<T> mapper = new Mapper<>();
-        return BitSet.withRelations(mapper::fromInt, mapper::toInt);
+        return BitSet.withRelations((Function<Integer, T> & Serializable) mapper::fromInt, (Function<T, Integer> & Serializable) mapper::toInt);
     }
 
     @Override

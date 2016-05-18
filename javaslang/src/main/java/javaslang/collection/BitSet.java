@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -33,12 +32,15 @@ public interface BitSet<T> extends SortedSet<T> {
 
     class Builder<T> {
 
-        final static Builder<Integer> DEFAULT = new Builder<>(i -> i, i -> i);
+        final static Builder<Integer> DEFAULT = new Builder<>(
+                (Function<Integer, Integer> & Serializable) i -> i,
+                (Function<Integer, Integer> & Serializable) i -> i
+        );
 
-        final Function1<Integer, T> fromInt;
-        final Function1<T, Integer> toInt;
+        final Function<Integer, T> fromInt;
+        final Function<T, Integer> toInt;
 
-        Builder(Function1<Integer, T> fromInt, Function1<T, Integer> toInt) {
+        Builder(Function<Integer, T> fromInt, Function<T, Integer> toInt) {
             this.fromInt = fromInt;
             this.toInt = toInt;
         }
@@ -88,30 +90,47 @@ public interface BitSet<T> extends SortedSet<T> {
         }
     }
 
-    static <T> Builder<T> withRelations(Function1<Integer, T> fromInt, Function1<T, Integer> toInt) {
+    /**
+     * Both functions should be serializable
+     * TODO javadoc
+     */
+    static <T> Builder<T> withRelations(Function<Integer, T> fromInt, Function<T, Integer> toInt) {
         return new Builder<>(fromInt, toInt);
     }
 
     static <T extends Enum<T>> Builder<T> withEnum(Class<T> enumClass) {
-        final Function1<Integer, T> fromInt = i -> enumClass.getEnumConstants()[i];
-        final Function1<T, Integer> toInt = Enum<T>::ordinal;
-        return new Builder<>(fromInt, toInt);
+        return new Builder<>(
+                (Function<Integer, T> & Serializable) i -> enumClass.getEnumConstants()[i],
+                (Function<T, Integer> & Serializable) Enum<T>::ordinal
+        );
     }
 
     static Builder<Character> withCharacters() {
-        return new Builder<>(i -> (char) i.intValue(), c -> (int) c);
+        return new Builder<>(
+                (Function<Integer, Character> & Serializable) i -> (char) i.intValue(),
+                (Function<Character, Integer> & Serializable) c -> (int) c
+        );
     }
 
     static Builder<Byte> withBytes() {
-        return new Builder<>(Integer::byteValue, Byte::intValue);
+        return new Builder<>(
+                (Function<Integer, Byte> & Serializable) Integer::byteValue,
+                (Function<Byte, Integer> & Serializable) Byte::intValue
+        );
     }
 
     static Builder<Long> withLongs() {
-        return new Builder<>(Integer::longValue, Long::intValue);
+        return new Builder<>(
+                (Function<Integer, Long> & Serializable) Integer::longValue,
+                (Function<Long, Integer> & Serializable) Long::intValue
+        );
     }
 
     static Builder<Short> withShorts() {
-        return new Builder<>(Integer::shortValue, Short::intValue);
+        return new Builder<>(
+                (Function<Integer, Short> & Serializable) Integer::shortValue,
+                (Function<Short, Integer> & Serializable) Short::intValue
+        );
     }
 
     /**
@@ -173,7 +192,10 @@ public interface BitSet<T> extends SortedSet<T> {
      */
     static BitSet<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return BitSet.withRelations(i -> i != 0, b -> b ? 1 : 0).ofAll(Iterator.ofAll(array));
+        return BitSet.withRelations(
+                (Function<Integer, Boolean> & Serializable) i -> i != 0,
+                (Function<Boolean, Integer> & Serializable) b -> b ? 1 : 0
+        ).ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -527,7 +549,6 @@ public interface BitSet<T> extends SortedSet<T> {
         return addAll(elements);
     }
 
-    // TODO
     @Override
     default <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
@@ -536,7 +557,6 @@ public interface BitSet<T> extends SortedSet<T> {
                 i2 -> TreeSet.ofAll(naturalComparator(), i2));
     }
 
-    // TODO
     @Override
     default <T1, T2, T3> Tuple3<TreeSet<T1>, TreeSet<T2>, TreeSet<T3>> unzip3(
             Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
@@ -547,7 +567,6 @@ public interface BitSet<T> extends SortedSet<T> {
                 i3 -> TreeSet.ofAll(naturalComparator(), i3));
     }
 
-    // TODO
     @Override
     default <U> TreeSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
@@ -555,7 +574,6 @@ public interface BitSet<T> extends SortedSet<T> {
         return TreeSet.ofAll(tuple2Comparator, iterator().zip(that));
     }
 
-    // TODO
     @Override
     default <U> TreeSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
@@ -563,7 +581,6 @@ public interface BitSet<T> extends SortedSet<T> {
         return TreeSet.ofAll(tuple2Comparator, iterator().zipAll(that, thisElem, thatElem));
     }
 
-    // TODO
     @Override
     default TreeSet<Tuple2<T, Long>> zipWithIndex() {
         final Comparator<? super T> component1Comparator = comparator();
@@ -581,10 +598,10 @@ interface BitSetModule {
 
         private static final long serialVersionUID = 1L;
 
-        final Function1<Integer, T> fromInt;
-        final Function1<T, Integer> toInt;
+        final Function<Integer, T> fromInt;
+        final Function<T, Integer> toInt;
 
-        AbstractBitSet(Function1<Integer, T> fromInt, Function1<T, Integer> toInt) {
+        AbstractBitSet(Function<Integer, T> fromInt, Function<T, Integer> toInt) {
             this.fromInt = fromInt;
             this.toInt = toInt;
         }
@@ -899,7 +916,7 @@ interface BitSetModule {
         private final long elements;
         private final int len;
 
-        BitSet1(Function1<Integer, T> fromInt, Function1<T, Integer> toInt, long elements) {
+        BitSet1(Function<Integer, T> fromInt, Function<T, Integer> toInt, long elements) {
             super(fromInt, toInt);
             this.elements = elements;
             this.len = Long.bitCount(elements);
@@ -951,7 +968,7 @@ interface BitSetModule {
         private final long elements1, elements2;
         private final int len;
 
-        BitSet2(Function1<Integer, T> fromInt, Function1<T, Integer> toInt, long elements1, long elements2) {
+        BitSet2(Function<Integer, T> fromInt, Function<T, Integer> toInt, long elements1, long elements2) {
             super(fromInt, toInt);
             this.elements1 = elements1;
             this.elements2 = elements2;
@@ -1011,7 +1028,7 @@ interface BitSetModule {
         private final long[] elements;
         private final int len;
 
-        BitSetN(Function1<Integer, T> fromInt, Function1<T, Integer> toInt, long[] elements) {
+        BitSetN(Function<Integer, T> fromInt, Function<T, Integer> toInt, long[] elements) {
             super(fromInt, toInt);
             this.elements = elements;
             this.len = calcLength(elements);
