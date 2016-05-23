@@ -258,18 +258,6 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         }
     }
 
-    private Random getRandom(int seed) {
-        if (seed >= 0) {
-            return new Random(seed);
-        } else {
-            final Random random = new Random();
-            seed = random.nextInt();
-            System.out.println("using seed: " + seed);
-            random.setSeed(seed);
-            return random;
-        }
-    }
-
     private void assertMinimumsAreEqual(java.util.PriorityQueue<Integer> oldQueue, PriorityQueue<Integer> newQueue) {
         assertThat(oldQueue.isEmpty()).isEqualTo(newQueue.isEmpty());
         if (!newQueue.isEmpty()) {

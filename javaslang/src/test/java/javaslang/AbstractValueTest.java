@@ -27,6 +27,18 @@ import static java.lang.Integer.bitCount;
 
 public abstract class AbstractValueTest {
 
+    protected Random getRandom(int seed) {
+        if (seed >= 0) {
+            return new Random(seed);
+        } else {
+            final Random random = new Random();
+            seed = random.nextInt();
+            System.out.println("using seed: " + seed);
+            random.setSeed(seed);
+            return random;
+        }
+    }
+
     protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
         return new IterableAssert<T>(actual) {
         };
