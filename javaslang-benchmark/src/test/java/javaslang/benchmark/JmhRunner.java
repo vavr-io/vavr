@@ -18,23 +18,31 @@ public class JmhRunner {
     private static final int QUICK_MEASUREMENT_ITERATIONS = 10;
 
     public static void run(Class<?> benchmarkClass) {
-        runAndReport(benchmarkClass, WARMUP_ITERATIONS, MEASUREMENT_ITERATIONS, Assertions.Disable);
+        runAndReport(benchmarkClass, WARMUP_ITERATIONS, MEASUREMENT_ITERATIONS, 1, Assertions.Disable);
     }
 
     public static void devRun(Class<?> benchmarkClass) {
-        runAndReport(benchmarkClass, QUICK_WARMUP_ITERATIONS, QUICK_MEASUREMENT_ITERATIONS, Assertions.Disable);
+        runAndReport(benchmarkClass, QUICK_WARMUP_ITERATIONS, QUICK_MEASUREMENT_ITERATIONS, 1, Assertions.Disable);
     }
 
     public static void devRunWithAssertions(Class<?> benchmarkClass) {
-        runAndReport(benchmarkClass, QUICK_WARMUP_ITERATIONS, QUICK_MEASUREMENT_ITERATIONS, Assertions.Enable);
+        runAndReport(benchmarkClass, QUICK_WARMUP_ITERATIONS, QUICK_MEASUREMENT_ITERATIONS, 0, Assertions.Enable);
     }
 
-    private static void runAndReport(Class<?> benchmarkClass, int warmupIterations, int measurementIterations, Assertions assertions) {
-        Collection<RunResult> results = run(benchmarkClass, warmupIterations, measurementIterations, assertions);
+    private static void runAndReport(Class<?> benchmarkClass,
+                                     int warmupIterations,
+                                     int measurementIterations,
+                                     int forks,
+                                     Assertions assertions) {
+        Collection<RunResult> results = run(benchmarkClass, warmupIterations, measurementIterations, forks, assertions);
         BenchmarkPerformanceReporter.of(results).print();
     }
 
-    private static Collection<RunResult> run(Class<?> benchmarkClass, int warmupIterations, int measurementIterations, Assertions assertions) {
+    private static Collection<RunResult> run(Class<?> benchmarkClass,
+                                             int warmupIterations,
+                                             int measurementIterations,
+                                             int forks,
+                                             Assertions assertions) {
         final Options opts = new OptionsBuilder()
                 .include(benchmarkClass.getSimpleName())
                 .shouldDoGC(true)
@@ -45,7 +53,7 @@ public class JmhRunner {
                 .warmupIterations(warmupIterations)
                 .measurementTime(TimeValue.milliseconds(500))
                 .measurementIterations(measurementIterations)
-                .forks(1)
+                .forks(forks)
                 // We are using 4Gb and setting NewGen to 100% to avoid GC during testing.
                 // Any GC during testing will destroy the iteration, which should get ignored as an outlier
                 .jvmArgsAppend("-XX:+UseG1GC", "-Xss100m", "-Xms4g", "-Xmx4g", "-XX:+PrintGC", "-XX:MaxGCPauseMillis=1000", "-XX:+UnlockExperimentalVMOptions", "-XX:G1NewSizePercent=100", "-XX:G1MaxNewSizePercent=100", assertions.vmArg)
