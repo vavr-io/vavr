@@ -1,29 +1,21 @@
 package javaslang.benchmark.collection;
 
 import javaslang.Tuple2;
-import javaslang.benchmark.JmhRunner;
 import javaslang.collection.Traversable;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.TearDown;
 import scala.math.Ordering;
 import scala.math.Ordering$;
-import scalaz.Heap;
-import scalaz.Order;
-import scalaz.Order$;
+import scalaz.*;
 
 import java.util.Collections;
-import java.util.Objects;
-import java.util.Random;
+
+import static javaslang.benchmark.JmhRunner.*;
 
 public class PriorityQueueBenchmark {
 
     public static void main(String... args) { /* main is more reliable than a test */
-        JmhRunner.run(PriorityQueueBenchmark.class);
+        run(PriorityQueueBenchmark.class);
     }
 
     @State(Scope.Benchmark)
@@ -31,7 +23,7 @@ public class PriorityQueueBenchmark {
         protected static final Ordering<Integer> SCALA_ORDERING = Ordering$.MODULE$.comparatorToOrdering(Integer::compareTo);
         protected static final Order<Integer> SCALAZ_ORDER = Order$.MODULE$.fromScalaOrdering(SCALA_ORDERING);
 
-        @Param({ "10", "100", "1000", "10000"})
+        @Param({ "10", "100", "1000", "10000" })
         public int CONTAINER_SIZE;
 
         public Integer[] ELEMENTS;
@@ -39,19 +31,10 @@ public class PriorityQueueBenchmark {
 
         @Setup
         public void setup() {
-            final Random random = new Random(0);
+            ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
 
-            ELEMENTS = new Integer[CONTAINER_SIZE];
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
-                final int value = random.nextInt(CONTAINER_SIZE) - (CONTAINER_SIZE / 2);
-                ELEMENTS[i] = value;
-                expectedAggregate ^= value;
-            }
-        }
-
-        protected static <T> void assertEquals(T a, T b) {
-            if (!Objects.equals(a, b)) {
-                throw new IllegalStateException(a + " != " + b);
+            for (int element : ELEMENTS) {
+                expectedAggregate ^= element;
             }
         }
     }

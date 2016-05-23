@@ -224,11 +224,11 @@ public class BenchmarkPerformanceReporter {
             if (!alternativeResult.isDefined()) {
                 return "";
             }
-            double alternativeScore = alternativeResult.get().getScore();
+            final double alternativeScore = alternativeResult.get().getScore();
             if (alternativeScore == 0.0) {
                 return "";
             }
-            double ratio = baseResult.getScore() / alternativeScore;
+            final double ratio = baseResult.getScore() / alternativeScore;
             return ratio == 1.0 ? "" : PERFORMANCE_FORMAT.format(ratio) + "x";
         }
     }
@@ -390,14 +390,14 @@ public class BenchmarkPerformanceReporter {
         }
 
         public TestExecution(BenchmarkResult benchmark) {
-            Result primaryResult = benchmark.getPrimaryResult();
+            final Result<?> primaryResult = benchmark.getPrimaryResult();
             fullName = benchmark.getParams().getBenchmark();
             target = extractPart(fullName, 2);
             operation = extractPart(fullName, 1);
             implementation = extractPart(fullName, 0);
             paramKey = getParameterKey(benchmark);
 
-            ListStatistics statistics = createStatisticsWithoutOutliers(benchmark, outlierLowPct, outlierHighPct);
+            final ListStatistics statistics = createStatisticsWithoutOutliers(benchmark, outlierLowPct, outlierHighPct);
             sampleCount = statistics.getN();
             score = statistics.getMean();
             scoreError = statistics.getMeanErrorAt(0.999);
@@ -409,15 +409,15 @@ public class BenchmarkPerformanceReporter {
                     .map(r -> r.getPrimaryResult().getScore())
                     .sorted()
                     .collect(Vector.collector());
-            int size = results.size();
-            int outliersLow = (int) (size * outlierLowPct);
-            int outliersHigh = (int) (size * outlierHighPct);
+            final int size = results.size();
+            final int outliersLow = (int) (size * outlierLowPct);
+            final int outliersHigh = (int) (size * outlierHighPct);
             results = results.drop(outliersLow).dropRight(outliersHigh);
             return new ListStatistics(results.toJavaList().stream().mapToDouble(r -> r).toArray());
         }
 
         private String getParameterKey(BenchmarkResult benchmarkResult) {
-            BenchmarkParams params = benchmarkResult.getParams();
+            final BenchmarkParams params = benchmarkResult.getParams();
             return params.getParamsKeys().stream().map(params::getParam).collect(Collectors.joining(","));
         }
 
