@@ -5,10 +5,10 @@
  */
 package javaslang.collection;
 
-import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import javaslang.control.Option;
+
+import java.util.*;
+import java.util.function.*;
 
 /**
  * Internal class, containing helpers.
@@ -17,6 +17,69 @@ import java.util.function.Supplier;
  * @since 2.0.0
  */
 final class Collections {
+
+    @SuppressWarnings("unchecked")
+    static <C extends Traversable<T>, T> C removeAll(C collection, T element) {
+        Objects.requireNonNull(element, "element is null");
+        return removeAll(collection, List.of(element));
+    }
+
+    @SuppressWarnings("unchecked")
+    static <C extends Traversable<T>, T> C removeAll(C collection, Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        final Set<T> removed = HashSet.ofAll(elements);
+        return (C) collection.filter(e -> !removed.contains(e));
+    }
+
+    @SuppressWarnings("unchecked")
+    static <C extends Traversable<T>, T> C retainAll(C collection, Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        final Set<T> removed = HashSet.ofAll(elements);
+        return (C) collection.filter(removed::contains);
+    }
+
+    public static <T, C, R extends Iterable<T>> Map<C, R> groupBy(Traversable<T> collection, Function<? super T, ? extends C> classifier, Function<? super Iterable<T>, R> mapper) {
+        Objects.requireNonNull(collection, "collection is null");
+        Objects.requireNonNull(classifier, "classifier is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+
+        final java.util.Map<C, Collection<T>> mutableResults = new java.util.HashMap<>();
+        for (T value : collection) {
+            final C key = classifier.apply(value);
+            mutableResults.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+        }
+
+        HashMap<C, R> results = HashMap.empty();
+        for (java.util.Map.Entry<C, Collection<T>> entry : mutableResults.entrySet()) {
+            results = results.put(entry.getKey(), mapper.apply(entry.getValue()));
+        }
+        return results;
+    }
+
+    static Option<Integer> indexOption(int index) {
+        return Option.when(index >= 0, index);
+    }
+
+    // checks, if the *elements* of the given iterables are equal
+    static boolean equals(Iterable<?> iterable1, Iterable<?> iterable2) {
+        final java.util.Iterator<?> iter1 = iterable1.iterator();
+        final java.util.Iterator<?> iter2 = iterable2.iterator();
+        while (iter1.hasNext() && iter2.hasNext()) {
+            if (!Objects.equals(iter1.next(), iter2.next())) {
+                return false;
+            }
+        }
+        return iter1.hasNext() == iter2.hasNext();
+    }
+
+    // hashes the elements of an iterable
+    static int hash(Iterable<?> iterable) {
+        int hashCode = 1;
+        for (Object o : iterable) {
+            hashCode = 31 * hashCode + Objects.hashCode(o);
+        }
+        return hashCode;
+    }
 
     static <T, U, C extends Iterable<U>, R extends Traversable<U>> R scanLeft(
             Iterable<? extends T> elements,
@@ -57,7 +120,7 @@ final class Collections {
             return empty;
         } else {
             @SuppressWarnings("unchecked")
-            T[] elements = (T[]) new Object[n];
+            final T[] elements = (T[]) new Object[n];
             for (int i = 0; i < n; i++) {
                 elements[i] = f.apply(i);
             }
