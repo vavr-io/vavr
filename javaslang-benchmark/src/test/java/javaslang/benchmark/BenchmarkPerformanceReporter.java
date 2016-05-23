@@ -390,7 +390,7 @@ public class BenchmarkPerformanceReporter {
         }
 
         public TestExecution(BenchmarkResult benchmark) {
-            Result primaryResult = benchmark.getPrimaryResult();
+            Result<?> primaryResult = benchmark.getPrimaryResult();
             fullName = benchmark.getParams().getBenchmark();
             target = extractPart(fullName, 2);
             operation = extractPart(fullName, 1);
