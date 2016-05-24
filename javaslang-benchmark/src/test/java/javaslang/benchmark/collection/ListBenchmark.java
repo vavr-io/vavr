@@ -1,47 +1,28 @@
 package javaslang.benchmark.collection;
 
-import javaslang.benchmark.JmhRunner;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.annotations.*;
+import scala.compat.java8.JFunction;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static javaslang.benchmark.JmhRunner.*;
 
 public class ListBenchmark {
-
     public static void main(String... args) { /* main is more reliable than a test */
-        JmhRunner.run(ListBenchmark.class);
+        run(ListBenchmark.class);
     }
 
     @State(Scope.Benchmark)
     public static class Base {
-        @Param({ "10", "100", "1000", "10000"})
+        @Param({ "10", "100", "1000" })
         public int CONTAINER_SIZE;
 
         public Integer[] ELEMENTS;
 
         @Setup
         public void setup() {
-            final Random random = new Random(0);
-
-            ELEMENTS = new Integer[CONTAINER_SIZE];
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
-                final int value = random.nextInt(CONTAINER_SIZE) - (CONTAINER_SIZE / 2);
-                ELEMENTS[i] = value;
-            }
-        }
-
-        protected static <T> void assertEquals(T a, T b) {
-            if (!Objects.equals(a, b)) {
-                throw new IllegalStateException(a + " != " + b);
-            }
+            ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
         }
     }
 
@@ -240,4 +221,52 @@ public class ListBenchmark {
         }
     }
 
+    public static class GroupBy extends Base {
+        @State(Scope.Thread)
+        public static class Initialized {
+            final java.util.ArrayList<Integer> javaMutable = new java.util.ArrayList<>();
+            scala.collection.immutable.List<Integer> scalaPersistent = scala.collection.immutable.List$.MODULE$.empty();
+            fj.data.List<Integer> fjavaPersistent = fj.data.List.list();
+            javaslang.collection.List<Integer> slangPersistent = javaslang.collection.List.empty();
+
+            @Setup
+            public void initializeMutable(Base state) {
+                assertEquals(javaMutable.size(), 0);
+                Collections.addAll(javaMutable, state.ELEMENTS);
+                assertEquals(javaMutable.size(), state.CONTAINER_SIZE);
+
+                assertEquals(fjavaPersistent.length(), 0);
+                assertEquals(scalaPersistent.size(), 0);
+                assertEquals(slangPersistent.size(), 0);
+                for (Integer element : state.ELEMENTS) {
+                    fjavaPersistent = fjavaPersistent.cons(element);
+                    scalaPersistent = scalaPersistent.$colon$colon(element);
+                    slangPersistent = slangPersistent.prepend(element);
+                }
+                assertEquals(fjavaPersistent.length(), state.CONTAINER_SIZE);
+                assertEquals(scalaPersistent.size(), state.CONTAINER_SIZE);
+                assertEquals(slangPersistent.size(), state.CONTAINER_SIZE);
+            }
+        }
+
+        @Benchmark
+        public Object java_mutable(Initialized state) {
+            return state.javaMutable.stream().collect(Collectors.groupingBy(Integer::bitCount));
+        }
+
+        @Benchmark
+        public Object scala_persistent(Initialized state) {
+            return state.scalaPersistent.groupBy(JFunction.func(Integer::bitCount));
+        }
+
+        @Benchmark
+        public Object fjava_persistent(Initialized state) {
+            return state.fjavaPersistent.groupBy(Integer::bitCount);
+        }
+
+        @Benchmark
+        public Object slang_persistent(Initialized state) {
+            return state.slangPersistent.groupBy(Integer::bitCount);
+        }
+    }
 }

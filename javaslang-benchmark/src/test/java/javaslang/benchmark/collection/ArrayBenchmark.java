@@ -1,45 +1,25 @@
 package javaslang.benchmark.collection;
 
-import javaslang.benchmark.JmhRunner;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.annotations.*;
 
-import java.util.Objects;
-import java.util.Random;
+import static javaslang.benchmark.JmhRunner.*;
 
 public class ArrayBenchmark {
 
     public static void main(String... args) { /* main is more reliable than a test */
-        JmhRunner.run(ArrayBenchmark.class);
+        run(ArrayBenchmark.class);
     }
 
     @State(Scope.Benchmark)
     public static class Base {
-        @Param({ "10", "100", "1000", "10000"})
+        @Param({ "10", "100", "1000", "10000" })
         public int CONTAINER_SIZE;
 
         public Integer[] ELEMENTS;
 
         @Setup
         public void setup() {
-            final Random random = new Random(0);
-
-            ELEMENTS = new Integer[CONTAINER_SIZE];
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
-                final int value = random.nextInt(CONTAINER_SIZE) - (CONTAINER_SIZE / 2);
-                ELEMENTS[i] = value;
-            }
-        }
-
-        protected static <T> void assertEquals(T a, T b) {
-            if (!Objects.equals(a, b)) {
-                throw new IllegalStateException(a + " != " + b);
-            }
+            ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
         }
     }
 

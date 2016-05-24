@@ -7,7 +7,7 @@ package javaslang.collection;
 
 import javaslang.control.Option;
 
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 
 /**
@@ -37,14 +37,32 @@ final class Collections {
         return (C) collection.filter(removed::contains);
     }
 
+    public static <T, C, R extends Iterable<T>> Map<C, R> groupBy(Traversable<T> collection, Function<? super T, ? extends C> classifier, Function<? super Iterable<T>, R> mapper) {
+        Objects.requireNonNull(collection, "collection is null");
+        Objects.requireNonNull(classifier, "classifier is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+
+        final java.util.Map<C, Collection<T>> mutableResults = new java.util.HashMap<>();
+        for (T value : collection) {
+            final C key = classifier.apply(value);
+            mutableResults.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+        }
+
+        HashMap<C, R> results = HashMap.empty();
+        for (java.util.Map.Entry<C, Collection<T>> entry : mutableResults.entrySet()) {
+            results = results.put(entry.getKey(), mapper.apply(entry.getValue()));
+        }
+        return results;
+    }
+
     static Option<Integer> indexOption(int index) {
         return Option.when(index >= 0, index);
     }
 
     // checks, if the *elements* of the given iterables are equal
     static boolean equals(Iterable<?> iterable1, Iterable<?> iterable2) {
-        java.util.Iterator<?> iter1 = iterable1.iterator();
-        java.util.Iterator<?> iter2 = iterable2.iterator();
+        final java.util.Iterator<?> iter1 = iterable1.iterator();
+        final java.util.Iterator<?> iter2 = iterable2.iterator();
         while (iter1.hasNext() && iter2.hasNext()) {
             if (!Objects.equals(iter1.next(), iter2.next())) {
                 return false;
@@ -101,7 +119,7 @@ final class Collections {
             return empty;
         } else {
             @SuppressWarnings("unchecked")
-            T[] elements = (T[]) new Object[n];
+            final T[] elements = (T[]) new Object[n];
             for (int i = 0; i < n; i++) {
                 elements[i] = f.apply(i);
             }
