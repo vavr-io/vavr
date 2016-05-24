@@ -23,6 +23,7 @@ import javaslang.control.*;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
+import java.util.stream.Collector;
 import java.util.stream.StreamSupport;
 
 /**
@@ -818,6 +819,39 @@ public interface Value<T> extends Iterable<T> {
      */
     @Override
     String toString();
+    
+    
+    /**
+     * Collect value using provided collector
+     * <p>
+     * Use {@link #collect(Supplier, BiConsumer, BiConsumer)} internally 
+     * 
+     * @param collector Collector performing reduction
+     * @return R result of "reduction" with collector
+     */
+    default <R, A> R collect(Collector<? super T,A,R> collector) {
+		return collector.finisher()
+				.apply(this.collect(collector.supplier(), 
+						collector.accumulator(), null));
+    }
+
+    /**
+     * Collect value using supplier, accumulator and combiner
+     * <p>
+     * Since it is provided for a single value, it do not use combiner
+     *
+     * @param supplier provide unit value for reduction
+     * @param accumulator perform reduction with unit value
+     * @param combiner is not used 
+     * @return R result of "reduction" with collector
+     */
+
+    default <R> R collect(Supplier<R> supplier, BiConsumer<R,? super T> accumulator, BiConsumer<R,R> combiner) {
+    	R container = supplier.get();
+    	accumulator.accept(container, get());
+    	return container;
+    }
+    
 }
 
 interface ValueModule {
