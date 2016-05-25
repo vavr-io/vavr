@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Function1;
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
@@ -38,6 +39,33 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     @SuppressWarnings("unchecked")
     static <K, V> Map<K, V> narrow(Map<? extends K, ? extends V> map) {
         return (Map<K, V>) map;
+    }
+
+    /**
+     * Convenience factory method to create a key/value pair.
+     * <p>
+     * If imported statically, this method allows to create a {@link Map} with arbitrary entries in a readable and
+     * type-safe way, e.g.:
+     * <pre>
+     * {@code
+     *
+     * HashMap.ofEntries(
+     *     entry(k1, v1),
+     *     entry(k2, v2),
+     *     entry(k3, v3)
+     * );
+     *
+     * }
+     * </pre>
+     *
+     * @param key the entry's key
+     * @param value the entry's value
+     * @param <K> Key type
+     * @param <V> Value type
+     * @return a key/value pair
+     */
+    static <K, V> Tuple2<K, V> entry(K key, V value) {
+        return Tuple.of(key, value);
     }
 
     @Override

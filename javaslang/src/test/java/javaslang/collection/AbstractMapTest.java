@@ -251,14 +251,21 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(mapOf(1, 2)).isEqualTo(emptyInt().put(1, 2));
     }
 
-    private static java.util.Map.Entry<String, Integer> entry(String key, Integer value) {
+    private static java.util.Map.Entry<String, Integer> utilEntry(String key, Integer value) {
         return new java.util.AbstractMap.SimpleEntry<>(key, value);
     }
 
     @SuppressWarnings("unchecked")
     @Test
+    public void shouldConstructFromUtilEntries() {
+        Map<String, Integer> map = mapOfEntries(utilEntry("1", 1), utilEntry("2", 2), utilEntry("3", 3));
+        assertThat(map).isEqualTo(this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void shouldConstructFromEntries() {
-        Map<String, Integer> map = mapOfEntries(entry("1", 1), entry("2", 2), entry("3", 3));
+        Map<String, Integer> map = mapOfTuples(Map.entry("1", 1), Map.entry("2", 2), Map.entry("3", 3));
         assertThat(map).isEqualTo(this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3));
     }
 
