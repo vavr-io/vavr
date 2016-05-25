@@ -41,16 +41,97 @@ interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
 
     HashArrayMappedTrie<K, V> remove(K key);
 
-    // this is a javaslang.collection.Iterator!
     @Override
     Iterator<Tuple2<K, V>> iterator();
 
+    Iterator<K> keysIterator();
 }
 
 interface HashArrayMappedTrieModule {
 
     enum Action {
         PUT, REMOVE
+    }
+
+    class It<K, V> extends AbstractIterator<LeafNode<K, V>> {
+
+        private final static int MAX_LEVELS = Integer.SIZE / AbstractNode.SIZE + 1;
+
+        private final int total;
+        private final Object[] nodes = new Object[MAX_LEVELS];
+        private final int[] indexes = new int[MAX_LEVELS];
+
+        private int level;
+        private int ptr = 0;
+
+        It(AbstractNode<K, V> root) {
+            total = root.size();
+            level = downstairs(nodes, indexes, root, 0);
+        }
+
+        @Override
+        public boolean hasNext() {
+            return ptr < total;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        protected LeafNode<K, V> getNext() {
+            Object node = nodes[level];
+            while (!(node instanceof LeafNode)) {
+                node = findNextLeaf();
+            }
+            ptr++;
+            if (node instanceof LeafList) {
+                LeafList<K, V> leaf = (LeafList<K, V>) node;
+                nodes[level] = leaf.tail;
+                return leaf;
+            } else {
+                nodes[level] = EmptyNode.instance();
+                return (LeafSingleton<K, V>) node;
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        private Object findNextLeaf() {
+            AbstractNode<K, V> node = null;
+            while (level > 0) {
+                level--;
+                indexes[level]++;
+                node = getChild((AbstractNode<K, V>) nodes[level], indexes[level]);
+                if (node != null) {
+                    break;
+                }
+            }
+            level = downstairs(nodes, indexes, node, level + 1);
+            return nodes[level];
+        }
+
+        private static <K, V> int downstairs(Object[] nodes, int[] indexes, AbstractNode<K, V> root, int level) {
+            while (true) {
+                nodes[level] = root;
+                indexes[level] = 0;
+                root = getChild(root, 0);
+                if (root == null) {
+                    break;
+                } else {
+                    level++;
+                }
+            }
+            return level;
+        }
+
+        @SuppressWarnings("unchecked")
+        private static <K, V> AbstractNode<K, V> getChild(AbstractNode<K, V> node, int index) {
+            if (node instanceof IndexedNode) {
+                Object[] subNodes = ((IndexedNode<K, V>) node).subNodes;
+                return index < subNodes.length ? (AbstractNode<K, V>) subNodes[index] : null;
+            } else if (node instanceof ArrayNode) {
+                ArrayNode<K, V> arrayNode = (ArrayNode<K, V>) node;
+                return index < 32 ? (AbstractNode<K, V>) arrayNode.subNodes[index] : null;
+            }
+            return null;
+        }
     }
 
     /**
@@ -115,6 +196,20 @@ interface HashArrayMappedTrieModule {
         abstract Option<V> lookup(int shift, int keyHashCode, K key);
 
         abstract AbstractNode<K, V> modify(int shift, int keyHashCode, K key, V value, Action action);
+
+        Iterator<LeafNode<K, V>> nodes() {
+            return new It<>(this);
+        }
+
+        @Override
+        public Iterator<Tuple2<K, V>> iterator() {
+            return nodes().map(node -> Tuple.of(node.key(), node.value()));
+        }
+
+        @Override
+        public Iterator<K> keysIterator() {
+            return nodes().map(LeafNode::key);
+        }
 
         @Override
         public Option<V> get(K key) {
@@ -199,7 +294,7 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        public Iterator<Tuple2<K, V>> iterator() {
+        public Iterator<LeafNode<K, V>> nodes() {
             return Iterator.empty();
         }
 
@@ -301,9 +396,8 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        public Iterator<Tuple2<K, V>> iterator() {
-            Tuple2<K, V> tuple = Tuple.of(key, value);
-            return Iterator.of(tuple);
+        public Iterator<LeafNode<K, V>> nodes() {
+            return Iterator.of(this);
         }
 
         @Override
@@ -417,8 +511,8 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        public Iterator<Tuple2<K, V>> iterator() {
-            return new AbstractIterator<Tuple2<K, V>>() {
+        public Iterator<LeafNode<K, V>> nodes() {
+            return new AbstractIterator<LeafNode<K, V>>() {
                 LeafNode<K, V> node = LeafList.this;
 
                 @Override
@@ -427,14 +521,14 @@ interface HashArrayMappedTrieModule {
                 }
 
                 @Override
-                public Tuple2<K, V> getNext() {
-                    Tuple2<K, V> tuple = Tuple.of(node.key(), node.value());
+                public LeafNode<K, V> getNext() {
+                    LeafNode<K, V> result = node;
                     if (node instanceof LeafSingleton) {
                         node = null;
                     } else {
                         node = ((LeafList<K, V>) node).tail;
                     }
-                    return tuple;
+                    return result;
                 }
             };
         }
@@ -561,11 +655,6 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        public Iterator<Tuple2<K, V>> iterator() {
-            return Iterator.concat(Array.wrap(subNodes));
-        }
-
-        @Override
         public int hashCode() {
             return Objects.hash(subNodes);
         }
@@ -643,11 +732,6 @@ interface HashArrayMappedTrieModule {
         @Override
         public int size() {
             return size;
-        }
-
-        @Override
-        public Iterator<Tuple2<K, V>> iterator() {
-            return Iterator.concat(Array.wrap(subNodes));
         }
 
         @Override
