@@ -830,9 +830,13 @@ public interface Value<T> extends Iterable<T> {
      * @return R result of "reduction" with collector
      */
     default <R, A> R collect(Collector<? super T,A,R> collector) {
-		return collector.finisher()
-				.apply(this.collect(collector.supplier(), 
-						collector.accumulator(), null));
+        if(this.isSingleValued()) {
+            return collector.finisher()
+                    .apply(this.collect(collector.supplier(), 
+                            collector.accumulator(), null));
+        } else {
+            return toJavaList().stream().collect(collector);
+        }
     }
 
     /**
@@ -842,14 +846,19 @@ public interface Value<T> extends Iterable<T> {
      *
      * @param supplier provide unit value for reduction
      * @param accumulator perform reduction with unit value
-     * @param combiner is not used 
+     * @param combiner function for combining two values, which must be
+     *                    compatible with the accumulator. 
      * @return R result of "reduction" with collector
      */
 
     default <R> R collect(Supplier<R> supplier, BiConsumer<R,? super T> accumulator, BiConsumer<R,R> combiner) {
-    	R container = supplier.get();
-    	accumulator.accept(container, get());
-    	return container;
+        if(this.isSingleValued()) {
+            final R container = supplier.get();
+            accumulator.accept(container, get());
+            return container;
+        } else {
+            return toJavaList().stream().collect(supplier, accumulator, combiner);
+        }
     }
     
 }

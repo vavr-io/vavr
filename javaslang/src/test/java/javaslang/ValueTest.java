@@ -6,6 +6,7 @@
 package javaslang;
 
 import javaslang.collection.List;
+import javaslang.control.Option;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,17 +24,29 @@ public class ValueTest {
     }
     
     @Test
-    public void collectWorkAsExpected() {
-        final Value<Double> doubles = List.of(1.0d);
-        Double result = doubles.collect(Collectors.toList()).get(0);
-        assertThat(result).isEqualTo(1.0d);
+    public void collectWorkAsExpectedMultiValue() {
+        final Value<Double> doubles = List.of(1.0d, 2.0d);
+        final java.util.List<Double>  result = doubles.collect(Collectors.toList());
+        assertThat(result).contains(1.0d, 2.0d);
     }
     
     @Test
-    public void collectWorkAsExpected2() {
-        final Value<Double> doubles = List.of(1.0d);
-        Double result = doubles.collect(() -> new ArrayList<Double>(), 
-        		(l, e) -> { l.add(e);},null).get(0);
-        assertThat(result).isEqualTo(1.0d);
+    public void verboseCollectWorkAsExpectedMultiValue() {
+        final Value<Double> doubles = List.of(1.0d, 2.0d);
+        final java.util.List<Double> result = doubles.collect(ArrayList<Double>::new, ArrayList::add, ArrayList::addAll);
+        assertThat(result).contains(1.0d, 2.0d);
+    }
+    
+    @Test
+    public void collectWorkAsExpectedSingleValue() {
+        final Value<Double> doubles = Option.of(1.0d);
+        assertThat(doubles.collect(Collectors.toList()).get(0)).isEqualTo(1.0d);
+    }
+    
+    @Test
+    public void verboseCollectWorkAsExpectedSingleValue() {
+        final Value<Double> doubles = Option.of(1.0d);
+        assertThat(doubles.collect(ArrayList<Double>::new, 
+                ArrayList::add, ArrayList::addAll).get(0)).isEqualTo(1.0d);
     }
 }
