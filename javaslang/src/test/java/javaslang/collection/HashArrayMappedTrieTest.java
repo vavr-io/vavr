@@ -57,6 +57,14 @@ public class HashArrayMappedTrieTest {
     }
 
     @Test
+    public void testDeepestTree() {
+        HashArrayMappedTrie<Integer, Integer> hamt = empty();
+        List<Integer> ints = List.tabulate(Integer.SIZE, i -> 1 << i).sorted();
+        hamt = ints.foldLeft(hamt, (h, i) -> h.put(i, i));
+        assertThat(List.ofAll(hamt.keysIterator()).sorted()).isEqualTo(ints);
+    }
+
+    @Test
     public void testBigData() {
         testBigData(5000, t -> t);
     }
