@@ -431,7 +431,31 @@ public interface Value<T> extends Iterable<T> {
      */
     @Override
     Iterator<T> iterator();
+    
+    /**
+     * Collects the underlying value(s) (if present) using the provided {@code collector}.
+     *
+     * @param collector Collector performing reduction
+     * @return R reduction result
+     */
+    default <R, A> R collect(Collector<? super T,A,R> collector) {
+        return StreamSupport.stream(spliterator(), false).collect(collector);
+    }
 
+    /**
+     * Collects the underlying value(s) (if present) using the given {@code supplier}, {@code accumulator} and
+     * {@code combiner}.
+     *
+     * @param supplier    provide unit value for reduction
+     * @param accumulator perform reduction with unit value
+     * @param combiner    function for combining two values, which must be
+     *                    compatible with the accumulator.
+     * @return R reduction result
+     */
+    default <R> R collect(Supplier<R> supplier, BiConsumer<R,? super T> accumulator, BiConsumer<R,R> combiner) {
+        return StreamSupport.stream(spliterator(), false).collect(supplier, accumulator, combiner);
+    }
+    
     // -- conversion methods
 
     /**
@@ -819,48 +843,7 @@ public interface Value<T> extends Iterable<T> {
      */
     @Override
     String toString();
-    
-    
-    /**
-     * Collect value using provided collector
-     * <p>
-     * Use {@link #collect(Supplier, BiConsumer, BiConsumer)} internally 
-     * 
-     * @param collector Collector performing reduction
-     * @return R result of "reduction" with collector
-     */
-    default <R, A> R collect(Collector<? super T,A,R> collector) {
-        if(this.isSingleValued()) {
-            return collector.finisher()
-                    .apply(this.collect(collector.supplier(), 
-                            collector.accumulator(), null));
-        } else {
-            return toJavaList().stream().collect(collector);
-        }
-    }
 
-    /**
-     * Collect value using supplier, accumulator and combiner
-     * <p>
-     * Since it is provided for a single value, it do not use combiner
-     *
-     * @param supplier provide unit value for reduction
-     * @param accumulator perform reduction with unit value
-     * @param combiner function for combining two values, which must be
-     *                    compatible with the accumulator. 
-     * @return R result of "reduction" with collector
-     */
-
-    default <R> R collect(Supplier<R> supplier, BiConsumer<R,? super T> accumulator, BiConsumer<R,R> combiner) {
-        if(this.isSingleValued()) {
-            final R container = supplier.get();
-            accumulator.accept(container, get());
-            return container;
-        } else {
-            return toJavaList().stream().collect(supplier, accumulator, combiner);
-        }
-    }
-    
 }
 
 interface ValueModule {
