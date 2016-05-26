@@ -51,9 +51,10 @@ interface HashArrayMappedTrieModule {
         PUT, REMOVE
     }
 
-    class It<K, V> extends AbstractIterator<LeafNode<K, V>> {
+    class LeafNodeIterator<K, V> extends AbstractIterator<LeafNode<K, V>> {
 
-        private final static int MAX_LEVELS = Integer.SIZE / AbstractNode.SIZE + 1;
+        // buckets levels + leaf level = (Integer.SIZE / AbstractNode.SIZE + 1) + 1
+        private final static int MAX_LEVELS = Integer.SIZE / AbstractNode.SIZE + 2;
 
         private final int total;
         private final Object[] nodes = new Object[MAX_LEVELS];
@@ -62,7 +63,7 @@ interface HashArrayMappedTrieModule {
         private int level;
         private int ptr = 0;
 
-        It(AbstractNode<K, V> root) {
+        LeafNodeIterator(AbstractNode<K, V> root) {
             total = root.size();
             level = downstairs(nodes, indexes, root, 0);
         }
@@ -126,7 +127,7 @@ interface HashArrayMappedTrieModule {
                 return index < subNodes.length ? (AbstractNode<K, V>) subNodes[index] : null;
             } else if (node instanceof ArrayNode) {
                 ArrayNode<K, V> arrayNode = (ArrayNode<K, V>) node;
-                return index < 32 ? (AbstractNode<K, V>) arrayNode.subNodes[index] : null;
+                return index < AbstractNode.BUCKET_SIZE ? (AbstractNode<K, V>) arrayNode.subNodes[index] : null;
             }
             return null;
         }
@@ -183,7 +184,7 @@ interface HashArrayMappedTrieModule {
         abstract AbstractNode<K, V> modify(int shift, int keyHashCode, K key, V value, Action action);
 
         Iterator<LeafNode<K, V>> nodes() {
-            return new It<>(this);
+            return new LeafNodeIterator<>(this);
         }
 
         @Override
