@@ -619,7 +619,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
 
     @Override
     public Iterator<T> iterator() {
-        return tree.iterator().map(t -> t._1);
+        return tree.keysIterator();
     }
 
     @Override
