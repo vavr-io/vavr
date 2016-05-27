@@ -1,6 +1,5 @@
 #!/bin/bash
 set -ev
-
 mvn test -B
 
 # Break CI build on PRs where committed differ from generated sources
