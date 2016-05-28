@@ -13,7 +13,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collector;
+import java.util.stream.*;
+import java.util.stream.Stream;
 
 public class VectorTest extends AbstractIndexedSeqTest {
     @Override
@@ -41,6 +42,11 @@ public class VectorTest extends AbstractIndexedSeqTest {
     @Override
     protected <T> Vector<T> ofAll(Iterable<? extends T> elements) {
         return Vector.ofAll(elements);
+    }
+
+    @Override
+    protected <T> Vector<T> ofJavaStream(Stream<? extends T> javaStream) {
+        return Vector.ofAll(javaStream);
     }
 
     @Override

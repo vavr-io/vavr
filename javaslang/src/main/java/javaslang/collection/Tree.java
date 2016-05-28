@@ -149,6 +149,18 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     /**
+     * Creates a Tree that contains the elements of the given {@link java.util.stream.Stream}.
+     *
+     * @param javaStream A {@link java.util.stream.Stream}
+     * @param <T>        Component type of the Stream.
+     * @return A Tree containing the given elements in the same order.
+     */
+    static <T> Tree<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+        Objects.requireNonNull(javaStream, "javaStream is null");
+        return ofAll(Iterator.ofAll(javaStream.iterator()));
+    }
+
+    /**
      * Returns a Tree containing {@code n} values of a given Function {@code f}
      * over a range of integer values from 0 to {@code n - 1}.
      *

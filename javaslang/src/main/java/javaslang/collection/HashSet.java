@@ -148,6 +148,18 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     }
 
     /**
+     * Creates a HashSet that contains the elements of the given {@link java.util.stream.Stream}.
+     *
+     * @param javaStream A {@link java.util.stream.Stream}
+     * @param <T>        Component type of the Stream.
+     * @return A HashSet containing the given elements in the same order.
+     */
+    public static <T> HashSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+        Objects.requireNonNull(javaStream, "javaStream is null");
+        return HashSet.ofAll(Iterator.ofAll(javaStream.iterator()));
+    }
+
+    /**
      * Creates a HashSet based on the elements of a boolean array.
      *
      * @param array a boolean array

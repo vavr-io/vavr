@@ -79,6 +79,11 @@ public interface BitSet<T> extends SortedSet<T> {
             return empty().addAll(values);
         }
 
+        public BitSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+            Objects.requireNonNull(javaStream, "javaStream is null");
+            return empty().addAll(Iterator.ofAll(javaStream.iterator()));
+        }
+
         public BitSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
             Objects.requireNonNull(f, "f is null");
             return empty().addAll(Collections.tabulate(n, f));
@@ -182,6 +187,10 @@ public interface BitSet<T> extends SortedSet<T> {
 
     static BitSet<Integer> ofAll(Iterable<Integer> values) {
         return Builder.DEFAULT.ofAll(values);
+    }
+
+    static BitSet<Integer> ofAll(java.util.stream.Stream<Integer> javaStream) {
+        return Builder.DEFAULT.ofAll(javaStream);
     }
 
     /**

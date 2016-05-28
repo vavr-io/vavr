@@ -155,6 +155,18 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     /**
+     * Creates a Queue that contains the elements of the given {@link java.util.stream.Stream}.
+     *
+     * @param javaStream A {@link java.util.stream.Stream}
+     * @param <T>        Component type of the Stream.
+     * @return A Queue containing the given elements in the same order.
+     */
+    static <T> Queue<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+        Objects.requireNonNull(javaStream, "javaStream is null");
+        return new Queue<>(List.ofAll(javaStream), List.empty());
+    }
+
+    /**
      * Creates a Queue based on the elements of a boolean array.
      *
      * @param array a boolean array

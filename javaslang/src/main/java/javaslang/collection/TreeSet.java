@@ -193,6 +193,16 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
                 : (TreeSet<T>) empty();
     }
 
+    public static <T extends Comparable<? super T>> TreeSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+        Objects.requireNonNull(javaStream, "javaStream is null");
+        return ofAll(Iterator.ofAll(javaStream.iterator()));
+    }
+
+    public static <T> TreeSet<T> ofAll(Comparator<? super T> comparator, java.util.stream.Stream<? extends T> javaStream) {
+        Objects.requireNonNull(javaStream, "javaStream is null");
+        return ofAll(comparator, Iterator.ofAll(javaStream.iterator()));
+    }
+
     /**
      * Creates a TreeSet based on the elements of a boolean array.
      *

@@ -214,6 +214,23 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     /**
+     * Creates a List that contains the elements of the given {@link java.util.stream.Stream}.
+     *
+     * @param javaStream A {@link java.util.stream.Stream}
+     * @param <T>        Component type of the Stream.
+     * @return A List containing the given elements in the same order.
+     */
+    static <T> List<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+        Objects.requireNonNull(javaStream, "javaStream is null");
+        final java.util.Iterator<? extends T> iterator = javaStream.iterator();
+        List<T> list = List.empty();
+        while (iterator.hasNext()) {
+            list = list.prepend(iterator.next());
+        }
+        return list.reverse();
+    }
+
+    /**
      * Creates a List based on the elements of a boolean array.
      *
      * @param array a boolean array
@@ -546,7 +563,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default List<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return ofAll(elements).prependAll(this);
+        return List.<T>ofAll(elements).prependAll(this);
     }
 
     @Override

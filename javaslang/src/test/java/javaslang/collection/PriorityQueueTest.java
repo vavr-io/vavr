@@ -12,7 +12,8 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.Collector;
+import java.util.stream.*;
+import java.util.stream.Stream;
 
 import static java.lang.Integer.bitCount;
 import static java.util.stream.Collectors.toList;
@@ -45,6 +46,11 @@ public class PriorityQueueTest extends AbstractTraversableTest {
     @Override
     protected <T> PriorityQueue<T> ofAll(Iterable<? extends T> elements) {
         return PriorityQueue.ofAll(toStringComparator(), elements);
+    }
+
+    @Override
+    protected <T> Traversable<T> ofJavaStream(Stream<? extends T> javaStream) {
+        return PriorityQueue.ofAll(toStringComparator(), javaStream);
     }
 
     @Override

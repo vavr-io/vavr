@@ -12,7 +12,8 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.Collector;
+import java.util.stream.*;
+import java.util.stream.Stream;
 
 public class QueueTest extends AbstractLinearSeqTest {
 
@@ -43,6 +44,11 @@ public class QueueTest extends AbstractLinearSeqTest {
     @Override
     protected <T> Queue<T> ofAll(Iterable<? extends T> elements) {
         return Queue.ofAll(elements);
+    }
+
+    @Override
+    protected <T> Queue<T> ofJavaStream(Stream<? extends T> javaStream) {
+        return Queue.ofAll(javaStream);
     }
 
     @Override

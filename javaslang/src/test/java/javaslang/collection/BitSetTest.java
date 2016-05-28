@@ -11,8 +11,8 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import java.util.stream.*;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static javaslang.Serializables.deserialize;
@@ -139,6 +139,11 @@ public class BitSetTest extends AbstractSortedSetTest {
     @Override
     protected <T> BitSet<T> ofAll(Iterable<? extends T> elements) {
         return this.<T>bsBuilder().ofAll(elements);
+    }
+
+    @Override
+    protected <T> BitSet<T> ofJavaStream(Stream<? extends T> javaStream) {
+        return this.<T>bsBuilder().ofAll(javaStream);
     }
 
     @Override

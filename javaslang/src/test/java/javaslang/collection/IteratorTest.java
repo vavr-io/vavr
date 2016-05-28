@@ -13,7 +13,8 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.Collector;
+import java.util.stream.*;
+import java.util.stream.Stream;
 
 import static javaslang.collection.Iterator.*;
 
@@ -107,6 +108,11 @@ public class IteratorTest extends AbstractTraversableTest {
     @Override
     protected <T> Iterator<T> ofAll(Iterable<? extends T> elements) {
         return Iterator.ofAll(elements);
+    }
+
+    @Override
+    protected <T> Iterator<T> ofJavaStream(Stream<? extends T> javaStream) {
+        return Iterator.ofAll(javaStream.iterator());
     }
 
     @Override

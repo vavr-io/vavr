@@ -127,6 +127,11 @@ public class TreeTest extends AbstractTraversableTest {
     }
 
     @Override
+    protected <T> Tree<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
+        return Tree.ofAll(javaStream);
+    }
+
+    @Override
     protected Tree<Boolean> ofAll(boolean[] array) {
         return Tree.ofAll(List.ofAll(array));
     }

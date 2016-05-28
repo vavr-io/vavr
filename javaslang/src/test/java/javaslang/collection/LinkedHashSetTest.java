@@ -6,7 +6,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collector;
+import java.util.stream.*;
+import java.util.stream.Stream;
 
 public class LinkedHashSetTest extends AbstractSetTest {
 
@@ -45,6 +46,11 @@ public class LinkedHashSetTest extends AbstractSetTest {
     @Override
     protected <T> LinkedHashSet<T> ofAll(Iterable<? extends T> elements) {
         return LinkedHashSet.ofAll(elements);
+    }
+
+    @Override
+    protected <T> LinkedHashSet<T> ofJavaStream(Stream<? extends T> javaStream) {
+        return LinkedHashSet.ofAll(javaStream);
     }
 
     @Override
