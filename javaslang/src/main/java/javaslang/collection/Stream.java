@@ -924,7 +924,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
         } else if (index == 0) {
-            return isEmpty() ? Stream.ofAll(elements) : Stream.ofAll(elements).appendAll(this);
+            return isEmpty() ? Stream.ofAll(elements) : Stream.<T>ofAll(elements).appendAll(this);
         } else if (isEmpty()) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on Nil");
         } else {
@@ -1050,7 +1050,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     @Override
     default Stream<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.ofAll(elements).appendAll(this);
+        return Stream.<T>ofAll(elements).appendAll(this);
     }
 
     @Override

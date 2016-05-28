@@ -181,6 +181,11 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     }
 
     @Override
+    protected <T> IntMap<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
+        return ofAll(Iterator.ofAll(javaStream.iterator()));
+    }
+
+    @Override
     protected IntMap<Boolean> ofAll(boolean[] array) {
         return ofAll(Iterator.ofAll(array));
     }

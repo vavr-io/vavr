@@ -137,6 +137,18 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     /**
+     * Creates a Array that contains the elements of the given {@link java.util.stream.Stream}.
+     *
+     * @param javaStream A {@link java.util.stream.Stream}
+     * @param <T>        Component type of the Stream.
+     * @return A Array containing the given elements in the same order.
+     */
+    static <T> Array<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+        Objects.requireNonNull(javaStream, "javaStream is null");
+        return wrap(javaStream.toArray());
+    }
+
+    /**
      * Creates a Array based on the elements of a boolean array.
      *
      * @param array a boolean array

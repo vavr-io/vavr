@@ -202,6 +202,11 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     }
 
     @Override
+    protected <T> IntMultimap<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
+        return ofAll(Iterator.ofAll(javaStream.iterator()));
+    }
+
+    @Override
     protected IntMultimap<Boolean> ofAll(boolean[] array) {
         return ofAll(Iterator.ofAll(array));
     }

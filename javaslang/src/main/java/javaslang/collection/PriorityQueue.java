@@ -194,6 +194,14 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
         return new PriorityQueue<>(serializableComparator, forest, size);
     }
 
+    public static <T extends Comparable<T>> PriorityQueue<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+        return ofAll(naturalComparator(), Iterator.ofAll(javaStream.iterator()));
+    }
+
+    public static <T> PriorityQueue<T> ofAll(Comparator<? super T> comparator, java.util.stream.Stream<? extends T> javaStream) {
+        return ofAll(comparator, Iterator.ofAll(javaStream.iterator()));
+    }
+
     /**
      * Returns a {@link PriorityQueue} containing {@code size} values of a given Function {@code function}
      * over a range of integer values from {@code 0} to {@code size - 1}.

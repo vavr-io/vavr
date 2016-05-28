@@ -13,7 +13,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collector;
+import java.util.stream.*;
+import java.util.stream.Stream;
 
 import static javaslang.collection.Comparators.naturalComparator;
 
@@ -65,6 +66,11 @@ public class TreeSetTest extends AbstractSortedSetTest {
     @Override
     protected <T> TreeSet<T> ofAll(Iterable<? extends T> elements) {
         return TreeSet.ofAll(toStringComparator(), elements);
+    }
+
+    @Override
+    protected <T> TreeSet<T> ofJavaStream(Stream<? extends T> javaStream) {
+        return TreeSet.ofAll(toStringComparator(), javaStream);
     }
 
     @Override

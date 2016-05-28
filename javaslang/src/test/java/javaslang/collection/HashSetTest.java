@@ -14,7 +14,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collector;
+import java.util.stream.*;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertTrue;
 
@@ -105,6 +106,11 @@ public class HashSetTest extends AbstractSetTest {
     @Override
     protected <T> HashSet<T> ofAll(Iterable<? extends T> elements) {
         return HashSet.ofAll(elements);
+    }
+
+    @Override
+    protected <T> HashSet<T> ofJavaStream(Stream<? extends T> javaStream) {
+        return HashSet.ofAll(javaStream);
     }
 
     @Override

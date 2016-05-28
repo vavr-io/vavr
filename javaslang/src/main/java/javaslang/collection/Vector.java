@@ -167,6 +167,18 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     /**
+     * Creates a Vector that contains the elements of the given {@link java.util.stream.Stream}.
+     *
+     * @param javaStream A {@link java.util.stream.Stream}
+     * @param <T>        Component type of the Stream.
+     * @return A Vector containing the given elements in the same order.
+     */
+    static <T> Vector<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+        Objects.requireNonNull(javaStream, "javaStream is null");
+        return ofAll(Iterator.ofAll(javaStream.iterator()));
+    }
+
+    /**
      * Creates a Vector based on the elements of a boolean array.
      *
      * @param array a boolean array

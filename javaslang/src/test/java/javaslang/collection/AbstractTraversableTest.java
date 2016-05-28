@@ -43,6 +43,8 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     abstract protected <T> Traversable<T> ofAll(Iterable<? extends T> elements);
 
+    abstract protected <T> Traversable<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream);
+
     abstract protected Traversable<Boolean> ofAll(boolean[] array);
 
     abstract protected Traversable<Byte> ofAll(byte[] array);
@@ -104,6 +106,20 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         final java.util.List<Integer> arrayList = Arrays.asList(1, 2);
         final List<Integer> actual = ofAll(arrayList).toList();
         assertThat(actual).isEqualTo(List.of(1, 2));
+    }
+
+    // -- static ofAll(java.util.stream.Stream)
+
+    @Test
+    public void shouldCreateStreamFromEmptyJavaUtilStream() {
+        final java.util.stream.Stream<Integer> javaStream = java.util.stream.Stream.empty();
+        assertThat(ofJavaStream(javaStream)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldCreateStreamFromNonEmptyJavaUtilStream() {
+        final java.util.stream.Stream<Integer> javaStream = java.util.stream.Stream.of(1, 2, 3);
+        assertThat(ofJavaStream(javaStream)).isEqualTo(of(1, 2, 3));
     }
 
     // -- static of(<primitive array>)

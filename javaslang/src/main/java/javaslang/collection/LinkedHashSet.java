@@ -148,6 +148,18 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     /**
+     * Creates a LinkedHashSet that contains the elements of the given {@link java.util.stream.Stream}.
+     *
+     * @param javaStream A {@link java.util.stream.Stream}
+     * @param <T>        Component type of the Stream.
+     * @return A LinkedHashSet containing the given elements in the same order.
+     */
+    static <T> LinkedHashSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+        Objects.requireNonNull(javaStream, "javaStream is null");
+        return ofAll(Iterator.ofAll(javaStream.iterator()));
+    }
+
+    /**
      * Creates a LinkedHashSet based on the elements of a boolean array.
      *
      * @param array a boolean array
