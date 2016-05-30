@@ -418,6 +418,76 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         return Stream.ofAll(Iterator.ofAll(array));
     }
 
+    /**
+     * Wrap a <code>InputStream</code> into a <code>Stream</code> of bytes.
+     * <p>
+     * Client code must close the <code>InputStream</code>. All
+     * {@link IOException}'s thrown be the <code>InputStream</code> are wrapped
+     * by {@link UncheckedIOException}'s.
+     */
+    static Stream<Byte> in(InputStream in) {
+        return StreamFactory.create(new AbstractIterator<Byte>() {
+            Byte next = null;
+
+            @Override
+            protected Byte getNext() {
+                Byte result = next;
+                next = null;
+                return result;
+            }
+
+            @Override
+            public boolean hasNext() {
+                if (next == null) {
+                    try {
+                        int i = in.read();
+                        if (i >= 0) {
+                            next = (byte) i;
+                        }
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                }
+                return next != null;
+            }
+        });
+    }
+
+    /**
+     * Wrap a <code>Reader</code> into a <code>Stream</code> of characters.
+     * <p>
+     * Client code must close the <code>Reader</code>. All
+     * {@link IOException}'s thrown be the <code>Reader</code> are wrapped
+     * by {@link UncheckedIOException}'s.
+     */
+    static Stream<Character> in(Reader reader) {
+        return StreamFactory.create(new AbstractIterator<Character>() {
+            Character next = null;
+
+            @Override
+            protected Character getNext() {
+                Character result = next;
+                next = null;
+                return result;
+            }
+
+            @Override
+            public boolean hasNext() {
+                if (next == null) {
+                    try {
+                        int i = reader.read();
+                        if (i >= 0) {
+                            next = (char) i;
+                        }
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                }
+                return next != null;
+            }
+        });
+    }
+
     static Stream<Character> range(char from, char toExclusive) {
         return Stream.ofAll(Iterator.range(from, toExclusive));
     }

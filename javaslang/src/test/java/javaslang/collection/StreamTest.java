@@ -10,7 +10,7 @@ import javaslang.control.Try;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.InvalidObjectException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
@@ -228,6 +228,61 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(Stream.from(Long.MAX_VALUE, 2).take(2))
                 .isEqualTo(Stream.of(Long.MAX_VALUE, Long.MAX_VALUE + 2));
     }
+
+    // -- static in(InputStream)
+
+    @Test
+    public void shouldWrapInputStream() {
+        InputStream is = new ByteArrayInputStream(new byte[] { 0, 1, 2, 3 });
+        Stream<Byte> stream = Stream.in(is);
+        assertThat(stream.length()).isEqualTo(4); // read entirely
+        assertThat(stream).isEqualTo(Stream.of((byte) 0, (byte) 1, (byte) 2, (byte) 3));
+    }
+
+    @Test(expected = UncheckedIOException.class)
+    public void shouldThrowWhenInputStreamThrows() {
+        InputStream is = new InputStream() {
+            @Override
+            public int read() throws IOException {
+                throw new IOException();
+            }
+        };
+        Stream<Byte> stream = Stream.in(is);
+        stream.head();
+    }
+
+    // -- static in(Reader)
+
+    @Test
+    public void shouldWrapReader() {
+        Reader reader = new StringReader("abc");
+        Stream<Character> stream = Stream.in(reader);
+        assertThat(stream.length()).isEqualTo(3); // read entirely
+        assertThat(stream).isEqualTo(Stream.of('a', 'b', 'c'));
+    }
+
+    @Test(expected = UncheckedIOException.class)
+    public void shouldThrowWhenReaderThrows() {
+        Reader reader = new Reader() {
+            @Override
+            public int read() throws IOException {
+                throw new IOException();
+            }
+
+            @Override
+            public int read(char[] cbuf, int off, int len) throws IOException {
+                throw new IOException();
+            }
+
+            @Override
+            public void close() throws IOException {
+                throw new IOException();
+            }
+        };
+        Stream<Character> stream = Stream.in(reader);
+        stream.head();
+    }
+
     // -- static continually(Supplier)
 
     @Test
