@@ -85,11 +85,15 @@ public class JmhRunner {
     }
 
     public static Integer[] getRandomValues(int size, int seed) {
+        return getRandomValues(size, seed, false);
+    }
+
+    public static Integer[] getRandomValues(int size, int seed, boolean nonNegative) {
         final Random random = new Random(seed);
 
         final Integer[] results = new Integer[size];
         for (int i = 0; i < size; i++) {
-            final int value = random.nextInt(size) - (size / 2);
+            final int value = random.nextInt(size) - (nonNegative ? 0 : (size / 2));
             results[i] = value;
         }
         return results;

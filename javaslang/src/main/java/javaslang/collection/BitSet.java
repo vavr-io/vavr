@@ -662,16 +662,10 @@ interface BitSetModule {
             return newelems;
         }
 
-        @Override
-        public BitSet<T> add(T t) {
-            if (contains(t)) {
-                return this;
-            } else {
-                final int element = toInt.apply(t);
-                final long[] copy = copyExpand(1 + (element >> ADDRESS_BITS_PER_WORD));
-                setElement(copy, element);
-                return fromBitMaskNoCopy(copy);
-            }
+        BitSet<T> addElement(int element) {
+            final long[] copy = copyExpand(1 + (element >> ADDRESS_BITS_PER_WORD));
+            setElement(copy, element);
+            return fromBitMaskNoCopy(copy);
         }
 
         @Override
@@ -893,6 +887,7 @@ interface BitSetModule {
     class BitSetIterator<T> extends AbstractIterator<T> {
 
         private final AbstractBitSet<T> bitSet;
+
         private long element;
         private int index;
 
@@ -911,10 +906,14 @@ interface BitSetModule {
 
         @Override
         public boolean hasNext() {
-            while (element == 0 && index < bitSet.getWordsNum() - 1) {
-                element = bitSet.getWord(++index);
+            if (element == 0) {
+                while (element == 0 && index < bitSet.getWordsNum() - 1) {
+                    element = bitSet.getWord(++index);
+                }
+                return element != 0 && index < bitSet.getWordsNum();
+            } else {
+                return true;
             }
-            return element != 0 && index < bitSet.getWordsNum();
         }
     }
 
@@ -967,6 +966,24 @@ interface BitSetModule {
         @Override
         public int length() {
             return len;
+        }
+
+        @Override
+        public BitSet<T> add(T t) {
+            final int element = toInt.apply(t);
+            if (element < 0) {
+                throw new IllegalArgumentException("bitset element must be >= 0");
+            }
+            if (element < BITS_PER_WORD) {
+                final long mask = 1L << element;
+                if ((elements & mask) != 0) {
+                    return this;
+                } else {
+                    return new BitSet1<>(fromInt, toInt, elements | mask);
+                }
+            } else {
+                return addElement(element);
+            }
         }
     }
 
@@ -1027,6 +1044,30 @@ interface BitSetModule {
         @Override
         public int length() {
             return len;
+        }
+
+        @Override
+        public BitSet<T> add(T t) {
+            final int element = toInt.apply(t);
+            if (element < 0) {
+                throw new IllegalArgumentException("bitset element must be >= 0");
+            }
+            final long mask = 1L << element;
+            if (element < BITS_PER_WORD) {
+                if ((elements1 & mask) != 0) {
+                    return this;
+                } else {
+                    return new BitSet2<>(fromInt, toInt, elements1 | mask, elements2);
+                }
+            } else if (element < 2 * BITS_PER_WORD) {
+                if ((elements2 & mask) != 0) {
+                    return this;
+                } else {
+                    return new BitSet2<>(fromInt, toInt, elements1, elements2 | mask);
+                }
+            } else {
+                return addElement(element);
+            }
         }
     }
 
@@ -1091,6 +1132,15 @@ interface BitSetModule {
         @Override
         public int length() {
             return len;
+        }
+
+        @Override
+        public BitSet<T> add(T t) {
+            if (contains(t)) {
+                return this;
+            } else {
+                return addElement(toInt.apply(t));
+            }
         }
     }
 }
