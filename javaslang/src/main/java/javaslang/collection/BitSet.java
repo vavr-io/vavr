@@ -910,7 +910,7 @@ interface BitSetModule {
                 while (element == 0 && index < bitSet.getWordsNum() - 1) {
                     element = bitSet.getWord(++index);
                 }
-                return element != 0 && index < bitSet.getWordsNum();
+                return element != 0;
             } else {
                 return true;
             }
@@ -947,11 +947,7 @@ interface BitSetModule {
 
         @Override
         long getWord(int index) {
-            if (index == 0) {
-                return elements;
-            } else {
-                throw new IndexOutOfBoundsException();
-            }
+            return elements;
         }
 
         @Override
@@ -1021,21 +1017,15 @@ interface BitSetModule {
         long getWord(int index) {
             if (index == 0) {
                 return elements1;
-            } else if (index == 1) {
-                return elements2;
             } else {
-                throw new IndexOutOfBoundsException();
+                return elements2;
             }
         }
 
         @Override
         public T head() {
             if (elements1 == 0) {
-                if (elements2 == 0) {
-                    throw new NoSuchElementException("head of empty BitSet");
-                } else {
-                    return fromInt.apply(BITS_PER_WORD + Long.numberOfTrailingZeros(elements2));
-                }
+                return fromInt.apply(BITS_PER_WORD + Long.numberOfTrailingZeros(elements2));
             } else {
                 return fromInt.apply(Long.numberOfTrailingZeros(elements1));
             }
@@ -1109,24 +1099,22 @@ interface BitSetModule {
 
         @Override
         long getWord(int index) {
-            if (index < elements.length) {
-                return elements[index];
-            } else {
-                throw new IndexOutOfBoundsException();
-            }
+            return elements[index];
         }
 
         @Override
         public T head() {
             int offset = 0;
+            int element = 0;
             for (int i = 0; i < getWordsNum(); i++) {
                 if(elements[i] == 0) {
                     offset += BITS_PER_WORD;
                 } else {
-                    return fromInt.apply(offset + Long.numberOfTrailingZeros(elements[i]));
+                    element = offset + Long.numberOfTrailingZeros(elements[i]);
+                    break;
                 }
             }
-            throw new NoSuchElementException("head of empty BitSet");
+            return fromInt.apply(element);
         }
 
         @Override
