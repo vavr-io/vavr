@@ -1030,6 +1030,11 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default List<T> removeAll(Predicate<? super T> predicate) {
+        return Collections.removeAll(this, predicate);
+    }
+
+    @Override
     default List<T> replace(T currentElement, T newElement) {
         List<T> preceding = Nil.instance();
         List<T> tail = this;

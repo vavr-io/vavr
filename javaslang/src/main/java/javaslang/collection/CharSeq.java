@@ -665,6 +665,11 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
+    public CharSeq removeAll(Predicate<? super Character> predicate) {
+        return Collections.removeAll(this, predicate);
+    }
+
+    @Override
     public CharSeq replace(Character currentElement, Character newElement) {
         final StringBuilder sb = new StringBuilder();
         boolean found = false;

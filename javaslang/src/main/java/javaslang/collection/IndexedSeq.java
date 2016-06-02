@@ -208,6 +208,9 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> removeAll(Iterable<? extends T> elements);
 
     @Override
+    IndexedSeq<T> removeAll(Predicate<? super T> predicate);
+
+    @Override
     IndexedSeq<T> replace(T currentElement, T newElement);
 
     @Override

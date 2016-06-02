@@ -188,6 +188,9 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> removeAll(Iterable<? extends T> elements);
 
     @Override
+    LinearSeq<T> removeAll(Predicate<? super T> predicate);
+
+    @Override
     LinearSeq<T> replace(T currentElement, T newElement);
 
     @Override

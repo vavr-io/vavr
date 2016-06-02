@@ -921,6 +921,11 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
+    public Array<T> removeAll(Predicate<? super T> predicate) {
+        return Collections.removeAll(this, predicate);
+    }
+
+    @Override
     public Array<T> replace(T currentElement, T newElement) {
         final Object[] arr = new Object[length()];
         boolean found = false;
