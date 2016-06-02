@@ -2442,6 +2442,25 @@ public class CharSeqTest {
         assertThat(t.removeAll(of('4', '5'))).isSameAs(t);
     }
 
+    // -- removeAll(Predicate)
+
+    @Test
+    public void shouldRemoveAllElementsByPredicateFromNil() {
+        assertThat(empty().removeAll(Character::isDigit)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldRemoveAllMatchedElementsFromNonNil() {
+        assertThat(of('1', '2', '3', 'a', 'b', 'c').removeAll(Character::isDigit))
+                .isEqualTo(of('a', 'b', 'c'));
+    }
+
+    @Test
+    public void shouldNotRemoveAllNonMatchedElementsFromNonNil() {
+        final CharSeq t = of('a', 'b', 'c');
+        assertThat(t.removeAll(Character::isDigit)).isSameAs(t);
+    }
+
     // -- removeAll(Object)
 
     @Test
