@@ -1075,6 +1075,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(of(1, 2, 3).removeAll(ignore -> true)).isEmpty();
             assertThat(of(1, 2, 3).removeAll(ignore -> false)).isEqualTo(of(1, 2, 3));
+        } else {
+            Seq<Integer> seq = of(1, 2, 3);
+            assertThat(seq.removeAll(ignore -> false)).isSameAs(seq);
         }
     }
 
