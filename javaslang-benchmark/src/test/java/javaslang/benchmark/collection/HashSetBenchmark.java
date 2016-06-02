@@ -1,17 +1,18 @@
 package javaslang.benchmark.collection;
 
+import javaslang.benchmark.JmhRunner;
 import org.openjdk.jmh.annotations.*;
 
 import static javaslang.benchmark.JmhRunner.*;
 
 public class HashSetBenchmark {
-    public static void main(String... args) { /* main is more reliable than a test */
-        run(HashSetBenchmark.class);
+    public static void main(String... args) {
+        JmhRunner.runDev(HashSetBenchmark.class);
     }
 
     @State(Scope.Benchmark)
     public static class Base {
-        @Param({"10", "100", "1000"})
+        @Param({ "10", "100", "1000" })
         public int CONTAINER_SIZE;
 
         public Integer[] ELEMENTS;
