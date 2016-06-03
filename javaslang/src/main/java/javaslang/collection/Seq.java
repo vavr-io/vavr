@@ -714,7 +714,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     /**
      * Returns a new Seq consisting of all elements which do not satisfy the given predicate.
      *
-     * @param predicate A predicate
+     * @param predicate the predicate used to test elements
      * @return a new Seq
      * @throws NullPointerException if {@code predicate} is null
      */
