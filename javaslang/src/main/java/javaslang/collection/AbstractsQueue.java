@@ -144,6 +144,11 @@ abstract class AbstractsQueue<T, Q extends AbstractsQueue<T, Q>> implements Trav
         return Collections.removeAll((Q) this, elements);
     }
 
+    @SuppressWarnings("unchecked")
+    public Q removeAll(Predicate<? super T> predicate) {
+        return Collections.removeAll((Q) this, predicate);
+    }
+
     @Override
     public Q takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");

@@ -931,6 +931,11 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
+    public IndexedSeq<T> removeAll(Predicate<? super T> predicate) {
+        return Collections.removeAll(this, predicate);
+    }
+
+    @Override
     public Vector<T> replace(T currentElement, T newElement) {
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         boolean found = false;

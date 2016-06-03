@@ -1103,6 +1103,11 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
+    default Stream<T> removeAll(Predicate<? super T> predicate) {
+        return Collections.removeAll(this, predicate);
+    }
+
+    @Override
     default Stream<T> replace(T currentElement, T newElement) {
         if (isEmpty()) {
             return this;

@@ -712,6 +712,15 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     Seq<T> removeAll(Iterable<? extends T> elements);
 
     /**
+     * Returns a new Seq consisting of all elements which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test elements
+     * @return a new Seq
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Seq<T> removeAll(Predicate<? super T> predicate);
+
+    /**
      * Removes the element at the specified position in this sequence. Shifts any subsequent elements to the left
      * (subtracts one from their indices).
      *

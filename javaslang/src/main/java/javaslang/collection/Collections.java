@@ -31,6 +31,12 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
+    static <C extends Traversable<T>, T> C removeAll(C collection, Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return (C) collection.filter(predicate.negate());
+    }
+
+    @SuppressWarnings("unchecked")
     static <C extends Traversable<T>, T> C retainAll(C collection, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final Set<T> removed = HashSet.ofAll(elements);

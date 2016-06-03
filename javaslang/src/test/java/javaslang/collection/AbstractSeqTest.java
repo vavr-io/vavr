@@ -12,6 +12,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collector;
 
 /**
@@ -1061,6 +1062,59 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
             assertThat(t.removeAll(of(4, 5))).isEqualTo(t);
         } else {
             assertThat(t.removeAll(of(4, 5))).isSameAs(t);
+        }
+    }
+
+    // -- removeAll(Predicate)
+
+    @Test
+    public void shouldRemoveExistingElements() {
+        assertThat(of(1, 2, 3).removeAll(i -> i == 1)).isEqualTo(of(2, 3));
+        assertThat(of(1, 2, 3).removeAll(i -> i == 2)).isEqualTo(of(1, 3));
+        assertThat(of(1, 2, 3).removeAll(i -> i == 3)).isEqualTo(of(1, 2));
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 3).removeAll(ignore -> true)).isEmpty();
+            assertThat(of(1, 2, 3).removeAll(ignore -> false)).isEqualTo(of(1, 2, 3));
+        } else {
+            Seq<Integer> seq = of(1, 2, 3);
+            assertThat(seq.removeAll(ignore -> false)).isSameAs(seq);
+        }
+    }
+
+    @Test
+    public void shouldRemoveNonExistingElements() {
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(this.<Integer> empty().removeAll(i -> i == 0)).isEqualTo(empty());
+            assertThat(of(1, 2, 3).removeAll(i -> i != 0)).isEqualTo(empty());
+        } else {
+            assertThat(this.<Integer> empty().removeAll(i -> i == 0)).isSameAs(empty());
+            assertThat(of(1, 2, 3).removeAll(i -> i != 0)).isSameAs(empty());
+        }
+    }
+
+    @Test
+    public void shouldRemoveAllElementsByPredicateFromNil() {
+        assertThat(empty().removeAll(o -> true)).isEmpty();
+    }
+
+    @Test
+    public void shouldRemoveAllExistingElements() {
+        assertThat(of(1, 2, 3, 4, 5, 6).removeAll(ignored -> true)).isEmpty();
+    }
+
+    @Test
+    public void shouldRemoveAllMatchedElementsFromNonNil() {
+        assertThat(of(1, 2, 3, 4, 5, 6).removeAll(i -> i % 2 == 0)).isEqualTo(of(1, 3, 5));
+    }
+
+    @Test
+    public void shouldNotRemoveAllNonMatchedElementsFromNonNil() {
+        final Seq<Integer> t = of(1, 2, 3);
+        final Predicate<Integer> isTooBig = i -> i >= 4;
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(t.removeAll(isTooBig)).isEqualTo(t);
+        } else {
+            assertThat(t.removeAll(isTooBig)).isSameAs(t);
         }
     }
 
