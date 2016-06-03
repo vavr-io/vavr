@@ -314,16 +314,20 @@ public class BitSetTest extends AbstractSortedSetTest {
 
         bs = bs.add(2);
         assertThat(bs.head()).isEqualTo(2);
+        assertThat(bs.length()).isEqualTo(1);
 
         bs = bs.add(4);
         assertThat(bs.head()).isEqualTo(2);
+        assertThat(bs.length()).isEqualTo(2);
 
         bs = bs.remove(2);
         assertThat(bs.head()).isEqualTo(4);
         assertThat(bs.contains(2)).isFalse();
+        assertThat(bs.length()).isEqualTo(1);
 
         bs = bs.remove(4);
         assertThat(bs.isEmpty()).isTrue();
+        assertThat(bs.length()).isEqualTo(0);
     }
 
     @Test
@@ -332,16 +336,33 @@ public class BitSetTest extends AbstractSortedSetTest {
 
         bs = bs.add(2);
         assertThat(bs.head()).isEqualTo(2);
+        assertThat(bs.add(2)).isSameAs(bs);
+        assertThat(bs.length()).isEqualTo(1);
 
         bs = bs.add(70);
         assertThat(bs.head()).isEqualTo(2);
+        assertThat(bs.add(2)).isSameAs(bs);
+        assertThat(bs.add(70)).isSameAs(bs);
+        assertThat(bs.length()).isEqualTo(2);
 
         bs = bs.remove(2);
         assertThat(bs.head()).isEqualTo(70);
         assertThat(bs.contains(2)).isFalse();
+        assertThat(bs.length()).isEqualTo(1);
 
         bs = bs.remove(70);
         assertThat(bs.isEmpty()).isTrue();
+        assertThat(bs.length()).isEqualTo(0);
+
+        bs = bs.add(2);
+        bs = bs.add(70);
+        bs = bs.add(3);
+        assertThat(bs.length()).isEqualTo(3);
+        bs = bs.add(71);
+        assertThat(bs.length()).isEqualTo(4);
+        bs = bs.add(701);
+        assertThat(bs.length()).isEqualTo(5);
+
     }
 
     @Test
@@ -353,6 +374,8 @@ public class BitSetTest extends AbstractSortedSetTest {
 
         bs = bs.add(700);
         assertThat(bs.head()).isEqualTo(2);
+        assertThat(bs.add(2)).isSameAs(bs);
+        assertThat(bs.add(700)).isSameAs(bs);
 
         bs = bs.remove(2);
         assertThat(bs.head()).isEqualTo(700);
@@ -360,6 +383,7 @@ public class BitSetTest extends AbstractSortedSetTest {
 
         bs = bs.remove(700);
         assertThat(bs.isEmpty()).isTrue();
+
     }
 
     @Test
@@ -367,6 +391,22 @@ public class BitSetTest extends AbstractSortedSetTest {
         assertThat(BitSet.of(7).contains(7)).isTrue();     // BitSet1, < 64
         assertThat(BitSet.of(77).contains(77)).isTrue();   // BitSet2, < 2*64
         assertThat(BitSet.of(777).contains(777)).isTrue(); // BitSetN, >= 2*64
+        assertThat(BitSet.ofAll(List.of(1).toJavaStream())).isEqualTo(BitSet.of(1));
+        assertThat(BitSet.fill(1, () -> 1)).isEqualTo(BitSet.of(1));
+        assertThat(BitSet.tabulate(1, i -> 1)).isEqualTo(BitSet.of(1));
+    }
+
+    @Test
+    public void shouldAllAll() {
+        assertThat(BitSet.empty().add(7).addAll(List.of(1, 2))).isEqualTo(BitSet.of(1, 2, 7));
+        assertThat(BitSet.empty().add(77).addAll(List.of(1, 2))).isEqualTo(BitSet.of(1, 2, 77));
+        assertThat(BitSet.empty().add(777).addAll(List.of(1, 2))).isEqualTo(BitSet.of(1, 2, 777));
+    }
+
+    @Test
+    public void shouldCollectInts() {
+        final Traversable<Integer> actual = java.util.stream.Stream.of(1, 2, 3).collect(BitSet.collector());
+        assertThat(actual).isEqualTo(of(1, 2, 3));
     }
 
     @Test
@@ -383,8 +423,18 @@ public class BitSetTest extends AbstractSortedSetTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowAddNegativeElement() {
+    public void shouldThrowAddNegativeElementToEmpty() {
         BitSet.empty().add(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowAddNegativeElementToBitSet2() {
+        BitSet.empty().add(77).add(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowAddNegativeElementToBitSetN() {
+        BitSet.empty().add(777).add(-1);
     }
 
     @Test(expected = IllegalArgumentException.class)
