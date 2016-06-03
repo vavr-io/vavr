@@ -712,7 +712,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     Seq<T> removeAll(Iterable<? extends T> elements);
 
     /**
-     * Returns a new Seq consisting of all elements which not satisfy the given predicate.
+     * Returns a new Seq consisting of all elements which do not satisfy the given predicate.
      *
      * @param predicate A predicate
      * @return a new Seq
