@@ -1,6 +1,7 @@
 package javaslang.benchmark.collection;
 
 import javaslang.Tuple2;
+import javaslang.benchmark.JmhRunner;
 import javaslang.collection.Traversable;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.annotations.State;
@@ -13,9 +14,8 @@ import java.util.Collections;
 import static javaslang.benchmark.JmhRunner.*;
 
 public class PriorityQueueBenchmark {
-
-    public static void main(String... args) { /* main is more reliable than a test */
-        run(PriorityQueueBenchmark.class);
+    public static void main(String... args) {
+        JmhRunner.runDev(PriorityQueueBenchmark.class);
     }
 
     @State(Scope.Benchmark)

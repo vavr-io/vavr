@@ -1,5 +1,6 @@
 package javaslang.benchmark.collection;
 
+import javaslang.benchmark.JmhRunner;
 import org.openjdk.jmh.annotations.*;
 import scala.compat.java8.JFunction;
 
@@ -9,8 +10,8 @@ import java.util.stream.Collectors;
 import static javaslang.benchmark.JmhRunner.*;
 
 public class ListBenchmark {
-    public static void main(String... args) { /* main is more reliable than a test */
-        run(ListBenchmark.class);
+    public static void main(String... args) {
+        JmhRunner.runDev(ListBenchmark.class);
     }
 
     @State(Scope.Benchmark)
