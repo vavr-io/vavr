@@ -7,7 +7,7 @@ import static javaslang.benchmark.JmhRunner.*;
 
 public class HashSetBenchmark {
     public static void main(String... args) {
-        JmhRunner.runDev(HashSetBenchmark.class);
+        JmhRunner.runQuick(HashSetBenchmark.class);
     }
 
     @State(Scope.Benchmark)
