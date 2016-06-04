@@ -175,4 +175,165 @@ public class APITest {
         assertThat(Case(ignored -> false, 1).apply(null)).isEqualTo(Option.none());
     }
 
+    // -- Match patterns
+
+    @Test
+    public void shouldMatchPattern1() {
+        final Tuple1<Integer> tuple = Tuple.of(1);
+        final String func = Match(tuple).of(
+                Case(Patterns.Tuple1($(0)), (m1) -> "fail"),
+                Case(Patterns.Tuple1($()), (m1) -> "okFunc")
+        );
+        assertThat(func).isEqualTo("okFunc");
+        final String supp = Match(tuple).of(
+                Case(Patterns.Tuple1($(0)), () -> "fail"),
+                Case(Patterns.Tuple1($()), () -> "okSupp")
+        );
+        assertThat(supp).isEqualTo("okSupp");
+        final String val = Match(tuple).of(
+                Case(Patterns.Tuple1($(0)), "fail"),
+                Case(Patterns.Tuple1($()), "okVal")
+        );
+        assertThat(val).isEqualTo("okVal");
+    }
+
+    @Test
+    public void shouldMatchPattern2() {
+        final Tuple2<Integer, Integer> tuple = Tuple.of(1, 1);
+        final String func = Match(tuple).of(
+                Case(Patterns.Tuple2($(0), $()), (m1, m2) -> "fail"),
+                Case(Patterns.Tuple2($(), $()), (m1, m2) -> "okFunc")
+        );
+        assertThat(func).isEqualTo("okFunc");
+        final String supp = Match(tuple).of(
+                Case(Patterns.Tuple2($(0), $()), () -> "fail"),
+                Case(Patterns.Tuple2($(), $()), () -> "okSupp")
+        );
+        assertThat(supp).isEqualTo("okSupp");
+        final String val = Match(tuple).of(
+                Case(Patterns.Tuple2($(0), $()), "fail"),
+                Case(Patterns.Tuple2($(), $()), "okVal")
+        );
+        assertThat(val).isEqualTo("okVal");
+    }
+
+    @Test
+    public void shouldMatchPattern3() {
+        final Tuple3<Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1);
+        final String func = Match(tuple).of(
+                Case(Patterns.Tuple3($(0), $(), $()), (m1, m2, m3) -> "fail"),
+                Case(Patterns.Tuple3($(), $(), $()), (m1, m2, m3) -> "okFunc")
+        );
+        assertThat(func).isEqualTo("okFunc");
+        final String supp = Match(tuple).of(
+                Case(Patterns.Tuple3($(0), $(), $()), () -> "fail"),
+                Case(Patterns.Tuple3($(), $(), $()), () -> "okSupp")
+        );
+        assertThat(supp).isEqualTo("okSupp");
+        final String val = Match(tuple).of(
+                Case(Patterns.Tuple3($(0), $(), $()), "fail"),
+                Case(Patterns.Tuple3($(), $(), $()), "okVal")
+        );
+        assertThat(val).isEqualTo("okVal");
+    }
+
+    @Test
+    public void shouldMatchPattern4() {
+        final Tuple4<Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1);
+        final String func = Match(tuple).of(
+                Case(Patterns.Tuple4($(0), $(), $(), $()), (m1, m2, m3, m4) -> "fail"),
+                Case(Patterns.Tuple4($(), $(), $(), $()), (m1, m2, m3, m4) -> "okFunc")
+        );
+        assertThat(func).isEqualTo("okFunc");
+        final String supp = Match(tuple).of(
+                Case(Patterns.Tuple4($(0), $(), $(), $()), () -> "fail"),
+                Case(Patterns.Tuple4($(), $(), $(), $()), () -> "okSupp")
+        );
+        assertThat(supp).isEqualTo("okSupp");
+        final String val = Match(tuple).of(
+                Case(Patterns.Tuple4($(0), $(), $(), $()), "fail"),
+                Case(Patterns.Tuple4($(), $(), $(), $()), "okVal")
+        );
+        assertThat(val).isEqualTo("okVal");
+    }
+
+    @Test
+    public void shouldMatchPattern5() {
+        final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1);
+        final String func = Match(tuple).of(
+                Case(Patterns.Tuple5($(0), $(), $(), $(), $()), (m1, m2, m3, m4, m5) -> "fail"),
+                Case(Patterns.Tuple5($(), $(), $(), $(), $()), (m1, m2, m3, m4, m5) -> "okFunc")
+        );
+        assertThat(func).isEqualTo("okFunc");
+        final String supp = Match(tuple).of(
+                Case(Patterns.Tuple5($(0), $(), $(), $(), $()), () -> "fail"),
+                Case(Patterns.Tuple5($(), $(), $(), $(), $()), () -> "okSupp")
+        );
+        assertThat(supp).isEqualTo("okSupp");
+        final String val = Match(tuple).of(
+                Case(Patterns.Tuple5($(0), $(), $(), $(), $()), "fail"),
+                Case(Patterns.Tuple5($(), $(), $(), $(), $()), "okVal")
+        );
+        assertThat(val).isEqualTo("okVal");
+    }
+
+    @Test
+    public void shouldMatchPattern6() {
+        final Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1, 1);
+        final String func = Match(tuple).of(
+                Case(Patterns.Tuple6($(0), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6) -> "fail"),
+                Case(Patterns.Tuple6($(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6) -> "okFunc")
+        );
+        assertThat(func).isEqualTo("okFunc");
+        final String supp = Match(tuple).of(
+                Case(Patterns.Tuple6($(0), $(), $(), $(), $(), $()), () -> "fail"),
+                Case(Patterns.Tuple6($(), $(), $(), $(), $(), $()), () -> "okSupp")
+        );
+        assertThat(supp).isEqualTo("okSupp");
+        final String val = Match(tuple).of(
+                Case(Patterns.Tuple6($(0), $(), $(), $(), $(), $()), "fail"),
+                Case(Patterns.Tuple6($(), $(), $(), $(), $(), $()), "okVal")
+        );
+        assertThat(val).isEqualTo("okVal");
+    }
+
+    @Test
+    public void shouldMatchPattern7() {
+        final Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1, 1, 1);
+        final String func = Match(tuple).of(
+                Case(Patterns.Tuple7($(0), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7) -> "fail"),
+                Case(Patterns.Tuple7($(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7) -> "okFunc")
+        );
+        assertThat(func).isEqualTo("okFunc");
+        final String supp = Match(tuple).of(
+                Case(Patterns.Tuple7($(0), $(), $(), $(), $(), $(), $()), () -> "fail"),
+                Case(Patterns.Tuple7($(), $(), $(), $(), $(), $(), $()), () -> "okSupp")
+        );
+        assertThat(supp).isEqualTo("okSupp");
+        final String val = Match(tuple).of(
+                Case(Patterns.Tuple7($(0), $(), $(), $(), $(), $(), $()), "fail"),
+                Case(Patterns.Tuple7($(), $(), $(), $(), $(), $(), $()), "okVal")
+        );
+        assertThat(val).isEqualTo("okVal");
+    }
+
+    @Test
+    public void shouldMatchPattern8() {
+        final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1, 1, 1, 1);
+        final String func = Match(tuple).of(
+                Case(Patterns.Tuple8($(0), $(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7, m8) -> "fail"),
+                Case(Patterns.Tuple8($(), $(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7, m8) -> "okFunc")
+        );
+        assertThat(func).isEqualTo("okFunc");
+        final String supp = Match(tuple).of(
+                Case(Patterns.Tuple8($(0), $(), $(), $(), $(), $(), $(), $()), () -> "fail"),
+                Case(Patterns.Tuple8($(), $(), $(), $(), $(), $(), $(), $()), () -> "okSupp")
+        );
+        assertThat(supp).isEqualTo("okSupp");
+        final String val = Match(tuple).of(
+                Case(Patterns.Tuple8($(0), $(), $(), $(), $(), $(), $(), $()), "fail"),
+                Case(Patterns.Tuple8($(), $(), $(), $(), $(), $(), $(), $()), "okVal")
+        );
+        assertThat(val).isEqualTo("okVal");
+    }
 }

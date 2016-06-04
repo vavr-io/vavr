@@ -1205,6 +1205,8 @@ def generateTestClasses(): Unit = {
       val ListType = im.getType("javaslang.collection.List")
       val OptionType = im.getType("javaslang.control.Option")
 
+      val d = "$";
+
       im.getStatic("javaslang.API.*")
 
       xs"""
@@ -1269,6 +1271,29 @@ def generateTestClasses(): Unit = {
                 assertThat(Case(ignored -> false, 1).apply(null)).isEqualTo($OptionType.none());
             }
 
+            // -- Match patterns
+
+            ${(1 to N).gen(i => xs"""
+              @$test
+              public void shouldMatchPattern$i() {
+                  final Tuple$i<${(1 to i).gen(j => s"Integer")(", ")}> tuple = Tuple.of(${(1 to i).gen(j => s"1")(", ")});
+                  final String func = Match(tuple).of(
+                          Case(Patterns.Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "fail"),
+                          Case(Patterns.Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "okFunc")
+                  );
+                  assertThat(func).isEqualTo("okFunc");
+                  final String supp = Match(tuple).of(
+                          Case(Patterns.Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), () -> "fail"),
+                          Case(Patterns.Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), () -> "okSupp")
+                  );
+                  assertThat(supp).isEqualTo("okSupp");
+                  final String val = Match(tuple).of(
+                          Case(Patterns.Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), "fail"),
+                          Case(Patterns.Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), "okVal")
+                  );
+                  assertThat(val).isEqualTo("okVal");
+              }
+            """)("\n\n")}
         }
       """
     })
