@@ -139,7 +139,30 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldMixAppendAndPrepend() {
-        assertThat(of(1).append(2).prepend(0).prepend(-1).append(3).append(4)).isEqualTo(of(-1, 0, 1, 2, 3, 4));
+        final Seq<Integer> append = of(1).append(2).prepend(0).prepend(-1).append(3).append(4);
+        assertThat(append).isEqualTo(of(-1, 0, 1, 2, 3, 4));
+    }
+
+    @Test
+    public void shouldAppend() {
+        final Seq<Integer> actual = Stream.range(4, 100).foldLeft(of(1, 2, 3),
+                (v, i) -> v.append(i).tail()
+        );
+        assertThat(actual).isEqualTo(of(97, 98, 99));
+    }
+
+    @Test
+    public void shouldPrepend() {
+        final Seq<Integer> actual = Stream.range(4, 100).foldLeft(of(3, 2, 1),
+                (v, i) -> v.prepend(i).init()
+        );
+        assertThat(actual).isEqualTo(of(99, 98, 97));
+    }
+
+    @Test
+    public void shouldMixAppendAndPrependAndDrop() {
+        final Seq<Integer> append = of(1).append(2).prepend(-1).prepend(-2).append(4).dropRight(1).append(3).drop(2).prepend(0);
+        assertThat(append).isEqualTo(of(0, 1, 2, 3));
     }
 
     // -- appendAll
@@ -594,8 +617,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldInsertIntoSeq() {
-        final Seq<Integer> actual = of(1, 2, 3).insert(2, 4);
-        final Seq<Integer> expected = of(1, 2, 4, 3);
+        final Seq<Integer> actual = of(1, 2, 4).insert(2, 3);
+        final Seq<Integer> expected = of(1, 2, 3, 4);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1271,7 +1294,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldReturnSliceWhenIndicesAreWithinRange() {
-        final Seq<Integer> actual = of(1, 2, 3).slice(1, 3);
+        final Seq<Integer> actual = of(1, 2, 3, 4).slice(1, 3);
         assertThat(actual).isEqualTo(of(2, 3));
     }
 
@@ -1293,7 +1316,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldComputeSliceOnNonNilWhenBeginIndexExceedsLowerBound() {
-        assertThat(of(1, 2, 3).slice(-1, 2)).isEqualTo(of(1, 2));
+        final Seq<Integer> actual = of(1, 2, 3).slice(-1, 2);
+        assertThat(actual).isEqualTo(of(1, 2));
     }
 
     @Test
