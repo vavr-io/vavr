@@ -1273,6 +1273,10 @@ def generateTestClasses(): Unit = {
 
             // -- Match patterns
 
+            static class ClzMatch {}
+            static class ClzMatch1 extends ClzMatch {}
+            static class ClzMatch2 extends ClzMatch {}
+
             ${(1 to N).gen(i => xs"""
               @$test
               public void shouldMatchPattern$i() {
@@ -1292,6 +1296,13 @@ def generateTestClasses(): Unit = {
                           Case(Patterns.Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), "okVal")
                   );
                   assertThat(val).isEqualTo("okVal");
+
+                  final ClzMatch c = new ClzMatch2();
+                  final String match = Match(c).of(
+                          Case(API.Match.Pattern$i.of(ClzMatch1.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "fail"),
+                          Case(API.Match.Pattern$i.of(ClzMatch2.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "okMatch")
+                  );
+                  assertThat(match).isEqualTo("okMatch");
               }
             """)("\n\n")}
         }

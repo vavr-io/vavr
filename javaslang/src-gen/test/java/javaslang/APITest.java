@@ -177,6 +177,10 @@ public class APITest {
 
     // -- Match patterns
 
+    static class ClzMatch {}
+    static class ClzMatch1 extends ClzMatch {}
+    static class ClzMatch2 extends ClzMatch {}
+
     @Test
     public void shouldMatchPattern1() {
         final Tuple1<Integer> tuple = Tuple.of(1);
@@ -195,6 +199,13 @@ public class APITest {
                 Case(Patterns.Tuple1($()), "okVal")
         );
         assertThat(val).isEqualTo("okVal");
+
+        final ClzMatch c = new ClzMatch2();
+        final String match = Match(c).of(
+                Case(API.Match.Pattern1.of(ClzMatch1.class, $(), t -> Tuple.of(null)), "fail"),
+                Case(API.Match.Pattern1.of(ClzMatch2.class, $(), t -> Tuple.of(null)), "okMatch")
+        );
+        assertThat(match).isEqualTo("okMatch");
     }
 
     @Test
@@ -215,6 +226,13 @@ public class APITest {
                 Case(Patterns.Tuple2($(), $()), "okVal")
         );
         assertThat(val).isEqualTo("okVal");
+
+        final ClzMatch c = new ClzMatch2();
+        final String match = Match(c).of(
+                Case(API.Match.Pattern2.of(ClzMatch1.class, $(), $(), t -> Tuple.of(null, null)), "fail"),
+                Case(API.Match.Pattern2.of(ClzMatch2.class, $(), $(), t -> Tuple.of(null, null)), "okMatch")
+        );
+        assertThat(match).isEqualTo("okMatch");
     }
 
     @Test
@@ -235,6 +253,13 @@ public class APITest {
                 Case(Patterns.Tuple3($(), $(), $()), "okVal")
         );
         assertThat(val).isEqualTo("okVal");
+
+        final ClzMatch c = new ClzMatch2();
+        final String match = Match(c).of(
+                Case(API.Match.Pattern3.of(ClzMatch1.class, $(), $(), $(), t -> Tuple.of(null, null, null)), "fail"),
+                Case(API.Match.Pattern3.of(ClzMatch2.class, $(), $(), $(), t -> Tuple.of(null, null, null)), "okMatch")
+        );
+        assertThat(match).isEqualTo("okMatch");
     }
 
     @Test
@@ -255,6 +280,13 @@ public class APITest {
                 Case(Patterns.Tuple4($(), $(), $(), $()), "okVal")
         );
         assertThat(val).isEqualTo("okVal");
+
+        final ClzMatch c = new ClzMatch2();
+        final String match = Match(c).of(
+                Case(API.Match.Pattern4.of(ClzMatch1.class, $(), $(), $(), $(), t -> Tuple.of(null, null, null, null)), "fail"),
+                Case(API.Match.Pattern4.of(ClzMatch2.class, $(), $(), $(), $(), t -> Tuple.of(null, null, null, null)), "okMatch")
+        );
+        assertThat(match).isEqualTo("okMatch");
     }
 
     @Test
@@ -275,6 +307,13 @@ public class APITest {
                 Case(Patterns.Tuple5($(), $(), $(), $(), $()), "okVal")
         );
         assertThat(val).isEqualTo("okVal");
+
+        final ClzMatch c = new ClzMatch2();
+        final String match = Match(c).of(
+                Case(API.Match.Pattern5.of(ClzMatch1.class, $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null)), "fail"),
+                Case(API.Match.Pattern5.of(ClzMatch2.class, $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null)), "okMatch")
+        );
+        assertThat(match).isEqualTo("okMatch");
     }
 
     @Test
@@ -295,6 +334,13 @@ public class APITest {
                 Case(Patterns.Tuple6($(), $(), $(), $(), $(), $()), "okVal")
         );
         assertThat(val).isEqualTo("okVal");
+
+        final ClzMatch c = new ClzMatch2();
+        final String match = Match(c).of(
+                Case(API.Match.Pattern6.of(ClzMatch1.class, $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null)), "fail"),
+                Case(API.Match.Pattern6.of(ClzMatch2.class, $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null)), "okMatch")
+        );
+        assertThat(match).isEqualTo("okMatch");
     }
 
     @Test
@@ -315,6 +361,13 @@ public class APITest {
                 Case(Patterns.Tuple7($(), $(), $(), $(), $(), $(), $()), "okVal")
         );
         assertThat(val).isEqualTo("okVal");
+
+        final ClzMatch c = new ClzMatch2();
+        final String match = Match(c).of(
+                Case(API.Match.Pattern7.of(ClzMatch1.class, $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null)), "fail"),
+                Case(API.Match.Pattern7.of(ClzMatch2.class, $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null)), "okMatch")
+        );
+        assertThat(match).isEqualTo("okMatch");
     }
 
     @Test
@@ -335,5 +388,12 @@ public class APITest {
                 Case(Patterns.Tuple8($(), $(), $(), $(), $(), $(), $(), $()), "okVal")
         );
         assertThat(val).isEqualTo("okVal");
+
+        final ClzMatch c = new ClzMatch2();
+        final String match = Match(c).of(
+                Case(API.Match.Pattern8.of(ClzMatch1.class, $(), $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null, null)), "fail"),
+                Case(API.Match.Pattern8.of(ClzMatch2.class, $(), $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null, null)), "okMatch")
+        );
+        assertThat(match).isEqualTo("okMatch");
     }
 }
