@@ -188,11 +188,23 @@ public class ArrayTest extends AbstractIndexedSeqTest {
         assertThat(actual).isEqualTo(3);
     }
 
+    // -- delegate
+
+    @Test
+    public void shouldPeriodicallyTrimExcess() {
+        for (Array<Integer> values = range(0, 100); !values.isEmpty(); values = values.tail()) {
+            final int length = values.length(), delegateLength = values.delegate.length;
+            if (length != delegateLength) {
+                assertThat(List.of(100, 50, 25, 13, 7, 4, 2)).contains(delegateLength);
+            }
+        }
+    }
+
     // -- transform()
 
     @Test
     public void shouldTransform() {
-        String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        final String transformed = of(42).transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("42");
     }
 
