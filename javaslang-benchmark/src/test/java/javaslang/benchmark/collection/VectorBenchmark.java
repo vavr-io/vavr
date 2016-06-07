@@ -2,6 +2,7 @@ package javaslang.benchmark.collection;
 
 import javaslang.benchmark.JmhRunner;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
 import scala.compat.java8.JFunction;
 
 import java.util.*;
@@ -9,9 +10,9 @@ import java.util.stream.Collectors;
 
 import static javaslang.benchmark.JmhRunner.*;
 
-public class ListBenchmark {
+public class VectorBenchmark {
     public static void main(String... args) {
-        JmhRunner.runQuick(ListBenchmark.class);
+        JmhRunner.runQuick(VectorBenchmark.class);
     }
 
     @State(Scope.Benchmark)
@@ -24,44 +25,32 @@ public class ListBenchmark {
 
         /* Only use these for non-mutating operations */
         final java.util.ArrayList<Integer> javaMutable = new java.util.ArrayList<>();
-        final java.util.LinkedList<Integer> javaMutableLinked = new java.util.LinkedList<>();
-        final scala.collection.mutable.MutableList<Integer> scalaMutable = new scala.collection.mutable.MutableList<>();
 
-        fj.data.List<Integer> fjavaPersistent = fj.data.List.list();
-        org.pcollections.PStack<Integer> pcollectionsPersistent = org.pcollections.ConsPStack.empty();
-        scala.collection.immutable.List<Integer> scalaPersistent = scala.collection.immutable.List$.MODULE$.empty();
-        javaslang.collection.List<Integer> slangPersistent = javaslang.collection.List.empty();
+        fj.data.Seq<Integer> fjavaPersistent = fj.data.Seq.empty();
+        org.pcollections.PVector<Integer> pcollectionsPersistent = org.pcollections.TreePVector.empty();
+        scala.collection.immutable.Vector<Integer> scalaPersistent = scala.collection.immutable.Vector$.MODULE$.empty();
+        javaslang.collection.Vector<Integer> slangPersistent = javaslang.collection.Vector.empty();
 
         @Setup
         public void setup() {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
 
-            for (Integer element : ELEMENTS) {
-                expectedAggregate ^= element;
-            }
-
             assertEquals(javaMutable.size(), 0);
-            assertEquals(javaMutableLinked.size(), 0);
-            assertEquals(scalaMutable.size(), 0);
             assertEquals(fjavaPersistent.length(), 0);
             assertEquals(pcollectionsPersistent.size(), 0);
             assertEquals(scalaPersistent.size(), 0);
             assertEquals(slangPersistent.size(), 0);
-            for (int i = CONTAINER_SIZE - 1; i >= 0; i--) {
-                final Integer element = ELEMENTS[i];
+            for (Integer element : ELEMENTS) {
+                expectedAggregate ^= element;
 
-                javaMutable.add(0, element);
-                javaMutableLinked.addFirst(element);
-                scalaMutable.prependElem(element);
+                javaMutable.add(element);
 
-                fjavaPersistent = fjavaPersistent.cons(element);
+                fjavaPersistent = fjavaPersistent.snoc(element);
                 pcollectionsPersistent = pcollectionsPersistent.plus(element);
-                scalaPersistent = scalaPersistent.$colon$colon(element);
-                slangPersistent = slangPersistent.prepend(element);
+                scalaPersistent = scalaPersistent.appendBack(element);
+                slangPersistent = slangPersistent.append(element);
             }
             assertEquals(javaMutable.size(), CONTAINER_SIZE);
-            assertEquals(javaMutableLinked.size(), CONTAINER_SIZE);
-            assertEquals(scalaMutable.size(), CONTAINER_SIZE);
             assertEquals(fjavaPersistent.length(), CONTAINER_SIZE);
             assertEquals(pcollectionsPersistent.size(), CONTAINER_SIZE);
             assertEquals(scalaPersistent.size(), CONTAINER_SIZE);
@@ -72,12 +61,6 @@ public class ListBenchmark {
     public static class Head extends Base {
         @Benchmark
         public Object java_mutable() { return javaMutable.get(0); }
-
-        @Benchmark
-        public Object java_mutable_linked() { return javaMutableLinked.get(0); }
-
-        @Benchmark
-        public Object scala_mutable() { return scalaMutable.head(); }
 
         @Benchmark
         public Object scala_persistent() { return scalaPersistent.head(); }
@@ -121,38 +104,38 @@ public class ListBenchmark {
 
         @Benchmark
         public void scala_persistent() {
-            scala.collection.immutable.List<Integer> values = scalaPersistent;
+            scala.collection.immutable.Vector<Integer> values = scalaPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
-                values = values.drop(1);
+                values = values.tail();
             }
-            assertEquals(values, scala.collection.immutable.List.empty());
+            assertEquals(values, scala.collection.immutable.Vector.empty());
         }
 
         @Benchmark
         public void fjava_persistent() {
-            fj.data.List<Integer> values = fjavaPersistent;
+            fj.data.Seq<Integer> values = fjavaPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.tail();
             }
-            assertEquals(values, fj.data.List.list());
+            assertEquals(values, fj.data.Seq.empty());
         }
 
         @Benchmark
         public void pcollections_persistent() {
-            org.pcollections.PStack<Integer> values = pcollectionsPersistent;
+            org.pcollections.PVector<Integer> values = pcollectionsPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.minus(0);
             }
-            assertEquals(values, org.pcollections.ConsPStack.empty());
+            assertEquals(values, org.pcollections.TreePVector.empty());
         }
 
         @Benchmark
         public void slang_persistent() {
-            javaslang.collection.List<Integer> values = slangPersistent;
+            javaslang.collection.Vector<Integer> values = slangPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.tail();
             }
-            assertEquals(values, javaslang.collection.List.empty());
+            assertEquals(values, javaslang.collection.Vector.empty());
         }
     }
 
@@ -161,20 +144,6 @@ public class ListBenchmark {
         public void java_mutable() {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 assertEquals(javaMutable.get(i), ELEMENTS[i]);
-            }
-        }
-
-        @Benchmark
-        public void java_mutable_linked() {
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
-                assertEquals(javaMutableLinked.get(i), ELEMENTS[i]);
-            }
-        }
-
-        @Benchmark
-        public void scala_mutable() {
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
-                assertEquals(scalaMutable.get(i).get(), ELEMENTS[i]);
             }
         }
 
@@ -211,31 +180,17 @@ public class ListBenchmark {
         @State(Scope.Thread)
         public static class Initialized {
             final java.util.ArrayList<Integer> javaMutable = new java.util.ArrayList<>();
-            final java.util.LinkedList<Integer> javaMutableLinked = new java.util.LinkedList<>();
-            final scala.collection.mutable.MutableList<Integer> scalaMutable = new scala.collection.mutable.MutableList<>();
 
             @Setup(Level.Invocation)
             public void initializeMutable(Base state) {
                 assertEquals(javaMutable.size(), 0);
                 Collections.addAll(javaMutable, state.ELEMENTS);
                 assertEquals(javaMutable.size(), state.CONTAINER_SIZE);
-
-                assertEquals(javaMutableLinked.size(), 0);
-                Collections.addAll(javaMutableLinked, state.ELEMENTS);
-                assertEquals(javaMutableLinked.size(), state.CONTAINER_SIZE);
-
-                assertEquals(scalaMutable.size(), 0);
-                for (int i = state.CONTAINER_SIZE - 1; i >= 0; i--) {
-                    scalaMutable.prependElem(state.ELEMENTS[i]);
-                }
-                assertEquals(scalaMutable.size(), state.CONTAINER_SIZE);
             }
 
             @TearDown(Level.Invocation)
             public void tearDown() {
                 javaMutable.clear();
-                javaMutableLinked.clear();
-                scalaMutable.clear();
             }
         }
 
@@ -249,26 +204,26 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        public Object java_mutable_linked(Initialized state) {
-            final java.util.LinkedList<Integer> values = state.javaMutableLinked;
+        public Object scala_persistent() {
+            scala.collection.immutable.Vector<Integer> values = scalaPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
-                values.set(i, 0);
+                values = values.updateAt(i, 0);
             }
             return values;
         }
 
         @Benchmark
-        public Object scala_mutable(Initialized state) {
-            final scala.collection.mutable.MutableList<Integer> values = state.scalaMutable;
+        public Object fjava_persistent() {
+            fj.data.Seq<Integer> values = fjavaPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
-                values.update(i, 0);
+                values = values.update(i, 0);
             }
             return values;
         }
 
         @Benchmark
         public Object pcollections_persistent() {
-            org.pcollections.PStack<Integer> values = pcollectionsPersistent;
+            org.pcollections.PVector<Integer> values = pcollectionsPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.with(i, 0);
             }
@@ -277,7 +232,7 @@ public class ListBenchmark {
 
         @Benchmark
         public Object slang_persistent() {
-            javaslang.collection.List<Integer> values = slangPersistent;
+            javaslang.collection.Vector<Integer> values = slangPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.update(i, 0);
             }
@@ -297,36 +252,17 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        @SuppressWarnings("ManualArrayToCollectionCopy")
-        public void java_mutable_linked() {
-            final java.util.LinkedList<Integer> values = new java.util.LinkedList<>();
-            for (Integer element : ELEMENTS) {
-                values.addFirst(element);
-            }
-            assertEquals(values.size(), CONTAINER_SIZE);
-        }
-
-        @Benchmark
-        public void scala_mutable() {
-            final scala.collection.mutable.MutableList<Integer> values = new scala.collection.mutable.MutableList<>();
-            for (Integer element : ELEMENTS) {
-                values.prependElem(element);
-            }
-            assertEquals(values.size(), CONTAINER_SIZE);
-        }
-
-        @Benchmark
         public void scala_persistent() {
-            scala.collection.immutable.List<Integer> values = scala.collection.immutable.List$.MODULE$.empty();
+            scala.collection.immutable.Vector<Integer> values = scala.collection.immutable.Vector$.MODULE$.empty();
             for (Integer element : ELEMENTS) {
-                values = values.$colon$colon(element);
+                values = values.appendFront(element);
             }
             assertEquals(values.size(), CONTAINER_SIZE);
         }
 
         @Benchmark
         public void fjava_persistent() {
-            fj.data.List<Integer> values = fj.data.List.list();
+            fj.data.Seq<Integer> values = fj.data.Seq.empty();
             for (Integer element : ELEMENTS) {
                 values = values.cons(element);
             }
@@ -335,7 +271,7 @@ public class ListBenchmark {
 
         @Benchmark
         public void pcollections_persistent() {
-            org.pcollections.PStack<Integer> values = org.pcollections.ConsPStack.empty();
+            org.pcollections.PVector<Integer> values = org.pcollections.TreePVector.empty();
             for (Integer element : ELEMENTS) {
                 values = values.plus(element);
             }
@@ -344,7 +280,7 @@ public class ListBenchmark {
 
         @Benchmark
         public void slang_persistent() {
-            javaslang.collection.List<Integer> values = javaslang.collection.List.empty();
+            javaslang.collection.Vector<Integer> values = javaslang.collection.Vector.empty();
             for (Integer element : ELEMENTS) {
                 values = values.prepend(element);
             }
@@ -364,36 +300,17 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        @SuppressWarnings("ManualArrayToCollectionCopy")
-        public void java_mutable_linked() {
-            final java.util.LinkedList<Integer> values = new java.util.LinkedList<>();
-            for (Integer element : ELEMENTS) {
-                values.addLast(element);
-            }
-            assertEquals(values.size(), CONTAINER_SIZE);
-        }
-
-        @Benchmark
-        public void scala_mutable() {
-            final scala.collection.mutable.MutableList<Integer> values = new scala.collection.mutable.MutableList<>();
-            for (Integer element : ELEMENTS) {
-                values.appendElem(element);
-            }
-            assertEquals(values.size(), CONTAINER_SIZE);
-        }
-
-        @Benchmark
         public void scala_persistent() {
-            scala.collection.immutable.List<Integer> values = scala.collection.immutable.List$.MODULE$.empty();
+            scala.collection.immutable.Vector<Integer> values = scala.collection.immutable.Vector$.MODULE$.empty();
             for (Integer element : ELEMENTS) {
-                values = values.$colon$colon$colon(scala.collection.immutable.List$.MODULE$.empty().$colon$colon(element)); // TODO there should be a better way to append an element to the end of the list in Scala
+                values = values.appendBack(element);
             }
             assertEquals(values.size(), CONTAINER_SIZE);
         }
 
         @Benchmark
         public void fjava_persistent() {
-            fj.data.List<Integer> values = fj.data.List.list();
+            fj.data.Seq<Integer> values = fj.data.Seq.empty();
             for (Integer element : ELEMENTS) {
                 values = values.snoc(element);
             }
@@ -402,7 +319,7 @@ public class ListBenchmark {
 
         @Benchmark
         public void pcollections_persistent() {
-            org.pcollections.PStack<Integer> values = org.pcollections.ConsPStack.empty();
+            org.pcollections.PVector<Integer> values = org.pcollections.TreePVector.empty();
             for (Integer element : ELEMENTS) {
                 values = values.plus(values.size(), element);
             }
@@ -411,7 +328,7 @@ public class ListBenchmark {
 
         @Benchmark
         public void slang_persistent() {
-            javaslang.collection.List<Integer> values = javaslang.collection.List.empty();
+            javaslang.collection.Vector<Integer> values = javaslang.collection.Vector.empty();
             for (Integer element : ELEMENTS) {
                 values = values.append(element);
             }
@@ -427,41 +344,53 @@ public class ListBenchmark {
         public Object scala_persistent() { return scalaPersistent.groupBy(JFunction.func(Integer::bitCount)); }
 
         @Benchmark
-        public Object fjava_persistent() { return fjavaPersistent.groupBy(Integer::bitCount); }
+        public Object slang_persistent() { return slangPersistent.groupBy(Integer::bitCount); }
+    }
+
+    public static class Slice extends Base {
+        @Benchmark
+        public void java_mutable(Blackhole bh) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
+                for (int j = i; j < CONTAINER_SIZE; j++) {
+                    bh.consume(javaMutable.subList(i, j));
+                }
+            }
+        }
 
         @Benchmark
-        public Object slang_persistent() { return slangPersistent.groupBy(Integer::bitCount); }
+        public void scala_persistent(Blackhole bh) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
+                for (int j = i; j < CONTAINER_SIZE; j++) {
+                    bh.consume(scalaPersistent.slice(i, j));
+                }
+            }
+        }
+
+        @Benchmark
+        public void slang_persistent(Blackhole bh) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
+                for (int j = i; j < CONTAINER_SIZE; j++) {
+                    bh.consume(slangPersistent.slice(i, j));
+                }
+            }
+        }
     }
 
     public static class Iterate extends Base {
         @State(Scope.Thread)
         public static class Initialized {
             final java.util.ArrayList<Integer> javaMutable = new java.util.ArrayList<>();
-            final java.util.LinkedList<Integer> javaMutableLinked = new java.util.LinkedList<>();
-            final scala.collection.mutable.MutableList<Integer> scalaMutable = new scala.collection.mutable.MutableList<>();
 
             @Setup(Level.Invocation)
             public void initializeMutable(Base state) {
                 assertEquals(javaMutable.size(), 0);
                 Collections.addAll(javaMutable, state.ELEMENTS);
                 assertEquals(javaMutable.size(), state.CONTAINER_SIZE);
-
-                assertEquals(javaMutableLinked.size(), 0);
-                Collections.addAll(javaMutableLinked, state.ELEMENTS);
-                assertEquals(javaMutableLinked.size(), state.CONTAINER_SIZE);
-
-                assertEquals(scalaMutable.size(), 0);
-                for (int i = state.CONTAINER_SIZE - 1; i >= 0; i--) {
-                    scalaMutable.prependElem(state.ELEMENTS[i]);
-                }
-                assertEquals(scalaMutable.size(), state.CONTAINER_SIZE);
             }
 
             @TearDown(Level.Invocation)
             public void tearDown() {
                 javaMutable.clear();
-                javaMutableLinked.clear();
-                scalaMutable.clear();
             }
         }
 
@@ -470,25 +399,6 @@ public class ListBenchmark {
         public void java_mutable(Initialized state) {
             int aggregate = 0;
             for (final Iterator<Integer> iterator = state.javaMutable.iterator(); iterator.hasNext(); ) {
-                aggregate ^= iterator.next();
-            }
-            assertEquals(aggregate, expectedAggregate);
-        }
-
-        @Benchmark
-        @SuppressWarnings("ForLoopReplaceableByForEach")
-        public void java_mutable_linked(Initialized state) {
-            int aggregate = 0;
-            for (final Iterator<Integer> iterator = state.javaMutableLinked.iterator(); iterator.hasNext(); ) {
-                aggregate ^= iterator.next();
-            }
-            assertEquals(aggregate, expectedAggregate);
-        }
-
-        @Benchmark
-        public void scala_mutable(Initialized state) {
-            int aggregate = 0;
-            for (final scala.collection.Iterator<Integer> iterator = state.scalaMutable.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
             assertEquals(aggregate, expectedAggregate);

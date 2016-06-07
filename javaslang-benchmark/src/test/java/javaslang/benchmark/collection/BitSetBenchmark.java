@@ -7,7 +7,7 @@ import static javaslang.benchmark.JmhRunner.*;
 
 public class BitSetBenchmark {
     public static void main(String... args) {
-        JmhRunner.runDev(BitSetBenchmark.class);
+        JmhRunner.runQuick(BitSetBenchmark.class);
     }
 
     @State(Scope.Benchmark)

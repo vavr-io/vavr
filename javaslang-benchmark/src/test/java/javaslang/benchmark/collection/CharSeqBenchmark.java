@@ -11,7 +11,7 @@ import static javaslang.benchmark.JmhRunner.assertEquals;
 
 public class CharSeqBenchmark {
     public static void main(java.lang.String... args) {
-        JmhRunner.runDebug(CharSeqBenchmark.class);
+        JmhRunner.runQuick(CharSeqBenchmark.class);
     }
 
     @State(Scope.Benchmark)
@@ -66,37 +66,76 @@ public class CharSeqBenchmark {
 
     public static class Tail extends Base {
         @Benchmark
-        public Object java_persistent() { return javaPersistent.substring(1); }
+        public void java_persistent() {
+            java.lang.String values = javaPersistent;
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
+                values = values.substring(1);
+            }
+            assertEquals(values, "");
+        }
 
         @Benchmark
-        public Object fjava_persistent() { return fjavaPersistent.tail(); }
+        public void fjava_persistent() {
+            fj.data.LazyString values = fjavaPersistent;
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
+                values = values.tail();
+            }
+            if (!values.isEmpty()) { throw new IllegalStateException(); } // .equals is not defined for LazyString
+        }
 
         @Benchmark
-        public Object slang_persistent() { return slangPersistent.tail(); }
+        public void slang_persistent() {
+            javaslang.collection.CharSeq values = slangPersistent;
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
+                values = values.tail();
+            }
+            assertEquals(values, javaslang.collection.CharSeq.empty());
+        }
     }
 
     public static class Get extends Base {
-        final int index = CONTAINER_SIZE / 2;
+        @Benchmark
+        public void java_persistent() {
+            for (int i = 0; i < ELEMENTS.length; i++) {
+                assertEquals(javaPersistent.charAt(i), ELEMENTS[i]);
+            }
+        }
 
         @Benchmark
-        public Object java_persistent() { return javaPersistent.charAt(index); }
+        public void fjava_persistent() {
+            for (int i = 0; i < ELEMENTS.length; i++) {
+                assertEquals(fjavaPersistent.charAt(i), ELEMENTS[i]);
+            }
+        }
 
         @Benchmark
-        public Object fjava_persistent() { return fjavaPersistent.charAt(index); }
-
-        @Benchmark
-        public Object slang_persistent() { return slangPersistent.charAt(index); }
+        public void slang_persistent() {
+            for (int i = 0; i < ELEMENTS.length; i++) {
+                assertEquals(slangPersistent.charAt(i), ELEMENTS[i]);
+            }
+        }
     }
 
     public static class Update extends Base {
-        final int index = CONTAINER_SIZE / 2;
         final char replacement = '-';
 
         @Benchmark
-        public Object java_persistent() { return javaPersistent.substring(0, index) + replacement + javaPersistent.substring(index + 1); }
+        public Object java_persistent() {
+            java.lang.String values = javaPersistent;
+            for (int i = 0; i < ELEMENTS.length; i++) {
+                values = values.substring(0, i) + replacement + values.substring(i + 1);
+            }
+            return values;
+        }
 
         @Benchmark
-        public Object slang_persistent() { return slangPersistent.update(index, replacement); }
+        public Object slang_persistent() {
+            javaslang.collection.CharSeq values = slangPersistent;
+            for (int i = 0; i < ELEMENTS.length; i++) {
+                values = slangPersistent.update(i, replacement);
+            }
+            return values;
+        }
     }
 
     public static class Prepend extends Base {

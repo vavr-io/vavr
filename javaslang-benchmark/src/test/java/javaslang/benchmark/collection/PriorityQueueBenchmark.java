@@ -15,7 +15,7 @@ import static javaslang.benchmark.JmhRunner.*;
 
 public class PriorityQueueBenchmark {
     public static void main(String... args) {
-        JmhRunner.runDev(PriorityQueueBenchmark.class);
+        JmhRunner.runQuick(PriorityQueueBenchmark.class);
     }
 
     @State(Scope.Benchmark)
