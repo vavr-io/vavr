@@ -549,7 +549,7 @@ public interface BitSet<T> extends SortedSet<T> {
 
     @Override
     default java.util.SortedSet<T> toJavaSet() {
-        return toJavaSet(() -> new java.util.TreeSet<>(comparator()));
+        return toJavaSet(ignore -> new java.util.TreeSet<>(comparator()));
     }
 
     @Override
