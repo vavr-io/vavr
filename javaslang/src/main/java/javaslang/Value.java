@@ -83,14 +83,14 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toCharSeq()}</li>
  * <li>{@link #toJavaArray()}</li>
  * <li>{@link #toJavaArray(Class)}</li>
- * <li>{@link #toJavaCollection(Supplier)}</li>
+ * <li>{@link #toJavaCollection(Function)}</li>
  * <li>{@link #toJavaList()}</li>
- * <li>{@link #toJavaList(Supplier)}</li>
+ * <li>{@link #toJavaList(Function)}</li>
  * <li>{@link #toJavaMap(Function)}</li>
  * <li>{@link #toJavaMap(Supplier, Function)}</li>
  * <li>{@link #toJavaOptional()}</li>
  * <li>{@link #toJavaSet()}</li>
- * <li>{@link #toJavaSet(Supplier)}</li>
+ * <li>{@link #toJavaSet(Function)}</li>
  * <li>{@link #toJavaStream()}</li>
  * <li>{@link #toLeft(Object)}</li>
  * <li>{@link #toLeft(Supplier)}</li>
@@ -480,11 +480,12 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to a specific {@link java.util.Collection}.
      *
      * @param factory A {@code java.util.Collection} factory
+     *                that returns empty collection with the specified initial capacity
      * @param <C>     a sub-type of {@code java.util.Collection}
      * @return a new {@code java.util.Collection} of type {@code C}
      */
-    default <C extends java.util.Collection<T>> C toJavaCollection(Supplier<C> factory) {
-        return ValueModule.toJavaCollection(this, factory.get());
+    default <C extends java.util.Collection<T>> C toJavaCollection(Function<Integer, C> factory) {
+        return ValueModule.toJavaCollection(this, factory);
     }
 
     /**
@@ -516,7 +517,7 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link java.util.ArrayList}.
      */
     default java.util.List<T> toJavaList() {
-        return ValueModule.toJavaCollection(this, new ArrayList<>());
+        return ValueModule.toJavaCollection(this, ArrayList::new);
     }
 
     /**
@@ -526,8 +527,8 @@ public interface Value<T> extends Iterable<T> {
      * @param <LIST>  a sub-type of {@code java.util.List}
      * @return a new {@code java.util.List} of type {@code LIST}
      */
-    default <LIST extends java.util.List<T>> LIST toJavaList(Supplier<LIST> factory) {
-        return ValueModule.toJavaCollection(this, factory.get());
+    default <LIST extends java.util.List<T>> LIST toJavaList(Function<Integer, LIST> factory) {
+        return ValueModule.toJavaCollection(this, factory);
     }
 
     /**
@@ -584,18 +585,19 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link java.util.HashSet}.
      */
     default java.util.Set<T> toJavaSet() {
-        return ValueModule.toJavaCollection(this, new java.util.HashSet<>());
+        return ValueModule.toJavaCollection(this, java.util.HashSet::new);
     }
 
     /**
      * Converts this to a specific {@link java.util.Set}.
      *
      * @param factory A {@code java.util.Set} factory
+     *                that returns empty set with the specified initial capacity
      * @param <SET>   a sub-type of {@code java.util.Set}
      * @return a new {@code java.util.Set} of type {@code SET}
      */
-    default <SET extends java.util.Set<T>> SET toJavaSet(Supplier<SET> factory) {
-        return ValueModule.toJavaCollection(this, factory.get());
+    default <SET extends java.util.Set<T>> SET toJavaSet(Function<Integer, SET> factory) {
+        return ValueModule.toJavaCollection(this, factory);
     }
 
     /**
@@ -860,14 +862,22 @@ interface ValueModule {
         }
     }
 
-    static <T extends java.util.Collection<V>, V> T toJavaCollection(Value<V> value, T empty) {
-        if (!value.isEmpty()) {
+    static <T extends java.util.Collection<V>, V> T toJavaCollection(Value<V> value, Function<Integer, T> containerSupplier) {
+        final T container;
+        if (value.isEmpty()) {
+            container = containerSupplier.apply(0);
+        } else {
             if (value.isSingleValued()) {
-                empty.add(value.get());
+                container = containerSupplier.apply(1);
+                container.add(value.get());
             } else {
-                value.forEach(empty::add);
+                final int size = value instanceof Traversable && ((Traversable) value).isTraversableAgain()
+                        ? ((Traversable<V>) value).size()
+                        : 0;
+                container = containerSupplier.apply(size);
+                value.forEach(container::add);
             }
         }
-        return empty;
+        return container;
     }
 }

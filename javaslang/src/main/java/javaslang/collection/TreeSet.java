@@ -877,7 +877,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     @Override
     public java.util.TreeSet<T> toJavaSet() {
-        return toJavaSet(() -> new java.util.TreeSet<>(comparator()));
+        return toJavaSet(ignore -> new java.util.TreeSet<>(comparator()));
     }
 
     @SuppressWarnings("unchecked")
