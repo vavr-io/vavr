@@ -719,33 +719,33 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(result[0]).isEqualTo(10);
     }
 
-    // -- putOrUpdate
+    // -- putWith
 
     @Test
-    public void putOrUpdateWasntPresent() {
+    public void putWithWasntPresent() {
         Map<Integer, Integer> map = mapOf(1, 2)
-            .putOrUpdate(2, 3, (x, y) -> x+y);
+            .putWith(2, 3, (x, y) -> x+y);
         assertThat(map).isEqualTo(emptyIntInt().put(1, 2).put(2, 3));
     }
 
     @Test
-    public void putOrUpdateWasPresent() {
+    public void putWithWasPresent() {
         Map<Integer, Integer> map = mapOf(1, 2)
-            .putOrUpdate(1, 3, (x, y) -> x+y);
+            .putWith(1, 3, (x, y) -> x+y);
         assertThat(map).isEqualTo(emptyIntInt().put(1, 5));
     }
 
     @Test
-    public void putOrUpdateTupleWasntPresent() {
+    public void putWithTupleWasntPresent() {
         Map<Integer, Integer> map = mapOf(1, 2)
-            .putOrUpdate(Tuple.of(2, 3), (x, y) -> x+y);
+            .putWith(Tuple.of(2, 3), (x, y) -> x+y);
         assertThat(map).isEqualTo(emptyIntInt().put(1, 2).put(2, 3));
     }
 
     @Test
-    public void putOrUpdateTupleWasPresent() {
+    public void putWithTupleWasPresent() {
         Map<Integer, Integer> map = mapOf(1, 2)
-            .putOrUpdate(Tuple.of(1, 3), (x, y) -> x+y);
+            .putWith(Tuple.of(1, 3), (x, y) -> x+y);
         assertThat(map).isEqualTo(emptyIntInt().put(1, 5));
     }
 

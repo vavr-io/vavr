@@ -175,7 +175,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      */
     Map<K, V> put(Tuple2<? extends K, ? extends V> entry);
 
-
     /**
      * Associates the specified value with the specified key in this map.
      * If the map previously contained a mapping for the key, the merge
@@ -187,14 +186,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @param merge function taking the old and new values and merging them.
      * @return A new Map containing these elements and that entry.
      */
-    default Map<K, V> putOrUpdate(K key, V value, Function2<V, V, V> merge) {
-        Option<V> currentValue = get(key);
-        if (currentValue.isEmpty()) {
-            return put(key, value);
-        } else {
-            return put(key, merge.apply(currentValue.get(), value));
-        }
-    }
+    Map<K, V> putWith(K key, V value, Function2<? super V, ? super V, ? extends V> merge);
 
     /**
      * Convenience method for {@code putOrUpdate(entry._1, entry._2)}.
@@ -203,16 +195,8 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @param merge function taking the old and new values and merging them.
      * @return A new Map containing these elements and that entry.
      */
-    default Map<K, V> putOrUpdate(Tuple2<? extends K, ? extends V> entry,
-                                  Function2<V, V, V> merge) {
-        Option<V> currentValue = get(entry._1);
-        if (currentValue.isEmpty()) {
-            return put(entry);
-        } else {
-            return put(entry.map2(
-                           value -> merge.apply(currentValue.get(), value)));
-        }
-    }
+    Map<K, V> putWith(Tuple2<? extends K, ? extends V> entry,
+                      Function2<? super V, ? super V, ? extends V> merge);
 
     /**
      * Removes the mapping for a key from this map if it is present.
