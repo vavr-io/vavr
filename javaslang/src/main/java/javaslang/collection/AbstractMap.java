@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Function2;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
@@ -48,7 +47,7 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
 
     @SuppressWarnings("unchecked")
     @Override
-    public M putWith(K key, V value, Function2<? super V, ? super V, ? extends V> merge) {
+    public M putWith(K key, V value, BiFunction<? super V, ? super V, ? extends V> merge) {
         Option<V> currentValue = get(key);
         if (currentValue.isEmpty()) {
             return (M) put(key, value);
@@ -59,7 +58,7 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
 
     @Override
     public M putWith(Tuple2<? extends K, ? extends V> entry,
-                         Function2<? super V, ? super V, ? extends V> merge) {
+                     BiFunction<? super V, ? super V, ? extends V> merge) {
         Option<V> currentValue = get(entry._1);
         if (currentValue.isEmpty()) {
             return put(entry);
