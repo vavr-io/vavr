@@ -197,6 +197,24 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     }
 
     /**
+     * Convenience method for {@code putOrUpdate(entry._1, entry._2)}.
+     *
+     * @param entry A Tuple2 containing the key and value
+     * @param merge function taking the old and new values and merging them.
+     * @return A new Map containing these elements and that entry.
+     */
+    default Map<K, V> putOrUpdate(Tuple2<? extends K, ? extends V> entry,
+                                  Function2<V, V, V> merge) {
+        Option<V> currentValue = get(entry._1);
+        if (currentValue.isEmpty()) {
+            return put(entry);
+        } else {
+            return put(entry.map2(
+                           value -> merge.apply(currentValue.get(), value)));
+        }
+    }
+
+    /**
      * Removes the mapping for a key from this map if it is present.
      *
      * @param key key whose mapping is to be removed from the map
