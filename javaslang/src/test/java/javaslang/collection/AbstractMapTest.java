@@ -719,6 +719,22 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(result[0]).isEqualTo(10);
     }
 
+    // -- putOrUpdate
+
+    @Test
+    public void putOrUpdateWasntPresent() {
+        Map<Integer, Integer> map = mapOf(1, 2)
+            .putOrUpdate(2, 3, (x, y) -> x+y);
+        assertThat(map).isEqualTo(emptyIntInt().put(1, 2).put(2, 3));
+    }
+
+    @Test
+    public void putOrUpdateWasPresent() {
+        Map<Integer, Integer> map = mapOf(1, 2)
+            .putOrUpdate(1, 3, (x, y) -> x+y);
+        assertThat(map).isEqualTo(emptyIntInt().put(1, 5));
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void shouldTabulateTheSeq() {

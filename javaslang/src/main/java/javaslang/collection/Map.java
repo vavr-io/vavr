@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Function1;
+import javaslang.Function2;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -173,6 +174,27 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @return A new Map containing these elements and that entry.
      */
     Map<K, V> put(Tuple2<? extends K, ? extends V> entry);
+
+
+    /**
+     * Associates the specified value with the specified key in this map.
+     * If the map previously contained a mapping for the key, the merge
+     * function is used to combine the previous value to the value to
+     * be inserted, and the result of that call is inserted in the map.
+     *
+     * @param key   key with which the specified value is to be associated
+     * @param value value to be associated with the specified key
+     * @param merge function taking the old and new values and merging them.
+     * @return A new Map containing these elements and that entry.
+     */
+    default Map<K, V> putOrUpdate(K key, V value, Function2<V, V, V> merge) {
+        Option<V> currentValue = get(key);
+        if (currentValue.isEmpty()) {
+            return put(key, value);
+        } else {
+            return put(key, merge.apply(currentValue.get(), value));
+        }
+    }
 
     /**
      * Removes the mapping for a key from this map if it is present.
