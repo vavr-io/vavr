@@ -48,6 +48,7 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
     @SuppressWarnings("unchecked")
     @Override
     public M putWith(K key, V value, BiFunction<? super V, ? super V, ? extends V> merge) {
+        Objects.requireNonNull(merge, "the merge function is null");
         Option<V> currentValue = get(key);
         if (currentValue.isEmpty()) {
             return (M) put(key, value);
@@ -59,6 +60,7 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
     @Override
     public M putWith(Tuple2<? extends K, ? extends V> entry,
                      BiFunction<? super V, ? super V, ? extends V> merge) {
+        Objects.requireNonNull(merge, "the merge function is null");
         Option<V> currentValue = get(entry._1);
         if (currentValue.isEmpty()) {
             return put(entry);
