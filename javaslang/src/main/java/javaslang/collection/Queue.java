@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
+import javaslang.control.*;
 
 import java.util.*;
 import java.util.function.*;
@@ -497,6 +498,60 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      */
     public static Queue<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+    }
+
+    /**
+     * Creates a Queue from a seed value and a function.
+     * The function takes the seed at first.
+     * The function should return {@code None} when it's
+     * done generating the Queue, otherwise {@code Some} {@code Tuple}
+     * of the element for the next call and the value to add to the
+     * resulting Queue.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * Queue.unfoldRight(10, x -&gt; x == 0
+     *             ? Option.none()
+     *             : Option.of(new Tuple2&lt;&gt;(x, x-1)));
+     * // Queue(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
+     * </code>
+     * </pre>
+     *
+     * @param seed the start value for the iteration
+     * @param f    the function to get the next step of the iteration
+     * @return a Queue with the values built up by the iteration
+     * @throws IllegalArgumentException if {@code f} is null
+     */
+    static <T,U> Queue<U> unfoldRight(T seed, Function1<T,Option<Tuple2<U,T>>> f) {
+        return Iterator.unfoldRight(seed, f).toQueue();
+    }
+
+    /**
+     * Creates a Queue from a seed value and a function.
+     * The function takes the seed at first.
+     * The function should return {@code None} when it's
+     * done generating the Queue, otherwise {@code Some} {@code Tuple}
+     * of the value to add to the resulting Queue and
+     * the element for the next call.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * Queue.unfoldLeft(10, x -&gt; x == 0
+     *             ? Option.none()
+     *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
+     * // Queue(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+     * </code>
+     * </pre>
+     *
+     * @param seed the start value for the iteration
+     * @param f    the function to get the next step of the iteration
+     * @return a Queue with the values built up by the iteration
+     * @throws IllegalArgumentException if {@code f} is null
+     */
+    static <T,U> Queue<U> unfoldLeft(T seed, Function<T,Option<Tuple2<T,U>>> f) {
+        return Iterator.unfoldLeft(seed, f).toQueue();
     }
 
     /**

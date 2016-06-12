@@ -5,6 +5,9 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple2;
+import javaslang.control.Option;
+
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -194,6 +197,36 @@ public class ArrayTest extends AbstractIndexedSeqTest {
     public void shouldTransform() {
         String transformed = of(42).transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("42");
+    }
+
+    // -- unfold
+
+    @Test
+    public void shouldUnfoldToEmpty() {
+        assertThat(Array.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldUnfoldSimpleArray() {
+        assertThat(
+            Array.unfoldRight(10, x -> x == 0
+                             ? Option.none()
+                             : Option.of(new Tuple2<>(x, x-1))))
+            .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+    }
+
+    @Test
+    public void shouldUnfoldLeftToEmpty() {
+        assertThat(Array.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldUnfoldLeftSimpleArray() {
+        assertThat(
+            Array.unfoldLeft(10, x -> x == 0
+                            ? Option.none()
+                            : Option.of(new Tuple2<>(x-1, x))))
+            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     // -- toString

@@ -5,7 +5,9 @@
  */
 package javaslang.collection;
 
+import javaslang.control.Option;
 import javaslang.Serializables;
+import javaslang.Tuple2;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
@@ -195,6 +197,36 @@ public class VectorTest extends AbstractIndexedSeqTest {
     public void shouldTransform() {
         String transformed = of(42).transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("42");
+    }
+
+    // -- unfold
+
+    @Test
+    public void shouldUnfoldToEmpty() {
+        assertThat(Vector.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldUnfoldSimpleVector() {
+        assertThat(
+            Vector.unfoldRight(10, x -> x == 0
+                               ? Option.none()
+                               : Option.of(new Tuple2<>(x, x-1))))
+            .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+    }
+
+    @Test
+    public void shouldUnfoldLeftToEmpty() {
+        assertThat(Vector.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldUnfoldLeftSimpleVector() {
+        assertThat(
+            Vector.unfoldLeft(10, x -> x == 0
+                              ? Option.none()
+                              : Option.of(new Tuple2<>(x-1, x))))
+            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     // -- toString

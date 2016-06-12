@@ -431,6 +431,36 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(rangeClosedBy(-Double.MAX_VALUE, Double.NEGATIVE_INFINITY, -3E307)).isEqualTo(of(-Double.MAX_VALUE));
     }
 
+    // -- unfoldRight
+
+    @Test
+    public void shouldUnfoldRightToEmpty() {
+        assertThat(Iterator.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldUnfoldRightSimpleList() {
+        assertThat(
+            Iterator.unfoldRight(10, x -> x == 0
+                        ? Option.none()
+                        : Option.of(new Tuple2<>(x, x-1))))
+            .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+    }
+
+    @Test
+    public void shouldUnfoldLeftToEmpty() {
+        assertThat(Iterator.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldUnfoldLeftSimpleList() {
+        assertThat(
+            Iterator.unfoldLeft(10, x -> x == 0
+                                 ? Option.none()
+                                 : Option.of(new Tuple2<>(x-1, x))))
+            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+    }
+
     // -- serialization/deserialization
 
     @Override

@@ -216,6 +216,60 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         return new CharSeq(Iterator.rangeClosedBy(from, toInclusive, step).mkString());
     }
 
+    /**
+     * Creates a CharSeq from a seed value and a function.
+     * The function takes the seed at first.
+     * The function should return {@code None} when it's
+     * done generating the CharSeq, otherwise {@code Some} {@code Tuple}
+     * of the element for the next call and the value to add to the
+     * resulting CharSeq.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * CharSeq.unfoldRight('j', x -&gt; x == 'a'
+     *             ? Option.none()
+     *             : Option.of(new Tuple2&lt;&gt;(new Character(x), (char)(x-1))));
+     * // CharSeq.of("jihgfedcb"))
+     * </code>
+     * </pre>
+     *
+     * @param seed the start value for the iteration
+     * @param f    the function to get the next step of the iteration
+     * @return a CharSeq with the values built up by the iteration
+     * @throws IllegalArgumentException if {@code f} is null
+     */
+    static <T> CharSeq unfoldRight(T seed, Function<T,Option<Tuple2<Character, T>>> f) {
+        return CharSeq.ofAll(Iterator.unfoldRight(seed, f));
+    }
+
+    /**
+     * Creates a CharSeq from a seed value and a function.
+     * The function takes the seed at first.
+     * The function should return {@code None} when it's
+     * done generating the CharSeq, otherwise {@code Some} {@code Tuple}
+     * of the value to add to the resulting CharSeq and
+     * the element for the next call.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * CharSeq.unfoldLeft('j', x -&gt; x == 'a'
+     *             ? Option.none()
+     *             : Option.of(new Tuple2&lt;&gt;((char)(x-1), new Character(x))));
+     * // CharSeq.of("bcdefghij"))
+     * </code>
+     * </pre>
+     *
+     * @param seed the start value for the iteration
+     * @param f    the function to get the next step of the iteration
+     * @return a CharSeq with the values built up by the iteration
+     * @throws IllegalArgumentException if {@code f} is null
+     */
+    static <T> CharSeq unfoldLeft(T seed, Function<T,Option<Tuple2<T,Character>>> f) {
+        return CharSeq.ofAll(Iterator.unfoldLeft(seed, f));
+    }
+
     private Tuple2<CharSeq, CharSeq> splitByBuilder(StringBuilder sb) {
         if (sb.length() == 0) {
             return Tuple.of(EMPTY, this);

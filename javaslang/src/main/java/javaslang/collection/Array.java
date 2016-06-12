@@ -473,6 +473,60 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * Creates a Array from a seed value and a function.
+     * The function takes the seed at first.
+     * The function should return {@code None} when it's
+     * done generating the Array, otherwise {@code Some} {@code Tuple}
+     * of the element for the next call and the value to add to the
+     * resulting Array.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * Array.unfoldRight(10, x -&gt; x == 0
+     *             ? Option.none()
+     *             : Option.of(new Tuple2&lt;gt;(x, x-1)));
+     * // Array(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
+     * </code>
+     * </pre>
+     *
+     * @param seed the start value for the iteration
+     * @param f    the function to get the next step of the iteration
+     * @return an Array with the values built up by the iteration
+     * @throws IllegalArgumentException if {@code f} is null
+     */
+    static <T,U> Array<U> unfoldRight(T seed, Function1<T,Option<Tuple2<U,T>>> f) {
+        return Iterator.unfoldRight(seed, f).toArray();
+    }
+
+    /**
+     * Creates an Array from a seed value and a function.
+     * The function takes the seed at first.
+     * The function should return {@code None} when it's
+     * done generating the list, otherwise {@code Some} {@code Tuple}
+     * of the value to add to the resulting list and
+     * the element for the next call.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * Array.unfoldLeft(10, x -&gt; x == 0
+     *             ? Option.none()
+     *             : Option.of(new Tuple2&lt;gt;(x-1, x)));
+     * // Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+     * </code>
+     * </pre>
+     *
+     * @param seed the start value for the iteration
+     * @param f    the function to get the next step of the iteration
+     * @return an Array with the values built up by the iteration
+     * @throws IllegalArgumentException if {@code f} is null
+     */
+    static <T,U> Array<U> unfoldLeft(T seed, Function<T,Option<Tuple2<T,U>>> f) {
+        return Iterator.unfoldLeft(seed, f).toArray();
+    }
+
     @Override
     public Array<T> append(T element) {
         final Object[] copy = new Object[length() + 1];

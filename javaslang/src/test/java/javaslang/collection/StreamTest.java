@@ -6,7 +6,9 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
+import javaslang.control.Option;
 import javaslang.control.Try;
+import javaslang.Tuple2;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -476,6 +478,36 @@ public class StreamTest extends AbstractLinearSeqTest {
     @Test
     public void shouldReturnTheOriginalStreamWhenTryingToExtendInfiniteStreamWithFunction() {
         assertThat(Stream.continually(1).extend(i -> i + 1).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
+    }
+
+    // -- unfold
+
+    @Test
+    public void shouldUnfoldToEmpty() {
+        assertThat(Stream.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldUnfoldSimpleStream() {
+        assertThat(
+            Stream.unfoldRight(10, x -> x == 0
+                              ? Option.none()
+                              : Option.of(new Tuple2<>(x, x-1))))
+            .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+    }
+
+    @Test
+    public void shouldUnfoldLeftToEmpty() {
+        assertThat(Stream.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldUnfoldLeftSimpleStream() {
+        assertThat(
+            Stream.unfoldLeft(10, x -> x == 0
+                             ? Option.none()
+                             : Option.of(new Tuple2<>(x-1, x))))
+            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     // -- toString

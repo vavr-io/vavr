@@ -3092,4 +3092,34 @@ public class CharSeqTest {
     public void ofAllShouldReturnTheSingletonEmpty() {
         assertThat(ofAll(Iterator.empty())).isSameAs(empty());
     }
+
+    // -- unfold
+
+    @Test
+    public void shouldUnfoldToEmpty() {
+        assertThat(CharSeq.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldUnfoldSimpleCharSeq() {
+        assertThat(
+            CharSeq.unfoldRight('j', x -> x == 'a'
+                                ? Option.none()
+                                : Option.of(new Tuple2<>(new Character(x), (char)(x-1)))))
+            .isEqualTo(of("jihgfedcb"));
+    }
+
+    @Test
+    public void shouldUnfoldLeftToEmpty() {
+        assertThat(CharSeq.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldUnfoldLeftSimpleCharSeq() {
+        assertThat(
+            CharSeq.unfoldLeft('j', x -> x == 'a'
+                               ? Option.none()
+                               : Option.of(new Tuple2<>((char)(x-1), new Character(x)))))
+            .isEqualTo(of("bcdefghij"));
+    }
 }

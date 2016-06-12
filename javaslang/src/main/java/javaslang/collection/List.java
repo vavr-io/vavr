@@ -566,9 +566,9 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * Example:
      * <pre>
      * <code>
-     * List.unfold(10, x -> x == 0
+     * List.unfoldRight(10, x -&gt; x == 0
      *             ? Option.none()
-     *             : Option.of(new Tuple2<>(x, x-1)));
+     *             : Option.of(new Tuple2&lt;&gt;(x, x-1)));
      * // List(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
      * </code>
      * </pre>
@@ -578,15 +578,35 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return a list with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> List<U> unfold(T seed, Function1<T,Option<Tuple2<U,T>>> f) {
-        Objects.requireNonNull(f, "the unfold iterating function is null");
-        Option<Tuple2<U,T>> nextVal = f.apply(seed);
-        List<U> result = empty();
-        while (nextVal.isDefined()) {
-            result = result.prepend(nextVal.get()._1);
-            nextVal = f.apply(nextVal.get()._2);
-        }
-        return result.reverse();
+    static <T,U> List<U> unfoldRight(T seed, Function<T,Option<Tuple2<U,T>>> f) {
+        return Iterator.unfoldRight(seed, f).toList();
+    }
+
+    /**
+     * Creates a list from a seed value and a function.
+     * The function takes the seed at first.
+     * The function should return {@code None} when it's
+     * done generating the list, otherwise {@code Some} {@code Tuple}
+     * of the value to add to the resulting list and
+     * the element for the next call.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * List.unfoldLeft(10, x -&gt; x == 0
+     *             ? Option.none()
+     *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
+     * // List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+     * </code>
+     * </pre>
+     *
+     * @param seed the start value for the iteration
+     * @param f    the function to get the next step of the iteration
+     * @return a list with the values built up by the iteration
+     * @throws IllegalArgumentException if {@code f} is null
+     */
+    static <T,U> List<U> unfoldLeft(T seed, Function<T,Option<Tuple2<T,U>>> f) {
+        return Iterator.unfoldLeft(seed, f).toList();
     }
 
     @Override
