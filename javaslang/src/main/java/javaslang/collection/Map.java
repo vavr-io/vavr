@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.util.*;
@@ -155,6 +152,8 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @throws NullPointerException if {@code keyMapper} is null
      */
     <K2> Map<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper);
+
+    <K2> Map<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, Function2<V, V, V> valueMerge);
 
     /**
      * Maps the values of this {@code Map} while preserving the corresponding keys.

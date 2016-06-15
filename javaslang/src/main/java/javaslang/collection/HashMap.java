@@ -310,6 +310,18 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
     }
 
     @Override
+    public <K2> Map<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, Function2<V, V, V> valueMerge) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMerge, "valueMerge is null");
+        return foldLeft(HashMap.empty(), (acc, entry) -> {
+            K2 k2 = keyMapper.apply(entry._1());
+            V v2 = entry._2();
+            V v = acc.get(k2).map(v1 -> valueMerge.apply(v1, v2)).getOrElse(v2);
+            return acc.put(k2, v);
+        });
+    }
+
+    @Override
     public <V2> HashMap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper) {
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return map((k, v) -> Tuple.of(k, valueMapper.apply(v)));

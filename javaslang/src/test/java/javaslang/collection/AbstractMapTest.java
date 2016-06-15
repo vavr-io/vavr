@@ -455,6 +455,16 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     }
 
     @Test
+    public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndMergedValus() {
+        Map<Integer, String> actual = emptyIntString()
+                .put(1, "1").put(2, "2").put(3, "3")
+                .mapKeys(k -> k * 118).mapKeys(Integer::toHexString).mapKeys(AbstractMapTest::md5)//Unique key mappers
+                .mapKeys(String::length, (v1, v2) -> List.of(v1.split("#")).append(v2).sorted().mkString("#"));
+        Map<Integer, String> expected = emptyIntString().put(32, "1#2#3");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldReturnModifiedValuesMap() {
         assertThat(emptyIntString().put(1, "1").put(2, "2").mapValues(Integer::parseInt)).isEqualTo(emptyInt().put(1, 1).put(2, 2));
     }

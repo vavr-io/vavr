@@ -5,11 +5,17 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Function2;
+import javaslang.Kind2;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -495,6 +501,20 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
     public <K2> TreeMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         return map((k, v) -> Tuple.of(keyMapper.apply(k), v));
+    }
+
+    @Override
+    public <K2> TreeMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, Function2<V, V, V> valueMerge) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMerge, "valueMerge is null");
+        //todo Hack
+        Comparator<K2> comparator = Comparators.naturalComparator();
+        return foldLeft(TreeMap.empty(comparator), (acc, entry) -> {
+            K2 k2 = keyMapper.apply(entry._1());
+            V v2 = entry._2();
+            V v = acc.get(k2).map(v1 -> valueMerge.apply(v1, v2)).getOrElse(v2);
+            return acc.put(k2, v);
+        });
     }
 
     @Override

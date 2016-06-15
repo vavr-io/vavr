@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Function2;
 import javaslang.Tuple2;
 import javaslang.control.Option;
 
@@ -148,6 +149,9 @@ public interface SortedMap<K, V> extends Map<K, V> {
 
     @Override
     <K2> SortedMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper);
+
+    @Override
+    <K2> SortedMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, Function2<V, V, V> valueMerge);
 
     @Override
     <V2> SortedMap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper);
