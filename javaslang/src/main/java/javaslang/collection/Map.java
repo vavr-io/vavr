@@ -146,6 +146,17 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     <K2, V2> Map<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
 
     /**
+     * Maps the keys of this {@code Map} while preserving the corresponding values.
+     * If {@code keyMapper} will return not unique values for keys, result map will lost some values which will be mapped to same key.
+     *
+     * @param <K2>        the new key type
+     * @param keyMapper a {@code Function} that maps keys of type {@code V} to keys of type {@code V2}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code keyMapper} is null
+     */
+    <K2> Map<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper);
+
+    /**
      * Maps the values of this {@code Map} while preserving the corresponding keys.
      *
      * @param <V2>        the new value type

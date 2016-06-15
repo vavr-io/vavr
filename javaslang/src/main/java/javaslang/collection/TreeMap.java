@@ -492,6 +492,12 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
     }
 
     @Override
+    public <K2> TreeMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        return map((k, v) -> Tuple.of(keyMapper.apply(k), v));
+    }
+
+    @Override
     public <W> TreeMap<K, W> mapValues(Function<? super V, ? extends W> valueMapper) {
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return map(keyComparator(), (k, v) -> Tuple.of(k, valueMapper.apply(v)));

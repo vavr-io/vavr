@@ -314,6 +314,12 @@ public final class LinkedHashMap<K, V> extends AbstractMap<K, V, LinkedHashMap<K
     }
 
     @Override
+    public <K2> LinkedHashMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        return map((k, v) -> Tuple.of(keyMapper.apply(k), v));
+    }
+
+    @Override
     public <W> LinkedHashMap<K, W> mapValues(Function<? super V, ? extends W> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return map((k, v) -> Tuple.of(k, mapper.apply(v)));
