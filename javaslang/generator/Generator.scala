@@ -585,6 +585,7 @@ def generateMainClasses(): Unit = {
         val genericsFunction = if (i > 0) s"$generics, " else ""
         val genericsReversedFunction = if (i > 0) s"$genericsReversed, " else ""
         val genericsOptionReturnType = s"<${(i > 0).gen(s"$generics, ")}${im.getType("javaslang.control.Option")}<R>>"
+        val genericsTryReturnType = s"<${(i > 0).gen(s"$generics, ")}${im.getType("javaslang.control.Try")}<R>>"
         val curried = if (i == 0) "v" else (1 to i).gen(j => s"t$j")(" -> ")
         val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
         val params = (1 to i).gen(j => s"t$j")(", ")
@@ -691,6 +692,24 @@ def generateMainClasses(): Unit = {
                     val lambdaArgs = if (i == 1) params else s"($params)"
                     xs"""
                       return $lambdaArgs -> ${im.getType("javaslang.control.Try")}.of($supplier).getOption();
+                    """
+                  }
+              }
+
+              /$javadoc
+               * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
+               *
+               * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
+               ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
+               * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
+               *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
+               */
+              static $fullGenerics ${im.getType(s"javaslang.Function$i")}$genericsTryReturnType liftTry($className$fullGenerics partialFunction) {
+                  ${
+                    val supplier = if (i == 0) "partialFunction::apply" else s"() -> partialFunction.apply($params)"
+                    val lambdaArgs = if (i == 1) params else s"($params)"
+                    xs"""
+                      return $lambdaArgs -> ${im.getType("javaslang.control.Try")}.of($supplier);
                     """
                   }
               }

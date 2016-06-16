@@ -83,6 +83,19 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
     }
 
     /**
+     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
+     *
+     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
+     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
+     */
+    static <T1, R> Function1<T1, Try<R>> liftTry(CheckedFunction1<T1, R> partialFunction) {
+        return t1 -> Try.of(() -> partialFunction.apply(t1));
+    }
+
+    /**
      * Returns the identity CheckedFunction1, i.e. the function that returns its input.
      *
      * @param <T> argument type (and return type) of the identity function
