@@ -8,13 +8,8 @@ package javaslang.collection;
 import javaslang.Function2;
 import javaslang.control.Option;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
 
 /**
  * Internal class, containing helpers.

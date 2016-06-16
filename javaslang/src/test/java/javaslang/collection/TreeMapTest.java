@@ -19,6 +19,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static javaslang.collection.Comparators.naturalComparator;
+
 public class TreeMapTest extends AbstractSortedMapTest {
 
     @Override
