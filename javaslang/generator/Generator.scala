@@ -1525,6 +1525,25 @@ def generateTestClasses(): Unit = {
                   $assertThat(memo.isMemoized()).isTrue();
               }
 
+              ${(!checked).gen(xs"""
+                @$test
+                public void shouldLiftTryPartialFunction() {
+                    $AtomicInteger integer = new $AtomicInteger();
+                    $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> divByZero = (${(1 to i).gen(j => s"i$j")(", ")}) -> 10 / integer.get();
+                    $name$i<${(1 to i).gen(j => "Integer, ")("")}Try<Integer>> divByZeroTry = $name$i.liftTry(divByZero);
+
+                    ${im.getType("javaslang.control.Try")}<Integer> res = divByZeroTry.apply(${(1 to i).gen(j => s"0")(", ")});
+                    assertThat(res.isFailure()).isTrue();
+                    assertThat(res.getCause()).isNotNull();
+                    assertThat(res.getCause().getMessage()).isEqualToIgnoringCase("/ by zero");
+
+                    integer.incrementAndGet();
+                    res = divByZeroTry.apply(${(1 to i).mkString(", ")});
+                    assertThat(res.isSuccess()).isTrue();
+                    assertThat(res.get()).isEqualTo(10);
+                }
+              """)}
+
               ${checked.gen(xs"""
                 ${(i == 0).gen(xs"""
                   @$test
