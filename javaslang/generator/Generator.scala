@@ -823,6 +823,16 @@ def generateMainClasses(): Unit = {
                         }
                     };
                 }
+
+                default Function$i$fullGenerics unchecked(Function1<? super Throwable, ? extends RuntimeException> exceptionMapper) {
+                    return recover((tuple, throwable) -> {
+                        throw exceptionMapper.apply(throwable);
+                    });
+                }
+
+                default Function$i$fullGenerics unchecked() {
+                    return unchecked(IllegalStateException::new);
+                }
               """)}
 
               /$javadoc

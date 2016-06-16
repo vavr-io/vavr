@@ -256,6 +256,16 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
         };
     }
 
+    default Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> unchecked(Function1<? super Throwable, ? extends RuntimeException> exceptionMapper) {
+        return recover((tuple, throwable) -> {
+            throw exceptionMapper.apply(throwable);
+        });
+    }
+
+    default Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> unchecked() {
+        return unchecked(IllegalStateException::new);
+    }
+
     /**
      * Returns a composed function that first applies this CheckedFunction8 to the given argument and then applies
      * {@linkplain CheckedFunction1} {@code after} to the result.

@@ -146,6 +146,16 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
         };
     }
 
+    default Function1<T1, R> unchecked(Function1<? super Throwable, ? extends RuntimeException> exceptionMapper) {
+        return recover((tuple, throwable) -> {
+            throw exceptionMapper.apply(throwable);
+        });
+    }
+
+    default Function1<T1, R> unchecked() {
+        return unchecked(IllegalStateException::new);
+    }
+
     /**
      * Returns a composed function that first applies this CheckedFunction1 to the given argument and then applies
      * {@linkplain CheckedFunction1} {@code after} to the result.
