@@ -499,7 +499,6 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
 
     @Override
     public <K2> TreeMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, Function2<V, V, V> valueMerge) {
-        //todo Hack
         Comparator<K2> comparator = Comparators.naturalComparator();
         return Collections.mapKeys(this, TreeMap.<K2, V>empty(comparator), keyMapper, valueMerge);
     }
