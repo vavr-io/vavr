@@ -144,9 +144,12 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
 
     /**
      * Maps the keys of this {@code Map} while preserving the corresponding values.
-     * If {@code keyMapper} will return not unique values for keys, result map will lost some values which will be mapped to same key.
+     * <p>
+     * The size of the result map may be smaller if {@code keyMapper} maps two or more distinct keys to the same new key.
+     * In this case the value at the {@code latest} of the original keys is retained.
+     * Order of keys is predictable in {@code TreeMap} (by comparator) and {@code LinkedHashMap} (insertion-order) and not predictable in {@code HashMap}.
      *
-     * @param <K2>        the new key type
+     * @param <K2>      the new key type
      * @param keyMapper a {@code Function} that maps keys of type {@code V} to keys of type {@code V2}
      * @return a new {@code Map}
      * @throws NullPointerException if {@code keyMapper} is null
