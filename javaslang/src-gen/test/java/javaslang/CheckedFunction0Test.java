@@ -99,6 +99,23 @@ public class CheckedFunction0Test {
         assertThat(recover.apply()).isNull();
     }
 
+    @Test
+    public void shouldUncheckedWork() {
+        CheckedFunction0<MessageDigest> digest = () -> MessageDigest.getInstance("MD5");
+        Function0<MessageDigest> unchecked = digest.unchecked();
+        MessageDigest md5 = unchecked.apply();
+        assertThat(md5).isNotNull();
+        assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+        assertThat(md5.getDigestLength()).isEqualTo(16);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldUncheckedThrowIllegalState() {
+        CheckedFunction0<MessageDigest> digest = () -> MessageDigest.getInstance("Unknown");
+        Function0<MessageDigest> unchecked = digest.unchecked();
+        unchecked.apply();
+    }
+
     private static final CheckedFunction0<Integer> recurrent1 = () -> 11;
 
     @Test

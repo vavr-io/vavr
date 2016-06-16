@@ -1525,37 +1525,73 @@ def generateTestClasses(): Unit = {
                   $assertThat(memo.isMemoized()).isTrue();
               }
 
-              ${(checked && i == 0).gen(xs"""
-                @$test
-                public void shouldRecover() {
-                    final $AtomicInteger integer = new $AtomicInteger();
-                    $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance(integer.get() == 0 ? "MD5" : "Unknown");
-                    Function$i<MessageDigest> recover = digest.recover((tuple, throwable) -> null);
-                    MessageDigest md5 = recover.apply();
-                    assertThat(md5).isNotNull();
-                    assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
-                    assertThat(md5.getDigestLength()).isEqualTo(16);
-                    integer.incrementAndGet();
-                    assertThat(recover.apply()).isNull();
-                }
-              """)}
-              ${(checked && i > 0).gen(xs"""
-                @$test
-                public void shouldRecover() {
-                    ${
-                      val types = s"<${(1 to i).gen(j => "String")(", ")}, MessageDigest>"
-                      def toArgList (s: String) = s.split("", i).mkString("\"", "\", \"", "\"") + (s.length + 2 to i).gen(j => ", \"\"")
-                      xs"""
-                        $name$i$types digest = (${(1 to i).gen(j => s"s$j")(", ")}) -> ${im.getType("java.security.MessageDigest")}.getInstance(${(1 to i).gen(j => s"s$j")(" + ")});
-                        Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> recover = digest.recover((tuple, throwable) -> null);
-                        MessageDigest md5 = recover.apply(${toArgList("MD5")});
-                        assertThat(md5).isNotNull();
-                        assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
-                        assertThat(md5.getDigestLength()).isEqualTo(16);
-                        assertThat(recover.apply(${toArgList("Unknown")})).isNull();
-                      """
-                    }
-                }
+              ${checked.gen(xs"""
+                ${(i == 0).gen(xs"""
+                  @$test
+                  public void shouldRecover() {
+                      final $AtomicInteger integer = new $AtomicInteger();
+                      $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance(integer.get() == 0 ? "MD5" : "Unknown");
+                      Function$i<MessageDigest> recover = digest.recover((tuple, throwable) -> null);
+                      MessageDigest md5 = recover.apply();
+                      assertThat(md5).isNotNull();
+                      assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+                      assertThat(md5.getDigestLength()).isEqualTo(16);
+                      integer.incrementAndGet();
+                      assertThat(recover.apply()).isNull();
+                  }
+
+                  @$test
+                  public void shouldUncheckedWork() {
+                      $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance("MD5");
+                      Function$i<MessageDigest> unchecked = digest.unchecked();
+                      MessageDigest md5 = unchecked.apply();
+                      assertThat(md5).isNotNull();
+                      assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+                      assertThat(md5.getDigestLength()).isEqualTo(16);
+                  }
+
+                  @$test(expected = IllegalStateException.class)
+                  public void shouldUncheckedThrowIllegalState() {
+                      $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance("Unknown");
+                      Function$i<MessageDigest> unchecked = digest.unchecked();
+                      unchecked.apply();
+                  }
+                """)}
+                ${(i > 0).gen(xs"""
+                  ${
+                    val types = s"<${(1 to i).gen(j => "String")(", ")}, MessageDigest>"
+                    def toArgList (s: String) = s.split("", i).mkString("\"", "\", \"", "\"") + (s.length + 2 to i).gen(j => ", \"\"")
+                    xs"""
+                      @$test
+                      public void shouldRecover() {
+                          $name$i$types digest = (${(1 to i).gen(j => s"s$j")(", ")}) -> ${im.getType("java.security.MessageDigest")}.getInstance(${(1 to i).gen(j => s"s$j")(" + ")});
+                          Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> recover = digest.recover((tuple, throwable) -> null);
+                          MessageDigest md5 = recover.apply(${toArgList("MD5")});
+                          assertThat(md5).isNotNull();
+                          assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+                          assertThat(md5.getDigestLength()).isEqualTo(16);
+                          assertThat(recover.apply(${toArgList("Unknown")})).isNull();
+                      }
+
+                      @$test
+                      public void shouldUncheckedWork() {
+                          $name$i$types digest = (${(1 to i).gen(j => s"s$j")(", ")}) -> ${im.getType("java.security.MessageDigest")}.getInstance(${(1 to i).gen(j => s"s$j")(" + ")});
+                          Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> unchecked = digest.unchecked();
+                          MessageDigest md5 = unchecked.apply(${toArgList("MD5")});
+                          assertThat(md5).isNotNull();
+                          assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+                          assertThat(md5.getDigestLength()).isEqualTo(16);
+                      }
+
+                      @$test(expected = IllegalStateException.class)
+                      public void shouldUncheckedThrowIllegalState() {
+                          $name$i$types digest = (${(1 to i).gen(j => s"s$j")(", ")}) -> ${im.getType("java.security.MessageDigest")}.getInstance(${(1 to i).gen(j => s"s$j")(" + ")});
+                          Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> unchecked = digest.unchecked();
+                          unchecked.apply(${toArgList("Unknown")});
+                      }
+                    """
+                  }
+                """)}
               """)}
 
               private static final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> recurrent1 = (${(1 to i).gen(j => s"i$j")(", ")}) -> $recFuncF1

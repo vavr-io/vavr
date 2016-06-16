@@ -113,6 +113,23 @@ public class CheckedFunction2Test {
         assertThat(recover.apply("U", "nknown")).isNull();
     }
 
+    @Test
+    public void shouldUncheckedWork() {
+        CheckedFunction2<String, String, MessageDigest> digest = (s1, s2) -> MessageDigest.getInstance(s1 + s2);
+        Function2<String, String, MessageDigest> unchecked = digest.unchecked();
+        MessageDigest md5 = unchecked.apply("M", "D5");
+        assertThat(md5).isNotNull();
+        assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+        assertThat(md5.getDigestLength()).isEqualTo(16);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldUncheckedThrowIllegalState() {
+        CheckedFunction2<String, String, MessageDigest> digest = (s1, s2) -> MessageDigest.getInstance(s1 + s2);
+        Function2<String, String, MessageDigest> unchecked = digest.unchecked();
+        unchecked.apply("U", "nknown");
+    }
+
     private static final CheckedFunction2<Integer, Integer, Integer> recurrent1 = (i1, i2) -> i1 <= 0 ? i1 : CheckedFunction2Test.recurrent2.apply(i1 - 1, i2) + 1;
     private static final CheckedFunction2<Integer, Integer, Integer> recurrent2 = CheckedFunction2Test.recurrent1.memoized();
 

@@ -118,6 +118,23 @@ public class CheckedFunction7Test {
         assertThat(recover.apply("U", "n", "k", "n", "o", "w", "n")).isNull();
     }
 
+    @Test
+    public void shouldUncheckedWork() {
+        CheckedFunction7<String, String, String, String, String, String, String, MessageDigest> digest = (s1, s2, s3, s4, s5, s6, s7) -> MessageDigest.getInstance(s1 + s2 + s3 + s4 + s5 + s6 + s7);
+        Function7<String, String, String, String, String, String, String, MessageDigest> unchecked = digest.unchecked();
+        MessageDigest md5 = unchecked.apply("M", "D", "5", "", "", "", "");
+        assertThat(md5).isNotNull();
+        assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+        assertThat(md5.getDigestLength()).isEqualTo(16);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldUncheckedThrowIllegalState() {
+        CheckedFunction7<String, String, String, String, String, String, String, MessageDigest> digest = (s1, s2, s3, s4, s5, s6, s7) -> MessageDigest.getInstance(s1 + s2 + s3 + s4 + s5 + s6 + s7);
+        Function7<String, String, String, String, String, String, String, MessageDigest> unchecked = digest.unchecked();
+        unchecked.apply("U", "n", "k", "n", "o", "w", "n");
+    }
+
     private static final CheckedFunction7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> recurrent1 = (i1, i2, i3, i4, i5, i6, i7) -> i1 <= 0 ? i1 : CheckedFunction7Test.recurrent2.apply(i1 - 1, i2, i3, i4, i5, i6, i7) + 1;
     private static final CheckedFunction7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> recurrent2 = CheckedFunction7Test.recurrent1.memoized();
 
