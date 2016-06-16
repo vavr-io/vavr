@@ -11,6 +11,7 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.security.MessageDigest;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
@@ -103,6 +104,17 @@ public class CheckedFunction6Test {
         final CheckedFunction6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> memo = f.memoized();
         assertThat(f.isMemoized()).isFalse();
         assertThat(memo.isMemoized()).isTrue();
+    }
+
+    @Test
+    public void shouldRecover() {
+        CheckedFunction6<String, String, String, String, String, String, MessageDigest> digest = (s1, s2, s3, s4, s5, s6) -> MessageDigest.getInstance(s1 + s2 + s3 + s4 + s5 + s6);
+        Function6<String, String, String, String, String, String, MessageDigest> recover = digest.recover((tuple, throwable) -> null);
+        MessageDigest md5 = recover.apply("M", "D", "5", "", "", "");
+        assertThat(md5).isNotNull();
+        assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+        assertThat(md5.getDigestLength()).isEqualTo(16);
+        assertThat(recover.apply("U", "n", "k", "n", "o", "wn")).isNull();
     }
 
     private static final CheckedFunction6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> recurrent1 = (i1, i2, i3, i4, i5, i6) -> i1 <= 0 ? i1 : CheckedFunction6Test.recurrent2.apply(i1 - 1, i2, i3, i4, i5, i6) + 1;

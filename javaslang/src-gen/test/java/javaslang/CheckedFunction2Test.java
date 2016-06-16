@@ -11,6 +11,7 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.security.MessageDigest;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
@@ -99,6 +100,17 @@ public class CheckedFunction2Test {
         final CheckedFunction2<Integer, Integer, Integer> memo = f.memoized();
         assertThat(f.isMemoized()).isFalse();
         assertThat(memo.isMemoized()).isTrue();
+    }
+
+    @Test
+    public void shouldRecover() {
+        CheckedFunction2<String, String, MessageDigest> digest = (s1, s2) -> MessageDigest.getInstance(s1 + s2);
+        Function2<String, String, MessageDigest> recover = digest.recover((tuple, throwable) -> null);
+        MessageDigest md5 = recover.apply("M", "D5");
+        assertThat(md5).isNotNull();
+        assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+        assertThat(md5.getDigestLength()).isEqualTo(16);
+        assertThat(recover.apply("U", "nknown")).isNull();
     }
 
     private static final CheckedFunction2<Integer, Integer, Integer> recurrent1 = (i1, i2) -> i1 <= 0 ? i1 : CheckedFunction2Test.recurrent2.apply(i1 - 1, i2) + 1;
