@@ -828,7 +828,16 @@ def generateMainClasses(): Unit = {
               }
 
               ${checked.gen(xs"""
+                /$javadoc
+                 * Return a composed function that first applies this $className to the given arguments and in case of throwable
+                 * try to get value from {@code recover} function with same arguments and throwable information.
+                 *
+                 * @param recover the function applied in case of throwable
+                 * @return a function composed of this and recover
+                 * @throws NullPointerException if recover is null
+                 */
                 default Function$i$fullGenerics recover(Function2<Tuple$i$genericsTuple, ? super Throwable, ? extends R> recover) {
+                    Objects.requireNonNull(recover, "recover is null");
                     return ($params) -> {
                         try {
                             return this.apply($params);

@@ -149,7 +149,16 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
         }
     }
 
+    /**
+     * Return a composed function that first applies this CheckedFunction1 to the given arguments and in case of throwable
+     * try to get value from {@code recover} function with same arguments and throwable information.
+     *
+     * @param recover the function applied in case of throwable
+     * @return a function composed of this and recover
+     * @throws NullPointerException if recover is null
+     */
     default Function1<T1, R> recover(Function2<Tuple1<T1>, ? super Throwable, ? extends R> recover) {
+        Objects.requireNonNull(recover, "recover is null");
         return (t1) -> {
             try {
                 return this.apply(t1);
