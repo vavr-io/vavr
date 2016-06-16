@@ -139,4 +139,15 @@ public class LinkedHashMapTest extends AbstractMapTest {
         source.put(3, 4);
         assertThat(LinkedHashMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
     }
+
+    // -- map
+
+    @Test
+    public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndPredictableOrder() {
+        Map<Integer, String> actual = LinkedHashMap
+                .of(3, "3").put(1, "1").put(2, "2")
+                .mapKeys(Integer::toHexString).mapKeys(String::length);
+        Map<Integer, String> expected = LinkedHashMap.of(1, "2");
+        assertThat(actual).isEqualTo(expected);
+    }
 }

@@ -19,8 +19,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import static javaslang.collection.Comparators.naturalComparator;
-
 public class TreeMapTest extends AbstractSortedMapTest {
 
     @Override
@@ -135,5 +133,16 @@ public class TreeMapTest extends AbstractSortedMapTest {
 
     private static Comparator<Object> toStringComparator() { // moveup
         return (Comparator<Object> & Serializable) (o1, o2) -> String.valueOf(o1).compareTo(String.valueOf(o2));
+    }
+
+    // -- map
+
+    @Test
+    public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndPredictableOrder() {
+        Map<Integer, String> actual = TreeMap
+                .of(3, "3").put(1, "1").put(2, "2")
+                .mapKeys(Integer::toHexString).mapKeys(String::length);
+        Map<Integer, String> expected = TreeMap.of(1, "3");
+        assertThat(actual).isEqualTo(expected);
     }
 }
