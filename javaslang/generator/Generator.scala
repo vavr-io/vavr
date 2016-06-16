@@ -808,6 +808,23 @@ def generateMainClasses(): Unit = {
                   }
               }
 
+              ${checked.gen(xs"""
+                default Function$i$fullGenerics recover(Function2<Tuple$i$genericsTuple, ? super Throwable, ? extends R> recover) {
+                    return ($params) -> {
+                        try {
+                            return this.apply($params);
+                        } catch (Throwable throwable) {
+                            ${val tupleMaker = i match {
+                                case 0 => s"empty()"
+                                case _ => s"of($params)"
+                              }
+                              s"return recover.apply(Tuple.$tupleMaker, throwable);"
+                            }
+                        }
+                    };
+                }
+              """)}
+
               /$javadoc
                * Returns a composed function that first applies this $className to the given argument and then applies
                * {@linkplain $compositionType} {@code after} to the result.

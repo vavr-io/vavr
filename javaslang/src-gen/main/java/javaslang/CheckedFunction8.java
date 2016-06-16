@@ -246,6 +246,16 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
         }
     }
 
+    default Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> recover(Function2<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, ? super Throwable, ? extends R> recover) {
+        return (t1, t2, t3, t4, t5, t6, t7, t8) -> {
+            try {
+                return this.apply(t1, t2, t3, t4, t5, t6, t7, t8);
+            } catch (Throwable throwable) {
+                return recover.apply(Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8), throwable);
+            }
+        };
+    }
+
     /**
      * Returns a composed function that first applies this CheckedFunction8 to the given argument and then applies
      * {@linkplain CheckedFunction1} {@code after} to the result.

@@ -156,6 +156,16 @@ public interface CheckedFunction3<T1, T2, T3, R> extends λ<R> {
         }
     }
 
+    default Function3<T1, T2, T3, R> recover(Function2<Tuple3<T1, T2, T3>, ? super Throwable, ? extends R> recover) {
+        return (t1, t2, t3) -> {
+            try {
+                return this.apply(t1, t2, t3);
+            } catch (Throwable throwable) {
+                return recover.apply(Tuple.of(t1, t2, t3), throwable);
+            }
+        };
+    }
+
     /**
      * Returns a composed function that first applies this CheckedFunction3 to the given argument and then applies
      * {@linkplain CheckedFunction1} {@code after} to the result.

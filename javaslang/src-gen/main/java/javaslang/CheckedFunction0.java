@@ -114,6 +114,16 @@ public interface CheckedFunction0<R> extends λ<R> {
         }
     }
 
+    default Function0<R> recover(Function2<Tuple0, ? super Throwable, ? extends R> recover) {
+        return () -> {
+            try {
+                return this.apply();
+            } catch (Throwable throwable) {
+                return recover.apply(Tuple.empty(), throwable);
+            }
+        };
+    }
+
     /**
      * Returns a composed function that first applies this CheckedFunction0 to the given argument and then applies
      * {@linkplain CheckedFunction1} {@code after} to the result.

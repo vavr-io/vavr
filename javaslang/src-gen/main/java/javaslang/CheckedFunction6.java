@@ -207,6 +207,16 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
         }
     }
 
+    default Function6<T1, T2, T3, T4, T5, T6, R> recover(Function2<Tuple6<T1, T2, T3, T4, T5, T6>, ? super Throwable, ? extends R> recover) {
+        return (t1, t2, t3, t4, t5, t6) -> {
+            try {
+                return this.apply(t1, t2, t3, t4, t5, t6);
+            } catch (Throwable throwable) {
+                return recover.apply(Tuple.of(t1, t2, t3, t4, t5, t6), throwable);
+            }
+        };
+    }
+
     /**
      * Returns a composed function that first applies this CheckedFunction6 to the given argument and then applies
      * {@linkplain CheckedFunction1} {@code after} to the result.
