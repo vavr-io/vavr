@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.security.MessageDigest;
 import java.util.concurrent.atomic.AtomicInteger;
+import javaslang.control.Try;
 import org.junit.Test;
 
 public class CheckedFunction0Test {
@@ -114,6 +115,24 @@ public class CheckedFunction0Test {
         CheckedFunction0<MessageDigest> digest = () -> MessageDigest.getInstance("Unknown");
         Function0<MessageDigest> unchecked = digest.unchecked();
         unchecked.apply();
+    }
+
+    @Test
+    public void shouldLiftTryPartialFunction() {
+        final AtomicInteger integer = new AtomicInteger();
+        CheckedFunction0<MessageDigest> digest = () -> MessageDigest.getInstance(integer.get() == 0 ? "MD5" : "Unknown");
+        Function0<Try<MessageDigest>> liftTry = CheckedFunction0.liftTry(digest);
+        Try<MessageDigest> md5 = liftTry.apply();
+        assertThat(md5.isSuccess()).isTrue();
+        assertThat(md5.get()).isNotNull();
+        assertThat(md5.get().getAlgorithm()).isEqualToIgnoringCase("MD5");
+        assertThat(md5.get().getDigestLength()).isEqualTo(16);
+
+        integer.incrementAndGet();
+        Try<MessageDigest> unknown = liftTry.apply();
+        assertThat(unknown.isFailure()).isTrue();
+        assertThat(unknown.getCause()).isNotNull();
+        assertThat(unknown.getCause().getMessage()).isEqualToIgnoringCase("Unknown MessageDigest not available");
     }
 
     private static final CheckedFunction0<Integer> recurrent1 = () -> 11;

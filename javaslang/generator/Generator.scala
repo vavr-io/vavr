@@ -1556,15 +1556,35 @@ def generateTestClasses(): Unit = {
                       Function$i<MessageDigest> unchecked = digest.unchecked();
                       unchecked.apply();
                   }
+
+                  @$test
+                  public void shouldLiftTryPartialFunction() {
+                      final $AtomicInteger integer = new $AtomicInteger();
+                      $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance(integer.get() == 0 ? "MD5" : "Unknown");
+                      Function$i<Try<MessageDigest>> liftTry = $name$i.liftTry(digest);
+                      ${im.getType("javaslang.control.Try")}<MessageDigest> md5 = liftTry.apply();
+                      assertThat(md5.isSuccess()).isTrue();
+                      assertThat(md5.get()).isNotNull();
+                      assertThat(md5.get().getAlgorithm()).isEqualToIgnoringCase("MD5");
+                      assertThat(md5.get().getDigestLength()).isEqualTo(16);
+
+                      integer.incrementAndGet();
+                      ${im.getType("javaslang.control.Try")}<MessageDigest> unknown = liftTry.apply();
+                      assertThat(unknown.isFailure()).isTrue();
+                      assertThat(unknown.getCause()).isNotNull();
+                      assertThat(unknown.getCause().getMessage()).isEqualToIgnoringCase("Unknown MessageDigest not available");
+                  }
                 """)}
                 ${(i > 0).gen(xs"""
                   ${
                     val types = s"<${(1 to i).gen(j => "String")(", ")}, MessageDigest>"
                     def toArgList (s: String) = s.split("", i).mkString("\"", "\", \"", "\"") + (s.length + 2 to i).gen(j => ", \"\"")
                     xs"""
+
+                      private static final $name$i$types digest = (${(1 to i).gen(j => s"s$j")(", ")}) -> ${im.getType("java.security.MessageDigest")}.getInstance(${(1 to i).gen(j => s"s$j")(" + ")});
+
                       @$test
                       public void shouldRecover() {
-                          $name$i$types digest = (${(1 to i).gen(j => s"s$j")(", ")}) -> ${im.getType("java.security.MessageDigest")}.getInstance(${(1 to i).gen(j => s"s$j")(" + ")});
                           Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> recover = digest.recover((tuple, throwable) -> null);
                           MessageDigest md5 = recover.apply(${toArgList("MD5")});
                           assertThat(md5).isNotNull();
@@ -1575,7 +1595,6 @@ def generateTestClasses(): Unit = {
 
                       @$test
                       public void shouldUncheckedWork() {
-                          $name$i$types digest = (${(1 to i).gen(j => s"s$j")(", ")}) -> ${im.getType("java.security.MessageDigest")}.getInstance(${(1 to i).gen(j => s"s$j")(" + ")});
                           Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> unchecked = digest.unchecked();
                           MessageDigest md5 = unchecked.apply(${toArgList("MD5")});
                           assertThat(md5).isNotNull();
@@ -1585,9 +1604,22 @@ def generateTestClasses(): Unit = {
 
                       @$test(expected = IllegalStateException.class)
                       public void shouldUncheckedThrowIllegalState() {
-                          $name$i$types digest = (${(1 to i).gen(j => s"s$j")(", ")}) -> ${im.getType("java.security.MessageDigest")}.getInstance(${(1 to i).gen(j => s"s$j")(" + ")});
                           Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> unchecked = digest.unchecked();
                           unchecked.apply(${toArgList("Unknown")});
+                      }
+
+                      @$test
+                      public void shouldLiftTryPartialFunction() {
+                          Function$i<${(1 to i).gen(j => "String")(", ")}, Try<MessageDigest>> liftTry = $name$i.liftTry(digest);
+                          ${im.getType("javaslang.control.Try")}<MessageDigest> md5 = liftTry.apply(${toArgList("MD5")});
+                          assertThat(md5.isSuccess()).isTrue();
+                          assertThat(md5.get()).isNotNull();
+                          assertThat(md5.get().getAlgorithm()).isEqualToIgnoringCase("MD5");
+                          assertThat(md5.get().getDigestLength()).isEqualTo(16);
+                          ${im.getType("javaslang.control.Try")}<MessageDigest> unknown = liftTry.apply(${toArgList("Unknown")});
+                          assertThat(unknown.isFailure()).isTrue();
+                          assertThat(unknown.getCause()).isNotNull();
+                          assertThat(unknown.getCause().getMessage()).isEqualToIgnoringCase("Unknown MessageDigest not available");
                       }
                     """
                   }

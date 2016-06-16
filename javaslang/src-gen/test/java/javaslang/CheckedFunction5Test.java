@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.security.MessageDigest;
 import java.util.concurrent.atomic.AtomicInteger;
+import javaslang.control.Try;
 import org.junit.Test;
 
 public class CheckedFunction5Test {
@@ -105,9 +106,10 @@ public class CheckedFunction5Test {
         assertThat(memo.isMemoized()).isTrue();
     }
 
+    private static final CheckedFunction5<String, String, String, String, String, MessageDigest> digest = (s1, s2, s3, s4, s5) -> MessageDigest.getInstance(s1 + s2 + s3 + s4 + s5);
+
     @Test
     public void shouldRecover() {
-        CheckedFunction5<String, String, String, String, String, MessageDigest> digest = (s1, s2, s3, s4, s5) -> MessageDigest.getInstance(s1 + s2 + s3 + s4 + s5);
         Function5<String, String, String, String, String, MessageDigest> recover = digest.recover((tuple, throwable) -> null);
         MessageDigest md5 = recover.apply("M", "D", "5", "", "");
         assertThat(md5).isNotNull();
@@ -118,7 +120,6 @@ public class CheckedFunction5Test {
 
     @Test
     public void shouldUncheckedWork() {
-        CheckedFunction5<String, String, String, String, String, MessageDigest> digest = (s1, s2, s3, s4, s5) -> MessageDigest.getInstance(s1 + s2 + s3 + s4 + s5);
         Function5<String, String, String, String, String, MessageDigest> unchecked = digest.unchecked();
         MessageDigest md5 = unchecked.apply("M", "D", "5", "", "");
         assertThat(md5).isNotNull();
@@ -128,9 +129,22 @@ public class CheckedFunction5Test {
 
     @Test(expected = IllegalStateException.class)
     public void shouldUncheckedThrowIllegalState() {
-        CheckedFunction5<String, String, String, String, String, MessageDigest> digest = (s1, s2, s3, s4, s5) -> MessageDigest.getInstance(s1 + s2 + s3 + s4 + s5);
         Function5<String, String, String, String, String, MessageDigest> unchecked = digest.unchecked();
         unchecked.apply("U", "n", "k", "n", "own");
+    }
+
+    @Test
+    public void shouldLiftTryPartialFunction() {
+        Function5<String, String, String, String, String, Try<MessageDigest>> liftTry = CheckedFunction5.liftTry(digest);
+        Try<MessageDigest> md5 = liftTry.apply("M", "D", "5", "", "");
+        assertThat(md5.isSuccess()).isTrue();
+        assertThat(md5.get()).isNotNull();
+        assertThat(md5.get().getAlgorithm()).isEqualToIgnoringCase("MD5");
+        assertThat(md5.get().getDigestLength()).isEqualTo(16);
+        Try<MessageDigest> unknown = liftTry.apply("U", "n", "k", "n", "own");
+        assertThat(unknown.isFailure()).isTrue();
+        assertThat(unknown.getCause()).isNotNull();
+        assertThat(unknown.getCause().getMessage()).isEqualToIgnoringCase("Unknown MessageDigest not available");
     }
 
     private static final CheckedFunction5<Integer, Integer, Integer, Integer, Integer, Integer> recurrent1 = (i1, i2, i3, i4, i5) -> i1 <= 0 ? i1 : CheckedFunction5Test.recurrent2.apply(i1 - 1, i2, i3, i4, i5) + 1;
