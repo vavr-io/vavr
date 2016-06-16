@@ -175,6 +175,28 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     Map<K, V> put(Tuple2<? extends K, ? extends V> entry);
 
     /**
+     * Associates the specified value with the specified key in this map.
+     * If the map previously contained a mapping for the key, the merge
+     * function is used to combine the previous value to the value to
+     * be inserted, and the result of that call is inserted in the map.
+     *
+     * @param key   key with which the specified value is to be associated
+     * @param value value to be associated with the specified key
+     * @param merge function taking the old and new values and merging them.
+     * @return A new Map containing these elements and that entry.
+     */
+    <U extends V> Map<K, V> put(K key, U value, BiFunction<? super V, ? super U, ? extends V> merge);
+
+    /**
+     * Convenience method for {@code put(entry._1, entry._2, merge)}.
+     *
+     * @param entry A Tuple2 containing the key and value
+     * @param merge function taking the old and new values and merging them.
+     * @return A new Map containing these elements and that entry.
+     */
+    <U extends V> Map<K, V> put(Tuple2<? extends K, U> entry, BiFunction<? super V, ? super U, ? extends V> merge);
+
+    /**
      * Removes the mapping for a key from this map if it is present.
      *
      * @param key key whose mapping is to be removed from the map

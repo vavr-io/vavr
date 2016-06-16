@@ -719,6 +719,36 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(result[0]).isEqualTo(10);
     }
 
+    // -- put with merge function
+
+    @Test
+    public void putWithWasntPresent() {
+        Map<Integer, Integer> map = mapOf(1, 2)
+            .put(2, 3, (x, y) -> x+y);
+        assertThat(map).isEqualTo(emptyIntInt().put(1, 2).put(2, 3));
+    }
+
+    @Test
+    public void putWithWasPresent() {
+        Map<Integer, Integer> map = mapOf(1, 2)
+            .put(1, 3, (x, y) -> x+y);
+        assertThat(map).isEqualTo(emptyIntInt().put(1, 5));
+    }
+
+    @Test
+    public void putWithTupleWasntPresent() {
+        Map<Integer, Integer> map = mapOf(1, 2)
+            .put(Tuple.of(2, 3), (x, y) -> x+y);
+        assertThat(map).isEqualTo(emptyIntInt().put(1, 2).put(2, 3));
+    }
+
+    @Test
+    public void putWithTupleWasPresent() {
+        Map<Integer, Integer> map = mapOf(1, 2)
+            .put(Tuple.of(1, 3), (x, y) -> x+y);
+        assertThat(map).isEqualTo(emptyIntInt().put(1, 5));
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void shouldTabulateTheSeq() {
