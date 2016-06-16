@@ -5,10 +5,16 @@
  */
 package javaslang.collection;
 
+import javaslang.Function2;
 import javaslang.control.Option;
 
-import java.util.*;
-import java.util.function.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Internal class, containing helpers.
@@ -59,6 +65,20 @@ final class Collections {
             results = results.put(entry.getKey(), mapper.apply(entry.getValue()));
         }
         return results;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V, K2, U extends Map<K2, V>> U mapKeys(Map<K, V> source, U zero, Function<? super K, ? extends K2> keyMapper, Function2<V, V, V> valueMerge) {
+        Objects.requireNonNull(source, "source is null");
+        Objects.requireNonNull(zero, "zero is null");
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMerge, "valueMerge is null");
+        return source.foldLeft(zero, (acc, entry) -> {
+            K2 k2 = keyMapper.apply(entry._1());
+            V v2 = entry._2();
+            V v = acc.get(k2).map(v1 -> valueMerge.apply(v1, v2)).getOrElse(v2);
+            return (U) acc.put(k2, v);
+        });
     }
 
     static Option<Integer> indexOption(int index) {
