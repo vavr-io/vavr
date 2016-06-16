@@ -153,6 +153,17 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      */
     <K2> Map<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper);
 
+    /**
+     * Maps the keys of this {@code Map} while preserving the corresponding values.
+     * <p>
+     * The size of the result map may be smaller if {@code keyMapper} maps two or more distinct keys to the same new key.
+     * In this case the associated values will be combined using {@code valueMerge}.
+     *
+     * @param <K2>      the new key type
+     * @param keyMapper a {@code Function} that maps keys of type {@code V} to keys of type {@code V2}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code keyMapper} is null
+     */
     <K2> Map<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, Function2<V, V, V> valueMerge);
 
     /**
