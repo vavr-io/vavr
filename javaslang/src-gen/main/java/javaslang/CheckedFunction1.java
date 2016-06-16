@@ -168,12 +168,22 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
         };
     }
 
+    /**
+     * Return unchecked function that will return this CheckedFunction1 result in correct case and throw runtime exception
+     * wrapped by {@code exceptionMapper} in case of throwable
+     *
+     * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
+     */
     default Function1<T1, R> unchecked(Function1<? super Throwable, ? extends RuntimeException> exceptionMapper) {
         return recover((tuple, throwable) -> {
             throw exceptionMapper.apply(throwable);
         });
     }
 
+    /**
+     * Return unchecked function that will return this CheckedFunction1 result in correct case and throw exception
+     * wrapped by {@link IllegalStateException} in case of throwable
+     */
     default Function1<T1, R> unchecked() {
         return unchecked(IllegalStateException::new);
     }

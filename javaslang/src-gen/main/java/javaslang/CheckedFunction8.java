@@ -285,12 +285,22 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
         };
     }
 
+    /**
+     * Return unchecked function that will return this CheckedFunction8 result in correct case and throw runtime exception
+     * wrapped by {@code exceptionMapper} in case of throwable
+     *
+     * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
+     */
     default Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> unchecked(Function1<? super Throwable, ? extends RuntimeException> exceptionMapper) {
         return recover((tuple, throwable) -> {
             throw exceptionMapper.apply(throwable);
         });
     }
 
+    /**
+     * Return unchecked function that will return this CheckedFunction8 result in correct case and throw exception
+     * wrapped by {@link IllegalStateException} in case of throwable
+     */
     default Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> unchecked() {
         return unchecked(IllegalStateException::new);
     }
