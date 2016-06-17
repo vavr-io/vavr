@@ -91,7 +91,7 @@ public class CheckedFunction0Test {
     public void shouldRecover() {
         final AtomicInteger integer = new AtomicInteger();
         CheckedFunction0<MessageDigest> digest = () -> MessageDigest.getInstance(integer.get() == 0 ? "MD5" : "Unknown");
-        Function0<MessageDigest> recover = digest.recover((tuple, throwable) -> null);
+        Function0<MessageDigest> recover = digest.recover(throwable -> () -> null);
         MessageDigest md5 = recover.apply();
         assertThat(md5).isNotNull();
         assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");

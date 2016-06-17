@@ -12,6 +12,7 @@ package javaslang;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import javaslang.control.Option;
 import javaslang.control.Try;
 
@@ -233,13 +234,15 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
      * @return a function composed of this and recover
      * @throws NullPointerException if recover is null
      */
-    default Function6<T1, T2, T3, T4, T5, T6, R> recover(Function2<Tuple6<T1, T2, T3, T4, T5, T6>, ? super Throwable, ? extends R> recover) {
+    default Function6<T1, T2, T3, T4, T5, T6, R> recover(Function<? super Throwable, ? extends Function6<T1, T2, T3, T4, T5, T6, R>> recover) {
         Objects.requireNonNull(recover, "recover is null");
         return (t1, t2, t3, t4, t5, t6) -> {
             try {
                 return this.apply(t1, t2, t3, t4, t5, t6);
             } catch (Throwable throwable) {
-                return recover.apply(Tuple.of(t1, t2, t3, t4, t5, t6), throwable);
+                final Function6<T1, T2, T3, T4, T5, T6, R> func = recover.apply(throwable);
+                Objects.requireNonNull(func, () -> String.format("recover return null for %s: %s", throwable.getClass(), throwable.getMessage()));
+                return func.apply(t1, t2, t3, t4, t5, t6);
             }
         };
     }
@@ -251,7 +254,7 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
      * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
      */
     default Function6<T1, T2, T3, T4, T5, T6, R> unchecked(Function1<? super Throwable, ? extends RuntimeException> exceptionMapper) {
-        return recover((tuple, throwable) -> {
+        return recover(throwable -> {
             throw exceptionMapper.apply(throwable);
         });
     }

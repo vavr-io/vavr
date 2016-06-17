@@ -108,12 +108,26 @@ public class CheckedFunction1Test {
 
     @Test
     public void shouldRecover() {
-        Function1<String, MessageDigest> recover = digest.recover((tuple, throwable) -> null);
+        Function1<String, MessageDigest> recover = digest.recover(throwable -> (s1) -> null);
         MessageDigest md5 = recover.apply("MD5");
         assertThat(md5).isNotNull();
         assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
         assertThat(md5.getDigestLength()).isEqualTo(16);
         assertThat(recover.apply("Unknown")).isNull();
+    }
+
+    @Test
+    public void shouldRecoverNonNull() {
+        Function1<String, MessageDigest> recover = digest.recover(throwable -> null);
+        MessageDigest md5 = recover.apply("MD5");
+        assertThat(md5).isNotNull();
+        assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+        assertThat(md5.getDigestLength()).isEqualTo(16);
+        Try<MessageDigest> unknown = Function1.liftTry(recover).apply("Unknown");
+        assertThat(unknown).isNotNull();
+        assertThat(unknown.isFailure()).isTrue();
+        assertThat(unknown.getCause()).isNotNull().isInstanceOf(NullPointerException.class);
+        assertThat(unknown.getCause().getMessage()).isNotEmpty().isEqualToIgnoringCase("recover return null for class java.security.NoSuchAlgorithmException: Unknown MessageDigest not available");
     }
 
     @Test

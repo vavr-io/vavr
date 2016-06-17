@@ -836,18 +836,15 @@ def generateMainClasses(): Unit = {
                  * @return a function composed of this and recover
                  * @throws NullPointerException if recover is null
                  */
-                default Function$i$fullGenerics recover(Function2<Tuple$i$genericsTuple, ? super Throwable, ? extends R> recover) {
+                default Function$i$fullGenerics recover(${im.getType("java.util.function.Function")}<? super Throwable, ? extends Function$i$fullGenerics> recover) {
                     Objects.requireNonNull(recover, "recover is null");
                     return ($params) -> {
                         try {
                             return this.apply($params);
                         } catch (Throwable throwable) {
-                            ${val tupleMaker = i match {
-                                case 0 => s"empty()"
-                                case _ => s"of($params)"
-                              }
-                              s"return recover.apply(Tuple.$tupleMaker, throwable);"
-                            }
+                            final Function$i$fullGenerics func = recover.apply(throwable);
+                            Objects.requireNonNull(func, () -> String.format("recover return null for %s: %s", throwable.getClass(), throwable.getMessage()));
+                            return func.apply($params);
                         }
                     };
                 }
@@ -859,7 +856,7 @@ def generateMainClasses(): Unit = {
                  * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
                  */
                 default Function$i$fullGenerics unchecked(Function1<? super Throwable, ? extends RuntimeException> exceptionMapper) {
-                    return recover((tuple, throwable) -> {
+                    return recover(throwable -> {
                         throw exceptionMapper.apply(throwable);
                     });
                 }
@@ -1550,7 +1547,7 @@ def generateTestClasses(): Unit = {
                   public void shouldRecover() {
                       final $AtomicInteger integer = new $AtomicInteger();
                       $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance(integer.get() == 0 ? "MD5" : "Unknown");
-                      Function$i<MessageDigest> recover = digest.recover((tuple, throwable) -> null);
+                      Function$i<MessageDigest> recover = digest.recover(throwable -> () -> null);
                       MessageDigest md5 = recover.apply();
                       assertThat(md5).isNotNull();
                       assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
@@ -1604,12 +1601,26 @@ def generateTestClasses(): Unit = {
 
                       @$test
                       public void shouldRecover() {
-                          Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> recover = digest.recover((tuple, throwable) -> null);
+                          Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> recover = digest.recover(throwable -> (${(1 to i).gen(j => s"s$j")(", ")}) -> null);
                           MessageDigest md5 = recover.apply(${toArgList("MD5")});
                           assertThat(md5).isNotNull();
                           assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
                           assertThat(md5.getDigestLength()).isEqualTo(16);
                           assertThat(recover.apply(${toArgList("Unknown")})).isNull();
+                      }
+
+                      @$test
+                      public void shouldRecoverNonNull() {
+                          Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> recover = digest.recover(throwable -> null);
+                          MessageDigest md5 = recover.apply(${toArgList("MD5")});
+                          assertThat(md5).isNotNull();
+                          assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+                          assertThat(md5.getDigestLength()).isEqualTo(16);
+                          ${im.getType("javaslang.control.Try")}<MessageDigest> unknown = Function$i.liftTry(recover).apply(${toArgList("Unknown")});
+                          assertThat(unknown).isNotNull();
+                          assertThat(unknown.isFailure()).isTrue();
+                          assertThat(unknown.getCause()).isNotNull().isInstanceOf(NullPointerException.class);
+                          assertThat(unknown.getCause().getMessage()).isNotEmpty().isEqualToIgnoringCase("recover return null for class java.security.NoSuchAlgorithmException: Unknown MessageDigest not available");
                       }
 
                       @$test

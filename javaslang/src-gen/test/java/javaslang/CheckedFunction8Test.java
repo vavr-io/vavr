@@ -113,12 +113,26 @@ public class CheckedFunction8Test {
 
     @Test
     public void shouldRecover() {
-        Function8<String, String, String, String, String, String, String, String, MessageDigest> recover = digest.recover((tuple, throwable) -> null);
+        Function8<String, String, String, String, String, String, String, String, MessageDigest> recover = digest.recover(throwable -> (s1, s2, s3, s4, s5, s6, s7, s8) -> null);
         MessageDigest md5 = recover.apply("M", "D", "5", "", "", "", "", "");
         assertThat(md5).isNotNull();
         assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
         assertThat(md5.getDigestLength()).isEqualTo(16);
         assertThat(recover.apply("U", "n", "k", "n", "o", "w", "n", "")).isNull();
+    }
+
+    @Test
+    public void shouldRecoverNonNull() {
+        Function8<String, String, String, String, String, String, String, String, MessageDigest> recover = digest.recover(throwable -> null);
+        MessageDigest md5 = recover.apply("M", "D", "5", "", "", "", "", "");
+        assertThat(md5).isNotNull();
+        assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+        assertThat(md5.getDigestLength()).isEqualTo(16);
+        Try<MessageDigest> unknown = Function8.liftTry(recover).apply("U", "n", "k", "n", "o", "w", "n", "");
+        assertThat(unknown).isNotNull();
+        assertThat(unknown.isFailure()).isTrue();
+        assertThat(unknown.getCause()).isNotNull().isInstanceOf(NullPointerException.class);
+        assertThat(unknown.getCause().getMessage()).isNotEmpty().isEqualToIgnoringCase("recover return null for class java.security.NoSuchAlgorithmException: Unknown MessageDigest not available");
     }
 
     @Test
