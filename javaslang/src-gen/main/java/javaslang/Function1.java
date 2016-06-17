@@ -92,7 +92,7 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <T1, R> Function1<T1, Try<R>> liftTry(Function1<T1, R> partialFunction) {
+    static <T1, R> Function1<T1, Try<R>> liftTry(Function<T1, R> partialFunction) {
         return t1 -> Try.of(() -> partialFunction.apply(t1));
     }
 

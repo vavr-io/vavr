@@ -717,9 +717,9 @@ def generateMainClasses(): Unit = {
                * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
                *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
                */
-              static $fullGenerics ${im.getType(s"javaslang.Function$i")}$genericsTryReturnType liftTry($className$fullGenerics partialFunction) {
+              static $fullGenerics ${im.getType(s"javaslang.Function$i")}$genericsTryReturnType liftTry($fullGenericsType partialFunction) {
                   ${
-                    val supplier = if (i == 0) "partialFunction::apply" else s"() -> partialFunction.apply($params)"
+                    val supplier = if (!checked && i == 0) "partialFunction::get" else if (checked && i == 0) "partialFunction::apply" else s"() -> partialFunction.apply($params)"
                     val lambdaArgs = if (i == 1) params else s"($params)"
                     xs"""
                       return $lambdaArgs -> ${im.getType("javaslang.control.Try")}.of($supplier);

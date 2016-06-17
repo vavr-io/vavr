@@ -87,8 +87,8 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <R> Function0<Try<R>> liftTry(Function0<R> partialFunction) {
-        return () -> Try.of(partialFunction::apply);
+    static <R> Function0<Try<R>> liftTry(Supplier<R> partialFunction) {
+        return () -> Try.of(partialFunction::get);
     }
 
     /**
