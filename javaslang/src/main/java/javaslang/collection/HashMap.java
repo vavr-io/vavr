@@ -310,7 +310,7 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
     }
 
     @Override
-    public <K2> HashMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, Function2<V, V, V> valueMerge) {
+    public <K2> HashMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge) {
         return Collections.mapKeys(this, HashMap.empty(), keyMapper, valueMerge);
     }
 
