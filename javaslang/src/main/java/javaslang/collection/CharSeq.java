@@ -239,7 +239,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return a CharSeq with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T> CharSeq unfoldRight(T seed, Function<T,Option<Tuple2<Character, T>>> f) {
+    static <T> CharSeq unfoldRight(T seed, Function<? super T,Option<Tuple2<? extends Character, ? extends T>>> f) {
         return CharSeq.ofAll(Iterator.unfoldRight(seed, f));
     }
 
@@ -266,7 +266,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return a CharSeq with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T> CharSeq unfoldLeft(T seed, Function<T,Option<Tuple2<T,Character>>> f) {
+    static <T> CharSeq unfoldLeft(T seed, Function<? super T,Option<Tuple2<? extends T,? extends Character>>> f) {
         return CharSeq.ofAll(Iterator.unfoldLeft(seed, f));
     }
 

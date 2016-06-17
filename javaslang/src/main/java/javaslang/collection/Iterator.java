@@ -1179,7 +1179,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return a list with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> Iterator<U> unfoldLeft(T seed, Function<T,Option<Tuple2<T,U>>> f) {
+    static <T,U> Iterator<U> unfoldLeft(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends U>>> f) {
         return Stream.ofAll(
             unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(t -> Tuple.of(t._2, t._1)))))
             .reverse().iterator();
@@ -1208,10 +1208,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return a list with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> Iterator<U> unfoldRight(T seed, Function<T,Option<Tuple2<U,T>>> f) {
+    static <T,U> Iterator<U> unfoldRight(T seed, Function<? super T,Option<Tuple2<? extends U, ? extends T>>> f) {
         Objects.requireNonNull(f, "the unfold iterating function is null");
         return new AbstractIterator<U>() {
-            private Option<Tuple2<U,T>> nextVal = f.apply(seed);
+            private Option<Tuple2<? extends U, ? extends T>> nextVal = f.apply(seed);
 
             @Override
             public boolean hasNext() {

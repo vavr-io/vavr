@@ -578,7 +578,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return a list with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> List<U> unfoldRight(T seed, Function<T,Option<Tuple2<U,T>>> f) {
+    static <T,U> List<U> unfoldRight(T seed, Function<? super T,Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toList();
     }
 
@@ -605,7 +605,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return a list with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> List<U> unfoldLeft(T seed, Function<T,Option<Tuple2<T,U>>> f) {
+    static <T,U> List<U> unfoldLeft(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toList();
     }
 

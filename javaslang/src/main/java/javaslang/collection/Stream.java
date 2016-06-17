@@ -649,7 +649,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * @return a Stream with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> Stream<U> unfoldRight(T seed, Function1<T,Option<Tuple2<U,T>>> f) {
+    static <T,U> Stream<U> unfoldRight(T seed, Function<? super T,Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toStream();
     }
 
@@ -676,7 +676,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * @return a Stream with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> Stream<U> unfoldLeft(T seed, Function<T,Option<Tuple2<T,U>>> f) {
+    static <T,U> Stream<U> unfoldLeft(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toStream();
     }
 

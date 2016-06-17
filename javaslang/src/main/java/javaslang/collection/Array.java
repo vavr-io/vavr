@@ -496,7 +496,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @return an Array with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> Array<U> unfoldRight(T seed, Function1<T,Option<Tuple2<U,T>>> f) {
+    static <T,U> Array<U> unfoldRight(T seed, Function<? super T,Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toArray();
     }
 
@@ -523,7 +523,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @return an Array with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> Array<U> unfoldLeft(T seed, Function<T,Option<Tuple2<T,U>>> f) {
+    static <T,U> Array<U> unfoldLeft(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toArray();
     }
 
