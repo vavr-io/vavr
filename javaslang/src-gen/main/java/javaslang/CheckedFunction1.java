@@ -158,13 +158,13 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
      * @return a function composed of this and recover
      * @throws NullPointerException if recover is null
      */
-    default Function1<T1, R> recover(Function<? super Throwable, ? extends Function1<T1, R>> recover) {
+    default Function1<T1, R> recover(Function<? super Throwable, ? extends Function<T1, R>> recover) {
         Objects.requireNonNull(recover, "recover is null");
         return (t1) -> {
             try {
                 return this.apply(t1);
             } catch (Throwable throwable) {
-                final Function1<T1, R> func = recover.apply(throwable);
+                final Function<T1, R> func = recover.apply(throwable);
                 Objects.requireNonNull(func, () -> String.format("recover return null for %s: %s", throwable.getClass(), throwable.getMessage()));
                 return func.apply(t1);
             }
@@ -177,7 +177,7 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
      *
      * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
      */
-    default Function1<T1, R> unchecked(Function1<? super Throwable, ? extends RuntimeException> exceptionMapper) {
+    default Function1<T1, R> unchecked(Function<? super Throwable, ? extends RuntimeException> exceptionMapper) {
         return recover(throwable -> {
             throw exceptionMapper.apply(throwable);
         });

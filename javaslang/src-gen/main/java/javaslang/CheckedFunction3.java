@@ -199,7 +199,7 @@ public interface CheckedFunction3<T1, T2, T3, R> extends λ<R> {
      *
      * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
      */
-    default Function3<T1, T2, T3, R> unchecked(Function1<? super Throwable, ? extends RuntimeException> exceptionMapper) {
+    default Function3<T1, T2, T3, R> unchecked(Function<? super Throwable, ? extends RuntimeException> exceptionMapper) {
         return recover(throwable -> {
             throw exceptionMapper.apply(throwable);
         });

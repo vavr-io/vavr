@@ -603,6 +603,19 @@ def generateMainClasses(): Unit = {
           case (false, 2) => ", " + im.getType("java.util.function.BiFunction") + "<T1, T2, R>"
           case _ => ""
         }
+        def fullGenericsTypeF(checked: Boolean, i: Int): String = (checked, i) match {
+          case (true, _) => im.getType(s"javaslang.CheckedFunction$i") + fullGenerics
+          case (false, 0) => im.getType("java.util.function.Supplier") + "<R>"
+          case (false, 1) => im.getType("java.util.function.Function") + "<T1, R>"
+          case (false, 2) => im.getType("java.util.function.BiFunction") + "<T1, T2, R>"
+          case (false, _) => im.getType(s"javaslang.Function$i") + fullGenerics
+        }
+        val fullGenericsType = fullGenericsTypeF(checked, i)
+        val refApply = i match {
+          case 0 => "get"
+          case _ => "apply"
+        }
+        val callApply = s"$refApply($params)"
 
         def curriedType(max: Int, function: String): String = {
           if (max == 0) {
@@ -836,15 +849,15 @@ def generateMainClasses(): Unit = {
                  * @return a function composed of this and recover
                  * @throws NullPointerException if recover is null
                  */
-                default Function$i$fullGenerics recover(${im.getType("java.util.function.Function")}<? super Throwable, ? extends Function$i$fullGenerics> recover) {
+                default Function$i$fullGenerics recover(${im.getType("java.util.function.Function")}<? super Throwable, ? extends ${fullGenericsTypeF(checked = false, i)}> recover) {
                     Objects.requireNonNull(recover, "recover is null");
                     return ($params) -> {
                         try {
                             return this.apply($params);
                         } catch (Throwable throwable) {
-                            final Function$i$fullGenerics func = recover.apply(throwable);
+                            final ${fullGenericsTypeF(checked = false, i)} func = recover.apply(throwable);
                             Objects.requireNonNull(func, () -> String.format("recover return null for %s: %s", throwable.getClass(), throwable.getMessage()));
-                            return func.apply($params);
+                            return func.$callApply;
                         }
                     };
                 }
@@ -855,7 +868,7 @@ def generateMainClasses(): Unit = {
                  *
                  * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
                  */
-                default Function$i$fullGenerics unchecked(Function1<? super Throwable, ? extends RuntimeException> exceptionMapper) {
+                default Function$i$fullGenerics unchecked(${im.getType("java.util.function.Function")}<? super Throwable, ? extends RuntimeException> exceptionMapper) {
                     return recover(throwable -> {
                         throw exceptionMapper.apply(throwable);
                     });
