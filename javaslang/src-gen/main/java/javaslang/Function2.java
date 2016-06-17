@@ -112,6 +112,17 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
         return 2;
     }
 
+    /**
+     * Returns a function that always returns the constant
+     * value that you give in parameter.
+     *
+     * @param value the value to be returned
+     * @return a function always returning the given value
+     */
+    static <T1, T2, R> Function2<T1, T2, R> constant(R value) {
+        return (t1, t2) -> value;
+    }
+
     @Override
     default Function1<T1, Function1<T2, R>> curried() {
         return t1 -> t2 -> apply(t1, t2);

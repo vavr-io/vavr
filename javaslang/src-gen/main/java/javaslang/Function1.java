@@ -107,6 +107,17 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
         return 1;
     }
 
+    /**
+     * Returns a function that always returns the constant
+     * value that you give in parameter.
+     *
+     * @param value the value to be returned
+     * @return a function always returning the given value
+     */
+    static <T1, R> Function1<T1, R> constant(R value) {
+        return (t1) -> value;
+    }
+
     @Override
     default Function1<T1, R> curried() {
         return this;
