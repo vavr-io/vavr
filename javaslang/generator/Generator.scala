@@ -1557,6 +1557,25 @@ def generateTestClasses(): Unit = {
                   }
 
                   @$test
+                  public void shouldRecoverNonNull() {
+                      final $AtomicInteger integer = new $AtomicInteger();
+                      $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance(integer.get() == 0 ? "MD5" : "Unknown");
+                      Function$i<MessageDigest> recover = digest.recover(throwable -> null);
+
+                      MessageDigest md5 = recover.apply();
+                      assertThat(md5).isNotNull();
+                      assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+                      assertThat(md5.getDigestLength()).isEqualTo(16);
+
+                      integer.incrementAndGet();
+                      ${im.getType("javaslang.control.Try")}<MessageDigest> unknown = Function$i.liftTry(recover).apply();
+                      assertThat(unknown).isNotNull();
+                      assertThat(unknown.isFailure()).isTrue();
+                      assertThat(unknown.getCause()).isNotNull().isInstanceOf(NullPointerException.class);
+                      assertThat(unknown.getCause().getMessage()).isNotEmpty().isEqualToIgnoringCase("recover return null for class java.security.NoSuchAlgorithmException: Unknown MessageDigest not available");
+                  }
+
+                  @$test
                   public void shouldUncheckedWork() {
                       $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance("MD5");
                       Function$i<MessageDigest> unchecked = digest.unchecked();

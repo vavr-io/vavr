@@ -101,6 +101,25 @@ public class CheckedFunction0Test {
     }
 
     @Test
+    public void shouldRecoverNonNull() {
+        final AtomicInteger integer = new AtomicInteger();
+        CheckedFunction0<MessageDigest> digest = () -> MessageDigest.getInstance(integer.get() == 0 ? "MD5" : "Unknown");
+        Function0<MessageDigest> recover = digest.recover(throwable -> null);
+
+        MessageDigest md5 = recover.apply();
+        assertThat(md5).isNotNull();
+        assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+        assertThat(md5.getDigestLength()).isEqualTo(16);
+
+        integer.incrementAndGet();
+        Try<MessageDigest> unknown = Function0.liftTry(recover).apply();
+        assertThat(unknown).isNotNull();
+        assertThat(unknown.isFailure()).isTrue();
+        assertThat(unknown.getCause()).isNotNull().isInstanceOf(NullPointerException.class);
+        assertThat(unknown.getCause().getMessage()).isNotEmpty().isEqualToIgnoringCase("recover return null for class java.security.NoSuchAlgorithmException: Unknown MessageDigest not available");
+    }
+
+    @Test
     public void shouldUncheckedWork() {
         CheckedFunction0<MessageDigest> digest = () -> MessageDigest.getInstance("MD5");
         Function0<MessageDigest> unchecked = digest.unchecked();
