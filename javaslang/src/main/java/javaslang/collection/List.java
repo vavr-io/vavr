@@ -555,6 +555,87 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * Creates a list from a seed value and a function.
+     * The function takes the seed at first.
+     * The function should return {@code None} when it's
+     * done generating the list, otherwise {@code Some} {@code Tuple}
+     * of the element for the next call and the value to add to the
+     * resulting list.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * List.unfoldRight(10, x -&gt; x == 0
+     *             ? Option.none()
+     *             : Option.of(new Tuple2&lt;&gt;(x, x-1)));
+     * // List(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
+     * </code>
+     * </pre>
+     *
+     * @param seed the start value for the iteration
+     * @param f    the function to get the next step of the iteration
+     * @return a list with the values built up by the iteration
+     * @throws IllegalArgumentException if {@code f} is null
+     */
+    static <T,U> List<U> unfoldRight(T seed, Function<? super T,Option<Tuple2<? extends U, ? extends T>>> f) {
+        return Iterator.unfoldRight(seed, f).toList();
+    }
+
+    /**
+     * Creates a list from a seed value and a function.
+     * The function takes the seed at first.
+     * The function should return {@code None} when it's
+     * done generating the list, otherwise {@code Some} {@code Tuple}
+     * of the value to add to the resulting list and
+     * the element for the next call.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * List.unfoldLeft(10, x -&gt; x == 0
+     *             ? Option.none()
+     *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
+     * // List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+     * </code>
+     * </pre>
+     *
+     * @param seed the start value for the iteration
+     * @param f    the function to get the next step of the iteration
+     * @return a list with the values built up by the iteration
+     * @throws IllegalArgumentException if {@code f} is null
+     */
+    static <T,U> List<U> unfoldLeft(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends U>>> f) {
+        return Iterator.unfoldLeft(seed, f).toList();
+    }
+
+    /**
+     * Creates a list from a seed value and a function.
+     * The function takes the seed at first.
+     * The function should return {@code None} when it's
+     * done generating the list, otherwise {@code Some} {@code Tuple}
+     * of the value to add to the resulting list and
+     * the element for the next call.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * List.unfold(10, x -&gt; x == 0
+     *             ? Option.none()
+     *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
+     * // List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+     * </code>
+     * </pre>
+     *
+     * @param seed the start value for the iteration
+     * @param f    the function to get the next step of the iteration
+     * @return a list with the values built up by the iteration
+     * @throws IllegalArgumentException if {@code f} is null
+     */
+    static <T> List<T> unfold(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends T>>> f) {
+        return Iterator.unfold(seed, f).toList();
+    }
+
     @Override
     default List<T> append(T element) {
         return foldRight(of(element), (x, xs) -> xs.prepend(x));
