@@ -407,6 +407,35 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
+     * Returns the only element of a Traversable as {@code Option}.
+     *
+     * @return {@code Some(element)} or {@code None} if the Traversable does not contain a single element.
+     */
+    default Option<T> singleOption() {
+        final Iterator<T> it = iterator();
+        if (!it.hasNext()) {
+            return Option.none();
+        }
+        final T first = it.next();
+        if (it.hasNext()) {
+            return Option.none();
+        } else {
+            return Option.some(first);
+        }
+    }
+
+    /**
+     * if the Traversable contains a single element, return it,
+     * otherwise throws.
+     *
+     * @return the single element from the Traversable
+     * @throws NoSuchElementException if the Traversable does not contain a single element.
+     */
+    default T single() {
+        return singleOption().getOrElseThrow(() -> new NoSuchElementException("Does not contain a single value"));
+    }
+
+    /**
      * Groups this elements by classifying the elements.
      *
      * @param classifier A function which classifies elements into classes
