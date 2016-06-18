@@ -90,6 +90,21 @@ public interface Function3<T1, T2, T3, R> extends λ<R> {
     }
 
     /**
+     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
+     *
+     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
+     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
+     */
+    static <T1, T2, T3, R> Function3<T1, T2, T3, Try<R>> liftTry(Function3<T1, T2, T3, R> partialFunction) {
+        return (t1, t2, t3) -> Try.of(() -> partialFunction.apply(t1, t2, t3));
+    }
+
+    /**
      * Applies this function to three arguments and returns the result.
      *
      * @param t1 argument 1

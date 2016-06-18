@@ -12,6 +12,7 @@ package javaslang;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import javaslang.control.Option;
 import javaslang.control.Try;
 
@@ -101,6 +102,26 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
      */
     static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, Option<R>> lift(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> partialFunction) {
         return (t1, t2, t3, t4, t5, t6, t7, t8) -> Try.of(() -> partialFunction.apply(t1, t2, t3, t4, t5, t6, t7, t8)).getOption();
+    }
+
+    /**
+     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
+     *
+     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @param <T4> 4th argument
+     * @param <T5> 5th argument
+     * @param <T6> 6th argument
+     * @param <T7> 7th argument
+     * @param <T8> 8th argument
+     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
+     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
+     */
+    static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, Try<R>> liftTry(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> partialFunction) {
+        return (t1, t2, t3, t4, t5, t6, t7, t8) -> Try.of(() -> partialFunction.apply(t1, t2, t3, t4, t5, t6, t7, t8));
     }
 
     /**
@@ -255,6 +276,47 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
                 }
             };
         }
+    }
+
+    /**
+     * Return a composed function that first applies this CheckedFunction8 to the given arguments and in case of throwable
+     * try to get value from {@code recover} function with same arguments and throwable information.
+     *
+     * @param recover the function applied in case of throwable
+     * @return a function composed of this and recover
+     * @throws NullPointerException if recover is null
+     */
+    default Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> recover(Function<? super Throwable, ? extends Function8<T1, T2, T3, T4, T5, T6, T7, T8, R>> recover) {
+        Objects.requireNonNull(recover, "recover is null");
+        return (t1, t2, t3, t4, t5, t6, t7, t8) -> {
+            try {
+                return this.apply(t1, t2, t3, t4, t5, t6, t7, t8);
+            } catch (Throwable throwable) {
+                final Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> func = recover.apply(throwable);
+                Objects.requireNonNull(func, () -> String.format("recover return null for %s: %s", throwable.getClass(), throwable.getMessage()));
+                return func.apply(t1, t2, t3, t4, t5, t6, t7, t8);
+            }
+        };
+    }
+
+    /**
+     * Return unchecked function that will return this CheckedFunction8 result in correct case and throw runtime exception
+     * wrapped by {@code exceptionMapper} in case of throwable
+     *
+     * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
+     */
+    default Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> unchecked(Function<? super Throwable, ? extends RuntimeException> exceptionMapper) {
+        return recover(throwable -> {
+            throw exceptionMapper.apply(throwable);
+        });
+    }
+
+    /**
+     * Return unchecked function that will return this CheckedFunction8 result in correct case and throw exception
+     * wrapped by {@link IllegalStateException} in case of throwable
+     */
+    default Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> unchecked() {
+        return unchecked(IllegalStateException::new);
     }
 
     /**

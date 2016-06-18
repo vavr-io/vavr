@@ -12,6 +12,7 @@ package javaslang;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import javaslang.control.Try;
 import org.junit.Test;
 
 public class Function0Test {
@@ -96,6 +97,23 @@ public class Function0Test {
         final Function0<Integer> memo = f.memoized();
         assertThat(f.isMemoized()).isFalse();
         assertThat(memo.isMemoized()).isTrue();
+    }
+
+    @Test
+    public void shouldLiftTryPartialFunction() {
+        AtomicInteger integer = new AtomicInteger();
+        Function0<Integer> divByZero = () -> 10 / integer.get();
+        Function0<Try<Integer>> divByZeroTry = Function0.liftTry(divByZero);
+
+        Try<Integer> res = divByZeroTry.apply();
+        assertThat(res.isFailure()).isTrue();
+        assertThat(res.getCause()).isNotNull();
+        assertThat(res.getCause().getMessage()).isEqualToIgnoringCase("/ by zero");
+
+        integer.incrementAndGet();
+        res = divByZeroTry.apply();
+        assertThat(res.isSuccess()).isTrue();
+        assertThat(res.get()).isEqualTo(10);
     }
 
     private static final Function0<Integer> recurrent1 = () -> 11;

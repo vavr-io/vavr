@@ -80,6 +80,18 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
     }
 
     /**
+     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
+     *
+     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
+     * @param <R> return type
+     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
+     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
+     */
+    static <R> Function0<Try<R>> liftTry(Supplier<R> partialFunction) {
+        return () -> Try.of(partialFunction::get);
+    }
+
+    /**
      * Applies this function to no arguments and returns the result.
      *
      * @return the result of function application

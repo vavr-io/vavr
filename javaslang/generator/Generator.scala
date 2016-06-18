@@ -585,6 +585,7 @@ def generateMainClasses(): Unit = {
         val genericsFunction = if (i > 0) s"$generics, " else ""
         val genericsReversedFunction = if (i > 0) s"$genericsReversed, " else ""
         val genericsOptionReturnType = s"<${(i > 0).gen(s"$generics, ")}${im.getType("javaslang.control.Option")}<R>>"
+        val genericsTryReturnType = s"<${(i > 0).gen(s"$generics, ")}${im.getType("javaslang.control.Try")}<R>>"
         val curried = if (i == 0) "v" else (1 to i).gen(j => s"t$j")(" -> ")
         val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
         val params = (1 to i).gen(j => s"t$j")(", ")
@@ -602,6 +603,19 @@ def generateMainClasses(): Unit = {
           case (false, 2) => ", " + im.getType("java.util.function.BiFunction") + "<T1, T2, R>"
           case _ => ""
         }
+        def fullGenericsTypeF(checked: Boolean, i: Int): String = (checked, i) match {
+          case (true, _) => im.getType(s"javaslang.CheckedFunction$i") + fullGenerics
+          case (false, 0) => im.getType("java.util.function.Supplier") + "<R>"
+          case (false, 1) => im.getType("java.util.function.Function") + "<T1, R>"
+          case (false, 2) => im.getType("java.util.function.BiFunction") + "<T1, T2, R>"
+          case (false, _) => im.getType(s"javaslang.Function$i") + fullGenerics
+        }
+        val fullGenericsType = fullGenericsTypeF(checked, i)
+        val refApply = i match {
+          case 0 => "get"
+          case _ => "apply"
+        }
+        val callApply = s"$refApply($params)"
 
         def curriedType(max: Int, function: String): String = {
           if (max == 0) {
@@ -691,6 +705,24 @@ def generateMainClasses(): Unit = {
                     val lambdaArgs = if (i == 1) params else s"($params)"
                     xs"""
                       return $lambdaArgs -> ${im.getType("javaslang.control.Try")}.of($supplier).getOption();
+                    """
+                  }
+              }
+
+              /$javadoc
+               * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
+               *
+               * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
+               ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
+               * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
+               *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
+               */
+              static $fullGenerics ${im.getType(s"javaslang.Function$i")}$genericsTryReturnType liftTry($fullGenericsType partialFunction) {
+                  ${
+                    val supplier = if (!checked && i == 0) "partialFunction::get" else if (checked && i == 0) "partialFunction::apply" else s"() -> partialFunction.apply($params)"
+                    val lambdaArgs = if (i == 1) params else s"($params)"
+                    xs"""
+                      return $lambdaArgs -> ${im.getType("javaslang.control.Try")}.of($supplier);
                     """
                   }
               }
@@ -818,6 +850,49 @@ def generateMainClasses(): Unit = {
                       }
                   }
               }
+
+              ${checked.gen(xs"""
+                /$javadoc
+                 * Return a composed function that first applies this $className to the given arguments and in case of throwable
+                 * try to get value from {@code recover} function with same arguments and throwable information.
+                 *
+                 * @param recover the function applied in case of throwable
+                 * @return a function composed of this and recover
+                 * @throws NullPointerException if recover is null
+                 */
+                default Function$i$fullGenerics recover(${im.getType("java.util.function.Function")}<? super Throwable, ? extends ${fullGenericsTypeF(checked = false, i)}> recover) {
+                    Objects.requireNonNull(recover, "recover is null");
+                    return ($params) -> {
+                        try {
+                            return this.apply($params);
+                        } catch (Throwable throwable) {
+                            final ${fullGenericsTypeF(checked = false, i)} func = recover.apply(throwable);
+                            Objects.requireNonNull(func, () -> String.format("recover return null for %s: %s", throwable.getClass(), throwable.getMessage()));
+                            return func.$callApply;
+                        }
+                    };
+                }
+
+                /$javadoc
+                 * Return unchecked function that will return this $className result in correct case and throw runtime exception
+                 * wrapped by {@code exceptionMapper} in case of throwable
+                 *
+                 * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
+                 */
+                default Function$i$fullGenerics unchecked(${im.getType("java.util.function.Function")}<? super Throwable, ? extends RuntimeException> exceptionMapper) {
+                    return recover(throwable -> {
+                        throw exceptionMapper.apply(throwable);
+                    });
+                }
+
+                /$javadoc
+                 * Return unchecked function that will return this $className result in correct case and throw exception
+                 * wrapped by {@link IllegalStateException} in case of throwable
+                 */
+                default Function$i$fullGenerics unchecked() {
+                    return unchecked(IllegalStateException::new);
+                }
+              """)}
 
               /$javadoc
                * Returns a composed function that first applies this $className to the given argument and then applies
@@ -1476,6 +1551,159 @@ def generateTestClasses(): Unit = {
                   $assertThat(f.isMemoized()).isFalse();
                   $assertThat(memo.isMemoized()).isTrue();
               }
+
+              ${(!checked).gen(xs"""
+                @$test
+                public void shouldLiftTryPartialFunction() {
+                    $AtomicInteger integer = new $AtomicInteger();
+                    $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> divByZero = (${(1 to i).gen(j => s"i$j")(", ")}) -> 10 / integer.get();
+                    $name$i<${(1 to i).gen(j => "Integer, ")("")}Try<Integer>> divByZeroTry = $name$i.liftTry(divByZero);
+
+                    ${im.getType("javaslang.control.Try")}<Integer> res = divByZeroTry.apply(${(1 to i).gen(j => s"0")(", ")});
+                    assertThat(res.isFailure()).isTrue();
+                    assertThat(res.getCause()).isNotNull();
+                    assertThat(res.getCause().getMessage()).isEqualToIgnoringCase("/ by zero");
+
+                    integer.incrementAndGet();
+                    res = divByZeroTry.apply(${(1 to i).mkString(", ")});
+                    assertThat(res.isSuccess()).isTrue();
+                    assertThat(res.get()).isEqualTo(10);
+                }
+              """)}
+
+              ${checked.gen(xs"""
+                ${(i == 0).gen(xs"""
+                  @$test
+                  public void shouldRecover() {
+                      final $AtomicInteger integer = new $AtomicInteger();
+                      $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance(integer.get() == 0 ? "MD5" : "Unknown");
+                      Function$i<MessageDigest> recover = digest.recover(throwable -> () -> null);
+                      MessageDigest md5 = recover.apply();
+                      assertThat(md5).isNotNull();
+                      assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+                      assertThat(md5.getDigestLength()).isEqualTo(16);
+                      integer.incrementAndGet();
+                      assertThat(recover.apply()).isNull();
+                  }
+
+                  @$test
+                  public void shouldRecoverNonNull() {
+                      final $AtomicInteger integer = new $AtomicInteger();
+                      $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance(integer.get() == 0 ? "MD5" : "Unknown");
+                      Function$i<MessageDigest> recover = digest.recover(throwable -> null);
+
+                      MessageDigest md5 = recover.apply();
+                      assertThat(md5).isNotNull();
+                      assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+                      assertThat(md5.getDigestLength()).isEqualTo(16);
+
+                      integer.incrementAndGet();
+                      ${im.getType("javaslang.control.Try")}<MessageDigest> unknown = Function$i.liftTry(recover).apply();
+                      assertThat(unknown).isNotNull();
+                      assertThat(unknown.isFailure()).isTrue();
+                      assertThat(unknown.getCause()).isNotNull().isInstanceOf(NullPointerException.class);
+                      assertThat(unknown.getCause().getMessage()).isNotEmpty().isEqualToIgnoringCase("recover return null for class java.security.NoSuchAlgorithmException: Unknown MessageDigest not available");
+                  }
+
+                  @$test
+                  public void shouldUncheckedWork() {
+                      $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance("MD5");
+                      Function$i<MessageDigest> unchecked = digest.unchecked();
+                      MessageDigest md5 = unchecked.apply();
+                      assertThat(md5).isNotNull();
+                      assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+                      assertThat(md5.getDigestLength()).isEqualTo(16);
+                  }
+
+                  @$test(expected = IllegalStateException.class)
+                  public void shouldUncheckedThrowIllegalState() {
+                      $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance("Unknown");
+                      Function$i<MessageDigest> unchecked = digest.unchecked();
+                      unchecked.apply();
+                  }
+
+                  @$test
+                  public void shouldLiftTryPartialFunction() {
+                      final $AtomicInteger integer = new $AtomicInteger();
+                      $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance(integer.get() == 0 ? "MD5" : "Unknown");
+                      Function$i<Try<MessageDigest>> liftTry = $name$i.liftTry(digest);
+                      ${im.getType("javaslang.control.Try")}<MessageDigest> md5 = liftTry.apply();
+                      assertThat(md5.isSuccess()).isTrue();
+                      assertThat(md5.get()).isNotNull();
+                      assertThat(md5.get().getAlgorithm()).isEqualToIgnoringCase("MD5");
+                      assertThat(md5.get().getDigestLength()).isEqualTo(16);
+
+                      integer.incrementAndGet();
+                      ${im.getType("javaslang.control.Try")}<MessageDigest> unknown = liftTry.apply();
+                      assertThat(unknown.isFailure()).isTrue();
+                      assertThat(unknown.getCause()).isNotNull();
+                      assertThat(unknown.getCause().getMessage()).isEqualToIgnoringCase("Unknown MessageDigest not available");
+                  }
+                """)}
+                ${(i > 0).gen(xs"""
+                  ${
+                    val types = s"<${(1 to i).gen(j => "String")(", ")}, MessageDigest>"
+                    def toArgList (s: String) = s.split("", i).mkString("\"", "\", \"", "\"") + (s.length + 2 to i).gen(j => ", \"\"")
+                    xs"""
+
+                      private static final $name$i$types digest = (${(1 to i).gen(j => s"s$j")(", ")}) -> ${im.getType("java.security.MessageDigest")}.getInstance(${(1 to i).gen(j => s"s$j")(" + ")});
+
+                      @$test
+                      public void shouldRecover() {
+                          Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> recover = digest.recover(throwable -> (${(1 to i).gen(j => s"s$j")(", ")}) -> null);
+                          MessageDigest md5 = recover.apply(${toArgList("MD5")});
+                          assertThat(md5).isNotNull();
+                          assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+                          assertThat(md5.getDigestLength()).isEqualTo(16);
+                          assertThat(recover.apply(${toArgList("Unknown")})).isNull();
+                      }
+
+                      @$test
+                      public void shouldRecoverNonNull() {
+                          Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> recover = digest.recover(throwable -> null);
+                          MessageDigest md5 = recover.apply(${toArgList("MD5")});
+                          assertThat(md5).isNotNull();
+                          assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+                          assertThat(md5.getDigestLength()).isEqualTo(16);
+                          ${im.getType("javaslang.control.Try")}<MessageDigest> unknown = Function$i.liftTry(recover).apply(${toArgList("Unknown")});
+                          assertThat(unknown).isNotNull();
+                          assertThat(unknown.isFailure()).isTrue();
+                          assertThat(unknown.getCause()).isNotNull().isInstanceOf(NullPointerException.class);
+                          assertThat(unknown.getCause().getMessage()).isNotEmpty().isEqualToIgnoringCase("recover return null for class java.security.NoSuchAlgorithmException: Unknown MessageDigest not available");
+                      }
+
+                      @$test
+                      public void shouldUncheckedWork() {
+                          Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> unchecked = digest.unchecked();
+                          MessageDigest md5 = unchecked.apply(${toArgList("MD5")});
+                          assertThat(md5).isNotNull();
+                          assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+                          assertThat(md5.getDigestLength()).isEqualTo(16);
+                      }
+
+                      @$test(expected = IllegalStateException.class)
+                      public void shouldUncheckedThrowIllegalState() {
+                          Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> unchecked = digest.unchecked();
+                          unchecked.apply(${toArgList("Unknown")});
+                      }
+
+                      @$test
+                      public void shouldLiftTryPartialFunction() {
+                          Function$i<${(1 to i).gen(j => "String")(", ")}, Try<MessageDigest>> liftTry = $name$i.liftTry(digest);
+                          ${im.getType("javaslang.control.Try")}<MessageDigest> md5 = liftTry.apply(${toArgList("MD5")});
+                          assertThat(md5.isSuccess()).isTrue();
+                          assertThat(md5.get()).isNotNull();
+                          assertThat(md5.get().getAlgorithm()).isEqualToIgnoringCase("MD5");
+                          assertThat(md5.get().getDigestLength()).isEqualTo(16);
+                          ${im.getType("javaslang.control.Try")}<MessageDigest> unknown = liftTry.apply(${toArgList("Unknown")});
+                          assertThat(unknown.isFailure()).isTrue();
+                          assertThat(unknown.getCause()).isNotNull();
+                          assertThat(unknown.getCause().getMessage()).isEqualToIgnoringCase("Unknown MessageDigest not available");
+                      }
+                    """
+                  }
+                """)}
+              """)}
 
               private static final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> recurrent1 = (${(1 to i).gen(j => s"i$j")(", ")}) -> $recFuncF1
               ${(i > 0).gen(xs"""

@@ -10,6 +10,8 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import javaslang.control.Option;
 import javaslang.control.Try;
 
@@ -78,6 +80,18 @@ public interface CheckedFunction0<R> extends λ<R> {
     }
 
     /**
+     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
+     *
+     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
+     * @param <R> return type
+     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
+     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
+     */
+    static <R> Function0<Try<R>> liftTry(CheckedFunction0<R> partialFunction) {
+        return () -> Try.of(partialFunction::apply);
+    }
+
+    /**
      * Applies this function to no arguments and returns the result.
      *
      * @return the result of function application
@@ -123,6 +137,47 @@ public interface CheckedFunction0<R> extends λ<R> {
         } else {
             return (CheckedFunction0<R> & Memoized) Lazy.of(() -> Try.of(this::apply).get())::get;
         }
+    }
+
+    /**
+     * Return a composed function that first applies this CheckedFunction0 to the given arguments and in case of throwable
+     * try to get value from {@code recover} function with same arguments and throwable information.
+     *
+     * @param recover the function applied in case of throwable
+     * @return a function composed of this and recover
+     * @throws NullPointerException if recover is null
+     */
+    default Function0<R> recover(Function<? super Throwable, ? extends Supplier<R>> recover) {
+        Objects.requireNonNull(recover, "recover is null");
+        return () -> {
+            try {
+                return this.apply();
+            } catch (Throwable throwable) {
+                final Supplier<R> func = recover.apply(throwable);
+                Objects.requireNonNull(func, () -> String.format("recover return null for %s: %s", throwable.getClass(), throwable.getMessage()));
+                return func.get();
+            }
+        };
+    }
+
+    /**
+     * Return unchecked function that will return this CheckedFunction0 result in correct case and throw runtime exception
+     * wrapped by {@code exceptionMapper} in case of throwable
+     *
+     * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
+     */
+    default Function0<R> unchecked(Function<? super Throwable, ? extends RuntimeException> exceptionMapper) {
+        return recover(throwable -> {
+            throw exceptionMapper.apply(throwable);
+        });
+    }
+
+    /**
+     * Return unchecked function that will return this CheckedFunction0 result in correct case and throw exception
+     * wrapped by {@link IllegalStateException} in case of throwable
+     */
+    default Function0<R> unchecked() {
+        return unchecked(IllegalStateException::new);
     }
 
     /**
