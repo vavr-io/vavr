@@ -528,6 +528,33 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         return Iterator.unfoldLeft(seed, f).toVector();
     }
 
+    /**
+     * Creates a Vector from a seed value and a function.
+     * The function takes the seed at first.
+     * The function should return {@code None} when it's
+     * done generating the Vector, otherwise {@code Some} {@code Tuple}
+     * of the value to add to the resulting Vector and
+     * the element for the next call.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * Vector.unfold(10, x -&gt; x == 0
+     *             ? Option.none()
+     *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
+     * // Vector(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+     * </code>
+     * </pre>
+     *
+     * @param seed the start value for the iteration
+     * @param f    the function to get the next step of the iteration
+     * @return a Vector with the values built up by the iteration
+     * @throws IllegalArgumentException if {@code f} is null
+     */
+    static <T> Vector<T> unfold(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends T>>> f) {
+        return Iterator.unfold(seed, f).toVector();
+    }
+
     @Override
     public Vector<T> append(T element) {
         return new Vector<>(indexShift, trie.put(length() + indexShift, element));

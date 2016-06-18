@@ -302,12 +302,12 @@ public class ListTest extends AbstractLinearSeqTest {
     // -- unfold
 
     @Test
-    public void shouldUnfoldToEmpty() {
+    public void shouldUnfoldRightToEmpty() {
         assertThat(List.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
     }
 
     @Test
-    public void shouldUnfoldSimpleList() {
+    public void shouldUnfoldRightSimpleList() {
         assertThat(
             List.unfoldRight(10, x -> x == 0
                              ? Option.none()
@@ -324,6 +324,20 @@ public class ListTest extends AbstractLinearSeqTest {
     public void shouldUnfoldLeftSimpleList() {
         assertThat(
             List.unfoldLeft(10, x -> x == 0
+                            ? Option.none()
+                            : Option.of(new Tuple2<>(x-1, x))))
+            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+    }
+
+    @Test
+    public void shouldUnfoldToEmpty() {
+        assertThat(List.unfold(0, x -> Option.none())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldUnfoldSimpleList() {
+        assertThat(
+            List.unfold(10, x -> x == 0
                             ? Option.none()
                             : Option.of(new Tuple2<>(x-1, x))))
             .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));

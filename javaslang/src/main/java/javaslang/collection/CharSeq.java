@@ -270,6 +270,33 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         return CharSeq.ofAll(Iterator.unfoldLeft(seed, f));
     }
 
+    /**
+     * Creates a CharSeq from a seed value and a function.
+     * The function takes the seed at first.
+     * The function should return {@code None} when it's
+     * done generating the CharSeq, otherwise {@code Some} {@code Tuple}
+     * of the value to add to the resulting CharSeq and
+     * the element for the next call.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * CharSeq.unfold('j', x -&gt; x == 'a'
+     *                ? Option.none()
+     *                : Option.of(new Tuple2&lt;&gt;((char)(x-1), new Character(x))));
+     * // CharSeq.of("bcdefghij"))
+     * </code>
+     * </pre>
+     *
+     * @param seed the start value for the iteration
+     * @param f    the function to get the next step of the iteration
+     * @return a CharSeq with the values built up by the iteration
+     * @throws IllegalArgumentException if {@code f} is null
+     */
+    static CharSeq unfold(Character seed, Function<? super Character,Option<Tuple2<? extends Character,? extends Character>>> f) {
+        return CharSeq.ofAll(Iterator.unfold(seed, f));
+    }
+
     private Tuple2<CharSeq, CharSeq> splitByBuilder(StringBuilder sb) {
         if (sb.length() == 0) {
             return Tuple.of(EMPTY, this);

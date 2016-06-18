@@ -483,12 +483,12 @@ public class StreamTest extends AbstractLinearSeqTest {
     // -- unfold
 
     @Test
-    public void shouldUnfoldToEmpty() {
+    public void shouldUnfoldRightToEmpty() {
         assertThat(Stream.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
     }
 
     @Test
-    public void shouldUnfoldSimpleStream() {
+    public void shouldUnfoldRightSimpleStream() {
         assertThat(
             Stream.unfoldRight(10, x -> x == 0
                               ? Option.none()
@@ -507,6 +507,20 @@ public class StreamTest extends AbstractLinearSeqTest {
             Stream.unfoldLeft(10, x -> x == 0
                              ? Option.none()
                              : Option.of(new Tuple2<>(x-1, x))))
+            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+    }
+
+    @Test
+    public void shouldUnfoldToEmpty() {
+        assertThat(Stream.unfold(0, x -> Option.none())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldUnfoldSimpleStream() {
+        assertThat(
+            Stream.unfold(10, x -> x == 0
+                          ? Option.none()
+                          : Option.of(new Tuple2<>(x-1, x))))
             .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 

@@ -202,12 +202,12 @@ public class ArrayTest extends AbstractIndexedSeqTest {
     // -- unfold
 
     @Test
-    public void shouldUnfoldToEmpty() {
+    public void shouldUnfoldRightToEmpty() {
         assertThat(Array.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
     }
 
     @Test
-    public void shouldUnfoldSimpleArray() {
+    public void shouldUnfoldRightSimpleArray() {
         assertThat(
             Array.unfoldRight(10, x -> x == 0
                              ? Option.none()
@@ -226,6 +226,20 @@ public class ArrayTest extends AbstractIndexedSeqTest {
             Array.unfoldLeft(10, x -> x == 0
                             ? Option.none()
                             : Option.of(new Tuple2<>(x-1, x))))
+            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+    }
+
+    @Test
+    public void shouldUnfoldToEmpty() {
+        assertThat(Array.unfold(0, x -> Option.none())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldUnfoldSimpleArray() {
+        assertThat(
+            Array.unfold(10, x -> x == 0
+                         ? Option.none()
+                         : Option.of(new Tuple2<>(x-1, x))))
             .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 

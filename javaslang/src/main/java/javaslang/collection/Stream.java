@@ -681,6 +681,33 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     /**
+     * Creates a Stream from a seed value and a function.
+     * The function takes the seed at first.
+     * The function should return {@code None} when it's
+     * done generating the Stream, otherwise {@code Some} {@code Tuple}
+     * of the value to add to the resulting Stream and
+     * the element for the next call.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * Stream.unfold(10, x -&gt; x == 0
+     *             ? Option.none()
+     *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
+     * // Stream(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+     * </code>
+     * </pre>
+     *
+     * @param seed the start value for the iteration
+     * @param f    the function to get the next step of the iteration
+     * @return a Stream with the values built up by the iteration
+     * @throws IllegalArgumentException if {@code f} is null
+     */
+    static <T> Stream<T> unfold(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends T>>> f) {
+        return Iterator.unfold(seed, f).toStream();
+    }
+
+    /**
      * Repeats an element infinitely often.
      *
      * @param t   An element

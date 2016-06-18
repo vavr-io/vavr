@@ -555,6 +555,33 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     /**
+     * Creates a Queue from a seed value and a function.
+     * The function takes the seed at first.
+     * The function should return {@code None} when it's
+     * done generating the Queue, otherwise {@code Some} {@code Tuple}
+     * of the value to add to the resulting Queue and
+     * the element for the next call.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * Queue.unfold(10, x -&gt; x == 0
+     *             ? Option.none()
+     *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
+     * // Queue(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+     * </code>
+     * </pre>
+     *
+     * @param seed the start value for the iteration
+     * @param f    the function to get the next step of the iteration
+     * @return a Queue with the values built up by the iteration
+     * @throws IllegalArgumentException if {@code f} is null
+     */
+    static <T> Queue<T> unfold(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends T>>> f) {
+        return Iterator.unfold(seed, f).toQueue();
+    }
+
+    /**
      * Enqueues a new element.
      *
      * @param element The new element

@@ -1155,6 +1155,32 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator(), source.map(t -> (T3) t._3).iterator());
         }
     }
+    /**
+     * Creates an iterator from a seed value and a function.
+     * The function takes the seed at first.
+     * The function should return {@code None} when it's
+     * done generating elements, otherwise {@code Some} {@code Tuple}
+     * of the value to add to the resulting iterator and
+     * the element for the next call.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * Iterator.unfold(10, x -&gt; x == 0
+     *                 ? Option.none()
+     *                 : Option.of(new Tuple2&lt;&gt;(x-1, x)));
+     * // List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+     * </code>
+     * </pre>
+     *
+     * @param seed the start value for the iteration
+     * @param f    the function to get the next step of the iteration
+     * @return a list with the values built up by the iteration
+     * @throws IllegalArgumentException if {@code f} is null
+     */
+    static <T> Iterator<T> unfold(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends T>>> f) {
+        return unfoldLeft(seed, f);
+    }
 
     /**
      * Creates an iterator from a seed value and a function.

@@ -3096,12 +3096,12 @@ public class CharSeqTest {
     // -- unfold
 
     @Test
-    public void shouldUnfoldToEmpty() {
+    public void shouldUnfoldRightToEmpty() {
         assertThat(CharSeq.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
     }
 
     @Test
-    public void shouldUnfoldSimpleCharSeq() {
+    public void shouldUnfoldRightSimpleCharSeq() {
         assertThat(
             CharSeq.unfoldRight('j', x -> x == 'a'
                                 ? Option.none()
@@ -3120,6 +3120,20 @@ public class CharSeqTest {
             CharSeq.unfoldLeft('j', x -> x == 'a'
                                ? Option.none()
                                : Option.of(new Tuple2<>((char)(x-1), new Character(x)))))
+            .isEqualTo(of("bcdefghij"));
+    }
+
+    @Test
+    public void shouldUnfoldToEmpty() {
+        assertThat(CharSeq.unfold('j', x -> Option.none())).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldUnfoldSimpleCharSeq() {
+        assertThat(
+            CharSeq.unfold('j', x -> x == 'a'
+                           ? Option.none()
+                           : Option.of(new Tuple2<>((char)(x-1), new Character(x)))))
             .isEqualTo(of("bcdefghij"));
     }
 }
