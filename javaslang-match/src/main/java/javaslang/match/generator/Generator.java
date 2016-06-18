@@ -68,7 +68,7 @@ public class Generator {
             body = pattern(im, 0) + ".of(" + paramTypeName + ".class)";
         } else {
             final String args = IntStream.rangeClosed(1, arity).mapToObj(i -> "p" + i).collect(joining(", "));
-            final String unapplyRef = classModel.getClassName() + "::" + name;
+            final String unapplyRef = classModel.getFullQualifiedName() + "::" + name;
             body = String.format("%s.of(%s, %s, %s)", pattern(im, arity), paramTypeName + ".class", args, unapplyRef);
         }
         final List<String> typeArgs = methodModel.getTypeParameters().stream()
