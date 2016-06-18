@@ -216,6 +216,17 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
         return 8;
     }
 
+    /**
+     * Returns a function that always returns the constant
+     * value that you give in parameter.
+     *
+     * @param value the value to be returned
+     * @return a function always returning the given value
+     */
+    static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> constant(R value) {
+        return (t1, t2, t3, t4, t5, t6, t7, t8) -> value;
+    }
+
     @Override
     default Function1<T1, Function1<T2, Function1<T3, Function1<T4, Function1<T5, Function1<T6, Function1<T7, Function1<T8, R>>>>>>>> curried() {
         return t1 -> t2 -> t3 -> t4 -> t5 -> t6 -> t7 -> t8 -> apply(t1, t2, t3, t4, t5, t6, t7, t8);

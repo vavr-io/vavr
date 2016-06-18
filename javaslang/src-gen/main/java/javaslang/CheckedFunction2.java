@@ -110,6 +110,17 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
         return 2;
     }
 
+    /**
+     * Returns a function that always returns the constant
+     * value that you give in parameter.
+     *
+     * @param value the value to be returned
+     * @return a function always returning the given value
+     */
+    static <T1, T2, R> CheckedFunction2<T1, T2, R> constant(R value) {
+        return (t1, t2) -> value;
+    }
+
     @Override
     default CheckedFunction1<T1, CheckedFunction1<T2, R>> curried() {
         return t1 -> t2 -> apply(t1, t2);

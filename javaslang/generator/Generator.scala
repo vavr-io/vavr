@@ -751,6 +751,17 @@ def generateMainClasses(): Unit = {
                   return $i;
               }
 
+              /**
+               * Returns a function that always returns the constant
+               * value that you give in parameter.
+               *
+               * @param value the value to be returned
+               * @return a function always returning the given value
+               */
+              static $fullGenerics $className$fullGenerics constant(R value) {
+                  return ($params) -> value;
+              }
+
               @Override
               default ${curriedType(i, name)} curried() {
                   return ${if (i < 2) "this" else s"$curried -> apply($params)"};
@@ -1344,7 +1355,7 @@ def generateTestClasses(): Unit = {
             returnType(1, max)
           }
         }
-        
+
         xs"""
           public class $className {
 
@@ -1397,6 +1408,12 @@ def generateTestClasses(): Unit = {
               public void shouldGetArity() {
                   final $name$i<$generics> f = ($functionArgs) -> null;
                   $assertThat(f.arity()).isEqualTo($i);
+              }
+
+              @$test
+              public void shouldConstant()${checked.gen(" throws Throwable")} {
+                  final $name$i<$generics> f = $name$i.constant(6);
+                  $assertThat(f.apply(${(1 to i).gen(j => s"$j")(", ")})).isEqualTo(6);
               }
 
               @$test

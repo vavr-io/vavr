@@ -102,6 +102,17 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
         return 0;
     }
 
+    /**
+     * Returns a function that always returns the constant
+     * value that you give in parameter.
+     *
+     * @param value the value to be returned
+     * @return a function always returning the given value
+     */
+    static <R> Function0<R> constant(R value) {
+        return () -> value;
+    }
+
     @Override
     default Function0<R> curried() {
         return this;
