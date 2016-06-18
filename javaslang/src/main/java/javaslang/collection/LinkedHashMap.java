@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Function2;
 import javaslang.Kind2;
 import javaslang.Tuple;
 import javaslang.Tuple2;
@@ -311,6 +312,17 @@ public final class LinkedHashMap<K, V> extends AbstractMap<K, V, LinkedHashMap<K
     public <K2, V2> LinkedHashMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(LinkedHashMap.empty(), (acc, entry) -> acc.put(entry.map(mapper)));
+    }
+
+    @Override
+    public <K2> LinkedHashMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        return map((k, v) -> Tuple.of(keyMapper.apply(k), v));
+    }
+
+    @Override
+    public <K2> LinkedHashMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge) {
+        return Collections.mapKeys(this, LinkedHashMap.empty(), keyMapper, valueMerge);
     }
 
     @Override

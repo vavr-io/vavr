@@ -13,6 +13,8 @@ import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.*;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -402,6 +404,64 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnTuple2SetOfANonEmptyMap() {
         assertThat(emptyInt().put(1, "1").put(2, "2").toSet()).isEqualTo(HashSet.of(Tuple.of(1, "1"), Tuple.of(2, "2")));
+    }
+
+    @Test
+    public void shouldReturnModifiedKeysMap() {
+        Map<String, String> actual = emptyIntString().put(1, "1").put(2, "2").mapKeys(k -> k * 12).mapKeys(Integer::toHexString).mapKeys(String::toUpperCase);
+        Map<String, String> expected = this.<String, String>emptyMap().put("C", "1").put("18", "2");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReturnModifiedKeysMapWithNonUniqueMapper() {
+        Map<Integer, String> actual = emptyIntString()
+                .put(1, "1").put(2, "2").put(3, "3")
+                .mapKeys(k -> k * 118).mapKeys(Integer::toHexString).mapKeys(AbstractMapTest::md5).mapKeys(String::length);
+        assertThat(actual).hasSize(1);
+        assertThat(actual.values()).hasSize(1);
+        //In different cases (based on items order) transformed map may contain different values
+        assertThat(actual.values().head()).isIn("1", "2", "3");
+    }
+
+    private static String md5(String src) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(src.getBytes(StandardCharsets.UTF_8));
+            return toHexString(md.digest());
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    /**
+     * Returns a string in the hexadecimal format.
+     *
+     * @param bytes the converted bytes
+     * @return the hexadecimal string representing the bytes data
+     * @throws IllegalArgumentException if the byte array is null
+     */
+    public static String toHexString(byte[] bytes) {
+        if (bytes == null) {
+            throw new IllegalArgumentException("byte array must not be null");
+        }
+
+        StringBuilder hex = new StringBuilder(bytes.length * 2);
+        for (byte aByte : bytes) {
+            hex.append(Character.forDigit((aByte & 0XF0) >> 4, 16));
+            hex.append(Character.forDigit((aByte & 0X0F), 16));
+        }
+        return hex.toString();
+    }
+
+    @Test
+    public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndMergedValus() {
+        Map<Integer, String> actual = emptyIntString()
+                .put(1, "1").put(2, "2").put(3, "3")
+                .mapKeys(k -> k * 118).mapKeys(Integer::toHexString).mapKeys(AbstractMapTest::md5)//Unique key mappers
+                .mapKeys(String::length, (v1, v2) -> List.of(v1.split("#")).append(v2).sorted().mkString("#"));
+        Map<Integer, String> expected = emptyIntString().put(32, "1#2#3");
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test

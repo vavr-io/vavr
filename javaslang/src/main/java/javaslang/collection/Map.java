@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.util.*;
@@ -144,6 +141,33 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @throws NullPointerException if {@code mapper} is null
      */
     <K2, V2> Map<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
+
+    /**
+     * Maps the keys of this {@code Map} while preserving the corresponding values.
+     * <p>
+     * The size of the result map may be smaller if {@code keyMapper} maps two or more distinct keys to the same new key.
+     * In this case the value at the {@code latest} of the original keys is retained.
+     * Order of keys is predictable in {@code TreeMap} (by comparator) and {@code LinkedHashMap} (insertion-order) and not predictable in {@code HashMap}.
+     *
+     * @param <K2>      the new key type
+     * @param keyMapper a {@code Function} that maps keys of type {@code V} to keys of type {@code V2}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code keyMapper} is null
+     */
+    <K2> Map<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper);
+
+    /**
+     * Maps the keys of this {@code Map} while preserving the corresponding values.
+     * <p>
+     * The size of the result map may be smaller if {@code keyMapper} maps two or more distinct keys to the same new key.
+     * In this case the associated values will be combined using {@code valueMerge}.
+     *
+     * @param <K2>      the new key type
+     * @param keyMapper a {@code Function} that maps keys of type {@code V} to keys of type {@code V2}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code keyMapper} is null
+     */
+    <K2> Map<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge);
 
     /**
      * Maps the values of this {@code Map} while preserving the corresponding keys.
