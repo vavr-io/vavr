@@ -198,7 +198,7 @@ public interface CheckedFunction3<T1, T2, T3, R> extends λ<R> {
                 return this.apply(t1, t2, t3);
             } catch (Throwable throwable) {
                 final Function3<T1, T2, T3, R> func = recover.apply(throwable);
-                Objects.requireNonNull(func, () -> String.format("recover return null for %s: %s", throwable.getClass(), throwable.getMessage()));
+                Objects.requireNonNull(func, () -> "recover return null for " + throwable.getClass() + ": " + throwable.getMessage());
                 return func.apply(t1, t2, t3);
             }
         };

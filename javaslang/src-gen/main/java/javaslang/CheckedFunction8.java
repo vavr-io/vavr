@@ -293,7 +293,7 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<
                 return this.apply(t1, t2, t3, t4, t5, t6, t7, t8);
             } catch (Throwable throwable) {
                 final Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> func = recover.apply(throwable);
-                Objects.requireNonNull(func, () -> String.format("recover return null for %s: %s", throwable.getClass(), throwable.getMessage()));
+                Objects.requireNonNull(func, () -> "recover return null for " + throwable.getClass() + ": " + throwable.getMessage());
                 return func.apply(t1, t2, t3, t4, t5, t6, t7, t8);
             }
         };
