@@ -154,7 +154,7 @@ public interface CheckedFunction0<R> extends λ<R> {
                 return this.apply();
             } catch (Throwable throwable) {
                 final Supplier<R> func = recover.apply(throwable);
-                Objects.requireNonNull(func, () -> String.format("recover return null for %s: %s", throwable.getClass(), throwable.getMessage()));
+                Objects.requireNonNull(func, () -> "recover return null for " + throwable.getClass() + ": " + throwable.getMessage());
                 return func.get();
             }
         };

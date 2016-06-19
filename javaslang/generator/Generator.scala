@@ -867,7 +867,7 @@ def generateMainClasses(): Unit = {
                             return this.apply($params);
                         } catch (Throwable throwable) {
                             final ${fullGenericsTypeF(checked = false, i)} func = recover.apply(throwable);
-                            Objects.requireNonNull(func, () -> String.format("recover return null for %s: %s", throwable.getClass(), throwable.getMessage()));
+                            Objects.requireNonNull(func, () -> "recover return null for " + throwable.getClass() + ": " + throwable.getMessage());
                             return func.$callApply;
                         }
                     };
