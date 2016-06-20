@@ -469,10 +469,10 @@ def generateMainClasses(): Unit = {
                                       return $OptionType.none();
                                   } else {
                                       ${if (i == 1) xs"""
-                                        return unapply.apply(obj).transform(u1 -> ((Pattern<U1, ?>) p1).apply(u1).map(_1 -> (T1) u1));
+                                        return unapply.apply(obj).apply(u1 -> ((Pattern<U1, ?>) p1).apply(u1).map(_1 -> (T1) u1));
                                       """ else xs"""
                                         final Tuple$i<${(1 to i).gen(j => s"U$j")(", ")}> unapplied = unapply.apply(obj);
-                                        return unapplied.transform((${(1 to i).gen(j => s"u$j")(", ")}) ->
+                                        return unapplied.apply((${(1 to i).gen(j => s"u$j")(", ")}) ->
                                                 ${(1 until i).gen(j => s"((Pattern<U$j, ?>) p$j).apply(u$j).flatMap(_$j ->")("\n")}
                                                 ((Pattern<U$i, ?>) p$i).apply(u$i).map(_$i -> ($resultType) unapplied)
                                         ${")" * i};
@@ -1135,6 +1135,28 @@ def generateMainClasses(): Unit = {
              * @return An object of type U
              * @throws NullPointerException if {@code f} is null
              */
+            ${if (i == 0) xs"""
+              public <U> U apply($functionType<? extends U> f) {
+                  $Objects.requireNonNull(f, "f is null");
+                  return f.get();
+              }
+            """ else xs"""
+              public <U> U apply($functionType<$paramTypes, ? extends U> f) {
+                  $Objects.requireNonNull(f, "f is null");
+                  return f.apply($params);
+              }
+            """}
+
+            /**
+             * Transforms this tuple to an object of type U.
+             *
+             * @deprecated Use {@link #apply($functionType)} instead, will be removed in 3.0.0
+             * @param f Transformation which creates a new object of type U based on this tuple's contents.
+             * @param <U> type of the transformation result
+             * @return An object of type U
+             * @throws NullPointerException if {@code f} is null
+             */
+            @Deprecated(/* Use apply instead, will be removed in 3.0.0 */)
             ${if (i == 0) xs"""
               public <U> U transform($functionType<? extends U> f) {
                   $Objects.requireNonNull(f, "f is null");
@@ -1843,6 +1865,14 @@ def generateTestClasses(): Unit = {
               })("\n\n")}
 
               @$test
+              public void shouldApplyTuple() {
+                  final Tuple$i<$generics> tuple = createTuple();
+                  final Tuple0 actual = tuple.apply($functionArgs -> Tuple0.instance());
+                  assertThat(actual).isEqualTo(Tuple0.instance());
+              }
+
+              @$test
+              @SuppressWarnings("deprecation")
               public void shouldTransformTuple() {
                   final Tuple$i<$generics> tuple = createTuple();
                   final Tuple0 actual = tuple.transform($functionArgs -> Tuple0.instance());

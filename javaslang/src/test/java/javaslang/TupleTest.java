@@ -71,6 +71,12 @@ public class TupleTest {
     }
 
     @Test
+    public void shouldApplyTuple0() {
+        assertThat(Tuple0.instance().apply(() -> 1) == 1).isTrue();
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
     public void shouldTransformTuple0() {
         assertThat(Tuple0.instance().transform(() -> 1) == 1).isTrue();
     }
