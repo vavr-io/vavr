@@ -580,6 +580,8 @@ def generateMainClasses(): Unit = {
 
         val generics = (1 to i).gen(j => s"T$j")(", ")
         val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
+        val wideGenerics = (1 to i).gen(j => s"? super T$j")(", ")
+        val fullWideGenerics = s"<${(i > 0).gen(s"$wideGenerics, ")}R>"
         val genericsReversed = (1 to i).reverse.gen(j => s"T$j")(", ")
         val genericsTuple = if (i > 0) s"<$generics>" else ""
         val genericsFunction = if (i > 0) s"$generics, " else ""
@@ -604,11 +606,11 @@ def generateMainClasses(): Unit = {
           case _ => ""
         }
         def fullGenericsTypeF(checked: Boolean, i: Int): String = (checked, i) match {
-          case (true, _) => im.getType(s"javaslang.CheckedFunction$i") + fullGenerics
+          case (true, _) => im.getType(s"javaslang.CheckedFunction$i") + fullWideGenerics
           case (false, 0) => im.getType("java.util.function.Supplier") + "<R>"
-          case (false, 1) => im.getType("java.util.function.Function") + "<T1, R>"
-          case (false, 2) => im.getType("java.util.function.BiFunction") + "<T1, T2, R>"
-          case (false, _) => im.getType(s"javaslang.Function$i") + fullGenerics
+          case (false, 1) => im.getType("java.util.function.Function") + "<? super T1, R>"
+          case (false, 2) => im.getType("java.util.function.BiFunction") + "<? super T1, ? super T2, R>"
+          case (false, _) => im.getType(s"javaslang.Function$i") + fullWideGenerics
         }
         val fullGenericsType = fullGenericsTypeF(checked, i)
         val refApply = i match {

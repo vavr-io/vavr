@@ -83,7 +83,7 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    static <T1, T2, R> Function2<T1, T2, Option<R>> lift(BiFunction<T1, T2, R> partialFunction) {
+    static <T1, T2, R> Function2<T1, T2, Option<R>> lift(BiFunction<? super T1, ? super T2, R> partialFunction) {
         return (t1, t2) -> Try.of(() -> partialFunction.apply(t1, t2)).getOption();
     }
 
@@ -97,7 +97,7 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <T1, T2, R> Function2<T1, T2, Try<R>> liftTry(BiFunction<T1, T2, R> partialFunction) {
+    static <T1, T2, R> Function2<T1, T2, Try<R>> liftTry(BiFunction<? super T1, ? super T2, R> partialFunction) {
         return (t1, t2) -> Try.of(() -> partialFunction.apply(t1, t2));
     }
 
