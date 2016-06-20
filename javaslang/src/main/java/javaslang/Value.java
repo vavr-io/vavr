@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import com.google.gwt.core.shared.GwtIncompatible;
 import javaslang.collection.*;
 import javaslang.collection.HashMap;
 import javaslang.collection.HashSet;
@@ -377,6 +378,7 @@ public interface Value<T> extends Iterable<T> {
      * @param out The PrintStream to write to
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stream.
      */
+    @GwtIncompatible("java.io.PrintStream is not implemented")
     default void out(PrintStream out) {
         for (T t : this) {
             out.println(String.valueOf(t));
@@ -393,6 +395,7 @@ public interface Value<T> extends Iterable<T> {
      * @param writer The PrintWriter to write to
      * @throws IllegalStateException if {@code PrintWriter.checkError()} is true after writing to writer.
      */
+    @GwtIncompatible("java.io.PrintWriter is not implemented")
     default void out(PrintWriter writer) {
         for (T t : this) {
             writer.println(String.valueOf(t));
@@ -408,6 +411,7 @@ public interface Value<T> extends Iterable<T> {
      *
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
      */
+    @GwtIncompatible("java.io.PrintStream is not implemented")
     default void stderr() {
         out(System.err);
     }
@@ -418,6 +422,7 @@ public interface Value<T> extends Iterable<T> {
      *
      * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
      */
+    @GwtIncompatible("java.io.PrintStream is not implemented")
     default void stdout() {
         out(System.out);
     }
@@ -505,6 +510,7 @@ public interface Value<T> extends Iterable<T> {
      * @throws NullPointerException if componentType is null
      */
     @SuppressWarnings("unchecked")
+    @GwtIncompatible("reflection is not supported")
     default T[] toJavaArray(Class<T> componentType) {
         Objects.requireNonNull(componentType, "componentType is null");
         final java.util.List<T> list = toJavaList();

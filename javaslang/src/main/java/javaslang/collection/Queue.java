@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import com.google.gwt.core.shared.GwtIncompatible;
 import javaslang.*;
 import javaslang.control.*;
 
@@ -300,6 +301,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    @GwtIncompatible
     public static Queue<Double> rangeBy(double from, double toExclusive, double step) {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
@@ -404,6 +406,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    @GwtIncompatible
     public static Queue<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }

@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import com.google.gwt.core.shared.GwtIncompatible;
 import javaslang.*;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Empty;
@@ -426,6 +427,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         return Stream.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    @GwtIncompatible
     static Stream<Double> rangeBy(double from, double toExclusive, double step) {
         return Stream.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
@@ -530,6 +532,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         return Stream.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    @GwtIncompatible
     static Stream<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return Stream.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
@@ -1717,10 +1720,12 @@ interface StreamModule {
             return tail.get();
         }
 
+        @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private Object writeReplace() {
             return new SerializationProxy<>(this);
         }
 
+        @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private void readObject(ObjectInputStream stream) throws InvalidObjectException {
             throw new InvalidObjectException("Proxy required");
         }
@@ -1764,10 +1769,12 @@ interface StreamModule {
             }
         }
 
+        @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private Object writeReplace() {
             return new SerializationProxy<>(this);
         }
 
+        @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private void readObject(ObjectInputStream stream) throws InvalidObjectException {
             throw new InvalidObjectException("Proxy required");
         }
@@ -1781,6 +1788,7 @@ interface StreamModule {
      */
     // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
     // classes. Also, it may not be compatible with circular object graphs.
+    @GwtIncompatible("The Java serialization protocol is explicitly not supported")
     final class SerializationProxy<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
