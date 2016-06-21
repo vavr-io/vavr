@@ -178,6 +178,21 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
      * @return An object of type U
      * @throws NullPointerException if {@code f} is null
      */
+    public <U> U apply(BiFunction<? super T1, ? super T2, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(_1, _2);
+    }
+
+    /**
+     * Transforms this tuple to an object of type U.
+     *
+     * @deprecated Use {@link #apply(BiFunction)} instead, will be removed in 3.0.0
+     * @param f Transformation which creates a new object of type U based on this tuple's contents.
+     * @param <U> type of the transformation result
+     * @return An object of type U
+     * @throws NullPointerException if {@code f} is null
+     */
+    @Deprecated(/* Use apply instead, will be removed in 3.0.0 */)
     public <U> U transform(BiFunction<? super T1, ? super T2, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(_1, _2);

@@ -397,6 +397,21 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
      * @return An object of type U
      * @throws NullPointerException if {@code f} is null
      */
+    public <U> U apply(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(_1, _2, _3, _4, _5, _6, _7);
+    }
+
+    /**
+     * Transforms this tuple to an object of type U.
+     *
+     * @deprecated Use {@link #apply(Function7)} instead, will be removed in 3.0.0
+     * @param f Transformation which creates a new object of type U based on this tuple's contents.
+     * @param <U> type of the transformation result
+     * @return An object of type U
+     * @throws NullPointerException if {@code f} is null
+     */
+    @Deprecated(/* Use apply instead, will be removed in 3.0.0 */)
     public <U> U transform(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(_1, _2, _3, _4, _5, _6, _7);
