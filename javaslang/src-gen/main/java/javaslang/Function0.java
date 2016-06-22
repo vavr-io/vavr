@@ -63,8 +63,8 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
      * @param <R> return type
      * @return a {@code Function0}
      */
-    static <R> Function0<R> of(Function0<R> methodReference) {
-        return methodReference;
+    static <R> Function0<R> of(Supplier<? extends R> methodReference) {
+        return methodReference::get;
     }
 
     /**
@@ -75,8 +75,8 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    static <R> Function0<Option<R>> lift(Supplier<R> partialFunction) {
-        return () -> Try.of(partialFunction::get).getOption();
+    static <R> Function0<Option<R>> lift(Supplier<? extends R> partialFunction) {
+        return () -> Try.of(of(partialFunction)::get).getOption();
     }
 
     /**
@@ -87,7 +87,7 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <R> Function0<Try<R>> liftTry(Supplier<R> partialFunction) {
+    static <R> Function0<Try<R>> liftTry(Supplier<? extends R> partialFunction) {
         return () -> Try.of(partialFunction::get);
     }
 

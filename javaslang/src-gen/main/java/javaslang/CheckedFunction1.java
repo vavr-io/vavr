@@ -66,8 +66,8 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
      * @param <T1> 1st argument
      * @return a {@code CheckedFunction1}
      */
-    static <T1, R> CheckedFunction1<T1, R> of(CheckedFunction1<T1, R> methodReference) {
-        return methodReference;
+    static <T1, R> CheckedFunction1<T1, R> of(CheckedFunction1<? super T1, ? extends R> methodReference) {
+        return methodReference::apply;
     }
 
     /**
@@ -79,8 +79,8 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    static <T1, R> Function1<T1, Option<R>> lift(CheckedFunction1<? super T1, R> partialFunction) {
-        return t1 -> Try.of(() -> partialFunction.apply(t1)).getOption();
+    static <T1, R> Function1<T1, Option<R>> lift(CheckedFunction1<? super T1, ? extends R> partialFunction) {
+        return t1 -> Try.of(() -> of(partialFunction).apply(t1)).getOption();
     }
 
     /**
@@ -92,7 +92,7 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <T1, R> Function1<T1, Try<R>> liftTry(CheckedFunction1<? super T1, R> partialFunction) {
+    static <T1, R> Function1<T1, Try<R>> liftTry(CheckedFunction1<? super T1, ? extends R> partialFunction) {
         return t1 -> Try.of(() -> partialFunction.apply(t1));
     }
 
@@ -169,13 +169,13 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
      * @return a function composed of this and recover
      * @throws NullPointerException if recover is null
      */
-    default Function1<T1, R> recover(Function<? super Throwable, ? extends Function<? super T1, R>> recover) {
+    default Function1<T1, R> recover(Function<? super Throwable, ? extends Function<? super T1, ? extends R>> recover) {
         Objects.requireNonNull(recover, "recover is null");
         return (t1) -> {
             try {
                 return this.apply(t1);
             } catch (Throwable throwable) {
-                final Function<? super T1, R> func = recover.apply(throwable);
+                final Function<? super T1, ? extends R> func = recover.apply(throwable);
                 Objects.requireNonNull(func, () -> "recover return null for " + throwable.getClass() + ": " + throwable.getMessage());
                 return func.apply(t1);
             }

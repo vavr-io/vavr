@@ -72,8 +72,8 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
      * @param <T4> 4th argument
      * @return a {@code Function4}
      */
-    static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> of(Function4<T1, T2, T3, T4, R> methodReference) {
-        return methodReference;
+    static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> of(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> methodReference) {
+        return methodReference::apply;
     }
 
     /**
@@ -88,8 +88,8 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, Option<R>> lift(Function4<? super T1, ? super T2, ? super T3, ? super T4, R> partialFunction) {
-        return (t1, t2, t3, t4) -> Try.of(() -> partialFunction.apply(t1, t2, t3, t4)).getOption();
+    static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, Option<R>> lift(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> partialFunction) {
+        return (t1, t2, t3, t4) -> Try.of(() -> of(partialFunction).apply(t1, t2, t3, t4)).getOption();
     }
 
     /**
@@ -104,7 +104,7 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, Try<R>> liftTry(Function4<? super T1, ? super T2, ? super T3, ? super T4, R> partialFunction) {
+    static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, Try<R>> liftTry(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> partialFunction) {
         return (t1, t2, t3, t4) -> Try.of(() -> partialFunction.apply(t1, t2, t3, t4));
     }
 

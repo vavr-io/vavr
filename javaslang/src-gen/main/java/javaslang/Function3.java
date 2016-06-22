@@ -70,8 +70,8 @@ public interface Function3<T1, T2, T3, R> extends λ<R> {
      * @param <T3> 3rd argument
      * @return a {@code Function3}
      */
-    static <T1, T2, T3, R> Function3<T1, T2, T3, R> of(Function3<T1, T2, T3, R> methodReference) {
-        return methodReference;
+    static <T1, T2, T3, R> Function3<T1, T2, T3, R> of(Function3<? super T1, ? super T2, ? super T3, ? extends R> methodReference) {
+        return methodReference::apply;
     }
 
     /**
@@ -85,8 +85,8 @@ public interface Function3<T1, T2, T3, R> extends λ<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    static <T1, T2, T3, R> Function3<T1, T2, T3, Option<R>> lift(Function3<? super T1, ? super T2, ? super T3, R> partialFunction) {
-        return (t1, t2, t3) -> Try.of(() -> partialFunction.apply(t1, t2, t3)).getOption();
+    static <T1, T2, T3, R> Function3<T1, T2, T3, Option<R>> lift(Function3<? super T1, ? super T2, ? super T3, ? extends R> partialFunction) {
+        return (t1, t2, t3) -> Try.of(() -> of(partialFunction).apply(t1, t2, t3)).getOption();
     }
 
     /**
@@ -100,7 +100,7 @@ public interface Function3<T1, T2, T3, R> extends λ<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <T1, T2, T3, R> Function3<T1, T2, T3, Try<R>> liftTry(Function3<? super T1, ? super T2, ? super T3, R> partialFunction) {
+    static <T1, T2, T3, R> Function3<T1, T2, T3, Try<R>> liftTry(Function3<? super T1, ? super T2, ? super T3, ? extends R> partialFunction) {
         return (t1, t2, t3) -> Try.of(() -> partialFunction.apply(t1, t2, t3));
     }
 
