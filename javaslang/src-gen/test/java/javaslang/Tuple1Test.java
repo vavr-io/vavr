@@ -76,6 +76,14 @@ public class Tuple1Test {
     }
 
     @Test
+    public void shouldApplyTuple() {
+        final Tuple1<Object> tuple = createTuple();
+        final Tuple0 actual = tuple.apply(o1 -> Tuple0.instance());
+        assertThat(actual).isEqualTo(Tuple0.instance());
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
     public void shouldTransformTuple() {
         final Tuple1<Object> tuple = createTuple();
         final Tuple0 actual = tuple.transform(o1 -> Tuple0.instance());

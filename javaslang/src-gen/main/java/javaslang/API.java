@@ -1102,7 +1102,7 @@ public final class API {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                             return Option.none();
                         } else {
-                            return unapply.apply(obj).transform(u1 -> ((Pattern<U1, ?>) p1).apply(u1).map(_1 -> (T1) u1));
+                            return unapply.apply(obj).apply(u1 -> ((Pattern<U1, ?>) p1).apply(u1).map(_1 -> (T1) u1));
                         }
                     }
                 };
@@ -1123,7 +1123,7 @@ public final class API {
                             return Option.none();
                         } else {
                             final Tuple2<U1, U2> unapplied = unapply.apply(obj);
-                            return unapplied.transform((u1, u2) ->
+                            return unapplied.apply((u1, u2) ->
                                     ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
                                     ((Pattern<U2, ?>) p2).apply(u2).map(_2 -> (Tuple2<T1, T2>) unapplied)
                             ));
@@ -1147,7 +1147,7 @@ public final class API {
                             return Option.none();
                         } else {
                             final Tuple3<U1, U2, U3> unapplied = unapply.apply(obj);
-                            return unapplied.transform((u1, u2, u3) ->
+                            return unapplied.apply((u1, u2, u3) ->
                                     ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
                                     ((Pattern<U2, ?>) p2).apply(u2).flatMap(_2 ->
                                     ((Pattern<U3, ?>) p3).apply(u3).map(_3 -> (Tuple3<T1, T2, T3>) unapplied)
@@ -1172,7 +1172,7 @@ public final class API {
                             return Option.none();
                         } else {
                             final Tuple4<U1, U2, U3, U4> unapplied = unapply.apply(obj);
-                            return unapplied.transform((u1, u2, u3, u4) ->
+                            return unapplied.apply((u1, u2, u3, u4) ->
                                     ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
                                     ((Pattern<U2, ?>) p2).apply(u2).flatMap(_2 ->
                                     ((Pattern<U3, ?>) p3).apply(u3).flatMap(_3 ->
@@ -1198,7 +1198,7 @@ public final class API {
                             return Option.none();
                         } else {
                             final Tuple5<U1, U2, U3, U4, U5> unapplied = unapply.apply(obj);
-                            return unapplied.transform((u1, u2, u3, u4, u5) ->
+                            return unapplied.apply((u1, u2, u3, u4, u5) ->
                                     ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
                                     ((Pattern<U2, ?>) p2).apply(u2).flatMap(_2 ->
                                     ((Pattern<U3, ?>) p3).apply(u3).flatMap(_3 ->
@@ -1225,7 +1225,7 @@ public final class API {
                             return Option.none();
                         } else {
                             final Tuple6<U1, U2, U3, U4, U5, U6> unapplied = unapply.apply(obj);
-                            return unapplied.transform((u1, u2, u3, u4, u5, u6) ->
+                            return unapplied.apply((u1, u2, u3, u4, u5, u6) ->
                                     ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
                                     ((Pattern<U2, ?>) p2).apply(u2).flatMap(_2 ->
                                     ((Pattern<U3, ?>) p3).apply(u3).flatMap(_3 ->
@@ -1253,7 +1253,7 @@ public final class API {
                             return Option.none();
                         } else {
                             final Tuple7<U1, U2, U3, U4, U5, U6, U7> unapplied = unapply.apply(obj);
-                            return unapplied.transform((u1, u2, u3, u4, u5, u6, u7) ->
+                            return unapplied.apply((u1, u2, u3, u4, u5, u6, u7) ->
                                     ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
                                     ((Pattern<U2, ?>) p2).apply(u2).flatMap(_2 ->
                                     ((Pattern<U3, ?>) p3).apply(u3).flatMap(_3 ->
@@ -1282,7 +1282,7 @@ public final class API {
                             return Option.none();
                         } else {
                             final Tuple8<U1, U2, U3, U4, U5, U6, U7, U8> unapplied = unapply.apply(obj);
-                            return unapplied.transform((u1, u2, u3, u4, u5, u6, u7, u8) ->
+                            return unapplied.apply((u1, u2, u3, u4, u5, u6, u7, u8) ->
                                     ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
                                     ((Pattern<U2, ?>) p2).apply(u2).flatMap(_2 ->
                                     ((Pattern<U3, ?>) p3).apply(u3).flatMap(_3 ->

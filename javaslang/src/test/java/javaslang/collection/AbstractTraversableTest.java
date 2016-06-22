@@ -2212,6 +2212,40 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         });
     }
 
+    // -- single
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldSingleFailEmpty() {
+        empty().single();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldSingleFailTwo() {
+        of(1, 2).single();
+    }
+
+    @Test
+    public void shouldSingleWork() {
+        assertThat(of(1).single()).isEqualTo(1);
+    }
+
+    // -- singleOption
+
+    @Test
+    public void shouldSingleOptionFailEmpty() {
+        assertThat(empty().singleOption()).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldSingleOptionFailTwo() {
+        assertThat(of(1, 2).singleOption()).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldSingleOptionWork() {
+        assertThat(of(1).singleOption()).isEqualTo(Option.of(1));
+    }
+
     @Test
     public void shouldTabulateTheSeq() {
         Function<Number, Integer> f = i -> i.intValue() * i.intValue();
