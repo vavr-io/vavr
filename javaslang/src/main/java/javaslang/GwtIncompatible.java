@@ -13,65 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.core.shared;
+package javaslang;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * A simple of a GwtIncompatible annotation.
- *
- * Any class, method or field with an annotation @GwtIncompatible (with any package prefix) is
- * ignored by the GWT compiler.
- *
- * Since only the name of the annotation matters, Java libraries may use their own copy of this
- * annotation class to avoid adding a compile-time dependency on GWT.
- *
- * For example:
- *
- * <pre><code>
- * class A {
- *
- *   int field;
- *
- *   &amp;GwtIncompatible("incompatible class")
- *   class Inner {
- *     ....
- *   }
- *
- *   &amp;GwtIncompatible("incompatible field")
- *   int field2 = methodThatisNotSupportedbyGwt();
- *
- *   void method1() { }
- *
- *   &amp;GwtIncompatible("incompatbile method")
- *   void method2() {}
- * }
- * </code></pre>
- *
- * is seen by the Gwt compiler as
- *
- * <pre><code>
- * class A {
- *
- *   int field;
- *
- *   void method1() { }
- *
- * }
- * </code>
- * </pre>
- *
- * Warning: this may have surprising effects when combined with method overloading or inheritance.
- */
 @Retention(RetentionPolicy.CLASS)
 @Target({
         ElementType.TYPE, ElementType.METHOD,
         ElementType.CONSTRUCTOR, ElementType.FIELD })
 @Documented
-public @interface GwtIncompatible {
+@interface GwtIncompatible {
     /**
      * An attribute that can be used to explain why the code is incompatible.
      * A GwtIncompatible annotation can have any number of attributes; attributes

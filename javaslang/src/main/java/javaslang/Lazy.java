@@ -5,7 +5,6 @@
  */
 package javaslang;
 
-import com.google.gwt.core.shared.GwtIncompatible;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;

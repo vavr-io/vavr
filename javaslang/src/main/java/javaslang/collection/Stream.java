@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import com.google.gwt.core.shared.GwtIncompatible;
 import javaslang.*;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Empty;

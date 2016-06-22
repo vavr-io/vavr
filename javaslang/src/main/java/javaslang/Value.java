@@ -5,7 +5,6 @@
  */
 package javaslang;
 
-import com.google.gwt.core.shared.GwtIncompatible;
 import javaslang.collection.*;
 import javaslang.collection.HashMap;
 import javaslang.collection.HashSet;
