@@ -471,7 +471,9 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
             return this;
         } else {
             final StringBuilder builder = new StringBuilder();
-            back.chars().forEach(c -> builder.append(mapper.apply((char) c)));
+            for (int i = 0; i < back.length(); i++) {
+                builder.append(mapper.apply(back.charAt(i)));
+            }
             return of(builder);
         }
     }
@@ -2249,6 +2251,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @see Pattern
      */
     @Deprecated(/* Use splitSeq instead, will be removed in 3.0.0 */)
+    @GwtIncompatible
     public CharSeq[] split(String regex, int limit) {
         return splitSeq(regex, limit).toJavaArray(CharSeq.class);
     }
@@ -2287,6 +2290,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @see Pattern
      */
     @Deprecated(/* Use splitSeq instead, will be removed in 3.0.0 */)
+    @GwtIncompatible
     public CharSeq[] split(String regex) {
         return splitSeq(regex, 0).toJavaArray(CharSeq.class);
     }

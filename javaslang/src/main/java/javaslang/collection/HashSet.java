@@ -301,6 +301,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
         return HashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    @GwtIncompatible
     public static HashSet<Double> rangeBy(double from, double toExclusive, double step) {
         return HashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
@@ -405,6 +406,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
         return HashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    @GwtIncompatible
     public static HashSet<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return HashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
@@ -906,6 +908,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
      *
      * @return A SerialiationProxy for this enclosing class.
      */
+    @GwtIncompatible("The Java serialization protocol is explicitly not supported")
     private Object writeReplace() {
         return new SerializationProxy<>(this.tree);
     }
@@ -918,6 +921,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
      * @param stream An object serialization stream.
      * @throws java.io.InvalidObjectException This method will throw with the message "Proxy required".
      */
+    @GwtIncompatible("The Java serialization protocol is explicitly not supported")
     private void readObject(ObjectInputStream stream) throws InvalidObjectException {
         throw new InvalidObjectException("Proxy required");
     }
@@ -930,6 +934,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
      */
     // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
     // classes. Also, it may not be compatible with circular object graphs.
+    @GwtIncompatible("The Java serialization protocol is explicitly not supported")
     private static final class SerializationProxy<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;

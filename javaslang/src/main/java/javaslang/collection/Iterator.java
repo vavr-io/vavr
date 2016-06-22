@@ -478,6 +478,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         return rangeBy((int) from, (int) toExclusive, step).map(i -> (char) i.shortValue());
     }
 
+    @GwtIncompatible("BigDecimalHelper is GwtIncompatible")
     static Iterator<Double> rangeBy(double from, double toExclusive, double step) {
         final BigDecimal fromDecimal = asDecimal(from), toDecimal = asDecimal(toExclusive), stepDecimal = asDecimal(step);
         return rangeBy(fromDecimal, toDecimal, stepDecimal).map(BigDecimal::doubleValue);
@@ -658,6 +659,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         return rangeClosedBy((int) from, (int) toInclusive, step).map(i -> (char) i.shortValue());
     }
 
+    @GwtIncompatible
     static Iterator<Double> rangeClosedBy(double from, double toInclusive, double step) {
         if (from == toInclusive) {
             return of(from);
@@ -1205,8 +1207,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return a list with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> Iterator<U> unfoldLeft(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends U>>> f) {
-        return Stream.ofAll(
+    static <T,U> Iterator<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
+        return Stream.<U>ofAll(
             unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(t -> Tuple.of(t._2, t._1)))))
             .reverse().iterator();
     }
@@ -1976,6 +1978,7 @@ interface IteratorModule {
     }
 
     final class BigDecimalHelper {
+        @GwtIncompatible("Math::nextDown is not implemented")
         private static final Lazy<BigDecimal> INFINITY_DISTANCE = Lazy.of(() -> {
             final BigDecimal two = BigDecimal.valueOf(2);
             final BigDecimal supremum = BigDecimal.valueOf(Math.nextDown(Double.POSITIVE_INFINITY));
@@ -2000,6 +2003,7 @@ interface IteratorModule {
         }
 
         /* parse infinite values also */
+        @GwtIncompatible("Math::nextUp is not implemented")
         static BigDecimal asDecimal(double number) {
             if (number == NEGATIVE_INFINITY) {
                 final BigDecimal result = BigDecimal.valueOf(Math.nextUp(NEGATIVE_INFINITY));

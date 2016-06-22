@@ -257,6 +257,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    @GwtIncompatible
     public static Array<Double> rangeBy(double from, double toExclusive, double step) {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
@@ -361,6 +362,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    @GwtIncompatible
     public static Array<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }

@@ -902,6 +902,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
      *
      * @return A SerialiationProxy for this enclosing class.
      */
+    @GwtIncompatible("The Java serialization protocol is explicitly not supported")
     private Object writeReplace() {
         return new SerializationProxy<>(this.map);
     }
@@ -914,6 +915,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
      * @param stream An object serialization stream.
      * @throws InvalidObjectException This method will throw with the message "Proxy required".
      */
+    @GwtIncompatible("The Java serialization protocol is explicitly not supported")
     private void readObject(ObjectInputStream stream) throws InvalidObjectException {
         throw new InvalidObjectException("Proxy required");
     }
@@ -926,6 +928,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
      */
     // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
     // classes. Also, it may not be compatible with circular object graphs.
+    @GwtIncompatible("The Java serialization protocol is explicitly not supported")
     private static final class SerializationProxy<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;

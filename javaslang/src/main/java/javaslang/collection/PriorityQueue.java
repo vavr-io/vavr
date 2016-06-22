@@ -212,6 +212,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
      * @return A {@link PriorityQueue} consisting of elements {@code function(0),function(1), ..., function(size - 1)}
      * @throws NullPointerException if {@code function} is null
      */
+    @GwtIncompatible
     static <T> PriorityQueue<T> tabulate(int size, Function<? super Integer, ? extends T> function) {
         Objects.requireNonNull(function, "function is null");
         final Comparator<? super T> comparator = naturalComparator();
@@ -227,6 +228,8 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
      * @return A {@link PriorityQueue} of size {@code size}, where each element contains the result supplied by {@code supplier}.
      * @throws NullPointerException if {@code supplier} is null
      */
+    @SuppressWarnings("unchecked")
+    @GwtIncompatible
     static <T> PriorityQueue<T> fill(int size, Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         final Comparator<? super T> comparator = naturalComparator();

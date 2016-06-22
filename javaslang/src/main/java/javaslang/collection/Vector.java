@@ -274,6 +274,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         return Vector.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    @GwtIncompatible
     public static Vector<Double> rangeBy(double from, double toExclusive, double step) {
         return Vector.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
@@ -378,6 +379,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         return Vector.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    @GwtIncompatible
     public static Vector<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return Vector.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }

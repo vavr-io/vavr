@@ -659,7 +659,7 @@ public interface Tree<T> extends Traversable<T> {
     default <U> Tree<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
-            return Iterator.ofAll(that).map(elem -> Tuple.of(thisElem, elem)).toTree();
+            return Iterator.<U>ofAll(that).map(elem -> Tuple.of(thisElem, elem)).toTree();
         } else {
             final java.util.Iterator<? extends U> thatIter = that.iterator();
             final Tree<Tuple2<T, U>> tree = ZipAll.apply((Node<T>) this, thatIter, thatElem);
@@ -810,6 +810,7 @@ public interface Tree<T> extends Traversable<T> {
          *
          * @return A SerialiationProxy for this enclosing class.
          */
+        @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private Object writeReplace() {
             return new SerializationProxy<>(this);
         }
@@ -822,6 +823,7 @@ public interface Tree<T> extends Traversable<T> {
          * @param stream An object serialization stream.
          * @throws java.io.InvalidObjectException This method will throw with the message "Proxy required".
          */
+        @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private void readObject(ObjectInputStream stream) throws InvalidObjectException {
             throw new InvalidObjectException("Proxy required");
         }
@@ -834,6 +836,7 @@ public interface Tree<T> extends Traversable<T> {
          */
         // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
         // classes. Also, it may not be compatible with circular object graphs.
+        @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private static final class SerializationProxy<T> implements Serializable {
 
             private static final long serialVersionUID = 1L;
