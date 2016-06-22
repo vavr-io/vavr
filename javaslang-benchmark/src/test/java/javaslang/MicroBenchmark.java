@@ -13,11 +13,10 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.Throughput)
 public class MicroBenchmark {
 
-
     @Test
     public void launchBenchmark() throws Exception {
 
-        Options opt = new OptionsBuilder()
+        final Options opt = new OptionsBuilder()
                 // Specify which benchmarks to run.
                 // You can be more specific if you'd like to run only one benchmark per test.
                 .include(this.getClass().getName() + ".*")
@@ -155,7 +154,6 @@ public class MicroBenchmark {
     public Object slangStreamUpdate(BenchmarkState state) {
         return state.slangStream.update(state.containerSize / 2, 1);
     }
-
 
     @Benchmark
     @Group("prepend")

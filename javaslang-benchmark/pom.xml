@@ -30,7 +30,13 @@
         <dependency>
             <groupId>org.scalaz</groupId>
             <artifactId>scalaz-core_2.11</artifactId>
-            <version>7.3.0-M1</version>
+            <version>7.3.0-M3</version>
+            <!--contains scala-library 2.11.8-->
+        </dependency>
+        <dependency>
+            <groupId>org.clojure</groupId>
+            <artifactId>clojure</artifactId>
+            <version>1.9.0-alpha7</version>
         </dependency>
         <dependency>
             <groupId>org.pcollections</groupId>
