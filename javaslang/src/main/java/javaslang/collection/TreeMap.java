@@ -97,7 +97,7 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
      * @return the given {@code treeMap} instance as narrowed type {@code TreeMap<K, V>}.
      */
     @SuppressWarnings("unchecked")
-    static <K, V> TreeMap<K, V> narrow(TreeMap<? extends K, ? extends V> treeMap) {
+    public static <K, V> TreeMap<K, V> narrow(TreeMap<? extends K, ? extends V> treeMap) {
         return (TreeMap<K, V>) treeMap;
     }
 
@@ -459,7 +459,6 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
     public SortedSet<K> keySet() {
         return TreeSet.ofAll(keyComparator(), iterator().map(Tuple2::_1));
     }
-
 
     @Override
     public <K2, V2> TreeMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {

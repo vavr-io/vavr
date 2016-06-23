@@ -7,25 +7,18 @@ package javaslang;
 
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
-import javaslang.collection.Seq;
+import javaslang.collection.*;
 import javaslang.control.Option;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.function.*;
 
 /**
  * Represents a lazy evaluated value. Compared to a Supplier, Lazy is memoizing, i.e. it evaluates only once and
  * therefore is referential transparent.
- *
+ * <p>
  * <pre>
  * <code>
  * final Lazy&lt;Double&gt; l = Lazy.of(Math::random);
@@ -35,9 +28,9 @@ import java.util.function.Supplier;
  * l.get();         // = 0.123 (memoized)
  * </code>
  * </pre>
- *
+ * <p>
  * Since 2.0.0 you may also create a <em>real</em> lazy value (works only with interfaces):
- *
+ * <p>
  * <pre><code>final CharSequence chars = Lazy.val(() -&gt; "Yay!", CharSequence.class);</code></pre>
  *
  * @author Daniel Dietrich
@@ -68,7 +61,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      * @return the given {@code lazy} instance as narrowed type {@code Lazy<T>}.
      */
     @SuppressWarnings("unchecked")
-    static <T> Lazy<T> narrow(Lazy<? extends T> lazy) {
+    public static <T> Lazy<T> narrow(Lazy<? extends T> lazy) {
         return (Lazy<T>) lazy;
     }
 
@@ -126,7 +119,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     public Option<T> filter(Predicate<? super T> predicate) {
-        T v = get();
+        final T v = get();
         return predicate.test(v) ? Option.some(v) : Option.none();
     }
 

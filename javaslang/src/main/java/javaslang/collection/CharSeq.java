@@ -2340,12 +2340,12 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @FunctionalInterface
-    interface CharUnaryOperator {
+    public interface CharUnaryOperator {
         char apply(char c);
     }
 
     @FunctionalInterface
-    interface CharFunction<R> {
+    public interface CharFunction<R> {
         R apply(char c);
     }
 }

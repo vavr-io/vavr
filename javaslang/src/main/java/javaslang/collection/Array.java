@@ -1000,13 +1000,13 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
                 new java.util.ArrayList<>(), (c, u) -> {
                     c.add(u);
                     return c;
-                }, list -> Array.<U> wrap(list.toArray()));
+                }, list -> Array.wrap(list.toArray()));
     }
 
     @Override
     public <U> Array<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, list -> Array.<U> wrap(list.toJavaArray()));
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, list -> Array.wrap(list.toJavaArray()));
     }
 
     @Override
