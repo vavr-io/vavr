@@ -580,7 +580,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return a list with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> List<U> unfoldRight(T seed, Function<? super T,Option<Tuple2<? extends U, ? extends T>>> f) {
+    static <T, U> List<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toList();
     }
 
@@ -607,7 +607,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return a list with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> List<U> unfoldLeft(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends U>>> f) {
+    static <T, U> List<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toList();
     }
 
@@ -634,7 +634,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @return a list with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T> List<T> unfold(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends T>>> f) {
+    static <T> List<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toList();
     }
 
@@ -646,7 +646,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default List<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return List.<T>ofAll(elements).prependAll(this);
+        return List.<T> ofAll(elements).prependAll(this);
     }
 
     @Override

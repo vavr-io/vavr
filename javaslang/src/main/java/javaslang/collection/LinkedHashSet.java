@@ -154,7 +154,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
      * @param <T>        Component type of the Stream.
      * @return A LinkedHashSet containing the given elements in the same order.
      */
-    static <T> LinkedHashSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+    public static <T> LinkedHashSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
         Objects.requireNonNull(javaStream, "javaStream is null");
         return ofAll(Iterator.ofAll(javaStream.iterator()));
     }

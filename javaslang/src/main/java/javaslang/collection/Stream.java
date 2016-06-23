@@ -6,8 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.collection.Stream.Cons;
-import javaslang.collection.Stream.Empty;
+import javaslang.collection.Stream.*;
 import javaslang.collection.StreamModule.*;
 import javaslang.control.Option;
 
@@ -48,9 +47,9 @@ import java.util.stream.Collector;
  * Stream.iterate(Object, Function)// e.g. Stream.iterate(1, i -&gt; i * 2);
  * </code>
  * </pre>
- *
+ * <p>
  * Factory method applications:
- *
+ * <p>
  * <pre>
  * <code>
  * Stream&lt;Integer&gt;       s1 = Stream.of(1);
@@ -67,9 +66,9 @@ import java.util.stream.Collector;
  * Stream&lt;Integer[]&gt;     s7 = Stream.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
  * </code>
  * </pre>
- *
+ * <p>
  * Example: Generating prime numbers
- *
+ * <p>
  * <pre>
  * <code>
  * // = Stream(2L, 3L, 5L, 7L, ...)
@@ -86,7 +85,7 @@ import java.util.stream.Collector;
  * }
  * </code>
  * </pre>
- *
+ * <p>
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 34 ff.). Cambridge, 2003.
  *
  * @param <T> component type of this Stream
@@ -245,7 +244,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
     /**
      * Creates a Stream of the given elements.
-     *
+     * <p>
      * <pre><code>  Stream.of(1, 2, 3, 4)
      * = Nil.instance().prepend(4).prepend(3).prepend(2).prepend(1)
      * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))</code></pre>
@@ -651,7 +650,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * @return a Stream with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> Stream<U> unfoldRight(T seed, Function<? super T,Option<Tuple2<? extends U, ? extends T>>> f) {
+    static <T, U> Stream<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toStream();
     }
 
@@ -678,7 +677,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * @return a Stream with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> Stream<U> unfoldLeft(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends U>>> f) {
+    static <T, U> Stream<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toStream();
     }
 
@@ -705,7 +704,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * @return a Stream with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T> Stream<T> unfold(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends T>>> f) {
+    static <T> Stream<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toStream();
     }
 
@@ -1007,7 +1006,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
         } else if (index == 0) {
-            return isEmpty() ? Stream.ofAll(elements) : Stream.<T>ofAll(elements).appendAll(this);
+            return isEmpty() ? Stream.ofAll(elements) : Stream.<T> ofAll(elements).appendAll(this);
         } else if (isEmpty()) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on Nil");
         } else {
@@ -1133,7 +1132,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     @Override
     default Stream<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.<T>ofAll(elements).appendAll(this);
+        return Stream.<T> ofAll(elements).appendAll(this);
     }
 
     @Override
@@ -1754,15 +1753,15 @@ interface StreamModule {
 
         @Override
         public Stream<T> tail() {
-            Stream<T> t = tail.get();
+            final Stream<T> t = tail.get();
             if (t.isEmpty()) {
                 return Stream.ofAll(queue);
             } else {
                 if (t instanceof ConsImpl) {
-                    ConsImpl<T> c = (ConsImpl<T>) t;
+                    final ConsImpl<T> c = (ConsImpl<T>) t;
                     return new AppendElements<>(c.head(), queue, c.tail);
                 } else {
-                    AppendElements<T> a = (AppendElements<T>) t;
+                    final AppendElements<T> a = (AppendElements<T>) t;
                     return new AppendElements<>(a.head(), a.queue.appendAll(queue), a.tail);
                 }
             }

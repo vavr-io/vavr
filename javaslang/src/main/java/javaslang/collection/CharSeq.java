@@ -238,7 +238,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return a CharSeq with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T> CharSeq unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends Character, ? extends T>>> f) {
+    public static <T> CharSeq unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends Character, ? extends T>>> f) {
         return CharSeq.ofAll(Iterator.unfoldRight(seed, f));
     }
 
@@ -265,7 +265,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return a CharSeq with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T> CharSeq unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends Character>>> f) {
+    public static <T> CharSeq unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends Character>>> f) {
         return CharSeq.ofAll(Iterator.unfoldLeft(seed, f));
     }
 
@@ -292,7 +292,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return a CharSeq with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static CharSeq unfold(Character seed, Function<? super Character, Option<Tuple2<? extends Character, ? extends Character>>> f) {
+    public static CharSeq unfold(Character seed, Function<? super Character, Option<Tuple2<? extends Character, ? extends Character>>> f) {
         return CharSeq.ofAll(Iterator.unfold(seed, f));
     }
 
@@ -1839,7 +1839,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @param fromIndex the index to start the search from.
      * @return {@code Some(index)} or {@code None} if not found.
      */
-    Option<Integer> lastIndexOfOption(int ch, int fromIndex) {
+    public Option<Integer> lastIndexOfOption(int ch, int fromIndex) {
         return Collections.indexOption(lastIndexOf(ch, fromIndex));
     }
 
@@ -1867,7 +1867,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @param str the substring to search for.
      * @return {@code Some(index)} or {@code None} if not found.
      */
-    Option<Integer> indexOfOption(CharSeq str) {
+    public Option<Integer> indexOfOption(CharSeq str) {
         return Collections.indexOption(indexOf(str));
     }
 
@@ -1899,7 +1899,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @param fromIndex the index from which to start the search.
      * @return {@code Some(index)} or {@code None} if not found.
      */
-    Option<Integer> indexOfOption(CharSeq str, int fromIndex) {
+    public Option<Integer> indexOfOption(CharSeq str, int fromIndex) {
         return Collections.indexOption(indexOf(str, fromIndex));
     }
 
@@ -1928,7 +1928,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @param str the substring to search for.
      * @return {@code Some(index)} or {@code None} if not found.
      */
-    Option<Integer> lastIndexOfOption(CharSeq str) {
+    public Option<Integer> lastIndexOfOption(CharSeq str) {
         return Collections.indexOption(lastIndexOf(str));
     }
 
@@ -1960,7 +1960,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @param fromIndex the index to start the search from.
      * @return {@code Some(index)} or {@code None} if not found.
      */
-    Option<Integer> lastIndexOfOption(CharSeq str, int fromIndex) {
+    public Option<Integer> lastIndexOfOption(CharSeq str, int fromIndex) {
         return Collections.indexOption(lastIndexOf(str, fromIndex));
     }
 
@@ -2500,12 +2500,12 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @FunctionalInterface
-    interface CharUnaryOperator {
+    public interface CharUnaryOperator {
         char apply(char c);
     }
 
     @FunctionalInterface
-    interface CharFunction<R> {
+    public interface CharFunction<R> {
         R apply(char c);
     }
 }

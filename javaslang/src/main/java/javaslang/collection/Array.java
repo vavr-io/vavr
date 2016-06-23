@@ -127,7 +127,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @param <T>        Component type of the Stream.
      * @return A Array containing the given elements in the same order.
      */
-    static <T> Array<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+    public static <T> Array<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
         Objects.requireNonNull(javaStream, "javaStream is null");
         return wrap(javaStream.toArray());
     }
@@ -482,7 +482,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @return an Array with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T, U> Array<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
+    public static <T, U> Array<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toArray();
     }
 
@@ -509,7 +509,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @return an Array with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T, U> Array<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
+    public static <T, U> Array<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toArray();
     }
 
@@ -536,7 +536,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @return an Array with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T> Array<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
+    public static <T> Array<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toArray();
     }
 
@@ -1052,13 +1052,13 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
                 new java.util.ArrayList<>(), (c, u) -> {
                     c.add(u);
                     return c;
-                }, list -> Array.<U> wrap(list.toArray()));
+                }, list -> Array.wrap(list.toArray()));
     }
 
     @Override
     public <U> Array<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, list -> Array.<U> wrap(list.toJavaArray()));
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, list -> Array.wrap(list.toJavaArray()));
     }
 
     @Override
