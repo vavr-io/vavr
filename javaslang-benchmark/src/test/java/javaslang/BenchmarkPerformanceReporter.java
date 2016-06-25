@@ -301,8 +301,8 @@ public class BenchmarkPerformanceReporter {
                 return;
             }
 
-            printTargetInNumerator();
             printTargetInDenominator();
+            printTargetInNumerator();
 
             System.out.println("\n");
         }
