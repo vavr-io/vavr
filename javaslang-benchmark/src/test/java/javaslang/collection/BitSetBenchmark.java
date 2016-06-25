@@ -1,13 +1,26 @@
-package javaslang.benchmark.collection;
+package javaslang.collection;
 
-import javaslang.benchmark.JmhRunner;
+import javaslang.JmhRunner;
+import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
+import scala.collection.JavaConversions;
 
-import static javaslang.benchmark.JmhRunner.*;
+import static javaslang.JmhRunner.*;
+import static scala.collection.JavaConversions.asJavaCollection;
 
 public class BitSetBenchmark {
+    static final Array<Class<?>> CLASSES = Array.of(
+            AddAll.class,
+            Iterate.class
+    );
+
+    @Test
+    public void testAsserts() {
+        JmhRunner.runDebug(CLASSES);
+    }
+
     public static void main(String... args) {
-        JmhRunner.runQuick(BitSetBenchmark.class);
+        JmhRunner.runNormal(CLASSES);
     }
 
     @State(Scope.Benchmark)
@@ -15,78 +28,78 @@ public class BitSetBenchmark {
         @Param({ "10", "100", "1000" })
         public int CONTAINER_SIZE;
 
-        public Integer[] ELEMENTS;
-        public int[] PRIMITIVES;
-        public int SET_SIZE;
-        public int EXPECTED_AGGREGATE;
+        int EXPECTED_AGGREGATE;
+        int[] ELEMENTS;
+        TreeSet<Integer> DISTINCT;
+
+        scala.collection.immutable.BitSet scalaPersistent = scala.collection.immutable.BitSet$.MODULE$.empty();
+        javaslang.collection.Set<Integer> slangPersistent = javaslang.collection.BitSet.empty();
 
         @Setup
+        @SuppressWarnings("RedundantCast")
         public void setup() {
-            ELEMENTS = getRandomValues(CONTAINER_SIZE, 0, true);
-            SET_SIZE = javaslang.collection.Stream.of(ELEMENTS).distinct().size();
-            EXPECTED_AGGREGATE = javaslang.collection.Stream.of(ELEMENTS).distinct().fold(0, (i, j) -> i ^ j);
-            PRIMITIVES = new int[ELEMENTS.length];
-            for (int i = 0; i < ELEMENTS.length; i++) {
-                PRIMITIVES[i] = ELEMENTS[i];
+            final Integer[] values = getRandomValues(CONTAINER_SIZE, 0, true);
+            ELEMENTS = new int[CONTAINER_SIZE];
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
+                ELEMENTS[i] = values[i];
             }
+
+            DISTINCT = TreeSet.ofAll(ELEMENTS);
+            EXPECTED_AGGREGATE = DISTINCT.reduce(JmhRunner::xor);
+
+            require(scalaPersistent::isEmpty,
+                    slangPersistent::isEmpty);
+
+            scalaPersistent = (scala.collection.immutable.BitSet) scala.collection.immutable.BitSet$.MODULE$.apply(scala.collection.JavaConversions.asScalaBuffer(DISTINCT.toJavaList())); // ouch...
+            slangPersistent = javaslang.collection.BitSet.ofAll(ELEMENTS);
+
+            require(() -> Collections.equals(slangPersistent, DISTINCT),
+                    () -> Collections.equals(asJavaCollection(scalaPersistent), DISTINCT));
         }
     }
 
     public static class AddAll extends Base {
-
         @Benchmark
-        public void scala_persistent() {
+        public Object scala_persistent() {
             scala.collection.immutable.BitSet values = new scala.collection.immutable.BitSet.BitSet1(0L);
-            for (int element : PRIMITIVES) {
+            for (int element : ELEMENTS) {
                 values = values.$plus(element);
             }
-            assertEquals(values.size(), SET_SIZE);
+            require(values, v -> v.equals(scalaPersistent));
+            return values;
         }
 
         @Benchmark
-        public void slang_persistent() {
+        public Object slang_persistent() {
             javaslang.collection.Set<Integer> values = javaslang.collection.BitSet.empty();
             for (Integer element : ELEMENTS) {
                 values = values.add(element);
             }
-            assertEquals(values.size(), SET_SIZE);
+            require(values, v -> v.equals(slangPersistent));
+            return values;
         }
     }
 
+    @SuppressWarnings("ForLoopReplaceableByForEach")
     public static class Iterate extends Base {
-
-        scala.collection.immutable.BitSet scalaPersistent = new scala.collection.immutable.BitSet.BitSet1(0L);
-        javaslang.collection.Set<Integer> slangPersistent = javaslang.collection.BitSet.empty();
-
-        @Setup
-        public void initializeImmutable(Base state) {
-            for (Integer element : state.ELEMENTS) {
-                slangPersistent = slangPersistent.add(element);
-            }
-            for (int element : state.ELEMENTS) {
-                scalaPersistent = scalaPersistent.$plus(element);
-            }
-            assertEquals(scalaPersistent.size(), state.SET_SIZE);
-            assertEquals(slangPersistent.size(), state.SET_SIZE);
-        }
-
         @Benchmark
-        public void scala_persistent() {
+        public Object scala_persistent() {
             int aggregate = 0;
             for (final scala.collection.Iterator<Object> iterator = scalaPersistent.iterator(); iterator.hasNext(); ) {
-                aggregate ^= (int) iterator.next();
+                aggregate ^= (Integer) iterator.next();
             }
-            assertEquals(aggregate, EXPECTED_AGGREGATE);
+            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            return aggregate;
         }
 
         @Benchmark
-        @SuppressWarnings("ForLoopReplaceableByForEach")
-        public void slang_persistent() {
+        public Object slang_persistent() {
             int aggregate = 0;
             for (final javaslang.collection.Iterator<Integer> iterator = slangPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
-            assertEquals(aggregate, EXPECTED_AGGREGATE);
+            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            return aggregate;
         }
     }
 }
