@@ -3,53 +3,51 @@
  *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang, http://javaslang.io
  * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
  */
-package javaslang.benchmark;
+package javaslang;
 
-import javaslang.*;
 import javaslang.collection.*;
-import javaslang.collection.List;
-import javaslang.collection.Map;
-import javaslang.collection.Vector;
 import javaslang.control.Option;
 import org.openjdk.jmh.infra.BenchmarkParams;
 import org.openjdk.jmh.results.*;
 import org.openjdk.jmh.util.ListStatistics;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.Comparator;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class BenchmarkPerformanceReporter {
+    private static final Comparator<String> TO_STRING_COMPARATOR = Comparator.comparing(String::length).thenComparing(Function.identity());
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,##0.000");
     private static final DecimalFormat PERFORMANCE_FORMAT = new DecimalFormat("#0.00");
     private static final DecimalFormat PCT_FORMAT = new DecimalFormat("0.00%");
-    private final Class<?> benchmarkClass;
-    private final Collection<RunResult> runResults;
+    private final Array<String> benchmarkClasses;
+    private final Array<RunResult> runResults;
     private final String targetImplementation;
     private final double outlierLowPct;
     private final double outlierHighPct;
 
-    public static BenchmarkPerformanceReporter of(Class<?> benchmarkClass, Collection<RunResult> runResults) {
-        return of(benchmarkClass, runResults, "slang", 0.3, 0.1);
+    public static BenchmarkPerformanceReporter of(Array<String> benchmarkClasses, Array<RunResult> runResults) {
+        return of(benchmarkClasses, runResults, "slang", 0.3, 0.1);
     }
 
-    public static BenchmarkPerformanceReporter of(Class<?> benchmarkClass, Collection<RunResult> runResults, String targetImplementation, double outlierLowPct, double outlierHighPct) {
-        return new BenchmarkPerformanceReporter(benchmarkClass, runResults, targetImplementation, outlierLowPct, outlierHighPct);
+    public static BenchmarkPerformanceReporter of(Array<String> benchmarkClasses, Array<RunResult> runResults, String targetImplementation, double outlierLowPct, double outlierHighPct) {
+        return new BenchmarkPerformanceReporter(benchmarkClasses, runResults, targetImplementation, outlierLowPct, outlierHighPct);
     }
 
     /**
      * This class prints performance reports about the execution of individual tests, comparing their performance
      * against other implementations as required.
      *
-     * @param benchmarkClass       The benchmarked source class
+     * @param benchmarkClasses     The benchmarked source class names
      * @param runResults           The results
      * @param targetImplementation The target implementation we want to focus on in the Ratio report.
      *                             It is case insensitive. If we enter "slang", it will match "JavaSlang" and "java_slang".
      * @param outlierLowPct        The percentage of samples on the lower end that will be ignored from the statistics
      * @param outlierHighPct       The percentage of samples on the higher end that will be ignored from the statistics
      */
-    private BenchmarkPerformanceReporter(Class<?> benchmarkClass, Collection<RunResult> runResults, String targetImplementation, double outlierLowPct, double outlierHighPct) {
-        this.benchmarkClass = benchmarkClass;
+    private BenchmarkPerformanceReporter(Array<String> benchmarkClasses, Array<RunResult> runResults, String targetImplementation, double outlierLowPct, double outlierHighPct) {
+        this.benchmarkClasses = benchmarkClasses;
         this.runResults = runResults;
         this.targetImplementation = targetImplementation;
         this.outlierLowPct = outlierLowPct;
@@ -69,18 +67,18 @@ public class BenchmarkPerformanceReporter {
      * <br>
      * For each test it prints out:
      * <ul>
-     *     <li>Group</li>
-     *     <li>Test Name</li>
-     *     <li>Implementation - tests can have different implementations, e.g. Scala, Java, JavaSlang</li>
-     *     <li>Parameters</li>
-     *     <li>Score</li>
-     *     <li>Error - 99% confidence interval expressed in % of the Score</li>
-     *     <li>Unit - units for the Score</li>
-     *     <li>Alternative implementations - compares performance of this test against alternative implementations</li>
+     * <li>Group</li>
+     * <li>Test Name</li>
+     * <li>Implementation - tests can have different implementations, e.g. Scala, Java, JavaSlang</li>
+     * <li>Parameters</li>
+     * <li>Score</li>
+     * <li>Error - 99% confidence interval expressed in % of the Score</li>
+     * <li>Unit - units for the Score</li>
+     * <li>Alternative implementations - compares performance of this test against alternative implementations</li>
      * </ul>
      */
     public void printDetailedPerformanceReport() {
-        final List<TestExecution> results = mapToTestExecutions(runResults);
+        final Array<TestExecution> results = mapToTestExecutions(runResults);
         if (results.isEmpty()) {
             return;
         }
@@ -93,26 +91,31 @@ public class BenchmarkPerformanceReporter {
      * <br>
      * For each test it prints out:
      * <ul>
-     *     <li>Group</li>
-     *     <li>Test Name</li>
-     *     <li>Ratio - A/B means implementation A is compared against base implementation B</li>
-     *     <li>Results - How many times faster implementation A is compared with B</li>
+     * <li>Group</li>
+     * <li>Test Name</li>
+     * <li>Ratio - A/B means implementation A is compared against base implementation B</li>
+     * <li>Results - How many times faster implementation A is compared with B</li>
      * </ul>
      */
     public void printRatioPerformanceReport() {
-        final List<TestExecution> results = mapToTestExecutions(runResults);
+        final Array<TestExecution> results = mapToTestExecutions(runResults);
         if (results.isEmpty()) {
             return;
         }
         new RatioPerformanceReport(results, targetImplementation).print();
     }
 
-    private List<TestExecution> mapToTestExecutions(Collection<RunResult> runResults) {
-        List<TestExecution> executions = List.empty();
+    private Array<TestExecution> mapToTestExecutions(Array<RunResult> runResults) {
+        Array<TestExecution> executions = Array.empty();
         for (RunResult runResult : runResults) {
-            executions = executions.push(TestExecution.of(runResult.getAggregatedResult(), outlierLowPct, outlierHighPct));
+            executions = executions.append(TestExecution.of(runResult.getAggregatedResult(), outlierLowPct, outlierHighPct));
         }
-        return executions;
+        return sort(executions);
+    }
+
+    private Array<TestExecution> sort(Array<TestExecution> results) {
+        final Comparator<TestExecution> comparator = Comparator.comparing(t -> benchmarkClasses.indexWhere(c -> c.endsWith(t.getOperation())));
+        return results.sorted(comparator);
     }
 
     private String padLeft(String str, int size) {
@@ -124,8 +127,8 @@ public class BenchmarkPerformanceReporter {
     }
 
     private class DetailedPerformanceReport {
-        private final List<TestExecution> results;
-        private final Map<String, List<TestExecution>> resultsByKey;
+        private final Array<TestExecution> results;
+        private final Map<String, Array<TestExecution>> resultsByKey;
         private final int paramKeySize;
         private final int groupSize;
         private final int nameSize;
@@ -134,9 +137,9 @@ public class BenchmarkPerformanceReporter {
         private final int scoreSize;
         private final int errorSize;
         private final int unitSize;
-        private final List<String> alternativeImplementations;
+        private final Array<String> alternativeImplementations;
 
-        public DetailedPerformanceReport(List<TestExecution> results) {
+        public DetailedPerformanceReport(Array<TestExecution> results) {
             this.results = results;
             resultsByKey = results.groupBy(TestExecution::getTestNameParamKey);
             paramKeySize = Math.max(results.map(r -> r.getParamKey().length()).max().get(), 10);
@@ -205,14 +208,14 @@ public class BenchmarkPerformanceReporter {
             return Math.max(5, name.length());
         }
 
-        private String calculatePerformanceStr(TestExecution result, List<String> alternativeImplementations, Map<String, List<TestExecution>> resultsByKey) {
+        private String calculatePerformanceStr(TestExecution result, Array<String> alternativeImplementations, Map<String, Array<TestExecution>> resultsByKey) {
             final String aggregateKey = result.getTestNameParamKey();
-            final List<TestExecution> alternativeResults = resultsByKey.get(aggregateKey).getOrElse(List::empty);
+            final Array<TestExecution> alternativeResults = resultsByKey.get(aggregateKey).getOrElse(Array::empty);
 
             return alternativeImplementations.map(altImpl -> Tuple.of(altImpl, alternativeResults.find(r -> altImpl.equals(r.getImplementation()))))
-                    .map(alt -> Tuple.of(alt._1, calculateRatioStr(result, alt._2)))
-                    .map(alt -> padRight(alt._2, altImplColSize(alt._1)))
-                    .mkString("  ");
+                                             .map(alt -> Tuple.of(alt._1, calculateRatioStr(result, alt._2)))
+                                             .map(alt -> padRight(alt._2, altImplColSize(alt._1)))
+                                             .mkString("  ");
         }
 
         private String calculateRatioStr(TestExecution baseResult, Option<TestExecution> alternativeResult) {
@@ -229,25 +232,25 @@ public class BenchmarkPerformanceReporter {
     }
 
     private class RatioPerformanceReport {
-        private final List<Tuple2<String, List<TestExecution>>> resultsByKey;
+        private final Map<String, Array<TestExecution>> resultsByKey;
         private final int groupSize;
         private final int nameSize;
-        private final List<String> paramKeys;
+        private final Array<String> paramKeys;
         private final int paramKeySize;
-        private final List<String> alternativeImplementations;
+        private final Array<String> alternativeImplementations;
         private final int alternativeImplSize;
         private final int ratioSize;
-        private final List<String> targetImplementations;
+        private final Array<String> targetImplementations;
         private final String targetImplementation;
 
-        public RatioPerformanceReport(List<TestExecution> results, String targetImplementation) {
+        public RatioPerformanceReport(Array<TestExecution> results, String targetImplementation) {
             this.targetImplementation = targetImplementation;
 
-            resultsByKey = groupBySorted(results);
+            resultsByKey = results.groupBy(TestExecution::getTestNameKey);
             groupSize = Math.max(results.map(r -> r.getTarget().length()).max().get(), 10);
             nameSize = Math.max(results.map(r -> r.getOperation().length()).max().get(), 9);
 
-            paramKeys = results.map(TestExecution::getParamKey).distinct().sorted();
+            paramKeys = results.map(TestExecution::getParamKey).distinct().sorted(TO_STRING_COMPARATOR);
             paramKeySize = Math.max(results.map(r -> r.getParamKey().length()).max().get(), 8);
 
             alternativeImplementations = results.map(TestExecution::getImplementation).distinct().sorted();
@@ -256,13 +259,6 @@ public class BenchmarkPerformanceReporter {
 
             final int targetImplSize = Math.max(targetImplementations.map(String::length).max().get(), 10);
             ratioSize = Math.max(targetImplSize + 1 + alternativeImplSize, 10);
-        }
-
-        private List<Tuple2<String, List<TestExecution>>> groupBySorted(List<TestExecution> results) {
-            final Array<String> classNames = Array.of(benchmarkClass.getClasses()).reverse().map(Class::getSimpleName);
-            final Comparator<Tuple2<String, List<TestExecution>>> comparator = Comparator.comparing(t -> classNames.indexOf(t._2.head().getOperation()));
-            final Map<String, List<TestExecution>> groups = results.groupBy(TestExecution::getTestNameKey);
-            return groups.toList().sorted(comparator);
         }
 
         public void print() {
@@ -316,7 +312,7 @@ public class BenchmarkPerformanceReporter {
             System.out.println(String.format("\nRatios %s / <alternative_impl>", targetImplementation));
             System.out.println(ratioHeaderNumerator());
             for (String targetImpl : targetImplementations) {
-                for (Tuple2<String, List<TestExecution>> execution : resultsByKey) {
+                for (Tuple2<String, Array<TestExecution>> execution : resultsByKey) {
                     printRatioForBaseType(targetImpl, execution._2,
                             (baseImpl, alternativeImpl) -> padLeft(String.format("%s/%s", baseImpl, alternativeImpl), ratioSize),
                             (baseExec, alternativeExec) -> calculateRatios(baseExec, alternativeExec));
@@ -328,7 +324,7 @@ public class BenchmarkPerformanceReporter {
             System.out.println(String.format("\nRatios <alternative_impl> / %s", targetImplementation));
             System.out.println(ratioHeaderDenominator());
             for (String targetImpl : targetImplementations) {
-                for (Tuple2<String, List<TestExecution>> execution : resultsByKey) {
+                for (Tuple2<String, Array<TestExecution>> execution : resultsByKey) {
                     printRatioForBaseType(targetImpl, execution._2,
                             (baseImpl, alternativeImpl) -> padRight(String.format("%s/%s", alternativeImpl, baseImpl), ratioSize),
                             (baseExec, alternativeExec) -> calculateRatios(alternativeExec, baseExec));
@@ -336,10 +332,10 @@ public class BenchmarkPerformanceReporter {
             }
         }
 
-        private void printRatioForBaseType(String baseType, List<TestExecution> testExecutions,
+        private void printRatioForBaseType(String baseType, Array<TestExecution> testExecutions,
                                            Function2<String, String, String> ratioNamePrinter,
-                                           Function2<List<TestExecution>, List<TestExecution>, String> ratioCalculator) {
-            final List<TestExecution> baseImplExecutions = testExecutions.filter(e -> e.getImplementation().equals(baseType));
+                                           Function2<Array<TestExecution>, Array<TestExecution>, String> ratioCalculator) {
+            final Array<TestExecution> baseImplExecutions = testExecutions.filter(e -> e.getImplementation().equals(baseType));
             if (baseImplExecutions.isEmpty()) {
                 return;
             }
@@ -349,7 +345,7 @@ public class BenchmarkPerformanceReporter {
                 if (alternativeImpl.equals(baseType)) {
                     continue;
                 }
-                final List<TestExecution> alternativeExecutions = testExecutions.filter(e -> e.getImplementation().equals(alternativeImpl));
+                final Array<TestExecution> alternativeExecutions = testExecutions.filter(e -> e.getImplementation().equals(alternativeImpl));
                 if (alternativeExecutions.isEmpty()) {
                     continue;
                 }
@@ -362,17 +358,17 @@ public class BenchmarkPerformanceReporter {
             System.out.println();
         }
 
-        private String calculateRatios(List<TestExecution> alternativeExecutions, List<TestExecution> baseImplExecutions) {
-            Array<String> ratioStrs = Array.empty();
+        private String calculateRatios(Array<TestExecution> alternativeExecutions, Array<TestExecution> baseImplExecutions) {
+            Array<String> ratioStings = Array.empty();
             for (String paramKey : paramKeys) {
                 final Option<TestExecution> alternativeExecution = alternativeExecutions.find(e -> e.getParamKey().equals(paramKey));
                 final Option<TestExecution> baseExecution = baseImplExecutions.find(e -> e.getParamKey().equals(paramKey));
                 final String paramRatio = alternativeExecution.isEmpty() || baseExecution.isEmpty() || baseExecution.get().getScore() == 0.0
-                        ? ""
-                        : PERFORMANCE_FORMAT.format(alternativeExecution.get().getScore() / baseExecution.get().getScore()) + "x";
-                ratioStrs = ratioStrs.append(padRight(paramRatio, paramKeySize));
+                                          ? ""
+                                          : PERFORMANCE_FORMAT.format(alternativeExecution.get().getScore() / baseExecution.get().getScore()) + "x";
+                ratioStings = ratioStings.append(padRight(paramRatio, paramKeySize));
             }
-            return ratioStrs.mkString(" ");
+            return ratioStings.mkString(" ");
         }
     }
 
@@ -411,10 +407,10 @@ public class BenchmarkPerformanceReporter {
         }
 
         private ListStatistics createStatisticsWithoutOutliers(BenchmarkResult benchmark, double outlierLowPct, double outlierHighPct) {
-            Vector<Double> results = benchmark.getIterationResults().stream()
-                    .map(r -> r.getPrimaryResult().getScore())
-                    .sorted()
-                    .collect(Vector.collector());
+            Array<Double> results = benchmark.getIterationResults().stream()
+                                             .map(r -> r.getPrimaryResult().getScore())
+                                             .sorted()
+                                             .collect(Array.collector());
             final int size = results.size();
             final int outliersLow = (int) (size * outlierLowPct);
             final int outliersHigh = (int) (size * outlierHighPct);
