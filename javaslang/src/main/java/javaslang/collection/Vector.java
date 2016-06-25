@@ -143,7 +143,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     /**
      * Creates a Vector of the given elements.
-     *
+     * <p>
      * The resulting vector has the same iteration order as the given iterable of elements
      * if the iteration order of the elements is stable.
      *
@@ -499,7 +499,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @return a Vector with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> Vector<U> unfoldRight(T seed, Function<? super T,Option<Tuple2<? extends U, ? extends T>>> f) {
+    static <T, U> Vector<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toVector();
     }
 
@@ -526,7 +526,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @return a Vector with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> Vector<U> unfoldLeft(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends U>>> f) {
+    static <T, U> Vector<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toVector();
     }
 
@@ -553,7 +553,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @return a Vector with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T> Vector<T> unfold(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends T>>> f) {
+    static <T> Vector<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toVector();
     }
 
@@ -706,8 +706,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public <C> Map<C, Vector<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, Vector.ofAll(it)));
+        return Collections.groupBy(this, classifier, Vector::ofAll);
     }
 
     @Override
@@ -885,7 +884,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         Objects.requireNonNull(predicate, "predicate is null");
         final java.util.List<T> left = new ArrayList<>(), right = new ArrayList<>();
         for (int i = 0; i < length(); i++) {
-            T t = get(i);
+            final T t = get(i);
             (predicate.test(t) ? left : right).add(t);
         }
         return Tuple.of(Vector.ofAll(left), Vector.ofAll(right));
@@ -1261,7 +1260,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         Objects.requireNonNull(predicate, "predicate is null");
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = 0; i < length(); i++) {
-            T value = get(i);
+            final T value = get(i);
             if (!predicate.test(value)) {
                 break;
             }

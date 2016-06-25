@@ -5,16 +5,11 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -59,9 +54,9 @@ public interface BitSet<T> extends SortedSet<T> {
 
         public BitSet<T> of(T t) {
             final int value = toInt.apply(t);
-            if(value < BitSetModule.BITS_PER_WORD) {
+            if (value < BitSetModule.BITS_PER_WORD) {
                 return new BitSetModule.BitSet1<>(fromInt, toInt, 1L << value);
-            } else if(value < 2 * BitSetModule.BITS_PER_WORD) {
+            } else if (value < 2 * BitSetModule.BITS_PER_WORD) {
                 return new BitSetModule.BitSet2<>(fromInt, toInt, 0L, 1L << value);
             } else {
                 return empty().add(t);
@@ -657,7 +652,7 @@ interface BitSetModule {
             while (newlen > 0 && elements[newlen - 1] == 0) {
                 newlen--;
             }
-            long[] newelems = new long[newlen];
+            final long[] newelems = new long[newlen];
             System.arraycopy(elements, 0, newelems, 0, newlen);
             return newelems;
         }
@@ -715,11 +710,11 @@ interface BitSetModule {
             if (isEmpty() || elements.isEmpty()) {
                 return createEmpty();
             } else {
-                int size = size();
+                final int size = size();
                 if (size <= elements.size()) {
                     return retainAll(elements);
                 } else {
-                    BitSet<T> results = createFromAll(elements).retainAll(this);
+                    final BitSet<T> results = createFromAll(elements).retainAll(this);
                     return (size == results.size()) ? this : results;
                 }
             }
@@ -759,9 +754,8 @@ interface BitSetModule {
         }
 
         @Override
-        public  <C> Map<C, BitSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
-            Objects.requireNonNull(classifier, "classifier is null");
-            return iterator().groupBy(classifier).map((key, iterator) -> Tuple.of(key, createFromAll(iterator)));
+        public <C> Map<C, BitSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
+            return Collections.groupBy(this, classifier, this::createFromAll);
         }
 
         @Override
@@ -899,7 +893,7 @@ interface BitSetModule {
 
         @Override
         protected T getNext() {
-            int pos = Long.numberOfTrailingZeros(element);
+            final int pos = Long.numberOfTrailingZeros(element);
             element &= ~(1L << pos);
             return bitSet.fromInt.apply(pos + (index << ADDRESS_BITS_PER_WORD));
         }
@@ -937,10 +931,10 @@ interface BitSetModule {
 
         @Override
         long[] copyExpand(int wordsNum) {
-            if(wordsNum < 1) {
+            if (wordsNum < 1) {
                 wordsNum = 1;
             }
-            long[] arr = new long[wordsNum];
+            final long[] arr = new long[wordsNum];
             arr[0] = elements;
             return arr;
         }
@@ -1004,10 +998,10 @@ interface BitSetModule {
 
         @Override
         long[] copyExpand(int wordsNum) {
-            if(wordsNum < 2) {
+            if (wordsNum < 2) {
                 wordsNum = 2;
             }
-            long[] arr = new long[wordsNum];
+            final long[] arr = new long[wordsNum];
             arr[0] = elements1;
             arr[1] = elements2;
             return arr;
@@ -1089,10 +1083,10 @@ interface BitSetModule {
 
         @Override
         long[] copyExpand(int wordsNum) {
-            if(wordsNum < elements.length) {
+            if (wordsNum < elements.length) {
                 wordsNum = elements.length;
             }
-            long[] arr = new long[wordsNum];
+            final long[] arr = new long[wordsNum];
             System.arraycopy(elements, 0, arr, 0, elements.length);
             return arr;
         }
@@ -1107,7 +1101,7 @@ interface BitSetModule {
             int offset = 0;
             int element = 0;
             for (int i = 0; i < getWordsNum(); i++) {
-                if(elements[i] == 0) {
+                if (elements[i] == 0) {
                     offset += BITS_PER_WORD;
                 } else {
                     element = offset + Long.numberOfTrailingZeros(elements[i]);

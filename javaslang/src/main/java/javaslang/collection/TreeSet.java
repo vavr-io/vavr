@@ -50,7 +50,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.TreeSet}.
      *
-     * @param <T> Component type of the List.
+     * @param <T>        Component type of the List.
      * @param comparator An element comparator
      * @return A javaslang.collection.List Collector.
      */
@@ -189,8 +189,8 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
         return values.iterator().hasNext()
-                ? new TreeSet<>(RedBlackTree.ofAll(comparator, values))
-                : (TreeSet<T>) empty();
+               ? new TreeSet<>(RedBlackTree.ofAll(comparator, values))
+               : (TreeSet<T>) empty();
     }
 
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
@@ -621,9 +621,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     @Override
     public <C> Map<C, TreeSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).map(
-                (key, iterator) -> Tuple.of(key, TreeSet.ofAll(tree.comparator(), iterator)));
+        return Collections.groupBy(this, classifier, elements -> ofAll(comparator(), elements));
     }
 
     @Override
@@ -872,7 +870,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    public  <U> U transform(Function<? super TreeSet<T>, ? extends U> f) {
+    public <U> U transform(Function<? super TreeSet<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }

@@ -337,8 +337,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
 
     @Override
     public <C> Map<C, ? extends PriorityQueue<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).map((c, q) -> Tuple.of(c, ofAll(comparator, q)));
+        return Collections.groupBy(this, classifier, (elements) -> ofAll(comparator, elements));
     }
 
     @Override
@@ -559,8 +558,8 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
                 assert rank == tree.rank;
 
                 return comparator.isLessOrEqual(this.root, tree.root)
-                        ? of(this.root, this.rank + 1, tree.appendTo(this.children))
-                        : of(tree.root, tree.rank + 1, this.appendTo(tree.children));
+                       ? of(this.root, this.rank + 1, tree.appendTo(this.children))
+                       : of(tree.root, tree.rank + 1, this.appendTo(tree.children));
             }
 
             /**
@@ -663,8 +662,8 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
          **/
         static <T> Seq<Node<T>> uniqify(SerializableComparator<? super T> comparator, Seq<Node<T>> forest) {
             return forest.isEmpty()
-                    ? forest
-                    : ins(comparator, forest.head(), forest.tail());
+                   ? forest
+                   : ins(comparator, forest.head(), forest.tail());
         }
 
         /**

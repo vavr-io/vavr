@@ -5,14 +5,11 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 
 /**
@@ -148,7 +145,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @SuppressWarnings("unchecked")
     @Override
     public M removeAll(Iterable<? extends K> keys) {
-        Map<K, Traversable<V>> result = back.removeAll(keys);
+        final Map<K, Traversable<V>> result = back.removeAll(keys);
         return (M) (result == back ? this : createFromMap(result));
     }
 
@@ -227,14 +224,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public <C> Map<C, Multimap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {
-        Objects.requireNonNull(classifier, "classifier is null");
-        return foldLeft(HashMap.empty(), (map, entry) -> {
-            final C key = classifier.apply(entry);
-            final Multimap<K, V> values = map.get(key)
-                    .map(entries -> entries.put(entry._1, entry._2))
-                    .getOrElse(createFromEntries(Iterator.of(entry)));
-            return map.put(key, values);
-        });
+        return Collections.groupBy(this, classifier, this::createFromEntries);
     }
 
     @Override
@@ -302,7 +292,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         } else if (that.isEmpty()) {
             return this;
         } else {
-            Map<K, Traversable<V>> result = that.keySet().foldLeft(this.back, (map, key) -> {
+            final Map<K, Traversable<V>> result = that.keySet().foldLeft(this.back, (map, key) -> {
                 final Traversable<V> thisValues = map.get(key).getOrElse((Traversable<V>) emptyContainer.get());
                 final Traversable<V2> thatValues = that.get(key).get();
                 final Traversable<V> newValues = collisionResolution.apply(thisValues, thatValues);

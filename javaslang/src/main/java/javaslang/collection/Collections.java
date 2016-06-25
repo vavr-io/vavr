@@ -7,13 +7,8 @@ package javaslang.collection;
 
 import javaslang.control.Option;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
 
 /**
  * Internal class, containing helpers.
@@ -53,13 +48,13 @@ final class Collections {
         Objects.requireNonNull(classifier, "classifier is null");
         Objects.requireNonNull(mapper, "mapper is null");
 
-        final java.util.Map<C, Collection<T>> mutableResults = new java.util.HashMap<>();
+        final java.util.Map<C, Collection<T>> mutableResults = new java.util.LinkedHashMap<>();
         for (T value : collection) {
             final C key = classifier.apply(value);
             mutableResults.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
         }
 
-        HashMap<C, R> results = HashMap.empty();
+        Map<C, R> results = LinkedHashMap.empty();
         for (java.util.Map.Entry<C, Collection<T>> entry : mutableResults.entrySet()) {
             results = results.put(entry.getKey(), mapper.apply(entry.getValue()));
         }
