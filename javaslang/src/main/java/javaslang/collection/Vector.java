@@ -173,7 +173,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @param <T>        Component type of the Stream.
      * @return A Vector containing the given elements in the same order.
      */
-    static <T> Vector<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+    public static <T> Vector<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
         Objects.requireNonNull(javaStream, "javaStream is null");
         return ofAll(Iterator.ofAll(javaStream.iterator()));
     }
@@ -499,7 +499,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @return a Vector with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T, U> Vector<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
+    public static <T, U> Vector<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toVector();
     }
 
@@ -526,7 +526,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @return a Vector with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T, U> Vector<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
+    public static <T, U> Vector<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toVector();
     }
 
@@ -553,7 +553,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @return a Vector with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T> Vector<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
+    public static <T> Vector<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toVector();
     }
 

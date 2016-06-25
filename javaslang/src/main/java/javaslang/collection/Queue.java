@@ -6,7 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.control.*;
+import javaslang.control.Option;
 
 import java.util.*;
 import java.util.function.*;
@@ -162,7 +162,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * @param <T>        Component type of the Stream.
      * @return A Queue containing the given elements in the same order.
      */
-    static <T> Queue<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+    public static <T> Queue<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
         Objects.requireNonNull(javaStream, "javaStream is null");
         return new Queue<>(List.ofAll(javaStream), List.empty());
     }
@@ -525,7 +525,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * @return a Queue with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> Queue<U> unfoldRight(T seed, Function<? super T,Option<Tuple2<? extends U, ? extends T>>> f) {
+    public static <T, U> Queue<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toQueue();
     }
 
@@ -552,7 +552,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * @return a Queue with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> Queue<U> unfoldLeft(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends U>>> f) {
+    public static <T, U> Queue<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toQueue();
     }
 
@@ -579,7 +579,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * @return a Queue with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T> Queue<T> unfold(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends T>>> f) {
+    public static <T> Queue<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toQueue();
     }
 

@@ -133,7 +133,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
      * @param <T> Component type of the {@code PriorityQueue}.
      * @return A {@code PriorityQueue<T>} Collector.
      */
-    static <T> Collector<T, ArrayList<T>, PriorityQueue<T>> collector() {
+    public static <T> Collector<T, ArrayList<T>, PriorityQueue<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
@@ -213,7 +213,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
      * @throws NullPointerException if {@code function} is null
      */
     @GwtIncompatible
-    static <T> PriorityQueue<T> tabulate(int size, Function<? super Integer, ? extends T> function) {
+    public static <T> PriorityQueue<T> tabulate(int size, Function<? super Integer, ? extends T> function) {
         Objects.requireNonNull(function, "function is null");
         final Comparator<? super T> comparator = naturalComparator();
         return Collections.tabulate(size, function, empty(comparator), values -> ofAll(comparator, List.of(values)));
@@ -228,9 +228,9 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
      * @return A {@link PriorityQueue} of size {@code size}, where each element contains the result supplied by {@code supplier}.
      * @throws NullPointerException if {@code supplier} is null
      */
-    @SuppressWarnings("unchecked")
     @GwtIncompatible
-    static <T> PriorityQueue<T> fill(int size, Supplier<? extends T> supplier) {
+    @SuppressWarnings("unchecked")
+    public static <T> PriorityQueue<T> fill(int size, Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         final Comparator<? super T> comparator = naturalComparator();
         return Collections.fill(size, supplier, empty(comparator), values -> ofAll(comparator, List.of(values)));

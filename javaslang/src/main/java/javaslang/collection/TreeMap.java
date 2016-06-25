@@ -54,8 +54,8 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a
      * {@link javaslang.collection.TreeMap}.
      *
-     * @param <K> The key type
-     * @param <V> The value type
+     * @param <K>           The key type
+     * @param <V>           The value type
      * @param keyComparator A key comparator
      * @return A {@link javaslang.collection.TreeMap} Collector.
      */
@@ -108,7 +108,7 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
      * @return the given {@code treeMap} instance as narrowed type {@code TreeMap<K, V>}.
      */
     @SuppressWarnings("unchecked")
-    static <K, V> TreeMap<K, V> narrow(TreeMap<? extends K, ? extends V> treeMap) {
+    public static <K, V> TreeMap<K, V> narrow(TreeMap<? extends K, ? extends V> treeMap) {
         return (TreeMap<K, V>) treeMap;
     }
 
@@ -477,7 +477,6 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
         return TreeSet.ofAll(keyComparator(), iterator().map(Tuple2::_1));
     }
 
-
     @Override
     public <K2, V2> TreeMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         return map(naturalComparator(), mapper);
@@ -500,7 +499,7 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
     @Override
     public <K2> TreeMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge) {
         final Comparator<K2> comparator = Comparators.naturalComparator();
-        return Collections.mapKeys(this, TreeMap.<K2, V>empty(comparator), keyMapper, valueMerge);
+        return Collections.mapKeys(this, TreeMap.<K2, V> empty(comparator), keyMapper, valueMerge);
     }
 
     @Override
@@ -596,7 +595,7 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
             tree = tree.insert((Tuple2<K, V>) entry);
         }
         return tree.isEmpty() ? (TreeMap<K, V>) TreeMap.empty()
-                              : new TreeMap<>(tree);
+                : new TreeMap<>(tree);
     }
 
     // -- Object

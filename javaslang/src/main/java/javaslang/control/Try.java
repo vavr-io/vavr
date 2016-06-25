@@ -8,16 +8,11 @@ package javaslang.control;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
-import javaslang.collection.Seq;
+import javaslang.collection.*;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
 
 /**
  * An implementation similar to Scala's Try control.
@@ -136,7 +131,7 @@ public interface Try<T> extends Value<T> {
      * Passes the result to the given {@code consumer} if this is a {@code Success}.
      * <p>
      * The main use case is chaining checked functions using method references:
-     *
+     * <p>
      * <pre>
      * <code>
      * Try.of(() -&gt; 100)
@@ -181,15 +176,15 @@ public interface Try<T> extends Value<T> {
      * Runs the given runnable if this is a {@code Success}, otherwise returns this {@code Failure}.
      * <p>
      * The main use case is chaining runnables using method references:
-     *
+     * <p>
      * <pre>
      * <code>
      * Try.run(A::methodRef).andThen(B::methodRef).andThen(C::methodRef);
      * </code>
      * </pre>
-     *
+     * <p>
      * Please note that these lines are semantically the same:
-     *
+     * <p>
      * <pre>
      * <code>
      * Try.run(this::doStuff)
@@ -416,9 +411,9 @@ public interface Try<T> extends Value<T> {
      * passing the result of the current expression to it.
      * If this expression is a {@code Failure} then it'll return a new
      * {@code Failure} of type R with the original exception.
-     *
+     * <p>
      * The main use case is chaining checked functions using method references:
-     *
+     * <p>
      * <pre>
      * <code>
      * Try.of(() -&gt; 0)
@@ -860,7 +855,7 @@ public interface Try<T> extends Value<T> {
         @Override
         public boolean equals(Object o) {
             return (o == this) || (o instanceof FatalException
-                    && Arrays.deepEquals(getCause().getStackTrace(), ((FatalException) o).getCause().getStackTrace()));
+                                   && Arrays.deepEquals(getCause().getStackTrace(), ((FatalException) o).getCause().getStackTrace()));
         }
 
         @Override
@@ -906,7 +901,7 @@ public interface Try<T> extends Value<T> {
          * @throws Error                if the given exception is fatal, i.e. not recoverable
          * @throws NullPointerException if exception is null
          */
-        static NonFatalException of(Throwable exception) {
+        public static NonFatalException of(Throwable exception) {
             Objects.requireNonNull(exception, "exception is null");
             if (exception instanceof NonFatalException) {
                 return (NonFatalException) exception;
@@ -914,9 +909,9 @@ public interface Try<T> extends Value<T> {
                 throw (FatalException) exception;
             } else {
                 final boolean isFatal = exception instanceof InterruptedException
-                        || exception instanceof LinkageError
-                        || exception instanceof ThreadDeath
-                        || exception instanceof VirtualMachineError;
+                                        || exception instanceof LinkageError
+                                        || exception instanceof ThreadDeath
+                                        || exception instanceof VirtualMachineError;
                 if (isFatal) {
                     throw new FatalException(exception);
                 } else {
@@ -934,7 +929,7 @@ public interface Try<T> extends Value<T> {
         @Override
         public boolean equals(Object o) {
             return (o == this) || (o instanceof NonFatalException
-                    && Arrays.deepEquals(getCause().getStackTrace(), ((NonFatalException) o).getCause().getStackTrace()));
+                                   && Arrays.deepEquals(getCause().getStackTrace(), ((NonFatalException) o).getCause().getStackTrace()));
         }
 
         @Override
