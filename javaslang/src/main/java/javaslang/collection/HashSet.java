@@ -82,7 +82,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
 
     /**
      * Creates a HashSet of the given elements.
-     *
+     * <p>
      * <pre><code>HashSet.of(1, 2, 3, 4)</code></pre>
      *
      * @param <T>      Component type of the HashSet.
@@ -565,11 +565,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
 
     @Override
     public <C> Map<C, HashSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        return foldLeft(HashMap.empty(), (map, t) -> {
-            final C key = classifier.apply(t);
-            final HashSet<T> values = map.get(key).map(ts -> ts.add(t)).getOrElse(HashSet.of(t));
-            return map.put(key, values);
-        });
+        return Collections.groupBy(this, classifier, HashSet::ofAll);
     }
 
     @Override
@@ -611,11 +607,11 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
         if (isEmpty() || elements.isEmpty()) {
             return empty();
         } else {
-            int size = size();
+            final int size = size();
             if (size <= elements.size()) {
                 return retainAll(elements);
             } else {
-                HashSet<T> results = HashSet.<T> ofAll(elements).retainAll(this);
+                final HashSet<T> results = HashSet.<T> ofAll(elements).retainAll(this);
                 return (size == results.size()) ? this : results;
             }
         }
@@ -782,7 +778,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     @Override
     public HashSet<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        HashSet<T> taken = HashSet.ofAll(iterator().takeWhile(predicate));
+        final HashSet<T> taken = HashSet.ofAll(iterator().takeWhile(predicate));
         return taken.length() == length() ? this : taken;
     }
 
@@ -830,7 +826,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     public <T1, T2> Tuple2<HashSet<T1>, HashSet<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        Tuple2<Iterator<T1>, Iterator<T2>> t = iterator().unzip(unzipper);
+        final Tuple2<Iterator<T1>, Iterator<T2>> t = iterator().unzip(unzipper);
         return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2));
     }
 
@@ -838,7 +834,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     public <T1, T2, T3> Tuple3<HashSet<T1>, HashSet<T2>, HashSet<T3>> unzip3(
             Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> t = iterator().unzip3(unzipper);
+        final Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> t = iterator().unzip3(unzipper);
         return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2), HashSet.ofAll(t._3));
     }
 

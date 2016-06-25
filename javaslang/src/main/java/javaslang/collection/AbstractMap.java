@@ -5,16 +5,11 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import javaslang.*;
 import javaslang.control.Option;
 
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.*;
+import java.util.function.*;
 
 /**
  * An abstract {@link Map} implementation (not intended to be public).
@@ -48,7 +43,7 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
     @SuppressWarnings("unchecked")
     @Override
     public <U extends V> M put(K key, U value,
-                                   BiFunction<? super V, ? super U, ? extends V> merge) {
+                               BiFunction<? super V, ? super U, ? extends V> merge) {
         Objects.requireNonNull(merge, "the merge function is null");
         final Option<V> currentValue = get(key);
         if (currentValue.isEmpty()) {
@@ -60,14 +55,14 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
 
     @Override
     public <U extends V> M put(Tuple2<? extends K, U> entry,
-                                   BiFunction<? super V, ? super U, ? extends V> merge) {
+                               BiFunction<? super V, ? super U, ? extends V> merge) {
         Objects.requireNonNull(merge, "the merge function is null");
         final Option<V> currentValue = get(entry._1);
         if (currentValue.isEmpty()) {
             return put(entry);
         } else {
             return put(entry.map2(
-                           value -> merge.apply(currentValue.get(), value)));
+                    value -> merge.apply(currentValue.get(), value)));
         }
     }
 
@@ -134,14 +129,7 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
     @SuppressWarnings("unchecked")
     @Override
     public <C> Map<C, M> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {
-        Objects.requireNonNull(classifier, "classifier is null");
-        return foldLeft(HashMap.empty(), (map, entry) -> {
-            final C key = classifier.apply(entry);
-            final Map<K, V> values = map.get(key)
-                    .map(entries -> entries.put(entry._1, entry._2))
-                    .getOrElse(createFromEntries(Iterator.of(entry)));
-            return map.put(key, (M) values);
-        });
+        return Collections.groupBy(this, classifier, this::createFromEntries);
     }
 
     @Override

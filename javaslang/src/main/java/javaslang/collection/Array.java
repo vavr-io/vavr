@@ -34,8 +34,8 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     static <T> Array<T> wrap(Object[] array) {
         return array.length == 0
-                ? empty()
-                : new Array<T>(array);
+               ? empty()
+               : new Array<T>(array);
     }
 
     /**
@@ -116,8 +116,8 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     public static <T> Array<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return elements instanceof Array
-                ? (Array<T>) elements
-                : wrap(toArray(elements));
+               ? (Array<T>) elements
+               : wrap(toArray(elements));
     }
 
     /**
@@ -482,7 +482,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @return an Array with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> Array<U> unfoldRight(T seed, Function<? super T,Option<Tuple2<? extends U, ? extends T>>> f) {
+    static <T, U> Array<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toArray();
     }
 
@@ -509,7 +509,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @return an Array with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T,U> Array<U> unfoldLeft(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends U>>> f) {
+    static <T, U> Array<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toArray();
     }
 
@@ -536,7 +536,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @return an Array with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T> Array<T> unfold(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends T>>> f) {
+    static <T> Array<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toArray();
     }
 
@@ -708,11 +708,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public <C> Map<C, Array<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        return foldLeft(HashMap.empty(), (map, t) -> {
-            final C key = classifier.apply(t);
-            final Array<T> values = map.get(key).map(ts -> ts.append(t)).getOrElse(of(t));
-            return map.put(key, values);
-        });
+        return Collections.groupBy(this, classifier, Array::ofAll);
     }
 
     @Override
@@ -1056,13 +1052,13 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
                 new java.util.ArrayList<>(), (c, u) -> {
                     c.add(u);
                     return c;
-                }, list -> Array.<U>wrap(list.toArray()));
+                }, list -> Array.<U> wrap(list.toArray()));
     }
 
     @Override
     public <U> Array<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, list -> Array.<U>wrap(list.toJavaArray()));
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, list -> Array.<U> wrap(list.toJavaArray()));
     }
 
     @Override

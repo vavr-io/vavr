@@ -82,7 +82,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
 
     /**
      * Creates a LinkedHashSet of the given elements.
-     *
+     * <p>
      * <pre><code>LinkedHashSet.of(1, 2, 3, 4)</code></pre>
      *
      * @param <T>      Component type of the LinkedHashSet.
@@ -561,11 +561,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
 
     @Override
     public <C> Map<C, LinkedHashSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        return foldLeft(HashMap.empty(), (map, t) -> {
-            final C key = classifier.apply(t);
-            final LinkedHashSet<T> values = map.get(key).map(ts -> ts.add(t)).getOrElse(LinkedHashSet.of(t));
-            return map.put(key, values);
-        });
+        return Collections.groupBy(this, classifier, LinkedHashSet::ofAll);
     }
 
     @Override
@@ -776,7 +772,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     @Override
     public LinkedHashSet<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        LinkedHashSet<T> taken = LinkedHashSet.ofAll(iterator().takeWhile(predicate));
+        final LinkedHashSet<T> taken = LinkedHashSet.ofAll(iterator().takeWhile(predicate));
         return taken.length() == length() ? this : taken;
     }
 
@@ -824,7 +820,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     public <T1, T2> Tuple2<LinkedHashSet<T1>, LinkedHashSet<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        Tuple2<Iterator<T1>, Iterator<T2>> t = iterator().unzip(unzipper);
+        final Tuple2<Iterator<T1>, Iterator<T2>> t = iterator().unzip(unzipper);
         return Tuple.of(LinkedHashSet.ofAll(t._1), LinkedHashSet.ofAll(t._2));
     }
 
@@ -832,7 +828,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     public <T1, T2, T3> Tuple3<LinkedHashSet<T1>, LinkedHashSet<T2>, LinkedHashSet<T3>> unzip3(
             Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> t = iterator().unzip3(unzipper);
+        final Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> t = iterator().unzip3(unzipper);
         return Tuple.of(LinkedHashSet.ofAll(t._1), LinkedHashSet.ofAll(t._2), LinkedHashSet.ofAll(t._3));
     }
 

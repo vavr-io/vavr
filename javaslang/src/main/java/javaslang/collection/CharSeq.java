@@ -13,8 +13,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.*;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import java.util.regex.*;
 import java.util.stream.Collector;
 
 /**
@@ -103,7 +102,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     /**
      * Creates a String of the given elements.
-     *
+     * <p>
      * The resulting string has the same iteration order as the given iterable of elements
      * if the iteration order of the elements is stable.
      *
@@ -239,7 +238,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return a CharSeq with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T> CharSeq unfoldRight(T seed, Function<? super T,Option<Tuple2<? extends Character, ? extends T>>> f) {
+    static <T> CharSeq unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends Character, ? extends T>>> f) {
         return CharSeq.ofAll(Iterator.unfoldRight(seed, f));
     }
 
@@ -266,7 +265,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return a CharSeq with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static <T> CharSeq unfoldLeft(T seed, Function<? super T,Option<Tuple2<? extends T,? extends Character>>> f) {
+    static <T> CharSeq unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends Character>>> f) {
         return CharSeq.ofAll(Iterator.unfoldLeft(seed, f));
     }
 
@@ -293,7 +292,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return a CharSeq with the values built up by the iteration
      * @throws IllegalArgumentException if {@code f} is null
      */
-    static CharSeq unfold(Character seed, Function<? super Character,Option<Tuple2<? extends Character,? extends Character>>> f) {
+    static CharSeq unfold(Character seed, Function<? super Character, Option<Tuple2<? extends Character, ? extends Character>>> f) {
         return CharSeq.ofAll(Iterator.unfold(seed, f));
     }
 
@@ -480,8 +479,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public <C> Map<C, CharSeq> groupBy(Function<? super Character, ? extends C> classifier) {
-        Objects.requireNonNull(classifier, "classifier is null");
-        return iterator().groupBy(classifier).map((c, it) -> Tuple.of(c, CharSeq.ofAll(it)));
+        return Collections.groupBy(this, classifier, CharSeq::ofAll);
     }
 
     @Override
@@ -1159,7 +1157,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * {@code length() - 1}. The first {@code char} value of the sequence
      * is at index {@code 0}, the next at index {@code 1},
      * and so on, as for array indexing.
-     *
+     * <p>
      * <p>If the {@code char} value specified by the index is a
      * <a href="Character.html#unicode">surrogate</a>, the surrogate
      * value is returned.
@@ -1200,7 +1198,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * index. The index refers to {@code char} values
      * (Unicode code units) and ranges from {@code 0} to
      * {@link #length()}{@code  - 1}.
-     *
+     * <p>
      * <p> If the {@code char} value specified at the given index
      * is in the high-surrogate range, the following index is less
      * than the length of this {@code CharSeq}, and the
@@ -1225,7 +1223,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * index. The index refers to {@code char} values
      * (Unicode code units) and ranges from {@code 1} to {@link
      * CharSequence#length() length}.
-     *
+     * <p>
      * <p> If the {@code char} value at {@code (index - 1)}
      * is in the low-surrogate range, {@code (index - 2)} is not
      * negative, and the {@code char} value at {@code (index -
@@ -1329,7 +1327,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     /**
      * Encodes this {@code CharSeq} into a sequence of bytes using the named
      * charset, storing the result into a new byte array.
-     *
+     * <p>
      * <p> The behavior of this method when this string cannot be encoded in
      * the given charset is unspecified.  The {@link
      * java.nio.charset.CharsetEncoder} class should be used when more control
@@ -1348,7 +1346,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * Encodes this {@code CharSeq} into a sequence of bytes using the given
      * {@linkplain java.nio.charset.Charset charset}, storing the result into a
      * new byte array.
-     *
+     * <p>
      * <p> This method always replaces malformed-input and unmappable-character
      * sequences with this charset's default replacement byte array.  The
      * {@link java.nio.charset.CharsetEncoder} class should be used when more
@@ -1365,7 +1363,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     /**
      * Encodes this {@code CharSeq} into a sequence of bytes using the
      * platform's default charset, storing the result into a new byte array.
-     *
+     * <p>
      * <p> The behavior of this method when this string cannot be encoded in
      * the default charset is unspecified.  The {@link
      * java.nio.charset.CharsetEncoder} class should be used when more control
@@ -1413,7 +1411,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * considerations.  Two strings are considered equal ignoring case if they
      * are of the same length and corresponding characters in the two strings
      * are equal ignoring case.
-     *
+     * <p>
      * <p> Two characters {@code c1} and {@code c2} are considered the same
      * ignoring case if at least one of the following is true:
      * <ul>
@@ -1724,14 +1722,14 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * is true. In either case, if no such character occurs in this
      * string at or after position {@code fromIndex}, then
      * {@code -1} is returned.
-     *
+     * <p>
      * <p>
      * There is no restriction on the value of {@code fromIndex}. If it
      * is negative, it has the same effect as if it were zero: this entire
      * string may be searched. If it is greater than the length of this
      * string, it has the same effect as if it were equal to the length of
      * this string: {@code -1} is returned.
-     *
+     * <p>
      * <p>All indices are specified in {@code char} values
      * (Unicode code units).
      *
@@ -1812,7 +1810,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * is true. In either case, if no such character occurs in this
      * string at or before position {@code fromIndex}, then
      * {@code -1} is returned.
-     *
+     * <p>
      * <p>All indices are specified in {@code char} values
      * (Unicode code units).
      *
@@ -1848,7 +1846,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     /**
      * Returns the index within this string of the first occurrence of the
      * specified substring.
-     *
+     * <p>
      * <p>The returned index is the smallest value <i>k</i> for which:
      * <blockquote><pre>
      * this.startsWith(str, <i>k</i>)
@@ -1876,7 +1874,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     /**
      * Returns the index within this string of the first occurrence of the
      * specified substring, starting at the specified index.
-     *
+     * <p>
      * <p>The returned index is the smallest value <i>k</i> for which:
      * <blockquote><pre>
      * <i>k</i> &gt;= fromIndex {@code &&} this.startsWith(str, <i>k</i>)
@@ -1909,7 +1907,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * Returns the index within this string of the last occurrence of the
      * specified substring.  The last occurrence of the empty string ""
      * is considered to occur at the index value {@code this.length()}.
-     *
+     * <p>
      * <p>The returned index is the largest value <i>k</i> for which:
      * <blockquote><pre>
      * this.startsWith(str, <i>k</i>)
@@ -1937,7 +1935,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     /**
      * Returns the index within this string of the last occurrence of the
      * specified substring, searching backward starting at the specified index.
-     *
+     * <p>
      * <p>The returned index is the largest value <i>k</i> for which:
      * <blockquote><pre>
      * <i>k</i> {@code <=} fromIndex {@code &&} this.startsWith(str, <i>k</i>)
@@ -2057,11 +2055,11 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     /**
      * Tells whether or not this string matches the given <a
      * href="../util/regex/Pattern.html#sum">regular expression</a>.
-     *
+     * <p>
      * <p> An invocation of this method of the form
      * <i>str</i>{@code .matches(}<i>regex</i>{@code )} yields exactly the
      * same result as the expression
-     *
+     * <p>
      * <blockquote>
      * {@link Pattern}.{@link Pattern#matches(String, CharSequence)
      * matches(<i>regex</i>, <i>str</i>)}
@@ -2092,11 +2090,11 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * Replaces the first substring of this string that matches the given <a
      * href="../util/regex/Pattern.html#sum">regular expression</a> with the
      * given replacement.
-     *
+     * <p>
      * <p> An invocation of this method of the form
      * <i>str</i>{@code .replaceFirst(}<i>regex</i>{@code ,} <i>repl</i>{@code )}
      * yields exactly the same result as the expression
-     *
+     * <p>
      * <blockquote>
      * <code>
      * {@link Pattern}.{@link
@@ -2105,7 +2103,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * java.util.regex.Matcher#replaceFirst replaceFirst}(<i>repl</i>)
      * </code>
      * </blockquote>
-     *
+     * <p>
      * <p>
      * Note that backslashes ({@code \}) and dollar signs ({@code $}) in the
      * replacement string may cause the results to be different than if it were
@@ -2128,11 +2126,11 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * Replaces each substring of this string that matches the given <a
      * href="../util/regex/Pattern.html#sum">regular expression</a> with the
      * given replacement.
-     *
+     * <p>
      * <p> An invocation of this method of the form
      * <i>str</i>{@code .replaceAll(}<i>regex</i>{@code ,} <i>repl</i>{@code )}
      * yields exactly the same result as the expression
-     *
+     * <p>
      * <blockquote>
      * <code>
      * {@link Pattern}.{@link
@@ -2141,7 +2139,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * java.util.regex.Matcher#replaceAll replaceAll}(<i>repl</i>)
      * </code>
      * </blockquote>
-     *
+     * <p>
      * <p>
      * Note that backslashes ({@code \}) and dollar signs ({@code $}) in the
      * replacement string may cause the results to be different than if it were
@@ -2178,19 +2176,19 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     /**
      * Splits this string around matches of the given
      * <a href="../util/regex/Pattern.html#sum">regular expression</a>.
-     *
+     * <p>
      * <p> The array returned by this method contains each substring of this
      * string that is terminated by another substring that matches the given
      * expression or is terminated by the end of the string.  The substrings in
      * the array are in the order in which they occur in this string.  If the
      * expression does not match any part of the input then the resulting array
      * has just one element, namely this string.
-     *
+     * <p>
      * <p> When there is a positive-width match at the beginning of this
      * string then an empty leading substring is included at the beginning
      * of the resulting array. A zero-width match at the beginning however
      * never produces such empty leading substring.
-     *
+     * <p>
      * <p> The {@code limit} parameter controls the number of times the
      * pattern is applied and therefore affects the length of the resulting
      * array.  If the limit <i>n</i> is greater than zero then the pattern
@@ -2201,10 +2199,10 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * possible and the array can have any length.  If <i>n</i> is zero then
      * the pattern will be applied as many times as possible, the array can
      * have any length, and trailing empty strings will be discarded.
-     *
+     * <p>
      * <p> The string {@code "boo:and:foo"}, for example, yields the
      * following results with these parameters:
-     *
+     * <p>
      * <blockquote><table cellpadding=1 cellspacing=0 summary="Split example showing regex, limit, and result">
      * <tr>
      * <th>Regex</th>
@@ -2230,11 +2228,11 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * <td align=center>0</td>
      * <td>{@code { "b", "", ":and:f" }}</td></tr>
      * </table></blockquote>
-     *
+     * <p>
      * <p> An invocation of this method of the form
      * <i>str.</i>{@code split(}<i>regex</i>{@code ,}&nbsp;<i>n</i>{@code )}
      * yields the same result as the expression
-     *
+     * <p>
      * <blockquote>
      * <code>
      * {@link Pattern}.{@link
@@ -2255,6 +2253,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     public CharSeq[] split(String regex, int limit) {
         return splitSeq(regex, limit).toJavaArray(CharSeq.class);
     }
+
     public Seq<CharSeq> splitSeq(String regex, int limit) {
         final Seq<String> split = Array.wrap(back.split(regex, limit));
         return split.map(CharSeq::of);
@@ -2263,15 +2262,15 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     /**
      * Splits this string around matches of the given <a
      * href="../util/regex/Pattern.html#sum">regular expression</a>.
-     *
+     * <p>
      * <p> This method works as if by invoking the two-argument {@link
      * #splitSeq(String, int) splitSeq} method with the given expression and a limit
      * argument of zero.  Trailing empty strings are therefore not included in
      * the resulting {@link javaslang.collection.Seq}.
-     *
+     * <p>
      * <p> The string {@code "boo:and:foo"}, for example, yields the following
      * results with these expressions:
-     *
+     * <p>
      * <blockquote><table cellpadding=1 cellspacing=0 summary="Split examples showing regex and result">
      * <tr>
      * <th>Regex</th>
@@ -2294,6 +2293,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     public CharSeq[] split(String regex) {
         return splitSeq(regex, 0).toJavaArray(CharSeq.class);
     }
+
     public Seq<CharSeq> splitSeq(String regex) {
         return splitSeq(regex, 0);
     }
@@ -2385,7 +2385,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * {@code CharSeq} may be a different length than the original {@code CharSeq}.
      * <p>
      * Examples of locale-sensitive and 1:M case mappings are in the following table.
-     *
+     * <p>
      * <table border="1" summary="Examples of locale-sensitive and 1:M case mappings. Shows Language code of locale, lower case, upper case, and description.">
      * <tr>
      * <th>Language Code of Locale</th>

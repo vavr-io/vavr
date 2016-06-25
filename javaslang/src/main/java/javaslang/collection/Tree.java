@@ -16,8 +16,8 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.collection.Tree.*;
 import static javaslang.collection.Tree.Order.PRE_ORDER;
+import static javaslang.collection.Tree.*;
 
 /**
  * A general Tree interface.
@@ -431,12 +431,7 @@ public interface Tree<T> extends Traversable<T> {
     @SuppressWarnings("unchecked")
     @Override
     default <C> Map<C, Seq<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        Objects.requireNonNull(classifier, "classifier is null");
-        if (isEmpty()) {
-            return HashMap.empty();
-        } else {
-            return (Map<C, Seq<T>>) values().groupBy(classifier);
-        }
+        return Collections.groupBy(values(), classifier, Stream::ofAll);
     }
 
     @Override
@@ -659,7 +654,7 @@ public interface Tree<T> extends Traversable<T> {
     default <U> Tree<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
-            return Iterator.<U>ofAll(that).map(elem -> Tuple.of(thisElem, elem)).toTree();
+            return Iterator.<U> ofAll(that).map(elem -> Tuple.of(thisElem, elem)).toTree();
         } else {
             final java.util.Iterator<? extends U> thatIter = that.iterator();
             final Tree<Tuple2<T, U>> tree = ZipAll.apply((Node<T>) this, thatIter, thatElem);
@@ -756,7 +751,7 @@ public interface Tree<T> extends Traversable<T> {
             } else if (o instanceof Node) {
                 final Node<?> that = (Node<?>) o;
                 return Objects.equals(this.getValue(), that.getValue())
-                        && Objects.equals(this.getChildren(), that.getChildren());
+                       && Objects.equals(this.getChildren(), that.getChildren());
             } else {
                 return false;
             }
@@ -784,8 +779,8 @@ public interface Tree<T> extends Traversable<T> {
             for (List<Node<T>> it = children; !it.isEmpty(); it = it.tail()) {
                 final boolean isLast = it.tail().isEmpty();
                 builder.append('\n')
-                        .append(indent)
-                        .append(isLast ? "└──" : "├──");
+                       .append(indent)
+                       .append(isLast ? "└──" : "├──");
                 it.head().drawAux(indent + (isLast ? "   " : "│  "), builder);
             }
         }
@@ -1135,7 +1130,7 @@ interface TreeModule {
                                                                            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
             final Tuple3<? extends T1, ? extends T2, ? extends T3> value = unzipper.apply(node.getValue());
             final List<Tuple3<Node<T1>, Node<T2>, Node<T3>>> children = node.getChildren()
-                    .map(child -> Unzip.apply3(child, unzipper));
+                                                                            .map(child -> Unzip.apply3(child, unzipper));
             final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
             final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
             final Node<T3> node3 = new Node<>(value._3, children.map(t -> t._3));

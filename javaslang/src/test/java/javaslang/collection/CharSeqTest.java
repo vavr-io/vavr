@@ -86,7 +86,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldPadNonEmptyZeroLen() {
-        CharSeq seq = of('a');
+        final CharSeq seq = of('a');
         assertThat(seq.padTo(0, 'b')).isSameAs(seq);
     }
 
@@ -111,7 +111,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldLeftPadNonEmptyZeroLen() {
-        CharSeq seq = of('a');
+        final CharSeq seq = of('a');
         assertThat(seq.leftPadTo(0, 'b')).isSameAs(seq);
     }
 
@@ -135,7 +135,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldPatchEmptyByNonEmpty() {
-        Seq<Character> s = of('1', '2', '3');
+        final Seq<Character> s = of('1', '2', '3');
         assertThat(empty().patch(0, s, 0)).isEqualTo(s);
         assertThat(empty().patch(-1, s, -1)).isEqualTo(s);
         assertThat(empty().patch(-1, s, 1)).isEqualTo(s);
@@ -145,7 +145,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldPatchNonEmptyByEmpty() {
-        Seq<Character> s = of('1', '2', '3');
+        final Seq<Character> s = of('1', '2', '3');
         assertThat(s.patch(-1, empty(), -1)).isEqualTo(of('1', '2', '3'));
         assertThat(s.patch(-1, empty(), 0)).isEqualTo(of('1', '2', '3'));
         assertThat(s.patch(-1, empty(), 1)).isEqualTo(of('2', '3'));
@@ -166,8 +166,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldPatchNonEmptyByNonEmpty() {
-        Seq<Character> s = of('1', '2', '3');
-        Seq<Character> d = of('4', '5', '6');
+        final Seq<Character> s = of('1', '2', '3');
+        final Seq<Character> d = of('4', '5', '6');
         assertThat(s.patch(-1, d, -1)).isEqualTo(of('4', '5', '6', '1', '2', '3'));
         assertThat(s.patch(-1, d, 0)).isEqualTo(of('4', '5', '6', '1', '2', '3'));
         assertThat(s.patch(-1, d, 1)).isEqualTo(of('4', '5', '6', '2', '3'));
@@ -547,7 +547,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldDropWhileNoneIfPredicateIsFalse() {
-        CharSeq t = of('1', '2', '3');
+        final CharSeq t = of('1', '2', '3');
         assertThat(t.dropWhile(ignored -> false)).isSameAs(t);
     }
 
@@ -748,20 +748,20 @@ public class CharSeqTest {
 
     @Test
     public void shouldNilGroupBy() {
-        assertThat(empty().groupBy(Function.identity())).isEqualTo(HashMap.empty());
+        assertThat(empty().groupBy(Function.identity())).isEqualTo(LinkedHashMap.empty());
     }
 
     @Test
     public void shouldNonNilGroupByIdentity() {
-        Map<?, ?> actual = of('a', 'b', 'c').groupBy(Function.identity());
-        Map<?, ?> expected = HashMap.empty().put('a', of('a')).put('b', of('b')).put('c', of('c'));
+        final Map<?, ?> actual = of('a', 'b', 'c').groupBy(Function.identity());
+        final Map<?, ?> expected = LinkedHashMap.empty().put('a', of('a')).put('b', of('b')).put('c', of('c'));
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldNonNilGroupByEqual() {
-        Map<?, ?> actual = of('a', 'b', 'c').groupBy(c -> 1);
-        Map<?, ?> expected = HashMap.empty().put(1, of('a', 'b', 'c'));
+        final Map<?, ?> actual = of('a', 'b', 'c').groupBy(c -> 1);
+        final Map<?, ?> expected = LinkedHashMap.empty().put(1, of('a', 'b', 'c'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1278,7 +1278,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldSpanNonNil() {
-        CharSeq cs = of('0', '1', '2', '3');
+        final CharSeq cs = of('0', '1', '2', '3');
         assertThat(cs.span(i -> i == '0' || i == '1'))
                 .isEqualTo(Tuple.of(of('0', '1'), of('2', '3')));
         assertThat(cs.span(i -> false))
@@ -1840,8 +1840,8 @@ public class CharSeqTest {
     public void shouldCalculateCrossProductOfNonNil() {
         final List<Tuple2<Character, Character>> actual = of('1', '2', '3').crossProduct().toList();
         final List<Tuple2<Character, Character>> expected = Iterator.of(Tuple.of('1', '1'), Tuple.of('1', '2'),
-                                                                        Tuple.of('1', '3'), Tuple.of('2', '1'), Tuple.of('2', '2'), Tuple.of('2', '3'), Tuple.of('3', '1'),
-                                                                        Tuple.of('3', '2'), Tuple.of('3', '3')).toList();
+                Tuple.of('1', '3'), Tuple.of('2', '1'), Tuple.of('2', '2'), Tuple.of('2', '3'), Tuple.of('3', '1'),
+                Tuple.of('3', '2'), Tuple.of('3', '3')).toList();
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -1883,7 +1883,7 @@ public class CharSeqTest {
                         .crossProduct(of('a', 'b'))
                         .toList();
         final List<Tuple2<Character, Character>> expected = Vector.of(Tuple.of('1', 'a'), Tuple.of('1', 'b'),
-                                                                      Tuple.of('2', 'a'), Tuple.of('2', 'b'), Tuple.of('3', 'a'), Tuple.of('3', 'b')).toList();
+                Tuple.of('2', 'a'), Tuple.of('2', 'b'), Tuple.of('3', 'a'), Tuple.of('3', 'b')).toList();
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -2243,7 +2243,7 @@ public class CharSeqTest {
     @Test
     public void shouldFullyIterateNonNilStartingAtIndex() {
         int actual = -1;
-        for (java.util.Iterator<Character> iter = of('1', '2', '3').iterator(1); iter.hasNext(); ) {
+        for (final java.util.Iterator<Character> iter = of('1', '2', '3').iterator(1); iter.hasNext(); ) {
             actual = iter.next();
         }
         assertThat(actual).isEqualTo('3');
@@ -2723,7 +2723,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldTransform() {
-        String transformed = of('0').transform(v -> String.valueOf(v.get()));
+        final String transformed = of('0').transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("0");
     }
 
@@ -3037,8 +3037,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldWrapOtherCharSeq() {
-        CharSeq cs1 = of("123");
-        CharSeq cs2 = of(cs1);
+        final CharSeq cs1 = of("123");
+        final CharSeq cs2 = of(cs1);
         assertThat(cs1 == cs2).isTrue();
     }
 
@@ -3063,15 +3063,15 @@ public class CharSeqTest {
 
     @Test
     public void shouldTabulateTheCharSeq() {
-        Function<Number, Character> f = i -> i.toString().charAt(0);
-        CharSeq actual = tabulate(3, f);
+        final Function<Number, Character> f = i -> i.toString().charAt(0);
+        final CharSeq actual = tabulate(3, f);
         assertThat(actual).isEqualTo(of('0', '1', '2'));
     }
 
     @Test
     public void shouldTabulateTheCharSeqCallingTheFunctionInTheRightOrder() {
-        java.util.LinkedList<Character> chars = new java.util.LinkedList<>(Arrays.asList('0', '1', '2'));
-        CharSeq actual = tabulate(3, i -> chars.remove());
+        final java.util.LinkedList<Character> chars = new java.util.LinkedList<>(Arrays.asList('0', '1', '2'));
+        final CharSeq actual = tabulate(3, i -> chars.remove());
         assertThat(actual).isEqualTo(of('0', '1', '2'));
     }
 
@@ -3087,8 +3087,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldFillTheCharSeqCallingTheSupplierInTheRightOrder() {
-        java.util.LinkedList<Character> chars = new java.util.LinkedList<>(Arrays.asList('0', '1'));
-        CharSeq actual = fill(2, () -> chars.remove());
+        final java.util.LinkedList<Character> chars = new java.util.LinkedList<>(Arrays.asList('0', '1'));
+        final CharSeq actual = fill(2, () -> chars.remove());
         assertThat(actual).isEqualTo(of('0', '1'));
     }
 
@@ -3122,10 +3122,10 @@ public class CharSeqTest {
     @Test
     public void shouldUnfoldRightSimpleCharSeq() {
         assertThat(
-            CharSeq.unfoldRight('j', x -> x == 'a'
-                                ? Option.none()
-                                : Option.of(new Tuple2<>(new Character(x), (char)(x-1)))))
-            .isEqualTo(of("jihgfedcb"));
+                CharSeq.unfoldRight('j', x -> x == 'a'
+                                              ? Option.none()
+                                              : Option.of(new Tuple2<>(new Character(x), (char) (x - 1)))))
+                .isEqualTo(of("jihgfedcb"));
     }
 
     @Test
@@ -3136,10 +3136,10 @@ public class CharSeqTest {
     @Test
     public void shouldUnfoldLeftSimpleCharSeq() {
         assertThat(
-            CharSeq.unfoldLeft('j', x -> x == 'a'
-                               ? Option.none()
-                               : Option.of(new Tuple2<>((char)(x-1), new Character(x)))))
-            .isEqualTo(of("bcdefghij"));
+                CharSeq.unfoldLeft('j', x -> x == 'a'
+                                             ? Option.none()
+                                             : Option.of(new Tuple2<>((char) (x - 1), new Character(x)))))
+                .isEqualTo(of("bcdefghij"));
     }
 
     @Test
@@ -3150,9 +3150,9 @@ public class CharSeqTest {
     @Test
     public void shouldUnfoldSimpleCharSeq() {
         assertThat(
-            CharSeq.unfold('j', x -> x == 'a'
-                           ? Option.none()
-                           : Option.of(new Tuple2<>((char)(x-1), new Character(x)))))
-            .isEqualTo(of("bcdefghij"));
+                CharSeq.unfold('j', x -> x == 'a'
+                                         ? Option.none()
+                                         : Option.of(new Tuple2<>((char) (x - 1), new Character(x)))))
+                .isEqualTo(of("bcdefghij"));
     }
 }
