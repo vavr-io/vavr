@@ -1,14 +1,26 @@
-package javaslang.benchmark.collection;
+package javaslang.collection;
 
-import javaslang.benchmark.JmhRunner;
-import javaslang.collection.HashSet;
+import javaslang.JmhRunner;
+import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 
-import static javaslang.benchmark.JmhRunner.*;
+import java.util.Objects;
+
+import static javaslang.JmhRunner.*;
 
 public class HashSetBenchmark {
+    static final Array<Class<?>> CLASSES = Array.of(
+            Add.class,
+            Iterate.class
+    );
+
+    @Test
+    public void testAsserts() {
+        JmhRunner.runDebug(CLASSES);
+    }
+
     public static void main(String... args) {
-        JmhRunner.runQuick(HashSetBenchmark.class);
+        JmhRunner.runNormal(CLASSES);
     }
 
     @State(Scope.Benchmark)
@@ -16,94 +28,99 @@ public class HashSetBenchmark {
         @Param({ "10", "100", "1000" })
         public int CONTAINER_SIZE;
 
-        Integer[] ELEMENTS;
-        int SET_SIZE;
         int EXPECTED_AGGREGATE;
+        Integer[] ELEMENTS;
+        Set<Integer> SET;
 
         org.pcollections.PSet<Integer> pcollectionsPersistent = org.pcollections.HashTreePSet.empty();
-        scala.collection.immutable.HashSet<Integer> scalaPersistent = new scala.collection.immutable.HashSet<>();
+        scala.collection.immutable.HashSet<Integer> scalaPersistent = (scala.collection.immutable.HashSet<Integer>) scala.collection.immutable.HashSet$.MODULE$.empty();
         javaslang.collection.Set<Integer> slangPersistent = javaslang.collection.HashSet.empty();
 
         @Setup
         public void setup() {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
 
-            final HashSet<Integer> set = HashSet.of(ELEMENTS);
-            SET_SIZE = set.size();
-            EXPECTED_AGGREGATE = set.fold(0, (i, j) -> i ^ j);
+            SET = TreeSet.of(ELEMENTS);
+            EXPECTED_AGGREGATE = SET.reduce(JmhRunner::xor);
 
-            assertEquals(pcollectionsPersistent.size(), 0);
-            assertEquals(scalaPersistent.size(), 0);
-            assertEquals(slangPersistent.size(), 0);
-            for (Integer element : ELEMENTS) {
-                pcollectionsPersistent = pcollectionsPersistent.plus(element);
-                scalaPersistent = scalaPersistent.$plus(element);
-                slangPersistent = slangPersistent.add(element);
+            require(pcollectionsPersistent::isEmpty,
+                    scalaPersistent::isEmpty,
+                    slangPersistent::isEmpty);
+
+            for (int value : SET) {
+                pcollectionsPersistent = pcollectionsPersistent.plus(value);
+                scalaPersistent = scalaPersistent.$plus(value);
             }
-            assertEquals(pcollectionsPersistent.size(), SET_SIZE);
-            assertEquals(scalaPersistent.size(), SET_SIZE);
-            assertEquals(slangPersistent.size(), SET_SIZE);
+            slangPersistent = javaslang.collection.HashSet.ofAll(SET);
 
+            require(() -> SET.forAll(v -> pcollectionsPersistent.contains(v)),
+                    () -> SET.forAll(v -> scalaPersistent.contains(v)),
+                    () -> SET.forAll(v -> slangPersistent.contains(v)));
         }
     }
 
     public static class Add extends Base {
         @Benchmark
-        public void pcollections_persistent() {
+        public Object pcollections_persistent() {
             org.pcollections.PSet<Integer> values = org.pcollections.HashTreePSet.empty();
             for (Integer element : ELEMENTS) {
                 values = values.plus(element);
             }
-            assertEquals(values.size(), SET_SIZE);
+            require(values, vs -> SET.forAll(vs::contains));
+            return values;
         }
 
         @Benchmark
-        public void scala_immutable() {
+        public Object scala_immutable() {
             scala.collection.immutable.HashSet<Integer> values = new scala.collection.immutable.HashSet<>();
             for (Integer element : ELEMENTS) {
                 values = values.$plus(element);
             }
-            assertEquals(values.size(), SET_SIZE);
+            require(values, vs -> SET.forAll(vs::contains));
+            return values;
         }
 
         @Benchmark
-        public void slang_persistent() {
+        public Object slang_persistent() {
             javaslang.collection.Set<Integer> values = javaslang.collection.HashSet.empty();
             for (Integer element : ELEMENTS) {
                 values = values.add(element);
             }
-            assertEquals(values.size(), SET_SIZE);
+            require(values, vs -> SET.forAll(vs::contains));
+            return values;
         }
     }
 
+    @SuppressWarnings("ForLoopReplaceableByForEach")
     public static class Iterate extends Base {
         @Benchmark
-        public void scala_persistent() {
+        public Object scala_persistent() {
             int aggregate = 0;
             for (final scala.collection.Iterator<Integer> iterator = scalaPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
-            assertEquals(aggregate, EXPECTED_AGGREGATE);
+            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            return aggregate;
         }
 
         @Benchmark
-        @SuppressWarnings("ForLoopReplaceableByForEach")
-        public void pcollections_persistent() {
+        public Object pcollections_persistent() {
             int aggregate = 0;
             for (final java.util.Iterator<Integer> iterator = pcollectionsPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
-            assertEquals(aggregate, EXPECTED_AGGREGATE);
+            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            return aggregate;
         }
 
         @Benchmark
-        @SuppressWarnings("ForLoopReplaceableByForEach")
-        public void slang_persistent() {
+        public Object slang_persistent() {
             int aggregate = 0;
             for (final javaslang.collection.Iterator<Integer> iterator = slangPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
-            assertEquals(aggregate, EXPECTED_AGGREGATE);
+            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            return aggregate;
         }
     }
 }
