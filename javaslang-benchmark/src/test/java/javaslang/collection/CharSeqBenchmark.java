@@ -1,17 +1,33 @@
-package javaslang.benchmark.collection;
+package javaslang.collection;
 
-import javaslang.benchmark.JmhRunner;
-import javaslang.collection.CharSeq;
+import javaslang.JmhRunner;
+import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
 
-import java.util.Random;
+import java.util.*;
 
 import static java.lang.String.valueOf;
-import static javaslang.benchmark.JmhRunner.assertEquals;
+import static javaslang.JmhRunner.require;
 
 public class CharSeqBenchmark {
+    static final Array<Class<?>> CLASSES = Array.of(
+            Head.class,
+            Tail.class,
+            Get.class,
+            Update.class,
+            Prepend.class,
+            Append.class,
+            Iterate.class
+    );
+
+    @Test
+    public void testAsserts() {
+        JmhRunner.runDebug(CLASSES);
+    }
+
     public static void main(java.lang.String... args) {
-        JmhRunner.runQuick(CharSeqBenchmark.class);
+        JmhRunner.runNormal(CLASSES);
     }
 
     @State(Scope.Benchmark)
@@ -19,7 +35,7 @@ public class CharSeqBenchmark {
         @Param({ "10", "100", "1000" })
         public int CONTAINER_SIZE;
 
-        int expectedAggregate = 0;
+        int EXPECTED_AGGREGATE;
         char[] ELEMENTS;
 
         java.lang.String javaPersistent;
@@ -29,89 +45,107 @@ public class CharSeqBenchmark {
         @Setup
         public void setup() {
             final Random random = new Random(0);
-
-            final StringBuilder results = new StringBuilder(CONTAINER_SIZE);
+            ELEMENTS = new char[CONTAINER_SIZE];
             for (int i = 0; i < CONTAINER_SIZE; i++) {
-                final char value = (char) random.nextInt(Character.MAX_VALUE);
-                results.append(value);
-
-                expectedAggregate ^= value;
+                ELEMENTS[i] = (char) random.nextInt(Character.MAX_VALUE);
             }
-            ELEMENTS = results.toString().toCharArray();
+            EXPECTED_AGGREGATE = Iterator.ofAll(ELEMENTS).reduce((x, y) -> (char) JmhRunner.xor((int) x, (int) y));
 
-            assertEquals(javaPersistent, null);
-            javaPersistent = results.toString();
-            assertEquals(javaPersistent.length(), CONTAINER_SIZE);
+            require(() -> javaPersistent == null,
+                    () -> fjavaPersistent == null,
+                    () -> slangPersistent == null);
 
-            assertEquals(fjavaPersistent, null);
-            fjavaPersistent = fj.data.LazyString.str(results.toString());
-            assertEquals(fjavaPersistent.length(), CONTAINER_SIZE);
+            javaPersistent = new String(ELEMENTS);
+            fjavaPersistent = fj.data.LazyString.str(javaPersistent);
+            slangPersistent = CharSeq.of(javaPersistent);
 
-            assertEquals(slangPersistent, null);
-            slangPersistent = CharSeq.of(results);
-            assertEquals(slangPersistent.size(), CONTAINER_SIZE);
+            require(() -> Arrays.equals(javaPersistent.toCharArray(), ELEMENTS),
+                    () -> Objects.equals(fjavaPersistent.eval(), javaPersistent),
+                    () -> slangPersistent.contentEquals(javaPersistent));
         }
     }
 
     public static class Head extends Base {
         @Benchmark
-        public Object java_persistent() { return javaPersistent.charAt(0); }
+        public Object java_persistent() {
+            final Object head = javaPersistent.charAt(0);
+            require(() -> Objects.equals(head, ELEMENTS[0]));
+            return head;
+        }
 
         @Benchmark
-        public Object fjava_persistent() { return fjavaPersistent.head(); }
+        public Object fjava_persistent() {
+            final Object head = fjavaPersistent.head();
+            require(() -> Objects.equals(head, ELEMENTS[0]));
+            return head;
+        }
 
         @Benchmark
-        public Object slang_persistent() { return slangPersistent.head(); }
+        public Object slang_persistent() {
+            final Object head = slangPersistent.head();
+            require(() -> Objects.equals(head, ELEMENTS[0]));
+            return head;
+        }
     }
 
+    @SuppressWarnings("Convert2MethodRef")
     public static class Tail extends Base {
         @Benchmark
-        public void java_persistent() {
+        public Object java_persistent() {
             java.lang.String values = javaPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.substring(1);
             }
-            assertEquals(values, "");
+            require(values, v -> v.isEmpty());
+            return values;
         }
 
         @Benchmark
-        public void fjava_persistent() {
+        public Object fjava_persistent() {
             fj.data.LazyString values = fjavaPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.tail();
             }
-            if (!values.isEmpty()) { throw new IllegalStateException(); } // .equals is not defined for LazyString
+            require(values, v -> v.isEmpty());
+            return values;
         }
 
         @Benchmark
-        public void slang_persistent() {
+        public Object slang_persistent() {
             javaslang.collection.CharSeq values = slangPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.tail();
             }
-            assertEquals(values, javaslang.collection.CharSeq.empty());
+            require(values, v -> v.isEmpty());
+            return values;
         }
     }
 
     public static class Get extends Base {
         @Benchmark
-        public void java_persistent() {
+        public void java_persistent(Blackhole bh) {
             for (int i = 0; i < ELEMENTS.length; i++) {
-                assertEquals(javaPersistent.charAt(i), ELEMENTS[i]);
+                final Object value = javaPersistent.charAt(i);
+                bh.consume(value);
+                require(i, j -> Objects.equals(value, ELEMENTS[j]));
             }
         }
 
         @Benchmark
-        public void fjava_persistent() {
+        public void fjava_persistent(Blackhole bh) {
             for (int i = 0; i < ELEMENTS.length; i++) {
-                assertEquals(fjavaPersistent.charAt(i), ELEMENTS[i]);
+                final Object value = fjavaPersistent.charAt(i);
+                bh.consume(value);
+                require(i, j -> Objects.equals(value, ELEMENTS[j]));
             }
         }
 
         @Benchmark
-        public void slang_persistent() {
+        public void slang_persistent(Blackhole bh) {
             for (int i = 0; i < ELEMENTS.length; i++) {
-                assertEquals(slangPersistent.charAt(i), ELEMENTS[i]);
+                final Object value = slangPersistent.charAt(i);
+                bh.consume(value);
+                require(i, j -> Objects.equals(value, ELEMENTS[j]));
             }
         }
     }
@@ -125,6 +159,7 @@ public class CharSeqBenchmark {
             for (int i = 0; i < ELEMENTS.length; i++) {
                 values = values.substring(0, i) + replacement + values.substring(i + 1);
             }
+            require(values, v -> Array.ofAll(v.toCharArray()).forAll(c -> c == replacement));
             return values;
         }
 
@@ -132,96 +167,107 @@ public class CharSeqBenchmark {
         public Object slang_persistent() {
             javaslang.collection.CharSeq values = slangPersistent;
             for (int i = 0; i < ELEMENTS.length; i++) {
-                values = slangPersistent.update(i, replacement);
+                values = values.update(i, replacement);
             }
+            require(values, v -> v.forAll(c -> c == replacement));
             return values;
         }
     }
 
     public static class Prepend extends Base {
         @Benchmark
-        public void java_persistent() {
+        public Object java_persistent() {
             java.lang.String values = "";
             for (int i = CONTAINER_SIZE - 1; i >= 0; i--) {
                 values = ELEMENTS[i] + values;
             }
-            assertEquals(values.length(), CONTAINER_SIZE);
+            require(values, v -> Arrays.equals(v.toCharArray(), ELEMENTS));
+            return values;
         }
 
         @Benchmark
-        public void fjava_persistent() {
+        public Object fjava_persistent() {
             fj.data.LazyString values = fj.data.LazyString.empty;
             for (int i = CONTAINER_SIZE - 1; i >= 0; i--) {
                 values = fj.data.LazyString.str(valueOf(ELEMENTS[i])).append(values);
             }
-            assertEquals(values.length(), CONTAINER_SIZE);
+            require(values, v -> Objects.equals(fjavaPersistent.eval(), javaPersistent));
+            return values;
         }
 
         @Benchmark
-        public void slang_persistent() {
+        public Object slang_persistent() {
             javaslang.collection.CharSeq values = javaslang.collection.CharSeq.empty();
             for (int i = CONTAINER_SIZE - 1; i >= 0; i--) {
                 values = values.prepend(ELEMENTS[i]);
             }
-            assertEquals(values.length(), CONTAINER_SIZE);
+            require(values, v -> v.contentEquals(slangPersistent));
+            return values;
         }
     }
 
     public static class Append extends Base {
         @Benchmark
-        public void java_persistent() {
+        public Object java_persistent() {
             java.lang.String values = "";
             for (char c : ELEMENTS) {
                 values = values + c;
             }
-            assertEquals(values.length(), CONTAINER_SIZE);
+            require(values, v -> Arrays.equals(v.toCharArray(), ELEMENTS));
+            return values;
         }
 
         @Benchmark
-        public void fjava_persistent() {
+        public Object fjava_persistent() {
             fj.data.LazyString values = fj.data.LazyString.empty;
             for (char c : ELEMENTS) {
                 values = values.append(valueOf(c));
             }
-            assertEquals(values.length(), CONTAINER_SIZE);
+            require(values, v -> Collections.equals(v.toStream(), slangPersistent));
+            return values;
         }
 
         @Benchmark
-        public void slang_persistent() {
+        public Object slang_persistent() {
             javaslang.collection.CharSeq values = javaslang.collection.CharSeq.empty();
             for (char c : ELEMENTS) {
                 values = values.append(c);
             }
-            assertEquals(values.length(), CONTAINER_SIZE);
+            require(values, v -> v.contentEquals(slangPersistent));
+            return values;
         }
     }
 
+    @SuppressWarnings("ForLoopReplaceableByForEach")
     public static class Iterate extends Base {
         @Benchmark
-        public void java_persistent() {
+        public Object java_persistent() {
             int aggregate = 0;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= javaPersistent.charAt(i);
             }
-            assertEquals(aggregate, expectedAggregate);
+            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            return aggregate;
         }
 
         @Benchmark
-        public void fjava_persistent() {
+        public Object fjava_persistent() {
             int aggregate = 0;
-            for (fj.data.LazyString iterable = fjavaPersistent; !iterable.isEmpty(); iterable = iterable.tail()) {
-                aggregate ^= iterable.head();
+            for (final java.util.Iterator<Character> iterator = fjavaPersistent.toStream().iterator(); iterator.hasNext(); ) {
+                aggregate ^= iterator.next();
             }
-            assertEquals(aggregate, expectedAggregate);
+            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            return aggregate;
         }
 
         @Benchmark
-        public void slang_persistent() {
+        public Object slang_persistent() {
             int aggregate = 0;
-            for (Character c : slangPersistent) {
-                aggregate ^= c;
+            for (final Iterator<Character> iterator = slangPersistent.iterator(); iterator.hasNext(); ) {
+                aggregate ^= iterator.next();
             }
-            assertEquals(aggregate, expectedAggregate);
+            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            return aggregate;
         }
     }
 }
