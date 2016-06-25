@@ -1,44 +1,44 @@
-package javaslang.benchmark;
+package javaslang;
 
+import javaslang.collection.Array;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.results.RunResult;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.*;
 
-import java.util.*;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.function.*;
 
 public class JmhRunner {
-    private static final int FORKS = 1;
+    public static boolean WITH_ASSERTS = false;
 
-    private static final int WARMUP_ITERATIONS = 20;
-    private static final int MEASUREMENT_ITERATIONS = 30;
-    private static final int DURATION_MILLIS = 500;
-
-    private static final int QUICK_WARMUP_ITERATIONS = 5;
-    private static final int QUICK_MEASUREMENT_ITERATIONS = 5;
-    private static final int QUICK_DURATION_MILLIS = 100;
-
-    public static void runDebug(Class<?> benchmarkClass) {
-        runAndReport(benchmarkClass, 1, 1, 1, PrintGc.Disable, 0);
+    public static void runDebug(Array<Class<?>> benchmarkClasses) {
+        WITH_ASSERTS = true;
+        runAndReport(0, 1, 1, PrintGc.Disable, 0, benchmarkClasses);
+        WITH_ASSERTS = false;
     }
 
-    public static void runQuick(Class<?> benchmarkClass) {
-        runAndReport(benchmarkClass, QUICK_WARMUP_ITERATIONS, QUICK_MEASUREMENT_ITERATIONS, QUICK_DURATION_MILLIS, PrintGc.Disable, FORKS);
+    public static void runQuick(Array<Class<?>> benchmarkClasses) {
+        runAndReport(10, 10, 10, PrintGc.Disable, 1, benchmarkClasses);
     }
 
-    public static void runSlow(Class<?> benchmarkClass) {
-        runAndReport(benchmarkClass, WARMUP_ITERATIONS, MEASUREMENT_ITERATIONS, DURATION_MILLIS, PrintGc.Enable, FORKS);
+    public static void runNormal(Array<Class<?>> benchmarkClasses) {
+        runAndReport(15, 10, 100, PrintGc.Disable, 1, benchmarkClasses);
     }
 
-    private static void runAndReport(Class<?> benchmarkClass, int warmupIterations, int measurementIterations, int millis, PrintGc printGc, int forks) {
-        final Collection<RunResult> results = run(benchmarkClass, warmupIterations, measurementIterations, millis, printGc, forks);
-        BenchmarkPerformanceReporter.of(benchmarkClass, results).print();
+    public static void runSlow(Array<Class<?>> benchmarkClasses) {
+        runAndReport(15, 15, 300, PrintGc.Enable, 1, benchmarkClasses);
     }
 
-    private static Collection<RunResult> run(Class<?> benchmarkClass, int warmupIterations, int measurementIterations, int millis, PrintGc printGc, int forks) {
-        final Options opts = new OptionsBuilder()
-                .include(benchmarkClass.getSimpleName())
+    public static void runAndReport(int warmupIterations, int measurementIterations, int millis, PrintGc printGc, int forks, Array<Class<?>> benchmarkClasses) {
+        final Array<String> classNames = benchmarkClasses.map(Class::getCanonicalName);
+        final Array<RunResult> results = run(warmupIterations, measurementIterations, millis, printGc, forks, classNames);
+        BenchmarkPerformanceReporter.of(classNames, results).print();
+    }
+
+    private static Array<RunResult> run(int warmupIterations, int measurementIterations, int millis, PrintGc printGc, int forks, Array<String> classNames) {
+        final ChainedOptionsBuilder builder = new OptionsBuilder()
                 .shouldDoGC(true)
                 .shouldFailOnError(true)
                 .mode(Mode.Throughput)
@@ -50,17 +50,18 @@ public class JmhRunner {
                 .forks(forks)
                 // We are using 4Gb and setting NewGen to 100% to avoid GC during testing.
                 // Any GC during testing will destroy the iteration, which should get ignored as an outlier
-                .jvmArgsAppend("-XX:+UseG1GC", "-Xss100m", "-Xms4g", "-Xmx4g", "-XX:MaxGCPauseMillis=1000", "-XX:+UnlockExperimentalVMOptions", "-XX:G1NewSizePercent=100", "-XX:G1MaxNewSizePercent=100", "-disableassertions", printGc.vmArg)
-                .build();
+                .jvmArgsAppend("-XX:+UseG1GC", "-Xss100m", "-Xms4g", "-Xmx4g", "-XX:MaxGCPauseMillis=1000", "-XX:+UnlockExperimentalVMOptions", "-XX:G1NewSizePercent=100", "-XX:G1MaxNewSizePercent=100", "-disableassertions", printGc.vmArg);
+
+        classNames.forEach(builder::include);
 
         try {
-            return new Runner(opts).run();
+            return Array.ofAll(new Runner(builder.build()).run());
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
 
-    private enum PrintGc {
+    public enum PrintGc {
         Enable("-XX:+PrintGC"),
         Disable("-XX:-PrintGC");
 
@@ -71,9 +72,28 @@ public class JmhRunner {
         }
     }
 
-    public static <T> void assertEquals(T a, T b) {
-        if (!Objects.equals(a, b)) {
-            throw new IllegalStateException(a + " != " + b);
+    public static <T> void require(T value, Predicate<T> predicate) {
+        require(() -> predicate.test(value));
+    }
+
+    public static <T1, T2> void require(T1 value1, Predicate<T1> predicate1, T2 value2, Predicate<T2> predicate2) {
+        require(() -> predicate1.test(value1),
+                () -> predicate2.test(value2));
+    }
+
+    public static <T1, T2, T3> void require(T1 value1, Predicate<T1> predicate1, T2 value2, Predicate<T2> predicate2, T3 value3, Predicate<T3> predicate3) {
+        require(() -> predicate1.test(value1),
+                () -> predicate2.test(value2),
+                () -> predicate3.test(value3));
+    }
+
+    public static void require(BooleanSupplier... suppliers) {
+        if (WITH_ASSERTS) {
+            for (int i = 0; i < suppliers.length; i++) {
+                if (!suppliers[i].getAsBoolean()) {
+                    throw new IllegalStateException("Failure in supplier #" + (i + 1) + "!");
+                }
+            }
         }
     }
 
@@ -90,5 +110,9 @@ public class JmhRunner {
             results[i] = value;
         }
         return results;
+    }
+
+    public static int xor(int x, int y) {
+        return x ^ y;
     }
 }

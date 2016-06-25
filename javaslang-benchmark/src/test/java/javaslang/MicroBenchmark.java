@@ -1,4 +1,4 @@
-package javaslang.benchmark;
+package javaslang;
 
 import javaslang.collection.*;
 import org.junit.Test;
