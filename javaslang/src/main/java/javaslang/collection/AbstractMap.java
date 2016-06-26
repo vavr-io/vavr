@@ -144,6 +144,24 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
         return filter(t -> predicate.test(t._2()));
     }
 
+    @Override
+    public Map<K, V> removeAll(BiPredicate<? super K, ? super V> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
+    }
+
+    @Override
+    public Map<K, V> removeKeys(Predicate<? super K> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filterKeys(predicate.negate());
+    }
+
+    @Override
+    public Map<K, V> removeValues(Predicate<? super V> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filterValues(predicate.negate());
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <C> Map<C, M> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {

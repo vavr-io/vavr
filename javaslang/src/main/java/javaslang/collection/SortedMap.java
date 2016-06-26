@@ -128,6 +128,15 @@ public interface SortedMap<K, V> extends Map<K, V> {
     SortedMap<K, V> filterValues(Predicate<? super V> predicate);
 
     @Override
+    SortedMap<K, V> removeAll(BiPredicate<? super K, ? super V> predicate);
+
+    @Override
+    SortedMap<K, V> removeKeys(Predicate<? super K> predicate);
+
+    @Override
+    SortedMap<K, V> removeValues(Predicate<? super V> predicate);
+
+    @Override
     <K2, V2> SortedMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper);
 
     @Override

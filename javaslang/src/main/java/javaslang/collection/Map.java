@@ -5,7 +5,10 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Function1;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.control.Option;
 
 import java.util.*;
@@ -336,6 +339,33 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @throws NullPointerException if {@code predicate} is null
      */
     Map<K, V> filterValues(Predicate<? super V> predicate);
+
+    /**
+     * Returns a new Map consisting of all elements which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> removeAll(BiPredicate<? super K, ? super V> predicate);
+
+    /**
+     * Returns a new Map consisting of all elements with keys which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test keys of elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> removeKeys(Predicate<? super K> predicate);
+
+    /**
+     * Returns a new Map consisting of all elements with values which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test values of elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> removeValues(Predicate<? super V> predicate);
 
     /**
      * Flat-maps this entries to a sequence of values.

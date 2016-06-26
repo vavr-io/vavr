@@ -921,4 +921,29 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         Map<Integer, String> dst = src.filterValues(v -> isDigits.matcher(v).matches());
         assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(1, "1").put(2, "2").put(3, "3").put(4, "4").put(5, "5").put(6, "6").put(7, "7").put(8, "8").put(9, "9"));
     }
+
+    // -- remove by filter
+
+    @Test
+    public void shouldBiRemoveWork() throws Exception {
+        Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
+        Pattern isDigits = Pattern.compile("^\\d+$");
+        Map<Integer, String> dst = src.removeAll((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f").put(17, "11").put(19, "13"));
+    }
+
+    @Test
+    public void shouldKeyRemoveWork() throws Exception {
+        Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
+        Map<Integer, String> dst = src.removeKeys(k -> k % 2 == 0);
+        assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(11, "b").put(13, "d").put(15, "f").put(17, "11").put(19, "13"));
+    }
+
+    @Test
+    public void shouldValueRemoveWork() throws Exception {
+        Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
+        Pattern isDigits = Pattern.compile("^\\d+$");
+        Map<Integer, String> dst = src.removeValues(v -> isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f"));
+    }
 }
