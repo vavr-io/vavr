@@ -94,8 +94,9 @@ public interface Function6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, Option<R>> lift(Function6<T1, T2, T3, T4, T5, T6, R> partialFunction) {
-        return (t1, t2, t3, t4, t5, t6) -> Try.of(() -> partialFunction.apply(t1, t2, t3, t4, t5, t6)).getOption();
+    @SuppressWarnings("RedundantTypeArguments")
+    static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, Option<R>> lift(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> partialFunction) {
+        return (t1, t2, t3, t4, t5, t6) -> Try.<R>of(() -> partialFunction.apply(t1, t2, t3, t4, t5, t6)).getOption();
     }
 
     /**
@@ -112,7 +113,7 @@ public interface Function6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, Try<R>> liftTry(Function6<T1, T2, T3, T4, T5, T6, R> partialFunction) {
+    static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, Try<R>> liftTry(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> partialFunction) {
         return (t1, t2, t3, t4, t5, t6) -> Try.of(() -> partialFunction.apply(t1, t2, t3, t4, t5, t6));
     }
 

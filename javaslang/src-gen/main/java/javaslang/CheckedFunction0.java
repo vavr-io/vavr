@@ -75,8 +75,9 @@ public interface CheckedFunction0<R> extends λ<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    static <R> Function0<Option<R>> lift(CheckedFunction0<R> partialFunction) {
-        return () -> Try.of(partialFunction::apply).getOption();
+    @SuppressWarnings("RedundantTypeArguments")
+    static <R> Function0<Option<R>> lift(CheckedFunction0<? extends R> partialFunction) {
+        return () -> Try.<R>of(partialFunction::apply).getOption();
     }
 
     /**
@@ -87,7 +88,7 @@ public interface CheckedFunction0<R> extends λ<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <R> Function0<Try<R>> liftTry(CheckedFunction0<R> partialFunction) {
+    static <R> Function0<Try<R>> liftTry(CheckedFunction0<? extends R> partialFunction) {
         return () -> Try.of(partialFunction::apply);
     }
 
@@ -147,13 +148,13 @@ public interface CheckedFunction0<R> extends λ<R> {
      * @return a function composed of this and recover
      * @throws NullPointerException if recover is null
      */
-    default Function0<R> recover(Function<? super Throwable, ? extends Supplier<R>> recover) {
+    default Function0<R> recover(Function<? super Throwable, ? extends Supplier<? extends R>> recover) {
         Objects.requireNonNull(recover, "recover is null");
         return () -> {
             try {
                 return this.apply();
             } catch (Throwable throwable) {
-                final Supplier<R> func = recover.apply(throwable);
+                final Supplier<? extends R> func = recover.apply(throwable);
                 Objects.requireNonNull(func, () -> "recover return null for " + throwable.getClass() + ": " + throwable.getMessage());
                 return func.get();
             }

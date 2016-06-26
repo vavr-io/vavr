@@ -580,6 +580,8 @@ def generateMainClasses(): Unit = {
 
         val generics = (1 to i).gen(j => s"T$j")(", ")
         val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
+        val wideGenerics = (1 to i).gen(j => s"? super T$j")(", ")
+        val fullWideGenerics = s"<${(i > 0).gen(s"$wideGenerics, ")}? extends R>"
         val genericsReversed = (1 to i).reverse.gen(j => s"T$j")(", ")
         val genericsTuple = if (i > 0) s"<$generics>" else ""
         val genericsFunction = if (i > 0) s"$generics, " else ""
@@ -604,11 +606,11 @@ def generateMainClasses(): Unit = {
           case _ => ""
         }
         def fullGenericsTypeF(checked: Boolean, i: Int): String = (checked, i) match {
-          case (true, _) => im.getType(s"javaslang.CheckedFunction$i") + fullGenerics
-          case (false, 0) => im.getType("java.util.function.Supplier") + "<R>"
-          case (false, 1) => im.getType("java.util.function.Function") + "<T1, R>"
-          case (false, 2) => im.getType("java.util.function.BiFunction") + "<T1, T2, R>"
-          case (false, _) => im.getType(s"javaslang.Function$i") + fullGenerics
+          case (true, _) => im.getType(s"javaslang.CheckedFunction$i") + fullWideGenerics
+          case (false, 0) => im.getType("java.util.function.Supplier") + "<? extends R>"
+          case (false, 1) => im.getType("java.util.function.Function") + "<? super T1, ? extends R>"
+          case (false, 2) => im.getType("java.util.function.BiFunction") + "<? super T1, ? super T2, ? extends R>"
+          case (false, _) => im.getType(s"javaslang.Function$i") + fullWideGenerics
         }
         val fullGenericsType = fullGenericsTypeF(checked, i)
         val refApply = i match {
@@ -699,12 +701,14 @@ def generateMainClasses(): Unit = {
                * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
                *         if the function is defined for the given arguments, and {@code None} otherwise.
                */
-              static $fullGenerics ${im.getType(s"javaslang.Function$i")}$genericsOptionReturnType lift($className$fullGenerics partialFunction) {
+              @SuppressWarnings("RedundantTypeArguments")
+              static $fullGenerics ${im.getType(s"javaslang.Function$i")}$genericsOptionReturnType lift($fullGenericsType partialFunction) {
                   ${
-                    val supplier = if (i == 0) "partialFunction::apply" else s"() -> partialFunction.apply($params)"
+                    val func = "partialFunction"
+                    val supplier = if (!checked && i == 0) s"$func::get" else if (checked && i == 0) s"$func::apply" else s"() -> $func.apply($params)"
                     val lambdaArgs = if (i == 1) params else s"($params)"
                     xs"""
-                      return $lambdaArgs -> ${im.getType("javaslang.control.Try")}.of($supplier).getOption();
+                      return $lambdaArgs -> ${im.getType("javaslang.control.Try")}.<R>of($supplier).getOption();
                     """
                   }
               }
