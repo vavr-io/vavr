@@ -8,7 +8,6 @@ import org.openjdk.jmh.runner.options.*;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.function.*;
 
 public class JmhRunner {
     /** enables debugging and assertions for benchmarks and production code - the speed results will be totally unreliable */
@@ -16,14 +15,17 @@ public class JmhRunner {
         runAndReport(groups, 0, 1, 1, 0, PrintGc.Disable, Assertions.Enable);
     }
 
+    @SuppressWarnings("unused")
     public static void runQuick(Array<Class<?>> groups) {
         runAndReport(groups, 10, 10, 10, 1, PrintGc.Disable, Assertions.Disable);
     }
 
+    @SuppressWarnings("unused")
     public static void runNormal(Array<Class<?>> groups) {
         runAndReport(groups, 15, 10, 100, 1, PrintGc.Disable, Assertions.Disable);
     }
 
+    @SuppressWarnings("unused")
     public static void runSlow(Array<Class<?>> groups) {
         runAndReport(groups, 15, 15, 300, 1, PrintGc.Enable, Assertions.Disable);
     }
@@ -77,28 +79,6 @@ public class JmhRunner {
 
         Assertions(String vmArg) {
             this.vmArg = vmArg;
-        }
-    }
-
-    public static <T> void require(T value, Predicate<T> predicate) {
-        require(() -> predicate.test(value));
-    }
-
-    public static <T1, T2> void require(T1 value1, Predicate<T1> predicate1, T2 value2, Predicate<T2> predicate2) {
-        require(() -> predicate1.test(value1),
-                () -> predicate2.test(value2));
-    }
-
-    public static <T1, T2, T3> void require(T1 value1, Predicate<T1> predicate1, T2 value2, Predicate<T2> predicate2, T3 value3, Predicate<T3> predicate3) {
-        require(() -> predicate1.test(value1),
-                () -> predicate2.test(value2),
-                () -> predicate3.test(value3));
-    }
-
-    public static void require(BooleanSupplier... suppliers) {
-        // TODO inline all requires
-        for (BooleanSupplier supplier : suppliers) {
-            assert supplier.getAsBoolean();
         }
     }
 

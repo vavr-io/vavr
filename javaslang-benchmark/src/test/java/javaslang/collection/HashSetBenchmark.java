@@ -4,7 +4,7 @@ import javaslang.JmhRunner;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 
-import static javaslang.JmhRunner.*;
+import static javaslang.JmhRunner.getRandomValues;
 
 public class HashSetBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
@@ -41,19 +41,15 @@ public class HashSetBenchmark {
             SET = TreeSet.of(ELEMENTS);
             EXPECTED_AGGREGATE = SET.reduce(JmhRunner::aggregate);
 
-            require(pcollectionsPersistent::isEmpty,
-                    scalaPersistent::isEmpty,
-                    slangPersistent::isEmpty);
-
             for (int value : SET) {
                 pcollectionsPersistent = pcollectionsPersistent.plus(value);
                 scalaPersistent = scalaPersistent.$plus(value);
             }
             slangPersistent = javaslang.collection.HashSet.ofAll(SET);
 
-            require(() -> SET.forAll(v -> pcollectionsPersistent.contains(v)),
-                    () -> SET.forAll(v -> scalaPersistent.contains(v)),
-                    () -> SET.forAll(v -> slangPersistent.contains(v)));
+            assert SET.forAll(v -> pcollectionsPersistent.contains(v))
+                   && SET.forAll(v -> scalaPersistent.contains(v))
+                   && SET.forAll(v -> slangPersistent.contains(v));
         }
     }
 
@@ -64,7 +60,7 @@ public class HashSetBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.plus(element);
             }
-            require(values, vs -> SET.forAll(vs::contains));
+            assert SET.forAll(values::contains);
             return values;
         }
 
@@ -74,7 +70,7 @@ public class HashSetBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.$plus(element);
             }
-            require(values, vs -> SET.forAll(vs::contains));
+            assert SET.forAll(values::contains);
             return values;
         }
 
@@ -84,7 +80,7 @@ public class HashSetBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.add(element);
             }
-            require(values, vs -> SET.forAll(vs::contains));
+            assert SET.forAll(values::contains);
             return values;
         }
     }
@@ -92,32 +88,32 @@ public class HashSetBenchmark {
     @SuppressWarnings("ForLoopReplaceableByForEach")
     public static class Iterate extends Base {
         @Benchmark
-        public Object scala_persistent() {
+        public int scala_persistent() {
             int aggregate = 0;
             for (final scala.collection.Iterator<Integer> iterator = scalaPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
 
         @Benchmark
-        public Object pcollections_persistent() {
+        public int pcollections_persistent() {
             int aggregate = 0;
             for (final java.util.Iterator<Integer> iterator = pcollectionsPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public int slang_persistent() {
             int aggregate = 0;
             for (final javaslang.collection.Iterator<Integer> iterator = slangPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
     }

@@ -4,7 +4,7 @@ import javaslang.JmhRunner;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 
-import static javaslang.JmhRunner.*;
+import static javaslang.JmhRunner.getRandomValues;
 import static scala.collection.JavaConversions.asJavaCollection;
 
 public class BitSetBenchmark {
@@ -46,14 +46,11 @@ public class BitSetBenchmark {
             DISTINCT = TreeSet.ofAll(ELEMENTS);
             EXPECTED_AGGREGATE = DISTINCT.reduce(JmhRunner::aggregate);
 
-            require(scalaPersistent::isEmpty,
-                    slangPersistent::isEmpty);
-
             scalaPersistent = (scala.collection.immutable.BitSet) scala.collection.immutable.BitSet$.MODULE$.apply(scala.collection.JavaConversions.asScalaBuffer(DISTINCT.toJavaList())); // ouch...
             slangPersistent = javaslang.collection.BitSet.ofAll(ELEMENTS);
 
-            require(() -> Collections.equals(slangPersistent, DISTINCT),
-                    () -> Collections.equals(asJavaCollection(scalaPersistent), DISTINCT));
+            assert Collections.equals(slangPersistent, DISTINCT)
+                   && Collections.equals(asJavaCollection(scalaPersistent), DISTINCT);
         }
     }
 
@@ -64,7 +61,7 @@ public class BitSetBenchmark {
             for (int element : ELEMENTS) {
                 values = values.$plus(element);
             }
-            require(values, v -> v.equals(scalaPersistent));
+            assert values.equals(scalaPersistent);
             return values;
         }
 
@@ -74,7 +71,7 @@ public class BitSetBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.add(element);
             }
-            require(values, v -> v.equals(slangPersistent));
+            assert values.equals(slangPersistent);
             return values;
         }
     }
@@ -82,22 +79,22 @@ public class BitSetBenchmark {
     @SuppressWarnings("ForLoopReplaceableByForEach")
     public static class Iterate extends Base {
         @Benchmark
-        public Object scala_persistent() {
+        public int scala_persistent() {
             int aggregate = 0;
             for (final scala.collection.Iterator<Object> iterator = scalaPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= (Integer) iterator.next();
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public int slang_persistent() {
             int aggregate = 0;
             for (final javaslang.collection.Iterator<Integer> iterator = slangPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
     }

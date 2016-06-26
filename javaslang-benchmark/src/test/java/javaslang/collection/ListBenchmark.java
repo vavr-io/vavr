@@ -8,7 +8,7 @@ import scala.compat.java8.JFunction;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static javaslang.JmhRunner.*;
+import static javaslang.JmhRunner.getRandomValues;
 import static scala.collection.JavaConversions.*;
 
 public class ListBenchmark {
@@ -57,15 +57,6 @@ public class ListBenchmark {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
             EXPECTED_AGGREGATE = Iterator.of(ELEMENTS).reduce(JmhRunner::aggregate);
 
-            require(javaMutable::isEmpty,
-                    javaMutableLinked::isEmpty,
-                    scalaMutable::isEmpty,
-                    scalaPersistent::isEmpty,
-                    () -> clojurePersistent.equals(clojure.lang.PersistentList.EMPTY),
-                    fjavaPersistent::isEmpty,
-                    pcollectionsPersistent::isEmpty,
-                    slangPersistent::isEmpty);
-
             java.util.Collections.addAll(javaMutable, ELEMENTS);
             javaMutableLinked.addAll(javaMutable);
             scalaMutable.$plus$plus$eq(asScalaBuffer(javaMutable));
@@ -76,14 +67,14 @@ public class ListBenchmark {
             pcollectionsPersistent = org.pcollections.ConsPStack.from(javaMutable);
             slangPersistent = javaslang.collection.List.ofAll(javaMutable);
 
-            require(() -> javaMutable.size() == CONTAINER_SIZE,
-                    () -> javaMutableLinked.size() == CONTAINER_SIZE,
-                    () -> scalaMutable.size() == CONTAINER_SIZE,
-                    () -> fjavaPersistent.length() == CONTAINER_SIZE,
-                    () -> pcollectionsPersistent.size() == CONTAINER_SIZE,
-                    () -> scalaPersistent.size() == CONTAINER_SIZE,
-                    () -> clojurePersistent.count() == CONTAINER_SIZE,
-                    () -> slangPersistent.size() == CONTAINER_SIZE);
+            assert Collections.equals(javaMutable, Arrays.asList(ELEMENTS))
+                   && Collections.equals(javaMutableLinked, javaMutable)
+                   && Collections.equals(asJavaCollection(scalaMutable), javaMutable)
+                   && Collections.equals(fjavaPersistent, javaMutable)
+                   && Collections.equals(pcollectionsPersistent, javaMutable)
+                   && Collections.equals(asJavaCollection(scalaPersistent), javaMutable)
+                   && Collections.equals((Iterable<?>) clojurePersistent, javaMutable)
+                   && Collections.equals(slangPersistent, javaMutable);
         }
     }
 
@@ -91,42 +82,42 @@ public class ListBenchmark {
         @Benchmark
         public Object java_mutable() {
             final ArrayList<Integer> values = new ArrayList<>(javaMutable);
-            require(() -> Collections.equals(values, javaMutable));
+            assert Collections.equals(values, javaMutable);
             return values;
         }
 
         @Benchmark
         public Object scala_persistent() {
             final scala.collection.immutable.List<?> values = scala.collection.immutable.List$.MODULE$.apply(scalaMutable);
-            require(() -> Objects.equals(values, scalaPersistent));
+            assert Objects.equals(values, scalaPersistent);
             return values;
         }
 
         @Benchmark
         public Object clojure_persistent() {
             final clojure.lang.IPersistentStack values = clojure.lang.PersistentList.create(javaMutable);
-            require(() -> Objects.equals(values, clojurePersistent));
+            assert Objects.equals(values, clojurePersistent);
             return values;
         }
 
         @Benchmark
         public Object fjava_persistent() {
             final fj.data.List<Integer> values = fj.data.List.fromIterator(javaMutable.iterator());
-            require(() -> Collections.equals(values, javaMutable));
+            assert Collections.equals(values, javaMutable);
             return values;
         }
 
         @Benchmark
         public Object pcollections_persistent() {
             final org.pcollections.PStack<Integer> values = org.pcollections.ConsPStack.from(javaMutable);
-            require(() -> Collections.equals(values, javaMutable));
+            assert Collections.equals(values, javaMutable);
             return values;
         }
 
         @Benchmark
         public Object slang_persistent() {
             final javaslang.collection.List<Integer> values = javaslang.collection.List.ofAll(javaMutable);
-            require(() -> Collections.equals(values, javaMutable));
+            assert Collections.equals(values, javaMutable);
             return values.head();
         }
     }
@@ -135,42 +126,42 @@ public class ListBenchmark {
         @Benchmark
         public Object java_mutable() {
             final Object head = javaMutable.get(0);
-            require(() -> Objects.equals(head, ELEMENTS[0]));
+            assert Objects.equals(head, ELEMENTS[0]);
             return head;
         }
 
         @Benchmark
         public Object scala_persistent() {
             final Object head = scalaPersistent.head();
-            require(() -> Objects.equals(head, javaMutable.get(0)));
+            assert Objects.equals(head, javaMutable.get(0));
             return head;
         }
 
         @Benchmark
         public Object clojure_persistent() {
             final Object head = clojurePersistent.peek();
-            require(() -> Objects.equals(head, javaMutable.get(0)));
+            assert Objects.equals(head, javaMutable.get(0));
             return head;
         }
 
         @Benchmark
         public Object fjava_persistent() {
             final Object head = fjavaPersistent.head();
-            require(() -> Objects.equals(head, javaMutable.get(0)));
+            assert Objects.equals(head, javaMutable.get(0));
             return head;
         }
 
         @Benchmark
         public Object pcollections_persistent() {
             final Object head = pcollectionsPersistent.get(0);
-            require(() -> Objects.equals(head, javaMutable.get(0)));
+            assert Objects.equals(head, javaMutable.get(0));
             return head;
         }
 
         @Benchmark
         public Object slang_persistent() {
             final Object head = slangPersistent.head();
-            require(() -> Objects.equals(head, javaMutable.get(0)));
+            assert Objects.equals(head, javaMutable.get(0));
             return head;
         }
     }
@@ -183,9 +174,8 @@ public class ListBenchmark {
 
             @Setup(Level.Invocation)
             public void initializeMutable(Base state) {
-                require(javaMutable::isEmpty);
                 java.util.Collections.addAll(javaMutable, state.ELEMENTS);
-                require(() -> javaMutable.size() == state.CONTAINER_SIZE);
+                assert Collections.equals(javaMutable, Arrays.asList(state.ELEMENTS));
             }
 
             @TearDown(Level.Invocation)
@@ -200,7 +190,7 @@ public class ListBenchmark {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values.remove(0);
             }
-            require(values::isEmpty);
+            assert values.isEmpty();
             return values;
         }
 
@@ -210,7 +200,7 @@ public class ListBenchmark {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values.remove(0);
             }
-            require(values::isEmpty);
+            assert values.isEmpty();
             return values;
         }
 
@@ -221,7 +211,7 @@ public class ListBenchmark {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = (scala.collection.immutable.List<Integer>) values.tail();
             }
-            require(values, v -> v.isEmpty());
+            assert values.isEmpty();
             return values;
         }
 
@@ -231,7 +221,7 @@ public class ListBenchmark {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.pop();
             }
-            require(values, v -> Objects.equals(v, clojure.lang.PersistentList.EMPTY));
+            assert Objects.equals(values, clojure.lang.PersistentList.EMPTY);
             return values;
         }
 
@@ -241,7 +231,7 @@ public class ListBenchmark {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.tail();
             }
-            require(values, v -> v.isEmpty());
+            assert values.isEmpty();
             return values;
         }
 
@@ -251,7 +241,7 @@ public class ListBenchmark {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.minus(0);
             }
-            require(values, v -> v.isEmpty());
+            assert values.isEmpty();
             return values;
         }
 
@@ -261,69 +251,69 @@ public class ListBenchmark {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.tail();
             }
-            require(values, v -> v.isEmpty());
+            assert values.isEmpty();
             return values;
         }
     }
 
     public static class Get extends Base {
         @Benchmark
-        public Object java_mutable() {
+        public int java_mutable() {
             int aggregate = 0;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= javaMutable.get(i);
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
 
         @Benchmark
-        public Object java_mutable_linked() {
+        public int java_mutable_linked() {
             int aggregate = 0;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= javaMutableLinked.get(i);
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
 
         @Benchmark
-        public Object scala_persistent() {
+        public int scala_persistent() {
             int aggregate = 0;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= scalaPersistent.apply(i);
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
 
         @Benchmark
-        public Object fjava_persistent() {
+        public int fjava_persistent() {
             int aggregate = 0;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= fjavaPersistent.index(i);
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
 
         @Benchmark
-        public Object pcollections_persistent() {
+        public int pcollections_persistent() {
             int aggregate = 0;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= pcollectionsPersistent.get(i);
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public int slang_persistent() {
             int aggregate = 0;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= slangPersistent.get(i);
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
     }
@@ -337,19 +327,15 @@ public class ListBenchmark {
 
             @Setup(Level.Invocation)
             public void initializeMutable(Base state) {
-                require(javaMutable::isEmpty,
-                        javaMutableLinked::isEmpty,
-                        scalaMutable::isEmpty);
-
                 java.util.Collections.addAll(javaMutable, state.ELEMENTS);
                 java.util.Collections.addAll(javaMutableLinked, state.ELEMENTS);
                 for (int i = state.CONTAINER_SIZE - 1; i >= 0; i--) {
                     scalaMutable.prependElem(state.ELEMENTS[i]);
                 }
 
-                require(javaMutable, v -> v.size() == state.CONTAINER_SIZE,
-                        javaMutableLinked, v -> v.size() == state.CONTAINER_SIZE,
-                        scalaMutable, v -> v.size() == state.CONTAINER_SIZE);
+                assert Collections.equals(javaMutable, Arrays.asList(state.ELEMENTS))
+                       && Collections.equals(javaMutableLinked, javaMutable)
+                       && Collections.equals(asJavaCollection(scalaMutable), javaMutable);
             }
 
             @TearDown(Level.Invocation)
@@ -366,7 +352,7 @@ public class ListBenchmark {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values.set(i, 0);
             }
-            require(values, v -> Array.ofAll(v).forAll(e -> e == 0));
+            assert Array.ofAll(values).forAll(e -> e == 0);
             return values;
         }
 
@@ -376,7 +362,7 @@ public class ListBenchmark {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values.set(i, 0);
             }
-            require(values, v -> Array.ofAll(v).forAll(e -> e == 0));
+            assert Array.ofAll(values).forAll(e -> e == 0);
             return values;
         }
 
@@ -386,7 +372,7 @@ public class ListBenchmark {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values.update(i, 0);
             }
-            require(values, v -> Array.ofAll(asJavaCollection(v)).forAll(e -> e == 0));
+            assert Array.ofAll(asJavaCollection(values)).forAll(e -> e == 0);
             return values;
         }
 
@@ -396,7 +382,7 @@ public class ListBenchmark {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.with(i, 0);
             }
-            require(values, v -> Array.ofAll(v).forAll(e -> e == 0));
+            assert Array.ofAll(values).forAll(e -> e == 0);
             return values;
         }
 
@@ -406,7 +392,7 @@ public class ListBenchmark {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.update(i, 0);
             }
-            require(values, v -> v.forAll(e -> e == 0));
+            assert values.forAll(e -> e == 0);
             return values;
         }
     }
@@ -419,7 +405,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values.add(0, element);
             }
-            require(values, v -> Collections.equals(Array.ofAll(v).reverse(), javaMutable));
+            assert Collections.equals(Array.ofAll(values).reverse(), javaMutable);
             return values;
         }
 
@@ -429,7 +415,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values.addFirst(element);
             }
-            require(values, v -> Collections.equals(Array.ofAll(v).reverse(), javaMutable));
+            assert Collections.equals(Array.ofAll(values).reverse(), javaMutable);
             return values;
         }
 
@@ -439,7 +425,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values.prependElem(element);
             }
-            require(values, v -> Collections.equals(Array.ofAll(asJavaCollection(v)).reverse(), javaMutable));
+            assert Collections.equals(Array.ofAll(asJavaCollection(values)).reverse(), javaMutable);
             return values;
         }
 
@@ -449,7 +435,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.$colon$colon(element);
             }
-            require(values, v -> Collections.equals(Array.ofAll(asJavaCollection(v)).reverse(), javaMutable));
+            assert Collections.equals(Array.ofAll(asJavaCollection(values)).reverse(), javaMutable);
             return values;
         }
 
@@ -459,7 +445,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.cons(element);
             }
-            require(values, v -> Collections.equals(Array.ofAll(v).reverse(), javaMutable));
+            assert Collections.equals(Array.ofAll(values).reverse(), javaMutable);
             return values;
         }
 
@@ -469,7 +455,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.plus(element);
             }
-            require(values, v -> Collections.equals(Array.ofAll(v).reverse(), javaMutable));
+            assert Collections.equals(Array.ofAll(values).reverse(), javaMutable);
             return values;
         }
 
@@ -479,7 +465,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.prepend(element);
             }
-            require(values, v -> Collections.equals(v.reverse(), javaMutable));
+            assert Collections.equals(values.reverse(), javaMutable);
             return values;
         }
     }
@@ -492,7 +478,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }
-            require(values, v -> Collections.equals(v, javaMutable));
+            assert Collections.equals(values, javaMutable);
             return values;
         }
 
@@ -502,7 +488,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values.addLast(element);
             }
-            require(values, v -> v.size() == CONTAINER_SIZE);
+            assert values.size() == CONTAINER_SIZE;
             return values;
         }
 
@@ -512,7 +498,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values.appendElem(element);
             }
-            require(values, v -> Collections.equals(asJavaCollection(v), javaMutable));
+            assert Collections.equals(asJavaCollection(values), javaMutable);
             return values;
         }
 
@@ -522,7 +508,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.snoc(element);
             }
-            require(values, v -> Collections.equals(v, javaMutable));
+            assert Collections.equals(values, javaMutable);
             return values;
         }
 
@@ -532,7 +518,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.plus(values.size(), element);
             }
-            require(values, v -> Collections.equals(v, javaMutable));
+            assert Collections.equals(values, javaMutable);
             return values;
         }
 
@@ -542,7 +528,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.append(element);
             }
-            require(values, v -> Collections.equals(v, javaMutable));
+            assert Collections.equals(values, javaMutable);
             return values;
         }
     }
@@ -572,72 +558,72 @@ public class ListBenchmark {
     @SuppressWarnings("ForLoopReplaceableByForEach")
     public static class Iterate extends Base {
         @Benchmark
-        public Object java_mutable() {
+        public int java_mutable() {
             int aggregate = 0;
             for (final java.util.Iterator<Integer> iterator = javaMutable.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
 
         @Benchmark
-        public Object java_mutable_linked() {
+        public int java_mutable_linked() {
             int aggregate = 0;
             for (final java.util.Iterator<Integer> iterator = javaMutableLinked.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
 
         @Benchmark
-        public Object scala_mutable() {
+        public int scala_mutable() {
             int aggregate = 0;
             for (final scala.collection.Iterator<Integer> iterator = scalaMutable.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
 
         @Benchmark
-        public Object scala_persistent() {
+        public int scala_persistent() {
             int aggregate = 0;
             for (final scala.collection.Iterator<Integer> iterator = scalaPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
 
         @Benchmark
-        public Object fjava_persistent() {
+        public int fjava_persistent() {
             int aggregate = 0;
             for (final java.util.Iterator<Integer> iterator = fjavaPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
 
         @Benchmark
-        public Object pcollections_persistent() {
+        public int pcollections_persistent() {
             int aggregate = 0;
             for (final java.util.Iterator<Integer> iterator = pcollectionsPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public int slang_persistent() {
             int aggregate = 0;
             for (final java.util.Iterator<Integer> iterator = slangPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
-            require(aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
         }
     }

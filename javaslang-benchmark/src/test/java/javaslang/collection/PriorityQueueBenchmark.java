@@ -48,16 +48,13 @@ public class PriorityQueueBenchmark {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
             EXPECTED_AGGREGATE = Iterator.of(ELEMENTS).reduce(JmhRunner::aggregate);
 
-            require(scalazPersistent::isEmpty,
-                    slangPersistent::isEmpty);
-
             for (Integer element : ELEMENTS) {
                 scalazPersistent = scalazPersistent.insert(element, SCALAZ_ORDER);
             }
             slangPersistent = javaslang.collection.PriorityQueue.of(ELEMENTS);
 
-            require(() -> scalazPersistent.size() == CONTAINER_SIZE,
-                    () -> slangPersistent.size() == CONTAINER_SIZE);
+            assert scalazPersistent.size() == CONTAINER_SIZE
+                   && slangPersistent.size() == CONTAINER_SIZE;
         }
     }
 
@@ -69,7 +66,7 @@ public class PriorityQueueBenchmark {
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }
-            require(values, v -> v.size() == CONTAINER_SIZE);
+            assert values.size() == CONTAINER_SIZE;
             return values;
         }
 
@@ -80,7 +77,7 @@ public class PriorityQueueBenchmark {
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }
-            require(values, v -> v.size() == CONTAINER_SIZE);
+            assert values.size() == CONTAINER_SIZE;
             return values;
         }
 
@@ -90,7 +87,7 @@ public class PriorityQueueBenchmark {
             for (Integer element : ELEMENTS) {
                 values.$plus$eq(element);
             }
-            require(values, v -> v.size() == CONTAINER_SIZE);
+            assert values.size() == CONTAINER_SIZE;
             return values;
         }
 
@@ -100,7 +97,7 @@ public class PriorityQueueBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.insert(element, SCALAZ_ORDER);
             }
-            require(values, v -> v.size() == CONTAINER_SIZE);
+            assert values.size() == CONTAINER_SIZE;
             return values;
         }
 
@@ -110,7 +107,7 @@ public class PriorityQueueBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.enqueue(element);
             }
-            require(values, v -> v.size() == CONTAINER_SIZE);
+            assert values.size() == CONTAINER_SIZE;
             return values;
         }
     }
@@ -125,19 +122,15 @@ public class PriorityQueueBenchmark {
 
             @Setup(Level.Invocation)
             public void initializeMutable(Base state) {
-                require(javaMutable::isEmpty,
-                        javaBlockingMutable::isEmpty,
-                        scalaMutable::isEmpty);
-
                 Collections.addAll(javaMutable, state.ELEMENTS);
                 Collections.addAll(javaBlockingMutable, state.ELEMENTS);
                 for (Integer element : state.ELEMENTS) {
                     scalaMutable.$plus$eq(element);
                 }
 
-                require(() -> javaMutable.size() == state.CONTAINER_SIZE,
-                        () -> javaBlockingMutable.size() == state.CONTAINER_SIZE,
-                        () -> scalaMutable.size() == state.CONTAINER_SIZE);
+                assert javaMutable.size() == state.CONTAINER_SIZE
+                       && javaBlockingMutable.size() == state.CONTAINER_SIZE
+                       && scalaMutable.size() == state.CONTAINER_SIZE;
             }
 
             @TearDown(Level.Invocation)
@@ -156,8 +149,7 @@ public class PriorityQueueBenchmark {
             for (; !values.isEmpty(); values.poll()) {
                 aggregate ^= values.peek();
             }
-            require(values, v -> v.isEmpty(),
-                    aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
             return values;
         }
 
@@ -169,8 +161,7 @@ public class PriorityQueueBenchmark {
             for (; !values.isEmpty(); values.poll()) {
                 aggregate ^= values.peek();
             }
-            require(values, v -> v.isEmpty(),
-                    aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
             return values;
         }
 
@@ -182,8 +173,7 @@ public class PriorityQueueBenchmark {
             while (!values.isEmpty()) {
                 aggregate ^= values.dequeue();
             }
-            require(values, v -> v.isEmpty(),
-                    aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
             return values;
         }
 
@@ -197,8 +187,7 @@ public class PriorityQueueBenchmark {
                 aggregate ^= uncons._1;
                 values = uncons._2;
             }
-            require(values, v -> v.isEmpty(),
-                    aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
             return values;
         }
 
@@ -212,8 +201,7 @@ public class PriorityQueueBenchmark {
                 aggregate ^= dequeue._1;
                 values = dequeue._2;
             }
-            require(values, v -> v.isEmpty(),
-                    aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
             return values;
         }
     }
@@ -227,14 +215,12 @@ public class PriorityQueueBenchmark {
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }
-            require(values, v -> v.size() == CONTAINER_SIZE);
-
+            assert values.size() == CONTAINER_SIZE;
             int aggregate = 0;
             for (; !values.isEmpty(); values.poll()) {
                 aggregate ^= values.peek();
             }
-            require(values, v -> v.isEmpty(),
-                    aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
             return values;
         }
 
@@ -245,14 +231,12 @@ public class PriorityQueueBenchmark {
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }
-            require(values, v -> v.size() == CONTAINER_SIZE);
-
+            assert values.size() == CONTAINER_SIZE;
             int aggregate = 0;
             for (; !values.isEmpty(); values.poll()) {
                 aggregate ^= values.peek();
             }
-            require(values, v -> v.isEmpty(),
-                    aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
             return values;
         }
 
@@ -262,14 +246,12 @@ public class PriorityQueueBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.$plus$eq(element);
             }
-            require(values, v -> v.size() == CONTAINER_SIZE);
-
+            assert values.size() == CONTAINER_SIZE;
             int aggregate = 0;
             while (!values.isEmpty()) {
                 aggregate ^= values.dequeue();
             }
-            require(values, v -> v.isEmpty(),
-                    aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
             return values;
         }
 
@@ -279,16 +261,14 @@ public class PriorityQueueBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.insert(element, SCALAZ_ORDER);
             }
-            require(values, v -> v.size() == CONTAINER_SIZE);
-
+            assert values.size() == CONTAINER_SIZE;
             int aggregate = 0;
             while (!values.isEmpty()) {
                 final scala.Tuple2<Integer, Heap<Integer>> uncons = values.uncons().get();
                 aggregate ^= uncons._1;
                 values = uncons._2;
             }
-            require(values, v -> v.isEmpty(),
-                    aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
             return values;
         }
 
@@ -300,8 +280,7 @@ public class PriorityQueueBenchmark {
                 final javaslang.collection.List<Integer> vs = values.get(element).getOrElse(javaslang.collection.List.empty()).prepend(element);
                 values = values.put(element, vs);
             }
-            require(values, v -> v.values().map(Traversable::size).sum().intValue() == CONTAINER_SIZE);
-
+            assert values.values().map(Traversable::size).sum().intValue() == CONTAINER_SIZE;
             int aggregate = 0;
             while (!values.isEmpty()) {
                 final Tuple2<Integer, javaslang.collection.List<Integer>> min = values.head();
@@ -310,8 +289,7 @@ public class PriorityQueueBenchmark {
                 }
                 values = values.remove(min._1);
             }
-            require(values, v -> v.isEmpty(),
-                    aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
             return values;
         }
 
@@ -321,16 +299,14 @@ public class PriorityQueueBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.enqueue(element);
             }
-            require(values, v -> v.size() == CONTAINER_SIZE);
-
+            assert values.size() == CONTAINER_SIZE;
             int aggregate = 0;
             while (!values.isEmpty()) {
                 final Tuple2<Integer, javaslang.collection.PriorityQueue<Integer>> dequeue = values.dequeue();
                 aggregate ^= dequeue._1;
                 values = dequeue._2;
             }
-            require(values, v -> v.isEmpty(),
-                    aggregate, a -> a == EXPECTED_AGGREGATE);
+            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
             return values;
         }
     }
