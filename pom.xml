@@ -37,6 +37,7 @@ Note: The maven build currently needs to be started from the javaslang root dir
     <description>Javaslang is a Java standard library extension built for Java 8 and above.</description>
     <modules>
         <module>javaslang</module>
+        <module>javaslang-benchmark</module>
         <module>javaslang-match</module>
         <module>javaslang-pure</module>
         <module>javaslang-test</module>
@@ -71,7 +72,8 @@ Note: The maven build currently needs to be started from the javaslang root dir
         <junit.version>4.12</junit.version>
         <maven.build-helper.version>1.9.1</maven.build-helper.version>
         <maven.bundle.version>3.0.1</maven.bundle.version>
-        <maven.clean.plugin>2.6.1</maven.clean.plugin>
+        <maven.clean.version>2.6.1</maven.clean.version>
+        <maven.install.version>2.5.2</maven.install.version>
         <maven.compiler.version>3.2</maven.compiler.version>
         <maven.deploy.version>2.8.2</maven.deploy.version>
         <maven.gpg.version>1.5</maven.gpg.version>
@@ -114,13 +116,18 @@ Note: The maven build currently needs to be started from the javaslang root dir
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>${maven.versions.version}</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>${maven.install.version}</version>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>${maven.clean.plugin}</version>
+                    <version>${maven.clean.version}</version>
                     <executions>
                         <execution>
                             <id>clean-generated-sources</id>
@@ -229,6 +236,7 @@ Note: The maven build currently needs to be started from the javaslang root dir
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${maven.jar.version}</version>
                     <configuration>
+                        <skipIfEmpty>true</skipIfEmpty>
                         <archive>
                             <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                         </archive>
@@ -262,31 +270,6 @@ Note: The maven build currently needs to be started from the javaslang root dir
         </pluginManagement>
     </build>
     <profiles>
-        <!-- A profile for benchmarks -->
-        <profile>
-            <id>benchmark</id>
-            <modules>
-                <module>javaslang</module>
-                <module>javaslang-match</module>
-                <module>javaslang-pure</module>
-                <module>javaslang-test</module>
-                <module>javaslang-benchmark</module>
-            </modules>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.19.1</version>
-                        <configuration>
-                            <includes>
-                                <include>**/*Benchmark.java</include>
-                            </includes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <!-- A profile for code coverage analysis in ci environments -->
         <profile>
             <id>ci</id>

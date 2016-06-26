@@ -205,7 +205,7 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        @SuppressWarnings("RedundantCast")
+        @SuppressWarnings({ "unchecked", "RedundantCast" })
         public Object scala_persistent() {
             scala.collection.immutable.List<Integer> values = scalaPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {

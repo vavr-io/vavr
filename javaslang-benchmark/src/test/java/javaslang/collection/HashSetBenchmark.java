@@ -30,8 +30,9 @@ public class HashSetBenchmark {
         Integer[] ELEMENTS;
         Set<Integer> SET;
 
-        org.pcollections.PSet<Integer> pcollectionsPersistent = org.pcollections.HashTreePSet.empty();
+        @SuppressWarnings("unchecked")
         scala.collection.immutable.HashSet<Integer> scalaPersistent = (scala.collection.immutable.HashSet<Integer>) scala.collection.immutable.HashSet$.MODULE$.empty();
+        org.pcollections.PSet<Integer> pcollectionsPersistent = org.pcollections.HashTreePSet.empty();
         javaslang.collection.Set<Integer> slangPersistent = javaslang.collection.HashSet.empty();
 
         @Setup
