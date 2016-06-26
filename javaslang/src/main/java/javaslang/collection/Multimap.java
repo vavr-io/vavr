@@ -269,6 +269,60 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     Multimap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
 
     /**
+     * Returns a new Multimap consisting of all elements which satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test elements
+     * @return a new Multimap
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Multimap<K, V> filter(BiPredicate<? super K, ? super V> predicate);
+
+    /**
+     * Returns a new Multimap consisting of all elements with keys which satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test keys of elements
+     * @return a new Multimap
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Multimap<K, V> filterKeys(Predicate<? super K> predicate);
+
+    /**
+     * Returns a new Multimap consisting of all elements with values which satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test values of elements
+     * @return a new Multimap
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Multimap<K, V> filterValues(Predicate<? super V> predicate);
+
+    /**
+     * Returns a new Multimap consisting of all elements which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test elements
+     * @return a new Multimap
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Multimap<K, V> removeAll(BiPredicate<? super K, ? super V> predicate);
+
+    /**
+     * Returns a new Multimap consisting of all elements with keys which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test keys of elements
+     * @return a new Multimap
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Multimap<K, V> removeKeys(Predicate<? super K> predicate);
+
+    /**
+     * Returns a new Multimap consisting of all elements with values which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test values of elements
+     * @return a new Multimap
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Multimap<K, V> removeValues(Predicate<? super V> predicate);
+
+    /**
      * Flat-maps this entries to a sequence of values.
      * <p>
      * Please use {@link #flatMap(BiFunction)} if the result should be a {@code Multimap}

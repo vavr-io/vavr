@@ -18,6 +18,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collector;
 
 @RunWith(Parameterized.class)
@@ -805,4 +806,53 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         }
     }
 
+    // -- filter
+
+    @Test
+    public void shouldBiFilterWork() throws Exception {
+        Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        Pattern isDigits = Pattern.compile("^\\d+$");
+        Multimap<Integer, String> dst = src.filter((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(2, "2").put(4, "4").put(6, "6").put(6, "10").put(8, "8").put(8, "12"));
+    }
+
+    @Test
+    public void shouldKeyFilterWork() throws Exception {
+        Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        Multimap<Integer, String> dst = src.filterKeys(k -> k % 2 == 0);
+        assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(0, "a").put(2, "2").put(2, "c").put(4, "4").put(4, "e").put(6, "6").put(6, "10").put(8, "8").put(8, "12"));
+    }
+
+    @Test
+    public void shouldValueFilterWork() throws Exception {
+        Multimap<Integer, String> src = mapTabulate(10, n -> Tuple.of(n % 5, Integer.toHexString(n)));
+        Pattern isDigits = Pattern.compile("^\\d+$");
+        Multimap<Integer, String> dst = src.filterValues(v -> isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(0, "5").put(1, "1").put(1, "6").put(2, "2").put(2, "7").put(3, "3").put(3, "8").put(4, "4").put(4, "9"));
+    }
+
+    // -- remove by filter
+
+    @Test
+    public void shouldBiRemoveWork() throws Exception {
+        Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        Pattern isDigits = Pattern.compile("^\\d+$");
+        Multimap<Integer, String> dst = src.removeAll((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(0, "a").put(1, "1").put(1, "b").put(2, "c").put(3, "3").put(3, "d").put(4, "e").put(5, "5").put(5, "f").put(7, "7").put(7, "11").put(9, "9").put(9, "13"));
+    }
+
+    @Test
+    public void shouldKeyRemoveWork() throws Exception {
+        Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        Multimap<Integer, String> dst = src.removeKeys(k -> k % 2 == 0);
+        assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(1, "b").put(3, "3").put(3, "d").put(5, "5").put(5, "f").put(7, "7").put(7, "11").put(9, "9").put(9, "13"));
+    }
+
+    @Test
+    public void shouldValueRemoveWork() throws Exception {
+        Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        Pattern isDigits = Pattern.compile("^\\d+$");
+        Multimap<Integer, String> dst = src.removeValues(v -> isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(0, "a").put(1, "b").put(2, "c").put(3, "d").put(4, "e").put(5, "f"));
+    }
 }

@@ -223,6 +223,42 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     }
 
     @Override
+    public M filter(BiPredicate<? super K, ? super V> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(t -> predicate.test(t._1(), t._2()));
+    }
+
+    @Override
+    public M filterKeys(Predicate<? super K> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(t -> predicate.test(t._1()));
+    }
+
+    @Override
+    public M filterValues(Predicate<? super V> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(t -> predicate.test(t._2()));
+    }
+
+    @Override
+    public M removeAll(BiPredicate<? super K, ? super V> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
+    }
+
+    @Override
+    public M removeKeys(Predicate<? super K> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filterKeys(predicate.negate());
+    }
+
+    @Override
+    public M removeValues(Predicate<? super V> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filterValues(predicate.negate());
+    }
+
+    @Override
     public <C> Map<C, Multimap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {
         return Collections.groupBy(this, classifier, this::createFromEntries);
     }
