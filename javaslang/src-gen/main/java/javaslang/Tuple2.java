@@ -115,6 +115,16 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
     }
 
     /**
+     * Swaps the elements of this {@code Tuple}.
+     *
+     * @return A new Tuple where the first element is the second element of this Tuple
+     *   and the second element is the first element of this Tuple.
+     */
+    public Tuple2<T2, T1> swap() {
+      return Tuple.of(_2, _1);
+    }
+
+    /**
      * Maps the components of this tuple using a mapper function.
      *
      * @param mapper the mapper function

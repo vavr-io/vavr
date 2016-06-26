@@ -72,6 +72,11 @@ public class Tuple2Test {
     }
 
     @Test
+    public void shouldSwap() {
+        assertThat(createIntTuple(1, 2).swap()).isEqualTo(createIntTuple(2, 1));
+    }
+
+    @Test
     public void shouldMap() {
         final Tuple2<Object, Object> tuple = createTuple();
         final Tuple2<Object, Object> actual = tuple.map((o1, o2) -> tuple);
