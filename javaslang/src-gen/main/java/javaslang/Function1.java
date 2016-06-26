@@ -66,8 +66,8 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
      * @param <T1> 1st argument
      * @return a {@code Function1}
      */
-    static <T1, R> Function1<T1, R> of(Function<? super T1, ? extends R> methodReference) {
-        return methodReference::apply;
+    static <T1, R> Function1<T1, R> of(Function1<T1, R> methodReference) {
+        return methodReference;
     }
 
     /**
@@ -79,8 +79,9 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
+    @SuppressWarnings("RedundantTypeArguments")
     static <T1, R> Function1<T1, Option<R>> lift(Function<? super T1, ? extends R> partialFunction) {
-        return t1 -> Try.of(() -> of(partialFunction).apply(t1)).getOption();
+        return t1 -> Try.<R>of(() -> partialFunction.apply(t1)).getOption();
     }
 
     /**

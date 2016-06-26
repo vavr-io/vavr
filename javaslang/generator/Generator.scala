@@ -689,11 +689,8 @@ def generateMainClasses(): Unit = {
                ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
                * @return a {@code $className}
                */
-              static $fullGenerics $className$fullGenerics of($fullGenericsType methodReference) {
-                  ${
-                    val ref = if (!checked && i == 0) "get" else "apply"
-                    s"return methodReference::$ref;"
-                  }
+              static $fullGenerics $className$fullGenerics of($className$fullGenerics methodReference) {
+                  return methodReference;
               }
 
               /$javadoc
@@ -704,13 +701,14 @@ def generateMainClasses(): Unit = {
                * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
                *         if the function is defined for the given arguments, and {@code None} otherwise.
                */
+              @SuppressWarnings("RedundantTypeArguments")
               static $fullGenerics ${im.getType(s"javaslang.Function$i")}$genericsOptionReturnType lift($fullGenericsType partialFunction) {
                   ${
-                    val func = "of(partialFunction)"
+                    val func = "partialFunction"
                     val supplier = if (!checked && i == 0) s"$func::get" else if (checked && i == 0) s"$func::apply" else s"() -> $func.apply($params)"
                     val lambdaArgs = if (i == 1) params else s"($params)"
                     xs"""
-                      return $lambdaArgs -> ${im.getType("javaslang.control.Try")}.of($supplier).getOption();
+                      return $lambdaArgs -> ${im.getType("javaslang.control.Try")}.<R>of($supplier).getOption();
                     """
                   }
               }

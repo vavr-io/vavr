@@ -69,8 +69,8 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
      * @param <T2> 2nd argument
      * @return a {@code CheckedFunction2}
      */
-    static <T1, T2, R> CheckedFunction2<T1, T2, R> of(CheckedFunction2<? super T1, ? super T2, ? extends R> methodReference) {
-        return methodReference::apply;
+    static <T1, T2, R> CheckedFunction2<T1, T2, R> of(CheckedFunction2<T1, T2, R> methodReference) {
+        return methodReference;
     }
 
     /**
@@ -83,8 +83,9 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
+    @SuppressWarnings("RedundantTypeArguments")
     static <T1, T2, R> Function2<T1, T2, Option<R>> lift(CheckedFunction2<? super T1, ? super T2, ? extends R> partialFunction) {
-        return (t1, t2) -> Try.of(() -> of(partialFunction).apply(t1, t2)).getOption();
+        return (t1, t2) -> Try.<R>of(() -> partialFunction.apply(t1, t2)).getOption();
     }
 
     /**

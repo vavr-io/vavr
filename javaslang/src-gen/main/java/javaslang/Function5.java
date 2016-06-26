@@ -74,8 +74,8 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends λ<R> {
      * @param <T5> 5th argument
      * @return a {@code Function5}
      */
-    static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> of(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> methodReference) {
-        return methodReference::apply;
+    static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> of(Function5<T1, T2, T3, T4, T5, R> methodReference) {
+        return methodReference;
     }
 
     /**
@@ -91,8 +91,9 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends λ<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
+    @SuppressWarnings("RedundantTypeArguments")
     static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, Option<R>> lift(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> partialFunction) {
-        return (t1, t2, t3, t4, t5) -> Try.of(() -> of(partialFunction).apply(t1, t2, t3, t4, t5)).getOption();
+        return (t1, t2, t3, t4, t5) -> Try.<R>of(() -> partialFunction.apply(t1, t2, t3, t4, t5)).getOption();
     }
 
     /**
