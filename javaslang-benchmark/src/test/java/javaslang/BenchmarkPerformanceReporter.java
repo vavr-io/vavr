@@ -255,9 +255,9 @@ public class BenchmarkPerformanceReporter {
 
             alternativeImplementations = results.map(TestExecution::getImplementation).distinct().sorted();
             targetImplementations = alternativeImplementations.filter(i -> i.toLowerCase().contains(targetImplementation.toLowerCase()));
-            alternativeImplSize = Math.max(alternativeImplementations.map(String::length).max().get(), 10);
+            alternativeImplSize = Math.max(alternativeImplementations.map(String::length).max().getOrElse(0), 10);
 
-            final int targetImplSize = Math.max(targetImplementations.map(String::length).max().get(), 10);
+            final int targetImplSize = Math.max(targetImplementations.map(String::length).max().getOrElse(0), 10);
             ratioSize = Math.max(targetImplSize + 1 + alternativeImplSize, 10);
         }
 

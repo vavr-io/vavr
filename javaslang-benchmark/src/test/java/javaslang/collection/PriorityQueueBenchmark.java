@@ -274,7 +274,7 @@ public class PriorityQueueBenchmark {
 
         @Benchmark
         @SuppressWarnings("ManualArrayToCollectionCopy")
-        public Object java_treeset() {
+        public Object java_treeset_mutable() {
             javaslang.collection.TreeMap<Integer, javaslang.collection.List<Integer>> values = javaslang.collection.TreeMap.empty();
             for (Integer element : ELEMENTS) {
                 final javaslang.collection.List<Integer> vs = values.get(element).getOrElse(javaslang.collection.List.empty()).prepend(element);

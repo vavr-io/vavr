@@ -66,7 +66,7 @@ public class HashSetBenchmark {
         }
 
         @Benchmark
-        public Object scala_immutable() {
+        public Object scala_persistent() {
             scala.collection.immutable.HashSet<Integer> values = new scala.collection.immutable.HashSet<>();
             for (Integer element : ELEMENTS) {
                 values = values.$plus(element);

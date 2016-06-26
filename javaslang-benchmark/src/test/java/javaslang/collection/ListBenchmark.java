@@ -268,7 +268,7 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        public int java_mutable_linked() {
+        public int java_linked_mutable() {
             int aggregate = 0;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= javaMutableLinked.get(i);
@@ -357,7 +357,7 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        public Object java_mutable_linked(Initialized state) {
+        public Object java_linked_mutable(Initialized state) {
             final java.util.LinkedList<Integer> values = state.javaMutableLinked;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values.set(i, 0);
@@ -410,7 +410,7 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        public Object java_mutable_linked() {
+        public Object java_linked_mutable() {
             final java.util.LinkedList<Integer> values = new java.util.LinkedList<>();
             for (Integer element : ELEMENTS) {
                 values.addFirst(element);
@@ -483,7 +483,7 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        public Object java_mutable_linked() {
+        public Object java_linked_mutable() {
             final java.util.LinkedList<Integer> values = new java.util.LinkedList<>();
             for (Integer element : ELEMENTS) {
                 values.addLast(element);
@@ -568,7 +568,7 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        public int java_mutable_linked() {
+        public int java_linked_mutable() {
             int aggregate = 0;
             for (final java.util.Iterator<Integer> iterator = javaMutableLinked.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();

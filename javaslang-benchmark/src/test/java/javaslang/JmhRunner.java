@@ -1,6 +1,6 @@
 package javaslang;
 
-import javaslang.collection.Array;
+import javaslang.collection.*;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.results.RunResult;
 import org.openjdk.jmh.runner.Runner;
@@ -10,6 +10,22 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class JmhRunner {
+    /**
+     * Runs all the available benchmarks in precision mode.
+     * Note: it takes about 3 hours.
+     */
+    public static void main(String[] args) {
+        JmhRunner.runSlow(Array.of(
+                ArrayBenchmark.class,
+                BitSetBenchmark.class,
+                CharSeqBenchmark.class,
+                HashSetBenchmark.class,
+                ListBenchmark.class,
+                PriorityQueueBenchmark.class,
+                VectorBenchmark.class
+        ));
+    }
+
     /** enables debugging and assertions for benchmarks and production code - the speed results will be totally unreliable */
     public static void runDebug(Array<Class<?>> groups) {
         runAndReport(groups, 0, 1, 1, 0, PrintGc.Disable, Assertions.Enable);
