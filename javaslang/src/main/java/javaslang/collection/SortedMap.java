@@ -11,10 +11,7 @@ import javaslang.control.Option;
 
 import java.util.Comparator;
 import java.util.NoSuchElementException;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * An immutable {@code SortedMap} interface.
@@ -120,6 +117,15 @@ public interface SortedMap<K, V> extends Map<K, V> {
 
     @Override
     SortedMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
+    SortedMap<K, V> filter(BiPredicate<? super K, ? super V> predicate);
+
+    @Override
+    SortedMap<K, V> filterKeys(Predicate<? super K> predicate);
+
+    @Override
+    SortedMap<K, V> filterValues(Predicate<? super V> predicate);
 
     @Override
     <K2, V2> SortedMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper);
