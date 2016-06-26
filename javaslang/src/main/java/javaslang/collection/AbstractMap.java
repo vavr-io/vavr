@@ -145,19 +145,19 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
     }
 
     @Override
-    public Map<K, V> removeAll(BiPredicate<? super K, ? super V> predicate) {
+    public M removeAll(BiPredicate<? super K, ? super V> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
 
     @Override
-    public Map<K, V> removeKeys(Predicate<? super K> predicate) {
+    public M removeKeys(Predicate<? super K> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filterKeys(predicate.negate());
     }
 
     @Override
-    public Map<K, V> removeValues(Predicate<? super V> predicate) {
+    public M removeValues(Predicate<? super V> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filterValues(predicate.negate());
     }
