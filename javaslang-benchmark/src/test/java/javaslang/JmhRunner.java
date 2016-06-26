@@ -11,33 +11,30 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.*;
 
 public class JmhRunner {
-    public static boolean WITH_ASSERTS = false;
-
-    public static void runDebug(Array<Class<?>> benchmarkClasses) {
-        WITH_ASSERTS = true;
-        runAndReport(0, 1, 1, PrintGc.Disable, 0, benchmarkClasses);
-        WITH_ASSERTS = false;
+    /** enables debugging and assertions for benchmarks and production code - the speed results will be totally unreliable */
+    public static void runDebug(Array<Class<?>> groups) {
+        runAndReport(groups, 0, 1, 1, 0, PrintGc.Disable, Assertions.Enable);
     }
 
-    public static void runQuick(Array<Class<?>> benchmarkClasses) {
-        runAndReport(10, 10, 10, PrintGc.Disable, 1, benchmarkClasses);
+    public static void runQuick(Array<Class<?>> groups) {
+        runAndReport(groups, 10, 10, 10, 1, PrintGc.Disable, Assertions.Disable);
     }
 
-    public static void runNormal(Array<Class<?>> benchmarkClasses) {
-        runAndReport(15, 10, 100, PrintGc.Disable, 1, benchmarkClasses);
+    public static void runNormal(Array<Class<?>> groups) {
+        runAndReport(groups, 15, 10, 100, 1, PrintGc.Disable, Assertions.Disable);
     }
 
-    public static void runSlow(Array<Class<?>> benchmarkClasses) {
-        runAndReport(15, 15, 300, PrintGc.Enable, 1, benchmarkClasses);
+    public static void runSlow(Array<Class<?>> groups) {
+        runAndReport(groups, 15, 15, 300, 1, PrintGc.Enable, Assertions.Disable);
     }
 
-    public static void runAndReport(int warmupIterations, int measurementIterations, int millis, PrintGc printGc, int forks, Array<Class<?>> benchmarkClasses) {
-        final Array<String> classNames = benchmarkClasses.map(Class::getCanonicalName);
-        final Array<RunResult> results = run(warmupIterations, measurementIterations, millis, printGc, forks, classNames);
+    public static void runAndReport(Array<Class<?>> groups, int warmupIterations, int measurementIterations, int millis, int forks, PrintGc printGc, Assertions assertions) {
+        final Array<String> classNames = groups.map(Class::getCanonicalName);
+        final Array<RunResult> results = run(classNames, warmupIterations, measurementIterations, millis, forks, printGc, assertions);
         BenchmarkPerformanceReporter.of(classNames, results).print();
     }
 
-    private static Array<RunResult> run(int warmupIterations, int measurementIterations, int millis, PrintGc printGc, int forks, Array<String> classNames) {
+    private static Array<RunResult> run(Array<String> classNames, int warmupIterations, int measurementIterations, int millis, int forks, PrintGc printGc, Assertions assertions) {
         final ChainedOptionsBuilder builder = new OptionsBuilder()
                 .shouldDoGC(true)
                 .shouldFailOnError(true)
@@ -50,7 +47,7 @@ public class JmhRunner {
                 .forks(forks)
                 // We are using 4Gb and setting NewGen to 100% to avoid GC during testing.
                 // Any GC during testing will destroy the iteration, which should get ignored as an outlier
-                .jvmArgsAppend("-XX:+UseG1GC", "-Xss100m", "-Xms4g", "-Xmx4g", "-XX:MaxGCPauseMillis=1000", "-XX:+UnlockExperimentalVMOptions", "-XX:G1NewSizePercent=100", "-XX:G1MaxNewSizePercent=100", "-disableassertions", printGc.vmArg);
+                .jvmArgsAppend("-XX:+UseG1GC", "-Xss100m", "-Xms4g", "-Xmx4g", "-XX:MaxGCPauseMillis=1000", "-XX:+UnlockExperimentalVMOptions", "-XX:G1NewSizePercent=100", "-XX:G1MaxNewSizePercent=100", printGc.vmArg, assertions.vmArg);
 
         classNames.forEach(builder::include);
 
@@ -72,6 +69,17 @@ public class JmhRunner {
         }
     }
 
+    public enum Assertions {
+        Enable("-enableassertions"),
+        Disable("-disableassertions");
+
+        final String vmArg;
+
+        Assertions(String vmArg) {
+            this.vmArg = vmArg;
+        }
+    }
+
     public static <T> void require(T value, Predicate<T> predicate) {
         require(() -> predicate.test(value));
     }
@@ -88,12 +96,9 @@ public class JmhRunner {
     }
 
     public static void require(BooleanSupplier... suppliers) {
-        if (WITH_ASSERTS) {
-            for (int i = 0; i < suppliers.length; i++) {
-                if (!suppliers[i].getAsBoolean()) {
-                    throw new IllegalStateException("Failure in supplier #" + (i + 1) + "!");
-                }
-            }
+        // TODO inline all requires
+        for (BooleanSupplier supplier : suppliers) {
+            assert supplier.getAsBoolean();
         }
     }
 
@@ -112,7 +117,8 @@ public class JmhRunner {
         return results;
     }
 
-    public static int xor(int x, int y) {
+    /** used for dead code elimination and correctness assertion inside the benchmarks */
+    public static int aggregate(int x, int y) {
         return x ^ y;
     }
 }

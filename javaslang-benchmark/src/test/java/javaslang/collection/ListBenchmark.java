@@ -55,7 +55,7 @@ public class ListBenchmark {
         @Setup
         public void setup() {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
-            EXPECTED_AGGREGATE = Iterator.of(ELEMENTS).reduce(JmhRunner::xor);
+            EXPECTED_AGGREGATE = Iterator.of(ELEMENTS).reduce(JmhRunner::aggregate);
 
             require(javaMutable::isEmpty,
                     javaMutableLinked::isEmpty,
@@ -109,7 +109,7 @@ public class ListBenchmark {
             return values;
         }
 
-        @Benchmark()
+        @Benchmark
         public Object fjava_persistent() {
             final fj.data.List<Integer> values = fj.data.List.fromIterator(javaMutable.iterator());
             require(() -> Collections.equals(values, javaMutable));

@@ -13,7 +13,7 @@ import org.openjdk.jmh.util.ListStatistics;
 
 import java.text.DecimalFormat;
 import java.util.Comparator;
-import java.util.function.Function;
+import java.util.function.*;
 import java.util.stream.Collectors;
 
 public class BenchmarkPerformanceReporter {
@@ -333,8 +333,8 @@ public class BenchmarkPerformanceReporter {
         }
 
         private void printRatioForBaseType(String baseType, Array<TestExecution> testExecutions,
-                                           Function2<String, String, String> ratioNamePrinter,
-                                           Function2<Array<TestExecution>, Array<TestExecution>, String> ratioCalculator) {
+                                           BiFunction<String, String, String> ratioNamePrinter,
+                                           BiFunction<Array<TestExecution>, Array<TestExecution>, String> ratioCalculator) {
             final Array<TestExecution> baseImplExecutions = testExecutions.filter(e -> e.getImplementation().equals(baseType));
             if (baseImplExecutions.isEmpty()) {
                 return;

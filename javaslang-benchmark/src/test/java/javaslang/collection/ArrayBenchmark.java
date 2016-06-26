@@ -45,7 +45,7 @@ public class ArrayBenchmark {
         @Setup
         public void setup() {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
-            EXPECTED_AGGREGATE = Iterator.of(ELEMENTS).reduce(JmhRunner::xor);
+            EXPECTED_AGGREGATE = Iterator.of(ELEMENTS).reduce(JmhRunner::aggregate);
 
             require(() -> javaMutable == null,
                     () -> fjavaMutable == null,
@@ -69,7 +69,7 @@ public class ArrayBenchmark {
             return values;
         }
 
-        @Benchmark()
+        @Benchmark
         public Object fjava_persistent() {
             final fj.data.Array<Integer> values = fj.data.Array.iterableArray(javaMutable);
             require(() -> Collections.equals(values, fjavaMutable));

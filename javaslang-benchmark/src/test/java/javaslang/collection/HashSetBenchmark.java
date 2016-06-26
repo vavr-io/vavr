@@ -4,8 +4,6 @@ import javaslang.JmhRunner;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 
-import java.util.Objects;
-
 import static javaslang.JmhRunner.*;
 
 public class HashSetBenchmark {
@@ -41,7 +39,7 @@ public class HashSetBenchmark {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
 
             SET = TreeSet.of(ELEMENTS);
-            EXPECTED_AGGREGATE = SET.reduce(JmhRunner::xor);
+            EXPECTED_AGGREGATE = SET.reduce(JmhRunner::aggregate);
 
             require(pcollectionsPersistent::isEmpty,
                     scalaPersistent::isEmpty,

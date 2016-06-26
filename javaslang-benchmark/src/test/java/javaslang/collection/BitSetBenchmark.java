@@ -3,7 +3,6 @@ package javaslang.collection;
 import javaslang.JmhRunner;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
-import scala.collection.JavaConversions;
 
 import static javaslang.JmhRunner.*;
 import static scala.collection.JavaConversions.asJavaCollection;
@@ -45,7 +44,7 @@ public class BitSetBenchmark {
             }
 
             DISTINCT = TreeSet.ofAll(ELEMENTS);
-            EXPECTED_AGGREGATE = DISTINCT.reduce(JmhRunner::xor);
+            EXPECTED_AGGREGATE = DISTINCT.reduce(JmhRunner::aggregate);
 
             require(scalaPersistent::isEmpty,
                     slangPersistent::isEmpty);

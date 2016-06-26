@@ -22,9 +22,7 @@ public class PriorityQueueBenchmark {
 
     @Test
     public void testAsserts() {
-        JmhRunner.WITH_ASSERTS = true;
-        JmhRunner.runAndReport(0, 1, 1, PrintGc.Disable, 1, CLASSES); // runDebug fails with stack overflow for Scalaz, because it cannot update the jvm args, if not forked
-        JmhRunner.WITH_ASSERTS = false;
+        JmhRunner.runAndReport(CLASSES, 0, 1, 1, 1, PrintGc.Disable, Assertions.Enable); // runDebug fails with stack overflow for Scalaz, because it cannot update the jvm args, if not forked
     }
 
     public static void main(String... args) {
@@ -48,7 +46,7 @@ public class PriorityQueueBenchmark {
         @Setup
         public void setup() {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
-            EXPECTED_AGGREGATE = Iterator.of(ELEMENTS).reduce(JmhRunner::xor);
+            EXPECTED_AGGREGATE = Iterator.of(ELEMENTS).reduce(JmhRunner::aggregate);
 
             require(scalazPersistent::isEmpty,
                     slangPersistent::isEmpty);

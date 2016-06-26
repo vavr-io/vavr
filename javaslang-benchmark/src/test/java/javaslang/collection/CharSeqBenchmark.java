@@ -49,7 +49,7 @@ public class CharSeqBenchmark {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 ELEMENTS[i] = (char) random.nextInt(Character.MAX_VALUE);
             }
-            EXPECTED_AGGREGATE = Iterator.ofAll(ELEMENTS).reduce((x, y) -> (char) JmhRunner.xor((int) x, (int) y));
+            EXPECTED_AGGREGATE = Iterator.ofAll(ELEMENTS).reduce((x, y) -> (char) JmhRunner.aggregate((int) x, (int) y));
 
             require(() -> javaPersistent == null,
                     () -> fjavaPersistent == null,

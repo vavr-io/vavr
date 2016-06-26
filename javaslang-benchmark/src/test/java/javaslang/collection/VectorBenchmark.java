@@ -56,7 +56,7 @@ public class VectorBenchmark {
         @SuppressWarnings("unchecked")
         public void setup() {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
-            EXPECTED_AGGREGATE = Array.of(ELEMENTS).reduce(JmhRunner::xor);
+            EXPECTED_AGGREGATE = Array.of(ELEMENTS).reduce(JmhRunner::aggregate);
 
             require(javaMutable::isEmpty,
                     fjavaPersistent::isEmpty,
@@ -103,7 +103,7 @@ public class VectorBenchmark {
             return values;
         }
 
-        @Benchmark()
+        @Benchmark
         public Object fjava_persistent() {
             final fj.data.Seq<Integer> values = fj.data.Seq.fromJavaList(javaMutable);
             require(() -> Collections.equals(values, javaMutable));
