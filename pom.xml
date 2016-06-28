@@ -80,6 +80,7 @@ Note: The maven build currently needs to be started from the javaslang root dir
         <maven.javadoc.version>2.10.3</maven.javadoc.version>
         <maven.release.version>2.5.1</maven.release.version>
         <maven.versions.version>2.1</maven.versions.version>
+        <maven.source.version>3.0.1</maven.source.version>
         <scala.maven.version>3.2.2</scala.maven.version>
         <scala.version>2.11.7</scala.version>
     </properties>
@@ -117,6 +118,21 @@ Note: The maven build currently needs to be started from the javaslang root dir
         </plugins>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven.source.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                                <goal>test-jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
