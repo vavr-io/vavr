@@ -5,6 +5,7 @@ import javaslang.JmhRunner.*;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.runner.options.VerboseMode;
 import scala.math.Ordering;
 import scala.math.Ordering$;
 import scalaz.*;
@@ -22,7 +23,7 @@ public class PriorityQueueBenchmark {
 
     @Test
     public void testAsserts() {
-        JmhRunner.runAndReport(CLASSES, 0, 1, 1, 1, PrintGc.Disable, Assertions.Enable); // runDebug fails with stack overflow for Scalaz, because it cannot update the jvm args, if not forked
+        JmhRunner.runAndReport(CLASSES, 0, 1, 1, 1, VerboseMode.SILENT, Assertions.Enable); // runDebug fails with stack overflow for Scalaz, because it cannot update the jvm args, if not forked
     }
 
     public static void main(String... args) {
