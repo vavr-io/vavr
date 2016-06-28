@@ -50,6 +50,8 @@ public class JmhRunner {
         final Array<String> classNames = groups.map(Class::getCanonicalName);
         final Array<RunResult> results = run(classNames, warmupIterations, measurementIterations, millis, forks, silent, assertions);
         BenchmarkPerformanceReporter.of(classNames, results).print();
+
+        Memory.printMemoryUsages();
     }
 
     private static Array<RunResult> run(Array<String> classNames, int warmupIterations, int measurementIterations, int millis, int forks, VerboseMode verboseMode, Assertions assertions) {

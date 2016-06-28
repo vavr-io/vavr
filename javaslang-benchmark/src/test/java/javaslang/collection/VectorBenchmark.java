@@ -1,6 +1,6 @@
 package javaslang.collection;
 
-import javaslang.JmhRunner;
+import javaslang.*;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
@@ -44,13 +44,13 @@ public class VectorBenchmark {
         Integer[] ELEMENTS;
 
         /* Only use these for non-mutating operations */
-        final java.util.ArrayList<Integer> javaMutable = new java.util.ArrayList<>();
+        public final java.util.ArrayList<Integer> javaMutable = new java.util.ArrayList<>();
 
-        fj.data.Seq<Integer> fjavaPersistent = fj.data.Seq.empty();
-        org.pcollections.PVector<Integer> pcollectionsPersistent = org.pcollections.TreePVector.empty();
-        scala.collection.immutable.Vector<Integer> scalaPersistent = scala.collection.immutable.Vector$.MODULE$.empty();
-        clojure.lang.PersistentVector clojurePersistent = clojure.lang.PersistentVector.EMPTY;
-        javaslang.collection.Vector<Integer> slangPersistent = Vector.empty();
+        public fj.data.Seq<Integer> fjavaPersistent = fj.data.Seq.empty();
+        public org.pcollections.PVector<Integer> pcollectionsPersistent = org.pcollections.TreePVector.empty();
+        public scala.collection.immutable.Vector<Integer> scalaPersistent = scala.collection.immutable.Vector$.MODULE$.empty();
+        public clojure.lang.PersistentVector clojurePersistent = clojure.lang.PersistentVector.EMPTY;
+        public javaslang.collection.Vector<Integer> slangPersistent = Vector.empty();
 
         @Setup
         @SuppressWarnings("unchecked")
@@ -71,6 +71,15 @@ public class VectorBenchmark {
                    && Collections.equals(clojurePersistent, javaMutable)
                    && Collections.equals(asJavaCollection(scalaPersistent), javaMutable)
                    && Collections.equals(slangPersistent, javaMutable);
+
+            Memory.storeMemoryUsages(ELEMENTS, Base.this,
+                    javaMutable,
+                    pcollectionsPersistent,
+                    fjavaPersistent,
+                    scalaPersistent,
+                    clojurePersistent,
+                    slangPersistent
+            );
         }
     }
 
