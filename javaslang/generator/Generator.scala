@@ -1083,6 +1083,18 @@ def generateMainClasses(): Unit = {
               }
             """)("\n\n")}
 
+            ${(i == 2).gen(xs"""
+              /$javadoc
+               * Swaps the elements of this {@code Tuple}.
+               *
+               * @return A new Tuple where the first element is the second element of this Tuple
+               *   and the second element is the first element of this Tuple.
+               */
+              public Tuple2<T2, T1> swap() {
+                return Tuple.of(_2, _1);
+              }
+            """)}
+
             ${(i > 0).gen(xs"""
               /$javadoc
                * Maps the components of this tuple using a mapper function.
@@ -1833,6 +1845,13 @@ def generateTestClasses(): Unit = {
                     $assertThat(intTupleComparator.compare(t$j, t0)).isPositive();
                 }
               """)("\n\n")}
+
+              ${(i == 2).gen(xs"""
+                @$test
+                public void shouldSwap() {
+                    $assertThat(createIntTuple(1, 2).swap()).isEqualTo(createIntTuple(2, 1));
+                }
+              """)}
 
               @$test
               public void shouldMap() {
