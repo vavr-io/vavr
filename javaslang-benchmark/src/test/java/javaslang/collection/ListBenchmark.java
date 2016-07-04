@@ -171,16 +171,20 @@ public class ListBenchmark {
         @State(Scope.Thread)
         public static class Initialized {
             final java.util.ArrayList<Integer> javaMutable = new java.util.ArrayList<>();
+            final java.util.LinkedList<Integer> javaMutableLinked = new java.util.LinkedList<>();
 
             @Setup(Level.Invocation)
             public void initializeMutable(Base state) {
                 java.util.Collections.addAll(javaMutable, state.ELEMENTS);
-                assert Collections.equals(javaMutable, Arrays.asList(state.ELEMENTS));
+                javaMutableLinked.addAll(javaMutable);
+                assert Collections.equals(javaMutable, Arrays.asList(state.ELEMENTS))
+                       && Collections.equals(javaMutableLinked, javaMutable);
             }
 
             @TearDown(Level.Invocation)
             public void tearDown() {
                 javaMutable.clear();
+                javaMutableLinked.clear();
             }
         }
 
@@ -196,7 +200,7 @@ public class ListBenchmark {
 
         @Benchmark
         public Object java_linked_mutable(Initialized state) {
-            final java.util.ArrayList<Integer> values = state.javaMutable;
+            final java.util.LinkedList<Integer> values = state.javaMutableLinked;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values.remove(0);
             }
