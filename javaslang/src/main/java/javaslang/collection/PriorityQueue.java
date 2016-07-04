@@ -525,7 +525,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
 
     @Override
     public boolean equals(Object o) {
-        return o == this || o instanceof PriorityQueue && Collections.equals(this, (Iterable) o);
+        return o == this || o instanceof PriorityQueue && Collections.areEqual(this, (Iterable) o);
     }
 
     protected static class PriorityQueueBase {

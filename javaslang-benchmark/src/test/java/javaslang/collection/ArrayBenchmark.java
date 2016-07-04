@@ -7,6 +7,7 @@ import org.openjdk.jmh.annotations.*;
 import java.util.*;
 
 import static javaslang.JmhRunner.getRandomValues;
+import static javaslang.collection.Collections.areEqual;
 
 public class ArrayBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
@@ -50,9 +51,9 @@ public class ArrayBenchmark {
             fjavaMutable = fj.data.Array.array(ELEMENTS);
             slangPersistent = javaslang.collection.Array.of(ELEMENTS);
 
-            assert Collections.equals(javaMutable, Arrays.asList(ELEMENTS))
-                   && Collections.equals(fjavaMutable, javaMutable)
-                   && Collections.equals(slangPersistent, javaMutable);
+            assert areEqual(javaMutable, Arrays.asList(ELEMENTS))
+                   && areEqual(fjavaMutable, javaMutable)
+                   && areEqual(slangPersistent, javaMutable);
         }
     }
 
@@ -60,21 +61,21 @@ public class ArrayBenchmark {
         @Benchmark
         public Object java_mutable() {
             final ArrayList<Integer> values = new ArrayList<>(javaMutable);
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
         @Benchmark
         public Object fjava_persistent() {
             final fj.data.Array<Integer> values = fj.data.Array.iterableArray(javaMutable);
-            assert Collections.equals(values, fjavaMutable);
+            assert areEqual(values, fjavaMutable);
             return values;
         }
 
         @Benchmark
         public Object slang_persistent() {
             final javaslang.collection.Array<Integer> values = javaslang.collection.Array.ofAll(javaMutable);
-            assert Collections.equals(values, slangPersistent);
+            assert areEqual(values, slangPersistent);
             return values.head();
         }
     }
@@ -111,7 +112,7 @@ public class ArrayBenchmark {
             @Setup(Level.Invocation)
             public void initializeMutable(Base state) {
                 java.util.Collections.addAll(javaMutable, state.ELEMENTS);
-                assert Collections.equals(javaMutable, Arrays.asList(state.ELEMENTS));
+                assert areEqual(javaMutable, Arrays.asList(state.ELEMENTS));
             }
 
             @TearDown(Level.Invocation)
@@ -212,7 +213,7 @@ public class ArrayBenchmark {
             for (Integer element : ELEMENTS) {
                 values.add(0, element);
             }
-            assert Collections.equals(List.ofAll(values).reverse(), javaMutable);
+            assert areEqual(List.ofAll(values).reverse(), javaMutable);
             return values;
         }
 
@@ -222,7 +223,7 @@ public class ArrayBenchmark {
             for (Integer element : ELEMENTS) {
                 values = fj.data.Array.array(element).append(values);
             }
-            assert Collections.equals(values.reverse(), javaMutable);
+            assert areEqual(values.reverse(), javaMutable);
             return values;
         }
 
@@ -232,7 +233,7 @@ public class ArrayBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.prepend(element);
             }
-            assert Collections.equals(values.reverse(), javaMutable);
+            assert areEqual(values.reverse(), javaMutable);
             return values;
         }
     }
@@ -245,7 +246,7 @@ public class ArrayBenchmark {
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
@@ -255,7 +256,7 @@ public class ArrayBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.append(fj.data.Array.array(element));
             }
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
@@ -265,7 +266,7 @@ public class ArrayBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.append(element);
             }
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
     }

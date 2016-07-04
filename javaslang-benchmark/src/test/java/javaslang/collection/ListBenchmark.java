@@ -9,6 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static javaslang.JmhRunner.getRandomValues;
+import static javaslang.collection.Collections.areEqual;
 import static scala.collection.JavaConversions.*;
 
 public class ListBenchmark {
@@ -67,14 +68,14 @@ public class ListBenchmark {
             pcollectionsPersistent = org.pcollections.ConsPStack.from(javaMutable);
             slangPersistent = javaslang.collection.List.ofAll(javaMutable);
 
-            assert Collections.equals(javaMutable, Arrays.asList(ELEMENTS))
-                   && Collections.equals(javaMutableLinked, javaMutable)
-                   && Collections.equals(asJavaCollection(scalaMutable), javaMutable)
-                   && Collections.equals(fjavaPersistent, javaMutable)
-                   && Collections.equals(pcollectionsPersistent, javaMutable)
-                   && Collections.equals(asJavaCollection(scalaPersistent), javaMutable)
-                   && Collections.equals((Iterable<?>) clojurePersistent, javaMutable)
-                   && Collections.equals(slangPersistent, javaMutable);
+            assert areEqual(javaMutable, Arrays.asList(ELEMENTS))
+                   && areEqual(javaMutableLinked, javaMutable)
+                   && areEqual(asJavaCollection(scalaMutable), javaMutable)
+                   && areEqual(fjavaPersistent, javaMutable)
+                   && areEqual(pcollectionsPersistent, javaMutable)
+                   && areEqual(asJavaCollection(scalaPersistent), javaMutable)
+                   && areEqual((Iterable<?>) clojurePersistent, javaMutable)
+                   && areEqual(slangPersistent, javaMutable);
         }
     }
 
@@ -82,7 +83,7 @@ public class ListBenchmark {
         @Benchmark
         public Object java_mutable() {
             final ArrayList<Integer> values = new ArrayList<>(javaMutable);
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
@@ -103,21 +104,21 @@ public class ListBenchmark {
         @Benchmark
         public Object fjava_persistent() {
             final fj.data.List<Integer> values = fj.data.List.fromIterator(javaMutable.iterator());
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
         @Benchmark
         public Object pcollections_persistent() {
             final org.pcollections.PStack<Integer> values = org.pcollections.ConsPStack.from(javaMutable);
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
         @Benchmark
         public Object slang_persistent() {
             final javaslang.collection.List<Integer> values = javaslang.collection.List.ofAll(javaMutable);
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values.head();
         }
     }
@@ -177,8 +178,8 @@ public class ListBenchmark {
             public void initializeMutable(Base state) {
                 java.util.Collections.addAll(javaMutable, state.ELEMENTS);
                 javaMutableLinked.addAll(javaMutable);
-                assert Collections.equals(javaMutable, Arrays.asList(state.ELEMENTS))
-                       && Collections.equals(javaMutableLinked, javaMutable);
+                assert areEqual(javaMutable, Arrays.asList(state.ELEMENTS))
+                       && areEqual(javaMutableLinked, javaMutable);
             }
 
             @TearDown(Level.Invocation)
@@ -337,9 +338,9 @@ public class ListBenchmark {
                     scalaMutable.prependElem(state.ELEMENTS[i]);
                 }
 
-                assert Collections.equals(javaMutable, Arrays.asList(state.ELEMENTS))
-                       && Collections.equals(javaMutableLinked, javaMutable)
-                       && Collections.equals(asJavaCollection(scalaMutable), javaMutable);
+                assert areEqual(javaMutable, Arrays.asList(state.ELEMENTS))
+                       && areEqual(javaMutableLinked, javaMutable)
+                       && areEqual(asJavaCollection(scalaMutable), javaMutable);
             }
 
             @TearDown(Level.Invocation)
@@ -409,7 +410,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values.add(0, element);
             }
-            assert Collections.equals(Array.ofAll(values).reverse(), javaMutable);
+            assert areEqual(Array.ofAll(values).reverse(), javaMutable);
             return values;
         }
 
@@ -419,7 +420,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values.addFirst(element);
             }
-            assert Collections.equals(Array.ofAll(values).reverse(), javaMutable);
+            assert areEqual(Array.ofAll(values).reverse(), javaMutable);
             return values;
         }
 
@@ -429,7 +430,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values.prependElem(element);
             }
-            assert Collections.equals(Array.ofAll(asJavaCollection(values)).reverse(), javaMutable);
+            assert areEqual(Array.ofAll(asJavaCollection(values)).reverse(), javaMutable);
             return values;
         }
 
@@ -439,7 +440,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.$colon$colon(element);
             }
-            assert Collections.equals(Array.ofAll(asJavaCollection(values)).reverse(), javaMutable);
+            assert areEqual(Array.ofAll(asJavaCollection(values)).reverse(), javaMutable);
             return values;
         }
 
@@ -449,7 +450,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.cons(element);
             }
-            assert Collections.equals(Array.ofAll(values).reverse(), javaMutable);
+            assert areEqual(Array.ofAll(values).reverse(), javaMutable);
             return values;
         }
 
@@ -459,7 +460,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.plus(element);
             }
-            assert Collections.equals(Array.ofAll(values).reverse(), javaMutable);
+            assert areEqual(Array.ofAll(values).reverse(), javaMutable);
             return values;
         }
 
@@ -469,7 +470,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.prepend(element);
             }
-            assert Collections.equals(values.reverse(), javaMutable);
+            assert areEqual(values.reverse(), javaMutable);
             return values;
         }
     }
@@ -482,7 +483,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
@@ -502,7 +503,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values.appendElem(element);
             }
-            assert Collections.equals(asJavaCollection(values), javaMutable);
+            assert areEqual(asJavaCollection(values), javaMutable);
             return values;
         }
 
@@ -512,7 +513,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.snoc(element);
             }
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
@@ -522,7 +523,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.plus(values.size(), element);
             }
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
@@ -532,7 +533,7 @@ public class ListBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.append(element);
             }
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
     }

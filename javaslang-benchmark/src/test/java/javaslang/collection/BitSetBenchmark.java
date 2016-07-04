@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 
 import static javaslang.JmhRunner.getRandomValues;
+import static javaslang.collection.Collections.areEqual;
 import static scala.collection.JavaConversions.asJavaCollection;
 
 public class BitSetBenchmark {
@@ -49,8 +50,8 @@ public class BitSetBenchmark {
             scalaPersistent = (scala.collection.immutable.BitSet) scala.collection.immutable.BitSet$.MODULE$.apply(scala.collection.JavaConversions.asScalaBuffer(DISTINCT.toJavaList())); // ouch...
             slangPersistent = javaslang.collection.BitSet.ofAll(ELEMENTS);
 
-            assert Collections.equals(slangPersistent, DISTINCT)
-                   && Collections.equals(asJavaCollection(scalaPersistent), DISTINCT);
+            assert areEqual(slangPersistent, DISTINCT)
+                   && areEqual(asJavaCollection(scalaPersistent), DISTINCT);
         }
     }
 

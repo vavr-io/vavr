@@ -7,6 +7,7 @@ import org.openjdk.jmh.annotations.*;
 import java.util.*;
 
 import static java.lang.String.valueOf;
+import static javaslang.collection.Collections.areEqual;
 
 public class CharSeqBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
@@ -220,7 +221,7 @@ public class CharSeqBenchmark {
             for (char c : ELEMENTS) {
                 values = values.append(valueOf(c));
             }
-            assert Collections.equals(values.toStream(), slangPersistent);
+            assert areEqual(values.toStream(), slangPersistent);
             return values;
         }
 

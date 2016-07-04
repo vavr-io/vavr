@@ -81,7 +81,7 @@ final class Collections {
     }
 
     // checks, if the *elements* of the given iterables are equal
-    static boolean equals(Iterable<?> iterable1, Iterable<?> iterable2) {
+    static boolean areEqual(Iterable<?> iterable1, Iterable<?> iterable2) {
         final java.util.Iterator<?> iter1 = iterable1.iterator();
         final java.util.Iterator<?> iter2 = iterable2.iterator();
         while (iter1.hasNext() && iter2.hasNext()) {
