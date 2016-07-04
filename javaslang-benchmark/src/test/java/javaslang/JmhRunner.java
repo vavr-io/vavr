@@ -66,9 +66,9 @@ public class JmhRunner {
                 .measurementTime(TimeValue.milliseconds(millis))
                 .measurementIterations(measurementIterations)
                 .forks(forks)
-                // We are using 4Gb and setting NewGen to 100% to avoid GC during testing.
-                // Any GC during testing will destroy the iteration, which should get ignored as an outlier
-                .jvmArgsAppend("-XX:+UseG1GC", "-Xss100m", "-Xms4g", "-Xmx4g", "-XX:MaxGCPauseMillis=1000", "-XX:+UnlockExperimentalVMOptions", "-XX:G1NewSizePercent=100", "-XX:G1MaxNewSizePercent=100", assertions.vmArg);
+                // We are using 2Gb and setting NewGen to 100% to avoid GC during testing.
+                // Any GC during testing will destroy the iteration (i.e. introduce unreliable noise in the measurement), which should get ignored as an outlier
+                .jvmArgsAppend("-XX:+UseG1GC", "-Xss100m", "-Xms2g", "-Xmx2g", "-XX:MaxGCPauseMillis=1000", "-XX:+UnlockExperimentalVMOptions", "-XX:G1NewSizePercent=100", "-XX:G1MaxNewSizePercent=100", assertions.vmArg);
 
         classNames.forEach(builder::include);
 
