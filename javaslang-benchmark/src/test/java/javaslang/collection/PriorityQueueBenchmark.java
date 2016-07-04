@@ -1,7 +1,7 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.JmhRunner.*;
+import javaslang.JmhRunner.Assertions;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.annotations.State;
@@ -12,7 +12,7 @@ import scalaz.*;
 
 import java.util.Collections;
 
-import static javaslang.JmhRunner.*;
+import static javaslang.JmhRunner.getRandomValues;
 
 public class PriorityQueueBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
@@ -63,7 +63,7 @@ public class PriorityQueueBenchmark {
         @Benchmark
         @SuppressWarnings({ "Convert2streamapi", "ManualArrayToCollectionCopy" })
         public Object java_mutable() {
-            final java.util.PriorityQueue<Integer> values = new java.util.PriorityQueue<>(ELEMENTS.length);
+            final java.util.PriorityQueue<Integer> values = new java.util.PriorityQueue<>(CONTAINER_SIZE);
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }
@@ -74,7 +74,7 @@ public class PriorityQueueBenchmark {
         @Benchmark
         @SuppressWarnings({ "Convert2streamapi", "ManualArrayToCollectionCopy" })
         public Object java_blocking_mutable() {
-            final java.util.concurrent.PriorityBlockingQueue<Integer> values = new java.util.concurrent.PriorityBlockingQueue<>(ELEMENTS.length);
+            final java.util.concurrent.PriorityBlockingQueue<Integer> values = new java.util.concurrent.PriorityBlockingQueue<>(CONTAINER_SIZE);
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }

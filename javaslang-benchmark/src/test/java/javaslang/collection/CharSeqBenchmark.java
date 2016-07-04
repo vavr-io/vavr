@@ -120,7 +120,7 @@ public class CharSeqBenchmark {
         @Benchmark
         public int java_persistent() {
             int aggregate = 0;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= javaPersistent.charAt(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
@@ -140,7 +140,7 @@ public class CharSeqBenchmark {
         @Benchmark
         public int slang_persistent() {
             int aggregate = 0;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= slangPersistent.charAt(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
@@ -154,7 +154,7 @@ public class CharSeqBenchmark {
         @Benchmark
         public Object java_persistent() {
             java.lang.String values = javaPersistent;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.substring(0, i) + replacement + values.substring(i + 1);
             }
             assert Array.ofAll(values.toCharArray()).forAll(c -> c == replacement);
@@ -164,7 +164,7 @@ public class CharSeqBenchmark {
         @Benchmark
         public Object slang_persistent() {
             javaslang.collection.CharSeq values = slangPersistent;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.update(i, replacement);
             }
             assert values.forAll(c -> c == replacement);

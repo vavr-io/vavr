@@ -146,7 +146,7 @@ public class ArrayBenchmark {
         @Benchmark
         public int java_mutable() {
             int aggregate = 0;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= javaMutable.get(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
@@ -166,7 +166,7 @@ public class ArrayBenchmark {
         @Benchmark
         public int slang_persistent() {
             int aggregate = 0;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= slangPersistent.get(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
@@ -178,7 +178,7 @@ public class ArrayBenchmark {
         @Benchmark
         public Object java_mutable() {
             final java.util.ArrayList<Integer> values = javaMutable;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values.set(i, 0);
             }
             assert Iterator.ofAll(values).forAll(e -> e == 0);
@@ -198,7 +198,7 @@ public class ArrayBenchmark {
         @Benchmark
         public Object slang_persistent() {
             javaslang.collection.Array<Integer> values = slangPersistent;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.update(i, 0);
             }
             assert values.forAll(e -> e == 0);
@@ -209,7 +209,7 @@ public class ArrayBenchmark {
     public static class Prepend extends Base {
         @Benchmark
         public Object java_mutable() {
-            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(ELEMENTS.length);
+            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(CONTAINER_SIZE);
             for (Integer element : ELEMENTS) {
                 values.add(0, element);
             }
@@ -242,7 +242,7 @@ public class ArrayBenchmark {
         @SuppressWarnings("ManualArrayToCollectionCopy")
         @Benchmark
         public Object java_mutable() {
-            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(ELEMENTS.length);
+            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(CONTAINER_SIZE);
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }
