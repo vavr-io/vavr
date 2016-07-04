@@ -22,11 +22,11 @@ public class CharSeqBenchmark {
 
     @Test
     public void testAsserts() {
-        JmhRunner.runDebug(CLASSES);
+        JmhRunner.runDebugWithAsserts(CLASSES);
     }
 
     public static void main(java.lang.String... args) {
-        JmhRunner.runNormal(CLASSES);
+        JmhRunner.runNormalNoAsserts(CLASSES);
     }
 
     @State(Scope.Benchmark)

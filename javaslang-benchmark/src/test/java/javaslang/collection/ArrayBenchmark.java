@@ -23,11 +23,11 @@ public class ArrayBenchmark {
 
     @Test
     public void testAsserts() {
-        JmhRunner.runDebug(CLASSES);
+        JmhRunner.runDebugWithAsserts(CLASSES);
     }
 
     public static void main(String... args) {
-        JmhRunner.runNormal(CLASSES);
+        JmhRunner.runNormalNoAsserts(CLASSES);
     }
 
     @State(Scope.Benchmark)

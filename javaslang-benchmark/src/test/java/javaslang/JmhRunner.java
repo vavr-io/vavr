@@ -15,7 +15,7 @@ public class JmhRunner {
      * Note: it takes about 3 hours.
      */
     public static void main(String[] args) {
-        JmhRunner.runSlow(Array.of(
+        JmhRunner.runSlowNoAsserts(Array.of(
                 ArrayBenchmark.class,
                 BitSetBenchmark.class,
                 CharSeqBenchmark.class,
@@ -27,22 +27,22 @@ public class JmhRunner {
     }
 
     /** enables debugging and assertions for benchmarks and production code - the speed results will be totally unreliable */
-    public static void runDebug(Array<Class<?>> groups) {
+    public static void runDebugWithAsserts(Array<Class<?>> groups) {
         runAndReport(groups, 0, 1, 1, 0, VerboseMode.SILENT, Assertions.Enable);
     }
 
     @SuppressWarnings("unused")
-    public static void runQuick(Array<Class<?>> groups) {
+    public static void runQuickNoAsserts(Array<Class<?>> groups) {
         runAndReport(groups, 10, 10, 10, 1, VerboseMode.NORMAL, Assertions.Disable);
     }
 
     @SuppressWarnings("unused")
-    public static void runNormal(Array<Class<?>> groups) {
+    public static void runNormalNoAsserts(Array<Class<?>> groups) {
         runAndReport(groups, 15, 10, 100, 1, VerboseMode.NORMAL, Assertions.Disable);
     }
 
     @SuppressWarnings("unused")
-    public static void runSlow(Array<Class<?>> groups) {
+    public static void runSlowNoAsserts(Array<Class<?>> groups) {
         runAndReport(groups, 15, 15, 300, 1, VerboseMode.EXTRA, Assertions.Disable);
     }
 

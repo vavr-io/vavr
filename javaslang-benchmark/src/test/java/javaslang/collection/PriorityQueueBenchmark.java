@@ -23,11 +23,11 @@ public class PriorityQueueBenchmark {
 
     @Test
     public void testAsserts() {
-        JmhRunner.runAndReport(CLASSES, 0, 1, 1, 1, VerboseMode.SILENT, Assertions.Enable); // runDebug fails with stack overflow for Scalaz, because it cannot update the jvm args, if not forked
+        JmhRunner.runAndReport(CLASSES, 0, 1, 1, 1, VerboseMode.SILENT, Assertions.Enable); // runDebugWithAsserts fails with stack overflow for Scalaz, because it cannot update the jvm args, if not forked
     }
 
     public static void main(String... args) {
-        JmhRunner.runNormal(CLASSES);
+        JmhRunner.runNormalNoAsserts(CLASSES);
     }
 
     @State(Scope.Benchmark)
