@@ -28,7 +28,10 @@ public class JmhRunner {
 
     /** enables debugging and assertions for benchmarks and production code - the speed results will be totally unreliable */
     public static void runDebugWithAsserts(Array<Class<?>> groups) {
-        runAndReport(groups, 0, 1, 1, 0, VerboseMode.SILENT, Assertions.Enable);
+        final Array<String> classNames = groups.map(Class::getCanonicalName);
+        run(classNames, 0, 1, 1, 0, VerboseMode.SILENT, Assertions.Enable);
+
+        MemoryUsage.printAndReset();
     }
 
     @SuppressWarnings("unused")
@@ -51,7 +54,7 @@ public class JmhRunner {
         final Array<RunResult> results = run(classNames, warmupIterations, measurementIterations, millis, forks, silent, assertions);
         BenchmarkPerformanceReporter.of(classNames, results).print();
 
-        Memory.printMemoryUsages();
+        MemoryUsage.printAndReset();
     }
 
     private static Array<RunResult> run(Array<String> classNames, int warmupIterations, int measurementIterations, int millis, int forks, VerboseMode verboseMode, Assertions assertions) {
