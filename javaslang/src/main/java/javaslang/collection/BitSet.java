@@ -866,7 +866,7 @@ interface BitSetModule {
                 return true;
             } else if (o instanceof BitSet) {
                 final BitSet<?> that = (BitSet<?>) o;
-                return Collections.equals(this, that);
+                return Collections.areEqual(this, that);
             } else {
                 return false;
             }

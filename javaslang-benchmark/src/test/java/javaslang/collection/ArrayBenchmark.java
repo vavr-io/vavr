@@ -6,7 +6,9 @@ import org.openjdk.jmh.annotations.*;
 
 import java.util.*;
 
-import static javaslang.JmhRunner.getRandomValues;
+import static java.util.Arrays.asList;
+import static javaslang.JmhRunner.*;
+import static javaslang.collection.Collections.areEqual;
 
 public class ArrayBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
@@ -22,11 +24,11 @@ public class ArrayBenchmark {
 
     @Test
     public void testAsserts() {
-        JmhRunner.runDebug(CLASSES);
+        JmhRunner.runDebugWithAsserts(CLASSES);
     }
 
     public static void main(String... args) {
-        JmhRunner.runNormal(CLASSES);
+        JmhRunner.runNormalNoAsserts(CLASSES);
     }
 
     @State(Scope.Benchmark)
@@ -46,13 +48,9 @@ public class ArrayBenchmark {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
             EXPECTED_AGGREGATE = Iterator.of(ELEMENTS).reduce(JmhRunner::aggregate);
 
-            javaMutable = new ArrayList<>(Arrays.asList(ELEMENTS));
-            fjavaMutable = fj.data.Array.array(ELEMENTS);
-            slangPersistent = javaslang.collection.Array.of(ELEMENTS);
-
-            assert Collections.equals(javaMutable, Arrays.asList(ELEMENTS))
-                   && Collections.equals(fjavaMutable, javaMutable)
-                   && Collections.equals(slangPersistent, javaMutable);
+            javaMutable = create(java.util.ArrayList::new, asList(ELEMENTS), v -> areEqual(v, asList(ELEMENTS)));
+            fjavaMutable = create(fj.data.Array::array, ELEMENTS, ELEMENTS.length, v -> areEqual(v, asList(ELEMENTS)));
+            slangPersistent = create(javaslang.collection.Array::ofAll, javaMutable, v -> areEqual(v, javaMutable));
         }
     }
 
@@ -60,21 +58,21 @@ public class ArrayBenchmark {
         @Benchmark
         public Object java_mutable() {
             final ArrayList<Integer> values = new ArrayList<>(javaMutable);
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
         @Benchmark
         public Object fjava_persistent() {
             final fj.data.Array<Integer> values = fj.data.Array.iterableArray(javaMutable);
-            assert Collections.equals(values, fjavaMutable);
+            assert areEqual(values, fjavaMutable);
             return values;
         }
 
         @Benchmark
         public Object slang_persistent() {
             final javaslang.collection.Array<Integer> values = javaslang.collection.Array.ofAll(javaMutable);
-            assert Collections.equals(values, slangPersistent);
+            assert areEqual(values, slangPersistent);
             return values.head();
         }
     }
@@ -111,7 +109,7 @@ public class ArrayBenchmark {
             @Setup(Level.Invocation)
             public void initializeMutable(Base state) {
                 java.util.Collections.addAll(javaMutable, state.ELEMENTS);
-                assert Collections.equals(javaMutable, Arrays.asList(state.ELEMENTS));
+                assert areEqual(javaMutable, asList(state.ELEMENTS));
             }
 
             @TearDown(Level.Invocation)
@@ -145,7 +143,7 @@ public class ArrayBenchmark {
         @Benchmark
         public int java_mutable() {
             int aggregate = 0;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= javaMutable.get(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
@@ -165,7 +163,7 @@ public class ArrayBenchmark {
         @Benchmark
         public int slang_persistent() {
             int aggregate = 0;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= slangPersistent.get(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
@@ -177,7 +175,7 @@ public class ArrayBenchmark {
         @Benchmark
         public Object java_mutable() {
             final java.util.ArrayList<Integer> values = javaMutable;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values.set(i, 0);
             }
             assert Iterator.ofAll(values).forAll(e -> e == 0);
@@ -197,7 +195,7 @@ public class ArrayBenchmark {
         @Benchmark
         public Object slang_persistent() {
             javaslang.collection.Array<Integer> values = slangPersistent;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.update(i, 0);
             }
             assert values.forAll(e -> e == 0);
@@ -208,11 +206,11 @@ public class ArrayBenchmark {
     public static class Prepend extends Base {
         @Benchmark
         public Object java_mutable() {
-            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(ELEMENTS.length);
+            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(CONTAINER_SIZE);
             for (Integer element : ELEMENTS) {
                 values.add(0, element);
             }
-            assert Collections.equals(List.ofAll(values).reverse(), javaMutable);
+            assert areEqual(List.ofAll(values).reverse(), javaMutable);
             return values;
         }
 
@@ -222,7 +220,7 @@ public class ArrayBenchmark {
             for (Integer element : ELEMENTS) {
                 values = fj.data.Array.array(element).append(values);
             }
-            assert Collections.equals(values.reverse(), javaMutable);
+            assert areEqual(values.reverse(), javaMutable);
             return values;
         }
 
@@ -232,7 +230,7 @@ public class ArrayBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.prepend(element);
             }
-            assert Collections.equals(values.reverse(), javaMutable);
+            assert areEqual(values.reverse(), javaMutable);
             return values;
         }
     }
@@ -241,11 +239,11 @@ public class ArrayBenchmark {
         @SuppressWarnings("ManualArrayToCollectionCopy")
         @Benchmark
         public Object java_mutable() {
-            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(ELEMENTS.length);
+            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(CONTAINER_SIZE);
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
@@ -255,7 +253,7 @@ public class ArrayBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.append(fj.data.Array.array(element));
             }
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
@@ -265,7 +263,7 @@ public class ArrayBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.append(element);
             }
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
     }

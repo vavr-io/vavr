@@ -1,18 +1,18 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.JmhRunner.*;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.runner.options.VerboseMode;
 import scala.math.Ordering;
 import scala.math.Ordering$;
 import scalaz.*;
 
 import java.util.Collections;
 
+import static java.util.Arrays.asList;
 import static javaslang.JmhRunner.*;
+import static scala.collection.JavaConversions.asScalaBuffer;
 
 public class PriorityQueueBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
@@ -23,11 +23,11 @@ public class PriorityQueueBenchmark {
 
     @Test
     public void testAsserts() {
-        JmhRunner.runAndReport(CLASSES, 0, 1, 1, 1, VerboseMode.SILENT, Assertions.Enable); // runDebug fails with stack overflow for Scalaz, because it cannot update the jvm args, if not forked
+        JmhRunner.runDebugWithAsserts(CLASSES);
     }
 
     public static void main(String... args) {
-        JmhRunner.runNormal(CLASSES);
+        JmhRunner.runNormalNoAsserts(CLASSES);
     }
 
     @State(Scope.Benchmark)
@@ -41,21 +41,16 @@ public class PriorityQueueBenchmark {
         int EXPECTED_AGGREGATE;
         Integer[] ELEMENTS;
 
-        scalaz.Heap<Integer> scalazPersistent = scalaz.Heap.Empty$.MODULE$.apply();
-        javaslang.collection.PriorityQueue<Integer> slangPersistent = javaslang.collection.PriorityQueue.empty();
+        scalaz.Heap<Integer> scalazPersistent;
+        javaslang.collection.PriorityQueue<Integer> slangPersistent;
 
         @Setup
         public void setup() {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
             EXPECTED_AGGREGATE = Iterator.of(ELEMENTS).reduce(JmhRunner::aggregate);
 
-            for (Integer element : ELEMENTS) {
-                scalazPersistent = scalazPersistent.insert(element, SCALAZ_ORDER);
-            }
-            slangPersistent = javaslang.collection.PriorityQueue.of(ELEMENTS);
-
-            assert scalazPersistent.size() == CONTAINER_SIZE
-                   && slangPersistent.size() == CONTAINER_SIZE;
+            scalazPersistent = create(v -> scalaz.Heap.Empty$.MODULE$.<Integer> apply().insertAll(asScalaBuffer(v), SCALAZ_ORDER), asList(ELEMENTS), v -> v.size() == CONTAINER_SIZE);
+            slangPersistent = create(javaslang.collection.PriorityQueue::of, ELEMENTS, ELEMENTS.length, v -> v.size() == CONTAINER_SIZE);
         }
     }
 
@@ -63,7 +58,7 @@ public class PriorityQueueBenchmark {
         @Benchmark
         @SuppressWarnings({ "Convert2streamapi", "ManualArrayToCollectionCopy" })
         public Object java_mutable() {
-            final java.util.PriorityQueue<Integer> values = new java.util.PriorityQueue<>(ELEMENTS.length);
+            final java.util.PriorityQueue<Integer> values = new java.util.PriorityQueue<>(CONTAINER_SIZE);
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }
@@ -74,7 +69,7 @@ public class PriorityQueueBenchmark {
         @Benchmark
         @SuppressWarnings({ "Convert2streamapi", "ManualArrayToCollectionCopy" })
         public Object java_blocking_mutable() {
-            final java.util.concurrent.PriorityBlockingQueue<Integer> values = new java.util.concurrent.PriorityBlockingQueue<>(ELEMENTS.length);
+            final java.util.concurrent.PriorityBlockingQueue<Integer> values = new java.util.concurrent.PriorityBlockingQueue<>(CONTAINER_SIZE);
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }
@@ -296,11 +291,9 @@ public class PriorityQueueBenchmark {
 
         @Benchmark
         public Object slang_persistent() {
-            javaslang.collection.PriorityQueue<Integer> values = javaslang.collection.PriorityQueue.empty();
-            for (Integer element : ELEMENTS) {
-                values = values.enqueue(element);
-            }
+            javaslang.collection.PriorityQueue<Integer> values = javaslang.collection.PriorityQueue.of(ELEMENTS);
             assert values.size() == CONTAINER_SIZE;
+
             int aggregate = 0;
             while (!values.isEmpty()) {
                 final Tuple2<Integer, javaslang.collection.PriorityQueue<Integer>> dequeue = values.dequeue();

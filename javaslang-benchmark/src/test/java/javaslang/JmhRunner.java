@@ -6,7 +6,7 @@ import org.openjdk.jmh.results.RunResult;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.*;
 
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class JmhRunner {
@@ -15,7 +15,7 @@ public class JmhRunner {
      * Note: it takes about 3 hours.
      */
     public static void main(String[] args) {
-        JmhRunner.runSlow(Array.of(
+        JmhRunner.runSlowNoAsserts(Array.of(
                 ArrayBenchmark.class,
                 BitSetBenchmark.class,
                 CharSeqBenchmark.class,
@@ -27,22 +27,25 @@ public class JmhRunner {
     }
 
     /** enables debugging and assertions for benchmarks and production code - the speed results will be totally unreliable */
-    public static void runDebug(Array<Class<?>> groups) {
-        runAndReport(groups, 0, 1, 1, 0, VerboseMode.SILENT, Assertions.Enable);
+    public static void runDebugWithAsserts(Array<Class<?>> groups) {
+        final Array<String> classNames = groups.map(Class::getCanonicalName);
+        run(classNames, 0, 1, 1, 0, VerboseMode.SILENT, Assertions.Enable);
+
+        MemoryUsage.printAndReset();
     }
 
     @SuppressWarnings("unused")
-    public static void runQuick(Array<Class<?>> groups) {
+    public static void runQuickNoAsserts(Array<Class<?>> groups) {
         runAndReport(groups, 10, 10, 10, 1, VerboseMode.NORMAL, Assertions.Disable);
     }
 
     @SuppressWarnings("unused")
-    public static void runNormal(Array<Class<?>> groups) {
+    public static void runNormalNoAsserts(Array<Class<?>> groups) {
         runAndReport(groups, 15, 10, 100, 1, VerboseMode.NORMAL, Assertions.Disable);
     }
 
     @SuppressWarnings("unused")
-    public static void runSlow(Array<Class<?>> groups) {
+    public static void runSlowNoAsserts(Array<Class<?>> groups) {
         runAndReport(groups, 15, 15, 300, 1, VerboseMode.EXTRA, Assertions.Disable);
     }
 
@@ -51,7 +54,7 @@ public class JmhRunner {
         final Array<RunResult> results = run(classNames, warmupIterations, measurementIterations, millis, forks, silent, assertions);
         BenchmarkPerformanceReporter.of(classNames, results).print();
 
-        Memory.printMemoryUsages();
+        MemoryUsage.printAndReset();
     }
 
     private static Array<RunResult> run(Array<String> classNames, int warmupIterations, int measurementIterations, int millis, int forks, VerboseMode verboseMode, Assertions assertions) {
@@ -66,9 +69,9 @@ public class JmhRunner {
                 .measurementTime(TimeValue.milliseconds(millis))
                 .measurementIterations(measurementIterations)
                 .forks(forks)
-                // We are using 4Gb and setting NewGen to 100% to avoid GC during testing.
-                // Any GC during testing will destroy the iteration, which should get ignored as an outlier
-                .jvmArgsAppend("-XX:+UseG1GC", "-Xss100m", "-Xms4g", "-Xmx4g", "-XX:MaxGCPauseMillis=1000", "-XX:+UnlockExperimentalVMOptions", "-XX:G1NewSizePercent=100", "-XX:G1MaxNewSizePercent=100", assertions.vmArg);
+                // We are using 2Gb and setting NewGen to 100% to avoid GC during testing.
+                // Any GC during testing will destroy the iteration (i.e. introduce unreliable noise in the measurement), which should get ignored as an outlier
+                .jvmArgsAppend("-XX:+UseG1GC", "-Xss100m", "-Xms2g", "-Xmx2g", "-XX:MaxGCPauseMillis=1000", "-XX:+UnlockExperimentalVMOptions", "-XX:G1NewSizePercent=100", "-XX:G1MaxNewSizePercent=100", assertions.vmArg);
 
         classNames.forEach(builder::include);
 
@@ -108,5 +111,20 @@ public class JmhRunner {
     /** used for dead code elimination and correctness assertion inside the benchmarks */
     public static int aggregate(int x, int y) {
         return x ^ y;
+    }
+
+    /** simplifies construction of immutable collections - with assertion and memory benchmarking */
+    public static <T extends Collection<?>, R> R create(Function1<T, R> function, T source, Function1<R, Boolean> assertion) {
+        return create(function, source, source.size(), assertion);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T, R> R create(Function1<T, R> function, T source, int elementCount, Function1<R, Boolean> assertion) {
+        final R result = function.apply(source);
+        assert assertion.apply(result);
+
+        MemoryUsage.storeMemoryUsages(source, elementCount, result);
+
+        return result;
     }
 }

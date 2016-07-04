@@ -1354,7 +1354,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
             return true;
         } else if (o instanceof Vector) {
             final Vector<?> that = (Vector<?>) o;
-            return (this.size() == that.size()) && Collections.equals(this, that);
+            return (this.size() == that.size()) && Collections.areEqual(this, that);
         } else {
             return false;
         }

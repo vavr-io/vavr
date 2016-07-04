@@ -4,7 +4,8 @@ import javaslang.JmhRunner;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 
-import static javaslang.JmhRunner.getRandomValues;
+import static javaslang.JmhRunner.*;
+import static scala.collection.JavaConversions.asScalaBuffer;
 
 public class HashSetBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
@@ -14,11 +15,11 @@ public class HashSetBenchmark {
 
     @Test
     public void testAsserts() {
-        JmhRunner.runDebug(CLASSES);
+        JmhRunner.runDebugWithAsserts(CLASSES);
     }
 
     public static void main(String... args) {
-        JmhRunner.runNormal(CLASSES);
+        JmhRunner.runNormalNoAsserts(CLASSES);
     }
 
     @State(Scope.Benchmark)
@@ -30,27 +31,21 @@ public class HashSetBenchmark {
         Integer[] ELEMENTS;
         Set<Integer> SET;
 
-        @SuppressWarnings("unchecked")
-        scala.collection.immutable.HashSet<Integer> scalaPersistent = (scala.collection.immutable.HashSet<Integer>) scala.collection.immutable.HashSet$.MODULE$.empty();
-        org.pcollections.PSet<Integer> pcollectionsPersistent = org.pcollections.HashTreePSet.empty();
-        javaslang.collection.Set<Integer> slangPersistent = javaslang.collection.HashSet.empty();
+        scala.collection.immutable.Set<Integer> scalaPersistent;
+        org.pcollections.PSet<Integer> pcollectionsPersistent;
+        javaslang.collection.Set<Integer> slangPersistent;
 
         @Setup
+        @SuppressWarnings("unchecked")
         public void setup() {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
 
             SET = TreeSet.of(ELEMENTS);
             EXPECTED_AGGREGATE = SET.reduce(JmhRunner::aggregate);
 
-            for (int value : SET) {
-                pcollectionsPersistent = pcollectionsPersistent.plus(value);
-                scalaPersistent = scalaPersistent.$plus(value);
-            }
-            slangPersistent = javaslang.collection.HashSet.ofAll(SET);
-
-            assert SET.forAll(v -> pcollectionsPersistent.contains(v))
-                   && SET.forAll(v -> scalaPersistent.contains(v))
-                   && SET.forAll(v -> slangPersistent.contains(v));
+            scalaPersistent = create(v -> scala.collection.immutable.HashSet$.MODULE$.apply(asScalaBuffer(v)), SET.toJavaList(), SET.size(), v -> SET.forAll(v::contains));
+            pcollectionsPersistent = create(org.pcollections.HashTreePSet::from, SET.toJavaList(), SET.size(), v -> SET.forAll(v::contains));
+            slangPersistent = create(javaslang.collection.HashSet::ofAll, SET, SET.size(), v -> SET.forAll(v::contains));
         }
     }
 

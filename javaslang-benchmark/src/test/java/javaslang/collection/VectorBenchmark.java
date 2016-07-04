@@ -1,6 +1,6 @@
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.JmhRunner;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
@@ -9,8 +9,10 @@ import scala.compat.java8.JFunction;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static javaslang.JmhRunner.getRandomValues;
-import static scala.collection.JavaConversions.asJavaCollection;
+import static java.util.Arrays.asList;
+import static javaslang.JmhRunner.*;
+import static javaslang.collection.Collections.areEqual;
+import static scala.collection.JavaConversions.*;
 
 public class VectorBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
@@ -28,11 +30,11 @@ public class VectorBenchmark {
 
     @Test
     public void testAsserts() {
-        JmhRunner.runDebug(CLASSES);
+        JmhRunner.runDebugWithAsserts(CLASSES);
     }
 
     public static void main(String... args) {
-        JmhRunner.runNormal(CLASSES);
+        JmhRunner.runNormalNoAsserts(CLASSES);
     }
 
     @State(Scope.Benchmark)
@@ -43,14 +45,14 @@ public class VectorBenchmark {
         int EXPECTED_AGGREGATE;
         Integer[] ELEMENTS;
 
-        /* Only use these for non-mutating operations */
-        public final java.util.ArrayList<Integer> javaMutable = new java.util.ArrayList<>();
+        /* Only use this for non-mutating operations */
+        java.util.ArrayList<Integer> javaMutable;
 
-        public fj.data.Seq<Integer> fjavaPersistent = fj.data.Seq.empty();
-        public org.pcollections.PVector<Integer> pcollectionsPersistent = org.pcollections.TreePVector.empty();
-        public scala.collection.immutable.Vector<Integer> scalaPersistent = scala.collection.immutable.Vector$.MODULE$.empty();
-        public clojure.lang.PersistentVector clojurePersistent = clojure.lang.PersistentVector.EMPTY;
-        public javaslang.collection.Vector<Integer> slangPersistent = Vector.empty();
+        fj.data.Seq<Integer> fjavaPersistent = fj.data.Seq.empty();
+        org.pcollections.PVector<Integer> pcollectionsPersistent = org.pcollections.TreePVector.empty();
+        scala.collection.immutable.Vector<Integer> scalaPersistent;
+        clojure.lang.PersistentVector clojurePersistent;
+        javaslang.collection.Vector<Integer> slangPersistent;
 
         @Setup
         @SuppressWarnings("unchecked")
@@ -58,28 +60,12 @@ public class VectorBenchmark {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
             EXPECTED_AGGREGATE = Array.of(ELEMENTS).reduce(JmhRunner::aggregate);
 
-            java.util.Collections.addAll(javaMutable, ELEMENTS);
-            pcollectionsPersistent = org.pcollections.TreePVector.from(javaMutable);
-            fjavaPersistent = fj.data.Seq.fromJavaList(javaMutable);
-            scalaPersistent = (scala.collection.immutable.Vector<Integer>) scala.collection.immutable.Vector$.MODULE$.apply(scala.collection.JavaConversions.asScalaBuffer(javaMutable));
-            clojurePersistent = clojure.lang.PersistentVector.create(javaMutable);
-            slangPersistent = Vector.ofAll(javaMutable);
-
-            assert Collections.equals(javaMutable, Arrays.asList(ELEMENTS))
-                   && Collections.equals(fjavaPersistent, javaMutable)
-                   && Collections.equals(pcollectionsPersistent, javaMutable)
-                   && Collections.equals(clojurePersistent, javaMutable)
-                   && Collections.equals(asJavaCollection(scalaPersistent), javaMutable)
-                   && Collections.equals(slangPersistent, javaMutable);
-
-            Memory.storeMemoryUsages(ELEMENTS, Base.this,
-                    javaMutable,
-                    pcollectionsPersistent,
-                    fjavaPersistent,
-                    scalaPersistent,
-                    clojurePersistent,
-                    slangPersistent
-            );
+            javaMutable = create(java.util.ArrayList::new, asList(ELEMENTS), v -> areEqual(v, asList(ELEMENTS)));
+            scalaPersistent = create(v -> (scala.collection.immutable.Vector<Integer>) scala.collection.immutable.Vector$.MODULE$.apply(asScalaBuffer(v)), javaMutable, v -> areEqual(asJavaCollection(v), javaMutable));
+            clojurePersistent = create(clojure.lang.PersistentVector::create, javaMutable, v -> areEqual(v, javaMutable));
+            pcollectionsPersistent = create(org.pcollections.TreePVector::from, javaMutable, v -> areEqual(v, javaMutable));
+            fjavaPersistent = create(fj.data.Seq::fromJavaList, javaMutable, v -> areEqual(v, javaMutable));
+            slangPersistent = create(javaslang.collection.Vector::ofAll, javaMutable, v -> areEqual(v, javaMutable));
         }
     }
 
@@ -87,7 +73,7 @@ public class VectorBenchmark {
         @Benchmark
         public Object java_mutable() {
             final ArrayList<Integer> values = new ArrayList<>(javaMutable);
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
@@ -101,28 +87,28 @@ public class VectorBenchmark {
         @Benchmark
         public Object clojure_persistent() {
             final clojure.lang.PersistentVector values = clojure.lang.PersistentVector.create(javaMutable);
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
         @Benchmark
         public Object fjava_persistent() {
             final fj.data.Seq<Integer> values = fj.data.Seq.fromJavaList(javaMutable);
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
         @Benchmark
         public Object pcollections_persistent() {
             final org.pcollections.PVector<Integer> values = org.pcollections.TreePVector.from(javaMutable);
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
         @Benchmark
         public Object slang_persistent() {
             final javaslang.collection.Vector<Integer> values = javaslang.collection.Vector.ofAll(javaMutable);
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values.head();
         }
     }
@@ -180,7 +166,7 @@ public class VectorBenchmark {
             @Setup(Level.Invocation)
             public void initializeMutable(Base state) {
                 java.util.Collections.addAll(javaMutable, state.ELEMENTS);
-                assert Collections.equals(javaMutable, Arrays.asList(state.ELEMENTS));
+                assert areEqual(javaMutable, asList(state.ELEMENTS));
             }
 
             @TearDown(Level.Invocation)
@@ -320,7 +306,7 @@ public class VectorBenchmark {
             @Setup(Level.Invocation)
             public void initializeMutable(Base state) {
                 java.util.Collections.addAll(javaMutable, state.ELEMENTS);
-                assert Collections.equals(javaMutable, Arrays.asList(state.ELEMENTS));
+                assert areEqual(javaMutable, asList(state.ELEMENTS));
             }
 
             @TearDown(Level.Invocation)
@@ -398,7 +384,7 @@ public class VectorBenchmark {
             for (Integer element : ELEMENTS) {
                 values.add(0, element);
             }
-            assert Collections.equals(Array.ofAll(values).reverse(), javaMutable);
+            assert areEqual(Array.ofAll(values).reverse(), javaMutable);
             return values;
         }
 
@@ -408,7 +394,7 @@ public class VectorBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.appendFront(element);
             }
-            assert Collections.equals(Array.ofAll(asJavaCollection(values)).reverse(), javaMutable);
+            assert areEqual(Array.ofAll(asJavaCollection(values)).reverse(), javaMutable);
             return values;
         }
 
@@ -418,7 +404,7 @@ public class VectorBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.cons(element);
             }
-            assert Collections.equals(Array.ofAll(values).reverse(), javaMutable);
+            assert areEqual(Array.ofAll(values).reverse(), javaMutable);
             return values;
         }
 
@@ -428,7 +414,7 @@ public class VectorBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.plus(0, element);
             }
-            assert Collections.equals(Array.ofAll(values).reverse(), javaMutable);
+            assert areEqual(Array.ofAll(values).reverse(), javaMutable);
             return values;
         }
 
@@ -438,7 +424,7 @@ public class VectorBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.prepend(element);
             }
-            assert Collections.equals(values.reverse(), javaMutable);
+            assert areEqual(values.reverse(), javaMutable);
             return values;
         }
     }
@@ -451,7 +437,7 @@ public class VectorBenchmark {
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
@@ -461,7 +447,7 @@ public class VectorBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.appendBack(element);
             }
-            assert Collections.equals(asJavaCollection(values), javaMutable);
+            assert areEqual(asJavaCollection(values), javaMutable);
             return values;
         }
 
@@ -471,7 +457,7 @@ public class VectorBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.cons(element);
             }
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
@@ -481,7 +467,7 @@ public class VectorBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.snoc(element);
             }
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
@@ -491,7 +477,7 @@ public class VectorBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.plus(element);
             }
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
 
@@ -501,7 +487,7 @@ public class VectorBenchmark {
             for (Integer element : ELEMENTS) {
                 values = values.append(element);
             }
-            assert Collections.equals(values, javaMutable);
+            assert areEqual(values, javaMutable);
             return values;
         }
     }
@@ -561,7 +547,7 @@ public class VectorBenchmark {
             @Setup(Level.Invocation)
             public void initializeMutable(Base state) {
                 java.util.Collections.addAll(javaMutable, state.ELEMENTS);
-                assert Collections.equals(javaMutable, Arrays.asList(state.ELEMENTS));
+                assert areEqual(javaMutable, asList(state.ELEMENTS));
             }
 
             @TearDown(Level.Invocation)

@@ -7,6 +7,8 @@ import org.openjdk.jmh.annotations.*;
 import java.util.*;
 
 import static java.lang.String.valueOf;
+import static javaslang.JmhRunner.create;
+import static javaslang.collection.Collections.areEqual;
 
 public class CharSeqBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
@@ -21,11 +23,11 @@ public class CharSeqBenchmark {
 
     @Test
     public void testAsserts() {
-        JmhRunner.runDebug(CLASSES);
+        JmhRunner.runDebugWithAsserts(CLASSES);
     }
 
     public static void main(java.lang.String... args) {
-        JmhRunner.runNormal(CLASSES);
+        JmhRunner.runNormalNoAsserts(CLASSES);
     }
 
     @State(Scope.Benchmark)
@@ -49,13 +51,9 @@ public class CharSeqBenchmark {
             }
             EXPECTED_AGGREGATE = Iterator.ofAll(ELEMENTS).reduce((x, y) -> (char) JmhRunner.aggregate((int) x, (int) y));
 
-            javaPersistent = new String(ELEMENTS);
-            fjavaPersistent = fj.data.LazyString.str(javaPersistent);
-            slangPersistent = CharSeq.of(javaPersistent);
-
-            assert Arrays.equals(javaPersistent.toCharArray(), ELEMENTS)
-                   && Objects.equals(fjavaPersistent.eval(), javaPersistent)
-                   && slangPersistent.contentEquals(javaPersistent);
+            javaPersistent = create(java.lang.String::new, ELEMENTS, ELEMENTS.length, v -> Arrays.equals(v.toCharArray(), ELEMENTS));
+            fjavaPersistent = create(fj.data.LazyString::str, javaPersistent, javaPersistent.length(), v -> Objects.equals(v.toStringEager(), javaPersistent));
+            slangPersistent = create(javaslang.collection.CharSeq::of, javaPersistent, javaPersistent.length(), v -> v.contentEquals(javaPersistent));
         }
     }
 
@@ -119,7 +117,7 @@ public class CharSeqBenchmark {
         @Benchmark
         public int java_persistent() {
             int aggregate = 0;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= javaPersistent.charAt(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
@@ -139,7 +137,7 @@ public class CharSeqBenchmark {
         @Benchmark
         public int slang_persistent() {
             int aggregate = 0;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 aggregate ^= slangPersistent.charAt(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
@@ -153,7 +151,7 @@ public class CharSeqBenchmark {
         @Benchmark
         public Object java_persistent() {
             java.lang.String values = javaPersistent;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.substring(0, i) + replacement + values.substring(i + 1);
             }
             assert Array.ofAll(values.toCharArray()).forAll(c -> c == replacement);
@@ -163,7 +161,7 @@ public class CharSeqBenchmark {
         @Benchmark
         public Object slang_persistent() {
             javaslang.collection.CharSeq values = slangPersistent;
-            for (int i = 0; i < ELEMENTS.length; i++) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.update(i, replacement);
             }
             assert values.forAll(c -> c == replacement);
@@ -178,7 +176,7 @@ public class CharSeqBenchmark {
             for (int i = CONTAINER_SIZE - 1; i >= 0; i--) {
                 values = ELEMENTS[i] + values;
             }
-            assert Arrays.equals(values.toCharArray(), ELEMENTS);
+            assert Objects.equals(values, javaPersistent);
             return values;
         }
 
@@ -210,7 +208,7 @@ public class CharSeqBenchmark {
             for (char c : ELEMENTS) {
                 values = values + c;
             }
-            assert Arrays.equals(values.toCharArray(), ELEMENTS);
+            assert Objects.equals(values, javaPersistent);
             return values;
         }
 
@@ -220,7 +218,7 @@ public class CharSeqBenchmark {
             for (char c : ELEMENTS) {
                 values = values.append(valueOf(c));
             }
-            assert Collections.equals(values.toStream(), slangPersistent);
+            assert areEqual(values.toStream(), slangPersistent);
             return values;
         }
 

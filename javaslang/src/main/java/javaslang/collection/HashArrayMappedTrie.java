@@ -224,7 +224,7 @@ interface HashArrayMappedTrieModule {
                 return true;
             } else if (o instanceof HashArrayMappedTrie) {
                 final HashArrayMappedTrie<Object, ?> that = (HashArrayMappedTrie<Object, ?>) o;
-                return (this.size() == that.size()) && Collections.equals(this, that);
+                return (this.size() == that.size()) && Collections.areEqual(this, that);
             } else {
                 return false;
             }

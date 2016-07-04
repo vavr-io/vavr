@@ -1164,6 +1164,6 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
 
     @Override
     public boolean equals(Object o) {
-        return o == this || o instanceof Queue && Collections.equals(this, (Iterable) o);
+        return o == this || o instanceof Queue && Collections.areEqual(this, (Iterable) o);
     }
 }

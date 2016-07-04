@@ -4,8 +4,9 @@ import javaslang.JmhRunner;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 
-import static javaslang.JmhRunner.getRandomValues;
-import static scala.collection.JavaConversions.asJavaCollection;
+import static javaslang.JmhRunner.*;
+import static javaslang.collection.Collections.areEqual;
+import static scala.collection.JavaConversions.*;
 
 public class BitSetBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
@@ -15,11 +16,11 @@ public class BitSetBenchmark {
 
     @Test
     public void testAsserts() {
-        JmhRunner.runDebug(CLASSES);
+        JmhRunner.runDebugWithAsserts(CLASSES);
     }
 
     public static void main(String... args) {
-        JmhRunner.runNormal(CLASSES);
+        JmhRunner.runNormalNoAsserts(CLASSES);
     }
 
     @State(Scope.Benchmark)
@@ -31,8 +32,8 @@ public class BitSetBenchmark {
         int[] ELEMENTS;
         TreeSet<Integer> DISTINCT;
 
-        scala.collection.immutable.BitSet scalaPersistent = scala.collection.immutable.BitSet$.MODULE$.empty();
-        javaslang.collection.Set<Integer> slangPersistent = javaslang.collection.BitSet.empty();
+        scala.collection.immutable.BitSet scalaPersistent;
+        javaslang.collection.BitSet<Integer> slangPersistent;
 
         @Setup
         @SuppressWarnings("RedundantCast")
@@ -46,11 +47,8 @@ public class BitSetBenchmark {
             DISTINCT = TreeSet.ofAll(ELEMENTS);
             EXPECTED_AGGREGATE = DISTINCT.reduce(JmhRunner::aggregate);
 
-            scalaPersistent = (scala.collection.immutable.BitSet) scala.collection.immutable.BitSet$.MODULE$.apply(scala.collection.JavaConversions.asScalaBuffer(DISTINCT.toJavaList())); // ouch...
-            slangPersistent = javaslang.collection.BitSet.ofAll(ELEMENTS);
-
-            assert Collections.equals(slangPersistent, DISTINCT)
-                   && Collections.equals(asJavaCollection(scalaPersistent), DISTINCT);
+            scalaPersistent = create(v -> (scala.collection.immutable.BitSet) scala.collection.immutable.BitSet$.MODULE$.apply(asScalaBuffer(v)), DISTINCT.toJavaList(), v -> areEqual(asJavaCollection(v), DISTINCT));
+            slangPersistent = create(javaslang.collection.BitSet::ofAll, ELEMENTS, ELEMENTS.length, v -> areEqual(v, DISTINCT));
         }
     }
 
