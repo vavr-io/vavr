@@ -6,7 +6,7 @@ import org.openjdk.jmh.results.RunResult;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.*;
 
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class JmhRunner {
@@ -111,5 +111,20 @@ public class JmhRunner {
     /** used for dead code elimination and correctness assertion inside the benchmarks */
     public static int aggregate(int x, int y) {
         return x ^ y;
+    }
+
+    /** simplifies construction of immutable collections - with assertion and memory benchmarking */
+    public static <T extends Collection<?>, R> R create(Function1<T, R> function, T source, Function1<R, Boolean> assertion) {
+        return create(function, source, source.size(), assertion);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T, R> R create(Function1<T, R> function, T source, int elementCount, Function1<R, Boolean> assertion) {
+        final R result = function.apply(source);
+        assert assertion.apply(result);
+
+        MemoryUsage.storeMemoryUsages(source, elementCount, result);
+
+        return result;
     }
 }

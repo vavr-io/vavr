@@ -1,6 +1,6 @@
 package javaslang;
 
-import javaslang.collection.TreeMultimap;
+import javaslang.collection.*;
 
 import java.text.DecimalFormat;
 import java.util.Comparator;
@@ -31,6 +31,8 @@ public class MemoryUsage {
                                            humanSizeOf(target),
                                            humanReadableUnits(overhead),
                                            RATIO_FORMAT.format(overheadPerElement));
-        memoryUsages = memoryUsages.put(elementCount, usage);
+        if (!memoryUsages.get(elementCount).getOrElse(List::empty).contains(usage)) {
+            memoryUsages = memoryUsages.put(elementCount, usage);
+        }
     }
 }

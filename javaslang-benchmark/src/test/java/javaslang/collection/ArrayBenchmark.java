@@ -6,7 +6,8 @@ import org.openjdk.jmh.annotations.*;
 
 import java.util.*;
 
-import static javaslang.JmhRunner.getRandomValues;
+import static java.util.Arrays.asList;
+import static javaslang.JmhRunner.*;
 import static javaslang.collection.Collections.areEqual;
 
 public class ArrayBenchmark {
@@ -47,13 +48,9 @@ public class ArrayBenchmark {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
             EXPECTED_AGGREGATE = Iterator.of(ELEMENTS).reduce(JmhRunner::aggregate);
 
-            javaMutable = new ArrayList<>(Arrays.asList(ELEMENTS));
-            fjavaMutable = fj.data.Array.array(ELEMENTS);
-            slangPersistent = javaslang.collection.Array.of(ELEMENTS);
-
-            assert areEqual(javaMutable, Arrays.asList(ELEMENTS))
-                   && areEqual(fjavaMutable, javaMutable)
-                   && areEqual(slangPersistent, javaMutable);
+            javaMutable = create(java.util.ArrayList::new, asList(ELEMENTS), v -> areEqual(v, asList(ELEMENTS)));
+            fjavaMutable = create(fj.data.Array::array, ELEMENTS, ELEMENTS.length, v -> areEqual(v, asList(ELEMENTS)));
+            slangPersistent = create(javaslang.collection.Array::ofAll, javaMutable, v -> areEqual(v, javaMutable));
         }
     }
 
@@ -112,7 +109,7 @@ public class ArrayBenchmark {
             @Setup(Level.Invocation)
             public void initializeMutable(Base state) {
                 java.util.Collections.addAll(javaMutable, state.ELEMENTS);
-                assert areEqual(javaMutable, Arrays.asList(state.ELEMENTS));
+                assert areEqual(javaMutable, asList(state.ELEMENTS));
             }
 
             @TearDown(Level.Invocation)

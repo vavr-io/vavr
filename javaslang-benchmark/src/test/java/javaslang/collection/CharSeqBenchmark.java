@@ -7,6 +7,7 @@ import org.openjdk.jmh.annotations.*;
 import java.util.*;
 
 import static java.lang.String.valueOf;
+import static javaslang.JmhRunner.create;
 import static javaslang.collection.Collections.areEqual;
 
 public class CharSeqBenchmark {
@@ -50,13 +51,9 @@ public class CharSeqBenchmark {
             }
             EXPECTED_AGGREGATE = Iterator.ofAll(ELEMENTS).reduce((x, y) -> (char) JmhRunner.aggregate((int) x, (int) y));
 
-            javaPersistent = new String(ELEMENTS);
-            fjavaPersistent = fj.data.LazyString.str(javaPersistent);
-            slangPersistent = CharSeq.of(javaPersistent);
-
-            assert Arrays.equals(javaPersistent.toCharArray(), ELEMENTS)
-                   && Objects.equals(fjavaPersistent.eval(), javaPersistent)
-                   && slangPersistent.contentEquals(javaPersistent);
+            javaPersistent = create(java.lang.String::new, ELEMENTS, ELEMENTS.length, v -> Arrays.equals(v.toCharArray(), ELEMENTS));
+            fjavaPersistent = create(fj.data.LazyString::str, javaPersistent, javaPersistent.length(), v -> Objects.equals(v.toStringEager(), javaPersistent));
+            slangPersistent = create(javaslang.collection.CharSeq::of, javaPersistent, javaPersistent.length(), v -> v.contentEquals(javaPersistent));
         }
     }
 
@@ -179,7 +176,7 @@ public class CharSeqBenchmark {
             for (int i = CONTAINER_SIZE - 1; i >= 0; i--) {
                 values = ELEMENTS[i] + values;
             }
-            assert Arrays.equals(values.toCharArray(), ELEMENTS);
+            assert Objects.equals(values, javaPersistent);
             return values;
         }
 
@@ -211,7 +208,7 @@ public class CharSeqBenchmark {
             for (char c : ELEMENTS) {
                 values = values + c;
             }
-            assert Arrays.equals(values.toCharArray(), ELEMENTS);
+            assert Objects.equals(values, javaPersistent);
             return values;
         }
 

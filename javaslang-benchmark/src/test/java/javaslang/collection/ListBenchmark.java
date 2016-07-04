@@ -8,7 +8,8 @@ import scala.compat.java8.JFunction;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static javaslang.JmhRunner.getRandomValues;
+import static java.util.Arrays.asList;
+import static javaslang.JmhRunner.*;
 import static javaslang.collection.Collections.areEqual;
 import static scala.collection.JavaConversions.*;
 
@@ -43,39 +44,31 @@ public class ListBenchmark {
         Integer[] ELEMENTS;
 
         /* Only use these for non-mutating operations */
-        final java.util.ArrayList<Integer> javaMutable = new java.util.ArrayList<>();
-        final java.util.LinkedList<Integer> javaMutableLinked = new java.util.LinkedList<>();
-        final scala.collection.mutable.MutableList<Integer> scalaMutable = new scala.collection.mutable.MutableList<>();
+        java.util.ArrayList<Integer> javaMutable;
+        java.util.LinkedList<Integer> javaMutableLinked;
+        scala.collection.mutable.MutableList<Integer> scalaMutable;
 
-        fj.data.List<Integer> fjavaPersistent = fj.data.List.list();
-        org.pcollections.PStack<Integer> pcollectionsPersistent = org.pcollections.ConsPStack.empty();
-        scala.collection.immutable.List<Integer> scalaPersistent = scala.collection.immutable.List$.MODULE$.empty();
-        clojure.lang.IPersistentList clojurePersistent = clojure.lang.PersistentList.EMPTY;
-        javaslang.collection.List<Integer> slangPersistent = javaslang.collection.List.empty();
+        fj.data.List<Integer> fjavaPersistent;
+        org.pcollections.PStack<Integer> pcollectionsPersistent;
+        scala.collection.immutable.List<Integer> scalaPersistent;
+        clojure.lang.IPersistentList clojurePersistent;
+        javaslang.collection.List<Integer> slangPersistent;
 
         @Setup
+        @SuppressWarnings("unchecked")
         public void setup() {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
             EXPECTED_AGGREGATE = Iterator.of(ELEMENTS).reduce(JmhRunner::aggregate);
 
-            java.util.Collections.addAll(javaMutable, ELEMENTS);
-            javaMutableLinked.addAll(javaMutable);
-            scalaMutable.$plus$plus$eq(asScalaBuffer(javaMutable));
+            javaMutable = create(java.util.ArrayList::new, asList(ELEMENTS), v -> areEqual(v, asList(ELEMENTS)));
+            javaMutableLinked = create(java.util.LinkedList::new, asList(ELEMENTS), v -> areEqual(v, asList(ELEMENTS)));
+            scalaMutable = create(v -> (scala.collection.mutable.MutableList<Integer>) scala.collection.mutable.MutableList$.MODULE$.apply(asScalaBuffer(v)), asList(ELEMENTS), v -> areEqual(asJavaCollection(v), javaMutable));
 
-            scalaPersistent = scala.collection.immutable.List$.MODULE$.apply(scalaMutable);
-            clojurePersistent = clojure.lang.PersistentList.create(javaMutable);
-            fjavaPersistent = fj.data.List.fromIterator(javaMutable.iterator());
-            pcollectionsPersistent = org.pcollections.ConsPStack.from(javaMutable);
-            slangPersistent = javaslang.collection.List.ofAll(javaMutable);
-
-            assert areEqual(javaMutable, Arrays.asList(ELEMENTS))
-                   && areEqual(javaMutableLinked, javaMutable)
-                   && areEqual(asJavaCollection(scalaMutable), javaMutable)
-                   && areEqual(fjavaPersistent, javaMutable)
-                   && areEqual(pcollectionsPersistent, javaMutable)
-                   && areEqual(asJavaCollection(scalaPersistent), javaMutable)
-                   && areEqual((Iterable<?>) clojurePersistent, javaMutable)
-                   && areEqual(slangPersistent, javaMutable);
+            scalaPersistent = create(v -> scala.collection.immutable.List$.MODULE$.apply(asScalaBuffer(v)), javaMutable, v -> areEqual(asJavaCollection(v), javaMutable));
+            clojurePersistent = create(clojure.lang.PersistentList::create, javaMutable, v -> areEqual((Iterable<?>) v, javaMutable));
+            fjavaPersistent = create(v -> fj.data.List.fromIterator(v.iterator()), javaMutable, v -> areEqual(v, javaMutable));
+            pcollectionsPersistent = create(org.pcollections.ConsPStack::from, javaMutable, v -> areEqual(v, javaMutable));
+            slangPersistent = create(javaslang.collection.List::ofAll, javaMutable, v -> areEqual(v, javaMutable));
         }
     }
 
@@ -178,7 +171,7 @@ public class ListBenchmark {
             public void initializeMutable(Base state) {
                 java.util.Collections.addAll(javaMutable, state.ELEMENTS);
                 javaMutableLinked.addAll(javaMutable);
-                assert areEqual(javaMutable, Arrays.asList(state.ELEMENTS))
+                assert areEqual(javaMutable, asList(state.ELEMENTS))
                        && areEqual(javaMutableLinked, javaMutable);
             }
 
@@ -338,7 +331,7 @@ public class ListBenchmark {
                     scalaMutable.prependElem(state.ELEMENTS[i]);
                 }
 
-                assert areEqual(javaMutable, Arrays.asList(state.ELEMENTS))
+                assert areEqual(javaMutable, asList(state.ELEMENTS))
                        && areEqual(javaMutableLinked, javaMutable)
                        && areEqual(asJavaCollection(scalaMutable), javaMutable);
             }
