@@ -286,6 +286,14 @@ Note: The maven build currently needs to be started from the javaslang root dir
         </pluginManagement>
     </build>
     <profiles>
+        <profile>
+            <id>gwt</id>
+            <modules>
+                <module>javaslang</module>
+                <module>javaslang-gwt</module>
+                <module>javaslang-gwt/example</module>
+            </modules>
+        </profile>
         <!-- A profile for code coverage analysis in ci environments -->
         <profile>
             <id>ci</id>
