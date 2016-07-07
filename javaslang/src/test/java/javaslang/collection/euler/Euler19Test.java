@@ -5,12 +5,14 @@
  */
 package javaslang.collection.euler;
 
+import javaslang.Tuple;
 import javaslang.collection.List;
 import org.junit.Test;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 
+import static javaslang.API.For;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -43,13 +45,10 @@ public class Euler19Test {
     }
 
     private static int findNumberOfFirstMonthDaysOnSunday(int startYear, int endYear) {
-        return List.range(startYear, endYear + 1).
-                map(
-                        y -> List.range(1, 13).filter(m -> isFirstDayOfMonthSunday(y, m)).length()
-                ).sum().intValue();
+        return For(List.range(startYear, endYear + 1), List.range(1, 13))
+                .yield(Tuple::of)
+                .filter(t -> isFirstDayOfMonthSunday(t._1, t._2))
+                .length();
     }
-
-
-
 
 }
