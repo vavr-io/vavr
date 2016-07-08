@@ -45,9 +45,9 @@ public class Euler12Test {
         assertThat(valueOfFirstTriangleNumberWithMoreDivisorsThan(500)).isEqualTo(76_576_500);
     }
 
-    private static long valueOfFirstTriangleNumberWithMoreDivisorsThan(long nofDivisors) {
+    private static long valueOfFirstTriangleNumberWithMoreDivisorsThan(long divisorCount) {
         return triangleNumbers()
-                .find(t -> nofDivisors(t) > nofDivisors)
+                .find(t -> divisorCount(t) > divisorCount)
                 .get();
     }
 
@@ -55,7 +55,7 @@ public class Euler12Test {
         return Stream.from(1L).scanLeft(0L, (a, l) -> a + l);
     }
 
-    private static long nofDivisors(long l) {
-        return factors(l).length();
+    private static long divisorCount(long number) {
+        return factors(number).length();
     }
 }

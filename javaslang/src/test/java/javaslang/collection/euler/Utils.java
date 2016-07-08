@@ -27,10 +27,10 @@ public final class Utils {
         return Stream.rangeClosed(1, n).map(BigInteger::valueOf).fold(BigInteger.ONE, BigInteger::multiply);
     }
 
-    public static Stream<Long> factors(long l) {
-        return Stream.rangeClosed(1, (long) Math.sqrt(l))
-                .filter(d -> l % d == 0)
-                .flatMap(d -> Stream.of(d, l / d))
+    public static Stream<Long> factors(long number) {
+        return Stream.rangeClosed(1, (long) Math.sqrt(number))
+                .filter(d -> number % d == 0)
+                .flatMap(d -> Stream.of(d, number / d))
                 .distinct();
     }
 
