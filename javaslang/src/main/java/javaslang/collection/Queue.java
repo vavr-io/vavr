@@ -1145,7 +1145,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     public <U, R> Queue<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
-        return ofAll(toList().zipWith((Iterable<U>) that, mapper));
+        return ofAll(toList().zipWith(that, mapper));
     }
 
     @Override
