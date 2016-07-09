@@ -912,9 +912,14 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     @Override
     public <U> TreeSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+        return zipWith(that, Tuple::of);
+    }
+
+    @Override
+    public <U, R> TreeSet<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
-        final Comparator<Tuple2<T, U>> tuple2Comparator = Tuple2.comparator(tree.comparator(), naturalComparator());
-        return TreeSet.ofAll(tuple2Comparator, iterator().zip(that));
+        Objects.requireNonNull(mapper, "mapper is null");
+        return TreeSet.ofAll(naturalComparator(), iterator().zipWith(that, mapper));
     }
 
     @Override
@@ -929,6 +934,11 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
         final Comparator<? super T> component1Comparator = tree.comparator();
         final Comparator<Tuple2<T, Long>> tuple2Comparator = (t1, t2) -> component1Comparator.compare(t1._1, t2._1);
         return TreeSet.ofAll(tuple2Comparator, iterator().zipWithIndex());
+    }
+
+    @Override
+    public <U> SortedSet<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+        return TreeSet.ofAll(naturalComparator(), iterator().zipWithIndex(mapper));
     }
 
     // -- Object

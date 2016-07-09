@@ -352,10 +352,16 @@ public interface IndexedSeq<T> extends Seq<T> {
     <U> IndexedSeq<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     @Override
+    <U, R> IndexedSeq<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
+
+    @Override
     <U> IndexedSeq<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
     IndexedSeq<Tuple2<T, Long>> zipWithIndex();
+
+    @Override
+    <U> IndexedSeq<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper);
 
     /**
      * Searches this sequence for a specific element using a binary search. The sequence must already be sorted into

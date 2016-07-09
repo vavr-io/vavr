@@ -208,9 +208,14 @@ public interface SortedSet<T> extends Set<T> {
     <U> SortedSet<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     @Override
+    <U, R> SortedSet<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
+
+    @Override
     <U> SortedSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
     SortedSet<Tuple2<T, Long>> zipWithIndex();
 
+    @Override
+    <U> SortedSet<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper);
 }

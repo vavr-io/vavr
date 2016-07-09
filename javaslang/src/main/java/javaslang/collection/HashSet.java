@@ -840,8 +840,14 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
 
     @Override
     public <U> HashSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+        return zipWith(that, Tuple::of);
+    }
+
+    @Override
+    public <U, R> HashSet<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
-        return HashSet.ofAll(iterator().zip(that));
+        Objects.requireNonNull(mapper, "mapper is null");
+        return HashSet.ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
@@ -852,7 +858,13 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
 
     @Override
     public HashSet<Tuple2<T, Long>> zipWithIndex() {
-        return HashSet.ofAll(iterator().zipWithIndex());
+        return zipWithIndex(Tuple::of);
+    }
+
+    @Override
+    public <U> HashSet<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return HashSet.ofAll(iterator().zipWithIndex(mapper));
     }
 
     // -- Object

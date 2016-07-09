@@ -1305,8 +1305,14 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public <U> Array<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+        return zipWith(that, Tuple::of);
+    }
+
+    @Override
+    public <U, R> Array<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
-        return ofAll(iterator().zip(that));
+        Objects.requireNonNull(mapper, "mapper is null");
+        return ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
@@ -1318,6 +1324,12 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     @Override
     public Array<Tuple2<T, Long>> zipWithIndex() {
         return ofAll(iterator().zipWithIndex());
+    }
+
+    @Override
+    public <U> Array<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return ofAll(iterator().zipWithIndex(mapper));
     }
 
     @Override

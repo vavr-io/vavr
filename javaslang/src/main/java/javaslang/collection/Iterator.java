@@ -1068,21 +1068,27 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default <U> Iterator<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+        return zipWith(that, Tuple::of);
+    }
+
+    @Override
+    default <U, R> Iterator<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
+        Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
         } else {
             final Iterator<T> it1 = this;
             final java.util.Iterator<? extends U> it2 = that.iterator();
-            return new AbstractIterator<Tuple2<T, U>>() {
+            return new AbstractIterator<R>() {
                 @Override
                 public boolean hasNext() {
                     return it1.hasNext() && it2.hasNext();
                 }
 
                 @Override
-                public Tuple2<T, U> getNext() {
-                    return Tuple.of(it1.next(), it2.next());
+                public R getNext() {
+                    return mapper.apply(it1.next(), it2.next());
                 }
             };
         }
@@ -1114,11 +1120,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default Iterator<Tuple2<T, Long>> zipWithIndex() {
+        return zipWithIndex(Tuple::of);
+    }
+
+    @Override
+    default <U> Iterator<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
         } else {
             final Iterator<T> it1 = this;
-            return new AbstractIterator<Tuple2<T, Long>>() {
+            return new AbstractIterator<U>() {
                 private long index = 0;
 
                 @Override
@@ -1127,8 +1139,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public Tuple2<T, Long> getNext() {
-                    return Tuple.of(it1.next(), index++);
+                public U getNext() {
+                    return mapper.apply(it1.next(), index++);
                 }
             };
         }
@@ -1157,6 +1169,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator(), source.map(t -> (T3) t._3).iterator());
         }
     }
+
     /**
      * Creates an iterator from a seed value and a function.
      * The function takes the seed at first.

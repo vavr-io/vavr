@@ -1135,11 +1135,17 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
         return ofAll(toList().update(index, element));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <U> Queue<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+        return zipWith(that, Tuple::of);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U, R> Queue<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
-        return ofAll(toList().zip((Iterable<U>) that));
+        Objects.requireNonNull(mapper, "mapper is null");
+        return ofAll(toList().zipWith(that, mapper));
     }
 
     @Override
@@ -1150,7 +1156,13 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
 
     @Override
     public Queue<Tuple2<T, Long>> zipWithIndex() {
-        return ofAll(toList().zipWithIndex());
+        return zipWithIndex(Tuple::of);
+    }
+
+    @Override
+    public <U> Queue<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return ofAll(toList().zipWithIndex(mapper));
     }
 
     private Object readResolve() {

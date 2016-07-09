@@ -498,8 +498,15 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
 
     @Override
     public <U> PriorityQueue<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+        return zipWith(that, Tuple::of);
+    }
+
+
+    @Override
+    public <U, R> PriorityQueue<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
-        return ofAll(iterator().zip(that));
+        Objects.requireNonNull(mapper, "mapper is null");
+        return ofAll(naturalComparator(), iterator().zipWith(that, mapper));
     }
 
     @Override
@@ -510,7 +517,13 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
 
     @Override
     public PriorityQueue<Tuple2<T, Long>> zipWithIndex() {
-        return ofAll(iterator().zipWithIndex());
+        return zipWithIndex(Tuple::of);
+    }
+
+    @Override
+    public <U> PriorityQueue<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return ofAll(naturalComparator(), iterator().zipWithIndex(mapper));
     }
 
     @Override
@@ -558,8 +571,8 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
                 assert rank == tree.rank;
 
                 return comparator.isLessOrEqual(this.root, tree.root)
-                       ? of(this.root, this.rank + 1, tree.appendTo(this.children))
-                       : of(tree.root, tree.rank + 1, this.appendTo(tree.children));
+                        ? of(this.root, this.rank + 1, tree.appendTo(this.children))
+                        : of(tree.root, tree.rank + 1, this.appendTo(tree.children));
             }
 
             /**

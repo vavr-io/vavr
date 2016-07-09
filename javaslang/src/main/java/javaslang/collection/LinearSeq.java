@@ -289,10 +289,16 @@ public interface LinearSeq<T> extends Seq<T> {
     <U> LinearSeq<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     @Override
+    <U, R> LinearSeq<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
+
+    @Override
     <U> LinearSeq<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
     LinearSeq<Tuple2<T, Long>> zipWithIndex();
+
+    @Override
+    <U> LinearSeq<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper);
 
     /**
      * Searches this sequence for a specific element using a linear search. The sequence must already be sorted into

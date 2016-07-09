@@ -642,11 +642,17 @@ public interface Tree<T> extends Traversable<T> {
 
     @Override
     default <U> Tree<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+        return zipWith(that, Tuple::of);
+    }
+
+    @Override
+    default <U, R> Tree<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
+        Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Empty.instance();
         } else {
-            return Zip.apply((Node<T>) this, that.iterator());
+            return Zip.apply((Node<T>) this, that.iterator(), mapper);
         }
     }
 
@@ -671,7 +677,13 @@ public interface Tree<T> extends Traversable<T> {
 
     @Override
     default Tree<Tuple2<T, Long>> zipWithIndex() {
-        return zip(Iterator.from(0L));
+        return zipWithIndex(Tuple::of);
+    }
+
+    @Override
+   default  <U> Tree<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper){
+        Objects.requireNonNull(mapper, "mapper is null");
+        return zipWith(Iterator.from(0L), mapper);
     }
 
     @Override
@@ -1141,14 +1153,14 @@ interface TreeModule {
     final class Zip {
 
         @SuppressWarnings("unchecked")
-        static <T, U> Tree<Tuple2<T, U>> apply(Node<T> node, java.util.Iterator<? extends U> that) {
+        static <T, U, R> Tree<R> apply(Node<T> node, java.util.Iterator<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
             if (!that.hasNext()) {
                 return Empty.instance();
             } else {
-                final Tuple2<T, U> value = Tuple.of(node.getValue(), that.next());
-                final List<Node<Tuple2<T, U>>> children = (List<Node<Tuple2<T, U>>>) (Object) node
+                final R value = mapper.apply(node.getValue(), that.next());
+                final List<Node<R>> children = (List<Node<R>>) (Object) node
                         .getChildren()
-                        .map(child -> Zip.apply(child, that))
+                        .map(child -> Zip.apply(child, that, mapper))
                         .filter(Tree::nonEmpty);
                 return new Node<>(value, children);
             }

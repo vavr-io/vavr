@@ -313,8 +313,14 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @Override
     public <U> Seq<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+        return zipWith(that, Tuple::of);
+    }
+
+    @Override
+    public <U, R> Seq<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
-        return Stream.ofAll(iterator().zip(that));
+        Objects.requireNonNull(mapper, "mapper is null");
+        return Stream.ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
@@ -325,6 +331,12 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @Override
     public Seq<Tuple2<T, Long>> zipWithIndex() {
-        return Stream.ofAll(iterator().zipWithIndex());
+        return zipWithIndex(Tuple::of);
+    }
+
+    @Override
+    public <U> Seq<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return Stream.ofAll(iterator().zipWithIndex(mapper));
     }
 }

@@ -550,8 +550,14 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
 
     @Override
     default <U> Seq<Tuple2<Tuple2<K, V>, U>> zip(Iterable<? extends U> that) {
+        return zipWith(that, Tuple::of);
+    }
+
+    @Override
+    default <U, R> Seq<R> zipWith(Iterable<? extends U> that, BiFunction<? super Tuple2<K, V>, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
-        return Stream.ofAll(iterator().zip(that));
+        Objects.requireNonNull(mapper, "mapper is null");
+        return Stream.ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
@@ -562,7 +568,13 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
 
     @Override
     default Seq<Tuple2<Tuple2<K, V>, Long>> zipWithIndex() {
-        return Stream.ofAll(iterator().zipWithIndex());
+        return zipWithIndex(Tuple::of);
+    }
+
+    @Override
+    default <U> Seq<U> zipWithIndex(BiFunction<? super Tuple2<K, V>, ? super Long, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return Stream.ofAll(iterator().zipWithIndex(mapper));
     }
 
     /**
