@@ -968,8 +968,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static <T> Iterator<T> iterate(T seed, Function<? super T, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return new AbstractIterator<T>() {
-            Function<? super T, ? extends T> nextFunc = (s) -> seed;
-            T previous = null;
+            Function<? super T, ? extends T> nextFunc = s -> {
+                nextFunc = f;
+                return seed;
+            };
+            T current = null;
 
             @Override
             public boolean hasNext() {
@@ -978,9 +981,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
             @Override
             public T getNext() {
-                previous = nextFunc.apply(previous);
-                nextFunc = f;
-                return previous;
+                current = nextFunc.apply(current);
+                return current;
             }
         };
     }
