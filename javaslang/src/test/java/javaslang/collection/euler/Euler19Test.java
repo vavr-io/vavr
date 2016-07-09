@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
 
 import static javaslang.API.For;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,12 +41,13 @@ public class Euler19Test {
         assertThat(findNumberOfFirstMonthDaysOnSunday(1901, 2000)).isEqualTo(171);
     }
 
-    private static boolean isFirstDayOfMonthSunday(int year, int month) {
+    private static boolean isFirstDayOfMonthSunday(int year, Month month) {
         return LocalDate.of(year, month, 1).getDayOfWeek() == DayOfWeek.SUNDAY;
     }
 
     private static int findNumberOfFirstMonthDaysOnSunday(int startYear, int endYear) {
-        return For(List.range(startYear, endYear + 1), List.range(1, 13))
+
+        return For(List.rangeClosed(startYear, endYear), List.of(Month.values()))
                 .yield(Tuple::of)
                 .filter(t -> isFirstDayOfMonthSunday(t._1, t._2))
                 .length();
