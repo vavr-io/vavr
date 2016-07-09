@@ -27,6 +27,13 @@ public final class Utils {
         return Stream.rangeClosed(1, n).map(BigInteger::valueOf).fold(BigInteger.ONE, BigInteger::multiply);
     }
 
+    public static Stream<Long> factors(long number) {
+        return Stream.rangeClosed(1, (long) Math.sqrt(number))
+                .filter(d -> number % d == 0)
+                .flatMap(d -> Stream.of(d, number / d))
+                .distinct();
+    }
+
     public static Stream<String> readLines(File file) {
         try {
             return Stream.ofAll(new Iterator<String>() {
