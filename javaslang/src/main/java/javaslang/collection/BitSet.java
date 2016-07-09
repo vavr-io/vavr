@@ -579,6 +579,13 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
+    default <U, R> TreeSet<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
+        Objects.requireNonNull(that, "that is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+        return TreeSet.ofAll(naturalComparator(), iterator().zipWith(that, mapper));
+    }
+
+    @Override
     default <U> TreeSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         final Comparator<Tuple2<T, U>> tuple2Comparator = Tuple2.comparator(comparator(), naturalComparator());
@@ -590,6 +597,12 @@ public interface BitSet<T> extends SortedSet<T> {
         final Comparator<? super T> component1Comparator = comparator();
         final Comparator<Tuple2<T, Long>> tuple2Comparator = (t1, t2) -> component1Comparator.compare(t1._1, t2._1);
         return TreeSet.ofAll(tuple2Comparator, iterator().zipWithIndex());
+    }
+
+    @Override
+    default <U> TreeSet<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return TreeSet.ofAll(naturalComparator(), iterator().zipWithIndex(mapper));
     }
 }
 

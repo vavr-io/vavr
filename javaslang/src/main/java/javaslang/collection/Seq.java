@@ -1101,10 +1101,16 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     <U> Seq<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     @Override
+    <U, R> Seq<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
+
+    @Override
     <U> Seq<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
     Seq<Tuple2<T, Long>> zipWithIndex();
+
+    @Override
+    <U> Seq<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper);
 
     /**
      * Turns this sequence from a partial function into a total function that

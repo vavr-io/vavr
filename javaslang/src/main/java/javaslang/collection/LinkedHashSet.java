@@ -834,8 +834,14 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
 
     @Override
     public <U> LinkedHashSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+        return zipWith(that, Tuple::of);
+    }
+
+    @Override
+    public <U, R> LinkedHashSet<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
-        return LinkedHashSet.ofAll(iterator().zip(that));
+        Objects.requireNonNull(mapper, "mapper is null");
+        return LinkedHashSet.ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
@@ -846,7 +852,13 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
 
     @Override
     public LinkedHashSet<Tuple2<T, Long>> zipWithIndex() {
-        return LinkedHashSet.ofAll(iterator().zipWithIndex());
+        return zipWithIndex(Tuple::of);
+    }
+
+    @Override
+    public <U> LinkedHashSet<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return LinkedHashSet.ofAll(iterator().zipWithIndex(mapper));
     }
 
     // -- Object

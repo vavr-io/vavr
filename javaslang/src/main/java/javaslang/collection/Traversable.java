@@ -1174,6 +1174,22 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     <U> Traversable<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     /**
+     * Returns a traversable formed from this traversable and another Iterable collection by mapping elements.
+     * If one of the two iterables is longer than the other, its remaining elements are ignored.
+     * <p>
+     * The length of the returned traversable is the minimum of the lengths of this traversable and {@code that}
+     * iterable.
+     *
+     * @param <U>    The type of the second parameter of the mapper.
+     * @param <R>    The type of the mapped elements.
+     * @param that   The Iterable providing the second parameter of the mapper.
+     * @param mapper a mapper.
+     * @return a new traversable containing mapped elements of this traversable and {@code that} iterable.
+     * @throws NullPointerException if {@code that} or {@code mapper} is null
+     */
+    <U, R> Traversable<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
+
+    /**
      * Returns a traversable formed from this traversable and another Iterable by combining corresponding elements in
      * pairs. If one of the two collections is shorter than the other, placeholder elements are used to extend the
      * shorter collection to the length of the longer.
@@ -1203,4 +1219,19 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return A new traversable containing all elements of this traversable paired with their index, starting with 0.
      */
     Traversable<Tuple2<T, Long>> zipWithIndex();
+
+    /**
+     * Returns a traversable formed from this traversable and another Iterable collection by mapping elements.
+     * If one of the two iterables is longer than the other, its remaining elements are ignored.
+     * <p>
+     * The length of the returned traversable is the minimum of the lengths of this traversable and {@code that}
+     * iterable.
+     *
+     * @param <U>    The type of the mapped elements.
+     * @param mapper a mapper.
+     * @return a new traversable containing mapped elements of this traversable and {@code that} iterable.
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    <U> Traversable<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper);
+
 }

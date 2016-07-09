@@ -1473,9 +1473,15 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
-    default <U> Stream<Tuple2<T, U>> zip(Iterable<? extends U> iterable) {
-        Objects.requireNonNull(iterable, "iterable is null");
-        return Stream.ofAll(iterator().zip(iterable));
+    default <U> Stream<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+        return zipWith(that, Tuple::of);
+    }
+
+    @Override
+    default <U, R> Stream<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
+        Objects.requireNonNull(that, "that is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+        return Stream.ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
@@ -1486,7 +1492,13 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
     @Override
     default Stream<Tuple2<T, Long>> zipWithIndex() {
-        return Stream.ofAll(iterator().zipWithIndex());
+        return zipWithIndex(Tuple::of);
+    }
+
+    @Override
+    default <U> Stream<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return Stream.ofAll(iterator().zipWithIndex(mapper));
     }
 
     /**

@@ -1329,8 +1329,14 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public <U> Vector<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+        return zipWith(that, Tuple::of);
+    }
+
+    @Override
+    public <U, R> Vector<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
-        return Vector.ofAll(iterator().zip(that));
+        Objects.requireNonNull(mapper, "mapper is null");
+        return Vector.ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
@@ -1341,7 +1347,13 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<Tuple2<T, Long>> zipWithIndex() {
-        return Vector.ofAll(iterator().zipWithIndex());
+        return zipWithIndex(Tuple::of);
+    }
+
+    @Override
+    public <U> Vector<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return Vector.ofAll(iterator().zipWithIndex(mapper));
     }
 
     private Object readResolve() {

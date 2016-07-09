@@ -1007,12 +1007,18 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public <U> IndexedSeq<Tuple2<Character, U>> zip(Iterable<? extends U> that) {
+        return zipWith(that, Tuple::of);
+    }
+
+    @Override
+    public <U, R> IndexedSeq<R> zipWith(Iterable<? extends U> that, BiFunction<? super Character, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
-        IndexedSeq<Tuple2<Character, U>> result = Vector.empty();
+        Objects.requireNonNull(mapper, "mapper is null");
+        IndexedSeq<R> result = Vector.empty();
         final Iterator<Character> list1 = iterator();
         final java.util.Iterator<? extends U> list2 = that.iterator();
         while (list1.hasNext() && list2.hasNext()) {
-            result = result.append(Tuple.of(list1.next(), list2.next()));
+            result = result.append(mapper.apply(list1.next(), list2.next()));
         }
         return result;
     }
@@ -1033,9 +1039,15 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public IndexedSeq<Tuple2<Character, Long>> zipWithIndex() {
-        IndexedSeq<Tuple2<Character, Long>> result = Vector.empty();
+        return zipWithIndex(Tuple::of);
+    }
+
+    @Override
+    public <U> IndexedSeq<U> zipWithIndex(BiFunction<? super Character, ? super Long, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        IndexedSeq<U> result = Vector.empty();
         for (int i = 0; i < length(); i++) {
-            result = result.append(Tuple.of(get(i), (long) i));
+            result = result.append(mapper.apply(get(i), (long) i));
         }
         return result;
     }

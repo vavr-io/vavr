@@ -1455,8 +1455,14 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default <U> List<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+        return zipWith(that, Tuple::of);
+    }
+
+    @Override
+    default <U, R> List<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
-        return ofAll(iterator().zip(that));
+        Objects.requireNonNull(mapper, "mapper is null");
+        return ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
@@ -1467,7 +1473,13 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default List<Tuple2<T, Long>> zipWithIndex() {
-        return ofAll(iterator().zipWithIndex());
+        return zipWithIndex(Tuple::of);
+    }
+
+    @Override
+    default <U> List<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return ofAll(iterator().zipWithIndex(mapper));
     }
 
     /**
