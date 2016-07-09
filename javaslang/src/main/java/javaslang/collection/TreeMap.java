@@ -5,11 +5,16 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Kind2;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -35,29 +40,29 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
     }
 
     /**
-     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a
-     * {@link javaslang.collection.TreeMap}.
+     * Returns a {@link Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(Collector)} to obtain a
+     * {@link TreeMap}.
      * <p>
      * The natural comparator is used to compare TreeMap keys.
      *
      * @param <K> The key type
      * @param <V> The value type
-     * @return A {@link javaslang.collection.TreeMap} Collector.
+     * @return A {@link TreeMap} Collector.
      */
     public static <K extends Comparable<? super K>, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, TreeMap<K, V>> collector() {
         return collector((Comparator<? super K> & Serializable) K::compareTo);
     }
 
     /**
-     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a
-     * {@link javaslang.collection.TreeMap}.
+     * Returns a {@link Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(Collector)} to obtain a
+     * {@link TreeMap}.
      *
      * @param <K>           The key type
      * @param <V>           The value type
      * @param keyComparator A key comparator
-     * @return A {@link javaslang.collection.TreeMap} Collector.
+     * @return A {@link TreeMap} Collector.
      */
     public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, TreeMap<K, V>> collector(Comparator<? super K> keyComparator) {
         Objects.requireNonNull(keyComparator, "keyComparator is null");
@@ -67,7 +72,7 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
             left.addAll(right);
             return left;
         };
-        final Function<ArrayList<Tuple2<K, V>>, TreeMap<K, V>> finisher = list -> TreeMap.ofEntries(keyComparator, list);
+        final Function<ArrayList<Tuple2<K, V>>, TreeMap<K, V>> finisher = list -> ofEntries(keyComparator, list);
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
@@ -328,7 +333,7 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             tree = tree.insert((Tuple2<K, V>) entry);
         }
-        return tree.isEmpty() ? TreeMap.empty(keyComparator) : new TreeMap<>(tree);
+        return tree.isEmpty() ? empty(keyComparator) : new TreeMap<>(tree);
     }
 
     /**
@@ -348,7 +353,7 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
         for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
             tree = tree.insert(Tuple.of(entry.getKey(), entry.getValue()));
         }
-        return tree.isEmpty() ? TreeMap.empty(keyComparator) : new TreeMap<>(tree);
+        return tree.isEmpty() ? empty(keyComparator) : new TreeMap<>(tree);
     }
 
     /**
@@ -359,8 +364,7 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
      * @param entries Map entries
      * @return A new TreeMap containing the given entries.
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(
-            Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         return ofEntries((Comparator<? super K> & Serializable) K::compareTo, entries);
     }
 
@@ -409,7 +413,7 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return createTreeMap(new EntryComparator<>(keyComparator),
-                entries.iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2))));
+                             entries.iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2))));
     }
 
     @Override
@@ -428,7 +432,7 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
                                             BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return createTreeMap(new EntryComparator<>(keyComparator),
-                entries.iterator().flatMap(entry -> mapper.apply(entry._1, entry._2)));
+                             entries.iterator().flatMap(entry -> mapper.apply(entry._1, entry._2)));
     }
 
     @Override
@@ -487,7 +491,7 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
                                         BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return createTreeMap(new EntryComparator<>(keyComparator),
-                entries.iterator().map(entry -> mapper.apply(entry._1, entry._2)));
+                             entries.iterator().map(entry -> mapper.apply(entry._1, entry._2)));
     }
 
     @Override
@@ -498,7 +502,7 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
 
     @Override
     public <K2> TreeMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge) {
-        final Comparator<K2> comparator = Comparators.naturalComparator();
+        final Comparator<K2> comparator = naturalComparator();
         return Collections.mapKeys(this, TreeMap.<K2, V> empty(comparator), keyMapper, valueMerge);
     }
 
@@ -594,8 +598,8 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             tree = tree.insert((Tuple2<K, V>) entry);
         }
-        return tree.isEmpty() ? (TreeMap<K, V>) TreeMap.empty()
-                : new TreeMap<>(tree);
+        return tree.isEmpty() ? (TreeMap<K, V>) empty()
+                              : new TreeMap<>(tree);
     }
 
     // -- Object
