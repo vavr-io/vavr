@@ -10,16 +10,16 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import org.junit.Test;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import static javaslang.collection.Comparators.naturalComparator;
+import static javaslang.Serializables.deserialize;
+import static javaslang.Serializables.serialize;
 
 public class TreeMapTest extends AbstractSortedMapTest {
 
@@ -50,7 +50,7 @@ public class TreeMapTest extends AbstractSortedMapTest {
 
     @Override
     protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
-        return TreeMap.<Integer, T> collector();
+        return TreeMap.collector();
     }
 
     @SuppressWarnings("varargs")
@@ -120,10 +120,26 @@ public class TreeMapTest extends AbstractSortedMapTest {
 
     @Test
     public void shouldWrapMap() {
-        java.util.Map<Integer, Integer> source = new HashMap<>();
+        final java.util.Map<Integer, Integer> source = new HashMap<>();
         source.put(1, 2);
         source.put(3, 4);
         assertThat(TreeMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
+    }
+
+    // -- ofAll
+
+    @Test
+    public void shouldCreateKeyComparatorForJavaUtilMap() {
+        final TreeMap<String, Integer> actual = TreeMap.ofAll(mapOfTuples(Tuple.of("c", 0), Tuple.of("a", 0), Tuple.of("b", 0)).toJavaMap());
+        final List<String> expected = List.of("a", "b", "c");
+        assertThat(actual.keySet().toList()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSerializeDeserializeNonEmptyMap() {
+        final Object expected = TreeMap.ofAll(Collections.singletonMap(0, 1));
+        final Object actual = deserialize(serialize(expected));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- obsolete tests
@@ -133,18 +149,14 @@ public class TreeMapTest extends AbstractSortedMapTest {
         // The empty TreeMap encapsulates a comparator and therefore cannot be a singleton
     }
 
-    private static Comparator<Object> toStringComparator() { // moveup
-        return (Comparator<Object> & Serializable) (o1, o2) -> String.valueOf(o1).compareTo(String.valueOf(o2));
-    }
-
     // -- map
 
     @Test
     public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndPredictableOrder() {
-        Map<Integer, String> actual = TreeMap
+        final Map<Integer, String> actual = TreeMap
                 .of(3, "3").put(1, "1").put(2, "2")
                 .mapKeys(Integer::toHexString).mapKeys(String::length);
-        Map<Integer, String> expected = TreeMap.of(1, "3");
+        final Map<Integer, String> expected = TreeMap.of(1, "3");
         assertThat(actual).isEqualTo(expected);
     }
 }
