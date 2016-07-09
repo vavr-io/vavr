@@ -45,7 +45,7 @@ public class TreeMapTest extends AbstractSortedMapTest {
 
     @Override
     protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
-        return TreeMap.<Integer, T> collector();
+        return TreeMap.collector();
     }
 
     @SuppressWarnings("varargs")
@@ -115,7 +115,7 @@ public class TreeMapTest extends AbstractSortedMapTest {
 
     @Test
     public void shouldWrapMap() {
-        java.util.Map<Integer, Integer> source = new HashMap<>();
+        final java.util.Map<Integer, Integer> source = new HashMap<>();
         source.put(1, 2);
         source.put(3, 4);
         assertThat(TreeMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
