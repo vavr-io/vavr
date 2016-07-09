@@ -360,7 +360,9 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldNotCallSupplierUntilNecessary() {
-        assertThat(Iterator.iterate(2, (i) -> {throw new RuntimeException("The supplier function should not be called since the next value is not needed in order to get head.");}).head()).isEqualTo(2);
+        assertThat(Iterator.iterate(2, (i) -> {
+            throw new RuntimeException();
+        }).head()).isEqualTo(2);
     }
 
     // ++++++ OBJECT ++++++
