@@ -58,10 +58,10 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * }
      * </pre>
      *
-     * @param key the entry's key
+     * @param key   the entry's key
      * @param value the entry's value
-     * @param <K> Key type
-     * @param <V> Value type
+     * @param <K>   Key type
+     * @param <V>   Value type
      * @return a key/value pair
      */
     static <K, V> Tuple2<K, V> entry(K key, V value) {
@@ -70,7 +70,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
 
     @Override
     default V apply(K key) {
-        return get(key).getOrElseThrow(NoSuchElementException::new);
+        return get(key).getOrElseThrow(() -> new NoSuchElementException(String.valueOf(key)));
     }
 
     /**
