@@ -5,8 +5,8 @@
  */
 package javaslang.collection.euler;
 
-import javaslang.API;
 import static javaslang.API.*;
+import static javaslang.Predicates.*;
 import javaslang.collection.Stream;
 import org.junit.Test;
 
@@ -73,9 +73,10 @@ public class Euler17Test {
     }
 
     private static int letterCountInNumber(int num) {
-        return API.Match(num).of(
+        return Match(num).of(
                 Case($(n -> n / 1000 > 0), n -> LETTER_COUNT[n / 1000] + THOUSAND + letterCountInNumber(n % 1000)),
-                Case($(n -> n / 100 > 0), n -> LETTER_COUNT[n / 100] + HUNDRED + (n % 100 > 0 ? AND + letterCountInNumber(n % 100) : 0)),
+                Case(allOf((Integer n) -> n / 100 > 0, n -> n % 100 > 0), n -> LETTER_COUNT[n / 100] + HUNDRED +  AND + letterCountInNumber(n % 100)),
+                Case($(n -> n / 100 > 0), n -> LETTER_COUNT[n / 100] + HUNDRED),
                 Case($(n -> n / 10 > 1), n -> LETTER_COUNT[n / 10 * 10] + letterCountInNumber(n % 10)),
                 Case($(), n -> LETTER_COUNT[n])
         );
