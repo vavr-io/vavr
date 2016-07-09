@@ -663,6 +663,13 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(actual).isTrue();
     }
 
+    @Test
+    public void shouldSerializeDeserializeNonEmptyMap() {
+        final Object expected = of('a', 'b', 'c');
+        final Object actual = deserialize(serialize(expected));
+        assertThat(actual).isEqualTo(expected);
+    }
+
     @Override
     public void shouldFoldRightNonNil() {
         final String actual = of('a', 'b', 'c').foldRight("", (x, xs) -> x + xs);

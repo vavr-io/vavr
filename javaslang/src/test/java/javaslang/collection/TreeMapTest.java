@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import org.junit.Test;
@@ -13,12 +12,15 @@ import org.junit.Test;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static javaslang.Serializables.deserialize;
+import static javaslang.Serializables.serialize;
 import static javaslang.collection.Comparators.naturalComparator;
 
 public class TreeMapTest extends AbstractSortedMapTest {
@@ -119,6 +121,22 @@ public class TreeMapTest extends AbstractSortedMapTest {
         source.put(1, 2);
         source.put(3, 4);
         assertThat(TreeMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
+    }
+
+    // -- ofAll
+
+    @Test
+    public void shouldCreateKeyComparatorForJavaUtilMap() {
+        final TreeMap<String, Integer> actual = TreeMap.ofAll(mapOfTuples(Tuple.of("c", 0), Tuple.of("a", 0), Tuple.of("b", 0)).toJavaMap());
+        final List<String> expected = List.of("a", "b", "c");
+        assertThat(actual.keySet().toList()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSerializeDeserializeNonEmptyMap() {
+        final Object expected = TreeMap.ofAll(Collections.singletonMap(0, 1));
+        final Object actual = deserialize(serialize(expected));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- obsolete tests
