@@ -632,26 +632,26 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public Array<T> drop(long n) {
+    public Array<T> drop(int n) {
         if (n <= 0) {
             return this;
         } else if (n >= length()) {
             return empty();
         } else {
-            final Object[] arr = new Object[back.length - (int) n];
-            System.arraycopy(back, (int) n, arr, 0, arr.length);
+            final Object[] arr = new Object[back.length - n];
+            System.arraycopy(back, n, arr, 0, arr.length);
             return wrap(arr);
         }
     }
 
     @Override
-    public Array<T> dropRight(long n) {
+    public Array<T> dropRight(int n) {
         if (n <= 0) {
             return this;
         } else if (n >= length()) {
             return empty();
         } else {
-            return wrap(Arrays.copyOf(back, back.length - (int) n));
+            return wrap(Arrays.copyOf(back, back.length - n));
         }
     }
 
@@ -712,7 +712,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public Iterator<Array<T>> grouped(long size) {
+    public Iterator<Array<T>> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -1062,27 +1062,27 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public Array<T> slice(long beginIndex, long endIndex) {
+    public Array<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
             return empty();
         }
         if (beginIndex <= 0 && endIndex >= length()) {
             return this;
         }
-        final int index = Math.max((int) beginIndex, 0);
-        final int length = Math.min((int) endIndex, length()) - index;
+        final int index = Math.max(beginIndex, 0);
+        final int length = Math.min(endIndex, length()) - index;
         final Object[] arr = new Object[length];
         System.arraycopy(back, index, arr, 0, length);
         return wrap(arr);
     }
 
     @Override
-    public Iterator<Array<T>> sliding(long size) {
+    public Iterator<Array<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<Array<T>> sliding(long size, long step) {
+    public Iterator<Array<T>> sliding(int size, int step) {
         return iterator().sliding(size, step).map(Array::ofAll);
     }
 
@@ -1115,7 +1115,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public Tuple2<Array<T>, Array<T>> splitAt(long n) {
+    public Tuple2<Array<T>, Array<T>> splitAt(int n) {
         return Tuple.of(take(n), drop(n));
     }
 
@@ -1194,25 +1194,25 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public Array<T> take(long n) {
+    public Array<T> take(int n) {
         if (n >= length()) {
             return this;
         } else if (n <= 0) {
             return empty();
         } else {
-            return wrap(Arrays.copyOf(back, (int) n));
+            return wrap(Arrays.copyOf(back, n));
         }
     }
 
     @Override
-    public Array<T> takeRight(long n) {
+    public Array<T> takeRight(int n) {
         if (n >= length()) {
             return this;
         } else if (n <= 0) {
             return empty();
         } else {
-            final Object[] arr = new Object[(int) n];
-            System.arraycopy(back, back.length - (int) n, arr, 0, (int) n);
+            final Object[] arr = new Object[n];
+            System.arraycopy(back, back.length - n, arr, 0, n);
             return wrap(arr);
         }
     }
@@ -1322,12 +1322,12 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public Array<Tuple2<T, Long>> zipWithIndex() {
+    public Array<Tuple2<T, Integer>> zipWithIndex() {
         return ofAll(iterator().zipWithIndex());
     }
 
     @Override
-    public <U> Array<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+    public <U> Array<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(iterator().zipWithIndex(mapper));
     }

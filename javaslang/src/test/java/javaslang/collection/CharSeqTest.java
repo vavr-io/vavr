@@ -5,17 +5,21 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.Option;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-import static javaslang.Serializables.*;
+import static javaslang.Serializables.deserialize;
+import static javaslang.Serializables.serialize;
 import static javaslang.collection.CharSeq.*;
 
 public class CharSeqTest {
@@ -2994,8 +2998,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldZipNonNilWithIndex() {
-        final IndexedSeq<Tuple2<Character, Long>> actual = of("abc").zipWithIndex();
-        final IndexedSeq<Tuple2<Character, Long>> expected = Vector.of(Tuple.of('a', 0L), Tuple.of('b', 1L), Tuple.of('c', 2L));
+        final IndexedSeq<Tuple2<Character, Integer>> actual = of("abc").zipWithIndex();
+        final IndexedSeq<Tuple2<Character, Integer>> expected = Vector.of(Tuple.of('a', 0), Tuple.of('b', 1), Tuple.of('c', 2));
         assertThat(actual).isEqualTo(expected);
     }
 

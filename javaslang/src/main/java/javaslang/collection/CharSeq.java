@@ -9,11 +9,13 @@ import javaslang.*;
 import javaslang.collection.CharSeqModule.Combinations;
 import javaslang.control.Option;
 
-import java.io.*;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.*;
-import java.util.regex.*;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collector;
 
 /**
@@ -392,24 +394,24 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public CharSeq drop(long n) {
+    public CharSeq drop(int n) {
         if (n <= 0) {
             return this;
         } else if (n >= length()) {
             return EMPTY;
         } else {
-            return of(back.substring((int) n));
+            return of(back.substring(n));
         }
     }
 
     @Override
-    public CharSeq dropRight(long n) {
+    public CharSeq dropRight(int n) {
         if (n <= 0) {
             return this;
         } else if (n >= length()) {
             return EMPTY;
         } else {
-            return of(back.substring(0, length() - (int) n));
+            return of(back.substring(0, length() - n));
         }
     }
 
@@ -483,7 +485,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public Iterator<CharSeq> grouped(long size) {
+    public Iterator<CharSeq> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -810,25 +812,25 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public CharSeq slice(long beginIndex, long endIndex) {
-        final long from = beginIndex < 0 ? 0 : beginIndex;
-        final long to = endIndex > length() ? length() : endIndex;
+    public CharSeq slice(int beginIndex, int endIndex) {
+        final int from = beginIndex < 0 ? 0 : beginIndex;
+        final int to = endIndex > length() ? length() : endIndex;
         if (from >= to) {
             return EMPTY;
         }
         if (from <= 0 && to >= length()) {
             return this;
         }
-        return CharSeq.of(back.substring((int) from, (int) to));
+        return CharSeq.of(back.substring(from, to));
     }
 
     @Override
-    public Iterator<CharSeq> sliding(long size) {
+    public Iterator<CharSeq> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<CharSeq> sliding(long size, long step) {
+    public Iterator<CharSeq> sliding(int size, int step) {
         return iterator().sliding(size, step).map(CharSeq::ofAll);
     }
 
@@ -905,24 +907,24 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public CharSeq take(long n) {
+    public CharSeq take(int n) {
         if (n <= 0) {
             return EMPTY;
         } else if (n >= length()) {
             return this;
         } else {
-            return CharSeq.of(back.substring(0, (int) n));
+            return CharSeq.of(back.substring(0, n));
         }
     }
 
     @Override
-    public CharSeq takeRight(long n) {
+    public CharSeq takeRight(int n) {
         if (n <= 0) {
             return EMPTY;
         } else if (n >= length()) {
             return this;
         } else {
-            return CharSeq.of(back.substring(length() - (int) n));
+            return CharSeq.of(back.substring(length() - n));
         }
     }
 
@@ -1038,16 +1040,16 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public IndexedSeq<Tuple2<Character, Long>> zipWithIndex() {
+    public IndexedSeq<Tuple2<Character, Integer>> zipWithIndex() {
         return zipWithIndex(Tuple::of);
     }
 
     @Override
-    public <U> IndexedSeq<U> zipWithIndex(BiFunction<? super Character, ? super Long, ? extends U> mapper) {
+    public <U> IndexedSeq<U> zipWithIndex(BiFunction<? super Character, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         IndexedSeq<U> result = Vector.empty();
         for (int i = 0; i < length(); i++) {
-            result = result.append(mapper.apply(get(i), (long) i));
+            result = result.append(mapper.apply(get(i), i));
         }
         return result;
     }
@@ -1068,13 +1070,13 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public Tuple2<CharSeq, CharSeq> splitAt(long n) {
+    public Tuple2<CharSeq, CharSeq> splitAt(int n) {
         if (n <= 0) {
             return Tuple.of(EMPTY, this);
         } else if (n >= length()) {
             return Tuple.of(this, EMPTY);
         } else {
-            return Tuple.of(of(back.substring(0, (int) n)), of(back.substring((int) n)));
+            return Tuple.of(of(back.substring(0, n)), of(back.substring(n)));
         }
     }
 

@@ -6,7 +6,8 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.collection.Stream.*;
+import javaslang.collection.Stream.Cons;
+import javaslang.collection.Stream.Empty;
 import javaslang.collection.StreamModule.*;
 import javaslang.control.Option;
 
@@ -855,7 +856,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> drop(long n) {
+    default Stream<T> drop(int n) {
         Stream<T> stream = this;
         while (n-- > 0 && !stream.isEmpty()) {
             stream = stream.tail();
@@ -864,7 +865,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> dropRight(long n) {
+    default Stream<T> dropRight(int n) {
         if (n <= 0) {
             return this;
         } else {
@@ -948,7 +949,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
-    default Iterator<Stream<T>> grouped(long size) {
+    default Iterator<Stream<T>> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -1244,11 +1245,11 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> slice(long beginIndex, long endIndex) {
+    default Stream<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || isEmpty()) {
             return empty();
         } else {
-            final long lowerBound = Math.max(beginIndex, 0);
+            final int lowerBound = Math.max(beginIndex, 0);
             if (lowerBound == 0) {
                 return cons(head(), () -> tail().slice(0, endIndex - 1));
             } else {
@@ -1258,12 +1259,12 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
-    default Iterator<Stream<T>> sliding(long size) {
+    default Iterator<Stream<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    default Iterator<Stream<T>> sliding(long size, long step) {
+    default Iterator<Stream<T>> sliding(int size, int step) {
         return iterator().sliding(size, step).map(Stream::ofAll);
     }
 
@@ -1298,7 +1299,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
-    default Tuple2<Stream<T>, Stream<T>> splitAt(long n) {
+    default Tuple2<Stream<T>, Stream<T>> splitAt(int n) {
         return Tuple.of(take(n), drop(n));
     }
 
@@ -1368,7 +1369,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> take(long n) {
+    default Stream<T> take(int n) {
         if (n < 1 || isEmpty()) {
             return Empty.instance();
         } else if (n == 1) {
@@ -1379,7 +1380,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> takeRight(long n) {
+    default Stream<T> takeRight(int n) {
         Stream<T> right = this;
         Stream<T> remaining = drop(n);
         while (!remaining.isEmpty()) {
@@ -1491,12 +1492,12 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
-    default Stream<Tuple2<T, Long>> zipWithIndex() {
+    default Stream<Tuple2<T, Integer>> zipWithIndex() {
         return zipWithIndex(Tuple::of);
     }
 
     @Override
-    default <U> Stream<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+    default <U> Stream<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return Stream.ofAll(iterator().zipWithIndex(mapper));
     }

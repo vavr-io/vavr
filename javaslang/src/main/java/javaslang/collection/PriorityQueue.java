@@ -5,7 +5,10 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Kind1;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.collection.Comparators.SerializableComparator;
 import javaslang.collection.PriorityQueue.PriorityQueueBase.*;
 
@@ -265,7 +268,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     }
 
     @Override
-    public PriorityQueue<T> drop(long n) {
+    public PriorityQueue<T> drop(int n) {
         PriorityQueue<T> result = this;
         for (long i = n; i > 0 && !result.isEmpty(); i--) {
             result = result.tail();
@@ -274,7 +277,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     }
 
     @Override
-    public PriorityQueue<T> dropRight(long n) {
+    public PriorityQueue<T> dropRight(int n) {
         if (n <= 0) {
             return this;
         } else if (n >= length()) {
@@ -341,7 +344,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     }
 
     @Override
-    public Iterator<? extends PriorityQueue<T>> grouped(long size) {
+    public Iterator<? extends PriorityQueue<T>> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -451,12 +454,12 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     }
 
     @Override
-    public Iterator<? extends PriorityQueue<T>> sliding(long size) {
+    public Iterator<? extends PriorityQueue<T>> sliding(int size) {
         return iterator().sliding(size).map(v -> ofAll(comparator, v));
     }
 
     @Override
-    public Iterator<? extends PriorityQueue<T>> sliding(long size, long step) {
+    public Iterator<? extends PriorityQueue<T>> sliding(int size, int step) {
         return iterator().sliding(size, step).map(v -> ofAll(comparator, v));
     }
 
@@ -467,12 +470,12 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     }
 
     @Override
-    public PriorityQueue<T> take(long n) {
+    public PriorityQueue<T> take(int n) {
         return ofAll(comparator, iterator().take(n));
     }
 
     @Override
-    public PriorityQueue<T> takeRight(long n) {
+    public PriorityQueue<T> takeRight(int n) {
         return ofAll(comparator, toList().takeRight(n));
     }
 
@@ -516,12 +519,12 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     }
 
     @Override
-    public PriorityQueue<Tuple2<T, Long>> zipWithIndex() {
+    public PriorityQueue<Tuple2<T, Integer>> zipWithIndex() {
         return zipWithIndex(Tuple::of);
     }
 
     @Override
-    public <U> PriorityQueue<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+    public <U> PriorityQueue<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(naturalComparator(), iterator().zipWithIndex(mapper));
     }

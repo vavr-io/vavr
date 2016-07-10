@@ -5,7 +5,9 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.*;
 import javaslang.collection.TreeModule.*;
@@ -369,7 +371,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Seq<T> drop(long n) {
+    default Seq<T> drop(int n) {
         if (n >= length()) {
             return Stream.empty();
         } else {
@@ -378,7 +380,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Seq<T> dropRight(long n) {
+    default Seq<T> dropRight(int n) {
         if (n >= length()) {
             return Stream.empty();
         } else {
@@ -435,7 +437,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Iterator<Seq<T>> grouped(long size) {
+    default Iterator<Seq<T>> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -541,12 +543,12 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Iterator<Seq<T>> sliding(long size) {
+    default Iterator<Seq<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    default Iterator<Seq<T>> sliding(long size, long step) {
+    default Iterator<Seq<T>> sliding(int size, int step) {
         return iterator().sliding(size, step);
     }
 
@@ -587,7 +589,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Seq<T> take(long n) {
+    default Seq<T> take(int n) {
         if (isEmpty()) {
             return Stream.empty();
         } else {
@@ -596,7 +598,7 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Seq<T> takeRight(long n) {
+    default Seq<T> takeRight(int n) {
         if (isEmpty()) {
             return Stream.empty();
         } else {
@@ -676,14 +678,14 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
-    default Tree<Tuple2<T, Long>> zipWithIndex() {
+    default Tree<Tuple2<T, Integer>> zipWithIndex() {
         return zipWithIndex(Tuple::of);
     }
 
     @Override
-   default  <U> Tree<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper){
+    default <U> Tree<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return zipWith(Iterator.from(0L), mapper);
+        return zipWith(Iterator.from(0), mapper);
     }
 
     @Override

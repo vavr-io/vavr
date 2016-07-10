@@ -606,7 +606,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Vector<T> drop(long n) {
+    public Vector<T> drop(int n) {
         if (n <= 0) {
             return this;
         }
@@ -614,14 +614,14 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
             return empty();
         }
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = (int) n; i < length(); i++) {
-            trie = trie.put(i - (int) n, get(i));
+        for (int i = n; i < length(); i++) {
+            trie = trie.put(i - n, get(i));
         }
         return wrap(trie);
     }
 
     @Override
-    public Vector<T> dropRight(long n) {
+    public Vector<T> dropRight(int n) {
         if (n <= 0) {
             return this;
         }
@@ -710,7 +710,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Iterator<Vector<T>> grouped(long size) {
+    public Iterator<Vector<T>> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -1085,29 +1085,29 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Vector<T> slice(long beginIndex, long endIndex) {
+    public Vector<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
             return Vector.empty();
         }
         if (beginIndex <= 0 && endIndex >= length()) {
             return this;
         }
-        final long index = Math.max(beginIndex, 0);
-        final long length = Math.min(endIndex, length());
+        final int index = Math.max(beginIndex, 0);
+        final int length = Math.min(endIndex, length());
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = (int) index; i < length; i++) {
+        for (int i = index; i < length; i++) {
             trie = trie.put(trie.size(), get(i));
         }
         return wrap(trie);
     }
 
     @Override
-    public Iterator<Vector<T>> sliding(long size) {
+    public Iterator<Vector<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<Vector<T>> sliding(long size, long step) {
+    public Iterator<Vector<T>> sliding(int size, int step) {
         return iterator().sliding(size, step).map(Vector::ofAll);
     }
 
@@ -1142,7 +1142,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Tuple2<Vector<T>, Vector<T>> splitAt(long n) {
+    public Tuple2<Vector<T>, Vector<T>> splitAt(int n) {
         return Tuple.of(take(n), drop(n));
     }
 
@@ -1220,7 +1220,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Vector<T> take(long n) {
+    public Vector<T> take(int n) {
         if (n >= length()) {
             return this;
         }
@@ -1235,7 +1235,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Vector<T> takeRight(long n) {
+    public Vector<T> takeRight(int n) {
         if (n >= length()) {
             return this;
         }
@@ -1244,7 +1244,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         }
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = 0; i < n; i++) {
-            trie = trie.put(i, get(length() - (int) n + i));
+            trie = trie.put(i, get(length() - n + i));
         }
         return new Vector<>(trie);
     }
@@ -1346,12 +1346,12 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Vector<Tuple2<T, Long>> zipWithIndex() {
+    public Vector<Tuple2<T, Integer>> zipWithIndex() {
         return zipWithIndex(Tuple::of);
     }
 
     @Override
-    public <U> Vector<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+    public <U> Vector<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return Vector.ofAll(iterator().zipWithIndex(mapper));
     }

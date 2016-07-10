@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.API;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -78,13 +77,13 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public IntMultimap<T> drop(long n) {
+    public IntMultimap<T> drop(int n) {
         final Multimap<Integer, T> dropped = original.drop(n);
         return dropped == original ? this : IntMultimap.of(dropped);
     }
 
     @Override
-    public IntMultimap<T> dropRight(long n) {
+    public IntMultimap<T> dropRight(int n) {
         final Multimap<Integer, T> dropped = original.dropRight(n);
         return dropped == original ? this : IntMultimap.of(dropped);
     }
@@ -121,7 +120,7 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Iterator<IntMultimap<T>> grouped(long size) {
+    public Iterator<IntMultimap<T>> grouped(int size) {
         return original.grouped(size).map(IntMultimap::of);
     }
 
@@ -224,12 +223,12 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Iterator<IntMultimap<T>> sliding(long size) {
+    public Iterator<IntMultimap<T>> sliding(int size) {
         return original.sliding(size).map(IntMultimap::of);
     }
 
     @Override
-    public Iterator<IntMultimap<T>> sliding(long size, long step) {
+    public Iterator<IntMultimap<T>> sliding(int size, int step) {
         return original.sliding(size, step).map(IntMultimap::of);
     }
 
@@ -280,12 +279,12 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public IntMultimap<T> take(long n) {
+    public IntMultimap<T> take(int n) {
         return IntMultimap.of(original.take(n));
     }
 
     @Override
-    public IntMultimap<T> takeRight(long n) {
+    public IntMultimap<T> takeRight(int n) {
         return IntMultimap.of(original.takeRight(n));
     }
 
@@ -330,12 +329,12 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Seq<Tuple2<T, Long>> zipWithIndex() {
+    public Seq<Tuple2<T, Integer>> zipWithIndex() {
         return zipWithIndex(Tuple::of);
     }
 
     @Override
-    public <U> Seq<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+    public <U> Seq<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return Stream.ofAll(iterator().zipWithIndex(mapper));
     }
