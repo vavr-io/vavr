@@ -822,6 +822,42 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of('a', 'b', 'c').mkString("[", ",", "]")).isEqualTo("[a,b,c]");
     }
 
+    // -- mkCharSeq()
+
+    @Test
+    public void shouldMkCharSeqNil() {
+        assertThat(empty().mkCharSeq()).isEqualTo(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldMkCharSeqNonNil() {
+        assertThat(of('a', 'b', 'c').mkCharSeq()).isEqualTo(CharSeq.of("abc"));
+    }
+
+    // -- mkCharSeq(delimiter)
+
+    @Test
+    public void shouldMkCharSeqWithDelimiterNil() {
+        assertThat(empty().mkCharSeq(",")).isEqualTo(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldMkCharSeqWithDelimiterNonNil() {
+        assertThat(of('a', 'b', 'c').mkCharSeq(",")).isEqualTo(CharSeq.of("a,b,c"));
+    }
+
+    // -- mkCharSeq(delimiter, prefix, suffix)
+
+    @Test
+    public void shouldMkCharSeqWithDelimiterAndPrefixAndSuffixNil() {
+        assertThat(empty().mkCharSeq("[", ",", "]")).isEqualTo(CharSeq.of("[]"));
+    }
+
+    @Test
+    public void shouldMkCharSeqWithDelimiterAndPrefixAndSuffixNonNil() {
+        assertThat(of('a', 'b', 'c').mkCharSeq("[", ",", "]")).isEqualTo(CharSeq.of("[a,b,c]"));
+    }
+
     // -- last
 
     @Test(expected = NoSuchElementException.class)
