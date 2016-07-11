@@ -37,19 +37,17 @@ public class Euler21Test {
 
     private static int sumOfDivisors(int n) {
         final int sqrtN = (int) Math.sqrt(n);
-        return Stream.rangeClosed(1, sqrtN)
-                .foldLeft(0, (sum, d) -> n % d == 0 ? sum + d + n / d : sum)
-                - n - (isPerfectSquare(n) ? sqrtN : 0);
+        return Stream.rangeClosed(2, sqrtN)
+                .filter(d -> n % d == 0)
+                .foldLeft(0, (sum, d) -> sum + d + n / d)
+                - (isPerfectSquare(n) ? sqrtN : 0) + 1;
     }
 
     private static int sumOfAmicablePairs(int n) {
         Function1<Integer, Integer> msd = Function1.of(Euler21Test::sumOfDivisors).memoized();
         return Stream.range(1, n)
-                .foldLeft(0, (sum, x) -> {
-                    boolean isAmicable = (msd.apply(msd.apply(x)).intValue() == x
-                            && msd.apply(x) > x);
-                    return isAmicable ? sum + x + msd.apply(x) : sum;
-                });
+                .filter(x -> msd.apply(msd.apply(x)).intValue() == x && msd.apply(x) > x)
+                .foldLeft(0, (sum, x) -> sum + x + msd.apply(x));
     }
 
 }
