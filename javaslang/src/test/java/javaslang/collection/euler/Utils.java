@@ -34,6 +34,11 @@ public final class Utils {
                 .distinct();
     }
 
+    public static Stream<Long> divisors(long l) {
+        return factors(l)
+                .filter((d) -> d < l);
+    }
+
     public static Stream<String> readLines(File file) {
         try {
             return Stream.ofAll(new Iterator<String>() {
