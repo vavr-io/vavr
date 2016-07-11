@@ -639,7 +639,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     @Override
-    public Queue<T> drop(long n) {
+    public Queue<T> drop(int n) {
         if (n <= 0) {
             return this;
         }
@@ -650,7 +650,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     @Override
-    public Queue<T> dropRight(long n) {
+    public Queue<T> dropRight(int n) {
         if (n <= 0) {
             return this;
         }
@@ -726,7 +726,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     @Override
-    public Iterator<Queue<T>> grouped(long size) {
+    public Iterator<Queue<T>> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -968,17 +968,17 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     @Override
-    public Queue<T> slice(long beginIndex, long endIndex) {
+    public Queue<T> slice(int beginIndex, int endIndex) {
         return ofAll(toList().slice(beginIndex, endIndex));
     }
 
     @Override
-    public Iterator<Queue<T>> sliding(long size) {
+    public Iterator<Queue<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<Queue<T>> sliding(long size, long step) {
+    public Iterator<Queue<T>> sliding(int size, int step) {
         return iterator().sliding(size, step).map(Queue::ofAll);
     }
 
@@ -1013,7 +1013,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     @Override
-    public Tuple2<Queue<T>, Queue<T>> splitAt(long n) {
+    public Tuple2<Queue<T>, Queue<T>> splitAt(int n) {
         return toList().splitAt(n).map(List::toQueue, List::toQueue);
     }
 
@@ -1057,7 +1057,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     @Override
-    public Queue<T> take(long n) {
+    public Queue<T> take(int n) {
         if (n <= 0) {
             return empty();
         }
@@ -1075,7 +1075,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     @Override
-    public Queue<T> takeRight(long n) {
+    public Queue<T> takeRight(int n) {
         if (n <= 0) {
             return empty();
         }
@@ -1155,12 +1155,12 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     @Override
-    public Queue<Tuple2<T, Long>> zipWithIndex() {
+    public Queue<Tuple2<T, Integer>> zipWithIndex() {
         return zipWithIndex(Tuple::of);
     }
 
     @Override
-    public <U> Queue<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+    public <U> Queue<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(toList().zipWithIndex(mapper));
     }

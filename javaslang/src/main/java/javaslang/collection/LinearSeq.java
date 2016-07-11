@@ -11,11 +11,7 @@ import javaslang.control.Option;
 
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
+import java.util.function.*;
 
 /**
  * Interface for immutable, linear sequences.
@@ -71,10 +67,10 @@ public interface LinearSeq<T> extends Seq<T> {
     <U> LinearSeq<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
-    LinearSeq<T> drop(long n);
+    LinearSeq<T> drop(int n);
 
     @Override
-    LinearSeq<T> dropRight(long n);
+    LinearSeq<T> dropRight(int n);
 
     @Override
     LinearSeq<T> dropUntil(Predicate<? super T> predicate);
@@ -92,7 +88,7 @@ public interface LinearSeq<T> extends Seq<T> {
     <C> Map<C, ? extends LinearSeq<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
-    Iterator<? extends LinearSeq<T>> grouped(long size);
+    Iterator<? extends LinearSeq<T>> grouped(int size);
 
     @Override
     default int indexWhere(Predicate<? super T> predicate, int from) {
@@ -229,13 +225,13 @@ public interface LinearSeq<T> extends Seq<T> {
     }
 
     @Override
-    LinearSeq<T> slice(long beginIndex, long endIndex);
+    LinearSeq<T> slice(int beginIndex, int endIndex);
 
     @Override
-    Iterator<? extends LinearSeq<T>> sliding(long size);
+    Iterator<? extends LinearSeq<T>> sliding(int size);
 
     @Override
-    Iterator<? extends LinearSeq<T>> sliding(long size, long step);
+    Iterator<? extends LinearSeq<T>> sliding(int size, int step);
 
     @Override
     LinearSeq<T> sorted();
@@ -265,10 +261,10 @@ public interface LinearSeq<T> extends Seq<T> {
     Option<? extends LinearSeq<T>> tailOption();
 
     @Override
-    LinearSeq<T> take(long n);
+    LinearSeq<T> take(int n);
 
     @Override
-    LinearSeq<T> takeRight(long n);
+    LinearSeq<T> takeRight(int n);
 
     @Override
     LinearSeq<T> takeUntil(Predicate<? super T> predicate);
@@ -295,10 +291,10 @@ public interface LinearSeq<T> extends Seq<T> {
     <U> LinearSeq<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
-    LinearSeq<Tuple2<T, Long>> zipWithIndex();
+    LinearSeq<Tuple2<T, Integer>> zipWithIndex();
 
     @Override
-    <U> LinearSeq<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper);
+    <U> LinearSeq<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper);
 
     /**
      * Searches this sequence for a specific element using a linear search. The sequence must already be sorted into

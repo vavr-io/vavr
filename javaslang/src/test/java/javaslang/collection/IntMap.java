@@ -5,12 +5,19 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.*;
-import java.util.function.*;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class IntMap<T> implements Traversable<T>, Serializable {
 
@@ -74,13 +81,13 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public IntMap<T> drop(long n) {
+    public IntMap<T> drop(int n) {
         final Map<Integer, T> dropped = original.drop(n);
         return dropped == original ? this : IntMap.of(dropped);
     }
 
     @Override
-    public IntMap<T> dropRight(long n) {
+    public IntMap<T> dropRight(int n) {
         final Map<Integer, T> dropped = original.dropRight(n);
         return dropped == original ? this : IntMap.of(dropped);
     }
@@ -117,7 +124,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Iterator<IntMap<T>> grouped(long size) {
+    public Iterator<IntMap<T>> grouped(int size) {
         return original.grouped(size).map(IntMap::of);
     }
 
@@ -220,12 +227,12 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Iterator<IntMap<T>> sliding(long size) {
+    public Iterator<IntMap<T>> sliding(int size) {
         return original.sliding(size).map(IntMap::of);
     }
 
     @Override
-    public Iterator<IntMap<T>> sliding(long size, long step) {
+    public Iterator<IntMap<T>> sliding(int size, int step) {
         return original.sliding(size, step).map(IntMap::of);
     }
 
@@ -276,12 +283,12 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public IntMap<T> take(long n) {
+    public IntMap<T> take(int n) {
         return IntMap.of(original.take(n));
     }
 
     @Override
-    public IntMap<T> takeRight(long n) {
+    public IntMap<T> takeRight(int n) {
         return IntMap.of(original.takeRight(n));
     }
 
@@ -326,12 +333,12 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Seq<Tuple2<T, Long>> zipWithIndex() {
+    public Seq<Tuple2<T, Integer>> zipWithIndex() {
         return  zipWithIndex(Tuple::of);
     }
 
     @Override
-    public <U> Seq<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+    public <U> Seq<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return Stream.ofAll(iterator().zipWithIndex(mapper));
     }

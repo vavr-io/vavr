@@ -5,11 +5,17 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Kind1;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.control.Option;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -504,7 +510,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     @Override
-    public LinkedHashSet<T> drop(long n) {
+    public LinkedHashSet<T> drop(int n) {
         if (n <= 0) {
             return this;
         } else {
@@ -513,7 +519,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     @Override
-    public LinkedHashSet<T> dropRight(long n) {
+    public LinkedHashSet<T> dropRight(int n) {
         if (n <= 0) {
             return this;
         } else {
@@ -565,7 +571,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     @Override
-    public Iterator<LinkedHashSet<T>> grouped(long size) {
+    public Iterator<LinkedHashSet<T>> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -718,12 +724,12 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     @Override
-    public Iterator<LinkedHashSet<T>> sliding(long size) {
+    public Iterator<LinkedHashSet<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<LinkedHashSet<T>> sliding(long size, long step) {
+    public Iterator<LinkedHashSet<T>> sliding(int size, int step) {
         return iterator().sliding(size, step).map(LinkedHashSet::ofAll);
     }
 
@@ -748,7 +754,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     @Override
-    public LinkedHashSet<T> take(long n) {
+    public LinkedHashSet<T> take(int n) {
         if (map.size() <= n) {
             return this;
         }
@@ -756,7 +762,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     @Override
-    public LinkedHashSet<T> takeRight(long n) {
+    public LinkedHashSet<T> takeRight(int n) {
         if (map.size() <= n) {
             return this;
         }
@@ -851,12 +857,12 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     @Override
-    public LinkedHashSet<Tuple2<T, Long>> zipWithIndex() {
+    public LinkedHashSet<Tuple2<T, Integer>> zipWithIndex() {
         return zipWithIndex(Tuple::of);
     }
 
     @Override
-    public <U> LinkedHashSet<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+    public <U> LinkedHashSet<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return LinkedHashSet.ofAll(iterator().zipWithIndex(mapper));
     }

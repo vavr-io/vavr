@@ -5,17 +5,23 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
-import javaslang.collection.IteratorModule.*;
+import javaslang.Lazy;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
+import javaslang.collection.IteratorModule.ConcatIterator;
+import javaslang.collection.IteratorModule.DistinctIterator;
 import javaslang.control.Option;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.*;
 
-import static java.lang.Double.*;
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.POSITIVE_INFINITY;
 import static java.math.RoundingMode.HALF_UP;
-import static javaslang.collection.IteratorModule.BigDecimalHelper.*;
+import static javaslang.collection.IteratorModule.BigDecimalHelper.areEqual;
+import static javaslang.collection.IteratorModule.BigDecimalHelper.asDecimal;
 
 /**
  * {@code javaslang.collection.Iterator} is a compositional replacement for {@code java.util.Iterator}
@@ -1122,19 +1128,19 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Iterator<Tuple2<T, Long>> zipWithIndex() {
+    default Iterator<Tuple2<T, Integer>> zipWithIndex() {
         return zipWithIndex(Tuple::of);
     }
 
     @Override
-    default <U> Iterator<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+    default <U> Iterator<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
         } else {
             final Iterator<T> it1 = this;
             return new AbstractIterator<U>() {
-                private long index = 0;
+                private int index = 0;
 
                 @Override
                 public boolean hasNext() {
@@ -1309,7 +1315,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return The empty iterator, if {@code n <= 0} or this is empty, otherwise a new iterator without the first n elements.
      */
     @Override
-    default Iterator<T> drop(long n) {
+    default Iterator<T> drop(int n) {
         if (n <= 0) {
             return this;
         } else if (!hasNext()) {
@@ -1338,7 +1344,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Iterator<T> dropRight(long n) {
+    default Iterator<T> dropRight(int n) {
         if (n <= 0) {
             return this;
         } else if (!hasNext()) {
@@ -1508,7 +1514,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Iterator<Seq<T>> grouped(long size) {
+    default Iterator<Seq<T>> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -1753,12 +1759,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Iterator<Seq<T>> sliding(long size) {
+    default Iterator<Seq<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    default Iterator<Seq<T>> sliding(long size, long step) {
+    default Iterator<Seq<T>> sliding(int size, int step) {
         if (size <= 0 || step <= 0) {
             throw new IllegalArgumentException("size: " + size + " or step: " + step + " not positive");
         }
@@ -1841,7 +1847,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return The empty iterator, if {@code n <= 0} or this is empty, otherwise a new iterator without the first n elements.
      */
     @Override
-    default Iterator<T> take(long n) {
+    default Iterator<T> take(int n) {
         if (n <= 0 || !hasNext()) {
             return empty();
         } else {
@@ -1865,7 +1871,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Iterator<T> takeRight(long n) {
+    default Iterator<T> takeRight(int n) {
         if (n <= 0) {
             return empty();
         } else {

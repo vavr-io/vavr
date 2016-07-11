@@ -5,10 +5,12 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.Option;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Objects;
 import java.util.function.*;
 
 /**
@@ -84,9 +86,9 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
         return createFromEntries(iterator().distinctBy(keyExtractor));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public M drop(long n) {
+    @SuppressWarnings("unchecked")
+    public M drop(int n) {
         if (n <= 0) {
             return (M) this;
         } else if (n >= length()) {
@@ -96,9 +98,9 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public M dropRight(long n) {
+    @SuppressWarnings("unchecked")
+    public M dropRight(int n) {
         if (n <= 0) {
             return (M) this;
         } else if (n >= length()) {
@@ -169,7 +171,7 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
     }
 
     @Override
-    public Iterator<M> grouped(long size) {
+    public Iterator<M> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -191,7 +193,7 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
 
     @SuppressWarnings("unchecked")
     @Override
-    public M take(long n) {
+    public M take(int n) {
         if (size() <= n) {
             return (M) this;
         } else {
@@ -201,7 +203,7 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
 
     @SuppressWarnings("unchecked")
     @Override
-    public M takeRight(long n) {
+    public M takeRight(int n) {
         if (size() <= n) {
             return (M) this;
         } else {
@@ -292,12 +294,12 @@ abstract class AbstractMap<K, V, M extends AbstractMap<K, V, M>> implements Map<
     }
 
     @Override
-    public Iterator<M> sliding(long size) {
+    public Iterator<M> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<M> sliding(long size, long step) {
+    public Iterator<M> sliding(int size, int step) {
         return iterator().sliding(size, step).map(this::createFromEntries);
     }
 

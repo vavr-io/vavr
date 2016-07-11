@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.*;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertTrue;
@@ -281,8 +281,8 @@ public class HashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldZipNonNilWithIndex() {
-        final HashSet<Tuple2<String, Long>> actual = of("a", "b", "c").zipWithIndex();
-        final HashSet<Tuple2<String, Long>> expected = of(Tuple.of("a", 0L), Tuple.of("b", 1L), Tuple.of("c", 2L));
+        final HashSet<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex();
+        final HashSet<Tuple2<String, Integer>> expected = of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
         assertThat(actual).isEqualTo(expected);
     }
 
