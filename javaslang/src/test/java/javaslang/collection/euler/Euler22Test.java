@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class Euler22Test {
 
     @Test
-    public void shouldSolveProblem20() {
+    public void shouldSolveProblem22() {
         assertThat(nameScore("COLIN", 938)).isEqualTo(49714);
         assertThat(totalOfAllNameScores()).isEqualTo(871_198_282);
     }
