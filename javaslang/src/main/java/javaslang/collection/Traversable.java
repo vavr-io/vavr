@@ -782,6 +782,43 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
+     * Joins the elements of this by concatenating their string representations.
+     * <p>
+     * This has the same effect as calling {@code mkCharSeq("", "", "")}.
+     *
+     * @return a new {@link CharSeq}
+     */
+    default CharSeq mkCharSeq() {
+        return mkCharSeq("", "", "");
+    }
+
+    /**
+     * Joins the string representations of this elements using a specific delimiter.
+     * <p>
+     * This has the same effect as calling {@code mkCharSeq(delimiter, "", "")}.
+     *
+     * @param delimiter A delimiter string put between string representations of elements of this
+     * @return A new {@link CharSeq}
+     */
+    default CharSeq mkCharSeq(CharSequence delimiter) {
+        return mkCharSeq("", delimiter, "");
+    }
+
+    /**
+     * Joins the string representations of this elements using a specific delimiter, prefix and suffix.
+     * <p>
+     * Example: {@code List.of("a", "b", "c").mkCharSeq(", ", "Chars(", ")") = CharSeq.of("Chars(a, b, c))"}
+     *
+     * @param prefix    prefix of the resulting {@link CharSeq}
+     * @param delimiter A delimiter string put between string representations of elements of this
+     * @param suffix    suffix of the resulting {@link CharSeq}
+     * @return a new {@link CharSeq}
+     */
+    default CharSeq mkCharSeq(CharSequence prefix, CharSequence delimiter, CharSequence suffix) {
+        return CharSeq.of(mkString(prefix, delimiter, suffix));
+    }
+
+    /**
      * Checks, this {@code Traversable} is not empty.
      * <p>
      * The call is equivalent to {@code !isEmpty()}.
