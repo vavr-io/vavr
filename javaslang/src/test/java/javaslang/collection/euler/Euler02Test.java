@@ -5,6 +5,7 @@
  */
 package javaslang.collection.euler;
 
+import java.math.BigInteger;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,6 +32,7 @@ public class Euler02Test {
 
     private static long sumOfEvenFibonacciValuesNotExceeding(final int max) {
         return Utils.fibonacci()
+                .map(BigInteger::longValue)
                 .takeWhile(f -> f <= max)
                 .filter(f -> f % 2 == 0)
                 .sum().longValue();

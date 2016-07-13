@@ -19,8 +19,8 @@ public final class Utils {
     private Utils() {
     }
 
-    public static Stream<Integer> fibonacci() {
-        return Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2));
+    public static Stream<BigInteger> fibonacci() {
+        return Stream.of(BigInteger.ZERO, BigInteger.ONE).appendSelf(self -> self.zip(self.tail()).map(t -> t._1.add(t._2)));
     }
 
     public static BigInteger factorial(int n) {
