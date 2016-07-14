@@ -107,6 +107,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toRight(Supplier)}</li>
  * <li>{@link #toSet()}</li>
  * <li>{@link #toLinkedSet()}</li>
+ * <li>{@link #toSortedSet()}</li>
  * <li>{@link #toSortedSet(Comparator)}</li>
  * <li>{@link #toSortedQueue(Comparator)}</li>
  * <li>{@link #toStack()}</li>
@@ -789,6 +790,18 @@ public interface Value<T> extends Iterable<T> {
      */
     default Set<T> toLinkedSet() {
         return ValueModule.toTraversable(this, LinkedHashSet.empty(), LinkedHashSet::of, LinkedHashSet::ofAll);
+    }
+
+    /**
+     * Converts this to a {@link SortedSet}.
+     * Current items must be comparable
+     *
+     * @return A new {@link TreeSet}.
+     * @throws ClassCastException if items is not comparable
+     */
+    @SuppressWarnings("unchecked")
+    default SortedSet<T> toSortedSet() throws ClassCastException {
+        return toSortedSet((Comparator<? super T> & Serializable) (o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
     }
 
     /**

@@ -364,6 +364,27 @@ public abstract class AbstractValueTest {
     }
 
     @Test
+    public void shouldConvertToSortedSetWithoutComparatorOnComparable() {
+        final Value<Integer> value = of(3, 7, 1, 15, 0);
+        final Set<Integer> set = value.toSortedSet();
+        if (value.isSingleValued()) {
+            assertThat(set).isEqualTo(TreeSet.of(3));
+        } else {
+            assertThat(set).isEqualTo(TreeSet.of(0, 1, 3, 7, 15));
+        }
+    }
+
+    @Test(expected = ClassCastException.class)
+    public void shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable() {
+        final Value<StringBuilder> value = of(new StringBuilder("3"), new StringBuilder("7"), new StringBuilder("1"), new StringBuilder("15"), new StringBuilder("0"));
+        final Set<StringBuilder> set = value.toSortedSet();
+        if (value.isSingleValued()) {
+            //Comparator is not used yet
+            set.add(new StringBuilder("7"));
+        }
+    }
+
+    @Test
     public void shouldConvertToSortedSet() {
         final Value<Integer> value = of(3, 7, 1, 15, 0);
         final Comparator<Integer> comparator = (o1, o2) -> Integer.compare(bitCount(o1), bitCount(o2));
