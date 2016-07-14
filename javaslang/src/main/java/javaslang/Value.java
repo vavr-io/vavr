@@ -16,6 +16,7 @@ import javaslang.collection.Map;
 import javaslang.collection.PriorityQueue;
 import javaslang.collection.Queue;
 import javaslang.collection.Set;
+import javaslang.collection.LinkedHashSet;
 import javaslang.collection.SortedSet;
 import javaslang.collection.Stack;
 import javaslang.collection.TreeSet;
@@ -105,6 +106,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toRight(Object)}</li>
  * <li>{@link #toRight(Supplier)}</li>
  * <li>{@link #toSet()}</li>
+ * <li>{@link #toLinkedSet()}</li>
  * <li>{@link #toSortedSet(Comparator)}</li>
  * <li>{@link #toSortedQueue(Comparator)}</li>
  * <li>{@link #toStack()}</li>
@@ -778,6 +780,15 @@ public interface Value<T> extends Iterable<T> {
      */
     default Set<T> toSet() {
         return ValueModule.toTraversable(this, HashSet.empty(), HashSet::of, HashSet::ofAll);
+    }
+
+    /**
+     * Converts this to a {@link Set}.
+     *
+     * @return A new {@link LinkedHashSet}.
+     */
+    default Set<T> toLinkedSet() {
+        return ValueModule.toTraversable(this, LinkedHashSet.empty(), LinkedHashSet::of, LinkedHashSet::ofAll);
     }
 
     /**

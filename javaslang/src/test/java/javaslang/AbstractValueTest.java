@@ -8,6 +8,7 @@ package javaslang;
 import javaslang.collection.*;
 import javaslang.collection.HashMap;
 import javaslang.collection.HashSet;
+import javaslang.collection.LinkedHashSet;
 import javaslang.collection.List;
 import javaslang.collection.Map;
 import javaslang.collection.PriorityQueue;
@@ -342,6 +343,23 @@ public abstract class AbstractValueTest {
             assertThat(set).isEqualTo(HashSet.of(1));
         } else {
             assertThat(set).isEqualTo(HashSet.of(1, 2, 3));
+        }
+    }
+
+    @Test
+    public void shouldConvertToLinkedSet() {
+        final Value<Integer> value = of(3, 7, 1, 15, 0);
+        final Set<Integer> set = value.toLinkedSet();
+        if (value.isSingleValued()) {
+            assertThat(set).isEqualTo(LinkedHashSet.of(3));
+        } else {
+            final List<Integer> itemsInOrder;
+            if (value instanceof Traversable && !((Traversable) value).isTraversableAgain()) {
+                itemsInOrder = List.of(3, 7, 1, 15, 0);
+            } else {
+                itemsInOrder = value.toList();
+            }
+            assertThat(set).isEqualTo(itemsInOrder.foldLeft(LinkedHashSet.empty(), LinkedHashSet::add));
         }
     }
 
