@@ -124,4 +124,5 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
     private Object readResolve() {
         return INSTANCE;
     }
+
 }

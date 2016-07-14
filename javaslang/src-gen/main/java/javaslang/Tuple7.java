@@ -452,4 +452,8 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
         return "(" + _1 + ", " + _2 + ", " + _3 + ", " + _4 + ", " + _5 + ", " + _6 + ", " + _7 + ")";
     }
 
+    public static <T1, T2, T3, T4, T5, T6, T7> Tuple7<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>, Seq<T6>, Seq<T7>> sequence(Seq<Tuple7<T1, T2, T3, T4, T5, T6, T7>> tuples) {
+      Objects.requireNonNull(tuples, "tuples is null");
+      return new Tuple7<>(tuples.map(Tuple7::_1), tuples.map(Tuple7::_2), tuples.map(Tuple7::_3), tuples.map(Tuple7::_4), tuples.map(Tuple7::_5), tuples.map(Tuple7::_6), tuples.map(Tuple7::_7));
+    }
 }

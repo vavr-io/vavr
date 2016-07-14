@@ -497,4 +497,8 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
         return "(" + _1 + ", " + _2 + ", " + _3 + ", " + _4 + ", " + _5 + ", " + _6 + ", " + _7 + ", " + _8 + ")";
     }
 
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>, Seq<T6>, Seq<T7>, Seq<T8>> sequence(Seq<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> tuples) {
+      Objects.requireNonNull(tuples, "tuples is null");
+      return new Tuple8<>(tuples.map(Tuple8::_1), tuples.map(Tuple8::_2), tuples.map(Tuple8::_3), tuples.map(Tuple8::_4), tuples.map(Tuple8::_5), tuples.map(Tuple8::_6), tuples.map(Tuple8::_7), tuples.map(Tuple8::_8));
+    }
 }

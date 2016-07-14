@@ -1252,6 +1252,13 @@ def generateMainClasses(): Unit = {
                   return INSTANCE;
               }
             """)}
+
+            ${(i > 1).gen(xs"""
+              public static $generics $className<${(1 to i).gen(j => s"Seq<T$j>")(", ")}> sequence(Seq<$className$generics> tuples) {
+                Objects.requireNonNull(tuples, "tuples is null");
+                return new $className<>(${(1 to i).gen(j => s"tuples.map($className::_$j)")(", ")});
+              }
+            """)}
         }
       """
     }

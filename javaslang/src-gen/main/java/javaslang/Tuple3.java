@@ -272,4 +272,8 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2
         return "(" + _1 + ", " + _2 + ", " + _3 + ")";
     }
 
+    public static <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> sequence(Seq<Tuple3<T1, T2, T3>> tuples) {
+      Objects.requireNonNull(tuples, "tuples is null");
+      return new Tuple3<>(tuples.map(Tuple3::_1), tuples.map(Tuple3::_2), tuples.map(Tuple3::_3));
+    }
 }
