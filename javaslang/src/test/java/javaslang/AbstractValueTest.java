@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.Collections;
+import java.util.function.Function;
 
 import static java.lang.Integer.bitCount;
 
@@ -236,6 +237,73 @@ public abstract class AbstractValueTest {
         } else {
             assertThat(map).isEqualTo(HashMap.empty().put(1, 1).put(2, 2).put(3, 3));
         }
+    }
+
+    @Test
+    public void shouldConvertToHashMap() {
+        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
+        final Value<Integer> value = of(9, 5, 1);
+        Map<Integer, Integer> map = value.toMap(v -> Tuple.of(keyMapper.apply(v), v));
+        if (value.isSingleValued()) {
+            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+        }
+        //Check order - order is matter
+        assertThat(map.mkString(", ")).isEqualTo(
+                "(110427681, 5), " +
+                "(663160547, 1), " +
+                "(1571254982, 9)");
+    }
+
+    @Test
+    public void shouldConvertToLinkedMap() {
+        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
+        final Value<Integer> value = of(9, 5, 1);
+        Map<Integer, Integer> map = value.toLinkedMap(v -> Tuple.of(keyMapper.apply(v), v));
+        final List<Integer> itemsInOrder;
+        if (value.isSingleValued()) {
+            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+            itemsInOrder = List.of(9, 5, 1);
+        } else if ((value instanceof Traversable) && !((Traversable) value).isTraversableAgain()) {
+            itemsInOrder = List.of(9, 5, 1);
+        } else {
+            itemsInOrder = value.toList();
+        }
+        //Check order - order is matter
+        assertThat(map.mkString(",")).isEqualTo(
+                itemsInOrder.map(i -> Tuple.of(keyMapper.apply(i), i)).mkString(",")
+        );
+    }
+
+    @Test
+    public void shouldConvertToTreeMap() {
+        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
+        final Value<Integer> value = of(9, 5, 1);
+        Map<Integer, Integer> map = value.toTreeMap(v -> Tuple.of(keyMapper.apply(v), v));
+        if (value.isSingleValued()) {
+            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+        }
+        //Check order - order is matter
+        assertThat(map.mkString(",")).isEqualTo(
+                "(110427681, 5)," +
+                "(663160547, 1)," +
+                "(1571254982, 9)"
+        );
+    }
+
+    @Test
+    public void shouldConvertToTreeMapWithComparator() {
+        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
+        final Value<Integer> value = of(9, 5, 1);
+        Map<Integer, Integer> map = value.toTreeMap(((Comparator<Integer>) Integer::compareTo).reversed(), v -> Tuple.of(keyMapper.apply(v), v));
+        if (value.isSingleValued()) {
+            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+        }
+        //Check order - order is matter
+        assertThat(map.mkString(",")).isEqualTo(
+                "(1571254982, 9)," +
+                "(663160547, 1)," +
+                "(110427681, 5)"
+        );
     }
 
     @Test

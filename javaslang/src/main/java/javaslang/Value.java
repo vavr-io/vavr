@@ -7,6 +7,8 @@ package javaslang;
 
 import javaslang.collection.*;
 import javaslang.collection.HashMap;
+import javaslang.collection.LinkedHashMap;
+import javaslang.collection.TreeMap;
 import javaslang.collection.HashSet;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
@@ -96,6 +98,8 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toLeft(Supplier)}</li>
  * <li>{@link #toList()}</li>
  * <li>{@link #toMap(Function)}</li>
+ * <li>{@link #toLinkedMap(Function)}</li>
+ * <li>{@link #toTreeMap(Function)}</li>
  * <li>{@link #toOption()}</li>
  * <li>{@link #toQueue()}</li>
  * <li>{@link #toRight(Object)}</li>
@@ -435,7 +439,7 @@ public interface Value<T> extends Iterable<T> {
      */
     @Override
     Iterator<T> iterator();
-    
+
     /**
      * Collects the underlying value(s) (if present) using the provided {@code collector}.
      *
@@ -459,7 +463,7 @@ public interface Value<T> extends Iterable<T> {
     default <R> R collect(Supplier<R> supplier, BiConsumer<R,? super T> accumulator, BiConsumer<R,R> combiner) {
         return StreamSupport.stream(spliterator(), false).collect(supplier, accumulator, combiner);
     }
-    
+
     // -- conversion methods
 
     /**
@@ -660,13 +664,46 @@ public interface Value<T> extends Iterable<T> {
      */
     default <K, V> Map<K, V> toMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
-        if (isEmpty()) {
-            return HashMap.empty();
-        } else if (isSingleValued()) {
-            return HashMap.of(f.apply(get()));
-        } else {
-            return HashMap.ofEntries(Iterator.ofAll(this).map(f));
-        }
+		return ValueModule.toMap(this, HashMap.empty(), HashMap::of, HashMap::ofEntries, f);
+    }
+
+    /**
+     * Converts this to a {@link Map}.
+     *
+     * @param f   A function that maps an element to a key/value pair represented by Tuple2
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new {@link LinkedHashMap}.
+     */
+    default <K, V> Map<K, V> toLinkedMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return ValueModule.toMap(this, LinkedHashMap.empty(), LinkedHashMap::of, LinkedHashMap::ofEntries, f);
+    }
+
+    /**
+     * Converts this to a {@link Map}.
+     *
+     * @param f   A function that maps an element to a key/value pair represented by Tuple2
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new {@link TreeMap}.
+     */
+    default <K extends Comparable<? super K>, V> Map<K, V> toTreeMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return ValueModule.toMap(this, TreeMap.empty(), TreeMap::of, TreeMap::ofEntries, f);
+    }
+
+    /**
+     * Converts this to a {@link Map}.
+     *
+     * @param f   A function that maps an element to a key/value pair represented by Tuple2
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new {@link TreeMap}.
+     */
+    default <K, V> Map<K, V> toTreeMap(Comparator<? super K> comparator, Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return ValueModule.toMap(this, TreeMap.empty(comparator), t -> TreeMap.of(comparator, t), t -> TreeMap.ofEntries(comparator, t), f);
     }
 
     /**
@@ -866,6 +903,21 @@ interface ValueModule {
             return ofAll.apply(value);
         }
     }
+
+	static <T, K, V, M extends Map<K, V>, TT extends Tuple2<? extends K, ? extends V>> M toMap(
+			Value<T> value, M empty,
+			Function<TT, M> ofElement,
+			Function<Iterable<TT>, M> ofAll,
+			Function<? super T, ? extends TT> f
+	) {
+		if (value.isEmpty()) {
+			return empty;
+		} else if (value.isSingleValued()) {
+			return ofElement.apply(f.apply(value.get()));
+		} else {
+			return ofAll.apply(Iterator.ofAll(value).map(f));
+		}
+	}
 
     static <T extends java.util.Collection<V>, V> T toJavaCollection(Value<V> value, Function<Integer, T> containerSupplier) {
         final T container;
