@@ -276,10 +276,10 @@ public abstract class AbstractValueTest {
     }
 
     @Test
-    public void shouldConvertToTreeMap() {
+    public void shouldConvertToSortedMap() {
         final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toTreeMap(v -> Tuple.of(keyMapper.apply(v), v));
+        Map<Integer, Integer> map = value.toSortedMap(v -> Tuple.of(keyMapper.apply(v), v));
         if (value.isSingleValued()) {
             map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
         }
@@ -292,10 +292,10 @@ public abstract class AbstractValueTest {
     }
 
     @Test
-    public void shouldConvertToTreeMapWithComparator() {
+    public void shouldConvertToSortedMapWithComparator() {
         final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toTreeMap(((Comparator<Integer>) Integer::compareTo).reversed(), v -> Tuple.of(keyMapper.apply(v), v));
+        Map<Integer, Integer> map = value.toSortedMap(((Comparator<Integer>) Integer::compareTo).reversed(), v -> Tuple.of(keyMapper.apply(v), v));
         if (value.isSingleValued()) {
             map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
         }

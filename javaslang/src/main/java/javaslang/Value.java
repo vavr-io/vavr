@@ -13,6 +13,7 @@ import javaslang.collection.HashSet;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Map;
+import javaslang.collection.SortedMap;
 import javaslang.collection.PriorityQueue;
 import javaslang.collection.Queue;
 import javaslang.collection.Set;
@@ -100,7 +101,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toList()}</li>
  * <li>{@link #toMap(Function)}</li>
  * <li>{@link #toLinkedMap(Function)}</li>
- * <li>{@link #toTreeMap(Function)}</li>
+ * <li>{@link #toSortedMap(Function)}</li>
  * <li>{@link #toOption()}</li>
  * <li>{@link #toQueue()}</li>
  * <li>{@link #toRight(Object)}</li>
@@ -691,7 +692,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V> The value type
      * @return A new {@link TreeMap}.
      */
-    default <K extends Comparable<? super K>, V> Map<K, V> toTreeMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+    default <K extends Comparable<? super K>, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         return ValueModule.toMap(this, TreeMap.empty(), TreeMap::of, TreeMap::ofEntries, f);
     }
@@ -704,7 +705,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V> The value type
      * @return A new {@link TreeMap}.
      */
-    default <K, V> Map<K, V> toTreeMap(Comparator<? super K> comparator, Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+    default <K, V> SortedMap<K, V> toSortedMap(Comparator<? super K> comparator, Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         return ValueModule.toMap(this, TreeMap.empty(comparator), t -> TreeMap.of(comparator, t), t -> TreeMap.ofEntries(comparator, t), f);
     }
