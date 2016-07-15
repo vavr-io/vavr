@@ -276,4 +276,10 @@ public class TreeSetTest extends AbstractSortedSetTest {
         Value<Integer> value = of(1, 2, 3);
         assertThat(value.toSortedSet(Integer::compareTo)).isSameAs(value);
     }
+
+    @Test
+    public void shouldPreserveComparatorOnConvertToSortedSetWithoutDistinctComparator() {
+        Value<Integer> value = TreeSet.of(Comparators.naturalComparator().reversed(), 1, 2, 3);
+        assertThat(value.toSortedSet().mkString(",")).isEqualTo("3,2,1");
+    }
 }
