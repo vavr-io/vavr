@@ -1255,7 +1255,7 @@ def generateMainClasses(): Unit = {
             """)}
 
             ${(i > 1).gen(xs"""
-              public static $generics $className<${(1 to i).gen(j => s"List<? extends T$j>")(", ")}> sequence(Iterable<$className<${(1 to i).gen(j => s"? extends T$j")(", ")}>> tuples) {
+              public static $generics $className<${(1 to i).gen(j => s"Seq<? extends T$j>")(", ")}> sequence(Iterable<$className<${(1 to i).gen(j => s"? extends T$j")(", ")}>> tuples) {
                 Objects.requireNonNull(tuples, "tuples is null");
                 return new $className<>(${(1 to i).gen(j => s"Iterator.ofAll(tuples).map($className::_$j).toList()")(", ")});
               }

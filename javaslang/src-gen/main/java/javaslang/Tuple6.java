@@ -408,7 +408,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
         return "(" + _1 + ", " + _2 + ", " + _3 + ", " + _4 + ", " + _5 + ", " + _6 + ")";
     }
 
-    public static <T1, T2, T3, T4, T5, T6> Tuple6<List<? extends T1>, List<? extends T2>, List<? extends T3>, List<? extends T4>, List<? extends T5>, List<? extends T6>> sequence(Iterable<Tuple6<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6>> tuples) {
+    public static <T1, T2, T3, T4, T5, T6> Tuple6<Seq<? extends T1>, Seq<? extends T2>, Seq<? extends T3>, Seq<? extends T4>, Seq<? extends T5>, Seq<? extends T6>> sequence(Iterable<Tuple6<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6>> tuples) {
       Objects.requireNonNull(tuples, "tuples is null");
       return new Tuple6<>(Iterator.ofAll(tuples).map(Tuple6::_1).toList(), Iterator.ofAll(tuples).map(Tuple6::_2).toList(), Iterator.ofAll(tuples).map(Tuple6::_3).toList(), Iterator.ofAll(tuples).map(Tuple6::_4).toList(), Iterator.ofAll(tuples).map(Tuple6::_5).toList(), Iterator.ofAll(tuples).map(Tuple6::_6).toList());
     }
