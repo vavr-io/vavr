@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
+import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 
@@ -452,8 +453,8 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
         return "(" + _1 + ", " + _2 + ", " + _3 + ", " + _4 + ", " + _5 + ", " + _6 + ", " + _7 + ")";
     }
 
-    public static <T1, T2, T3, T4, T5, T6, T7> Tuple7<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>, Seq<T6>, Seq<T7>> sequence(Seq<Tuple7<T1, T2, T3, T4, T5, T6, T7>> tuples) {
+    public static <T1, T2, T3, T4, T5, T6, T7> Tuple7<List<? extends T1>, List<? extends T2>, List<? extends T3>, List<? extends T4>, List<? extends T5>, List<? extends T6>, List<? extends T7>> sequence(Iterable<Tuple7<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7>> tuples) {
       Objects.requireNonNull(tuples, "tuples is null");
-      return new Tuple7<>(tuples.map(Tuple7::_1), tuples.map(Tuple7::_2), tuples.map(Tuple7::_3), tuples.map(Tuple7::_4), tuples.map(Tuple7::_5), tuples.map(Tuple7::_6), tuples.map(Tuple7::_7));
+      return new Tuple7<>(Iterator.ofAll(tuples).map(Tuple7::_1).toList(), Iterator.ofAll(tuples).map(Tuple7::_2).toList(), Iterator.ofAll(tuples).map(Tuple7::_3).toList(), Iterator.ofAll(tuples).map(Tuple7::_4).toList(), Iterator.ofAll(tuples).map(Tuple7::_5).toList(), Iterator.ofAll(tuples).map(Tuple7::_6).toList(), Iterator.ofAll(tuples).map(Tuple7::_7).toList());
     }
 }

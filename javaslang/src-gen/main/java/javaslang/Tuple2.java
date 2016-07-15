@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 
@@ -238,8 +239,8 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
         return "(" + _1 + ", " + _2 + ")";
     }
 
-    public static <T1, T2> Tuple2<Seq<T1>, Seq<T2>> sequence(Seq<Tuple2<T1, T2>> tuples) {
+    public static <T1, T2> Tuple2<List<? extends T1>, List<? extends T2>> sequence(Iterable<Tuple2<? extends T1, ? extends T2>> tuples) {
       Objects.requireNonNull(tuples, "tuples is null");
-      return new Tuple2<>(tuples.map(Tuple2::_1), tuples.map(Tuple2::_2));
+      return new Tuple2<>(Iterator.ofAll(tuples).map(Tuple2::_1).toList(), Iterator.ofAll(tuples).map(Tuple2::_2).toList());
     }
 }
