@@ -2,9 +2,11 @@ package javaslang.collection;
 
 import javaslang.Tuple2;
 import javaslang.Tuple3;
+import javaslang.Value;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.Serializable;
@@ -501,6 +503,21 @@ public class BitSetTest extends AbstractSortedSetTest {
         assertThat(oldSet.isEmpty()).isEqualTo(newSet.isEmpty());
         if (!newSet.isEmpty()) {
             assertThat(oldSet.nextSetBit(0)).isEqualTo(newSet.head());
+        }
+    }
+
+    // -- toSortedSet
+
+
+    @Override
+    @Test
+    public void shouldConvertToSortedSetWithoutComparatorOnComparable() {
+        final Value<Integer> value = BitSet.of(3, 7, 1, 15, 0);
+        final Set<Integer> set = value.toSortedSet();
+        if (value.isSingleValued()) {
+            assertThat(set).isEqualTo(TreeSet.of(3));
+        } else {
+            assertThat(set).isEqualTo(TreeSet.of(0, 1, 3, 7, 15));
         }
     }
 }

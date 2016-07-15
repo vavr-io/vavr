@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
+import javaslang.Value;
 import javaslang.control.Option;
 import javaslang.control.Try;
 import javaslang.Tuple2;
@@ -665,5 +666,13 @@ public class StreamTest extends AbstractLinearSeqTest {
             throw new Exception("Some error !!!");
         }
         return i + " Value";
+    }
+
+    // -- toStream
+
+    @Test
+    public void shouldReturnSelfOnConvertToStream() {
+        Value<Integer> value = of(1, 2, 3);
+        assertThat(value.toStream()).isSameAs(value);
     }
 }

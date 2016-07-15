@@ -5,6 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.Value;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.Serializable;
@@ -253,5 +255,25 @@ public class TreeSetTest extends AbstractSortedSetTest {
     @Override
     protected TreeSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return TreeSet.rangeClosedBy(from, toInclusive, step);
+    }
+
+    // -- toSortedSet
+
+    @Test
+    public void shouldReturnSelfOnConvertToSortedSet() {
+        Value<Integer> value = of(1, 2, 3);
+        assertThat(value.toSortedSet()).isSameAs(value);
+    }
+
+    @Test
+    public void shouldReturnSelfOnConvertToSortedSetWithSameComparator() {
+        TreeSet<Integer> value = of(1, 2, 3);
+        assertThat(value.toSortedSet(value.comparator())).isSameAs(value);
+    }
+
+    @Test
+    public void shouldNotReturnSelfOnConvertToSortedSetWithDifferentComparator() {
+        Value<Integer> value = of(1, 2, 3);
+        assertThat(value.toSortedSet(Integer::compareTo)).isSameAs(value);
     }
 }

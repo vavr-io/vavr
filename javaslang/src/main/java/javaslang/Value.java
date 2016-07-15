@@ -917,10 +917,13 @@ public interface Value<T> extends Iterable<T> {
 
 interface ValueModule {
 
+    @SuppressWarnings("unchecked")
     static <T extends Traversable<V>, V> T toTraversable(Value<V> value, T empty,
                                                          Function<V, T> ofElement,
                                                          Function<Iterable<V>, T> ofAll) {
-        if (value.isEmpty()) {
+        if (empty.getClass().isAssignableFrom(value.getClass())) {
+            return (T) value;
+        } else if (value.isEmpty()) {
             return empty;
         } else if (value.isSingleValued()) {
             return ofElement.apply(value.get());

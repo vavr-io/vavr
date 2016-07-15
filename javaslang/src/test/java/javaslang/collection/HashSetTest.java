@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Value;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
@@ -443,5 +444,13 @@ public class HashSetTest extends AbstractSetTest {
     @Override
     protected HashSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return HashSet.rangeClosedBy(from, toInclusive, step);
+    }
+
+    // -- toSet
+
+    @Test
+    public void shouldReturnSelfOnConvertToSet() {
+        Value<Integer> value = of(1, 2, 3);
+        assertThat(value.toSet()).isSameAs(value);
     }
 }
