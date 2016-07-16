@@ -11,8 +11,11 @@ import javaslang.control.Option;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.Set;
 import java.util.function.*;
 import java.util.stream.Collector;
+
+import static javaslang.collection.Collections.*;
 
 /**
  * Vector is the default Seq implementation. It provides the best performance in between Array (with constant time element access)
@@ -23,13 +26,16 @@ import java.util.stream.Collector;
  * @since 2.0.0
  */
 public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Serializable {
-
     private static final long serialVersionUID = 1L;
 
     private static final Vector<?> EMPTY = new Vector<>(HashArrayMappedTrie.empty());
 
     private final HashArrayMappedTrie<Integer, T> trie;
     private final int indexShift;
+
+    private static <T> Vector<T> wrap(HashArrayMappedTrie<Integer, T> trie) {
+        return trie.isEmpty() ? empty() : new Vector<>(trie);
+    }
 
     private Vector(HashArrayMappedTrie<Integer, T> trie) {
         this(0, trie);
@@ -52,8 +58,8 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     /**
-     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link javaslang.collection.Vector}.
+     * Returns a {@link Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(Collector)} to obtain a {@link Vector}.
      *
      * @param <T> Component type of the Vector.
      * @return A javaslang.collection.List Collector.
@@ -91,7 +97,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @return A new Vector instance containing the given element
      */
     public static <T> Vector<T> of(T element) {
-        return new Vector<>(HashArrayMappedTrie.<Integer, T> empty().put(0, element));
+        return ofAll(Iterator.of(element));
     }
 
     /**
@@ -103,13 +109,9 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public static <T> Vector<T> of(T... elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        HashArrayMappedTrie<Integer, T> result = HashArrayMappedTrie.empty();
-        for (T element : elements) {
-            result = result.put(result.size(), element);
-        }
-        return wrap(result);
+        return ofAll(Iterator.of(elements));
     }
 
     /**
@@ -124,7 +126,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      */
     public static <T> Vector<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return Collections.tabulate(n, f, Vector.empty(), Vector::of);
+        return Collections.tabulate(n, f, empty(), Vector::of);
     }
 
     /**
@@ -138,7 +140,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      */
     public static <T> Vector<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return Collections.fill(n, s, Vector.empty(), Vector::of);
+        return Collections.fill(n, s, empty(), Vector::of);
     }
 
     /**
@@ -186,7 +188,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      */
     public static Vector<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -197,7 +199,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      */
     public static Vector<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -208,7 +210,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      */
     public static Vector<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -219,7 +221,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      */
     public static Vector<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -230,7 +232,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      */
     public static Vector<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -241,7 +243,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      */
     public static Vector<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -252,7 +254,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      */
     public static Vector<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     /**
@@ -263,20 +265,20 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      */
     public static Vector<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
-        return Vector.ofAll(Iterator.ofAll(array));
+        return ofAll(Iterator.ofAll(array));
     }
 
     public static Vector<Character> range(char from, char toExclusive) {
-        return Vector.ofAll(Iterator.range(from, toExclusive));
+        return ofAll(Iterator.range(from, toExclusive));
     }
 
     public static Vector<Character> rangeBy(char from, char toExclusive, int step) {
-        return Vector.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     @GwtIncompatible
     public static Vector<Double> rangeBy(double from, double toExclusive, double step) {
-        return Vector.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -296,7 +298,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
      */
     public static Vector<Integer> range(int from, int toExclusive) {
-        return Vector.ofAll(Iterator.range(from, toExclusive));
+        return ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -322,7 +324,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Vector<Integer> rangeBy(int from, int toExclusive, int step) {
-        return Vector.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -342,7 +344,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
      */
     public static Vector<Long> range(long from, long toExclusive) {
-        return Vector.ofAll(Iterator.range(from, toExclusive));
+        return ofAll(Iterator.range(from, toExclusive));
     }
 
     /**
@@ -368,20 +370,20 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Vector<Long> rangeBy(long from, long toExclusive, long step) {
-        return Vector.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     public static Vector<Character> rangeClosed(char from, char toInclusive) {
-        return Vector.ofAll(Iterator.rangeClosed(from, toInclusive));
+        return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     public static Vector<Character> rangeClosedBy(char from, char toInclusive, int step) {
-        return Vector.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     @GwtIncompatible
     public static Vector<Double> rangeClosedBy(double from, double toInclusive, double step) {
-        return Vector.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -401,7 +403,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @return a range of int values as specified or the empty range if {@code from > toInclusive}
      */
     public static Vector<Integer> rangeClosed(int from, int toInclusive) {
-        return Vector.ofAll(Iterator.rangeClosed(from, toInclusive));
+        return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -427,7 +429,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Vector<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        return Vector.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -447,7 +449,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @return a range of long values as specified or the empty range if {@code from > toInclusive}
      */
     public static Vector<Long> rangeClosed(long from, long toInclusive) {
-        return Vector.ofAll(Iterator.rangeClosed(from, toInclusive));
+        return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -473,7 +475,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Vector<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        return Vector.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -559,7 +561,11 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> append(T element) {
-        return new Vector<>(indexShift, trie.put(length() + indexShift, element));
+        if (isEmpty()) {
+            return of(element);
+        } else {
+            return new Vector<>(indexShift, trie.put(length() + indexShift, element));
+        }
     }
 
     @Override
@@ -573,7 +579,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<Vector<T>> combinations() {
-        return Vector.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
+        return rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
 
     @Override
@@ -583,7 +589,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Iterator<Vector<T>> crossProduct(int power) {
-        return Collections.crossProduct(Vector.empty(), this, power);
+        return Collections.crossProduct(empty(), this, power);
     }
 
     @Override
@@ -601,7 +607,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public <U> Vector<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        final java.util.Set<U> seen = new java.util.HashSet<>();
+        final java.util.Set<U> seen = new java.util.HashSet<>(length());
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
 
@@ -609,28 +615,28 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     public Vector<T> drop(int n) {
         if (n <= 0) {
             return this;
-        }
-        if (n >= length()) {
+        } else if (n >= length()) {
             return empty();
+        } else {
+            HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
+            for (int i = n; i < length(); i++) {
+                trie = trie.put(i - n, get(i));
+            }
+            return wrap(trie);
         }
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = n; i < length(); i++) {
-            trie = trie.put(i - n, get(i));
-        }
-        return wrap(trie);
-    }
-
-    @Override
-    public Vector<T> dropUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return dropWhile(predicate.negate());
     }
 
     @Override
     public Vector<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
+        return dropUntil(predicate.negate());
+    }
+
+    @Override
+    public Vector<T> dropUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         for (int i = 0; i < length(); i++) {
-            if (!predicate.test(get(i))) {
+            if (predicate.test(get(i))) {
                 return drop(i);
             }
         }
@@ -666,50 +672,32 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public Vector<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        HashArrayMappedTrie<Integer, T> filtered = HashArrayMappedTrie.empty();
-        for (T t : this) {
-            if (predicate.test(t)) {
-                filtered = filtered.put(filtered.size(), t);
-            }
-        }
 
-        if (filtered.isEmpty()) {
-            return Vector.empty();
-        } else if (filtered.size() == size()) {
-            return this;
-        } else {
-            return wrap(filtered);
-        }
+        final Vector<T> results = ofAll(iterator().filter(predicate));
+        return (results.length() == length()) ? this
+                                              : results;
     }
 
     @Override
     public <U> Vector<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return empty();
-        } else {
-            HashArrayMappedTrie<Integer, U> trie = HashArrayMappedTrie.empty();
-            for (int i = 0; i < length(); i++) {
-                for (U u : mapper.apply(get(i))) {
-                    trie = trie.put(trie.size(), u);
-                }
-            }
-            return wrap(trie);
-        }
+        final Iterator<? extends U> results = iterator().flatMap(mapper);
+        return ofAll(results);
     }
 
     @Override
     public T get(int index) {
-        if (index < 0 || index >= length()) {
+        if ((index < 0) || (index >= length())) {
             throw new IndexOutOfBoundsException("get(" + index + ")");
+        } else {
+            return trie.get(index + indexShift).get();
         }
-        return trie.get(index + indexShift).get();
     }
 
     @Override
     public T head() {
         if (isEmpty()) {
-            throw new NoSuchElementException("head of empty vector");
+            throw new NoSuchElementException("head of empty Vector");
         } else {
             return get(0);
         }
@@ -743,42 +731,25 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public Vector<T> init() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("init of empty vector");
+            throw new UnsupportedOperationException("init of empty Vector");
+        } else {
+            return dropRight(1);
         }
-        return new Vector<>(indexShift, trie.remove(length() + indexShift - 1));
     }
 
     @Override
-    public Option<? extends Vector<T>> initOption() {
+    public Option<Vector<T>> initOption() {
         return isEmpty() ? Option.none() : Option.some(init());
     }
 
     @Override
     public Vector<T> insert(int index, T element) {
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("insert(" + index + ", e)");
-        }
-        if (index > length()) {
-            throw new IndexOutOfBoundsException("insert(" + index + ", e) on Vector of length " + length());
-        }
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = 0; i <= length(); i++) {
-            if (i == index) {
-                trie = trie.put(trie.size(), element);
-            }
-            if (i < length()) {
-                trie = trie.put(trie.size(), get(i));
-            }
-        }
-        return new Vector<>(trie);
+        return insertAll(index, Iterator.of(element));
     }
 
     @Override
     public Vector<T> insertAll(int index, Iterable<? extends T> elements) {
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("insert(" + index + ", e)");
-        }
-        if (index > length()) {
+        if ((index < 0) || (index > length())) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e) on Vector of length " + length());
         }
         HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
@@ -797,19 +768,12 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> intersperse(T element) {
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = 0; i < length(); i++) {
-            if (i > 0) {
-                trie = trie.put(trie.size(), element);
-            }
-            trie = trie.put(trie.size(), get(i));
-        }
-        return wrap(trie);
+        return ofAll(iterator().intersperse(element));
     }
 
     @Override
     public boolean isEmpty() {
-        return trie.isEmpty();
+        return length() == 0;
     }
 
     @Override
@@ -820,18 +784,13 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public Iterator<T> iterator() {
         return new AbstractIterator<T>() {
-            private int index = indexShift;
-            private final int size = trie.size() + indexShift;
+            int index;
 
             @Override
-            public boolean hasNext() {
-                return index < size;
-            }
+            public boolean hasNext() { return index < Vector.this.length(); }
 
             @Override
-            public T getNext() {
-                return trie.get(index++).get();
-            }
+            public T getNext() { return Vector.this.get(index++); }
         };
     }
 
@@ -853,37 +812,34 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public <U> Vector<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        HashArrayMappedTrie<Integer, U> trie = HashArrayMappedTrie.empty();
-        for (int i = 0; i < length(); i++) {
-            trie = trie.put(i, mapper.apply(get(i)));
-        }
-        return wrap(trie);
+
+        final Iterator<? extends U> results = iterator().map(mapper);
+        return ofAll(results);
     }
 
     @Override
     public Vector<T> padTo(int length, T element) {
         final int actualLength = length();
-        if (length <= actualLength) {
-            return this;
-        } else {
-            return appendAll(Iterator.continually(element).take(length - actualLength));
-        }
+        return (length <= actualLength) ? this
+                                        : appendAll(Iterator.continually(element)
+                                                            .take(length - actualLength));
     }
 
     @Override
     public Vector<T> leftPadTo(int length, T element) {
-        final int actualLength = length();
-        if (length <= actualLength) {
+        if (length <= length()) {
             return this;
         } else {
-            return prependAll(Iterator.continually(element).take(length - actualLength));
+            final Iterator<T> prefix = Iterator.continually(element).take(length - length());
+            return prependAll(prefix);
         }
     }
 
     @Override
     public Vector<T> patch(int from, Iterable<? extends T> that, int replaced) {
-        from = from < 0 ? 0 : from;
-        replaced = replaced < 0 ? 0 : replaced;
+        from = Math.max(from, 0);
+        replaced = Math.max(replaced, 0);
+
         Vector<T> result = take(from).appendAll(that);
         from += replaced;
         result = result.appendAll(drop(from));
@@ -893,12 +849,12 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public Tuple2<Vector<T>, Vector<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final java.util.List<T> left = new ArrayList<>(), right = new ArrayList<>();
+        final ArrayList<T> left = new ArrayList<>(), right = new ArrayList<>();
         for (int i = 0; i < length(); i++) {
             final T t = get(i);
             (predicate.test(t) ? left : right).add(t);
         }
-        return Tuple.of(Vector.ofAll(left), Vector.ofAll(right));
+        return Tuple.of(ofAll(left), ofAll(right));
     }
 
     @Override
@@ -913,76 +869,64 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public Vector<Vector<T>> permutations() {
         if (isEmpty()) {
-            return Vector.empty();
+            return empty();
+        } else if (length() == 1) {
+            return of(this);
         } else {
-            final Vector<T> tail = tail();
-            if (tail.isEmpty()) {
-                return Vector.of(this);
-            } else {
-                final Vector<Vector<T>> zero = empty();
-                return distinct().foldLeft(zero, (xs, x) -> {
-                    final Function<Vector<T>, Vector<T>> prepend = l -> l.prepend(x);
-                    return xs.appendAll(remove(x).permutations().map(prepend));
-                });
+            Vector<Vector<T>> results = empty();
+            for (T t : distinct()) {
+                for (Vector<T> ts : remove(t).permutations()) {
+                    results = results.append(of(t).appendAll(ts));
+                }
             }
+            return results;
         }
     }
 
     @Override
     public Vector<T> prepend(T element) {
-        final int newIndexShift = indexShift - 1;
-        return new Vector<>(newIndexShift, trie.put(newIndexShift, element));
+        if (isEmpty()) {
+            return of(element);
+        } else {
+            final int newIndexShift = indexShift - 1;
+            return new Vector<>(newIndexShift, trie.put(newIndexShift, element));
+        }
     }
 
     @Override
     public Vector<T> prependAll(Iterable<? extends T> elements) {
-        List<T> list = List.ofAll(elements);
-        final int newIndexShift = indexShift - list.length();
-        HashArrayMappedTrie<Integer, T> newTrie = trie;
-        for (int i = newIndexShift; !list.isEmpty(); i++) {
-            newTrie = newTrie.put(i, list.head());
-            list = list.tail();
+        Objects.requireNonNull(elements, "elements is null");
+        if (isEmpty()) {
+            return ofAll(elements);
+        } else {
+            Vector<T> result = this;
+            for (T element : seq(elements).reverse()) {
+                result = result.prepend(element);
+            }
+            return result.isEmpty() ? empty()
+                                    : result;
         }
-        return new Vector<>(newIndexShift, newTrie);
     }
 
     @Override
     public Vector<T> remove(T element) {
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        boolean found = false;
         for (int i = 0; i < length(); i++) {
-            final T value = get(i);
-            if (found) {
-                trie = trie.put(trie.size(), value);
-            } else {
-                if (element.equals(value)) {
-                    found = true;
-                } else {
-                    trie = trie.put(trie.size(), value);
-                }
+            if (Objects.equals(get(i), element)) {
+                return removeAt(i);
             }
         }
-        return trie.size() == length() ? this : wrap(trie);
+        return this;
     }
 
     @Override
     public Vector<T> removeFirst(Predicate<T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        boolean found = false;
         for (int i = 0; i < length(); i++) {
-            final T value = get(i);
-            if (found) {
-                trie = trie.put(trie.size(), value);
-            } else {
-                if (predicate.test(value)) {
-                    found = true;
-                } else {
-                    trie = trie.put(trie.size(), value);
-                }
+            if (predicate.test(get(i))) {
+                return removeAt(i);
             }
         }
-        return trie.size() == length() ? this : wrap(trie);
+        return this;
     }
 
     @Override
@@ -998,19 +942,17 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> removeAt(int index) {
-        if (index < 0) {
+        if ((index < 0) || (index >= length())) {
             throw new IndexOutOfBoundsException("removeAt(" + index + ")");
-        }
-        if (index >= length()) {
-            throw new IndexOutOfBoundsException("removeAt(" + index + ")");
-        }
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = 0; i < length(); i++) {
-            if (i != index) {
-                trie = trie.put(trie.size(), get(i));
+        } else {
+            HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
+            for (int i = 0; i < length(); i++) {
+                if (i != index) {
+                    trie = trie.put(trie.size(), get(i));
+                }
             }
+            return wrap(trie);
         }
-        return wrap(trie);
     }
 
     @Override
@@ -1024,44 +966,27 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public IndexedSeq<T> removeAll(Predicate<? super T> predicate) {
+    public Vector<T> removeAll(Predicate<? super T> predicate) {
         return Collections.removeAll(this, predicate);
     }
 
     @Override
     public Vector<T> replace(T currentElement, T newElement) {
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        boolean found = false;
-        for (int i = 0; i < length(); i++) {
-            final T value = get(i);
-            if (found) {
-                trie = trie.put(trie.size(), value);
-            } else {
-                if (currentElement.equals(value)) {
-                    trie = trie.put(trie.size(), newElement);
-                    found = true;
-                } else {
-                    trie = trie.put(trie.size(), value);
-                }
-            }
-        }
-        return found ? new Vector<>(trie) : this;
+        return indexOfOption(currentElement).map(i -> update(i, newElement))
+                                            .getOrElse(this);
     }
 
     @Override
     public Vector<T> replaceAll(T currentElement, T newElement) {
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        boolean changed = false;
-        for (int i = 0; i < length(); i++) {
-            final T value = get(i);
-            if (currentElement.equals(value)) {
-                trie = trie.put(trie.size(), newElement);
-                changed = true;
-            } else {
-                trie = trie.put(trie.size(), value);
+        Vector<T> result = this;
+        int index = 0;
+        for (T value : iterator()) {
+            if (Objects.equals(value, currentElement)) {
+                result = result.update(index, newElement);
             }
+            index++;
         }
-        return changed ? wrap(trie) : this;
+        return result;
     }
 
     @Override
@@ -1071,11 +996,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> reverse() {
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = 0; i < length(); i++) {
-            trie = trie.put(i, get(length() - 1 - i));
-        }
-        return trie.isEmpty() ? empty() : new Vector<>(trie);
+        return (length() <= 1) ? this : ofAll(reverseIterator());
     }
 
     @Override
@@ -1086,30 +1007,30 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public <U> Vector<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, Vector.empty(), Vector::append, Function.identity());
+        return Collections.scanLeft(this, zero, operation, empty(), Vector::append, Function.identity());
     }
 
     @Override
     public <U> Vector<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, Vector.empty(), Vector::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, empty(), Vector::prepend, Function.identity());
     }
 
     @Override
     public Vector<T> slice(int beginIndex, int endIndex) {
-        if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
-            return Vector.empty();
-        }
-        if (beginIndex <= 0 && endIndex >= length()) {
+        if ((beginIndex >= endIndex) || (beginIndex >= size()) || isEmpty()) {
+            return empty();
+        } else if ((beginIndex <= 0) && (endIndex >= length())) {
             return this;
+        } else {
+            final long index = Math.max(beginIndex, 0);
+            final long length = Math.min(endIndex, length());
+            HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
+            for (int i = (int) index; i < length; i++) {
+                trie = trie.put(trie.size(), get(i));
+            }
+            return wrap(trie);
         }
-        final int index = Math.max(beginIndex, 0);
-        final int length = Math.min(endIndex, length());
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = index; i < length; i++) {
-            trie = trie.put(trie.size(), get(i));
-        }
-        return wrap(trie);
     }
 
     @Override
@@ -1124,13 +1045,13 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> sorted() {
-        return isEmpty() ? this : toJavaStream().sorted().collect(Vector.collector());
+        return isEmpty() ? this : toJavaStream().sorted().collect(collector());
     }
 
     @Override
     public Vector<T> sorted(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return isEmpty() ? this : toJavaStream().sorted(comparator).collect(Vector.collector());
+        return isEmpty() ? this : toJavaStream().sorted(comparator).collect(collector());
     }
 
     @Override
@@ -1141,9 +1062,8 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public <U> Vector<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
         final Function<? super T, ? extends U> domain = Function1.of(mapper::apply).memoized();
-        return toJavaStream()
-                .sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
-                .collect(collector());
+        return toJavaStream().sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
+                             .collect(collector());
     }
 
     @Override
@@ -1161,21 +1081,17 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     public Tuple2<Vector<T>, Vector<T>> splitAt(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Vector<T> init = takeWhile(predicate.negate());
-        return Tuple.of(init, drop(init.length()));
+        return Tuple.of(init, drop(init.size()));
     }
 
     @Override
     public Tuple2<Vector<T>, Vector<T>> splitAtInclusive(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        HashArrayMappedTrie<Integer, T> init = HashArrayMappedTrie.empty();
-        for (T t : this) {
-            init = init.put(init.size(), t);
-            if (predicate.test(t)) {
-                if (init.size() == length()) {
-                    return Tuple.of(this, empty());
-                } else {
-                    return Tuple.of(new Vector<>(init), drop(init.size()));
-                }
+        for (int i = 0; i < length(); i++) {
+            final T value = get(i);
+            if (predicate.test(value)) {
+                return (i == (length() - 1)) ? Tuple.of(this, empty())
+                                             : Tuple.of(take(i + 1), drop(i + 1));
             }
         }
         return Tuple.of(this, empty());
@@ -1188,40 +1104,28 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> subSequence(int beginIndex) {
-        if (beginIndex < 0) {
-            throw new IndexOutOfBoundsException("slice(" + beginIndex + ")");
+        if ((beginIndex < 0) || (beginIndex > length())) {
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
+        } else {
+            return drop(beginIndex);
         }
-        if (beginIndex > length()) {
-            throw new IndexOutOfBoundsException("slice(" + beginIndex + ")");
-        }
-        return drop(beginIndex);
     }
 
     @Override
     public Vector<T> subSequence(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
-            throw new IndexOutOfBoundsException("slice(" + beginIndex + ", " + endIndex + ") on Vector of length " + length());
+        if ((beginIndex < 0) || (beginIndex > endIndex) || (endIndex > length())) {
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on Vector of size " + length());
+        } else {
+            return slice(beginIndex, endIndex);
         }
-        if (beginIndex == endIndex) {
-            return Vector.empty();
-        }
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = beginIndex; i < endIndex; i++) {
-            trie = trie.put(trie.size(), get(i));
-        }
-        return wrap(trie);
     }
 
     @Override
     public Vector<T> tail() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("tail of empty vector");
-        }
-        if (length() == 1) {
-            return empty();
+            throw new UnsupportedOperationException("tail of empty Vector");
         } else {
-            final int newIndexShift = indexShift + 1;
-            return new Vector<>(newIndexShift, trie.remove(indexShift));
+            return drop(1);
         }
     }
 
@@ -1234,30 +1138,26 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     public Vector<T> take(int n) {
         if (n >= length()) {
             return this;
-        }
-        if (n <= 0) {
+        } else if (n <= 0) {
             return empty();
+        } else {
+            HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
+            for (int i = 0; i < n; i++) {
+                trie = trie.put(i, get(i));
+            }
+            return new Vector<>(trie);
         }
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = 0; i < n; i++) {
-            trie = trie.put(i, get(i));
-        }
-        return new Vector<>(trie);
     }
 
     @Override
     public Vector<T> takeRight(int n) {
         if (n >= length()) {
             return this;
-        }
-        if (n <= 0) {
+        } else if (n <= 0) {
             return empty();
+        } else {
+            return drop(length() - n);
         }
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-        for (int i = 0; i < n; i++) {
-            trie = trie.put(i, get(length() - n + i));
-        }
-        return new Vector<>(trie);
     }
 
     @Override
@@ -1269,15 +1169,13 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public Vector<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
         for (int i = 0; i < length(); i++) {
             final T value = get(i);
             if (!predicate.test(value)) {
-                break;
+                return take(i);
             }
-            trie = trie.put(i, get(i));
         }
-        return trie.size() == length() ? this : wrap(trie);
+        return this;
     }
 
     /**
@@ -1295,47 +1193,44 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public <U> Vector<U> unit(Iterable<? extends U> iterable) {
-        return Vector.ofAll(iterable);
+        return ofAll(iterable);
     }
 
     @Override
-    public <T1, T2> Tuple2<Vector<T1>, Vector<T2>> unzip(
-            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    public <T1, T2> Tuple2<Vector<T1>, Vector<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        HashArrayMappedTrie<Integer, T1> xs = HashArrayMappedTrie.empty();
-        HashArrayMappedTrie<Integer, T2> ys = HashArrayMappedTrie.empty();
-        for (T element : this) {
-            final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(element);
-            xs = xs.put(xs.size(), t._1);
-            ys = ys.put(ys.size(), t._2);
+        Vector<T1> xs = empty();
+        Vector<T2> ys = empty();
+        for (int i = 0; i < length(); i++) {
+            final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(get(i));
+            xs = xs.append(t._1);
+            ys = ys.append(t._2);
         }
-        return Tuple.of(new Vector<>(xs), new Vector<>(ys));
+        return Tuple.of(xs, ys);
     }
 
     @Override
     public <T1, T2, T3> Tuple3<Vector<T1>, Vector<T2>, Vector<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        HashArrayMappedTrie<Integer, T1> xs = HashArrayMappedTrie.empty();
-        HashArrayMappedTrie<Integer, T2> ys = HashArrayMappedTrie.empty();
-        HashArrayMappedTrie<Integer, T3> zs = HashArrayMappedTrie.empty();
-        for (T element : this) {
-            final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(element);
-            xs = xs.put(xs.size(), t._1);
-            ys = ys.put(ys.size(), t._2);
-            zs = zs.put(zs.size(), t._3);
+        Vector<T1> xs = empty();
+        Vector<T2> ys = empty();
+        Vector<T3> zs = empty();
+        for (int i = 0; i < length(); i++) {
+            final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(get(i));
+            xs = xs.append(t._1);
+            ys = ys.append(t._2);
+            zs = zs.append(t._3);
         }
-        return Tuple.of(new Vector<>(xs), new Vector<>(ys), new Vector<>(zs));
+        return Tuple.of(xs, ys, zs);
     }
 
     @Override
     public Vector<T> update(int index, T element) {
-        if (index < 0) {
+        if ((index < 0) || (index >= length())) {
             throw new IndexOutOfBoundsException("update(" + index + ")");
+        } else {
+            return new Vector<>(indexShift, trie.put(index + indexShift, element));
         }
-        if (index >= length()) {
-            throw new IndexOutOfBoundsException("update(" + index + ")");
-        }
-        return new Vector<>(indexShift, trie.put(index + indexShift, element));
     }
 
     @Override
@@ -1347,13 +1242,13 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     public <U, R> Vector<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
-        return Vector.ofAll(iterator().zipWith(that, mapper));
+        return ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
     public <U> Vector<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        return Vector.ofAll(iterator().zipAll(that, thisElem, thatElem));
+        return ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
 
     @Override
@@ -1364,28 +1259,19 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public <U> Vector<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return Vector.ofAll(iterator().zipWithIndex(mapper));
+        return ofAll(iterator().zipWithIndex(mapper));
     }
 
-    private Object readResolve() {
-        return isEmpty() ? EMPTY : this;
-    }
+    private Object readResolve() { return isEmpty() ? EMPTY : this; }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof Vector) {
-            final Vector<?> that = (Vector<?>) o;
-            return (this.size() == that.size()) && Collections.areEqual(this, that);
-        } else {
-            return false;
-        }
+    public boolean equals(Object that) {
+        return (that == this) || ((that instanceof Vector) && areEqual(this, (Vector<?>) that));
     }
 
     @Override
     public int hashCode() {
-        return Collections.hash(this);
+        return hash(this);
     }
 
     @Override
@@ -1397,24 +1283,15 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     public String toString() {
         return mkString(stringPrefix() + "(", ", ", ")");
     }
-
-    private static <T> Vector<T> wrap(HashArrayMappedTrie<Integer, T> trie) {
-        return trie.isEmpty() ? empty() : new Vector<>(trie);
-    }
 }
 
 interface VectorModule {
-
     final class Combinations {
-
         static <T> Vector<Vector<T>> apply(Vector<T> elements, int k) {
-            if (k == 0) {
-                return Vector.of(Vector.empty());
-            } else {
-                return elements.zipWithIndex().flatMap(t -> apply(elements.drop(t._2 + 1), (k - 1))
-                        .map((Vector<T> c) -> c.prepend(t._1))
-                );
-            }
+            return (k == 0)
+                   ? Vector.of(Vector.empty())
+                   : elements.zipWithIndex().flatMap(
+                    t -> apply(elements.drop(t._2 + 1), (k - 1)).map((Vector<T> c) -> c.prepend(t._1)));
         }
     }
 }

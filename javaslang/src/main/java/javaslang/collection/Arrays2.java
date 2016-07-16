@@ -8,7 +8,8 @@ package javaslang.collection;
 import java.util.Random;
 
 /**
- * Internal class, containing helpers.
+ * Internal class, containing Java array manipulation helpers.
+ * Many arrays are represented as simple Objects, to avoid casts at the client site, and to work with all types of arrays, including primitive ones.
  *
  * @author Pap Lőrinc
  * @since 3.0.0
