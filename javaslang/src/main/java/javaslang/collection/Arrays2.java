@@ -7,6 +7,8 @@ package javaslang.collection;
 
 import java.util.Random;
 
+import static java.util.Arrays.copyOfRange;
+
 /**
  * Internal class, containing helpers.
  *
@@ -19,6 +21,12 @@ final class Arrays2 { // TODO reuse these in `Array` also
 
     static <T> T[] emptyArray()                  { return (T[]) EMPTY; }
     static boolean isNullOrEmpty(Object[] array) { return (array == null) || (array.length == 0); }
+
+    static <T> T getOrDefault(Object[] array, int i, T defaultValue) {
+        return (isNullOrEmpty(array) || (i < 0) || (i >= array.length))
+               ? defaultValue
+               : (T) array[i];
+    }
 
     /** Repeatedly group an array into equal sized sub-trees */
     static Object[] grouped(Object[] array, int length, int size) {
@@ -50,6 +58,19 @@ final class Arrays2 { // TODO reuse these in `Array` also
             array[i] = it.next();
         }
         return array;
+    }
+
+    static <T> T[] copyUpdate(T[] array, int index, T element) {
+        if (array == null) { array = emptyArray(); }
+        final T[] copy = (T[]) new Object[Math.max(array.length, index + 1)];
+        System.arraycopy(array, 0, copy, 0, array.length);
+        copy[index] = element;
+        return copy;
+    }
+
+    static <T> T[] take(T[] array, int length) {
+        return (length <= 0) ? emptyArray()
+                             : copyOfRange(array, 0, length);
     }
 
     /** Randomly mutate array positions */

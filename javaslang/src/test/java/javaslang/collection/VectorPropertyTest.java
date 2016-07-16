@@ -11,6 +11,8 @@ import org.junit.Test;
 
 import java.util.List;
 
+import java.util.List;
+
 import static javaslang.Function2.constant;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,6 +49,24 @@ public class VectorPropertyTest {
             }
 
             System.out.println("Depth " + depth + " ok!");
+        }
+    }
+
+    @Test
+    public void shouldDropRight() {
+        final int length = getMaxSizeForDepth(5) + 1;
+
+        final Seq<Integer> expected = Array.range(0, length);
+        final Vector<Integer> actual = Vector.ofAll(expected);
+
+        Vector<Integer> actualSingleDrop = actual;
+        for (int i = 0; i <= length; i++) {
+            final Seq<Integer> expectedDrop = expected.dropRight(i);
+
+            assertAreEqual(actual, i, Vector::dropRight, expectedDrop);
+            assertAreEqual(actualSingleDrop, null, (a, p) -> a, expectedDrop);
+
+            actualSingleDrop = actualSingleDrop.dropRight(1);
         }
     }
 
