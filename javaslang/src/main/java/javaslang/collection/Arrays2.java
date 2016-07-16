@@ -68,6 +68,13 @@ final class Arrays2 { // TODO reuse these in `Array` also
         return copy;
     }
 
+    static <T> T[] copyAppend(T[] array, T element) {
+        final T[] copy = (T[]) new Object[array.length + 1];
+        System.arraycopy(array, 0, copy, 0, array.length); // why is this a *LOT* slower than prepend???
+        copy[array.length] = element;
+        return copy;
+    }
+
     static <T> T[] drop(T[] array, int index) {
         final T[] copy = (T[]) new Object[array.length];
         System.arraycopy(array, index, copy, index, array.length - index);
