@@ -274,7 +274,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
     @Test
     public void shouldNotReturnSelfOnConvertToSortedSetWithDifferentComparator() {
         Value<Integer> value = of(1, 2, 3);
-        assertThat(value.toSortedSet(Integer::compareTo)).isSameAs(value);
+        assertThat(value.toSortedSet(Integer::compareTo)).isNotSameAs(value);
     }
 
     @Test

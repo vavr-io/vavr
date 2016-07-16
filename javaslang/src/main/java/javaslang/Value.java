@@ -802,7 +802,13 @@ public interface Value<T> extends Iterable<T> {
      */
     @SuppressWarnings("unchecked")
     default SortedSet<T> toSortedSet() throws ClassCastException {
-        return toSortedSet((Comparator<? super T> & Serializable) (o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
+        final Comparator<? super T> comparator;
+        if (this instanceof SortedSet<?>) {
+            comparator = ((SortedSet<T>) this).comparator();
+        } else {
+            comparator = (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
+        }
+        return toSortedSet(comparator);
     }
 
     /**
@@ -921,7 +927,8 @@ interface ValueModule {
     static <T extends Traversable<V>, V> T toTraversable(Value<V> value, T empty,
                                                          Function<V, T> ofElement,
                                                          Function<Iterable<V>, T> ofAll) {
-        if (empty.getClass().isAssignableFrom(value.getClass())) {
+        //If (current class same as target class) AND (current comparator is same as target comparator)
+        if (empty.getClass().isAssignableFrom(value.getClass()) && (value instanceof SortedSet<?> && ((SortedSet) value).comparator() == ((SortedSet) empty).comparator())) {
             return (T) value;
         } else if (value.isEmpty()) {
             return empty;

@@ -388,11 +388,11 @@ public abstract class AbstractValueTest {
     public void shouldConvertToSortedSet() {
         final Value<Integer> value = of(3, 7, 1, 15, 0);
         final Comparator<Integer> comparator = (o1, o2) -> Integer.compare(bitCount(o1), bitCount(o2));
-        final Set<Integer> set = value.toSortedSet(comparator);
+        final Set<Integer> set = value.toSortedSet(comparator.reversed());
         if (value.isSingleValued()) {
             assertThat(set).isEqualTo(TreeSet.of(3));
         } else {
-            assertThat(set).isEqualTo(TreeSet.of(comparator, 0, 1, 3, 7, 15));
+            assertThat(set).isEqualTo(TreeSet.of(comparator.reversed(), 0, 1, 3, 7, 15));
         }
     }
 
