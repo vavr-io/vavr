@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static javaslang.Function2.constant;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VectorPropertyTest {
@@ -29,6 +30,20 @@ public class VectorPropertyTest {
             for (Integer value : expected) {
                 final Integer actualValue = actual.get(i++);
                 assertThat(actualValue).isEqualTo(value);
+            }
+
+            System.out.println("Depth " + depth + " ok!");
+        }
+    }
+
+    @Test
+    public void shouldIterate() {
+        for (byte depth = 1; depth <= 6; depth++) {
+            for (int i = 0; i < getMaxSizeForDepth(depth); i++) {
+                final Seq<Integer> expected = Array.range(0, i);
+                final Vector<Integer> actual = Vector.ofAll(expected);
+
+                assertAreEqual(actual, null, constant(actual), expected);
             }
 
             System.out.println("Depth " + depth + " ok!");
