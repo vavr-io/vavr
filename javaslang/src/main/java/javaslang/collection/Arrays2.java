@@ -60,6 +60,13 @@ final class Arrays2 { // TODO reuse these in `Array` also
         return array;
     }
 
+    static <T> T[] copyPrepend(T[] array, T element) {
+        final T[] copy = (T[]) new Object[array.length + 1];
+        System.arraycopy(array, 0, copy, 1, array.length);
+        copy[0] = element;
+        return copy;
+    }
+
     static <T> T[] copyUpdate(T[] array, int index, T element) {
         if (array == null) { array = emptyArray(); }
         final T[] copy = (T[]) new Object[Math.max(array.length, index + 1)];
