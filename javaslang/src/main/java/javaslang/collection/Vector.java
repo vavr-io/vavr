@@ -1038,7 +1038,21 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         if (isEmpty()) {
             return of(element);
         } else {
-            throw new UnsupportedOperationException();
+            if (leadingLength() < branchingFactor()) {
+                final T[] newLeading = copyPrepend(collapsedLeading(), element);
+                return new Vector<>(newLeading, 0, middle, trailing, trailingLength);
+            } else {
+                final T[] newLeading = (T[]) new Object[] {element};
+                if (trailingLength == 0) {
+                    assert middle.length() == 0;
+                    final T[] newTrailing = collapsedLeading();
+                    final int newTrailingLength = newTrailing.length;
+                    return new Vector<>(newLeading, 0, emptyTree(), newTrailing, newTrailingLength);
+                } else {
+                    final VectorTree<T> newMiddle = middle.prependLeaf(collapsedLeading());
+                    return new Vector<>(newLeading, 0, newMiddle, trailing, trailingLength);
+                }
+            }
         }
     }
 
@@ -1476,6 +1490,31 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
             final boolean shouldCollapse = (toExclusive - fromInclusive) < array.length;
             return shouldCollapse ? copyOfRange(array, fromInclusive, toExclusive)
                                   : array;
+        }
+
+        VectorTree<T> prependLeaf(T[] leading) {
+            assert leading.length == branchingFactor();
+
+            final int newSize = length() + leading.length;
+            int offset = this.offset;
+            Object[] array = leading;
+            int depthShift = this.depthShift;
+            if (length() > 0) {
+                array = this.array;
+                if (offset == 0) {
+                    final Object[] newArray = new Object[branchingFactor()];
+                    newArray[newArray.length - 1] = array;
+                    array = newArray;
+
+                    depthShift += BRANCHING_BASE;
+                    offset = treeSize(branchingFactor() - 1, depthShift);
+                }
+
+                offset -= leading.length;
+                array = recursiveSet(array, offset, depthShift, leading, BRANCHING_BASE);
+            }
+
+            return create(array, offset, newSize, depthShift);
         }
 
         VectorTree<T> appendLeaf(T[] trailing) {

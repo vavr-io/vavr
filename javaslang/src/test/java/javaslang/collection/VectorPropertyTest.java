@@ -54,6 +54,22 @@ public class VectorPropertyTest {
     }
 
     @Test
+    public void shouldPrepend() {
+        Seq<Integer> expected = Array.empty();
+        Vector<Integer> actual = Vector.empty();
+
+        for (int drop = 0; drop <= (Vector.branchingFactor() + 1); drop += 2) {
+            for (Integer value : Iterator.range(0, getMaxSizeForDepth(3) + 1)) {
+                expected = expected.drop(drop);
+                actual = assertAreEqual(actual, drop, Vector::drop, expected);
+
+                expected = expected.prepend(value);
+                actual = assertAreEqual(actual, value, Vector::prepend, expected);
+            }
+        }
+    }
+
+    @Test
     public void shouldAppend() {
         Seq<Integer> expected = Array.empty();
         Vector<Integer> actual = Vector.empty();
