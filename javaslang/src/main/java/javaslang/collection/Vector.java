@@ -9,42 +9,60 @@ import javaslang.*;
 import javaslang.collection.VectorModule.Combinations;
 import javaslang.control.Option;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.Set;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+import static java.util.Arrays.copyOfRange;
+import static javaslang.collection.Arrays2.asArray;
+import static javaslang.collection.Arrays2.emptyArray;
 import static javaslang.collection.Collections.*;
+import static javaslang.collection.Vector.VectorTree.create;
+import static javaslang.collection.Vector.VectorTree.emptyTree;
 
 /**
- * Vector is the default Seq implementation. It provides the best performance in between Array (with constant time element access)
- * and List (with constant time element addition).
+ * Vector is the default Seq implementation that provides effectively constant time access to any element.
+ * Many other operations (e.g. `tail`, `drop`, `slice`) are also effectively constant.
+ * <p>
+ * It's implemented using a `bit-mapped vector trie`, i.e. a tree where each node has 32 children.
+ * For integers this means that the tree's depth will be ≤ 6.
+ * <p>
+ * For symmetrically fast beginning and end operations (e.g. `drop` vs `dropRight`) two small arrays are used as depthless staging areas.
+ * The leading and trailing arrays have dynamic lengths (their max size equals the branching factor),
+ * but the middle tree's leafs only contain full blocks - though the first one may be padded by an offset.
+ * The leading is only empty if everything is empty; if the trailing is empty, so is the middle.
  *
  * @param <T> Component type of the Vector.
- * @author Ruslan Sennov
- * @since 2.0.0
+ * @author Pap Lőrinc
+ * @since 3.0.0
  */
 @SuppressWarnings({"SuspiciousArrayCast", "unchecked"})
-public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
+public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
     private static final long serialVersionUID = 1L;
 
-    static final Vector<?> EMPTY = new Vector<>(HashArrayMappedTrie.empty());
+    static int BRANCHING_BASE = 5;
+    static int branchingFactor()                   { return (1 << BRANCHING_BASE); }
+    static int firstDigit(int num, int depthShift) { return num >> depthShift; }
+    static int digit(int num, int depthShift)      { return lastDigit(num >> depthShift); }
+    static int lastDigit(int num)                  { return (num & (-1 >>> -BRANCHING_BASE)); }
 
-    private final HashArrayMappedTrie<Integer, T> trie;
-    private final int indexShift;
+    private static final Vector<?> EMPTY = new Vector<>(emptyArray(), emptyTree(), emptyArray());
 
-    private static <T> Vector<T> wrap(HashArrayMappedTrie<Integer, T> trie) {
-        return trie.isEmpty() ? empty() : new Vector<>(trie);
+    final VectorTree<T> middle;
+    final T[] leading, trailing;
+
+    private Vector(T[] leading, VectorTree<T> middle, T[] trailing) {
+        this.leading = leading;
+        this.middle = middle;
+        this.trailing = trailing;
+
+        assert (leading.length <= branchingFactor()) && (trailing.length <= branchingFactor());
+        assert (leadingLength() == 0) || (length() > 0);
     }
 
-    private Vector(HashArrayMappedTrie<Integer, T> trie) {
-        this(0, trie);
-    }
-
-    private Vector(int indexShift, HashArrayMappedTrie<Integer, T> trie) {
-        this.trie = trie;
-        this.indexShift = indexShift;
-    }
+    private int leadingLength() { return leading.length; }
 
     /**
      * Returns the empty Vector.
@@ -95,7 +113,8 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
      * @return A new Vector instance containing the given element
      */
     public static <T> Vector<T> of(T element) {
-        return ofAll(List.of(element));
+        final T[] leading = (T[]) new Object[] {element};
+        return new Vector<T>(leading, emptyTree(), emptyArray());
     }
 
     /**
@@ -157,12 +176,42 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         if (elements instanceof Vector) {
             return (Vector<T>) elements;
         } else {
-            HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-            for (T element : elements) {
-                trie = trie.put(trie.size(), element);
-            }
-            return wrap(trie);
+            final Seq<? extends T> seq = seq(elements);
+            return seq.isEmpty() ? empty()
+                                 : ofAll(seq, seq.size());
         }
+    }
+
+    public static <T> Vector<T> ofAll(Collection<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return elements.isEmpty() ? empty()
+                                  : ofAll(elements, elements.size());
+    }
+
+    public static <T> Vector<T> ofAll(Iterable<? extends T> iterable, int size) {
+        Object[] array = (iterable instanceof ArrayList) ? ((ArrayList<?>) iterable).toArray()
+                                                         : asArray(iterable.iterator(), size);
+        if (array.length <= branchingFactor()) {
+            return new Vector<>((T[]) array, emptyTree(), emptyArray());
+        }
+
+        final T[] leading = (T[]) copyOfRange(array, 0, Math.min(size, branchingFactor()));
+        final int remaining = size - leading.length;
+        int trailingSize = lastDigit(remaining);
+        if (trailingSize == 0) { trailingSize += branchingFactor(); }
+        final T[] trailing = (T[]) copyOfRange(array, array.length - trailingSize, array.length);
+        final int middleSize = remaining - trailingSize;
+        if (middleSize == 0) {
+            return new Vector<>(leading, emptyTree(), trailing);
+        }
+
+        int depthShift = 0;
+        for (array = copyOfRange(array, leading.length, leading.length + middleSize); array.length > branchingFactor(); depthShift += BRANCHING_BASE) {
+            array = Arrays2.grouped(array, array.length, branchingFactor());
+        }
+
+        final VectorTree<T> middle = create(array, 0, middleSize, depthShift);
+        return new Vector<>(leading, middle, trailing);
     }
 
     /**
@@ -558,7 +607,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
 
     @Override
     public Vector<T> append(T element) {
-        return new Vector<>(indexShift, trie.put(length() + indexShift, element));
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -618,11 +667,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         } else if (n >= length()) {
             return empty();
         } else {
-            HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-            for (int i = n; i < length(); i++) {
-                trie = trie.put(i - n, get(i));
-            }
-            return wrap(trie);
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -685,15 +730,28 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         if ((index < 0) || (index >= length())) {
             throw new IndexOutOfBoundsException("get(" + index + ")");
         }
-        return trie.get(index + indexShift).get();
+
+        if (index < leadingLength()) {
+            return leading[index];
+        } else if (index < trailingStartIndex()) {
+            index -= leadingLength();
+            final Object[] leaf = middle.getLeaf(index);
+            return (T) leaf[lastDigit(middle.offset() + index)];
+        } else {
+            index -= trailingStartIndex();
+            assert index < trailing.length;
+            return trailing[index];
+        }
     }
+
+    private int trailingStartIndex() { return leadingLength() + middle.length(); }
 
     @Override
     public T head() {
         if (isEmpty()) {
             throw new NoSuchElementException("head of empty Vector");
         } else {
-            return get(0);
+            return leading[0];
         }
     }
 
@@ -759,7 +817,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
 
     @Override
     public boolean isEmpty() {
-        return length() == 0;
+        return leadingLength() == 0;
     }
 
     @Override
@@ -769,20 +827,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new AbstractIterator<T>() {
-            private int index = indexShift;
-            private final int size = trie.size() + indexShift;
-
-            @Override
-            public boolean hasNext() {
-                return index < size;
-            }
-
-            @Override
-            public T getNext() {
-                return trie.get(index++).get();
-            }
-        };
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -797,7 +842,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
 
     @Override
     public int length() {
-        return trie.size();
+        return leadingLength() + middle.length() + trailing.length;
     }
 
     @Override
@@ -884,8 +929,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         if (isEmpty()) {
             return of(element);
         } else {
-            final int newIndexShift = indexShift - 1;
-            return new Vector<>(newIndexShift, trie.put(newIndexShift, element));
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -1128,11 +1172,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         } else if (n <= 0) {
             return empty();
         } else {
-            HashArrayMappedTrie<Integer, T> trie = HashArrayMappedTrie.empty();
-            for (int i = 0; i < n; i++) {
-                trie = trie.put(i, get(i));
-            }
-            return new Vector<>(trie);
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -1216,7 +1256,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         if ((index < 0) || (index >= length())) {
             throw new IndexOutOfBoundsException("update(" + index + ")");
         } else {
-            return new Vector<>(indexShift, trie.put(index + indexShift, element));
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -1269,6 +1309,68 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
     @Override
     public String toString() {
         return mkString(stringPrefix() + "(", ", ", ")");
+    }
+
+    static final class VectorTree<T> implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        private static final VectorTree<?> EMPTY = new VectorTree<>(emptyArray(), 0, 0, 0);
+        static <T> VectorTree<T> emptyTree() { return (VectorTree<T>) EMPTY; }
+
+        private final Object[] array;
+        private final int offset, length;
+        private final int depthShift;
+
+        static <T> VectorTree<T> create(Object[] array, int offset, int length, int depthShift) {
+            if (array.length == 0) {
+                assert (offset == 0) && (length == 0) && (depthShift == 0);
+                return (VectorTree<T>) EMPTY;
+            } else {
+                return new VectorTree<T>(array, offset, length, depthShift);
+            }
+        }
+
+        private VectorTree(Object[] array, int offset, int length, int depthShift) {
+            this.array = array;
+            this.offset = offset;
+            this.length = length;
+            this.depthShift = depthShift;
+
+            assert length() <= treeSize(branchingFactor(), depthShift);
+        }
+
+        static int treeSize(int branchCount, int depthShift) {
+            final int fullBranchSize = 1 << depthShift;
+            return branchCount * fullBranchSize;
+        }
+
+        int offset() { return offset; }
+
+        T[] getLeaf(int index) {
+            index += offset;
+            assert index >= 0;
+
+            if (depthShift == 0) {
+                return (T[]) array;
+            } else if (depthShift == BRANCHING_BASE) {
+                return (T[]) array[firstDigit(index, depthShift)];
+            } else {
+                Object[] root = (Object[]) array[firstDigit(index, depthShift)];
+
+                int depthShift = this.depthShift - BRANCHING_BASE;
+                root = (Object[]) root[digit(index, depthShift)];
+
+                while (depthShift > BRANCHING_BASE) {
+                    depthShift -= BRANCHING_BASE;
+                    root = (Object[]) root[digit(index, depthShift)];
+                }
+
+                assert root != null;
+                return (T[]) root;
+            }
+        }
+
+        int length() { return length; }
     }
 }
 
