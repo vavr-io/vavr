@@ -1,6 +1,7 @@
 package javaslang;
 
-import javaslang.collection.*;
+import javaslang.collection.List;
+import javaslang.collection.TreeMultimap;
 
 import java.text.DecimalFormat;
 import java.util.Comparator;
@@ -9,7 +10,7 @@ import static com.carrotsearch.sizeof.RamUsageEstimator.*;
 
 public class MemoryUsage {
     private static final DecimalFormat RATIO_FORMAT = new DecimalFormat("#0.0");
-    private static TreeMultimap<Integer, String> memoryUsages = TreeMultimap.withSeq().empty(Comparator.reverseOrder());
+    private static TreeMultimap<Integer, String> memoryUsages = TreeMultimap.withSeq().empty(Comparator.reverseOrder()); // if forked, this will be reset every time
 
     /** Calculate the occupied memory of different internals */
     static void printAndReset() {
