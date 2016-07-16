@@ -1308,7 +1308,16 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         if ((index < 0) || (index >= length())) {
             throw new IndexOutOfBoundsException("update(" + index + ")");
         } else {
-            throw new UnsupportedOperationException();
+            if (index < leadingLength()) {
+                final T[] newLeading = copyUpdate(leading, index, element);
+                return new Vector<>(newLeading, middle, trailing, trailingLength);
+            } else if (index < trailingStartIndex()) {
+                final VectorTree<T> newMiddle = middle.update(index - leadingLength(), element);
+                return new Vector<>(leading, newMiddle, trailing, trailingLength);
+            } else {
+                final T[] newTrailing = copyUpdate(collapsedTrailing(), index - trailingStartIndex(), element);
+                return new Vector<>(leading, middle, newTrailing, newTrailing.length);
+            }
         }
     }
 
@@ -1400,6 +1409,25 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
             final boolean shouldCollapse = (toExclusive - fromInclusive) < array.length;
             return shouldCollapse ? copyOfRange(array, fromInclusive, toExclusive)
                                   : array;
+        }
+
+        VectorTree<T> update(int index, T element) {
+            final Object[] root = recursiveSet(array, offset + index, depthShift, element, 0);
+            return create(root, offset, length(), depthShift);
+        }
+
+        /** Since the depth of the tree is always small, a non-tailrecursive call is actually faster than pre-calculating the path (is probably unrolled) */
+        static <T> Object[] recursiveSet(Object arrayObject, int index, int depthShift, T element, int endShift) {
+            final Object[] array = (Object[]) arrayObject;
+            final int childIndex = digit(index, depthShift);
+            if (depthShift <= endShift) {
+                return copyUpdate(array, childIndex, element);
+            } else {
+                final int childShift = depthShift - BRANCHING_BASE;
+                Object[] childArray = getOrDefault(array, childIndex, emptyArray());
+                childArray = recursiveSet(childArray, index, childShift, element, endShift);
+                return copyUpdate(array, childIndex, childArray);
+            }
         }
 
         VectorTree<T> take(int n) {
