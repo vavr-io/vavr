@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.function.Function;
 
 import java.util.List;
 
@@ -49,6 +50,25 @@ public class VectorPropertyTest {
             }
 
             System.out.println("Depth " + depth + " ok!");
+        }
+    }
+
+    @Test
+    public void shouldUpdate() {
+        final Function<Integer, Integer> mapper = i -> i + 1;
+
+        for (byte depth = 0; depth <= 2; depth++) {
+            final int length = getMaxSizeForDepth(depth) + 1;
+
+            Seq<Integer> expected = Array.range(0, length);
+            Vector<Integer> actual = Vector.ofAll(expected);
+
+            for (int i = 0; i < actual.length(); i++) {
+                final Integer newValue = mapper.apply(actual.get(i));
+                actual = actual.update(i, newValue);
+            }
+
+            assertAreEqual(actual, 0, (a, p) -> a, expected.map(mapper));
         }
     }
 
