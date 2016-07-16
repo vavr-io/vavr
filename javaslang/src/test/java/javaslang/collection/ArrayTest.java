@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.Option;
 
 import org.junit.Test;
@@ -255,4 +256,11 @@ public class ArrayTest extends AbstractIndexedSeqTest {
         assertThat(of(1, 2, 3).toString()).isEqualTo("Array(1, 2, 3)");
     }
 
+    // -- toArray
+
+    @Test
+    public void shouldReturnSelfOnConvertToArray() {
+        Value<Integer> value = of(1, 2, 3);
+        assertThat(value.toArray()).isSameAs(value);
+    }
 }

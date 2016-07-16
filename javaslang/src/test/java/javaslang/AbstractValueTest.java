@@ -8,6 +8,7 @@ package javaslang;
 import javaslang.collection.*;
 import javaslang.collection.HashMap;
 import javaslang.collection.HashSet;
+import javaslang.collection.LinkedHashSet;
 import javaslang.collection.List;
 import javaslang.collection.Map;
 import javaslang.collection.PriorityQueue;
@@ -22,6 +23,7 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.Collections;
+import java.util.function.Function;
 
 import static java.lang.Integer.bitCount;
 
@@ -239,6 +241,73 @@ public abstract class AbstractValueTest {
     }
 
     @Test
+    public void shouldConvertToHashMap() {
+        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
+        final Value<Integer> value = of(9, 5, 1);
+        Map<Integer, Integer> map = value.toMap(v -> Tuple.of(keyMapper.apply(v), v));
+        if (value.isSingleValued()) {
+            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+        }
+        //Check order - order is matter
+        assertThat(map.mkString(", ")).isEqualTo(
+                "(110427681, 5), " +
+                "(663160547, 1), " +
+                "(1571254982, 9)");
+    }
+
+    @Test
+    public void shouldConvertToLinkedMap() {
+        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
+        final Value<Integer> value = of(9, 5, 1);
+        Map<Integer, Integer> map = value.toLinkedMap(v -> Tuple.of(keyMapper.apply(v), v));
+        final List<Integer> itemsInOrder;
+        if (value.isSingleValued()) {
+            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+            itemsInOrder = List.of(9, 5, 1);
+        } else if ((value instanceof Traversable) && !((Traversable) value).isTraversableAgain()) {
+            itemsInOrder = List.of(9, 5, 1);
+        } else {
+            itemsInOrder = value.toList();
+        }
+        //Check order - order is matter
+        assertThat(map.mkString(",")).isEqualTo(
+                itemsInOrder.map(i -> Tuple.of(keyMapper.apply(i), i)).mkString(",")
+        );
+    }
+
+    @Test
+    public void shouldConvertToSortedMap() {
+        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
+        final Value<Integer> value = of(9, 5, 1);
+        Map<Integer, Integer> map = value.toSortedMap(v -> Tuple.of(keyMapper.apply(v), v));
+        if (value.isSingleValued()) {
+            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+        }
+        //Check order - order is matter
+        assertThat(map.mkString(",")).isEqualTo(
+                "(110427681, 5)," +
+                "(663160547, 1)," +
+                "(1571254982, 9)"
+        );
+    }
+
+    @Test
+    public void shouldConvertToSortedMapWithComparator() {
+        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
+        final Value<Integer> value = of(9, 5, 1);
+        Map<Integer, Integer> map = value.toSortedMap(((Comparator<Integer>) Integer::compareTo).reversed(), v -> Tuple.of(keyMapper.apply(v), v));
+        if (value.isSingleValued()) {
+            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+        }
+        //Check order - order is matter
+        assertThat(map.mkString(",")).isEqualTo(
+                "(1571254982, 9)," +
+                "(663160547, 1)," +
+                "(110427681, 5)"
+        );
+    }
+
+    @Test
     public void shouldConvertToOption() {
         assertThat(empty().toOption()).isSameAs(Option.none());
         assertThat(of(1).toOption()).isEqualTo(Option.of(1));
@@ -278,14 +347,52 @@ public abstract class AbstractValueTest {
     }
 
     @Test
-    public void shouldConvertToSortedSet() {
+    public void shouldConvertToLinkedSet() {
         final Value<Integer> value = of(3, 7, 1, 15, 0);
-        final Comparator<Integer> comparator = (o1, o2) -> Integer.compare(bitCount(o1), bitCount(o2));
-        final Set<Integer> set = value.toSortedSet(comparator);
+        final Set<Integer> set = value.toLinkedSet();
+        if (value.isSingleValued()) {
+            assertThat(set).isEqualTo(LinkedHashSet.of(3));
+        } else {
+            final List<Integer> itemsInOrder;
+            if (value instanceof Traversable && !((Traversable) value).isTraversableAgain()) {
+                itemsInOrder = List.of(3, 7, 1, 15, 0);
+            } else {
+                itemsInOrder = value.toList();
+            }
+            assertThat(set).isEqualTo(itemsInOrder.foldLeft(LinkedHashSet.empty(), LinkedHashSet::add));
+        }
+    }
+
+    @Test
+    public void shouldConvertToSortedSetWithoutComparatorOnComparable() {
+        final Value<Integer> value = of(3, 7, 1, 15, 0);
+        final Set<Integer> set = value.toSortedSet();
         if (value.isSingleValued()) {
             assertThat(set).isEqualTo(TreeSet.of(3));
         } else {
-            assertThat(set).isEqualTo(TreeSet.of(comparator, 0, 1, 3, 7, 15));
+            assertThat(set).isEqualTo(TreeSet.of(0, 1, 3, 7, 15));
+        }
+    }
+
+    @Test(expected = ClassCastException.class)
+    public void shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable() {
+        final Value<StringBuilder> value = of(new StringBuilder("3"), new StringBuilder("7"), new StringBuilder("1"), new StringBuilder("15"), new StringBuilder("0"));
+        final Set<StringBuilder> set = value.toSortedSet();
+        if (value.isSingleValued()) {
+            //Comparator is not used yet
+            set.add(new StringBuilder("7"));
+        }
+    }
+
+    @Test
+    public void shouldConvertToSortedSet() {
+        final Value<Integer> value = of(3, 7, 1, 15, 0);
+        final Comparator<Integer> comparator = (o1, o2) -> Integer.compare(bitCount(o1), bitCount(o2));
+        final Set<Integer> set = value.toSortedSet(comparator.reversed());
+        if (value.isSingleValued()) {
+            assertThat(set).isEqualTo(TreeSet.of(3));
+        } else {
+            assertThat(set).isEqualTo(TreeSet.of(comparator.reversed(), 0, 1, 3, 7, 15));
         }
     }
 

@@ -425,7 +425,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(actual.values().head()).isIn("1", "2", "3");
     }
 
-    private static String md5(String src) {
+    public static String md5(String src) {
         try {
             final MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(src.getBytes(StandardCharsets.UTF_8));

@@ -7,13 +7,17 @@ package javaslang;
 
 import javaslang.collection.*;
 import javaslang.collection.HashMap;
+import javaslang.collection.LinkedHashMap;
+import javaslang.collection.TreeMap;
 import javaslang.collection.HashSet;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Map;
+import javaslang.collection.SortedMap;
 import javaslang.collection.PriorityQueue;
 import javaslang.collection.Queue;
 import javaslang.collection.Set;
+import javaslang.collection.LinkedHashSet;
 import javaslang.collection.SortedSet;
 import javaslang.collection.Stack;
 import javaslang.collection.TreeSet;
@@ -96,11 +100,15 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toLeft(Supplier)}</li>
  * <li>{@link #toList()}</li>
  * <li>{@link #toMap(Function)}</li>
+ * <li>{@link #toLinkedMap(Function)}</li>
+ * <li>{@link #toSortedMap(Function)}</li>
  * <li>{@link #toOption()}</li>
  * <li>{@link #toQueue()}</li>
  * <li>{@link #toRight(Object)}</li>
  * <li>{@link #toRight(Supplier)}</li>
  * <li>{@link #toSet()}</li>
+ * <li>{@link #toLinkedSet()}</li>
+ * <li>{@link #toSortedSet()}</li>
  * <li>{@link #toSortedSet(Comparator)}</li>
  * <li>{@link #toSortedQueue(Comparator)}</li>
  * <li>{@link #toStack()}</li>
@@ -435,7 +443,7 @@ public interface Value<T> extends Iterable<T> {
      */
     @Override
     Iterator<T> iterator();
-    
+
     /**
      * Collects the underlying value(s) (if present) using the provided {@code collector}.
      *
@@ -459,7 +467,7 @@ public interface Value<T> extends Iterable<T> {
     default <R> R collect(Supplier<R> supplier, BiConsumer<R,? super T> accumulator, BiConsumer<R,R> combiner) {
         return StreamSupport.stream(spliterator(), false).collect(supplier, accumulator, combiner);
     }
-    
+
     // -- conversion methods
 
     /**
@@ -660,13 +668,46 @@ public interface Value<T> extends Iterable<T> {
      */
     default <K, V> Map<K, V> toMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
-        if (isEmpty()) {
-            return HashMap.empty();
-        } else if (isSingleValued()) {
-            return HashMap.of(f.apply(get()));
-        } else {
-            return HashMap.ofEntries(Iterator.ofAll(this).map(f));
-        }
+		return ValueModule.toMap(this, HashMap.empty(), HashMap::of, HashMap::ofEntries, f);
+    }
+
+    /**
+     * Converts this to a {@link Map}.
+     *
+     * @param f   A function that maps an element to a key/value pair represented by Tuple2
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new {@link LinkedHashMap}.
+     */
+    default <K, V> Map<K, V> toLinkedMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return ValueModule.toMap(this, LinkedHashMap.empty(), LinkedHashMap::of, LinkedHashMap::ofEntries, f);
+    }
+
+    /**
+     * Converts this to a {@link Map}.
+     *
+     * @param f   A function that maps an element to a key/value pair represented by Tuple2
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new {@link TreeMap}.
+     */
+    default <K extends Comparable<? super K>, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return ValueModule.toMap(this, TreeMap.empty(), TreeMap::of, TreeMap::ofEntries, f);
+    }
+
+    /**
+     * Converts this to a {@link Map}.
+     *
+     * @param f   A function that maps an element to a key/value pair represented by Tuple2
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new {@link TreeMap}.
+     */
+    default <K, V> SortedMap<K, V> toSortedMap(Comparator<? super K> comparator, Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return ValueModule.toMap(this, TreeMap.empty(comparator), t -> TreeMap.of(comparator, t), t -> TreeMap.ofEntries(comparator, t), f);
     }
 
     /**
@@ -741,6 +782,33 @@ public interface Value<T> extends Iterable<T> {
      */
     default Set<T> toSet() {
         return ValueModule.toTraversable(this, HashSet.empty(), HashSet::of, HashSet::ofAll);
+    }
+
+    /**
+     * Converts this to a {@link Set}.
+     *
+     * @return A new {@link LinkedHashSet}.
+     */
+    default Set<T> toLinkedSet() {
+        return ValueModule.toTraversable(this, LinkedHashSet.empty(), LinkedHashSet::of, LinkedHashSet::ofAll);
+    }
+
+    /**
+     * Converts this to a {@link SortedSet}.
+     * Current items must be comparable
+     *
+     * @return A new {@link TreeSet}.
+     * @throws ClassCastException if items is not comparable
+     */
+    @SuppressWarnings("unchecked")
+    default SortedSet<T> toSortedSet() throws ClassCastException {
+        final Comparator<? super T> comparator;
+        if (this instanceof SortedSet<?>) {
+            comparator = ((SortedSet<T>) this).comparator();
+        } else {
+            comparator = (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
+        }
+        return toSortedSet(comparator);
     }
 
     /**
@@ -855,10 +923,14 @@ public interface Value<T> extends Iterable<T> {
 
 interface ValueModule {
 
+    @SuppressWarnings("unchecked")
     static <T extends Traversable<V>, V> T toTraversable(Value<V> value, T empty,
                                                          Function<V, T> ofElement,
                                                          Function<Iterable<V>, T> ofAll) {
-        if (value.isEmpty()) {
+        //If (current class same as target class) AND (current comparator is same as target comparator)
+        if (empty.getClass().isAssignableFrom(value.getClass()) && (value instanceof SortedSet<?> && ((SortedSet) value).comparator() == ((SortedSet) empty).comparator())) {
+            return (T) value;
+        } else if (value.isEmpty()) {
             return empty;
         } else if (value.isSingleValued()) {
             return ofElement.apply(value.get());
@@ -866,6 +938,21 @@ interface ValueModule {
             return ofAll.apply(value);
         }
     }
+
+	static <T, K, V, M extends Map<K, V>, TT extends Tuple2<? extends K, ? extends V>> M toMap(
+			Value<T> value, M empty,
+			Function<TT, M> ofElement,
+			Function<Iterable<TT>, M> ofAll,
+			Function<? super T, ? extends TT> f
+	) {
+		if (value.isEmpty()) {
+			return empty;
+		} else if (value.isSingleValued()) {
+			return ofElement.apply(f.apply(value.get()));
+		} else {
+			return ofAll.apply(Iterator.ofAll(value).map(f));
+		}
+	}
 
     static <T extends java.util.Collection<V>, V> T toJavaCollection(Value<V> value, Function<Integer, T> containerSupplier) {
         final T container;

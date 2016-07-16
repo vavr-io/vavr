@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Value;
 import javaslang.control.Option;
 import javaslang.Serializables;
 import javaslang.Tuple2;
@@ -296,4 +297,11 @@ public class VectorTest extends AbstractIndexedSeqTest {
         }
     }
 
+    // -- toVector
+
+    @Test
+    public void shouldReturnSelfOnConvertToVector() {
+        Value<Integer> value = of(1, 2, 3);
+        assertThat(value.toVector()).isSameAs(value);
+    }
 }

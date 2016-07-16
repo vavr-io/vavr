@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Serializables;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.Option;
 import org.junit.Test;
 
@@ -389,4 +390,11 @@ public class ListTest extends AbstractLinearSeqTest {
         return false;
     }
 
+    // -- toList
+
+    @Test
+    public void shouldReturnSelfOnConvertToList() {
+        Value<Integer> value = of(1, 2, 3);
+        assertThat(value.toList()).isSameAs(value);
+    }
 }
