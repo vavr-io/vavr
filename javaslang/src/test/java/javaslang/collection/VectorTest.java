@@ -5,10 +5,10 @@
  */
 package javaslang.collection;
 
-import javaslang.Value;
-import javaslang.control.Option;
 import javaslang.Serializables;
 import javaslang.Tuple2;
+import javaslang.Value;
+import javaslang.control.Option;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.*;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 public class VectorTest extends AbstractIndexedSeqTest {
@@ -196,7 +196,7 @@ public class VectorTest extends AbstractIndexedSeqTest {
 
     @Test
     public void shouldTransform() {
-        String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        final String transformed = of(42).transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("42");
     }
 
@@ -210,10 +210,10 @@ public class VectorTest extends AbstractIndexedSeqTest {
     @Test
     public void shouldUnfoldRightSimpleVector() {
         assertThat(
-            Vector.unfoldRight(10, x -> x == 0
-                               ? Option.none()
-                               : Option.of(new Tuple2<>(x, x-1))))
-            .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+                Vector.unfoldRight(10, x -> x == 0
+                                            ? Option.none()
+                                            : Option.of(new Tuple2<>(x, x - 1))))
+                .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
     }
 
     @Test
@@ -224,10 +224,10 @@ public class VectorTest extends AbstractIndexedSeqTest {
     @Test
     public void shouldUnfoldLeftSimpleVector() {
         assertThat(
-            Vector.unfoldLeft(10, x -> x == 0
-                              ? Option.none()
-                              : Option.of(new Tuple2<>(x-1, x))))
-            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                Vector.unfoldLeft(10, x -> x == 0
+                                           ? Option.none()
+                                           : Option.of(new Tuple2<>(x - 1, x))))
+                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     @Test
@@ -238,10 +238,10 @@ public class VectorTest extends AbstractIndexedSeqTest {
     @Test
     public void shouldUnfoldSimpleVector() {
         assertThat(
-            Vector.unfold(10, x -> x == 0
-                          ? Option.none()
-                          : Option.of(new Tuple2<>(x-1, x))))
-            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                Vector.unfold(10, x -> x == 0
+                                       ? Option.none()
+                                       : Option.of(new Tuple2<>(x - 1, x))))
+                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     // -- toString
@@ -261,40 +261,6 @@ public class VectorTest extends AbstractIndexedSeqTest {
     @Test(expected = InvalidObjectException.class)
     public void shouldNotSerializeEnclosingClass() throws Throwable {
         Serializables.callReadObject(List.of(1));
-    }
-
-    @Test(expected = InvalidObjectException.class)
-    public void shouldNotDeserializeListWithSizeLessThanOne() throws Throwable {
-        try {
-            /*
-             * This implementation is stable regarding jvm impl changes of object serialization. The index of the number
-             * of List elements is gathered dynamically.
-             */
-            final byte[] listWithOneElement = Serializables.serialize(List.of(0));
-            final byte[] listWithTwoElements = Serializables.serialize(List.of(0, 0));
-            int index = -1;
-            for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
-                final byte b1 = listWithOneElement[i];
-                final byte b2 = listWithTwoElements[i];
-                if (b1 != b2) {
-                    if (b1 != 1 || b2 != 2) {
-                        throw new IllegalStateException("Difference does not indicate number of elements.");
-                    } else {
-                        index = i;
-                    }
-                }
-            }
-            if (index == -1) {
-                throw new IllegalStateException("Hack incomplete - index not found");
-            }
-            /*
-             * Hack the serialized data and fake zero elements.
-			 */
-            listWithOneElement[index] = 0;
-            Serializables.deserialize(listWithOneElement);
-        } catch (IllegalStateException x) {
-            throw (x.getCause() != null) ? x.getCause() : x;
-        }
     }
 
     // -- toVector
