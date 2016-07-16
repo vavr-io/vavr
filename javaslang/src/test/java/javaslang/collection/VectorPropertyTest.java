@@ -6,13 +6,15 @@
 package javaslang.collection;
 
 import javaslang.Function2;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Function;
-
-import java.util.List;
 
 import static javaslang.Function2.constant;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -143,6 +145,107 @@ public class VectorPropertyTest {
             assertAreEqual(actualSingleDrop, null, (a, p) -> a, expectedDrop);
 
             actualSingleDrop = actualSingleDrop.dropRight(1);
+        }
+    }
+
+    @Test
+    public void shouldSlice() {
+        for (int length = 1, end = getMaxSizeForDepth(2) + 1; length <= end; length++) {
+            Seq<Integer> expected = Array.range(0, length);
+            Vector<Integer> actual = Vector.ofAll(expected);
+
+            for (int i = 0; i <= expected.length(); i++) {
+                expected = expected.slice(1, expected.size() - 1);
+                actual = assertAreEqual(actual, i, (a, p) -> a.slice(1, a.size() - 1), expected);
+            }
+        }
+    }
+
+    @Test
+    public void shouldBehaveLikeArray() {
+        Random random = new Random();
+        final int seed = random.nextInt();
+        System.out.println("using seed " + seed);
+        random = new Random(seed);
+
+        for (int i = 0; i < 10; i++) {
+            Seq<Integer> expected = Array.empty();
+            Vector<Integer> actual = Vector.empty();
+            for (int j = 0; j < 100_000; j++) {
+                Seq<Tuple2<Seq<Integer>, Vector<Integer>>> history = Array.empty();
+
+                if (random.nextInt(100) < 10) {
+                    final ArrayList<Integer> values = new ArrayList<>();
+                    for (int k = 0; k < random.nextInt(j + 1); k++) {
+                        values.add(random.nextInt());
+                    }
+                    expected = Array.ofAll(values);
+                    actual = assertAreEqual(values, null, (v, p) -> Vector.ofAll(v), expected);
+                    history = history.append(Tuple.of(expected, actual));
+                }
+
+                if (random.nextInt(100) < 50) {
+                    final int value = random.nextInt();
+                    expected = expected.append(value);
+                    actual = assertAreEqual(actual, value, Vector::append, expected);
+                    history = history.append(Tuple.of(expected, actual));
+                }
+
+                if (random.nextInt(100) < 50) {
+                    final int value = random.nextInt();
+                    expected = expected.prepend(value);
+                    actual = assertAreEqual(actual, value, Vector::prepend, expected);
+                    history = history.append(Tuple.of(expected, actual));
+                }
+
+                if (random.nextInt(100) < 30) {
+                    final int n = random.nextInt(expected.size() + 1);
+                    expected = expected.drop(n);
+                    actual = assertAreEqual(actual, n, Vector::drop, expected);
+                    history = history.append(Tuple.of(expected, actual));
+                }
+
+                if (random.nextInt(100) < 30) {
+                    final int n = random.nextInt(expected.size() + 1);
+                    expected = expected.take(n);
+                    actual = assertAreEqual(actual, n, Vector::take, expected);
+                    history = history.append(Tuple.of(expected, actual));
+                }
+
+                if (!expected.isEmpty()) {
+                    assertThat(actual.head()).isEqualTo(expected.head());
+                    assertThat(actual.tail().toJavaList()).isEqualTo(expected.tail().toJavaList());
+                    history = history.append(Tuple.of(expected, actual));
+                }
+
+                if (!expected.isEmpty()) {
+                    final int index = random.nextInt(expected.size());
+                    assertThat(actual.get(index)).isEqualTo(expected.get(index));
+                    history = history.append(Tuple.of(expected, actual));
+                }
+
+                if (random.nextInt(100) < 50) {
+                    if (!expected.isEmpty()) {
+                        final int index = random.nextInt(expected.size());
+                        final int value = random.nextInt();
+                        expected = expected.update(index, value);
+                        actual = assertAreEqual(actual, null, (a, p) -> a.update(index, value), expected);
+                        history = history.append(Tuple.of(expected, actual));
+                    }
+                }
+
+                for (int k = 0; k < 10; k++) {
+                    if (!expected.isEmpty()) {
+                        final int from = random.nextInt(expected.size());
+                        final int to = random.nextInt(expected.size());
+                        expected = expected.slice(from, to);
+                        actual = assertAreEqual(actual, null, (a, p) -> a.slice(from, to), expected);
+                        history = history.append(Tuple.of(expected, actual));
+                    }
+                }
+
+                history.forEach(t -> assertAreEqual(t._1, t._2)); // test that the modifications are persistent
+            }
         }
     }
 
