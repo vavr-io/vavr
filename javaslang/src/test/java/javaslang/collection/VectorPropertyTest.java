@@ -60,15 +60,39 @@ public class VectorPropertyTest {
         for (byte depth = 0; depth <= 2; depth++) {
             final int length = getMaxSizeForDepth(depth) + 1;
 
-            Seq<Integer> expected = Array.range(0, length);
-            Vector<Integer> actual = Vector.ofAll(expected);
+            for (int drop = 0; drop <= (Vector.branchingFactor() + 1); drop += 2) {
+                Seq<Integer> expected = Array.range(0, length);
+                Vector<Integer> actual = Vector.ofAll(expected);
 
-            for (int i = 0; i < actual.length(); i++) {
-                final Integer newValue = mapper.apply(actual.get(i));
-                actual = actual.update(i, newValue);
+                expected = expected.drop(drop); // test the `trailing` drops and the internal tree offset
+                actual = assertAreEqual(actual, drop, Vector::drop, expected);
+
+                for (int i = 0; i < actual.length(); i++) {
+                    final Integer newValue = mapper.apply(actual.get(i));
+                    actual = actual.update(i, newValue);
+                }
+
+                assertAreEqual(actual, 0, (a, p) -> a, expected.map(mapper));
             }
+            System.out.println("Depth " + depth + " ok!");
+        }
+    }
 
-            assertAreEqual(actual, 0, (a, p) -> a, expected.map(mapper));
+    @Test
+    public void shouldDrop() {
+        final int length = getMaxSizeForDepth(6) + 1;
+
+        final Seq<Integer> expected = Array.range(0, length);
+        final Vector<Integer> actual = Vector.ofAll(expected);
+
+        Vector<Integer> actualSingleDrop = actual;
+        for (int i = 0; i <= length; i++) {
+            final Seq<Integer> expectedDrop = expected.drop(i);
+
+            assertAreEqual(actual, i, Vector::drop, expectedDrop);
+            assertAreEqual(actualSingleDrop, null, (a, p) -> a, expectedDrop);
+
+            actualSingleDrop = actualSingleDrop.drop(1);
         }
     }
 

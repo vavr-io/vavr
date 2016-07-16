@@ -46,30 +46,57 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
     static int digit(int num, int depthShift)      { return lastDigit(num >> depthShift); }
     static int lastDigit(int num)                  { return (num & (-1 >>> -BRANCHING_BASE)); }
 
-    private static final Vector<?> EMPTY = new Vector<>(emptyArray(), emptyTree(), emptyArray(), 0);
+    private static final Vector<?> EMPTY = new Vector<>(emptyArray(), 0, emptyTree(), emptyArray(), 0);
 
     final VectorTree<T> middle;
     final T[] leading, trailing;
-    final int trailingLength;
+    final int leadingOffset, trailingLength;
 
-    private Vector(T[] leading, VectorTree<T> middle, T[] trailing, int trailingLength) {
+    private Vector(T[] leading, int leadingOffset, VectorTree<T> middle, T[] trailing, int trailingLength) {
         this.leading = leading;
         this.middle = middle;
         this.trailing = trailing;
+        this.leadingOffset = leadingOffset;
         this.trailingLength = trailingLength;
 
         assert (leading.length <= branchingFactor()) && (trailing.length <= branchingFactor());
-        assert (leadingLength() == 0) || (length() > 0);
+        assert (leadingLength() == 0) || ((leadingOffset < leading.length) && (length() > 0));
+        assert (trailingLength == 0) || (leading.length > this.leadingOffset);
+        assert (middle.length() == 0) || (trailingLength > 0);
     }
 
-    private static <T> Vector<T> normalized(T[] leading, VectorTree<T> middle, T[] trailing, int trailingLength) {
+    private static <T> Vector<T> normalized(T[] leading, int leadingOffset, VectorTree<T> middle, T[] trailing, int trailingLength) {
+        /* Normalize the 3 containers */
+        if (leading.length == leadingOffset) {
+            if (middle.length() > 0) {
+                leadingOffset = lastDigit(middle.offset());
+                leading = middle.getLeaf(0);
+                middle = middle.drop(branchingFactor() - leadingOffset);
+            } else if (trailingLength > 0) {
+                leading = collapse(trailing, 0, trailingLength);
+                assert leadingOffset == 0;
+
+                trailing = emptyArray();
+                trailingLength = 0;
+            }
+        }
+
+        if (middle.length() > 0) {
+            if (trailingLength == 0) {
+                trailing = middle.getLeaf(middle.length() - 1);
+                trailingLength = trailing.length;
+                middle = middle.take(middle.length() - trailingLength);
+            }
+        }
+
         middle = middle.collapseHeight();
 
-        return new Vector<>(leading, middle, trailing, trailingLength);
+        return new Vector<>(leading, leadingOffset, middle, trailing, trailingLength);
     }
 
+    private T[] collapsedLeading()  { return collapse(leading, leadingOffset, leading.length); }
     private T[] collapsedTrailing() { return collapse(trailing, 0, trailingLength); }
-    private int leadingLength()     { return leading.length; }
+    private int leadingLength()     { return leading.length - leadingOffset; }
 
     /**
      * Returns the empty Vector.
@@ -121,7 +148,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
      */
     public static <T> Vector<T> of(T element) {
         final T[] leading = (T[]) new Object[] {element};
-        return new Vector<T>(leading, emptyTree(), emptyArray(), 0);
+        return new Vector<T>(leading, 0, emptyTree(), emptyArray(), 0);
     }
 
     /**
@@ -199,7 +226,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         Object[] array = (iterable instanceof ArrayList) ? ((ArrayList<?>) iterable).toArray()
                                                          : asArray(iterable.iterator(), size);
         if (array.length <= branchingFactor()) {
-            return new Vector<>((T[]) array, emptyTree(), emptyArray(), 0);
+            return new Vector<>((T[]) array, 0, emptyTree(), emptyArray(), 0);
         }
 
         final T[] leading = (T[]) copyOfRange(array, 0, Math.min(size, branchingFactor()));
@@ -209,7 +236,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         final T[] trailing = (T[]) copyOfRange(array, array.length - trailingSize, array.length);
         final int middleSize = remaining - trailingSize;
         if (middleSize == 0) {
-            return new Vector<>(leading, emptyTree(), trailing, trailing.length);
+            return new Vector<>(leading, 0, emptyTree(), trailing, trailing.length);
         }
 
         int depthShift = 0;
@@ -218,7 +245,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         }
 
         final VectorTree<T> middle = create(array, 0, middleSize, depthShift);
-        return new Vector<>(leading, middle, trailing, trailing.length);
+        return new Vector<>(leading, 0, middle, trailing, trailing.length);
     }
 
     /**
@@ -674,7 +701,16 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         } else if (n >= length()) {
             return empty();
         } else {
-            throw new UnsupportedOperationException();
+            if (n < leadingLength()) {
+                final int newLeadingOffset = (leadingOffset + n);
+                return normalized(leading, newLeadingOffset, middle, trailing, trailingLength);
+            } else if (n < trailingStartIndex()) {
+                final VectorTree<T> newMiddle = middle.drop(n - leadingLength());
+                return normalized(emptyArray(), 0, newMiddle, trailing, trailingLength);
+            } else {
+                final T[] newTrailing = copyOfRange(trailing, n - trailingStartIndex(), trailingLength);
+                return normalized(emptyArray(), 0, emptyTree(), newTrailing, newTrailing.length);
+            }
         }
     }
 
@@ -754,7 +790,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         }
 
         if (index < leadingLength()) {
-            return leading[index];
+            return leading[leadingOffset + index];
         } else if (index < trailingStartIndex()) {
             index -= leadingLength();
             final Object[] leaf = middle.getLeaf(index);
@@ -773,7 +809,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         if (isEmpty()) {
             throw new NoSuchElementException("head of empty Vector");
         } else {
-            return leading[0];
+            return leading[leadingOffset];
         }
     }
 
@@ -854,7 +890,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
             int globalIndex;
 
             T[] leaf = leading;
-            int leafIndex;
+            int leafIndex = leadingOffset;
 
             @Override
             public boolean hasNext() { return globalIndex < globalLength; }
@@ -1230,15 +1266,15 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
             return empty();
         } else {
             if (n < leadingLength()) {
-                final T[] newLeading = copyOfRange(leading, 0, n);
-                return normalized(newLeading, emptyTree(), emptyArray(), 0);
+                final T[] newLeading = copyOfRange(leading, leadingOffset, leadingOffset + n);
+                return normalized(newLeading, 0, emptyTree(), emptyArray(), 0);
             } else if (n < trailingStartIndex()) {
                 final VectorTree<T> newMiddle = middle.take(n - leadingLength());
-                return normalized(leading, newMiddle, emptyArray(), 0);
+                return normalized(leading, leadingOffset, newMiddle, emptyArray(), 0);
             } else {
                 final int newTrailingLength = (n - trailingStartIndex());
                 assert newTrailingLength < trailingLength;
-                return normalized(leading, middle, trailing, newTrailingLength);
+                return normalized(leading, leadingOffset, middle, trailing, newTrailingLength);
             }
         }
     }
@@ -1324,14 +1360,14 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
             throw new IndexOutOfBoundsException("update(" + index + ")");
         } else {
             if (index < leadingLength()) {
-                final T[] newLeading = copyUpdate(leading, index, element);
-                return new Vector<>(newLeading, middle, trailing, trailingLength);
+                final T[] newLeading = copyUpdate(collapsedLeading(), index, element);
+                return new Vector<>(newLeading, 0, middle, trailing, trailingLength);
             } else if (index < trailingStartIndex()) {
                 final VectorTree<T> newMiddle = middle.update(index - leadingLength(), element);
-                return new Vector<>(leading, newMiddle, trailing, trailingLength);
+                return new Vector<>(leading, leadingOffset, newMiddle, trailing, trailingLength);
             } else {
                 final T[] newTrailing = copyUpdate(collapsedTrailing(), index - trailingStartIndex(), element);
-                return new Vector<>(leading, middle, newTrailing, newTrailing.length);
+                return new Vector<>(leading, leadingOffset, middle, newTrailing, newTrailing.length);
             }
         }
     }
@@ -1442,6 +1478,31 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
                 Object[] childArray = getOrDefault(array, childIndex, emptyArray());
                 childArray = recursiveSet(childArray, index, childShift, element, endShift);
                 return copyUpdate(array, childIndex, childArray);
+            }
+        }
+
+        VectorTree<T> drop(int n) {
+            if (n <= 0) {
+                return this;
+            } else if (n >= length()) {
+                return emptyTree();
+            } else {
+                final int index = offset + n;
+
+                int shiftValue = depthShift;
+                int previousOffset = firstDigit(index, shiftValue);
+                final Object[] root = Arrays2.drop(array, previousOffset);
+                for (Object[] array = root; (array != null) && (shiftValue >= BRANCHING_BASE); ) {
+                    shiftValue -= BRANCHING_BASE;
+                    final int offset = digit(index, shiftValue);
+
+                    final Object[] newNode = Arrays2.drop((T[]) array[previousOffset], offset);
+                    array[previousOffset] = newNode;
+                    array = newNode;
+
+                    previousOffset = offset;
+                }
+                return create(root, index, length() - n, depthShift);
             }
         }
 

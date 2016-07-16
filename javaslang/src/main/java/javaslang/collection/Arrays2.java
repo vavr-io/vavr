@@ -68,6 +68,12 @@ final class Arrays2 { // TODO reuse these in `Array` also
         return copy;
     }
 
+    static <T> T[] drop(T[] array, int index) {
+        final T[] copy = (T[]) new Object[array.length];
+        System.arraycopy(array, index, copy, index, array.length - index);
+        return copy;
+    }
+
     static <T> T[] take(T[] array, int length) {
         return (length <= 0) ? emptyArray()
                              : copyOfRange(array, 0, length);
