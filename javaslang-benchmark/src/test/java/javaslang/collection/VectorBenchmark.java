@@ -6,14 +6,19 @@ import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import scala.compat.java8.JFunction;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
-import static javaslang.JmhRunner.*;
+import static javaslang.JmhRunner.create;
+import static javaslang.JmhRunner.getRandomValues;
 import static javaslang.collection.Collections.areEqual;
-import static scala.collection.JavaConversions.*;
+import static scala.collection.JavaConversions.asJavaCollection;
+import static scala.collection.JavaConversions.asScalaBuffer;
 
+@SuppressWarnings({"ALL", "unchecked"})
 public class VectorBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
             Create.class,
@@ -34,30 +39,34 @@ public class VectorBenchmark {
     }
 
     public static void main(String... args) {
+        JmhRunner.runDebugWithAsserts(CLASSES);
         JmhRunner.runNormalNoAsserts(CLASSES);
     }
 
     @State(Scope.Benchmark)
     public static class Base {
-        @Param({ "32", "1024", "32768"/*, "1048576"*/ }) // i.e. depth 1,2,3(,4) for a branching factor of 32
+        @Param({"32", "1024", "32768" /*, "1048576", "33554432", "1073741824" */}) /* i.e. depth 1,2,3(,4,5,6) for a branching factor of 32 */
         public int CONTAINER_SIZE;
 
         int EXPECTED_AGGREGATE;
         Integer[] ELEMENTS;
+        int[] RANDOMIZED_INDICES;
 
         /* Only use this for non-mutating operations */
         java.util.ArrayList<Integer> javaMutable;
 
-        fj.data.Seq<Integer> fjavaPersistent = fj.data.Seq.empty();
-        org.pcollections.PVector<Integer> pcollectionsPersistent = org.pcollections.TreePVector.empty();
         scala.collection.immutable.Vector<Integer> scalaPersistent;
         clojure.lang.PersistentVector clojurePersistent;
+        fj.data.Seq<Integer> fjavaPersistent;
+        org.pcollections.PVector<Integer> pcollectionsPersistent;
         javaslang.collection.Vector<Integer> slangPersistent;
 
         @Setup
-        @SuppressWarnings("unchecked")
         public void setup() {
-            ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
+            final Random random = new Random(0);
+            ELEMENTS = getRandomValues(CONTAINER_SIZE, false, random);
+            RANDOMIZED_INDICES = Arrays2.shuffle(Array.range(0, CONTAINER_SIZE).toJavaStream().mapToInt(Integer::intValue).toArray(), random);
+
             EXPECTED_AGGREGATE = Array.of(ELEMENTS).reduce(JmhRunner::aggregate);
 
             javaMutable = create(java.util.ArrayList::new, asList(ELEMENTS), v -> areEqual(v, asList(ELEMENTS)));
@@ -69,6 +78,7 @@ public class VectorBenchmark {
         }
     }
 
+    /** Bulk creation from array based, boxed source */
     public static class Create extends Base {
         @Benchmark
         public Object java_mutable() {
@@ -157,7 +167,6 @@ public class VectorBenchmark {
         }
     }
 
-    @SuppressWarnings("Convert2MethodRef")
     public static class Tail extends Base {
         @State(Scope.Thread)
         public static class Initialized {
@@ -177,9 +186,9 @@ public class VectorBenchmark {
 
         @Benchmark
         public Object java_mutable(Initialized state) {
-            final java.util.ArrayList<Integer> values = state.javaMutable;
+            java.util.List<Integer> values = state.javaMutable;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
-                values.remove(0);
+                values = values.subList(1, values.size()); // remove(0) would copy everything, but this will slow access down because of nesting
             }
             assert values.isEmpty();
             return values;
@@ -190,16 +199,6 @@ public class VectorBenchmark {
             scala.collection.immutable.Vector<Integer> values = scalaPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.tail();
-            }
-            assert values.isEmpty();
-            return values;
-        }
-
-        @Benchmark
-        public Object clojure_persistent() {
-            clojure.lang.PersistentVector values = clojurePersistent;
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
-                values = values.pop();
             }
             assert values.isEmpty();
             return values;
@@ -236,11 +235,12 @@ public class VectorBenchmark {
         }
     }
 
+    /** Aggregated, randomized access to every element */
     public static class Get extends Base {
         @Benchmark
         public int java_mutable() {
             int aggregate = 0;
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
+            for (int i : RANDOMIZED_INDICES) {
                 aggregate ^= javaMutable.get(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
@@ -250,7 +250,7 @@ public class VectorBenchmark {
         @Benchmark
         public int scala_persistent() {
             int aggregate = 0;
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
+            for (int i : RANDOMIZED_INDICES) {
                 aggregate ^= scalaPersistent.apply(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
@@ -260,7 +260,7 @@ public class VectorBenchmark {
         @Benchmark
         public int clojure_persistent() {
             int aggregate = 0;
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
+            for (int i : RANDOMIZED_INDICES) {
                 aggregate ^= (int) clojurePersistent.get(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
@@ -270,7 +270,7 @@ public class VectorBenchmark {
         @Benchmark
         public int fjava_persistent() {
             int aggregate = 0;
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
+            for (int i : RANDOMIZED_INDICES) {
                 aggregate ^= fjavaPersistent.index(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
@@ -280,7 +280,7 @@ public class VectorBenchmark {
         @Benchmark
         public int pcollections_persistent() {
             int aggregate = 0;
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
+            for (int i : RANDOMIZED_INDICES) {
                 aggregate ^= pcollectionsPersistent.get(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
@@ -290,7 +290,7 @@ public class VectorBenchmark {
         @Benchmark
         public int slang_persistent() {
             int aggregate = 0;
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
+            for (int i : RANDOMIZED_INDICES) {
                 aggregate ^= slangPersistent.get(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
@@ -298,6 +298,7 @@ public class VectorBenchmark {
         }
     }
 
+    /** Randomized update of every element */
     public static class Update extends Base {
         @State(Scope.Thread)
         public static class Initialized {
@@ -318,7 +319,7 @@ public class VectorBenchmark {
         @Benchmark
         public Object java_mutable(Initialized state) {
             final java.util.ArrayList<Integer> values = state.javaMutable;
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
+            for (int i : RANDOMIZED_INDICES) {
                 values.set(i, 0);
             }
             assert Array.ofAll(values).forAll(e -> e == 0);
@@ -328,7 +329,7 @@ public class VectorBenchmark {
         @Benchmark
         public Object scala_persistent() {
             scala.collection.immutable.Vector<Integer> values = scalaPersistent;
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
+            for (int i : RANDOMIZED_INDICES) {
                 values = values.updateAt(i, 0);
             }
             assert Array.ofAll(asJavaCollection(values)).forAll(e -> e == 0);
@@ -338,7 +339,7 @@ public class VectorBenchmark {
         @Benchmark
         public Object clojure_persistent() {
             clojure.lang.PersistentVector values = clojurePersistent;
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
+            for (int i : RANDOMIZED_INDICES) {
                 values = values.assocN(i, 0);
             }
             assert Array.of(values.toArray()).forAll(e -> Objects.equals(e, 0));
@@ -348,7 +349,7 @@ public class VectorBenchmark {
         @Benchmark
         public Object fjava_persistent() {
             fj.data.Seq<Integer> values = fjavaPersistent;
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
+            for (int i : RANDOMIZED_INDICES) {
                 values = values.update(i, 0);
             }
             assert Array.ofAll(values).forAll(e -> e == 0);
@@ -358,7 +359,7 @@ public class VectorBenchmark {
         @Benchmark
         public Object pcollections_persistent() {
             org.pcollections.PVector<Integer> values = pcollectionsPersistent;
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
+            for (int i : RANDOMIZED_INDICES) {
                 values = values.with(i, 0);
             }
             assert Array.ofAll(values).forAll(e -> e == 0);
@@ -368,7 +369,7 @@ public class VectorBenchmark {
         @Benchmark
         public Object slang_persistent() {
             javaslang.collection.Vector<Integer> values = slangPersistent;
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
+            for (int i : RANDOMIZED_INDICES) {
                 values = values.update(i, 0);
             }
             assert values.forAll(e -> e == 0);
@@ -376,11 +377,10 @@ public class VectorBenchmark {
         }
     }
 
-    @SuppressWarnings("ManualArrayToCollectionCopy")
     public static class Prepend extends Base {
         @Benchmark
         public Object java_mutable() {
-            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(CONTAINER_SIZE);
+            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(); // no initial value, as we're simulating dynamic usage
             for (Integer element : ELEMENTS) {
                 values.add(0, element);
             }
@@ -395,6 +395,20 @@ public class VectorBenchmark {
                 values = values.appendFront(element);
             }
             assert areEqual(Array.ofAll(asJavaCollection(values)).reverse(), javaMutable);
+            return values;
+        }
+
+        @Benchmark
+        public Object clojure_persistent() {
+            clojure.lang.PersistentVector values = clojure.lang.PersistentVector.EMPTY;
+            for (int i = 0; i < ELEMENTS.length; i++) {
+                clojure.lang.PersistentVector prepended = clojure.lang.PersistentVector.create(ELEMENTS[i]);
+                for (Object value : values) {
+                    prepended = prepended.cons(value); // rebuild everything via append
+                }
+                values = prepended;
+            }
+            assert areEqual(Array.ofAll(values).reverse(), javaMutable);
             return values;
         }
 
@@ -429,11 +443,10 @@ public class VectorBenchmark {
         }
     }
 
-    @SuppressWarnings("ManualArrayToCollectionCopy")
     public static class Append extends Base {
         @Benchmark
         public Object java_mutable() {
-            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(CONTAINER_SIZE);
+            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(); // no initial value as we're simulating dynamic usage
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }
@@ -445,7 +458,9 @@ public class VectorBenchmark {
         public Object scala_persistent() {
             scala.collection.immutable.Vector<Integer> values = scala.collection.immutable.Vector$.MODULE$.empty();
             for (Integer element : ELEMENTS) {
-                values = values.appendBack(element);
+                final scala.collection.immutable.Vector<Integer> newValues = values.appendBack(element);
+                assert values != newValues;
+                values = newValues;
             }
             assert areEqual(asJavaCollection(values), javaMutable);
             return values;
@@ -455,7 +470,9 @@ public class VectorBenchmark {
         public Object clojure_persistent() {
             clojure.lang.PersistentVector values = clojure.lang.PersistentVector.EMPTY;
             for (Integer element : ELEMENTS) {
-                values = values.cons(element);
+                final clojure.lang.PersistentVector newValues = values.cons(element);
+                assert values != newValues;
+                values = newValues;
             }
             assert areEqual(values, javaMutable);
             return values;
@@ -465,7 +482,9 @@ public class VectorBenchmark {
         public Object fjava_persistent() {
             fj.data.Seq<Integer> values = fj.data.Seq.empty();
             for (Integer element : ELEMENTS) {
-                values = values.snoc(element);
+                final fj.data.Seq<Integer> newValues = values.snoc(element);
+                assert values != newValues;
+                values = newValues;
             }
             assert areEqual(values, javaMutable);
             return values;
@@ -475,7 +494,9 @@ public class VectorBenchmark {
         public Object pcollections_persistent() {
             org.pcollections.PVector<Integer> values = org.pcollections.TreePVector.empty();
             for (Integer element : ELEMENTS) {
-                values = values.plus(element);
+                final org.pcollections.PVector<Integer> newValues = values.plus(element);
+                assert values != newValues;
+                values = newValues;
             }
             assert areEqual(values, javaMutable);
             return values;
@@ -485,7 +506,9 @@ public class VectorBenchmark {
         public Object slang_persistent() {
             javaslang.collection.Vector<Integer> values = javaslang.collection.Vector.empty();
             for (Integer element : ELEMENTS) {
-                values = values.append(element);
+                final Vector<Integer> newValues = values.append(element);
+                assert values != newValues;
+                values = newValues;
             }
             assert areEqual(values, javaMutable);
             return values;
@@ -509,36 +532,50 @@ public class VectorBenchmark {
         }
     }
 
+    /** Consume the vector one-by-one, from the front and back */
     public static class Slice extends Base {
         @Benchmark
-        public void java_mutable(Blackhole bh) {
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
-                for (int j = i; j < Math.min(CONTAINER_SIZE, 100); j++) {
-                    bh.consume(javaMutable.subList(i, j));
-                }
+        public void java_mutable(Blackhole bh) { // stores the whole list underneath
+            java.util.List<Integer> values = javaMutable;
+            while (!values.isEmpty()) {
+                values = values.subList(1, values.size());
+                values = values.subList(0, values.size() - 1);
+                bh.consume(values);
+            }
+        }
+
+        @Benchmark
+        public void clojure_persistent(Blackhole bh) { // stores the whole list underneath
+            java.util.List<?> values = clojurePersistent;
+            while (!values.isEmpty()) {
+                values = values.subList(1, values.size());
+                values = values.subList(0, values.size() - 1);
+                bh.consume(values);
             }
         }
 
         @Benchmark
         public void scala_persistent(Blackhole bh) {
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
-                for (int j = i; j < Math.min(CONTAINER_SIZE, 100); j++) {
-                    bh.consume(scalaPersistent.slice(i, j));
-                }
+            scala.collection.immutable.Vector<Integer> values = this.scalaPersistent;
+            while (!values.isEmpty()) {
+                values = values.slice(1, values.size());
+                values = values.slice(0, values.size() - 1);
+                bh.consume(values);
             }
         }
 
         @Benchmark
         public void slang_persistent(Blackhole bh) {
-            for (int i = 0; i < CONTAINER_SIZE; i++) {
-                for (int j = i; j < Math.min(CONTAINER_SIZE, 100); j++) {
-                    bh.consume(slangPersistent.slice(i, j));
-                }
+            javaslang.collection.Vector<Integer> values = this.slangPersistent;
+            while (!values.isEmpty()) {
+                values = values.slice(1, values.size());
+                values = values.slice(0, values.size() - 1);
+                bh.consume(values);
             }
         }
     }
 
-    @SuppressWarnings("ForLoopReplaceableByForEach")
+    /* Sequential access for all elements */
     public static class Iterate extends Base {
         @State(Scope.Thread)
         public static class Initialized {
@@ -577,7 +614,6 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        @SuppressWarnings("unchecked")
         public int clojure_persistent() {
             int aggregate = 0;
             for (final java.util.Iterator<Integer> iterator = clojurePersistent.iterator(); iterator.hasNext(); ) {
