@@ -827,7 +827,42 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
 
     @Override
     public Iterator<T> iterator() {
-        throw new UnsupportedOperationException();
+        return isEmpty() ? Iterator.empty() : new Iterator<T>() {
+            final int globalLength = Vector.this.length();
+            int globalIndex;
+
+            T[] leaf = leading;
+            int leafIndex;
+
+            @Override
+            public boolean hasNext() { return globalIndex < globalLength; }
+
+            @Override
+            public T next() {
+                if (leafIndex == leaf.length) { setCurrentArray(); }
+
+                final T next = leaf[leafIndex];
+                assert next == Vector.this.get(globalIndex);
+
+                leafIndex++;
+                globalIndex++;
+
+                return next;
+            }
+
+            @SuppressWarnings("ArrayEquality")
+            void setCurrentArray() {
+                if (globalIndex < trailingStartIndex()) { /* first middle-leaf can have an offset */
+                    leafIndex = (globalIndex > leadingLength()) ? 0
+                                                                : lastDigit(middle.offset());
+                    leaf = middle.getLeaf(globalIndex - leadingLength());
+                } else if (leaf != trailing) {
+                    leafIndex = 0;
+                    leaf = trailing;
+                }
+                assert leaf != null;
+            }
+        };
     }
 
     @Override
