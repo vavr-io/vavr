@@ -238,4 +238,11 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
         return "(" + _1 + ", " + _2 + ")";
     }
 
+    public <A> Tuple3<A, T1, T2> prepend(A v) {
+        return Tuple.of(v, _1, _2);
+    }
+
+    public <A> Tuple3<T1, T2, A> append(A v) {
+        return Tuple.of(_1, _2, v);
+    }
 }

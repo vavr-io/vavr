@@ -1252,6 +1252,16 @@ def generateMainClasses(): Unit = {
                   return INSTANCE;
               }
             """)}
+
+            ${(i > 0 && i < 8).gen(xs"""
+              public <A> Tuple${i + 1}<A, ${(1 to i).gen(j => s"T$j")(", ")}> prepend(A v) {
+                  return Tuple.of(v, ${(1 to i).gen(j => s"_$j")(", ")});
+              }
+
+              public <A> Tuple${i + 1}<${(1 to i).gen(j => s"T$j")(", ")}, A> append(A v) {
+                  return Tuple.of(${(1 to i).gen(j => s"_$j")(", ")}, v);
+              }
+            """) }
         }
       """
     }
