@@ -559,6 +559,23 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to a specific {@link java.util.Map}.
      *
+     * @param factory     A {@code java.util.Map} factory
+     * @param keyMapper   A function that maps an element to a key
+     * @param valueMapper A function that maps an element to a value
+     * @param <K>         The key type
+     * @param <V>         The value type
+     * @param <MAP>       a sub-type of {@code java.util.Map}
+     * @return a new {@code java.util.Map} of type {@code MAP}
+     */
+    default <K, V, MAP extends java.util.Map<K, V>> MAP toJavaMap(Supplier<MAP> factory, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return toJavaMap(factory, t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
+    }
+
+    /**
+     * Converts this to a specific {@link java.util.Map}.
+     *
      * @param factory A {@code java.util.Map} factory
      * @param f       A function that maps an element to a key/value pair represented by Tuple2
      * @param <K>     The key type
@@ -661,6 +678,21 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to a {@link Map}.
      *
+     * @param keyMapper   A function that maps an element to a key
+     * @param valueMapper A function that maps an element to a value
+     * @param <K>         The key type
+     * @param <V>         The value type
+     * @return A new {@link HashMap}.
+     */
+    default <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return toMap(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
+    }
+
+    /**
+     * Converts this to a {@link Map}.
+     *
      * @param f   A function that maps an element to a key/value pair represented by Tuple2
      * @param <K> The key type
      * @param <V> The value type
@@ -669,6 +701,21 @@ public interface Value<T> extends Iterable<T> {
     default <K, V> Map<K, V> toMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
 		return ValueModule.toMap(this, HashMap.empty(), HashMap::of, HashMap::ofEntries, f);
+    }
+
+    /**
+     * Converts this to a {@link Map}.
+     *
+     * @param keyMapper   A function that maps an element to a key
+     * @param valueMapper A function that maps an element to a value
+     * @param <K>         The key type
+     * @param <V>         The value type
+     * @return A new {@link LinkedHashMap}.
+     */
+    default <K, V> Map<K, V> toLinkedMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return toLinkedMap(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
     }
 
     /**
@@ -687,6 +734,21 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to a {@link Map}.
      *
+     * @param keyMapper   A function that maps an element to a key
+     * @param valueMapper A function that maps an element to a value
+     * @param <K>         The key type
+     * @param <V>         The value type
+     * @return A new {@link TreeMap}.
+     */
+    default <K extends Comparable<? super K>, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return toSortedMap(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
+    }
+
+    /**
+     * Converts this to a {@link Map}.
+     *
      * @param f   A function that maps an element to a key/value pair represented by Tuple2
      * @param <K> The key type
      * @param <V> The value type
@@ -695,6 +757,21 @@ public interface Value<T> extends Iterable<T> {
     default <K extends Comparable<? super K>, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         return ValueModule.toMap(this, TreeMap.empty(), TreeMap::of, TreeMap::ofEntries, f);
+    }
+
+    /**
+     * Converts this to a {@link Map}.
+     *
+     * @param keyMapper   A function that maps an element to a key
+     * @param valueMapper A function that maps an element to a value
+     * @param <K>         The key type
+     * @param <V>         The value type
+     * @return A new {@link TreeMap}.
+     */
+    default <K, V> SortedMap<K, V> toSortedMap(Comparator<? super K> comparator, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return toSortedMap(comparator, t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
     }
 
     /**
