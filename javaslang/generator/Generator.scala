@@ -1913,6 +1913,26 @@ def generateTestClasses(): Unit = {
                 """
               })("\n\n")}
 
+              ${(i > 0 && i < 8).gen(xs"""
+                @$test
+                public void shouldAppendTuple$i() {
+                    Tuple${i}<${(1 to i).gen(_ => "Integer")(", ")}> tuple = Tuple.of(${(1 to i).gen("" + _)(", ")});
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> actual = tuple.append(2016);
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> expected = Tuple.of(${(1 to i).gen("" + _)(", ")}, 2016);
+
+                    assertThat(actual).isEqualTo(expected);
+                }
+
+                @$test
+                public void shouldPrependTuple$i() {
+                    Tuple${i}<${(1 to i).gen(_ => "Integer")(", ")}> tuple = Tuple.of(${(1 to i).gen("" + _)(", ")});
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> actual = tuple.prepend(2016);
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> expected = Tuple.of(2016, ${(1 to i).gen("" + _)(", ")});
+
+                    assertThat(actual).isEqualTo(expected);
+                }
+              """) }
+
               @$test
               public void shouldApplyTuple() {
                   final Tuple$i<$generics> tuple = createTuple();

@@ -107,6 +107,24 @@ public class Tuple2Test {
     }
 
     @Test
+    public void shouldAppendTuple2() {
+        Tuple2<Integer, Integer> tuple = Tuple.of(1, 2);
+        Tuple3<Integer, Integer, Integer> actual = tuple.append(2016);
+        Tuple3<Integer, Integer, Integer> expected = Tuple.of(1, 2, 2016);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldPrependTuple2() {
+        Tuple2<Integer, Integer> tuple = Tuple.of(1, 2);
+        Tuple3<Integer, Integer, Integer> actual = tuple.prepend(2016);
+        Tuple3<Integer, Integer, Integer> expected = Tuple.of(2016, 1, 2);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldApplyTuple() {
         final Tuple2<Object, Object> tuple = createTuple();
         final Tuple0 actual = tuple.apply((o1, o2) -> Tuple0.instance());

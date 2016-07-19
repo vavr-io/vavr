@@ -159,6 +159,24 @@ public class Tuple5Test {
     }
 
     @Test
+    public void shouldAppendTuple5() {
+        Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 2, 3, 4, 5);
+        Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> actual = tuple.append(2016);
+        Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4, 5, 2016);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldPrependTuple5() {
+        Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 2, 3, 4, 5);
+        Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> actual = tuple.prepend(2016);
+        Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(2016, 1, 2, 3, 4, 5);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldApplyTuple() {
         final Tuple5<Object, Object, Object, Object, Object> tuple = createTuple();
         final Tuple0 actual = tuple.apply((o1, o2, o3, o4, o5) -> Tuple0.instance());
