@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
+import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 
@@ -157,4 +158,8 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
         return "(" + _1 + ")";
     }
 
+    public static <T1> Tuple1<Seq<? extends T1>> sequence(Iterable<Tuple1<? extends T1>> tuples) {
+      Objects.requireNonNull(tuples, "tuples is null");
+      return new Tuple1<>(Iterator.ofAll(tuples).map(Tuple1::_1).toList());
+    }
 }
