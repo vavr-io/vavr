@@ -927,10 +927,7 @@ interface ValueModule {
     static <T extends Traversable<V>, V> T toTraversable(Value<V> value, T empty,
                                                          Function<V, T> ofElement,
                                                          Function<Iterable<V>, T> ofAll) {
-        //If (current class same as target class) AND (current comparator is same as target comparator)
-        if (empty.getClass().isAssignableFrom(value.getClass()) && (value instanceof SortedSet<?> && ((SortedSet) value).comparator() == ((SortedSet) empty).comparator())) {
-            return (T) value;
-        } else if (value.isEmpty()) {
+        if (value.isEmpty()) {
             return empty;
         } else if (value.isSingleValued()) {
             return ofElement.apply(value.get());
