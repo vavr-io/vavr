@@ -100,7 +100,7 @@ public class Euler26Test {
     private static Function1<CharSeq, CharSeq> removeTrailingZeroes() {
         return seq -> seq
                 .reverse()
-                .dropWhile(c -> Character.valueOf('0').equals(c)) //Remove any trailing zeroes
+                .dropWhile(c -> c == '0') //Remove any trailing zeroes
                 .reverse();
     }
 
