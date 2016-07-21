@@ -185,18 +185,27 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
         return fill((Comparator<? super T> & Serializable) T::compareTo, n, s);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(Iterable<? extends T> values) {
         Objects.requireNonNull(values, "values is null");
-        return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(values)) : empty();
+        if(values instanceof TreeSet) {
+            return (TreeSet<T>) values;
+        } else {
+            return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(values)) : empty();
+        }
     }
 
     @SuppressWarnings("unchecked")
     public static <T> TreeSet<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
-        return values.iterator().hasNext()
-               ? new TreeSet<>(RedBlackTree.ofAll(comparator, values))
-               : (TreeSet<T>) empty();
+        if (values instanceof TreeSet && ((TreeSet) values).comparator() == comparator) {
+            return (TreeSet<T>) values;
+        } else {
+            return values.iterator().hasNext()
+                    ? new TreeSet<>(RedBlackTree.ofAll(comparator, values))
+                    : (TreeSet<T>) empty();
+        }
     }
 
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {

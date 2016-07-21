@@ -7,8 +7,13 @@ package javaslang.collection;
 
 import javaslang.control.Option;
 
-import java.util.*;
-import java.util.function.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Internal class, containing helpers.
@@ -101,10 +106,10 @@ final class Collections {
         return hashCode;
     }
 
-    static <T, U, C extends Iterable<U>, R extends Traversable<U>> R scanLeft(
-            Iterable<? extends T> elements,
-            U zero, BiFunction<? super U, ? super T, ? extends U> operation,
-            C cumulativeResult, BiFunction<C, U, C> combiner, Function<C, R> finisher) {
+    static <T, U, C extends Iterable<U>, R extends Traversable<U>> R scanLeft(Iterable<? extends T> elements,
+                                                                              U zero, BiFunction<? super U, ? super T, ? extends U> operation,
+                                                                              C cumulativeResult, BiFunction<C, U, C> combiner,
+                                                                              Function<C, R> finisher) {
         U acc = zero;
         cumulativeResult = combiner.apply(cumulativeResult, acc);
         for (T a : elements) {
@@ -114,11 +119,11 @@ final class Collections {
         return finisher.apply(cumulativeResult);
     }
 
-    static <T, U, C extends Iterable<U>, R extends Traversable<U>> R scanRight(
-            Iterable<? extends T> elements,
-            U zero, BiFunction<? super T, ? super U, ? extends U> operation,
-            C cumulativeResult, BiFunction<C, U, C> combiner, Function<C, R> finisher) {
-        final Iterator<? extends T> reversedElements = seq(elements).reverseIterator();
+    static <T, U, C extends Iterable<U>, R extends Traversable<U>> R scanRight(Iterable<? extends T> elements,
+                                                                               U zero, BiFunction<? super T, ? super U, ? extends U> operation,
+                                                                               C cumulativeResult, BiFunction<C, U, C> combiner,
+                                                                               Function<C, R> finisher) {
+        final Iterator<? extends T> reversedElements = seq(elements).reverseIterator(); // TODO a List will be reversed too many times this way
         return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), cumulativeResult, combiner, finisher);
     }
 
@@ -127,9 +132,8 @@ final class Collections {
         if (power < 0) {
             throw new IllegalArgumentException("negative power");
         }
-        return Iterator
-                .range(0, power)
-                .foldLeft(Iterator.of(empty), (product, ignored) -> product.flatMap(el -> seq.map(t -> (S) el.append(t))));
+        return Iterator.range(0, power)
+                       .foldLeft(Iterator.of(empty), (product, ignored) -> product.flatMap(el -> seq.map(t -> (S) el.append(t))));
     }
 
     static <C extends Traversable<T>, T> C tabulate(int n, Function<? super Integer, ? extends T> f, C empty, Function<T[], C> of) {
@@ -183,7 +187,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> Seq<T> seq(Iterable<? extends T> iterable) {
+    static <T> Seq<T> seq(Iterable<? extends T> iterable) {
         if (iterable instanceof Seq) {
             return (Seq<T>) iterable;
         } else {

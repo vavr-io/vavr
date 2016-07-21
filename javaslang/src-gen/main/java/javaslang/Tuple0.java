@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Supplier;
+import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 
@@ -124,4 +125,5 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
     private Object readResolve() {
         return INSTANCE;
     }
+
 }

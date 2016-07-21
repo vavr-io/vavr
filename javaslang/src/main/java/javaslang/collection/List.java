@@ -737,17 +737,13 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default <U> List<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return empty();
-        } else {
-            List<U> list = empty();
-            for (T t : this) {
-                for (U u : mapper.apply(t)) {
-                    list = list.prepend(u);
-                }
+        List<U> list = empty();
+        for (T t : this) {
+            for (U u : mapper.apply(t)) {
+                list = list.prepend(u);
             }
-            return list.reverse();
         }
+        return list.reverse();
     }
 
     @Override
