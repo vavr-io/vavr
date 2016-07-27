@@ -307,6 +307,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
         return LinkedHashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    @GwtIncompatible
     public static LinkedHashSet<Double> rangeBy(double from, double toExclusive, double step) {
         return LinkedHashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
@@ -411,6 +412,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
         return LinkedHashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    @GwtIncompatible
     public static LinkedHashSet<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return LinkedHashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }

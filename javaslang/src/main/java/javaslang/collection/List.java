@@ -1034,9 +1034,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> remove(T element) {
-        // DEV-NOTE: ArrayDeque is not supported in GWT, but announced.
-        // LinkedList should be reverted to ArrayDeque ASAP
-        final Deque<T> preceding = new LinkedList<T>();
+        final Deque<T> preceding = new ArrayDeque<>(size());
         List<T> result = this;
         boolean found = false;
         while (!found && !result.isEmpty()) {

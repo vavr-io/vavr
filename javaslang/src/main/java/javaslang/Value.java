@@ -784,7 +784,9 @@ public interface Value<T> extends Iterable<T> {
      */
     default <K, V> SortedMap<K, V> toSortedMap(Comparator<? super K> comparator, Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
-        return ValueModule.toMap(this, TreeMap.empty(comparator), t -> TreeMap.of(comparator, t), t -> TreeMap.ofEntries(comparator, t), f);
+        final Function<Tuple2<? extends K, ? extends V>, SortedMap<K, V>> ofElement = t -> TreeMap.of(comparator, t);
+        final Function<Iterable<Tuple2<? extends K, ? extends V>>, SortedMap<K, V>> ofAll = t -> TreeMap.ofEntries(comparator, t);
+        return ValueModule.toMap(this, TreeMap.empty(comparator), ofElement, ofAll, f);
     }
 
     /**
