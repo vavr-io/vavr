@@ -6,8 +6,11 @@
 package javaslang.collection.euler;
 
 import javaslang.Function1;
+import javaslang.Tuple;
 import javaslang.collection.Stream;
 import org.junit.Test;
+
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,29 +28,24 @@ public class Euler21Test {
 
     @Test
     public void shouldSolveProblem21() {
-        assertThat(sumOfDivisors(220)).isEqualTo(284); //1 + 2 + 4 + 5 + 10 + 11 + 20 + 22 + 44 + 55 + 110
-        assertThat(sumOfDivisors(284)).isEqualTo(220); //1 + 2 + 4 + 71 + 142
+        assertThat(sumOfDivisors(220)).isEqualTo(1 + 2 + 4 + 5 + 10 + 11 + 20 + 22 + 44 + 55 + 110);
+        assertThat(sumOfDivisors(284)).isEqualTo(1 + 2 + 4 + 71 + 142);
         assertThat(sumOfAmicablePairs(10000)).isEqualTo(31626);
     }
 
-    private static boolean isPerfectSquare(int n) {
-        final int sqrtN = (int) Math.sqrt(n);
-        return sqrtN * sqrtN == n;
-    }
-
     private static int sumOfDivisors(int n) {
-        final int sqrtN = (int) Math.sqrt(n);
-        return Stream.rangeClosed(2, sqrtN)
-                .filter(d -> n % d == 0)
-                .foldLeft(0, (sum, d) -> sum + d + n / d)
-                - (isPerfectSquare(n) ? sqrtN : 0) + 1;
+        return 1 + Stream.rangeClosed(2, (int) Math.sqrt(n))
+                .map(d -> Tuple.of(d, n / d))
+                .filter(t -> t._1 * t._2 == n && !Objects.equals(t._1, t._2))
+                .map(t -> t._1 + t._2)
+                .foldLeft(0, (sum, x) -> sum + x);
     }
 
     private static int sumOfAmicablePairs(int n) {
-        final Function1<Integer, Integer> msd = Function1.of(Euler21Test::sumOfDivisors).memoized();
+        final Function1<Integer, Integer> mSumOfDivisors = Function1.of(Euler21Test::sumOfDivisors).memoized();
         return Stream.range(1, n)
-                .filter(x -> msd.apply(msd.apply(x)).intValue() == x && msd.apply(x) > x)
-                .foldLeft(0, (sum, x) -> sum + x + msd.apply(x));
+                .filter(x -> mSumOfDivisors.apply(mSumOfDivisors.apply(x)).intValue() == x && mSumOfDivisors.apply(x) > x)
+                .foldLeft(0, (sum, x) -> sum + x + mSumOfDivisors.apply(x));
     }
 
 }
