@@ -55,7 +55,7 @@ public class CheckedFunction2Test {
     @Test
     public void shouldCurry() {
         final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
-        final CheckedFunction1<Object, CheckedFunction1<Object, Object>> curried = f.curried();
+        final Function1<Object, CheckedFunction1<Object, Object>> curried = f.curried();
         assertThat(curried).isNotNull();
     }
 

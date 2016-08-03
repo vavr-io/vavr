@@ -142,7 +142,7 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
     }
 
     @Override
-    default CheckedFunction1<T1, CheckedFunction1<T2, R>> curried() {
+    default Function1<T1, CheckedFunction1<T2, R>> curried() {
         return t1 -> t2 -> apply(t1, t2);
     }
 
