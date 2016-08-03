@@ -31,6 +31,8 @@ public final class Utils {
         return Stream.rangeClosed(1, n).map(BigInteger::valueOf).fold(BigInteger.ONE, BigInteger::multiply);
     }
 
+    public static final Function1<Integer, BigInteger> memoizedFactorial = Function1.of(Utils::factorial).memoized();
+
     public static Stream<Long> factors(long number) {
         return Stream.rangeClosed(1, (long) Math.sqrt(number))
                 .filter(d -> number % d == 0)
