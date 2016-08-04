@@ -49,7 +49,8 @@ public final class Utils {
     public static boolean isPrime(long val) {
         return API.Match(val).of(
                 Case($(2L), true),
-                Case($(), n -> !primes().takeWhile(d -> d <= Math.sqrt(n)).exists(d -> n % d == 0))
+                Case($(n -> n > 2), n -> !primes().takeWhile(d -> d <= Math.sqrt(n)).exists(d -> n % d == 0)),
+                Case($(), false)
         );
     }
 
