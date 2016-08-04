@@ -17,6 +17,7 @@ import javaslang.API;
 import static javaslang.API.$;
 import static javaslang.API.Case;
 import javaslang.Function1;
+import static javaslang.collection.euler.PrimeNumbers.primes;
 
 public final class Utils {
 
@@ -48,8 +49,7 @@ public final class Utils {
     public static boolean isPrime(long val) {
         return API.Match(val).of(
                 Case($(2L), true),
-                Case($(3L), true),
-                Case($(n -> n > 3), n -> !Stream.rangeClosedBy(3, Math.sqrt(n), 2).exists(d -> n % d == 0)),
+                Case($(n -> n > 2), n -> !primes().takeWhile(d -> d <= Math.sqrt(n)).exists(d -> n % d == 0)),
                 Case($(), false)
         );
     }
