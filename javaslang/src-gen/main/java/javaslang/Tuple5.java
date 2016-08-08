@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
+import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 
@@ -368,5 +369,10 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
 
     public <A> Tuple6<T1, T2, T3, T4, T5, A> append(A v) {
         return Tuple.of(_1, _2, _3, _4, _5, v);
+    }
+
+    public static <T1, T2, T3, T4, T5> Tuple5<Seq<? extends T1>, Seq<? extends T2>, Seq<? extends T3>, Seq<? extends T4>, Seq<? extends T5>> sequence(Iterable<Tuple5<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5>> tuples) {
+      Objects.requireNonNull(tuples, "tuples is null");
+      return new Tuple5<>(Iterator.ofAll(tuples).map(Tuple5::_1).toList(), Iterator.ofAll(tuples).map(Tuple5::_2).toList(), Iterator.ofAll(tuples).map(Tuple5::_3).toList(), Iterator.ofAll(tuples).map(Tuple5::_4).toList(), Iterator.ofAll(tuples).map(Tuple5::_5).toList());
     }
 }
