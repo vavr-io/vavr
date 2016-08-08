@@ -1,19 +1,24 @@
 package javaslang.collection;
 
-import javaslang.*;
+import fj.P;
+import javaslang.JmhRunner;
+import javaslang.Tuple2;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.annotations.State;
 import scala.math.Ordering;
 import scala.math.Ordering$;
-import scalaz.*;
+import scalaz.Heap;
+import scalaz.Order;
+import scalaz.Order$;
 
 import java.util.Collections;
 
 import static java.util.Arrays.asList;
-import static javaslang.JmhRunner.*;
+import static javaslang.JmhRunner.create;
+import static javaslang.JmhRunner.getRandomValues;
 import static scala.collection.JavaConversions.asScalaBuffer;
 
+@SuppressWarnings({"UnnecessaryFullyQualifiedName", "UnnecessarilyQualifiedInnerClassAccess"})
 public class PriorityQueueBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
             Enqueue.class,
@@ -27,15 +32,16 @@ public class PriorityQueueBenchmark {
     }
 
     public static void main(String... args) {
+        JmhRunner.runDebugWithAsserts(CLASSES);
         JmhRunner.runNormalNoAsserts(CLASSES);
     }
 
     @State(Scope.Benchmark)
     public static class Base {
-        protected static final Ordering<Integer> SCALA_ORDERING = Ordering$.MODULE$.comparatorToOrdering(Integer::compareTo);
-        protected static final Order<Integer> SCALAZ_ORDER = Order$.MODULE$.fromScalaOrdering(SCALA_ORDERING);
+        static final Ordering<Integer> SCALA_ORDERING = Ordering$.MODULE$.comparatorToOrdering(Integer::compareTo);
+        static final Order<Integer> SCALAZ_ORDER = Order$.MODULE$.fromScalaOrdering(SCALA_ORDERING);
 
-        @Param({ "10", "100", "1000" })
+        @Param({"10", "100", "1000"})
         public int CONTAINER_SIZE;
 
         int EXPECTED_AGGREGATE;
@@ -43,6 +49,7 @@ public class PriorityQueueBenchmark {
 
         scalaz.Heap<Integer> scalazPersistent;
         javaslang.collection.PriorityQueue<Integer> slangPersistent;
+        fj.data.PriorityQueue<Integer, Integer> fjava_persistent;
 
         @Setup
         public void setup() {
@@ -50,13 +57,14 @@ public class PriorityQueueBenchmark {
             EXPECTED_AGGREGATE = Iterator.of(ELEMENTS).reduce(JmhRunner::aggregate);
 
             scalazPersistent = create(v -> scalaz.Heap.Empty$.MODULE$.<Integer> apply().insertAll(asScalaBuffer(v), SCALAZ_ORDER), asList(ELEMENTS), v -> v.size() == CONTAINER_SIZE);
+            fjava_persistent = create(v -> fj.data.PriorityQueue.<Integer> emptyInt().enqueue(v), List.of(ELEMENTS).map(v -> P.p(v, v)).toJavaList(), ELEMENTS.length, v -> v.toList().length() == CONTAINER_SIZE);
             slangPersistent = create(javaslang.collection.PriorityQueue::of, ELEMENTS, ELEMENTS.length, v -> v.size() == CONTAINER_SIZE);
         }
     }
 
     public static class Enqueue extends Base {
         @Benchmark
-        @SuppressWarnings({ "Convert2streamapi", "ManualArrayToCollectionCopy" })
+        @SuppressWarnings({"Convert2streamapi", "ManualArrayToCollectionCopy"})
         public Object java_mutable() {
             final java.util.PriorityQueue<Integer> values = new java.util.PriorityQueue<>(CONTAINER_SIZE);
             for (Integer element : ELEMENTS) {
@@ -67,7 +75,7 @@ public class PriorityQueueBenchmark {
         }
 
         @Benchmark
-        @SuppressWarnings({ "Convert2streamapi", "ManualArrayToCollectionCopy" })
+        @SuppressWarnings({"Convert2streamapi", "ManualArrayToCollectionCopy"})
         public Object java_blocking_mutable() {
             final java.util.concurrent.PriorityBlockingQueue<Integer> values = new java.util.concurrent.PriorityBlockingQueue<>(CONTAINER_SIZE);
             for (Integer element : ELEMENTS) {
@@ -98,6 +106,16 @@ public class PriorityQueueBenchmark {
         }
 
         @Benchmark
+        public Object fjava_persistent() {
+            fj.data.PriorityQueue<Integer, Integer> values = fj.data.PriorityQueue.emptyInt();
+            for (Integer element : ELEMENTS) {
+                values = values.enqueue(element, element);
+            }
+            assert values.toList().length() == CONTAINER_SIZE;
+            return values;
+        }
+
+        @Benchmark
         public Object slang_persistent() {
             javaslang.collection.PriorityQueue<Integer> values = javaslang.collection.PriorityQueue.empty();
             for (Integer element : ELEMENTS) {
@@ -124,9 +142,9 @@ public class PriorityQueueBenchmark {
                     scalaMutable.$plus$eq(element);
                 }
 
-                assert javaMutable.size() == state.CONTAINER_SIZE
-                       && javaBlockingMutable.size() == state.CONTAINER_SIZE
-                       && scalaMutable.size() == state.CONTAINER_SIZE;
+                assert (javaMutable.size() == state.CONTAINER_SIZE)
+                       && (javaBlockingMutable.size() == state.CONTAINER_SIZE)
+                       && (scalaMutable.size() == state.CONTAINER_SIZE);
             }
 
             @TearDown(Level.Invocation)
@@ -145,7 +163,7 @@ public class PriorityQueueBenchmark {
             for (; !values.isEmpty(); values.poll()) {
                 aggregate ^= values.peek();
             }
-            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
+            assert values.isEmpty() && (aggregate == EXPECTED_AGGREGATE);
             return values;
         }
 
@@ -157,7 +175,7 @@ public class PriorityQueueBenchmark {
             for (; !values.isEmpty(); values.poll()) {
                 aggregate ^= values.peek();
             }
-            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
+            assert values.isEmpty() && (aggregate == EXPECTED_AGGREGATE);
             return values;
         }
 
@@ -169,7 +187,7 @@ public class PriorityQueueBenchmark {
             while (!values.isEmpty()) {
                 aggregate ^= values.dequeue();
             }
-            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
+            assert values.isEmpty() && (aggregate == EXPECTED_AGGREGATE);
             return values;
         }
 
@@ -183,7 +201,20 @@ public class PriorityQueueBenchmark {
                 aggregate ^= uncons._1;
                 values = uncons._2;
             }
-            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
+            assert values.isEmpty() && (aggregate == EXPECTED_AGGREGATE);
+            return values;
+        }
+
+        @Benchmark
+        public Object fjava_persistent() {
+            fj.data.PriorityQueue<Integer, Integer> values = fjava_persistent;
+
+            int aggregate = 0;
+            while (!values.isEmpty()) {
+                aggregate ^= values.top().some()._1();
+                values = values.dequeue();
+            }
+            assert values.isEmpty() && (aggregate == EXPECTED_AGGREGATE);
             return values;
         }
 
@@ -197,7 +228,7 @@ public class PriorityQueueBenchmark {
                 aggregate ^= dequeue._1;
                 values = dequeue._2;
             }
-            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
+            assert values.isEmpty() && (aggregate == EXPECTED_AGGREGATE);
             return values;
         }
     }
@@ -216,7 +247,7 @@ public class PriorityQueueBenchmark {
             for (; !values.isEmpty(); values.poll()) {
                 aggregate ^= values.peek();
             }
-            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
+            assert values.isEmpty() && (aggregate == EXPECTED_AGGREGATE);
             return values;
         }
 
@@ -232,39 +263,7 @@ public class PriorityQueueBenchmark {
             for (; !values.isEmpty(); values.poll()) {
                 aggregate ^= values.peek();
             }
-            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
-            return values;
-        }
-
-        @Benchmark
-        public Object scala_mutable() {
-            scala.collection.mutable.PriorityQueue<Integer> values = new scala.collection.mutable.PriorityQueue<>(SCALA_ORDERING);
-            for (Integer element : ELEMENTS) {
-                values = values.$plus$eq(element);
-            }
-            assert values.size() == CONTAINER_SIZE;
-            int aggregate = 0;
-            while (!values.isEmpty()) {
-                aggregate ^= values.dequeue();
-            }
-            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
-            return values;
-        }
-
-        @Benchmark
-        public Object scalaz_persistent() {
-            scalaz.Heap<Integer> values = scalaz.Heap.Empty$.MODULE$.apply();
-            for (Integer element : ELEMENTS) {
-                values = values.insert(element, SCALAZ_ORDER);
-            }
-            assert values.size() == CONTAINER_SIZE;
-            int aggregate = 0;
-            while (!values.isEmpty()) {
-                final scala.Tuple2<Integer, Heap<Integer>> uncons = values.uncons().get();
-                aggregate ^= uncons._1;
-                values = uncons._2;
-            }
-            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
+            assert values.isEmpty() && (aggregate == EXPECTED_AGGREGATE);
             return values;
         }
 
@@ -285,7 +284,56 @@ public class PriorityQueueBenchmark {
                 }
                 values = values.remove(min._1);
             }
-            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
+            assert values.isEmpty() && (aggregate == EXPECTED_AGGREGATE);
+            return values;
+        }
+
+        @Benchmark
+        public Object scala_mutable() {
+            scala.collection.mutable.PriorityQueue<Integer> values = new scala.collection.mutable.PriorityQueue<>(SCALA_ORDERING);
+            for (Integer element : ELEMENTS) {
+                values = values.$plus$eq(element);
+            }
+            assert values.size() == CONTAINER_SIZE;
+            int aggregate = 0;
+            while (!values.isEmpty()) {
+                aggregate ^= values.dequeue();
+            }
+            assert values.isEmpty() && (aggregate == EXPECTED_AGGREGATE);
+            return values;
+        }
+
+        @Benchmark
+        public Object scalaz_persistent() {
+            scalaz.Heap<Integer> values = scalaz.Heap.Empty$.MODULE$.apply();
+            for (Integer element : ELEMENTS) {
+                values = values.insert(element, SCALAZ_ORDER);
+            }
+            assert values.size() == CONTAINER_SIZE;
+            int aggregate = 0;
+            while (!values.isEmpty()) {
+                final scala.Tuple2<Integer, Heap<Integer>> uncons = values.uncons().get();
+                aggregate ^= uncons._1;
+                values = uncons._2;
+            }
+            assert values.isEmpty() && (aggregate == EXPECTED_AGGREGATE);
+            return values;
+        }
+
+        @Benchmark
+        public Object fjava_persistent() {
+            fj.data.PriorityQueue<Integer, Integer> values = fj.data.PriorityQueue.emptyInt();
+            for (Integer element : ELEMENTS) {
+                values = values.enqueue(element, element);
+            }
+            assert values.toList().length() == CONTAINER_SIZE;
+
+            int aggregate = 0;
+            while (!values.isEmpty()) {
+                aggregate ^= values.top().some()._1();
+                values = values.dequeue();
+            }
+            assert values.isEmpty() && (aggregate == EXPECTED_AGGREGATE);
             return values;
         }
 
@@ -300,7 +348,7 @@ public class PriorityQueueBenchmark {
                 aggregate ^= dequeue._1;
                 values = dequeue._2;
             }
-            assert values.isEmpty() && aggregate == EXPECTED_AGGREGATE;
+            assert values.isEmpty() && (aggregate == EXPECTED_AGGREGATE);
             return values;
         }
     }

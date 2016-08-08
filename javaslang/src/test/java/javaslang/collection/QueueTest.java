@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.Option;
 import org.junit.Test;
 
@@ -390,4 +391,11 @@ public class QueueTest extends AbstractLinearSeqTest {
         assertThat(Queue.of(0, null).equals(Queue.of(0, 0))).isFalse();
     }
 
+    // -- toQueue
+
+    @Test
+    public void shouldReturnSelfOnConvertToQueue() {
+        Value<Integer> value = of(1, 2, 3);
+        assertThat(value.toQueue()).isSameAs(value);
+    }
 }

@@ -299,10 +299,10 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     <U> Map<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor);
 
     @Override
-    Map<K, V> drop(long n);
+    Map<K, V> drop(int n);
 
     @Override
-    Map<K, V> dropRight(long n);
+    Map<K, V> dropRight(int n);
 
     @Override
     Map<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate);
@@ -394,7 +394,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
 
     @Override
-    Iterator<? extends Map<K, V>> grouped(long size);
+    Iterator<? extends Map<K, V>> grouped(int size);
 
     @Override
     default boolean hasDefiniteSize() {
@@ -504,10 +504,10 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     }
 
     @Override
-    Iterator<? extends Map<K, V>> sliding(long size);
+    Iterator<? extends Map<K, V>> sliding(int size);
 
     @Override
-    Iterator<? extends Map<K, V>> sliding(long size, long step);
+    Iterator<? extends Map<K, V>> sliding(int size, int step);
 
     @Override
     Tuple2<? extends Map<K, V>, ? extends Map<K, V>> span(Predicate<? super Tuple2<K, V>> predicate);
@@ -524,10 +524,10 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     Option<? extends Map<K, V>> tailOption();
 
     @Override
-    Map<K, V> take(long n);
+    Map<K, V> take(int n);
 
     @Override
-    Map<K, V> takeRight(long n);
+    Map<K, V> takeRight(int n);
 
     @Override
     Map<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate);
@@ -567,12 +567,12 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     }
 
     @Override
-    default Seq<Tuple2<Tuple2<K, V>, Long>> zipWithIndex() {
+    default Seq<Tuple2<Tuple2<K, V>, Integer>> zipWithIndex() {
         return zipWithIndex(Tuple::of);
     }
 
     @Override
-    default <U> Seq<U> zipWithIndex(BiFunction<? super Tuple2<K, V>, ? super Long, ? extends U> mapper) {
+    default <U> Seq<U> zipWithIndex(BiFunction<? super Tuple2<K, V>, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return Stream.ofAll(iterator().zipWithIndex(mapper));
     }

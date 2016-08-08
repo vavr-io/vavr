@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Serializables;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.collection.Tree.Node;
 import javaslang.control.Option;
 import org.assertj.core.api.Assertions;
@@ -663,4 +660,11 @@ public class TreeTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- toVector
+
+    @Test
+    public void shouldReturnSelfOnConvertToTree() {
+        Value<Integer> value = of(1, 2, 3);
+        assertThat(value.toTree()).isSameAs(value);
+    }
 }

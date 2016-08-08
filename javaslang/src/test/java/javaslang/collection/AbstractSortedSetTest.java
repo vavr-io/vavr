@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -35,4 +36,12 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
         // not possible, because the empty instance stores information about the underlying comparator
     }
 
+    // -- toSortedSet
+
+    @Override
+    @Test(expected = ClassCastException.class)
+    @Ignore("SortedSet in test always created with working comparator, and because method toSortedSet() return same object will never throw ClassCastException")
+    public void shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable() {
+        super.shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable();
+    }
 }

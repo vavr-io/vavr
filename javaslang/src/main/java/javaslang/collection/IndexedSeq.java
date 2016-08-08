@@ -12,11 +12,7 @@ import javaslang.control.Option;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.IntUnaryOperator;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * Interface for immutable, indexed sequences.
@@ -72,10 +68,10 @@ public interface IndexedSeq<T> extends Seq<T> {
     <U> IndexedSeq<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
-    IndexedSeq<T> drop(long n);
+    IndexedSeq<T> drop(int n);
 
     @Override
-    IndexedSeq<T> dropRight(long n);
+    IndexedSeq<T> dropRight(int n);
 
     @Override
     IndexedSeq<T> dropUntil(Predicate<? super T> predicate);
@@ -124,7 +120,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     }
 
     @Override
-    Iterator<? extends IndexedSeq<T>> grouped(long size);
+    Iterator<? extends IndexedSeq<T>> grouped(int size);
 
     @Override
     IndexedSeq<T> init();
@@ -260,13 +256,13 @@ public interface IndexedSeq<T> extends Seq<T> {
     }
 
     @Override
-    IndexedSeq<T> slice(long beginIndex, long endIndex);
+    IndexedSeq<T> slice(int beginIndex, int endIndex);
 
     @Override
-    Iterator<? extends IndexedSeq<T>> sliding(long size);
+    Iterator<? extends IndexedSeq<T>> sliding(int size);
 
     @Override
-    Iterator<? extends IndexedSeq<T>> sliding(long size, long step);
+    Iterator<? extends IndexedSeq<T>> sliding(int size, int step);
 
     @Override
     IndexedSeq<T> sorted();
@@ -325,10 +321,10 @@ public interface IndexedSeq<T> extends Seq<T> {
     Option<? extends IndexedSeq<T>> tailOption();
 
     @Override
-    IndexedSeq<T> take(long n);
+    IndexedSeq<T> take(int n);
 
     @Override
-    IndexedSeq<T> takeRight(long n);
+    IndexedSeq<T> takeRight(int n);
 
     @Override
     IndexedSeq<T> takeUntil(Predicate<? super T> predicate);
@@ -358,10 +354,10 @@ public interface IndexedSeq<T> extends Seq<T> {
     <U> IndexedSeq<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
-    IndexedSeq<Tuple2<T, Long>> zipWithIndex();
+    IndexedSeq<Tuple2<T, Integer>> zipWithIndex();
 
     @Override
-    <U> IndexedSeq<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper);
+    <U> IndexedSeq<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper);
 
     /**
      * Searches this sequence for a specific element using a binary search. The sequence must already be sorted into

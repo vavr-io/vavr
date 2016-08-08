@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Tuple;
+import javaslang.Value;
 import javaslang.collection.Comparators.SerializableComparator;
 import org.junit.Test;
 
@@ -269,5 +270,13 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         if (!newQueue.isEmpty()) {
             assertThat(oldQueue.peek()).isEqualTo(newQueue.head());
         }
+    }
+
+    // -- toSortedQueue
+
+    @Test
+    public void shouldReturnSelfOnConvertToSortedQueue() {
+        Value<Integer> value = of(1, 2, 3);
+        assertThat(value.toSortedQueue(Integer::compareTo)).isSameAs(value);
     }
 }

@@ -5,11 +5,14 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Objects;
 import java.util.function.*;
 
 /**
@@ -178,9 +181,9 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         return createFromEntries(iterator().distinctBy(keyExtractor));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public M drop(long n) {
+    @SuppressWarnings("unchecked")
+    public M drop(int n) {
         if (n <= 0) {
             return (M) this;
         } else if (n >= length()) {
@@ -190,9 +193,9 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public M dropRight(long n) {
+    @SuppressWarnings("unchecked")
+    public M dropRight(int n) {
         if (n <= 0) {
             return (M) this;
         } else if (n >= length()) {
@@ -264,7 +267,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     }
 
     @Override
-    public Iterator<Multimap<K, V>> grouped(long size) {
+    public Iterator<Multimap<K, V>> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -383,12 +386,12 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     }
 
     @Override
-    public Iterator<Multimap<K, V>> sliding(long size) {
+    public Iterator<Multimap<K, V>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<Multimap<K, V>> sliding(long size, long step) {
+    public Iterator<Multimap<K, V>> sliding(int size, int step) {
         return iterator().sliding(size, step).map(this::createFromEntries);
     }
 
@@ -409,15 +412,15 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public M take(long n) {
+    @SuppressWarnings("unchecked")
+    public M take(int n) {
         return (M) (size() <= n ? this : createFromEntries(iterator().take(n)));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public M takeRight(long n) {
+    @SuppressWarnings("unchecked")
+    public M takeRight(int n) {
         return (M) (size() <= n ? this : createFromEntries(iterator().takeRight(n)));
     }
 

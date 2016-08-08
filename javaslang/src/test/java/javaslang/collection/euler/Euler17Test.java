@@ -5,15 +5,16 @@
  */
 package javaslang.collection.euler;
 
-import static javaslang.API.*;
-import static javaslang.Predicates.*;
-import javaslang.collection.Stream;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.collection.*;
 import org.junit.Test;
 
+import static javaslang.API.*;
+import static javaslang.collection.Stream.rangeClosed;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler17Test {
-
     /**
      * <strong>Problem 17: Number letter counts</strong>
      * <p>
@@ -30,61 +31,125 @@ public class Euler17Test {
      */
     @Test
     public void shouldSolveProblem17() {
-        assertThat(letterCountInNumber(1)).isEqualTo(3);
-        assertThat(letterCountInNumber(342)).isEqualTo(23);
-        assertThat(letterCountInNumber(115)).isEqualTo(20);
-        assertThat(letterCountInNumbersUpToAndIncluding(5)).isEqualTo(19);
-        assertThat(letterCountInNumbersUpToAndIncluding(1000)).isEqualTo(21124);
+        runTestsFor(new SolutionA());
+        runTestsFor(new SolutionB());
+
+        // Additional capability, only for more general solution B
+        assertThat(new SolutionB().letterCount(Integer.MAX_VALUE)).isEqualTo("twobilliononehundredandfortysevenmillionfourhundredandeightythreethousandsixhundredandfortyseven".length());
     }
 
-    private static final int THOUSAND = "thousand".length();
-    private static final int HUNDRED = "hundred".length();
-    private static final int AND = "and".length();
-    private static final int[] LETTER_COUNT = new int[91];
+    private static void runTestsFor(SolutionProblem17 solution) {
+        List.of("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty", "twentyone")
+            .zipWithIndex()
+            .forEach(t -> {
+                final int number = t._2.intValue() + 1;
+                final String numberAsString = t._1;
+                assertThat(numberAsString).hasSize(solution.letterCount(number));
+            });
 
-    static {
-        LETTER_COUNT[1] = "one".length();
-        LETTER_COUNT[2] = "two".length();
-        LETTER_COUNT[3] = "three".length();
-        LETTER_COUNT[4] = "four".length();
-        LETTER_COUNT[5] = "five".length();
-        LETTER_COUNT[6] = "six".length();
-        LETTER_COUNT[7] = "seven".length();
-        LETTER_COUNT[8] = "eight".length();
-        LETTER_COUNT[9] = "nine".length();
-        LETTER_COUNT[10] = "ten".length();
-        LETTER_COUNT[11] = "eleven".length();
-        LETTER_COUNT[12] = "twelve".length();
-        LETTER_COUNT[13] = "thirteen".length();
-        LETTER_COUNT[14] = "fourteen".length();
-        LETTER_COUNT[15] = "fifteen".length();
-        LETTER_COUNT[16] = "sixteen".length();
-        LETTER_COUNT[17] = "seventeen".length();
-        LETTER_COUNT[18] = "eighteen".length();
-        LETTER_COUNT[19] = "nineteen".length();
-        LETTER_COUNT[20] = "twenty".length();
-        LETTER_COUNT[30] = "thirty".length();
-        LETTER_COUNT[40] = "forty".length();
-        LETTER_COUNT[50] = "fifty".length();
-        LETTER_COUNT[60] = "sixty".length();
-        LETTER_COUNT[70] = "seventy".length();
-        LETTER_COUNT[80] = "eighty".length();
-        LETTER_COUNT[90] = "ninety".length();
+        assertThat(solution.letterCount(200)).isEqualTo("twohundred".length());
+        assertThat(solution.letterCount(201)).isEqualTo("twohundredandone".length());
+
+        assertThat(solution.letterCount(342)).isEqualTo(23);
+        assertThat(solution.letterCount(115)).isEqualTo(20);
+
+        assertThat(solution.letterCount(rangeClosed(1, 5))).isEqualTo(19);
+        assertThat(solution.letterCount(rangeClosed(1, 1000))).isEqualTo(21124);
     }
 
-    private static int letterCountInNumber(int num) {
-        return Match(num).of(
-                Case($(n -> n / 1000 > 0), n -> LETTER_COUNT[n / 1000] + THOUSAND + letterCountInNumber(n % 1000)),
-                Case(allOf((Integer n) -> n / 100 > 0, n -> n % 100 > 0), n -> LETTER_COUNT[n / 100] + HUNDRED +  AND + letterCountInNumber(n % 100)),
-                Case($(n -> n / 100 > 0), n -> LETTER_COUNT[n / 100] + HUNDRED),
-                Case($(n -> n / 10 > 1), n -> LETTER_COUNT[n / 10 * 10] + letterCountInNumber(n % 10)),
-                Case($(), n -> LETTER_COUNT[n])
-        );
+    private interface SolutionProblem17 {
+        int letterCount(int num);
+
+        default int letterCount(Seq<Integer> range) {
+            return range.map(this::letterCount)
+                        .sum().intValue();
+        }
     }
 
-    private static int letterCountInNumbersUpToAndIncluding(int num) {
-        return Stream.rangeClosed(1, num)
-                .map(Euler17Test::letterCountInNumber)
-                .sum().intValue();
+    static final String CONJUNCTION = "and";
+    static final Map<Integer, String> LENGTHS = TreeMap.of(
+            1, "one",
+            2, "two",
+            3, "three",
+            4, "four",
+            5, "five",
+            6, "six",
+            7, "seven",
+            8, "eight",
+            9, "nine",
+            10, "ten",
+            11, "eleven",
+            12, "twelve",
+            13, "thirteen",
+            14, "fourteen",
+            15, "fifteen",
+            16, "sixteen",
+            17, "seventeen",
+            18, "eighteen",
+            19, "nineteen",
+            20, "twenty",
+            30, "thirty",
+            40, "forty",
+            50, "fifty",
+            60, "sixty",
+            70, "seventy",
+            80, "eighty",
+            90, "ninety",
+            100, "hundred",
+            1_000, "thousand",
+            1_000_000, "million",
+            1_000_000_000, "billion"
+    );
+
+    /**
+     * Solution using Javaslang Pattern Matching.
+     */
+    private static class SolutionA implements SolutionProblem17 {
+        @Override
+        public int letterCount(int num) {
+            return Match(num).of( /*@formatter:off*/
+                    Case(n -> n >= 1000,           n -> length(n / 1000) + length(1000) + letterCount(n % 1000)),
+                    Case(n -> n >= 100,            n -> Match(n).of(
+                        Case(n1 -> (n1 % 100) > 0, n1 -> length(n1 / 100) + length(100) + CONJUNCTION.length() + letterCount(n1 % 100)),
+                        Case($(),                  length(n / 100) + length(100)))),
+                    Case(n -> n >= 20,             n -> length(n - (n % 10)) + letterCount(n % 10)),
+                    Case(0,                        0),
+                    Case($(),                      n -> length(n))
+            ); /*@formatter:on*/
+        }
+
+        private static int length(int number) {
+            return LENGTHS.get(number).map(String::length).get();
+        }
+    }
+
+    /**
+     * A more general solution using functionality of the Javaslang Collections.
+     */
+    private static class SolutionB implements SolutionProblem17 {
+        @Override
+        public int letterCount(int number) {
+            return asText(number).length();
+        }
+
+        private static String asText(int number) {
+            return LENGTHS.foldRight(Tuple.of(Vector.<String> empty(), number), (magnitudeAndText, lengthsAndRemainder) -> {
+                final int magnitude = magnitudeAndText._1;
+                final int remainder = lengthsAndRemainder._2;
+
+                return ((remainder >= magnitude) && (remainder > 0)) ? asText(magnitude, magnitudeAndText._2, lengthsAndRemainder._1, remainder)
+                                                                     : lengthsAndRemainder;
+            })._1.mkString();
+        }
+
+        private static Tuple2<Vector<String>, Integer> asText(int magnitude, String text, Vector<String> chunks, int remainder) {
+            if (remainder >= 100) {
+                text = asText(remainder / magnitude) + text;
+                if ((remainder < 1000) && ((remainder % magnitude) != 0)) {
+                    text += CONJUNCTION;
+                }
+            }
+            return Tuple.of(chunks.append(text), remainder % magnitude);
+        }
     }
 }

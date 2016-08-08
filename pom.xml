@@ -31,7 +31,7 @@ Note: The maven build currently needs to be started from the javaslang root dir
     </parent>
     <groupId>io.javaslang</groupId>
     <artifactId>javaslang-parent</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Javaslang Parent</name>
     <description>Javaslang is a Java standard library extension built for Java 8 and above.</description>
@@ -68,7 +68,7 @@ Note: The maven build currently needs to be started from the javaslang root dir
         <assertj.core.version>3.3.0</assertj.core.version>
         <eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
         <java.version>1.8</java.version>
-        <jmh.version>1.12</jmh.version>
+        <jmh.version>1.13</jmh.version>
         <junit.version>4.12</junit.version>
         <maven.build-helper.version>1.9.1</maven.build-helper.version>
         <maven.bundle.version>3.0.1</maven.bundle.version>

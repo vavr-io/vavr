@@ -93,10 +93,10 @@ public interface SortedSet<T> extends Set<T> {
     <U> SortedSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
-    SortedSet<T> drop(long n);
+    SortedSet<T> drop(int n);
 
     @Override
-    SortedSet<T> dropRight(long n);
+    SortedSet<T> dropRight(int n);
 
     @Override
     SortedSet<T> dropUntil(Predicate<? super T> predicate);
@@ -114,7 +114,7 @@ public interface SortedSet<T> extends Set<T> {
     <C> Map<C, ? extends SortedSet<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
-    Iterator<? extends SortedSet<T>> grouped(long size);
+    Iterator<? extends SortedSet<T>> grouped(int size);
 
     @Override
     SortedSet<T> init();
@@ -166,10 +166,10 @@ public interface SortedSet<T> extends Set<T> {
     <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
-    Iterator<? extends SortedSet<T>> sliding(long size);
+    Iterator<? extends SortedSet<T>> sliding(int size);
 
     @Override
-    Iterator<? extends SortedSet<T>> sliding(long size, long step);
+    Iterator<? extends SortedSet<T>> sliding(int size, int step);
 
     @Override
     Tuple2<? extends SortedSet<T>, ? extends SortedSet<T>> span(Predicate<? super T> predicate);
@@ -181,10 +181,10 @@ public interface SortedSet<T> extends Set<T> {
     Option<? extends SortedSet<T>> tailOption();
 
     @Override
-    SortedSet<T> take(long n);
+    SortedSet<T> take(int n);
 
     @Override
-    SortedSet<T> takeRight(long n);
+    SortedSet<T> takeRight(int n);
 
     @Override
     SortedSet<T> takeUntil(Predicate<? super T> predicate);
@@ -214,8 +214,8 @@ public interface SortedSet<T> extends Set<T> {
     <U> SortedSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
-    SortedSet<Tuple2<T, Long>> zipWithIndex();
+    SortedSet<Tuple2<T, Integer>> zipWithIndex();
 
     @Override
-    <U> SortedSet<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper);
+    <U> SortedSet<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper);
 }

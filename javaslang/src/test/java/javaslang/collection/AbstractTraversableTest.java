@@ -5,19 +5,25 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.AbstractValueTest;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.Option;
 import org.junit.Test;
 
 import java.io.*;
-import java.math.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
-import java.util.function.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static java.lang.System.lineSeparator;
-import static javaslang.Serializables.*;
-import static org.assertj.core.api.Assertions.*;
+import static javaslang.Serializables.deserialize;
+import static javaslang.Serializables.serialize;
+import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.within;
 
 public abstract class AbstractTraversableTest extends AbstractValueTest {
 
@@ -820,6 +826,42 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldMkStringWithDelimiterAndPrefixAndSuffixNonNil() {
         assertThat(of('a', 'b', 'c').mkString("[", ",", "]")).isEqualTo("[a,b,c]");
+    }
+
+    // -- mkCharSeq()
+
+    @Test
+    public void shouldMkCharSeqNil() {
+        assertThat(empty().mkCharSeq()).isEqualTo(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldMkCharSeqNonNil() {
+        assertThat(of('a', 'b', 'c').mkCharSeq()).isEqualTo(CharSeq.of("abc"));
+    }
+
+    // -- mkCharSeq(delimiter)
+
+    @Test
+    public void shouldMkCharSeqWithDelimiterNil() {
+        assertThat(empty().mkCharSeq(",")).isEqualTo(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldMkCharSeqWithDelimiterNonNil() {
+        assertThat(of('a', 'b', 'c').mkCharSeq(",")).isEqualTo(CharSeq.of("a,b,c"));
+    }
+
+    // -- mkCharSeq(delimiter, prefix, suffix)
+
+    @Test
+    public void shouldMkCharSeqWithDelimiterAndPrefixAndSuffixNil() {
+        assertThat(empty().mkCharSeq("[", ",", "]")).isEqualTo(CharSeq.of("[]"));
+    }
+
+    @Test
+    public void shouldMkCharSeqWithDelimiterAndPrefixAndSuffixNonNil() {
+        assertThat(of('a', 'b', 'c').mkCharSeq("[", ",", "]")).isEqualTo(CharSeq.of("[a,b,c]"));
     }
 
     // -- last
@@ -2019,9 +2061,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldZipNonNilWithIndex() {
-        final Traversable<Tuple2<String, Long>> actual = of("a", "b", "c").zipWithIndex();
+        final Traversable<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex();
         @SuppressWarnings("unchecked")
-        final Traversable<Tuple2<String, Long>> expected = of(Tuple.of("a", 0L), Tuple.of("b", 1L), Tuple.of("c", 2L));
+        final Traversable<Tuple2<String, Integer>> expected = of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
         assertThat(actual).isEqualTo(expected);
     }
 

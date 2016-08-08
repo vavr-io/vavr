@@ -26,10 +26,10 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     private static final Array<?> EMPTY = new Array<>(new Object[0]);
 
-    private final Object[] back;
+    private final Object[] delegate;
 
-    private Array(Object[] back) {
-        this.back = back;
+    private Array(Object[] delegate) {
+        this.delegate = delegate;
     }
 
     static <T> Array<T> wrap(Object[] array) {
@@ -542,8 +542,8 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public Array<T> append(T element) {
-        final Object[] copy = Arrays.copyOf(back, back.length + 1);
-        copy[back.length] = element;
+        final Object[] copy = Arrays.copyOf(delegate, delegate.length + 1);
+        copy[delegate.length] = element;
         return wrap(copy);
     }
 
@@ -554,8 +554,8 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         if (source.length == 0) {
             return this;
         } else {
-            final Object[] arr = Arrays.copyOf(back, back.length + source.length);
-            System.arraycopy(source, 0, arr, back.length, source.length);
+            final Object[] arr = Arrays.copyOf(delegate, delegate.length + source.length);
+            System.arraycopy(source, 0, arr, delegate.length, source.length);
             return wrap(arr);
         }
     }
@@ -578,12 +578,12 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
             @Override
             public boolean hasNext() {
-                return index < back.length;
+                return index < delegate.length;
             }
 
             @Override
             public T getNext() {
-                return (T) back[index++];
+                return (T) delegate[index++];
             }
         };
     }
@@ -609,7 +609,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         if (index < 0 || index >= length()) {
             throw new IndexOutOfBoundsException("get(" + index + ")");
         }
-        return (T) back[index];
+        return (T) delegate[index];
     }
 
     @Override
@@ -632,26 +632,26 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public Array<T> drop(long n) {
+    public Array<T> drop(int n) {
         if (n <= 0) {
             return this;
         } else if (n >= length()) {
             return empty();
         } else {
-            final Object[] arr = new Object[back.length - (int) n];
-            System.arraycopy(back, (int) n, arr, 0, arr.length);
+            final Object[] arr = new Object[delegate.length - n];
+            System.arraycopy(delegate, n, arr, 0, arr.length);
             return wrap(arr);
         }
     }
 
     @Override
-    public Array<T> dropRight(long n) {
+    public Array<T> dropRight(int n) {
         if (n <= 0) {
             return this;
         } else if (n >= length()) {
             return empty();
         } else {
-            return wrap(Arrays.copyOf(back, back.length - (int) n));
+            return wrap(Arrays.copyOf(delegate, delegate.length - n));
         }
     }
 
@@ -712,7 +712,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public Iterator<Array<T>> grouped(long size) {
+    public Iterator<Array<T>> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -722,7 +722,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         if (isEmpty()) {
             throw new NoSuchElementException("head on empty Array");
         } else {
-            return (T) back[0];
+            return (T) delegate[0];
         }
     }
 
@@ -751,7 +751,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public boolean isEmpty() {
-        return back.length == 0;
+        return delegate.length == 0;
     }
 
     private Object readResolve() {
@@ -760,45 +760,41 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public Array<T> insert(int index, T element) {
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("insert(" + index + ", e)");
-        } else if (index > length()) {
+        if (index < 0 || index > length()) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e) on Vector of length " + length());
         }
-        final Object[] arr = new Object[back.length + 1];
-        System.arraycopy(back, 0, arr, 0, index);
+        final Object[] arr = new Object[delegate.length + 1];
+        System.arraycopy(delegate, 0, arr, 0, index);
         arr[index] = element;
-        System.arraycopy(back, index, arr, index + 1, back.length - index);
+        System.arraycopy(delegate, index, arr, index + 1, delegate.length - index);
         return wrap(arr);
     }
 
     @Override
     public Array<T> insertAll(int index, Iterable<? extends T> elements) {
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("insert(" + index + ", e)");
-        } else if (index > length()) {
+        if (index < 0 || index > length()) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e) on Array of length " + length());
         }
         final Object[] list = toArray(elements);
         if (list.length == 0) {
             return this;
         } else {
-            final Object[] arr = new Object[back.length + list.length];
-            System.arraycopy(back, 0, arr, 0, index);
+            final Object[] arr = new Object[delegate.length + list.length];
+            System.arraycopy(delegate, 0, arr, 0, index);
             System.arraycopy(list, 0, arr, index, list.length);
-            System.arraycopy(back, index, arr, index + list.length, back.length - index);
+            System.arraycopy(delegate, index, arr, index + list.length, delegate.length - index);
             return wrap(arr);
         }
     }
 
     @Override
     public Array<T> intersperse(T element) {
-        if (back.length <= 1) {
+        if (delegate.length <= 1) {
             return this;
         } else {
-            final Object[] arr = new Object[back.length * 2 - 1];
-            for (int i = 0; i < back.length; i++) {
-                arr[i * 2] = back[i];
+            final Object[] arr = new Object[delegate.length * 2 - 1];
+            for (int i = 0; i < delegate.length; i++) {
+                arr[i * 2] = delegate[i];
                 if (i > 0) {
                     arr[i * 2 - 1] = element;
                 }
@@ -819,14 +815,14 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public int length() {
-        return back.length;
+        return delegate.length;
     }
 
     @Override
     public <U> Array<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Object[] arr = new Object[length()];
-        for (int i = 0; i < back.length; i++) {
+        for (int i = 0; i < delegate.length; i++) {
             arr[i] = mapper.apply(get(i));
         }
         return wrap(arr);
@@ -885,7 +881,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     public Array<Array<T>> permutations() {
         if (isEmpty()) {
             return empty();
-        } else if (back.length == 1) {
+        } else if (delegate.length == 1) {
             return of(this);
         } else {
             Array<Array<T>> results = empty();
@@ -969,8 +965,8 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
             throw new IndexOutOfBoundsException("removeAt(" + index + ")");
         } else {
             final Object[] arr = new Object[length() - 1];
-            System.arraycopy(back, 0, arr, 0, index);
-            System.arraycopy(back, index + 1, arr, index, length() - index - 1);
+            System.arraycopy(delegate, 0, arr, 0, index);
+            System.arraycopy(delegate, index + 1, arr, index, length() - index - 1);
             return wrap(arr);
         }
     }
@@ -997,13 +993,13 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         for (int i = 0; i < length(); i++) {
             final T value = get(i);
             if (found) {
-                arr[i] = back[i];
+                arr[i] = delegate[i];
             } else {
                 if (currentElement.equals(value)) {
                     arr[i] = newElement;
                     found = true;
                 } else {
-                    arr[i] = back[i];
+                    arr[i] = delegate[i];
                 }
             }
         }
@@ -1020,7 +1016,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
                 arr[i] = newElement;
                 changed = true;
             } else {
-                arr[i] = back[i];
+                arr[i] = delegate[i];
             }
         }
         return changed ? wrap(arr) : this;
@@ -1033,9 +1029,9 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public Array<T> reverse() {
-        final Object[] arr = new Object[back.length];
-        for (int i = 0; i < back.length; i++) {
-            arr[back.length - 1 - i] = back[i];
+        final Object[] arr = new Object[delegate.length];
+        for (int i = 0; i < delegate.length; i++) {
+            arr[delegate.length - 1 - i] = delegate[i];
         }
         return wrap(arr);
     }
@@ -1062,33 +1058,33 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public Array<T> slice(long beginIndex, long endIndex) {
+    public Array<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
             return empty();
         }
         if (beginIndex <= 0 && endIndex >= length()) {
             return this;
         }
-        final int index = Math.max((int) beginIndex, 0);
-        final int length = Math.min((int) endIndex, length()) - index;
+        final int index = Math.max(beginIndex, 0);
+        final int length = Math.min(endIndex, length()) - index;
         final Object[] arr = new Object[length];
-        System.arraycopy(back, index, arr, 0, length);
+        System.arraycopy(delegate, index, arr, 0, length);
         return wrap(arr);
     }
 
     @Override
-    public Iterator<Array<T>> sliding(long size) {
+    public Iterator<Array<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<Array<T>> sliding(long size, long step) {
+    public Iterator<Array<T>> sliding(int size, int step) {
         return iterator().sliding(size, step).map(Array::ofAll);
     }
 
     @Override
     public Array<T> sorted() {
-        final Object[] arr = Arrays.copyOf(back, back.length);
+        final Object[] arr = Arrays.copyOf(delegate, delegate.length);
         Arrays.sort(arr);
         return wrap(arr);
     }
@@ -1096,7 +1092,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     @SuppressWarnings("unchecked")
     @Override
     public Array<T> sorted(Comparator<? super T> comparator) {
-        final Object[] arr = Arrays.copyOf(back, back.length);
+        final Object[] arr = Arrays.copyOf(delegate, delegate.length);
         Arrays.sort(arr, (o1, o2) -> comparator.compare((T) o1, (T) o2));
         return wrap(arr);
     }
@@ -1115,7 +1111,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public Tuple2<Array<T>, Array<T>> splitAt(long n) {
+    public Tuple2<Array<T>, Array<T>> splitAt(int n) {
         return Tuple.of(take(n), drop(n));
     }
 
@@ -1129,10 +1125,10 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     @Override
     public Tuple2<Array<T>, Array<T>> splitAtInclusive(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        for (int i = 0; i < back.length; i++) {
+        for (int i = 0; i < delegate.length; i++) {
             final T value = get(i);
             if (predicate.test(value)) {
-                if (i == back.length - 1) {
+                if (i == delegate.length - 1) {
                     return Tuple.of(this, empty());
                 } else {
                     return Tuple.of(take(i + 1), drop(i + 1));
@@ -1172,7 +1168,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
             return empty();
         } else {
             final Object[] arr = new Object[endIndex - beginIndex];
-            System.arraycopy(back, beginIndex, arr, 0, arr.length);
+            System.arraycopy(delegate, beginIndex, arr, 0, arr.length);
             return wrap(arr);
         }
     }
@@ -1182,8 +1178,8 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail() on empty Array");
         } else {
-            final Object[] arr = new Object[back.length - 1];
-            System.arraycopy(back, 1, arr, 0, arr.length);
+            final Object[] arr = new Object[delegate.length - 1];
+            System.arraycopy(delegate, 1, arr, 0, arr.length);
             return wrap(arr);
         }
     }
@@ -1194,25 +1190,25 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public Array<T> take(long n) {
+    public Array<T> take(int n) {
         if (n >= length()) {
             return this;
         } else if (n <= 0) {
             return empty();
         } else {
-            return wrap(Arrays.copyOf(back, (int) n));
+            return wrap(Arrays.copyOf(delegate, n));
         }
     }
 
     @Override
-    public Array<T> takeRight(long n) {
+    public Array<T> takeRight(int n) {
         if (n >= length()) {
             return this;
         } else if (n <= 0) {
             return empty();
         } else {
-            final Object[] arr = new Object[(int) n];
-            System.arraycopy(back, back.length - (int) n, arr, 0, (int) n);
+            final Object[] arr = new Object[n];
+            System.arraycopy(delegate, delegate.length - n, arr, 0, n);
             return wrap(arr);
         }
     }
@@ -1226,7 +1222,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     @Override
     public Array<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        for (int i = 0; i < back.length; i++) {
+        for (int i = 0; i < delegate.length; i++) {
             final T value = get(i);
             if (!predicate.test(value)) {
                 return take(i);
@@ -1260,9 +1256,9 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         if (isEmpty()) {
             return Tuple.of(empty(), empty());
         } else {
-            final Object[] xs = new Object[back.length];
-            final Object[] ys = new Object[back.length];
-            for (int i = 0; i < back.length; i++) {
+            final Object[] xs = new Object[delegate.length];
+            final Object[] ys = new Object[delegate.length];
+            for (int i = 0; i < delegate.length; i++) {
                 final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(get(i));
                 xs[i] = t._1;
                 ys[i] = t._2;
@@ -1277,10 +1273,10 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         if (isEmpty()) {
             return Tuple.of(empty(), empty(), empty());
         } else {
-            final Object[] xs = new Object[back.length];
-            final Object[] ys = new Object[back.length];
-            final Object[] zs = new Object[back.length];
-            for (int i = 0; i < back.length; i++) {
+            final Object[] xs = new Object[delegate.length];
+            final Object[] ys = new Object[delegate.length];
+            final Object[] zs = new Object[delegate.length];
+            for (int i = 0; i < delegate.length; i++) {
                 final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(get(i));
                 xs[i] = t._1;
                 ys[i] = t._2;
@@ -1322,12 +1318,12 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public Array<Tuple2<T, Long>> zipWithIndex() {
+    public Array<Tuple2<T, Integer>> zipWithIndex() {
         return ofAll(iterator().zipWithIndex());
     }
 
     @Override
-    public <U> Array<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+    public <U> Array<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(iterator().zipWithIndex(mapper));
     }
@@ -1337,8 +1333,8 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         if (o == this) {
             return true;
         } else if (o instanceof Array) {
-            final Object[] arr1 = back;
-            final Object[] arr2 = ((Array<?>) o).back;
+            final Object[] arr1 = delegate;
+            final Object[] arr2 = ((Array<?>) o).delegate;
             return Objects.deepEquals(arr1, arr2);
         } else {
             return false;
@@ -1347,7 +1343,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public int hashCode() {
-        return Objects.hash(back);
+        return Objects.hash(delegate);
     }
 
     @Override

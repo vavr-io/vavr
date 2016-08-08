@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Supplier;
+import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 

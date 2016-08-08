@@ -13,19 +13,25 @@ import java.io.FileNotFoundException;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.Scanner;
+import javaslang.API;
+import static javaslang.API.$;
+import static javaslang.API.Case;
+import javaslang.Function1;
 
 public final class Utils {
 
     private Utils() {
     }
 
-    public static Stream<Integer> fibonacci() {
-        return Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2));
+    public static Stream<BigInteger> fibonacci() {
+        return Stream.of(BigInteger.ZERO, BigInteger.ONE).appendSelf(self -> self.zip(self.tail()).map(t -> t._1.add(t._2)));
     }
 
     public static BigInteger factorial(int n) {
         return Stream.rangeClosed(1, n).map(BigInteger::valueOf).fold(BigInteger.ONE, BigInteger::multiply);
     }
+
+    public static final Function1<Integer, BigInteger> memoizedFactorial = Function1.of(Utils::factorial).memoized();
 
     public static Stream<Long> factors(long number) {
         return Stream.rangeClosed(1, (long) Math.sqrt(number))
@@ -33,6 +39,22 @@ public final class Utils {
                 .flatMap(d -> Stream.of(d, number / d))
                 .distinct();
     }
+
+    public static Stream<Long> divisors(long l) {
+        return factors(l)
+                .filter((d) -> d < l);
+    }
+
+    public static boolean isPrime(long val) {
+        return API.Match(val).of(
+                Case($(2L), true),
+                Case($(3L), true),
+                Case($(n -> n > 3), n -> !Stream.rangeClosedBy(3, Math.sqrt(n), 2).exists(d -> n % d == 0)),
+                Case($(), false)
+        );
+    }
+
+    public static final Function1<Long, Boolean> memoizedIsPrime = Function1.of(Utils::isPrime).memoized();
 
     public static Stream<String> readLines(File file) {
         try {

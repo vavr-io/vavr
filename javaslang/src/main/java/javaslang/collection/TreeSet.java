@@ -5,11 +5,17 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Kind1;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -179,18 +185,27 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
         return fill((Comparator<? super T> & Serializable) T::compareTo, n, s);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(Iterable<? extends T> values) {
         Objects.requireNonNull(values, "values is null");
-        return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(values)) : empty();
+        if(values instanceof TreeSet) {
+            return (TreeSet<T>) values;
+        } else {
+            return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(values)) : empty();
+        }
     }
 
     @SuppressWarnings("unchecked")
     public static <T> TreeSet<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
-        return values.iterator().hasNext()
-               ? new TreeSet<>(RedBlackTree.ofAll(comparator, values))
-               : (TreeSet<T>) empty();
+        if (values instanceof TreeSet && ((TreeSet) values).comparator() == comparator) {
+            return (TreeSet<T>) values;
+        } else {
+            return values.iterator().hasNext()
+                    ? new TreeSet<>(RedBlackTree.ofAll(comparator, values))
+                    : (TreeSet<T>) empty();
+        }
     }
 
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
@@ -560,7 +575,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     }
 
     @Override
-    public TreeSet<T> drop(long n) {
+    public TreeSet<T> drop(int n) {
         if (n <= 0) {
             return this;
         } else if (n >= length()) {
@@ -571,7 +586,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     }
 
     @Override
-    public TreeSet<T> dropRight(long n) {
+    public TreeSet<T> dropRight(int n) {
         if (n <= 0) {
             return this;
         } else if (n >= length()) {
@@ -625,7 +640,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     }
 
     @Override
-    public Iterator<TreeSet<T>> grouped(long size) {
+    public Iterator<TreeSet<T>> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -796,12 +811,12 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     }
 
     @Override
-    public Iterator<TreeSet<T>> sliding(long size) {
+    public Iterator<TreeSet<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    public Iterator<TreeSet<T>> sliding(long size, long step) {
+    public Iterator<TreeSet<T>> sliding(int size, int step) {
         return iterator().sliding(size, step).map(seq -> TreeSet.ofAll(tree.comparator(), seq));
     }
 
@@ -827,7 +842,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     }
 
     @Override
-    public TreeSet<T> take(long n) {
+    public TreeSet<T> take(int n) {
         if (n <= 0) {
             return empty(tree.comparator());
         } else if (n >= length()) {
@@ -838,7 +853,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     }
 
     @Override
-    public TreeSet<T> takeRight(long n) {
+    public TreeSet<T> takeRight(int n) {
         if (n <= 0) {
             return empty(tree.comparator());
         } else if (n >= length()) {
@@ -930,14 +945,14 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     }
 
     @Override
-    public TreeSet<Tuple2<T, Long>> zipWithIndex() {
+    public TreeSet<Tuple2<T, Integer>> zipWithIndex() {
         final Comparator<? super T> component1Comparator = tree.comparator();
-        final Comparator<Tuple2<T, Long>> tuple2Comparator = (t1, t2) -> component1Comparator.compare(t1._1, t2._1);
+        final Comparator<Tuple2<T, Integer>> tuple2Comparator = (t1, t2) -> component1Comparator.compare(t1._1, t2._1);
         return TreeSet.ofAll(tuple2Comparator, iterator().zipWithIndex());
     }
 
     @Override
-    public <U> SortedSet<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+    public <U> SortedSet<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         return TreeSet.ofAll(naturalComparator(), iterator().zipWithIndex(mapper));
     }
 

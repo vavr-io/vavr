@@ -1,5 +1,6 @@
 package javaslang.collection;
 
+import javaslang.Value;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -205,4 +206,11 @@ public class LinkedHashSetTest extends AbstractSetTest {
         assertThat(of(0, 1, 2).replace(1, 3)).isEqualTo(of(0, 2, 3));
     }
 
+    // -- toLinkedSet
+
+    @Test
+    public void shouldReturnSelfOnConvertToLinkedSet() {
+        Value<Integer> value = of(1, 2, 3);
+        assertThat(value.toLinkedSet()).isSameAs(value);
+    }
 }

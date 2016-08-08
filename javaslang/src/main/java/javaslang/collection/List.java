@@ -7,7 +7,8 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.collection.List.Nil;
-import javaslang.collection.ListModule.*;
+import javaslang.collection.ListModule.Combinations;
+import javaslang.collection.ListModule.SplitAt;
 import javaslang.control.Option;
 
 import java.io.*;
@@ -684,7 +685,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> drop(long n) {
+    default List<T> drop(int n) {
         List<T> list = this;
         for (long i = n; i > 0 && !list.isEmpty(); i--) {
             list = list.tail();
@@ -693,7 +694,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> dropRight(long n) {
+    default List<T> dropRight(int n) {
         if (n <= 0) {
             return this;
         }
@@ -736,17 +737,13 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default <U> List<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return empty();
-        } else {
-            List<U> list = empty();
-            for (T t : this) {
-                for (U u : mapper.apply(t)) {
-                    list = list.prepend(u);
-                }
+        List<U> list = empty();
+        for (T t : this) {
+            for (U u : mapper.apply(t)) {
+                list = list.prepend(u);
             }
-            return list.reverse();
         }
+        return list.reverse();
     }
 
     @Override
@@ -773,7 +770,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Iterator<List<T>> grouped(long size) {
+    default Iterator<List<T>> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -1037,9 +1034,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> remove(T element) {
-        // DEV-NOTE: ArrayDeque is not supported in GWT, but announced.
-        // LinkedList should be reverted to ArrayDeque ASAP
-        final Deque<T> preceding = new LinkedList<T>();
+        final Deque<T> preceding = new ArrayDeque<>(size());
         List<T> result = this;
         boolean found = false;
         while (!found && !result.isEmpty()) {
@@ -1182,7 +1177,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> slice(long beginIndex, long endIndex) {
+    default List<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
             return empty();
         } else {
@@ -1201,12 +1196,12 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Iterator<List<T>> sliding(long size) {
+    default Iterator<List<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    default Iterator<List<T>> sliding(long size, long step) {
+    default Iterator<List<T>> sliding(int size, int step) {
         return iterator().sliding(size, step).map(List::ofAll);
     }
 
@@ -1242,7 +1237,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default Tuple2<List<T>, List<T>> splitAt(long n) {
+    default Tuple2<List<T>, List<T>> splitAt(int n) {
         if (isEmpty()) {
             return Tuple.of(empty(), empty());
         } else {
@@ -1336,7 +1331,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> take(long n) {
+    default List<T> take(int n) {
         if (n >= length()) {
             return this;
         }
@@ -1352,7 +1347,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> takeRight(long n) {
+    default List<T> takeRight(int n) {
         if (n >= length()) {
             return this;
         }
@@ -1472,12 +1467,12 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<Tuple2<T, Long>> zipWithIndex() {
+    default List<Tuple2<T, Integer>> zipWithIndex() {
         return zipWithIndex(Tuple::of);
     }
 
     @Override
-    default <U> List<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+    default <U> List<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(iterator().zipWithIndex(mapper));
     }

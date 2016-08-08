@@ -5,11 +5,15 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -366,10 +370,10 @@ public interface BitSet<T> extends SortedSet<T> {
     <U> BitSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
-    BitSet<T> drop(long n);
+    BitSet<T> drop(int n);
 
     @Override
-    BitSet<T> dropRight(long n);
+    BitSet<T> dropRight(int n);
 
     @Override
     default BitSet<T> dropUntil(Predicate<? super T> predicate) {
@@ -404,7 +408,7 @@ public interface BitSet<T> extends SortedSet<T> {
     <C> Map<C, BitSet<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     @Override
-    default Iterator<BitSet<T>> grouped(long size) {
+    default Iterator<BitSet<T>> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -503,12 +507,12 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    default Iterator<BitSet<T>> sliding(long size) {
+    default Iterator<BitSet<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    Iterator<BitSet<T>> sliding(long size, long step);
+    Iterator<BitSet<T>> sliding(int size, int step);
 
     @Override
     Tuple2<BitSet<T>, BitSet<T>> span(Predicate<? super T> predicate);
@@ -528,10 +532,10 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    BitSet<T> take(long n);
+    BitSet<T> take(int n);
 
     @Override
-    BitSet<T> takeRight(long n);
+    BitSet<T> takeRight(int n);
 
     @Override
     default BitSet<T> takeUntil(Predicate<? super T> predicate) {
@@ -593,14 +597,14 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    default TreeSet<Tuple2<T, Long>> zipWithIndex() {
+    default TreeSet<Tuple2<T, Integer>> zipWithIndex() {
         final Comparator<? super T> component1Comparator = comparator();
-        final Comparator<Tuple2<T, Long>> tuple2Comparator = (t1, t2) -> component1Comparator.compare(t1._1, t2._1);
+        final Comparator<Tuple2<T, Integer>> tuple2Comparator = (t1, t2) -> component1Comparator.compare(t1._1, t2._1);
         return TreeSet.ofAll(tuple2Comparator, iterator().zipWithIndex());
     }
 
     @Override
-    default <U> TreeSet<U> zipWithIndex(BiFunction<? super T, ? super Long, ? extends U> mapper) {
+    default <U> TreeSet<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return TreeSet.ofAll(naturalComparator(), iterator().zipWithIndex(mapper));
     }
@@ -689,7 +693,7 @@ interface BitSetModule {
         }
 
         @Override
-        public BitSet<T> drop(long n) {
+        public BitSet<T> drop(int n) {
             if (n <= 0) {
                 return this;
             } else if (n >= length()) {
@@ -700,7 +704,7 @@ interface BitSetModule {
         }
 
         @Override
-        public BitSet<T> dropRight(long n) {
+        public BitSet<T> dropRight(int n) {
             if (n <= 0) {
                 return this;
             } else if (n >= length()) {
@@ -734,7 +738,7 @@ interface BitSetModule {
         }
 
         @Override
-        public Iterator<BitSet<T>> sliding(long size, long step) {
+        public Iterator<BitSet<T>> sliding(int size, int step) {
             return iterator().sliding(size, step).map(this::createFromAll);
         }
 
@@ -824,7 +828,7 @@ interface BitSetModule {
         }
 
         @Override
-        public BitSet<T> take(long n) {
+        public BitSet<T> take(int n) {
             if (n <= 0) {
                 return createEmpty();
             } else if (n >= length()) {
@@ -835,7 +839,7 @@ interface BitSetModule {
         }
 
         @Override
-        public BitSet<T> takeRight(long n) {
+        public BitSet<T> takeRight(int n) {
             if (n <= 0) {
                 return createEmpty();
             } else if (n >= length()) {

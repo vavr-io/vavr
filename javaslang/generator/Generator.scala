@@ -986,6 +986,7 @@ def generateMainClasses(): Unit = {
       val Objects = im.getType("java.util.Objects")
       val Seq = im.getType("javaslang.collection.Seq")
       val List = im.getType("javaslang.collection.List")
+      val Iterator = im.getType("javaslang.collection.Iterator")
 
       xs"""
         /**
@@ -1262,6 +1263,13 @@ def generateMainClasses(): Unit = {
                   return Tuple.of(${(1 to i).gen(j => s"_$j")(", ")}, v);
               }
             """) }
+
+            ${(i > 0).gen(xs"""
+              public static $generics $className<${(1 to i).gen(j => s"Seq<? extends T$j>")(", ")}> sequence(Iterable<$className<${(1 to i).gen(j => s"? extends T$j")(", ")}>> tuples) {
+                Objects.requireNonNull(tuples, "tuples is null");
+                return new $className<>(${(1 to i).gen(j => s"${im.getType("javaslang.collection.Iterator")}.ofAll(tuples).map($className::_$j).toList()")(", ")});
+              }
+            """)}
         }
       """
     }
