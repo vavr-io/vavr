@@ -1254,7 +1254,17 @@ def generateMainClasses(): Unit = {
               }
             """)}
 
-            ${(i > 0 && i < 8).gen(xs"""
+            ${(i == 0).gen(xs"""
+              public <A> Tuple1<A> prepend(A v) {
+                 return new Tuple1<>(v);
+              }
+
+              public <A> Tuple1<A> append(A v) {
+                 return new Tuple1<>(v);
+              }
+            """)}
+
+            ${(i > 0 && i < N).gen(xs"""
               public <A> Tuple${i + 1}<A, ${(1 to i).gen(j => s"T$j")(", ")}> prepend(A v) {
                   return Tuple.of(v, ${(1 to i).gen(j => s"_$j")(", ")});
               }
@@ -1921,12 +1931,32 @@ def generateTestClasses(): Unit = {
                 """
               })("\n\n")}
 
-              ${(i > 0 && i < 8).gen(xs"""
+              ${(i == 0).gen(xs"""
+                @$test
+                public void shouldAppendTuple$i() {
+                    Tuple0 tuple = Tuple.instance();
+                    Tuple1<Integer> actual = tuple.append(42);
+                    Tuple1<Integer> expected = new Tuple1<>(42);
+
+                    assertThat(actual).isEqualTo(expected);
+                }
+
+                @$test
+                public void shouldPrependTuple$i() {
+                    Tuple0 tuple = Tuple.instance();
+                    Tuple1<Integer> actual = tuple.prepend(42);
+                    Tuple1<Integer> expected = new Tuple1<>(42);
+
+                    assertThat(actual).isEqualTo(expected);
+                }
+              """) }
+
+              ${(i > 0 && i < N).gen(xs"""
                 @$test
                 public void shouldAppendTuple$i() {
                     Tuple${i}<${(1 to i).gen(_ => "Integer")(", ")}> tuple = Tuple.of(${(1 to i).gen("" + _)(", ")});
-                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> actual = tuple.append(2016);
-                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> expected = Tuple.of(${(1 to i).gen("" + _)(", ")}, 2016);
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> actual = tuple.append(42);
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> expected = Tuple.of(${(1 to i).gen("" + _)(", ")}, 42);
 
                     assertThat(actual).isEqualTo(expected);
                 }
@@ -1934,8 +1964,8 @@ def generateTestClasses(): Unit = {
                 @$test
                 public void shouldPrependTuple$i() {
                     Tuple${i}<${(1 to i).gen(_ => "Integer")(", ")}> tuple = Tuple.of(${(1 to i).gen("" + _)(", ")});
-                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> actual = tuple.prepend(2016);
-                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> expected = Tuple.of(2016, ${(1 to i).gen("" + _)(", ")});
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> actual = tuple.prepend(42);
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> expected = Tuple.of(42, ${(1 to i).gen("" + _)(", ")});
 
                     assertThat(actual).isEqualTo(expected);
                 }

@@ -126,4 +126,12 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
         return INSTANCE;
     }
 
+    public <A> Tuple1<A> prepend(A v) {
+       return new Tuple1<>(v);
+    }
+
+    public <A> Tuple1<A> append(A v) {
+       return new Tuple1<>(v);
+    }
+
 }
