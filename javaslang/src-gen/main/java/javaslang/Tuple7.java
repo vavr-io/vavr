@@ -196,12 +196,34 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     }
 
     /**
+     * Wither of the 1st element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _1} due to possible ambiguity when using method reference (Tuple7::_1).
+     *
+     * @return a copy of this tuple with a new value for the 1st element of this Tuple.
+     */
+    public Tuple7<T1, T2, T3, T4, T5, T6, T7> w1(T1 t1) {
+        return new Tuple7<>(t1, _2, _3, _4, _5, _6, _7);
+    }
+
+    /**
      * Getter of the 2nd element of this tuple.
      *
      * @return the 2nd element of this Tuple.
      */
     public T2 _2() {
         return _2;
+    }
+
+    /**
+     * Wither of the 2nd element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _2} due to possible ambiguity when using method reference (Tuple7::_2).
+     *
+     * @return a copy of this tuple with a new value for the 2nd element of this Tuple.
+     */
+    public Tuple7<T1, T2, T3, T4, T5, T6, T7> w2(T2 t2) {
+        return new Tuple7<>(_1, t2, _3, _4, _5, _6, _7);
     }
 
     /**
@@ -214,12 +236,34 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     }
 
     /**
+     * Wither of the 3rd element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _3} due to possible ambiguity when using method reference (Tuple7::_3).
+     *
+     * @return a copy of this tuple with a new value for the 3rd element of this Tuple.
+     */
+    public Tuple7<T1, T2, T3, T4, T5, T6, T7> w3(T3 t3) {
+        return new Tuple7<>(_1, _2, t3, _4, _5, _6, _7);
+    }
+
+    /**
      * Getter of the 4th element of this tuple.
      *
      * @return the 4th element of this Tuple.
      */
     public T4 _4() {
         return _4;
+    }
+
+    /**
+     * Wither of the 4th element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _4} due to possible ambiguity when using method reference (Tuple7::_4).
+     *
+     * @return a copy of this tuple with a new value for the 4th element of this Tuple.
+     */
+    public Tuple7<T1, T2, T3, T4, T5, T6, T7> w4(T4 t4) {
+        return new Tuple7<>(_1, _2, _3, t4, _5, _6, _7);
     }
 
     /**
@@ -232,6 +276,17 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     }
 
     /**
+     * Wither of the 5th element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _5} due to possible ambiguity when using method reference (Tuple7::_5).
+     *
+     * @return a copy of this tuple with a new value for the 5th element of this Tuple.
+     */
+    public Tuple7<T1, T2, T3, T4, T5, T6, T7> w5(T5 t5) {
+        return new Tuple7<>(_1, _2, _3, _4, t5, _6, _7);
+    }
+
+    /**
      * Getter of the 6th element of this tuple.
      *
      * @return the 6th element of this Tuple.
@@ -241,12 +296,34 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     }
 
     /**
+     * Wither of the 6th element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _6} due to possible ambiguity when using method reference (Tuple7::_6).
+     *
+     * @return a copy of this tuple with a new value for the 6th element of this Tuple.
+     */
+    public Tuple7<T1, T2, T3, T4, T5, T6, T7> w6(T6 t6) {
+        return new Tuple7<>(_1, _2, _3, _4, _5, t6, _7);
+    }
+
+    /**
      * Getter of the 7th element of this tuple.
      *
      * @return the 7th element of this Tuple.
      */
     public T7 _7() {
         return _7;
+    }
+
+    /**
+     * Wither of the 7th element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _7} due to possible ambiguity when using method reference (Tuple7::_7).
+     *
+     * @return a copy of this tuple with a new value for the 7th element of this Tuple.
+     */
+    public Tuple7<T1, T2, T3, T4, T5, T6, T7> w7(T7 t7) {
+        return new Tuple7<>(_1, _2, _3, _4, _5, _6, t7);
     }
 
     /**

@@ -214,12 +214,34 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     }
 
     /**
+     * Wither of the 1st element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _1} due to possible ambiguity when using method reference (Tuple8::_1).
+     *
+     * @return a copy of this tuple with a new value for the 1st element of this Tuple.
+     */
+    public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> w1(T1 t1) {
+        return new Tuple8<>(t1, _2, _3, _4, _5, _6, _7, _8);
+    }
+
+    /**
      * Getter of the 2nd element of this tuple.
      *
      * @return the 2nd element of this Tuple.
      */
     public T2 _2() {
         return _2;
+    }
+
+    /**
+     * Wither of the 2nd element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _2} due to possible ambiguity when using method reference (Tuple8::_2).
+     *
+     * @return a copy of this tuple with a new value for the 2nd element of this Tuple.
+     */
+    public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> w2(T2 t2) {
+        return new Tuple8<>(_1, t2, _3, _4, _5, _6, _7, _8);
     }
 
     /**
@@ -232,12 +254,34 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     }
 
     /**
+     * Wither of the 3rd element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _3} due to possible ambiguity when using method reference (Tuple8::_3).
+     *
+     * @return a copy of this tuple with a new value for the 3rd element of this Tuple.
+     */
+    public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> w3(T3 t3) {
+        return new Tuple8<>(_1, _2, t3, _4, _5, _6, _7, _8);
+    }
+
+    /**
      * Getter of the 4th element of this tuple.
      *
      * @return the 4th element of this Tuple.
      */
     public T4 _4() {
         return _4;
+    }
+
+    /**
+     * Wither of the 4th element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _4} due to possible ambiguity when using method reference (Tuple8::_4).
+     *
+     * @return a copy of this tuple with a new value for the 4th element of this Tuple.
+     */
+    public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> w4(T4 t4) {
+        return new Tuple8<>(_1, _2, _3, t4, _5, _6, _7, _8);
     }
 
     /**
@@ -250,12 +294,34 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     }
 
     /**
+     * Wither of the 5th element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _5} due to possible ambiguity when using method reference (Tuple8::_5).
+     *
+     * @return a copy of this tuple with a new value for the 5th element of this Tuple.
+     */
+    public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> w5(T5 t5) {
+        return new Tuple8<>(_1, _2, _3, _4, t5, _6, _7, _8);
+    }
+
+    /**
      * Getter of the 6th element of this tuple.
      *
      * @return the 6th element of this Tuple.
      */
     public T6 _6() {
         return _6;
+    }
+
+    /**
+     * Wither of the 6th element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _6} due to possible ambiguity when using method reference (Tuple8::_6).
+     *
+     * @return a copy of this tuple with a new value for the 6th element of this Tuple.
+     */
+    public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> w6(T6 t6) {
+        return new Tuple8<>(_1, _2, _3, _4, _5, t6, _7, _8);
     }
 
     /**
@@ -268,12 +334,34 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     }
 
     /**
+     * Wither of the 7th element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _7} due to possible ambiguity when using method reference (Tuple8::_7).
+     *
+     * @return a copy of this tuple with a new value for the 7th element of this Tuple.
+     */
+    public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> w7(T7 t7) {
+        return new Tuple8<>(_1, _2, _3, _4, _5, _6, t7, _8);
+    }
+
+    /**
      * Getter of the 8th element of this tuple.
      *
      * @return the 8th element of this Tuple.
      */
     public T8 _8() {
         return _8;
+    }
+
+    /**
+     * Wither of the 8th element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _8} due to possible ambiguity when using method reference (Tuple8::_8).
+     *
+     * @return a copy of this tuple with a new value for the 8th element of this Tuple.
+     */
+    public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> w8(T8 t8) {
+        return new Tuple8<>(_1, _2, _3, _4, _5, _6, _7, t8);
     }
 
     /**

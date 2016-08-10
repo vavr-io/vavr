@@ -1098,6 +1098,17 @@ def generateMainClasses(): Unit = {
               public T$j _$j() {
                   return _$j;
               }
+
+              /$javadoc
+               * Wither of the ${j.ordinal} element of this tuple.
+               *
+               * Note: The wither is NOT named {@code _$j} due to possible ambiguity when using method reference ($className::_$j).
+               *
+               * @return a copy of this tuple with a new value for the ${j.ordinal} element of this Tuple.
+               */
+              public $className$generics w$j(T$j t$j) {
+                  return new $className<>(${(1 to (j - 1)).gen(k => s"_$k")(", ")}${(j > 1).gen(", ")}t$j${(j < i).gen(", ")}${((j + 1) to i).gen(k => s"_$k")(", ")});
+              }
             """)("\n\n")}
 
             ${(i == 2).gen(xs"""

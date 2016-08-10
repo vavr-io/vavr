@@ -107,12 +107,34 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
     }
 
     /**
+     * Wither of the 1st element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _1} due to possible ambiguity when using method reference (Tuple2::_1).
+     *
+     * @return a copy of this tuple with a new value for the 1st element of this Tuple.
+     */
+    public Tuple2<T1, T2> w1(T1 t1) {
+        return new Tuple2<>(t1, _2);
+    }
+
+    /**
      * Getter of the 2nd element of this tuple.
      *
      * @return the 2nd element of this Tuple.
      */
     public T2 _2() {
         return _2;
+    }
+
+    /**
+     * Wither of the 2nd element of this tuple.
+     *
+     * Note: The wither is NOT named {@code _2} due to possible ambiguity when using method reference (Tuple2::_2).
+     *
+     * @return a copy of this tuple with a new value for the 2nd element of this Tuple.
+     */
+    public Tuple2<T1, T2> w2(T2 t2) {
+        return new Tuple2<>(_1, t2);
     }
 
     /**
