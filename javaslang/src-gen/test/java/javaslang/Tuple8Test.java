@@ -215,6 +215,16 @@ public class Tuple8Test {
       assertThat(actual).isEqualTo(expected);
     }
 
+    @Test(expected = RuntimeException.class)
+    public void shouldAppendTuple8() {
+        Tuple.of(1, 2, 3, 4, 5, 6, 7, 8).append(42);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldPrependTuple8() {
+        Tuple.of(1, 2, 3, 4, 5, 6, 7, 8).prepend(42);
+    }
+
     @Test
     public void shouldApplyTuple() {
         final Tuple8<Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();

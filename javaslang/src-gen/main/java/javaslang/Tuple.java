@@ -33,6 +33,10 @@ public interface Tuple {
      */
     Seq<?> toSeq();
 
+    <A> Tuple append(A v);
+
+    <A> Tuple prepend(A v);
+
     // -- factory methods
 
     /**
