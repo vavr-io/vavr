@@ -5,8 +5,10 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
-import javaslang.collection.CharSeqModule.Combinations;
+import javaslang.Kind1;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -18,23 +20,42 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collector;
 
+import static javaslang.collection.Arrays2.toPrimitiveArray;
+
 /**
  * The CharSeq (read: character sequence) collection essentially is a rich String wrapper having all operations
  * we know from the functional Javaslang collections.
  *
- * @author Ruslan Sennov, Daniel Dietrich
+ * @author Ruslan Sennov, Daniel Dietrich, Pap Lőrinc
  * @since 2.0.0
  */
 public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, IndexedSeq<Character>, Serializable {
-
     private static final long serialVersionUID = 1L;
 
-    private static final CharSeq EMPTY = new CharSeq("");
+    private static final CharSeq EMPTY = new CharSeq(Vector.empty());
 
-    private final String back;
+    final Vector<Character> delegate;
+
+    private CharSeq(Vector<Character> chars) {
+        if (chars.nonEmpty() && !chars.type.isPrimitive()) {
+            this.delegate = Vector.ofAll(Arrays2.<char[]> toPrimitiveArray(char.class, chars.toJavaArray()));
+        } else {
+            this.delegate = chars;
+        }
+    }
 
     private CharSeq(String javaString) {
-        this.back = javaString;
+        this(Vector.ofAll(javaString.toCharArray()));
+    }
+
+    private static CharSeq of(Vector<Character> chars) {
+        return chars.isEmpty() ? empty()
+                               : new CharSeq(chars);
+    }
+
+    private CharSeq from(Vector<Character> chars) {
+        return (chars == delegate) ? this
+                                   : of(chars);
     }
 
     public static CharSeq empty() {
@@ -70,7 +91,8 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         if (sequence instanceof CharSeq) {
             return (CharSeq) sequence;
         } else {
-            return sequence.length() == 0 ? empty() : new CharSeq(sequence.toString());
+            return (sequence.length() == 0) ? empty()
+                                            : new CharSeq(sequence.toString());
         }
     }
 
@@ -81,7 +103,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return A new {@code CharSeq} instance containing the given element
      */
     public static CharSeq of(char character) {
-        return new CharSeq(new String(new char[] { character }));
+        return of(Vector.ofAll(new char[] {character}));
     }
 
     /**
@@ -92,14 +114,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws NullPointerException if {@code elements} is null
      */
     public static CharSeq of(char... characters) {
-        Objects.requireNonNull(characters, "characters is null");
-        if (characters.length == 0) {
-            return empty();
-        } else {
-            final char[] chrs = new char[characters.length];
-            System.arraycopy(characters, 0, chrs, 0, characters.length);
-            return new CharSeq(new String(chrs));
-        }
+        return of(Vector.ofAll(characters));
     }
 
     /**
@@ -113,12 +128,8 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws NullPointerException if {@code elements} is null
      */
     public static CharSeq ofAll(Iterable<? extends Character> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        final StringBuilder sb = new StringBuilder();
-        for (Character character : elements) {
-            sb.append(character);
-        }
-        return sb.length() == 0 ? EMPTY : of(sb);
+        final char[] array = toPrimitiveArray(char.class, Vector.ofAll(elements).toJavaArray());
+        return of(Vector.ofAll(array));
     }
 
     /**
@@ -131,12 +142,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws NullPointerException if {@code f} is null
      */
     public static CharSeq tabulate(int n, Function<? super Integer, ? extends Character> f) {
-        Objects.requireNonNull(f, "f is null");
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < n; i++) {
-            sb.append(f.apply(i));
-        }
-        return of(sb);
+        return of(Vector.tabulate(n, f));
     }
 
     /**
@@ -148,7 +154,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws NullPointerException if {@code s} is null
      */
     public static CharSeq fill(int n, Supplier<? extends Character> s) {
-        return tabulate(n, anything -> s.get());
+        return of(Vector.fill(n, s));
     }
 
     /**
@@ -167,11 +173,11 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return a range of characters as specified or the empty range if {@code from >= toExclusive}
      */
     public static CharSeq range(char from, char toExclusive) {
-        return new CharSeq(Iterator.range(from, toExclusive).mkString());
+        return of(Vector.range(from, toExclusive));
     }
 
     public static CharSeq rangeBy(char from, char toExclusive, int step) {
-        return new CharSeq(Iterator.rangeBy(from, toExclusive, step).mkString());
+        return of(Vector.rangeBy(from, toExclusive, step));
     }
 
     /**
@@ -190,7 +196,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return a range of characters as specified or the empty range if {@code from > toInclusive}
      */
     public static CharSeq rangeClosed(char from, char toInclusive) {
-        return new CharSeq(Iterator.rangeClosed(from, toInclusive).mkString());
+        return of(Vector.rangeClosed(from, toInclusive));
     }
 
     /**
@@ -214,7 +220,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static CharSeq rangeClosedBy(char from, char toInclusive, int step) {
-        return new CharSeq(Iterator.rangeClosedBy(from, toInclusive, step).mkString());
+        return of(Vector.rangeClosedBy(from, toInclusive, step));
     }
 
     /**
@@ -241,7 +247,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws IllegalArgumentException if {@code f} is null
      */
     public static <T> CharSeq unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends Character, ? extends T>>> f) {
-        return CharSeq.ofAll(Iterator.unfoldRight(seed, f));
+        return of(Vector.unfoldRight(seed, f));
     }
 
     /**
@@ -268,7 +274,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws IllegalArgumentException if {@code f} is null
      */
     public static <T> CharSeq unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends Character>>> f) {
-        return CharSeq.ofAll(Iterator.unfoldLeft(seed, f));
+        return of(Vector.unfoldLeft(seed, f));
     }
 
     /**
@@ -295,17 +301,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws IllegalArgumentException if {@code f} is null
      */
     public static CharSeq unfold(Character seed, Function<? super Character, Option<Tuple2<? extends Character, ? extends Character>>> f) {
-        return CharSeq.ofAll(Iterator.unfold(seed, f));
-    }
-
-    private Tuple2<CharSeq, CharSeq> splitByBuilder(StringBuilder sb) {
-        if (sb.length() == 0) {
-            return Tuple.of(EMPTY, this);
-        } else if (sb.length() == length()) {
-            return Tuple.of(this, EMPTY);
-        } else {
-            return Tuple.of(of(sb), of(back.substring(sb.length())));
-        }
+        return of(Vector.unfold(seed, f));
     }
 
     /**
@@ -316,10 +312,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return A CharSeq representing {@code character * times}
      */
     public static CharSeq repeat(char character, int times) {
-        final int length = Math.max(times, 0);
-        final char[] characters = new char[length];
-        Arrays.fill(characters, character);
-        return new CharSeq(String.valueOf(characters));
+        return of(character).repeat(times);
     }
 
     /**
@@ -331,11 +324,11 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return A CharSeq representing {@code this * times}
      */
     public CharSeq repeat(int times) {
-        final StringBuilder builder = new StringBuilder();
+        Vector<Character> result = Vector.empty();
         for (int i = 0; i < times; i++) {
-            builder.append(back);
+            result = result.appendAll(delegate);
         }
-        return of(builder);
+        return from(result);
     }
 
     //
@@ -346,32 +339,27 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public CharSeq append(Character element) {
-        return of(back + element);
+        return from(delegate.append(element));
     }
 
     @Override
     public CharSeq appendAll(Iterable<? extends Character> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        final StringBuilder sb = new StringBuilder(back);
-        for (char element : elements) {
-            sb.append(element);
-        }
-        return of(sb);
+        return from(delegate.appendAll(elements));
     }
 
     @Override
-    public IndexedSeq<CharSeq> combinations() {
-        return Vector.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
+    public Vector<CharSeq> combinations() {
+        return delegate.combinations().map(CharSeq::of);
     }
 
     @Override
-    public IndexedSeq<CharSeq> combinations(int k) {
-        return Combinations.apply(this, Math.max(k, 0));
+    public Vector<CharSeq> combinations(int k) {
+        return delegate.combinations(k).map(CharSeq::of);
     }
 
     @Override
     public Iterator<CharSeq> crossProduct(int power) {
-        return Collections.crossProduct(CharSeq.empty(), this, power);
+        return Collections.crossProduct(empty(), this, power);
     }
 
     @Override
@@ -395,88 +383,36 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public CharSeq drop(int n) {
-        if (n <= 0) {
-            return this;
-        } else if (n >= length()) {
-            return EMPTY;
-        } else {
-            return of(back.substring(n));
-        }
+        return from(delegate.drop(n));
     }
 
     @Override
     public CharSeq dropRight(int n) {
-        if (n <= 0) {
-            return this;
-        } else if (n >= length()) {
-            return EMPTY;
-        } else {
-            return of(back.substring(0, length() - n));
-        }
+        return from(delegate.dropRight(n));
     }
 
     @Override
     public CharSeq dropUntil(Predicate<? super Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return dropWhile(predicate.negate());
+        return from(delegate.dropUntil(predicate));
     }
 
     @Override
     public CharSeq dropWhile(Predicate<? super Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        int index = 0;
-        while (index < length() && predicate.test(charAt(index))) {
-            index++;
-        }
-        return index < length() ? (index == 0 ? this : of(back.substring(index))) : empty();
+        return from(delegate.dropWhile(predicate));
     }
 
     @Override
     public CharSeq filter(Predicate<? super Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < back.length(); i++) {
-            final char ch = get(i);
-            if (predicate.test(ch)) {
-                sb.append(ch);
-            }
-        }
-        if (sb.length() == 0) {
-            return EMPTY;
-        } else if (sb.length() == length()) {
-            return this;
-        } else {
-            return of(sb);
-        }
+        return from(delegate.filter(predicate));
     }
 
     @Override
-    public <U> IndexedSeq<U> flatMap(Function<? super Character, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return Vector.empty();
-        } else {
-            IndexedSeq<U> result = Vector.empty();
-            for (int i = 0; i < length(); i++) {
-                for (U u : mapper.apply(get(i))) {
-                    result = result.append(u);
-                }
-            }
-            return result;
-        }
+    public <U> Vector<U> flatMap(Function<? super Character, ? extends Iterable<? extends U>> mapper) {
+        return delegate.flatMap(mapper);
     }
 
     public CharSeq flatMapChars(CharFunction<? extends CharSequence> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return this;
-        } else {
-            final StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < back.length(); i++) {
-                builder.append(mapper.apply(back.charAt(i)));
-            }
-            return of(builder);
-        }
+        return from(delegate.flatMap(c -> of(mapper.apply(c))));
     }
 
     @Override
@@ -496,11 +432,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public CharSeq init() {
-        if (isEmpty()) {
-            throw new UnsupportedOperationException("init of empty string");
-        } else {
-            return of(back.substring(0, length() - 1));
-        }
+        return from(delegate.init());
     }
 
     @Override
@@ -510,231 +442,94 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public CharSeq insert(int index, Character element) {
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("insert(" + index + ", e)");
-        }
-        if (index > length()) {
-            throw new IndexOutOfBoundsException("insert(" + index + ", e) on String of length " + length());
-        }
-        return of(new StringBuilder(back).insert(index, element).toString());
+        return from(delegate.insert(index, element));
     }
 
     @Override
     public CharSeq insertAll(int index, Iterable<? extends Character> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
-        }
-        if (index > length()) {
-            throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on String of length " + length());
-        }
-        final String javaString = back;
-        final StringBuilder sb = new StringBuilder(javaString.substring(0, index));
-        for (Character element : elements) {
-            sb.append(element);
-        }
-        sb.append(javaString.substring(index));
-        return of(sb);
+        return from(delegate.insertAll(index, elements));
     }
 
     @Override
     public Iterator<Character> iterator() {
-        return Iterator.ofAll(toCharArray());
+        return delegate.iterator();
     }
 
     @Override
     public CharSeq intersperse(Character element) {
-        final StringBuilder sb = new StringBuilder();
-        if (!isEmpty()) {
-            sb.append(head());
-        }
-        for (int i = 1; i < length(); i++) {
-            sb.append(element)
-              .append(get(i));
-        }
-        return sb.length() == 0 ? EMPTY : of(sb);
+        return from(delegate.intersperse(element));
     }
 
     @Override
-    public <U> IndexedSeq<U> map(Function<? super Character, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        IndexedSeq<U> result = Vector.empty();
-        for (int i = 0; i < length(); i++) {
-            result = result.append(mapper.apply(get(i)));
-        }
-        return result;
+    public <U> Vector<U> map(Function<? super Character, ? extends U> mapper) {
+        return delegate.map(mapper);
     }
 
     @Override
     public CharSeq padTo(int length, Character element) {
-        final int actualLength = back.length();
-        if (length <= actualLength) {
-            return this;
-        } else {
-            return new CharSeq(back + padding(element, length - actualLength));
-        }
+        return from(delegate.padTo(length, element));
     }
 
     @Override
     public CharSeq leftPadTo(int length, Character element) {
-        final int actualLength = back.length();
-        if (length <= actualLength) {
-            return this;
-        } else {
-            return of(padding(element, length - actualLength).append(back));
-        }
-    }
-
-    private static StringBuilder padding(Character element, int limit) {
-        final StringBuilder padding = new StringBuilder();
-        for (int i = 0; i < limit; i++) {
-            padding.append(element);
-        }
-        return padding;
+        return from(delegate.leftPadTo(length, element));
     }
 
     @Override
     public CharSeq patch(int from, Iterable<? extends Character> that, int replaced) {
-        from = from < 0 ? 0 : from > length() ? length() : from;
-        replaced = replaced < 0 ? 0 : replaced;
-        final StringBuilder sb = new StringBuilder(back.substring(0, from));
-        for (Character character : that) {
-            sb.append(character);
-        }
-        from += replaced;
-        if (from < length()) {
-            sb.append(back.substring(from));
-        }
-        return sb.length() == 0 ? EMPTY : of(sb);
+        return from(delegate.patch(from, that, replaced));
     }
 
     public CharSeq mapChars(CharUnaryOperator mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return this;
-        } else {
-            final char[] chars = back.toCharArray();
-            for (int i = 0; i < chars.length; i++) {
-                chars[i] = mapper.apply(chars[i]);
-            }
-            return CharSeq.of(chars);
-        }
+        return from(delegate.map(mapper::apply));
     }
 
     @Override
     public Tuple2<CharSeq, CharSeq> partition(Predicate<? super Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        if (isEmpty()) {
-            return Tuple.of(EMPTY, EMPTY);
-        }
-        final StringBuilder left = new StringBuilder();
-        final StringBuilder right = new StringBuilder();
-        for (int i = 0; i < length(); i++) {
-            final Character t = get(i);
-            (predicate.test(t) ? left : right).append(t);
-        }
-        if (left.length() == 0) {
-            return Tuple.of(EMPTY, of(right.toString()));
-        } else if (right.length() == 0) {
-            return Tuple.of(of(left.toString()), EMPTY);
-        } else {
-            return Tuple.of(of(left.toString()), of(right.toString()));
-        }
+        return delegate.partition(predicate)
+                       .map((l, r) -> Tuple.of(from(l), from(r)));
     }
 
     @Override
     public CharSeq peek(Consumer<? super Character> action) {
-        Objects.requireNonNull(action, "action is null");
-        if (!isEmpty()) {
-            action.accept(get(0));
-        }
+        delegate.peek(action);
         return this;
     }
 
     @Override
-    public IndexedSeq<CharSeq> permutations() {
-        if (isEmpty()) {
-            return Vector.empty();
-        } else {
-            if (length() == 1) {
-                return Vector.of(this);
-            } else {
-                IndexedSeq<CharSeq> result = Vector.empty();
-                for (Character t : distinct()) {
-                    for (CharSeq ts : remove(t).permutations()) {
-                        result = result.append(CharSeq.of(t).appendAll(ts));
-                    }
-                }
-                return result;
-            }
-        }
+    public Vector<CharSeq> permutations() {
+        return delegate.permutations().map(CharSeq::of);
     }
 
     @Override
     public CharSeq prepend(Character element) {
-        return of(element + back);
+        return from(delegate.prepend(element));
     }
 
     @Override
     public CharSeq prependAll(Iterable<? extends Character> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        final StringBuilder sb = new StringBuilder();
-        for (Character element : elements) {
-            sb.append(element);
-        }
-        sb.append(back);
-        return sb.length() == 0 ? EMPTY : of(sb);
+        return from(delegate.prependAll(elements));
     }
 
     @Override
     public CharSeq remove(Character element) {
-        final StringBuilder sb = new StringBuilder();
-        boolean found = false;
-        for (int i = 0; i < length(); i++) {
-            final char c = get(i);
-            if (!found && c == element) {
-                found = true;
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.length() == 0 ? EMPTY : sb.length() == length() ? this : of(sb);
+        return from(delegate.remove(element));
     }
 
     @Override
     public CharSeq removeFirst(Predicate<Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final StringBuilder sb = new StringBuilder();
-        boolean found = false;
-        for (int i = 0; i < back.length(); i++) {
-            final char ch = get(i);
-            if (predicate.test(ch)) {
-                if (found) {
-                    sb.append(ch);
-                }
-                found = true;
-            } else {
-                sb.append(ch);
-            }
-        }
-        return found ? (sb.length() == 0 ? EMPTY : of(sb.toString())) : this;
+        return from(delegate.removeFirst(predicate));
     }
 
     @Override
     public CharSeq removeLast(Predicate<Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        for (int i = length() - 1; i >= 0; i--) {
-            if (predicate.test(get(i))) {
-                return removeAt(i);
-            }
-        }
-        return this;
+        return from(delegate.removeLast(predicate));
     }
 
     @Override
     public CharSeq removeAt(int index) {
-        final String removed = back.substring(0, index) + back.substring(index + 1);
-        return removed.isEmpty() ? EMPTY : of(removed);
+        return from(delegate.removeAt(index));
     }
 
     @Override
@@ -754,34 +549,21 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public CharSeq replace(Character currentElement, Character newElement) {
-        final StringBuilder sb = new StringBuilder();
-        boolean found = false;
-        for (int i = 0; i < length(); i++) {
-            final char c = get(i);
-            if (c == currentElement && !found) {
-                sb.append(newElement);
-                found = true;
-            } else {
-                sb.append(c);
+        for (int i = 0; i < length(); ) {
+            final char[] leaf = (char[]) delegate.getLeafUnsafe(i);
+            for (char value : leaf) {
+                if (value == currentElement) {
+                    return update(i, newElement);
+                }
+                i++;
             }
         }
-        return found ? of(sb) : this;
+        return this;
     }
 
     @Override
     public CharSeq replaceAll(Character currentElement, Character newElement) {
-        final StringBuilder sb = new StringBuilder();
-        boolean found = false;
-        for (int i = 0; i < length(); i++) {
-            final char c = get(i);
-            if (c == currentElement) {
-                sb.append(newElement);
-                found = true;
-            } else {
-                sb.append(c);
-            }
-        }
-        return found ? of(sb) : this;
+        return from(delegate.replaceAll(currentElement, newElement));
     }
 
     @Override
@@ -791,37 +573,29 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public CharSeq reverse() {
-        return of(new StringBuilder(back).reverse().toString());
+        return from(delegate.reverse());
     }
 
     @Override
-    public IndexedSeq<Character> scan(Character zero, BiFunction<? super Character, ? super Character, ? extends Character> operation) {
+    public Vector<Character> scan(Character zero, BiFunction<? super Character, ? super Character, ? extends Character> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    public <U> IndexedSeq<U> scanLeft(U zero, BiFunction<? super U, ? super Character, ? extends U> operation) {
+    public <U> Vector<U> scanLeft(U zero, BiFunction<? super U, ? super Character, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         return Collections.scanLeft(this, zero, operation, Vector.empty(), Vector::append, Function.identity());
     }
 
     @Override
-    public <U> IndexedSeq<U> scanRight(U zero, BiFunction<? super Character, ? super U, ? extends U> operation) {
+    public <U> Vector<U> scanRight(U zero, BiFunction<? super Character, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         return Collections.scanRight(this, zero, operation, Vector.empty(), Vector::prepend, Function.identity());
     }
 
     @Override
     public CharSeq slice(int beginIndex, int endIndex) {
-        final int from = beginIndex < 0 ? 0 : beginIndex;
-        final int to = endIndex > length() ? length() : endIndex;
-        if (from >= to) {
-            return EMPTY;
-        }
-        if (from <= 0 && to >= length()) {
-            return this;
-        }
-        return CharSeq.of(back.substring(from, to));
+        return from(delegate.slice(beginIndex, endIndex));
     }
 
     @Override
@@ -831,18 +605,18 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public Iterator<CharSeq> sliding(int size, int step) {
-        return iterator().sliding(size, step).map(CharSeq::ofAll);
+        return delegate.sliding(size, step).map(CharSeq::ofAll);
     }
 
     @Override
     public CharSeq sorted() {
-        return isEmpty() ? this : toJavaStream().sorted().collect(CharSeq.collector());
+        return from(delegate.sorted());
     }
 
     @Override
     public CharSeq sorted(Comparator<? super Character> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return isEmpty() ? this : toJavaStream().sorted(comparator).collect(CharSeq.collector());
+        return from(delegate.sorted(comparator));
     }
 
     @Override
@@ -852,53 +626,28 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public <U> CharSeq sortBy(Comparator<? super U> comparator, Function<? super Character, ? extends U> mapper) {
-        final Function<? super Character, ? extends U> domain = Function1.of(mapper::apply).memoized();
-        return toJavaStream()
-                .sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
-                .collect(collector());
+        return from(delegate.sortBy(comparator, mapper));
     }
 
     @Override
     public Tuple2<CharSeq, CharSeq> span(Predicate<? super Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length(); i++) {
-            final char c = get(i);
-            if (predicate.test(c)) {
-                sb.append(c);
-            } else {
-                break;
-            }
-        }
-        return splitByBuilder(sb);
+        return delegate.span(predicate)
+                       .map((l, r) -> Tuple.of(from(l), from(r)));
     }
 
     @Override
     public Spliterator<Character> spliterator() {
-        return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
+        return delegate.spliterator();
     }
 
     @Override
     public CharSeq subSequence(int beginIndex) {
-        if (beginIndex < 0 || beginIndex > length()) {
-            throw new IndexOutOfBoundsException("begin index " + beginIndex + " < 0");
-        }
-        if (beginIndex == 0) {
-            return this;
-        } else if (beginIndex == length()) {
-            return EMPTY;
-        } else {
-            return CharSeq.of(back.substring(beginIndex));
-        }
+        return from(delegate.subSequence(beginIndex));
     }
 
     @Override
     public CharSeq tail() {
-        if (isEmpty()) {
-            throw new UnsupportedOperationException("tail of empty string");
-        } else {
-            return CharSeq.of(back.substring(1));
-        }
+        return from(delegate.tail());
     }
 
     @Override
@@ -908,44 +657,22 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public CharSeq take(int n) {
-        if (n <= 0) {
-            return EMPTY;
-        } else if (n >= length()) {
-            return this;
-        } else {
-            return CharSeq.of(back.substring(0, n));
-        }
+        return from(delegate.take(n));
     }
 
     @Override
     public CharSeq takeRight(int n) {
-        if (n <= 0) {
-            return EMPTY;
-        } else if (n >= length()) {
-            return this;
-        } else {
-            return CharSeq.of(back.substring(length() - n));
-        }
+        return from(delegate.takeRight(n));
     }
 
     @Override
     public CharSeq takeUntil(Predicate<? super Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return takeWhile(predicate.negate());
+        return from(delegate.takeUntil(predicate));
     }
 
     @Override
     public CharSeq takeWhile(Predicate<? super Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length(); i++) {
-            final char c = get(i);
-            if (!predicate.test(c)) {
-                break;
-            }
-            sb.append(c);
-        }
-        return sb.length() == length() ? this : sb.length() == 0 ? EMPTY : of(sb);
+        return from(delegate.takeWhile(predicate));
     }
 
     /**
@@ -962,176 +689,91 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public <U> IndexedSeq<U> unit(Iterable<? extends U> iterable) {
+    public <U> Vector<U> unit(Iterable<? extends U> iterable) {
         return Vector.ofAll(iterable);
     }
 
     @Override
-    public <T1, T2> Tuple2<IndexedSeq<T1>, IndexedSeq<T2>> unzip(
-            Function<? super Character, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        IndexedSeq<T1> xs = Vector.empty();
-        IndexedSeq<T2> ys = Vector.empty();
-        for (int i = 0; i < length(); i++) {
-            final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(get(i));
-            xs = xs.append(t._1);
-            ys = ys.append(t._2);
-        }
-        return Tuple.of(xs, ys);
+    public <T1, T2> Tuple2<Vector<T1>, Vector<T2>> unzip(Function<? super Character, Tuple2<? extends T1, ? extends T2>> unzipper) {
+        return delegate.unzip(unzipper);
     }
 
     @Override
-    public <T1, T2, T3> Tuple3<IndexedSeq<T1>, IndexedSeq<T2>, IndexedSeq<T3>> unzip3(
-            Function<? super Character, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        IndexedSeq<T1> xs = Vector.empty();
-        IndexedSeq<T2> ys = Vector.empty();
-        IndexedSeq<T3> zs = Vector.empty();
-        for (int i = 0; i < length(); i++) {
-            final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(get(i));
-            xs = xs.append(t._1);
-            ys = ys.append(t._2);
-            zs = zs.append(t._3);
-        }
-        return Tuple.of(xs, ys, zs);
+    public <T1, T2, T3> Tuple3<Vector<T1>, Vector<T2>, Vector<T3>> unzip3(Function<? super Character, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+        return delegate.unzip3(unzipper);
     }
 
     @Override
     public CharSeq update(int index, Character element) {
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("update(" + index + ")");
-        }
-        if (index >= length()) {
-            throw new IndexOutOfBoundsException("update(" + index + ")");
-        }
-        return of(back.substring(0, index) + element + back.substring(index + 1));
+        return from(delegate.update(index, element));
     }
 
     @Override
-    public <U> IndexedSeq<Tuple2<Character, U>> zip(Iterable<? extends U> that) {
+    public <U> Vector<Tuple2<Character, U>> zip(Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }
 
     @Override
-    public <U, R> IndexedSeq<R> zipWith(Iterable<? extends U> that, BiFunction<? super Character, ? super U, ? extends R> mapper) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(mapper, "mapper is null");
-        IndexedSeq<R> result = Vector.empty();
-        final Iterator<Character> list1 = iterator();
-        final java.util.Iterator<? extends U> list2 = that.iterator();
-        while (list1.hasNext() && list2.hasNext()) {
-            result = result.append(mapper.apply(list1.next(), list2.next()));
-        }
-        return result;
+    public <U, R> Vector<R> zipWith(Iterable<? extends U> that, BiFunction<? super Character, ? super U, ? extends R> mapper) {
+        return delegate.zipWith(that, mapper);
     }
 
     @Override
-    public <U> IndexedSeq<Tuple2<Character, U>> zipAll(Iterable<? extends U> that, Character thisElem, U thatElem) {
-        Objects.requireNonNull(that, "that is null");
-        IndexedSeq<Tuple2<Character, U>> result = Vector.empty();
-        final Iterator<Character> list1 = iterator();
-        final java.util.Iterator<? extends U> list2 = that.iterator();
-        while (list1.hasNext() || list2.hasNext()) {
-            final Character elem1 = list1.hasNext() ? list1.next() : thisElem;
-            final U elem2 = list2.hasNext() ? list2.next() : thatElem;
-            result = result.append(Tuple.of(elem1, elem2));
-        }
-        return result;
+    public <U> Vector<Tuple2<Character, U>> zipAll(Iterable<? extends U> that, Character thisElem, U thatElem) {
+        return delegate.zipAll(that, thisElem, thatElem);
     }
 
     @Override
-    public IndexedSeq<Tuple2<Character, Integer>> zipWithIndex() {
+    public Vector<Tuple2<Character, Integer>> zipWithIndex() {
         return zipWithIndex(Tuple::of);
     }
 
     @Override
-    public <U> IndexedSeq<U> zipWithIndex(BiFunction<? super Character, ? super Integer, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        IndexedSeq<U> result = Vector.empty();
-        for (int i = 0; i < length(); i++) {
-            result = result.append(mapper.apply(get(i), i));
-        }
-        return result;
+    public <U> Vector<U> zipWithIndex(BiFunction<? super Character, ? super Integer, ? extends U> mapper) {
+        return delegate.zipWithIndex(mapper);
     }
 
     @Override
     public Character get(int index) {
-        return back.charAt(index);
+        return delegate.get(index);
     }
 
     @Override
     public int indexOf(Character element, int from) {
-        return back.indexOf(element, from);
+        return delegate.indexOf(element, from);
     }
 
     @Override
     public int lastIndexOf(Character element, int end) {
-        return back.lastIndexOf(element, end);
+        return delegate.lastIndexOf(element, end);
     }
 
     @Override
     public Tuple2<CharSeq, CharSeq> splitAt(int n) {
-        if (n <= 0) {
-            return Tuple.of(EMPTY, this);
-        } else if (n >= length()) {
-            return Tuple.of(this, EMPTY);
-        } else {
-            return Tuple.of(of(back.substring(0, n)), of(back.substring(n)));
-        }
+        return delegate.splitAt(n)
+                       .map((l, r) -> Tuple.of(from(l), from(r)));
     }
 
     @Override
     public Tuple2<CharSeq, CharSeq> splitAt(Predicate<? super Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        if (isEmpty()) {
-            return Tuple.of(EMPTY, EMPTY);
-        }
-        final StringBuilder left = new StringBuilder();
-        for (int i = 0; i < length(); i++) {
-            final Character t = get(i);
-            if (!predicate.test(t)) {
-                left.append(t);
-            } else {
-                break;
-            }
-        }
-        return splitByBuilder(left);
+        return delegate.splitAt(predicate)
+                       .map((l, r) -> Tuple.of(from(l), from(r)));
     }
 
     @Override
     public Tuple2<CharSeq, CharSeq> splitAtInclusive(Predicate<? super Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        if (isEmpty()) {
-            return Tuple.of(EMPTY, EMPTY);
-        }
-        final StringBuilder left = new StringBuilder();
-        for (int i = 0; i < length(); i++) {
-            final Character t = get(i);
-            left.append(t);
-            if (predicate.test(t)) {
-                break;
-            }
-        }
-        return splitByBuilder(left);
-    }
-
-    @Override
-    public boolean startsWith(Iterable<? extends Character> that, int offset) {
-        return startsWith(CharSeq.ofAll(that), offset);
+        return delegate.splitAtInclusive(predicate)
+                       .map((l, r) -> Tuple.of(from(l), from(r)));
     }
 
     @Override
     public Character head() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("head of empty string");
-        } else {
-            return get(0);
-        }
+        return delegate.head();
     }
 
     @Override
     public boolean isEmpty() {
-        return back.isEmpty();
+        return delegate.isEmpty();
     }
 
     @Override
@@ -1144,19 +786,13 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof CharSeq) {
-            return ((CharSeq) o).back.equals(back);
-        } else {
-            return false;
-        }
+    public boolean equals(Object that) {
+        return (that == this) || ((that instanceof CharSeq) && ((CharSeq) that).delegate.equals(delegate));
     }
 
     @Override
     public int hashCode() {
-        return back.hashCode();
+        return delegate.hashCode();
     }
 
     //
@@ -1198,7 +834,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      */
     @Override
     public int length() {
-        return back.length();
+        return delegate.length();
     }
 
     //
@@ -1229,7 +865,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      *                                   string.
      */
     public int codePointAt(int index) {
-        return back.codePointAt(index);
+        return toString().codePointAt(index);
     }
 
     /**
@@ -1254,7 +890,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      *                                   of this string.
      */
     public int codePointBefore(int index) {
-        return back.codePointBefore(index);
+        return toString().codePointBefore(index);
     }
 
     /**
@@ -1278,7 +914,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      *                                   {@code beginIndex} is larger than {@code endIndex}.
      */
     public int codePointCount(int beginIndex, int endIndex) {
-        return back.codePointCount(beginIndex, endIndex);
+        return toString().codePointCount(beginIndex, endIndex);
     }
 
     /**
@@ -1301,7 +937,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      *                                   of {@code codePointOffset} code points.
      */
     public int offsetByCodePoints(int index, int codePointOffset) {
-        return back.offsetByCodePoints(index, codePointOffset);
+        return toString().offsetByCodePoints(index, codePointOffset);
     }
 
     /**
@@ -1335,7 +971,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      *                                   {@code dst.length}</ul>
      */
     public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin) {
-        back.getChars(srcBegin, srcEnd, dst, dstBegin);
+        toString().getChars(srcBegin, srcEnd, dst, dstBegin);
     }
 
     /**
@@ -1353,7 +989,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws UnsupportedEncodingException If the named charset is not supported
      */
     public byte[] getBytes(String charsetName) throws UnsupportedEncodingException {
-        return back.getBytes(charsetName);
+        return toString().getBytes(charsetName);
     }
 
     /**
@@ -1371,7 +1007,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return The resultant byte array
      */
     public byte[] getBytes(Charset charset) {
-        return back.getBytes(charset);
+        return toString().getBytes(charset);
     }
 
     /**
@@ -1386,7 +1022,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return The resultant byte array
      */
     public byte[] getBytes() {
-        return back.getBytes();
+        return toString().getBytes();
     }
 
     /**
@@ -1401,7 +1037,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * {@code false} otherwise
      */
     public boolean contentEquals(StringBuffer sb) {
-        return back.contentEquals(sb);
+        return toString().contentEquals(sb);
     }
 
     /**
@@ -1417,7 +1053,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * false} otherwise
      */
     public boolean contentEquals(CharSequence cs) {
-        return back.contentEquals(cs);
+        return toString().contentEquals(cs);
     }
 
     /**
@@ -1439,14 +1075,25 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * produces the same result
      * </ul>
      *
-     * @param anotherString The {@code CharSeq} to compare this {@code CharSeq} against
+     * @param that The {@code CharSeq} to compare this {@code CharSeq} against
      * @return {@code true} if the argument is not {@code null} and it
      * represents an equivalent {@code CharSeq} ignoring case; {@code
      * false} otherwise
      * @see #equals(Object)
      */
-    public boolean equalsIgnoreCase(CharSeq anotherString) {
-        return back.equalsIgnoreCase(anotherString.back);
+    public boolean equalsIgnoreCase(CharSeq that) {
+        if (this.size() != that.size()) {
+            return false;
+        }
+
+        for (int i = 0, size = size(); i < size; i++) {
+            final Character source = get(i);
+            final Character target = that.get(i);
+            if ((source != target) && (Character.toLowerCase(source) != Character.toLowerCase(target))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -1491,7 +1138,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * lexicographically greater than the string argument.
      */
     public int compareTo(CharSeq anotherString) {
-        return back.compareTo(anotherString.back);
+        return toString().compareTo(anotherString.toString());
     }
 
     /**
@@ -1513,7 +1160,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * than this String, ignoring case considerations.
      */
     public int compareToIgnoreCase(CharSeq str) {
-        return back.compareToIgnoreCase(str.back);
+        return toString().compareToIgnoreCase(str.toString());
     }
 
     /**
@@ -1549,7 +1196,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * {@code false} otherwise.
      */
     public boolean regionMatches(int toffset, CharSeq other, int ooffset, int len) {
-        return back.regionMatches(toffset, other.back, ooffset, len);
+        return toString().regionMatches(toffset, other.toString(), ooffset, len);
     }
 
     /**
@@ -1603,47 +1250,12 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * argument.
      */
     public boolean regionMatches(boolean ignoreCase, int toffset, CharSeq other, int ooffset, int len) {
-        return back.regionMatches(ignoreCase, toffset, other.back, ooffset, len);
+        return toString().regionMatches(ignoreCase, toffset, other.toString(), ooffset, len);
     }
 
     @Override
     public CharSeq subSequence(int beginIndex, int endIndex) {
-        if (beginIndex < 0) {
-            throw new IndexOutOfBoundsException("begin index " + beginIndex + " < 0");
-        }
-        if (endIndex > length()) {
-            throw new IndexOutOfBoundsException("endIndex " + endIndex + " > length " + length());
-        }
-        final int subLen = endIndex - beginIndex;
-        if (subLen < 0) {
-            throw new IndexOutOfBoundsException("beginIndex " + beginIndex + " > endIndex " + endIndex);
-        }
-        if (beginIndex == 0 && endIndex == length()) {
-            return this;
-        } else {
-            return CharSeq.of(back.subSequence(beginIndex, endIndex));
-        }
-    }
-
-    /**
-     * Tests if the substring of this string beginning at the
-     * specified index starts with the specified prefix.
-     *
-     * @param prefix  the prefix.
-     * @param toffset where to begin looking in this string.
-     * @return {@code true} if the character sequence represented by the
-     * argument is a prefix of the substring of this object starting
-     * at index {@code toffset}; {@code false} otherwise.
-     * The result is {@code false} if {@code toffset} is
-     * negative or greater than the length of this
-     * {@code CharSeq} object; otherwise the result is the same
-     * as the result of the expression
-     * <pre>
-     *          this.substring(toffset).startsWith(prefix)
-     *          </pre>
-     */
-    public boolean startsWith(CharSeq prefix, int toffset) {
-        return back.startsWith(prefix.back, toffset);
+        return from(delegate.subSequence(beginIndex, endIndex));
     }
 
     /**
@@ -1659,22 +1271,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * {@link #equals(Object)} method.
      */
     public boolean startsWith(CharSeq prefix) {
-        return back.startsWith(prefix.back);
-    }
-
-    /**
-     * Tests if this string ends with the specified suffix.
-     *
-     * @param suffix the suffix.
-     * @return {@code true} if the character sequence represented by the
-     * argument is a suffix of the character sequence represented by
-     * this object; {@code false} otherwise. Note that the
-     * result will be {@code true} if the argument is the
-     * empty string or is equal to this {@code CharSeq} object
-     * as determined by the {@link #equals(Object)} method.
-     */
-    public boolean endsWith(CharSeq suffix) {
-        return back.endsWith(suffix.back);
+        return delegate.startsWith(prefix);
     }
 
     /**
@@ -1702,7 +1299,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * {@code -1} if the character does not occur.
      */
     public int indexOf(int ch) {
-        return back.indexOf(ch);
+        return delegate.indexOf((char) ch);
     }
 
     /**
@@ -1755,7 +1352,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * if the character does not occur.
      */
     public int indexOf(int ch, int fromIndex) {
-        return back.indexOf(ch, fromIndex);
+        return delegate.indexOf((char) ch, fromIndex);
     }
 
     /**
@@ -1794,7 +1391,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * {@code -1} if the character does not occur.
      */
     public int lastIndexOf(int ch) {
-        return back.lastIndexOf(ch);
+        return delegate.lastIndexOf((char) ch);
     }
 
     /**
@@ -1842,7 +1439,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * if the character does not occur before that point.
      */
     public int lastIndexOf(int ch, int fromIndex) {
-        return back.lastIndexOf(ch, fromIndex);
+        return delegate.lastIndexOf((char) ch, fromIndex);
     }
 
     /**
@@ -1872,7 +1469,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * or {@code -1} if there is no such occurrence.
      */
     public int indexOf(CharSeq str) {
-        return back.indexOf(str.back);
+        return delegate.indexOfSlice(str);
     }
 
     /**
@@ -1902,7 +1499,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * or {@code -1} if there is no such occurrence.
      */
     public int indexOf(CharSeq str, int fromIndex) {
-        return back.indexOf(str.back, fromIndex);
+        return delegate.indexOfSlice(str, fromIndex);
     }
 
     /**
@@ -1933,7 +1530,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * or {@code -1} if there is no such occurrence.
      */
     public int lastIndexOf(CharSeq str) {
-        return back.lastIndexOf(str.back);
+        return delegate.lastIndexOfSlice(str);
     }
 
     /**
@@ -1963,7 +1560,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * or {@code -1} if there is no such occurrence.
      */
     public int lastIndexOf(CharSeq str, int fromIndex) {
-        return back.lastIndexOf(str.back, fromIndex);
+        return delegate.lastIndexOfSlice(str, fromIndex);
     }
 
     /**
@@ -1996,7 +1593,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      *                                   length of this {@code CharSeq} object.
      */
     public CharSeq substring(int beginIndex) {
-        return CharSeq.of(back.substring(beginIndex));
+        return from(delegate.subSequence(beginIndex));
     }
 
     /**
@@ -2022,7 +1619,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      *                                   {@code endIndex}.
      */
     public CharSeq substring(int beginIndex, int endIndex) {
-        return CharSeq.of(back.substring(beginIndex, endIndex));
+        return from(delegate.subSequence(beginIndex, endIndex));
     }
 
     @Override
@@ -2039,7 +1636,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      */
     @Override
     public String toString() {
-        return back;
+        return delegate.mkString();
     }
 
     /**
@@ -2063,7 +1660,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * characters followed by the string argument's characters.
      */
     public CharSeq concat(CharSeq str) {
-        return CharSeq.of(back.concat(str.back));
+        return appendAll(str);
     }
 
     /**
@@ -2086,7 +1683,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @see Pattern
      */
     public boolean matches(String regex) {
-        return back.matches(regex);
+        return toString().matches(regex);
     }
 
     /**
@@ -2097,7 +1694,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return true if this string contains {@code s}, false otherwise
      */
     public boolean contains(CharSequence s) {
-        return back.contains(s);
+        return indexOfSliceOption(of(s)).isDefined();
     }
 
     /**
@@ -2133,7 +1730,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @see Pattern
      */
     public CharSeq replaceFirst(String regex, String replacement) {
-        return CharSeq.of(back.replaceFirst(regex, replacement));
+        return of(toString().replaceFirst(regex, replacement));
     }
 
     /**
@@ -2169,7 +1766,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @see Pattern
      */
     public CharSeq replaceAll(String regex, String replacement) {
-        return CharSeq.of(back.replaceAll(regex, replacement));
+        return of(toString().replaceAll(regex, replacement));
     }
 
     /**
@@ -2184,7 +1781,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return The resulting string
      */
     public CharSeq replace(CharSequence target, CharSequence replacement) {
-        return CharSeq.of(back.replace(target, replacement));
+        return of(toString().replace(target, replacement));
     }
 
     /**
@@ -2262,14 +1859,8 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see Pattern
      */
-    @Deprecated(/* Use splitSeq instead, will be removed in 3.0.0 */)
-    @GwtIncompatible
-    public CharSeq[] split(String regex, int limit) {
-        return splitSeq(regex, limit).toJavaArray(CharSeq.class);
-    }
-
-    public Seq<CharSeq> splitSeq(String regex, int limit) {
-        final Seq<String> split = Array.wrap(back.split(regex, limit));
+    public Seq<CharSeq> split(String regex, int limit) {
+        final Seq<String> split = Array.wrap(toString().split(regex, limit));
         return split.map(CharSeq::of);
     }
 
@@ -2278,7 +1869,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * href="../util/regex/Pattern.html#sum">regular expression</a>.
      * <p>
      * <p> This method works as if by invoking the two-argument {@link
-     * #splitSeq(String, int) splitSeq} method with the given expression and a limit
+     * #split(String, int) split} method with the given expression and a limit
      * argument of zero.  Trailing empty strings are therefore not included in
      * the resulting {@link javaslang.collection.Seq}.
      * <p>
@@ -2302,14 +1893,8 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see Pattern
      */
-    @Deprecated(/* Use splitSeq instead, will be removed in 3.0.0 */)
-    @GwtIncompatible
-    public CharSeq[] split(String regex) {
-        return splitSeq(regex, 0).toJavaArray(CharSeq.class);
-    }
-
-    public Seq<CharSeq> splitSeq(String regex) {
-        return splitSeq(regex, 0);
+    public Seq<CharSeq> split(String regex) {
+        return split(regex, 0);
     }
 
     /**
@@ -2364,7 +1949,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @see String#toUpperCase(Locale)
      */
     public CharSeq toLowerCase(Locale locale) {
-        return CharSeq.of(back.toLowerCase(locale));
+        return of(toString().toLowerCase(locale));
     }
 
     /**
@@ -2388,7 +1973,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @see String#toLowerCase(Locale)
      */
     public CharSeq toLowerCase() {
-        return CharSeq.of(back.toLowerCase(Locale.getDefault()));
+        return from(delegate.map(Character::toLowerCase));
     }
 
     /**
@@ -2440,7 +2025,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @see String#toLowerCase(Locale)
      */
     public CharSeq toUpperCase(Locale locale) {
-        return CharSeq.of(back.toUpperCase(locale));
+        return of(toString().toUpperCase(locale));
     }
 
     /**
@@ -2464,11 +2049,11 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @see String#toUpperCase(Locale)
      */
     public CharSeq toUpperCase() {
-        return CharSeq.of(back.toUpperCase(Locale.getDefault()));
+        return from(delegate.map(Character::toUpperCase));
     }
 
     /**
-     * Returns a string whose value is this string, with any leading and trailing
+     * Returns a string whose value is this {@code CharSeq}Seq, with any leading and trailing
      * whitespace removed.
      * <p>
      * If this {@code CharSeq} object represents an empty character
@@ -2499,7 +2084,21 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * trailing white space.
      */
     public CharSeq trim() {
-        return of(back.trim());
+        return trimLeft().trimRight();
+    }
+
+    /**
+     * Returns a string whose value is this {@code CharSeq}, with any leading whitespace removed.
+     */
+    public CharSeq trimLeft() {
+        return from(delegate.dropWhile(Character::isWhitespace));
+    }
+
+    /**
+     * Returns a string whose value is this {@code CharSeq}, with any trailing whitespace removed.
+     */
+    public CharSeq trimRight() {
+        return from(delegate.dropRightWhile(Character::isWhitespace));
     }
 
     /**
@@ -2510,7 +2109,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * the character sequence represented by this string.
      */
     public char[] toCharArray() {
-        return back.toCharArray();
+        return toString().toCharArray();
     }
 
     @FunctionalInterface
@@ -2521,19 +2120,5 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     @FunctionalInterface
     public interface CharFunction<R> {
         R apply(char c);
-    }
-}
-
-interface CharSeqModule {
-    interface Combinations {
-        static IndexedSeq<CharSeq> apply(CharSeq elements, int k) {
-            if (k == 0) {
-                return Vector.of(CharSeq.empty());
-            } else {
-                return elements.zipWithIndex().flatMap(
-                        t -> apply(elements.drop(t._2 + 1), (k - 1)).map((CharSeq c) -> c.prepend(t._1))
-                );
-            }
-        }
     }
 }

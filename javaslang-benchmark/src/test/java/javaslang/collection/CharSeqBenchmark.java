@@ -3,21 +3,27 @@ package javaslang.collection;
 import javaslang.JmhRunner;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Random;
 
 import static java.lang.String.valueOf;
 import static javaslang.JmhRunner.create;
 import static javaslang.collection.Collections.areEqual;
 
+@SuppressWarnings({"ALL", "unchecked"})
 public class CharSeqBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
             Head.class,
             Tail.class,
             Get.class,
             Update.class,
+            Replace.class,
             Prepend.class,
             Append.class,
+            Slice.class,
             Iterate.class
     );
 
@@ -32,14 +38,14 @@ public class CharSeqBenchmark {
 
     @State(Scope.Benchmark)
     public static class Base {
-        @Param({ "10", "100", "1000" })
+        @Param({"10", "100", "1000"})
         public int CONTAINER_SIZE;
 
         int EXPECTED_AGGREGATE;
         char[] ELEMENTS;
 
         java.lang.String javaPersistent;
-        fj.data.LazyString fjavaPersistent;
+        fj.data.LazyString fjavaPersistent; // cannot handle large Strings
         javaslang.collection.CharSeq slangPersistent;
 
         @Setup
@@ -51,9 +57,9 @@ public class CharSeqBenchmark {
             }
             EXPECTED_AGGREGATE = Iterator.ofAll(ELEMENTS).reduce((x, y) -> (char) JmhRunner.aggregate((int) x, (int) y));
 
-            javaPersistent = create(java.lang.String::new, ELEMENTS, ELEMENTS.length, v -> Arrays.equals(v.toCharArray(), ELEMENTS));
-            fjavaPersistent = create(fj.data.LazyString::str, javaPersistent, javaPersistent.length(), v -> Objects.equals(v.toStringEager(), javaPersistent));
-            slangPersistent = create(javaslang.collection.CharSeq::of, javaPersistent, javaPersistent.length(), v -> v.contentEquals(javaPersistent));
+            javaPersistent = create(java.lang.String::new, ELEMENTS, CONTAINER_SIZE, v -> Arrays.equals(v.toCharArray(), ELEMENTS));
+            fjavaPersistent = create(fj.data.LazyString::str, javaPersistent, CONTAINER_SIZE, v -> Objects.equals(v.toStringEager(), javaPersistent));
+            slangPersistent = create(javaslang.collection.CharSeq::of, javaPersistent, CONTAINER_SIZE, v -> v.contentEquals(javaPersistent));
         }
     }
 
@@ -169,6 +175,30 @@ public class CharSeqBenchmark {
         }
     }
 
+    public static class Replace extends Base {
+        final char replacement = '❤';
+
+        @Benchmark
+        public Object java_persistent() {
+            java.lang.String values = javaPersistent;
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
+                values = values.replace(values.charAt(i), replacement);
+            }
+            assert Array.ofAll(values.toCharArray()).forAll(c -> c == replacement);
+            return values;
+        }
+
+        @Benchmark
+        public Object slang_persistent() {
+            javaslang.collection.CharSeq values = slangPersistent;
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
+                values = values.replace(values.charAt(i), replacement);
+            }
+            assert values.forAll(c -> c == replacement);
+            return values;
+        }
+    }
+
     public static class Prepend extends Base {
         @Benchmark
         public Object java_persistent() {
@@ -233,6 +263,29 @@ public class CharSeqBenchmark {
         }
     }
 
+    /** Consume the vector one-by-one, from the front and back */
+    public static class Slice extends Base {
+        @Benchmark
+        public void java_mutable(Blackhole bh) { // stores the whole list underneath
+            java.lang.String values = javaPersistent;
+            while (!values.isEmpty()) {
+                values = values.substring(1, values.length());
+                values = values.substring(0, values.length() - 1);
+                bh.consume(values);
+            }
+        }
+
+        @Benchmark
+        public void slang_persistent(Blackhole bh) {
+            javaslang.collection.CharSeq values = slangPersistent;
+            while (!values.isEmpty()) {
+                values = values.slice(1, values.size());
+                values = values.slice(0, values.size() - 1);
+                bh.consume(values);
+            }
+        }
+    }
+
     @SuppressWarnings("ForLoopReplaceableByForEach")
     public static class Iterate extends Base {
         @Benchmark
@@ -258,8 +311,12 @@ public class CharSeqBenchmark {
         @Benchmark
         public int slang_persistent() {
             int aggregate = 0;
-            for (final Iterator<Character> iterator = slangPersistent.iterator(); iterator.hasNext(); ) {
-                aggregate ^= iterator.next();
+            for (int i = 0; i < slangPersistent.length(); ) {
+                char[] leaf = (char[]) slangPersistent.delegate.getLeafUnsafe(i);
+                for (int value : leaf) {
+                    aggregate ^= value;
+                }
+                i += leaf.length;
             }
             assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;

@@ -1341,7 +1341,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldStartsNilOfNilWithOffsetCalculate() {
-        assertThat(empty().startsWith(empty(), 1)).isFalse();
+        assertThat(empty().startsWith(empty(), 1)).isTrue();
     }
 
     @Test
