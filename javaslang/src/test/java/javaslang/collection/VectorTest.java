@@ -244,6 +244,28 @@ public class VectorTest extends AbstractIndexedSeqTest {
                 .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
+    // -- dropRightUntil
+
+    @Test
+    public void shouldDropRightUntilNoneOnNil() {
+        assertThat(empty().dropRightUntil(ignored -> false)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldDropRightUntilNoneIfPredicateIsFalse() {
+        assertThat(of(1, 2, 3).dropRightUntil(ignored -> true)).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    public void shouldDropRightUntilAllIfPredicateIsTrue() {
+        assertThat(of(1, 2, 3).dropRightUntil(ignored -> false)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldDropRightUntilCorrect() {
+        assertThat(ofAll("abc  ".toCharArray()).dropRightUntil(Character::isAlphabetic)).isEqualTo(ofAll("abc".toCharArray()));
+    }
+
     // -- toString
 
     @Test

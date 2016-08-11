@@ -815,6 +815,21 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         }
     }
 
+    public Vector<T> dropRightWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropRightUntil(predicate.negate());
+    }
+
+    public Vector<T> dropRightUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        for (int i = length() - 1; i >= 0; i--) {
+            if (predicate.test(get(i))) {
+                return take(i + 1);
+            }
+        }
+        return empty();
+    }
+
     @Override
     public Vector<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
