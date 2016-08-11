@@ -453,10 +453,12 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
         return "(" + _1 + ", " + _2 + ", " + _3 + ", " + _4 + ", " + _5 + ", " + _6 + ", " + _7 + ")";
     }
 
+    @Override
     public <A> Tuple8<A, T1, T2, T3, T4, T5, T6, T7> prepend(A v) {
         return Tuple.of(v, _1, _2, _3, _4, _5, _6, _7);
     }
 
+    @Override
     public <A> Tuple8<T1, T2, T3, T4, T5, T6, T7, A> append(A v) {
         return Tuple.of(_1, _2, _3, _4, _5, _6, _7, v);
     }

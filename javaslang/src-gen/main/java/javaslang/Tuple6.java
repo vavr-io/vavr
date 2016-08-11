@@ -408,10 +408,12 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
         return "(" + _1 + ", " + _2 + ", " + _3 + ", " + _4 + ", " + _5 + ", " + _6 + ")";
     }
 
+    @Override
     public <A> Tuple7<A, T1, T2, T3, T4, T5, T6> prepend(A v) {
         return Tuple.of(v, _1, _2, _3, _4, _5, _6);
     }
 
+    @Override
     public <A> Tuple7<T1, T2, T3, T4, T5, T6, A> append(A v) {
         return Tuple.of(_1, _2, _3, _4, _5, _6, v);
     }

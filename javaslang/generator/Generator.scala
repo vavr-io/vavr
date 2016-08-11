@@ -1255,24 +1255,40 @@ def generateMainClasses(): Unit = {
             """)}
 
             ${(i == 0).gen(xs"""
+              @Override
               public <A> Tuple1<A> prepend(A v) {
                  return new Tuple1<>(v);
               }
 
+              @Override
               public <A> Tuple1<A> append(A v) {
                  return new Tuple1<>(v);
               }
             """)}
 
             ${(i > 0 && i < N).gen(xs"""
+              @Override
               public <A> Tuple${i + 1}<A, ${(1 to i).gen(j => s"T$j")(", ")}> prepend(A v) {
                   return Tuple.of(v, ${(1 to i).gen(j => s"_$j")(", ")});
               }
 
+              @Override
               public <A> Tuple${i + 1}<${(1 to i).gen(j => s"T$j")(", ")}, A> append(A v) {
                   return Tuple.of(${(1 to i).gen(j => s"_$j")(", ")}, v);
               }
-            """) }
+            """)}
+
+            ${(i == N).gen(xs"""
+              @Override
+              public <A> Tuple prepend(A v) {
+                  throw new RuntimeException("Prepend to Tuple${N}");
+              }
+
+              @Override
+              public <A> Tuple append(A v) {
+                  throw new RuntimeException("Append to Tuple${N}");
+              }
+            """)}
 
             ${(i > 0).gen(xs"""
               public static $generics $className<${(1 to i).gen(j => s"Seq<? extends T$j>")(", ")}> sequence(Iterable<$className<${(1 to i).gen(j => s"? extends T$j")(", ")}>> tuples) {
@@ -1330,6 +1346,10 @@ def generateMainClasses(): Unit = {
              * @return A new {@code Seq}.
              */
             $Seq<?> toSeq();
+
+            <A> Tuple append(A v);
+
+            <A> Tuple prepend(A v);
 
             // -- factory methods
 
@@ -1972,6 +1992,18 @@ def generateTestClasses(): Unit = {
                     Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> expected = Tuple.of(42, ${(1 to i).gen("" + _)(", ")});
 
                     assertThat(actual).isEqualTo(expected);
+                }
+              """) }
+
+              ${(i == N).gen(xs"""
+                @$test(expected = RuntimeException.class)
+                public void shouldAppendTuple$i() {
+                    Tuple.of(${(1 to i).gen("" + _)(", ")}).append(42);
+                }
+
+                @$test(expected = RuntimeException.class)
+                public void shouldPrependTuple$i() {
+                    Tuple.of(${(1 to i).gen("" + _)(", ")}).prepend(42);
                 }
               """) }
 
