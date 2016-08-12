@@ -216,15 +216,12 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         empty().dequeue();
     }
 
-    // -- toSortedQueue
+    // -- toPriorityQueue
 
     @Test
-    public void shouldKeepInstanceOfSortedQueue() {
-        final SerializableComparator<Integer> comparator = naturalComparator();
-        final PriorityQueue<Integer> queue = PriorityQueue.of(comparator, 1, 3, 2);
-        if (!queue.isSingleValued()) {
-            assertThat(queue.toSortedQueue(comparator)).isSameAs(queue);
-        }
+    public void shouldKeepInstanceOfPriorityQueue() {
+        final PriorityQueue<Integer> queue = PriorityQueue.of(1, 3, 2);
+        assertThat(queue.toPriorityQueue()).isSameAs(queue);
     }
 
     // -- property based tests
@@ -270,13 +267,5 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         if (!newQueue.isEmpty()) {
             assertThat(oldQueue.peek()).isEqualTo(newQueue.head());
         }
-    }
-
-    // -- toSortedQueue
-
-    @Test
-    public void shouldReturnSelfOnConvertToSortedQueue() {
-        Value<Integer> value = of(1, 2, 3);
-        assertThat(value.toSortedQueue(Integer::compareTo)).isSameAs(value);
     }
 }

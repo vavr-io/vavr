@@ -219,6 +219,13 @@ public abstract class AbstractValueTest {
     }
 
     @Test
+    public void shouldConvertToCharSeq() {
+        final Value<Integer> value = of(1, 2, 3);
+        final CharSeq charSeq = value.toCharSeq();
+        assertThat(charSeq).isEqualTo(CharSeq.of(value.toString()));
+    }
+
+    @Test
     public void shouldConvertToList() {
         final Value<Integer> value = of(1, 2, 3);
         final List<Integer> list = value.toList();
@@ -403,13 +410,25 @@ public abstract class AbstractValueTest {
     }
 
     @Test
-    public void shouldConvertToSortedQueue() {
+    public void shouldConvertToPriorityQueueUsingImplicitComparator() {
         final Value<Integer> value = of(1, 3, 2);
-        final PriorityQueue<Integer> queue = value.toSortedQueue(Comparator.naturalOrder());
+        final PriorityQueue<Integer> queue = value.toPriorityQueue();
         if (value.isSingleValued()) {
             assertThat(queue).isEqualTo(PriorityQueue.of(1));
         } else {
             assertThat(queue).isEqualTo(PriorityQueue.of(1, 2, 3));
+        }
+    }
+
+    @Test
+    public void shouldConvertToPriorityQueueUsingExplicitComparator() {
+        final Comparator<Integer> comparator = Comparator.naturalOrder();
+        final Value<Integer> value = of(1, 3, 2);
+        final PriorityQueue<Integer> queue = value.toPriorityQueue(comparator);
+        if (value.isSingleValued()) {
+            assertThat(queue).isEqualTo(PriorityQueue.of(comparator, 1));
+        } else {
+            assertThat(queue).isEqualTo(PriorityQueue.of(comparator, 1, 2, 3));
         }
     }
 
@@ -534,6 +553,17 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertToJavaArray() {
         final Value<Integer> value = of(1, 2, 3);
+        final Object[] ints = value.toJavaArray();
+        if (value.isSingleValued()) {
+            assertThat(ints).isEqualTo(new int[] { 1 });
+        } else {
+            assertThat(ints).isEqualTo(new int[] { 1, 2, 3 });
+        }
+    }
+
+    @Test
+    public void shouldConvertToJavaArrayWithTypeHint() {
+        final Value<Integer> value = of(1, 2, 3);
         final Integer[] ints = value.toJavaArray(Integer.class);
         if (value.isSingleValued()) {
             assertThat(ints).isEqualTo(new int[] { 1 });
@@ -558,7 +588,7 @@ public abstract class AbstractValueTest {
         final Value<Integer> value = of(1, 2, 3);
         final java.util.List<Integer> list = value.toJavaList();
         if (value.isSingleValued()) {
-            assertThat(list).isEqualTo(Arrays.asList(1));
+            assertThat(list).isEqualTo(Collections.singletonList(1));
         } else {
             assertThat(list).isEqualTo(Arrays.asList(1, 2, 3));
         }
