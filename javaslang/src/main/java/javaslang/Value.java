@@ -901,7 +901,9 @@ public interface Value<T> extends Iterable<T> {
     @SuppressWarnings("unchecked")
     default SortedSet<T> toSortedSet() throws ClassCastException {
         final Comparator<T> comparator;
-        if (this instanceof SortedSet<?>) {
+        if (this instanceof TreeSet<?>) {
+            return (TreeSet<T>) this;
+        } else if (this instanceof SortedSet<?>) {
             comparator = ((SortedSet<T>) this).comparator();
         } else {
             comparator = (Comparator<T> & Serializable) (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
