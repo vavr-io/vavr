@@ -6,26 +6,17 @@
 package javaslang;
 
 import javaslang.collection.*;
-import javaslang.collection.HashMap;
-import javaslang.collection.LinkedHashMap;
-import javaslang.collection.TreeMap;
-import javaslang.collection.HashSet;
-import javaslang.collection.Iterator;
-import javaslang.collection.List;
-import javaslang.collection.Map;
-import javaslang.collection.SortedMap;
-import javaslang.collection.PriorityQueue;
-import javaslang.collection.Queue;
-import javaslang.collection.Set;
-import javaslang.collection.LinkedHashSet;
-import javaslang.collection.SortedSet;
-import javaslang.collection.Stack;
-import javaslang.collection.TreeSet;
-import javaslang.collection.Vector;
-import javaslang.control.*;
+import javaslang.control.Either;
+import javaslang.control.Option;
+import javaslang.control.Try;
 
-import java.io.*;
-import java.util.*;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.StreamSupport;
@@ -155,7 +146,7 @@ public interface Value<T> extends Iterable<T> {
      * @param collector Collector performing reduction
      * @return R reduction result
      */
-    default <R, A> R collect(Collector<? super T,A,R> collector) {
+    default <R, A> R collect(Collector<? super T, A, R> collector) {
         return StreamSupport.stream(spliterator(), false).collect(collector);
     }
 
@@ -169,7 +160,7 @@ public interface Value<T> extends Iterable<T> {
      *                    compatible with the accumulator.
      * @return R reduction result
      */
-    default <R> R collect(Supplier<R> supplier, BiConsumer<R,? super T> accumulator, BiConsumer<R,R> combiner) {
+    default <R> R collect(Supplier<R> supplier, BiConsumer<R, ? super T> accumulator, BiConsumer<R, R> combiner) {
         return StreamSupport.stream(spliterator(), false).collect(supplier, accumulator, combiner);
     }
 
@@ -781,6 +772,7 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link TreeMap}.
      */
     default <K, V> SortedMap<K, V> toSortedMap(Comparator<? super K> comparator, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return toSortedMap(comparator, t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
@@ -790,12 +782,13 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to a {@link Map}.
      *
      * @param comparator A comparator that induces an order of the Map keys.
-     * @param f   A function that maps an element to a key/value pair represented by Tuple2
-     * @param <K> The key type
-     * @param <V> The value type
+     * @param f          A function that maps an element to a key/value pair represented by Tuple2
+     * @param <K>        The key type
+     * @param <V>        The value type
      * @return A new {@link TreeMap}.
      */
     default <K, V> SortedMap<K, V> toSortedMap(Comparator<? super K> comparator, Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+        Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(f, "f is null");
         final Function<Tuple2<? extends K, ? extends V>, SortedMap<K, V>> ofElement = t -> TreeMap.of(comparator, t);
         final Function<Iterable<Tuple2<? extends K, ? extends V>>, SortedMap<K, V>> ofAll = t -> TreeMap.ofEntries(comparator, t);
@@ -834,7 +827,7 @@ public interface Value<T> extends Iterable<T> {
         if (this instanceof PriorityQueue<?>) {
             return (PriorityQueue<T>) this;
         } else {
-            final Comparator<T> comparator = (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
+            final Comparator<T> comparator = (Comparator<T> & Serializable) (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
             return toPriorityQueue(comparator);
         }
     }
@@ -846,6 +839,7 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link PriorityQueue}.
      */
     default PriorityQueue<T> toPriorityQueue(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
         final PriorityQueue<T> empty = PriorityQueue.empty(comparator);
         final Function<T, PriorityQueue<T>> of = value -> PriorityQueue.of(comparator, value);
         final Function<Iterable<T>, PriorityQueue<T>> ofAll = values -> PriorityQueue.ofAll(comparator, values);
@@ -910,7 +904,7 @@ public interface Value<T> extends Iterable<T> {
         if (this instanceof SortedSet<?>) {
             comparator = ((SortedSet<T>) this).comparator();
         } else {
-            comparator = (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
+            comparator = (Comparator<T> & Serializable) (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
         }
         return toSortedSet(comparator);
     }
@@ -922,6 +916,7 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link TreeSet}.
      */
     default SortedSet<T> toSortedSet(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
         return ValueModule.toTraversable(this, TreeSet.empty(comparator), value -> TreeSet.of(comparator, value), values -> TreeSet.ofAll(comparator, values));
     }
 
@@ -1041,20 +1036,20 @@ interface ValueModule {
         }
     }
 
-	static <T, K, V, M extends Map<K, V>, TT extends Tuple2<? extends K, ? extends V>> M toMap(
-			Value<T> value, M empty,
-			Function<TT, M> ofElement,
-			Function<Iterable<TT>, M> ofAll,
-			Function<? super T, ? extends TT> f
-	) {
-		if (value.isEmpty()) {
-			return empty;
-		} else if (value.isSingleValued()) {
-			return ofElement.apply(f.apply(value.get()));
-		} else {
-			return ofAll.apply(Iterator.ofAll(value).map(f));
-		}
-	}
+    static <T, K, V, M extends Map<K, V>, TT extends Tuple2<? extends K, ? extends V>> M toMap(
+            Value<T> value, M empty,
+            Function<TT, M> ofElement,
+            Function<Iterable<TT>, M> ofAll,
+            Function<? super T, ? extends TT> f
+    ) {
+        if (value.isEmpty()) {
+            return empty;
+        } else if (value.isSingleValued()) {
+            return ofElement.apply(f.apply(value.get()));
+        } else {
+            return ofAll.apply(Iterator.ofAll(value).map(f));
+        }
+    }
 
     static <T extends java.util.Collection<V>, V> T toJavaCollection(Value<V> value, Function<Integer, T> containerSupplier) {
         final T container;

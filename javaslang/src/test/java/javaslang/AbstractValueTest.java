@@ -14,10 +14,13 @@ import javaslang.collection.Map;
 import javaslang.collection.PriorityQueue;
 import javaslang.collection.Queue;
 import javaslang.collection.Set;
+import javaslang.collection.SortedSet;
 import javaslang.collection.Stack;
 import javaslang.collection.TreeSet;
 import javaslang.collection.Vector;
-import javaslang.control.*;
+import javaslang.control.Either;
+import javaslang.control.Option;
+import javaslang.control.Try;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
@@ -26,6 +29,8 @@ import java.util.Collections;
 import java.util.function.Function;
 
 import static java.lang.Integer.bitCount;
+import static javaslang.Serializables.deserialize;
+import static javaslang.Serializables.serialize;
 
 public abstract class AbstractValueTest {
 
@@ -181,12 +186,14 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldPeekNil() {
-        assertThat(empty().peek(t -> {})).isEqualTo(empty());
+        assertThat(empty().peek(t -> {
+        })).isEqualTo(empty());
     }
 
     @Test
     public void shouldPeekNonNilPerformingNoAction() {
-        assertThat(of(1).peek(t -> {})).isEqualTo(of(1));
+        assertThat(of(1).peek(t -> {
+        })).isEqualTo(of(1));
     }
 
     @Test
@@ -269,8 +276,8 @@ public abstract class AbstractValueTest {
         //Check order - order is matter
         assertThat(map.mkString(", ")).isEqualTo(
                 "(110427681, 5), " +
-                "(663160547, 1), " +
-                "(1571254982, 9)");
+                        "(663160547, 1), " +
+                        "(1571254982, 9)");
     }
 
     @Test
@@ -284,8 +291,8 @@ public abstract class AbstractValueTest {
         //Check order - order is matter
         assertThat(map.mkString(", ")).isEqualTo(
                 "(110427681, 5), " +
-                "(663160547, 1), " +
-                "(1571254982, 9)");
+                        "(663160547, 1), " +
+                        "(1571254982, 9)");
     }
 
     @Test
@@ -339,8 +346,8 @@ public abstract class AbstractValueTest {
         //Check order - order is matter
         assertThat(map.mkString(",")).isEqualTo(
                 "(110427681, 5)," +
-                "(663160547, 1)," +
-                "(1571254982, 9)"
+                        "(663160547, 1)," +
+                        "(1571254982, 9)"
         );
     }
 
@@ -355,8 +362,8 @@ public abstract class AbstractValueTest {
         //Check order - order is matter
         assertThat(map.mkString(",")).isEqualTo(
                 "(110427681, 5)," +
-                "(663160547, 1)," +
-                "(1571254982, 9)"
+                        "(663160547, 1)," +
+                        "(1571254982, 9)"
         );
     }
 
@@ -371,8 +378,8 @@ public abstract class AbstractValueTest {
         //Check order - order is matter
         assertThat(map.mkString(",")).isEqualTo(
                 "(1571254982, 9)," +
-                "(663160547, 1)," +
-                "(110427681, 5)"
+                        "(663160547, 1)," +
+                        "(110427681, 5)"
         );
     }
 
@@ -387,8 +394,8 @@ public abstract class AbstractValueTest {
         //Check order - order is matter
         assertThat(map.mkString(",")).isEqualTo(
                 "(1571254982, 9)," +
-                "(663160547, 1)," +
-                "(110427681, 5)"
+                        "(663160547, 1)," +
+                        "(110427681, 5)"
         );
     }
 
@@ -433,6 +440,14 @@ public abstract class AbstractValueTest {
     }
 
     @Test
+    public void shouldConvertToPriorityQueueUsingSerializableComparator() {
+        final Value<Integer> value = of(1, 3, 2);
+        final PriorityQueue<Integer> queue = value.toPriorityQueue();
+        final PriorityQueue<Integer> actual = deserialize(serialize(queue));
+        assertThat(actual).isEqualTo(queue);
+    }
+
+    @Test
     public void shouldConvertToSet() {
         final Value<Integer> value = of(1, 2, 3);
         final Set<Integer> set = value.toSet();
@@ -463,7 +478,7 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertToSortedSetWithoutComparatorOnComparable() {
         final Value<Integer> value = of(3, 7, 1, 15, 0);
-        final Set<Integer> set = value.toSortedSet();
+        final SortedSet<Integer> set = value.toSortedSet();
         if (value.isSingleValued()) {
             assertThat(set).isEqualTo(TreeSet.of(3));
         } else {
@@ -474,7 +489,7 @@ public abstract class AbstractValueTest {
     @Test(expected = ClassCastException.class)
     public void shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable() {
         final Value<StringBuilder> value = of(new StringBuilder("3"), new StringBuilder("7"), new StringBuilder("1"), new StringBuilder("15"), new StringBuilder("0"));
-        final Set<StringBuilder> set = value.toSortedSet();
+        final SortedSet<StringBuilder> set = value.toSortedSet();
         if (value.isSingleValued()) {
             //Comparator is not used yet
             set.add(new StringBuilder("7"));
@@ -485,13 +500,22 @@ public abstract class AbstractValueTest {
     public void shouldConvertToSortedSet() {
         final Value<Integer> value = of(3, 7, 1, 15, 0);
         final Comparator<Integer> comparator = (o1, o2) -> Integer.compare(bitCount(o1), bitCount(o2));
-        final Set<Integer> set = value.toSortedSet(comparator.reversed());
+        final SortedSet<Integer> set = value.toSortedSet(comparator.reversed());
         if (value.isSingleValued()) {
             assertThat(set).isEqualTo(TreeSet.of(3));
         } else {
             assertThat(set).isEqualTo(TreeSet.of(comparator.reversed(), 0, 1, 3, 7, 15));
         }
     }
+
+    @Test
+    public void shouldConvertToSortedSetUsingSerializableComparator() {
+        final Value<Integer> value = of(1, 3, 2);
+        final SortedSet<Integer> queue = value.toSortedSet();
+        final SortedSet<Integer> actual = deserialize(serialize(queue));
+        assertThat(actual).isEqualTo(queue);
+    }
+
 
     @Test
     public void shouldConvertToStack() {
