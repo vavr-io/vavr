@@ -15,9 +15,8 @@ import java.util.Set;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static java.util.Arrays.copyOfRange;
-import static javaslang.collection.Arrays2.asArray;
-import static javaslang.collection.Arrays2.emptyArray;
+import static java.lang.System.arraycopy;
+import static javaslang.collection.Arrays2.*;
 import static javaslang.collection.Collections.*;
 import static javaslang.collection.Vector.VectorTree.create;
 import static javaslang.collection.Vector.VectorTree.emptyTree;
@@ -48,21 +47,20 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
     static int digit(int num, int depthShift)      { return lastDigit(num >> depthShift); }
     static int lastDigit(int num)                  { return (num & (-1 >>> -BRANCHING_BASE)); }
 
-    private static final Vector<?> EMPTY = new Vector<>(emptyArray(), emptyTree(), emptyArray());
+    private static final Vector<?> EMPTY = new Vector<>(null, emptyArray(), emptyTree(), emptyArray());
 
+    final Class<?> type;
     final VectorTree<T> middle;
-    final T[] leading, trailing;
+    final Object leading, trailing;
 
-    private Vector(T[] leading, VectorTree<T> middle, T[] trailing) {
+    private Vector(Class<?> type, Object leading, VectorTree<T> middle, Object trailing) {
+        this.type = type;
         this.leading = leading;
         this.middle = middle;
         this.trailing = trailing;
-
-        assert (leading.length <= branchingFactor()) && (trailing.length <= branchingFactor());
-        assert (leadingLength() == 0) || (length() > 0);
     }
 
-    private int leadingLength() { return leading.length; }
+    private int leadingLength() { return getLength(leading); }
 
     /**
      * Returns the empty Vector.
@@ -113,8 +111,9 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
      * @return A new Vector instance containing the given element
      */
     public static <T> Vector<T> of(T element) {
-        final T[] leading = (T[]) new Object[] {element};
-        return new Vector<T>(leading, emptyTree(), emptyArray());
+        final Class<?> type = toPrimitive(element.getClass());
+        Object leading = asArray(type, element);
+        return new Vector<T>(type, leading, emptyTree(), emptyArray());
     }
 
     /**
@@ -189,29 +188,60 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
     }
 
     public static <T> Vector<T> ofAll(Iterable<? extends T> iterable, int size) {
-        Object[] array = (iterable instanceof ArrayList) ? ((ArrayList<?>) iterable).toArray()
-                                                         : asArray(iterable.iterator(), size);
-        if (array.length <= branchingFactor()) {
-            return new Vector<>((T[]) array, emptyTree(), emptyArray());
+        final Class<?> type;
+        Object array;
+        if (iterable instanceof ArrayList) {
+            T[] originalArray = (T[]) ((ArrayList<T>) iterable).toArray();
+            type = toPrimitive(originalArray[0].getClass());
+
+            if (type.isPrimitive()) {
+                array = newInstance(type, size);
+                for (int i = 0; i < size; i++) {
+                    set(array, i, originalArray[i]);
+                }
+            } else {
+                array = originalArray;
+            }
+        } else {
+            array = asArray(iterable.iterator(), size);
+            type = array.getClass().getComponentType();
         }
 
-        final T[] leading = (T[]) copyOfRange(array, 0, Math.min(size, branchingFactor()));
-        final int remaining = size - leading.length;
+        if (getLength(array) <= branchingFactor()) {
+            return new Vector<>(type, array, emptyTree(), emptyArray());
+        }
+
+        int leadingSize = Math.min(size, branchingFactor());
+        final Object leading = newInstance(type, leadingSize);
+        arraycopy(array, 0, leading, 0, leadingSize);
+
+        final int remaining = size - leadingSize;
         int trailingSize = lastDigit(remaining);
         if (trailingSize == 0) { trailingSize += branchingFactor(); }
-        final T[] trailing = (T[]) copyOfRange(array, array.length - trailingSize, array.length);
+
+        int from = getLength(array) - trailingSize;
+        int to = getLength(array);
+        int trailingLength = to - from;
+
+        final Object trailing = newInstance(type, trailingLength);
+        arraycopy(array, from, trailing, 0, trailingLength);
         final int middleSize = remaining - trailingSize;
         if (middleSize == 0) {
-            return new Vector<>(leading, emptyTree(), trailing);
+            return new Vector<>(type, leading, emptyTree(), trailing);
         }
 
-        int depthShift = 0;
-        for (array = copyOfRange(array, leading.length, leading.length + middleSize); array.length > branchingFactor(); depthShift += BRANCHING_BASE) {
-            array = Arrays2.grouped(array, array.length, branchingFactor());
+        Object copy = newInstance(type, middleSize);
+        arraycopy(array, leadingSize, copy, 0, middleSize);
+        array = copy;
+
+        byte depthShift = 0;
+        for (; getLength(array) > branchingFactor(); depthShift += BRANCHING_BASE) {
+            array = Arrays2.grouped(array, getLength(array), branchingFactor());
+
         }
 
-        final VectorTree<T> middle = create(array, 0, middleSize, depthShift);
-        return new Vector<>(leading, middle, trailing);
+        final VectorTree<T> middle = create(type, array, 0, middleSize, depthShift);
+        return new Vector<>(type, leading, middle, trailing);
     }
 
     /**
@@ -732,15 +762,14 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         }
 
         if (index < leadingLength()) {
-            return leading[index];
+            return (T) Arrays2.get(leading, index);
         } else if (index < trailingStartIndex()) {
             index -= leadingLength();
-            final Object[] leaf = middle.getLeaf(index);
-            return (T) leaf[lastDigit(middle.offset() + index)];
+            final Object leaf = middle.getLeaf(index);
+            return (T) Arrays2.get(leaf, lastDigit(middle.offset() + index));
         } else {
             index -= trailingStartIndex();
-            assert index < trailing.length;
-            return trailing[index];
+            return (T) Arrays2.get(trailing, index);
         }
     }
 
@@ -751,7 +780,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         if (isEmpty()) {
             throw new NoSuchElementException("head of empty Vector");
         } else {
-            return leading[0];
+            return (T) Arrays2.get(leading, 0);
         }
     }
 
@@ -827,7 +856,19 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
 
     @Override
     public Iterator<T> iterator() {
-        throw new UnsupportedOperationException();
+        return new Iterator<T>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < Vector.this.length();
+            }
+
+            @Override
+            public T next() {
+                return Vector.this.get(i++);
+            }
+        };
     }
 
     @Override
@@ -842,7 +883,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
 
     @Override
     public int length() {
-        return leadingLength() + middle.length() + trailing.length;
+        return leadingLength() + middle.length() + getLength(trailing);
     }
 
     @Override
@@ -1314,23 +1355,25 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
     static final class VectorTree<T> implements Serializable {
         private static final long serialVersionUID = 1L;
 
-        private static final VectorTree<?> EMPTY = new VectorTree<>(emptyArray(), 0, 0, 0);
+        private static final VectorTree<?> EMPTY = new VectorTree<>(null, emptyArray(), 0, 0, 0);
         static <T> VectorTree<T> emptyTree() { return (VectorTree<T>) EMPTY; }
 
-        private final Object[] array;
+        private final Class<?> type;
+        private final Object array;
         private final int offset, length;
         private final int depthShift;
 
-        static <T> VectorTree<T> create(Object[] array, int offset, int length, int depthShift) {
-            if (array.length == 0) {
-                assert (offset == 0) && (length == 0) && (depthShift == 0);
+        static <T> VectorTree<T> create(Class<?> type, Object array, int offset, int length, int depthShift) {
+            if (length == 0) {
+                assert (offset == 0) && (depthShift == 0);
                 return (VectorTree<T>) EMPTY;
             } else {
-                return new VectorTree<T>(array, offset, length, depthShift);
+                return new VectorTree<T>(type, array, offset, length, depthShift);
             }
         }
 
-        private VectorTree(Object[] array, int offset, int length, int depthShift) {
+        private VectorTree(Class<?> type, Object array, int offset, int length, int depthShift) {
+            this.type = type;
             this.array = array;
             this.offset = offset;
             this.length = length;
@@ -1346,27 +1389,27 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
 
         int offset() { return offset; }
 
-        T[] getLeaf(int index) {
+        Object getLeaf(int index) {
             index += offset;
             assert index >= 0;
 
             if (depthShift == 0) {
-                return (T[]) array;
+                return array;
             } else if (depthShift == BRANCHING_BASE) {
-                return (T[]) array[firstDigit(index, depthShift)];
+                return Arrays2.get(array, firstDigit(index, depthShift));
             } else {
-                Object[] root = (Object[]) array[firstDigit(index, depthShift)];
+                Object root = Arrays2.get(array, firstDigit(index, depthShift));
 
                 int depthShift = this.depthShift - BRANCHING_BASE;
-                root = (Object[]) root[digit(index, depthShift)];
+                root = Arrays2.get(root, digit(index, depthShift));
 
                 while (depthShift > BRANCHING_BASE) {
                     depthShift -= BRANCHING_BASE;
-                    root = (Object[]) root[digit(index, depthShift)];
+                    root = Arrays2.get(root, digit(index, depthShift));
                 }
 
                 assert root != null;
-                return (T[]) root;
+                return root;
             }
         }
 
