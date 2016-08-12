@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Function2;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,26 +18,15 @@ public class VectorPropertyTest {
 
     @Test
     public void shouldCreateAndGet() {
-        for (byte depth = 0; depth <= 6; depth++) {
-            final int length = getMaxSizeForDepth(depth);
-
-            final Seq<Integer> expected = Array.range(0, length);
+        for (int i = 0; i < 2000; i++) {
+            final Seq<Integer> expected = Array.range(0, i);
             final Vector<Integer> actual = Vector.ofAll(expected);
+            assertAreEqual(expected, actual);
 
-            int i = 0;
-            for (Integer value : expected) {
-                final Integer actualValue = actual.get(i++);
-                assertThat(actualValue).isEqualTo(value);
-            }
-
-            System.out.println("Depth " + depth + " ok!");
+            final Vector<Integer> actualInt = Vector.ofAll((int[]) Arrays2.toPrimitiveArray(int.class, expected.toJavaArray()));
+            assert actualInt.leading instanceof int[];
+            assertAreEqual(expected, actual);
         }
-    }
-
-    private static <T1, T2> Vector<Integer> assertAreEqual(T1 previousActual, T2 param, Function2<T1, T2, Vector<Integer>> actualProvider, Seq<Integer> expected) {
-        final Vector<Integer> actual = actualProvider.apply(previousActual, param);
-        assertAreEqual(expected, actual);
-        return actual; // makes debugging a lot easier, as the frame can be dropped and rerun on AssertError
     }
 
     private static void assertAreEqual(Seq<Integer> expected, Seq<Integer> actual) {

@@ -38,7 +38,7 @@ import static javaslang.collection.Vector.VectorTree.emptyTree;
  * @since 3.0.0
  */
 @SuppressWarnings({"SuspiciousArrayCast", "unchecked"})
-public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
+public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
     private static final long serialVersionUID = 1L;
 
     static int BRANCHING_BASE = 5;
@@ -47,17 +47,26 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
     static int digit(int num, int depthShift)      { return lastDigit(num >> depthShift); }
     static int lastDigit(int num)                  { return (num & (-1 >>> -BRANCHING_BASE)); }
 
-    private static final Vector<?> EMPTY = new Vector<>(null, emptyArray(), emptyTree(), emptyArray());
+    private static final Vector<?> EMPTY = new Vector<Object>(Object.class, emptyArray(), emptyTree(), emptyArray()) {
+        @Override
+        public Object get(int index) { throw new NoSuchElementException("get on an empty Vector"); }
+        @Override
+        public Object head() { throw new NoSuchElementException("head of empty Vector"); }
+        @Override
+        public Iterator<Object> iterator() { return Iterator.empty(); }
+    };
 
     final Class<?> type;
     final VectorTree<T> middle;
     final Object leading, trailing;
+    final int length;
 
     private Vector(Class<?> type, Object leading, VectorTree<T> middle, Object trailing) {
         this.type = type;
         this.leading = leading;
         this.middle = middle;
         this.trailing = trailing;
+        this.length = leadingLength() + middle.length() + getLength(trailing);
     }
 
     private int leadingLength() { return getLength(leading); }
@@ -207,6 +216,10 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
             type = array.getClass().getComponentType();
         }
 
+        return getTs(array, type, size);
+    }
+
+    public static <T> Vector<T> getTs(Object array, Class<?> type, int size) {
         if (getLength(array) <= branchingFactor()) {
             return new Vector<>(type, array, emptyTree(), emptyArray());
         }
@@ -319,7 +332,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
      */
     public static Vector<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+        return getTs(array, array.getClass().getComponentType(), array.length);
     }
 
     /**
@@ -773,6 +786,23 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         }
     }
 
+    public int getInt(int index) {
+        if ((index < 0) || (index >= length())) {
+            throw new IndexOutOfBoundsException("get(" + index + ")");
+        }
+
+        if (index < leadingLength()) {
+            return ((int[]) leading)[index];
+        } else if (index < trailingStartIndex()) {
+            index -= leadingLength();
+            final Object leaf = middle.getLeaf(index);
+            return ((int[]) leaf)[lastDigit(middle.offset() + index)];
+        } else {
+            index -= trailingStartIndex();
+            return ((int[]) trailing)[index];
+        }
+    }
+
     private int trailingStartIndex() { return leadingLength() + middle.length(); }
 
     @Override
@@ -781,6 +811,15 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
             throw new NoSuchElementException("head of empty Vector");
         } else {
             return (T) Arrays2.get(leading, 0);
+        }
+    }
+
+    public int intHead() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("head of empty Vector");
+        } else {
+            final int[] intArray = (int[]) leading;
+            return intArray[0];
         }
     }
 

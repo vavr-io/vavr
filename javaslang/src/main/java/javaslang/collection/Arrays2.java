@@ -67,16 +67,46 @@ final class Arrays2 { // TODO reuse these in `Array` also
     }
 
     static Object newInstance(Class<?> type, int size) {
-        return java.lang.reflect.Array.newInstance(type, size);
+        if (int.class.equals(type)) {
+            return new int[size];
+        } else {
+            return new Object[size];
+        }
     }
     static int getLength(Object array) {
-        return java.lang.reflect.Array.getLength(array);
+        if (array instanceof int[]) {
+            final int[] intArray = (int[]) array;
+            return intArray.length;
+        } else {
+            final Object[] objectArray = (Object[]) array;
+            return objectArray.length;
+        }
     }
     static Object get(Object array, int index) {
-        return java.lang.reflect.Array.get(array, index);
+        if (array instanceof int[]) {
+            final int[] intArray = (int[]) array;
+            return intArray[index];
+        } else {
+            final Object[] objectArray = (Object[]) array;
+            return objectArray[index];
+        }
     }
     static void set(Object array, int index, Object value) {
-        java.lang.reflect.Array.set(array, index, value);
+        if (array instanceof int[]) {
+            final int[] intArray = (int[]) array;
+            intArray[index] = (Integer) value;
+        } else {
+            final Object[] objectArray = (Object[]) array;
+            objectArray[index] = value;
+        }
+    }
+
+    static Object toPrimitiveArray(Class<?> type, Object[] array) {
+        Object results = newInstance(type, array.length);
+        for (int i = 0; i < array.length; i++) {
+            set(results, i, array[i]);
+        }
+        return results;
     }
 
     /* convert to primitive */

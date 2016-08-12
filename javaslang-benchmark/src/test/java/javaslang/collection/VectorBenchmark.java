@@ -49,6 +49,10 @@ public class VectorBenchmark {
         public void setup() {
             final Random random = new Random(0);
             ELEMENTS = getRandomValues(CONTAINER_SIZE, false, random);
+            INT_ELEMENTS = new int[ELEMENTS.length];
+            for (int i = 0; i < ELEMENTS.length; i++) {
+                INT_ELEMENTS[i] = ELEMENTS[i];
+            }
             RANDOMIZED_INDICES = Arrays2.shuffle(Array.range(0, CONTAINER_SIZE).toJavaStream().mapToInt(Integer::intValue).toArray(), random);
 
             EXPECTED_AGGREGATE = Array.of(ELEMENTS).reduce(JmhRunner::aggregate);
@@ -61,8 +65,15 @@ public class VectorBenchmark {
     /** Bulk creation from array based, boxed source */
     public static class Create extends Base {
         @Benchmark
-        public Object slang_persistent() {
+        public Object slang_persistent_list() {
             final javaslang.collection.Vector<Integer> values = javaslang.collection.Vector.ofAll(javaMutable);
+            assert areEqual(values, javaMutable);
+            return values.head();
+        }
+
+        @Benchmark
+        public Object slang_persistent_primitive_array() {
+            final javaslang.collection.Vector<Integer> values = javaslang.collection.Vector.ofAll(INT_ELEMENTS);
             assert areEqual(values, javaMutable);
             return values.head();
         }
@@ -75,6 +86,13 @@ public class VectorBenchmark {
             assert Objects.equals(head, javaMutable.get(0));
             return head;
         }
+
+        @Benchmark
+        public int slang_persistent_int() {
+            final int head = slangPersistent.intHead();
+            assert Objects.equals(head, javaMutable.get(0));
+            return head;
+        }
     }
 
     /** Aggregated, randomized access to every element */
@@ -84,6 +102,16 @@ public class VectorBenchmark {
             int aggregate = 0;
             for (int i : RANDOMIZED_INDICES) {
                 aggregate ^= slangPersistent.get(i);
+            }
+            assert aggregate == EXPECTED_AGGREGATE;
+            return aggregate;
+        }
+
+        @Benchmark
+        public int slang_persistent_int() {
+            int aggregate = 0;
+            for (int i : RANDOMIZED_INDICES) {
+                aggregate ^= slangPersistent.getInt(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
