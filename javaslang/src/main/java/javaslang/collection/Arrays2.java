@@ -21,17 +21,17 @@ final class Arrays2 { // TODO reuse these in `Array` also
 
     /** Repeatedly group an array into equal sized sub-trees */
     static Object grouped(Object array, int length, int groupSize) {
-        Class<?> type = toPrimitive(get(array, 0).getClass());
+        Class<?> type = toPrimitive(array.getClass().getComponentType());
 
         final int firstSize = Math.min(groupSize, length);
         Object results = newInstance(type, firstSize);
         System.arraycopy(array, 0, results, 0, firstSize);
 
-        if (firstSize < getLength(array)) {
+        if (firstSize < length) {
             final Object[] parentArray = new Object[1 + ((length - 1) / groupSize)];
             parentArray[0] = results;
 
-            for (int start = firstSize, i = 1; start < getLength(array); i++) {
+            for (int start = firstSize, i = 1; start < length; i++) {
                 int nextSize = Math.min(groupSize, length - (i * groupSize));
                 Object next = newInstance(type, nextSize);
                 System.arraycopy(array, start, next, 0, nextSize);
@@ -45,56 +45,82 @@ final class Arrays2 { // TODO reuse these in `Array` also
         return results;
     }
 
+    static <T> Object drop(Class<?> type, Object array, int index) {
+        final int length = getLength(type, array);
+        Object copy = newInstance(type, length);
+        System.arraycopy(array, index, copy, index, length - index);
+        return copy;
+    }
+
     /** Store the content of an iterable in an array */
     static <T> Object asArray(java.util.Iterator<T> it, int length) {
         assert length > 0;
 
         Object first = it.next();
-        final Class<?> type = toPrimitive(first.getClass());
-        Object array = newInstance(type, length);
-        set(array, 0, first);
+        Object[] array = new Object[length];
+        array[0] = first;
 
         for (int i = 1; i < length; i++) {
-            set(array, i, it.next());
+            array[i] = it.next();
         }
         return array;
     }
 
     static Object asArray(Class<?> type, Object element) {
         Object newTrailing = newInstance(type, 1);
-        set(newTrailing, 0, element);
+        set(type, newTrailing, 0, element);
         return newTrailing;
     }
 
     static Object newInstance(Class<?> type, int size) {
-        if (int.class.equals(type)) {
-            return new int[size];
+        if (type.isPrimitive()) {
+            if (int.class.equals(type)) return new int[size];
+            else if (char.class.equals(type)) return new char[size];
+            else if (byte.class.equals(type)) return new byte[size];
+            else if (long.class.equals(type)) return new long[size];
+            else if (double.class.equals(type)) return new double[size];
+            else return java.lang.reflect.Array.newInstance(type, size);
         } else {
             return new Object[size];
         }
     }
-    static int getLength(Object array) {
-        if (array instanceof int[]) {
-            final int[] intArray = (int[]) array;
-            return intArray.length;
+
+    static int getLength(Class<?> type, Object array) {
+        if (type.isPrimitive()) {
+            if (array instanceof int[]) return ((int[]) array).length;
+            else if (array instanceof char[]) return ((char[]) array).length;
+            else if (array instanceof byte[]) return ((byte[]) array).length;
+            else if (array instanceof long[]) return ((long[]) array).length;
+            else if (array instanceof double[]) return ((double[]) array).length;
+            else return java.lang.reflect.Array.getLength(array);
         } else {
             final Object[] objectArray = (Object[]) array;
             return objectArray.length;
         }
     }
-    static Object get(Object array, int index) {
-        if (array instanceof int[]) {
-            final int[] intArray = (int[]) array;
-            return intArray[index];
+
+    static <T> T get(Class<?> type, Object array, int index) {
+        if (type.isPrimitive()) {
+            if (array instanceof int[]) return (T) (Object) ((int[]) array)[index];
+            else if (array instanceof char[]) return (T) (Object) ((char[]) array)[index];
+            else if (array instanceof byte[]) return (T) (Object) ((byte[]) array)[index];
+            else if (array instanceof long[]) return (T) (Object) ((long[]) array)[index];
+            else if (array instanceof double[]) return (T) (Object) ((double[]) array)[index];
+            else return (T) java.lang.reflect.Array.get(array, index);
         } else {
             final Object[] objectArray = (Object[]) array;
-            return objectArray[index];
+            return (T) objectArray[index];
         }
     }
-    static void set(Object array, int index, Object value) {
-        if (array instanceof int[]) {
-            final int[] intArray = (int[]) array;
-            intArray[index] = (Integer) value;
+
+    static void set(Class<?> type, Object array, int index, Object value) {
+        if (type.isPrimitive()) {
+            if (array instanceof int[]) ((int[]) array)[index] = (int) value;
+            else if (array instanceof char[]) ((char[]) array)[index] = (char) value;
+            else if (array instanceof byte[]) ((byte[]) array)[index] = (byte) value;
+            else if (array instanceof long[]) ((long[]) array)[index] = (long) value;
+            else if (array instanceof double[]) ((double[]) array)[index] = (double) value;
+            else java.lang.reflect.Array.set(array, index, value);
         } else {
             final Object[] objectArray = (Object[]) array;
             objectArray[index] = value;
@@ -104,7 +130,7 @@ final class Arrays2 { // TODO reuse these in `Array` also
     static Object toPrimitiveArray(Class<?> type, Object[] array) {
         Object results = newInstance(type, array.length);
         for (int i = 0; i < array.length; i++) {
-            set(results, i, array[i]);
+            set(type, results, i, array[i]);
         }
         return results;
     }

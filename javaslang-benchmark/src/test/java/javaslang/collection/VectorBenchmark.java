@@ -58,23 +58,23 @@ public class VectorBenchmark {
             EXPECTED_AGGREGATE = Array.of(ELEMENTS).reduce(JmhRunner::aggregate);
 
             javaMutable = create(java.util.ArrayList::new, asList(ELEMENTS), v -> areEqual(v, asList(ELEMENTS)));
-            slangPersistent = create(javaslang.collection.Vector::ofAll, javaMutable, v -> areEqual(v, javaMutable));
+            slangPersistent = create(javaslang.collection.Vector::ofAll, INT_ELEMENTS, CONTAINER_SIZE, v -> areEqual(v, javaMutable));
         }
     }
 
     /** Bulk creation from array based, boxed source */
     public static class Create extends Base {
         @Benchmark
-        public Object slang_persistent_list() {
+        public Object slang_persistent() {
             final javaslang.collection.Vector<Integer> values = javaslang.collection.Vector.ofAll(javaMutable);
             assert areEqual(values, javaMutable);
             return values.head();
         }
 
         @Benchmark
-        public Object slang_persistent_primitive_array() {
+        public Object slang_persistent_int() {
             final javaslang.collection.Vector<Integer> values = javaslang.collection.Vector.ofAll(INT_ELEMENTS);
-            assert areEqual(values, javaMutable);
+            assert areEqual(values, slangPersistent);
             return values.head();
         }
     }
@@ -89,7 +89,7 @@ public class VectorBenchmark {
 
         @Benchmark
         public int slang_persistent_int() {
-            final int head = slangPersistent.intHead();
+            final int head = ((int[]) slangPersistent.getLeafUnsafe(0))[0];
             assert Objects.equals(head, javaMutable.get(0));
             return head;
         }
@@ -111,7 +111,8 @@ public class VectorBenchmark {
         public int slang_persistent_int() {
             int aggregate = 0;
             for (int i : RANDOMIZED_INDICES) {
-                aggregate ^= slangPersistent.getInt(i);
+                int[] leafUnsafe = (int[]) slangPersistent.getLeafUnsafe(i);
+                aggregate ^= leafUnsafe[Vector.lastDigit(i)];
             }
             assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
@@ -125,6 +126,19 @@ public class VectorBenchmark {
             int aggregate = 0;
             for (final Iterator<Integer> iterator = slangPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
+            }
+            assert aggregate == EXPECTED_AGGREGATE;
+            return aggregate;
+        }
+
+        @Benchmark
+        public int slang_persistent_int() {
+            int aggregate = 0;
+            for (int i = 0; i < slangPersistent.length(); ) {
+                for (int value : (int[]) slangPersistent.getLeafUnsafe(i)) {
+                    aggregate ^= value;
+                    i++;
+                }
             }
             assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;

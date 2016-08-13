@@ -66,10 +66,10 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         this.leading = leading;
         this.middle = middle;
         this.trailing = trailing;
-        this.length = leadingLength() + middle.length() + getLength(trailing);
+        this.length = leadingLength() + middle.length() + getLength(type, trailing);
     }
 
-    private int leadingLength() { return getLength(leading); }
+    private int leadingLength() { return getLength(type, leading); }
 
     /**
      * Returns the empty Vector.
@@ -192,35 +192,20 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
 
     public static <T> Vector<T> ofAll(Collection<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return elements.isEmpty() ? empty()
-                                  : ofAll(elements, elements.size());
+        return ofAll(elements, elements.size());
     }
 
     public static <T> Vector<T> ofAll(Iterable<? extends T> iterable, int size) {
-        final Class<?> type;
-        Object array;
-        if (iterable instanceof ArrayList) {
-            T[] originalArray = (T[]) ((ArrayList<T>) iterable).toArray();
-            type = toPrimitive(originalArray[0].getClass());
+        if (!iterable.iterator().hasNext()) return empty();
 
-            if (type.isPrimitive()) {
-                array = newInstance(type, size);
-                for (int i = 0; i < size; i++) {
-                    set(array, i, originalArray[i]);
-                }
-            } else {
-                array = originalArray;
-            }
-        } else {
-            array = asArray(iterable.iterator(), size);
-            type = array.getClass().getComponentType();
-        }
-
-        return getTs(array, type, size);
+        final Object array = (iterable instanceof ArrayList) ? (T[]) ((ArrayList<T>) iterable).toArray()
+                                                             : asArray(iterable.iterator(), size);
+        return ofAll(array.getClass().getComponentType(), array, size);
     }
 
-    public static <T> Vector<T> getTs(Object array, Class<?> type, int size) {
-        if (getLength(array) <= branchingFactor()) {
+    static <T> Vector<T> ofAll(Class<?> type, Object array, int size) {
+        assert getLength(type, array) == size;
+        if (size <= branchingFactor()) {
             return new Vector<>(type, array, emptyTree(), emptyArray());
         }
 
@@ -232,9 +217,8 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         int trailingSize = lastDigit(remaining);
         if (trailingSize == 0) { trailingSize += branchingFactor(); }
 
-        int from = getLength(array) - trailingSize;
-        int to = getLength(array);
-        int trailingLength = to - from;
+        int from = size - trailingSize;
+        int trailingLength = size - from;
 
         final Object trailing = newInstance(type, trailingLength);
         arraycopy(array, from, trailing, 0, trailingLength);
@@ -248,9 +232,12 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         array = copy;
 
         byte depthShift = 0;
-        for (; getLength(array) > branchingFactor(); depthShift += BRANCHING_BASE) {
-            array = Arrays2.grouped(array, getLength(array), branchingFactor());
+        while (true) {
+            final int length = getLength(array.getClass().getComponentType(), array);
+            if (length <= branchingFactor()) break;
 
+            array = Arrays2.grouped(array, length, branchingFactor());
+            depthShift += BRANCHING_BASE;
         }
 
         final VectorTree<T> middle = create(type, array, 0, middleSize, depthShift);
@@ -277,7 +264,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
      */
     public static Vector<Boolean> ofAll(boolean[] array) {
         Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+        return ofAll(array.getClass().getComponentType(), array, array.length);
     }
 
     /**
@@ -288,7 +275,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
      */
     public static Vector<Byte> ofAll(byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+        return ofAll(array.getClass().getComponentType(), array, array.length);
     }
 
     /**
@@ -299,7 +286,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
      */
     public static Vector<Character> ofAll(char[] array) {
         Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+        return ofAll(array.getClass().getComponentType(), array, array.length);
     }
 
     /**
@@ -310,7 +297,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
      */
     public static Vector<Double> ofAll(double[] array) {
         Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+        return ofAll(array.getClass().getComponentType(), array, array.length);
     }
 
     /**
@@ -321,7 +308,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
      */
     public static Vector<Float> ofAll(float[] array) {
         Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+        return ofAll(array.getClass().getComponentType(), array, array.length);
     }
 
     /**
@@ -332,7 +319,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
      */
     public static Vector<Integer> ofAll(int[] array) {
         Objects.requireNonNull(array, "array is null");
-        return getTs(array, array.getClass().getComponentType(), array.length);
+        return ofAll(array.getClass().getComponentType(), array, array.length);
     }
 
     /**
@@ -343,7 +330,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
      */
     public static Vector<Long> ofAll(long[] array) {
         Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+        return ofAll(array.getClass().getComponentType(), array, array.length);
     }
 
     /**
@@ -354,7 +341,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
      */
     public static Vector<Short> ofAll(short[] array) {
         Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+        return ofAll(array.getClass().getComponentType(), array, array.length);
     }
 
     public static Vector<Character> range(char from, char toExclusive) {
@@ -770,36 +757,29 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
 
     @Override
     public T get(int index) {
-        if ((index < 0) || (index >= length())) {
-            throw new IndexOutOfBoundsException("get(" + index + ")");
-        }
+        if ((index < 0) || (index >= length())) throw new IndexOutOfBoundsException("get(" + index + ")");
 
         if (index < leadingLength()) {
-            return (T) Arrays2.get(leading, index);
+            return Arrays2.get(type, leading, index);
         } else if (index < trailingStartIndex()) {
             index -= leadingLength();
             final Object leaf = middle.getLeaf(index);
-            return (T) Arrays2.get(leaf, lastDigit(middle.offset() + index));
+            return Arrays2.get(type, leaf, lastDigit(middle.offset() + index));
         } else {
             index -= trailingStartIndex();
-            return (T) Arrays2.get(trailing, index);
+            return Arrays2.get(type, trailing, index);
         }
     }
 
-    public int getInt(int index) {
-        if ((index < 0) || (index >= length())) {
-            throw new IndexOutOfBoundsException("get(" + index + ")");
-        }
+    Object getLeafUnsafe(int index) {
+        if ((index < 0) || (index >= length())) throw new IndexOutOfBoundsException("get(" + index + ")");
 
         if (index < leadingLength()) {
-            return ((int[]) leading)[index];
+            return leading;
         } else if (index < trailingStartIndex()) {
-            index -= leadingLength();
-            final Object leaf = middle.getLeaf(index);
-            return ((int[]) leaf)[lastDigit(middle.offset() + index)];
+            return middle.getLeaf(index - leadingLength());
         } else {
-            index -= trailingStartIndex();
-            return ((int[]) trailing)[index];
+            return trailing;
         }
     }
 
@@ -807,20 +787,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
 
     @Override
     public T head() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("head of empty Vector");
-        } else {
-            return (T) Arrays2.get(leading, 0);
-        }
-    }
-
-    public int intHead() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("head of empty Vector");
-        } else {
-            final int[] intArray = (int[]) leading;
-            return intArray[0];
-        }
+        return Arrays2.get(type, leading, 0);
     }
 
     @Override
@@ -885,7 +852,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
 
     @Override
     public boolean isEmpty() {
-        return leadingLength() == 0;
+        return length == 0;
     }
 
     @Override
@@ -899,14 +866,10 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
             int i = 0;
 
             @Override
-            public boolean hasNext() {
-                return i < Vector.this.length();
-            }
+            public boolean hasNext() { return i < Vector.this.length(); }
 
             @Override
-            public T next() {
-                return Vector.this.get(i++);
-            }
+            public T next() { return Vector.this.get(i++); }
         };
     }
 
@@ -922,7 +885,7 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
 
     @Override
     public int length() {
-        return leadingLength() + middle.length() + getLength(trailing);
+        return length;
     }
 
     @Override
@@ -1429,26 +1392,28 @@ public class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T> {
         int offset() { return offset; }
 
         Object getLeaf(int index) {
-            index += offset;
-            assert index >= 0;
-
             if (depthShift == 0) {
                 return array;
-            } else if (depthShift == BRANCHING_BASE) {
-                return Arrays2.get(array, firstDigit(index, depthShift));
             } else {
-                Object root = Arrays2.get(array, firstDigit(index, depthShift));
+                index += offset;
+                assert index >= 0;
 
-                int depthShift = this.depthShift - BRANCHING_BASE;
-                root = Arrays2.get(root, digit(index, depthShift));
+                if (depthShift == BRANCHING_BASE) {
+                    return ((Object[]) array)[firstDigit(index, depthShift)];
+                } else {
+                    Object root = ((Object[]) array)[firstDigit(index, depthShift)];
 
-                while (depthShift > BRANCHING_BASE) {
-                    depthShift -= BRANCHING_BASE;
-                    root = Arrays2.get(root, digit(index, depthShift));
+                    int depthShift = this.depthShift - BRANCHING_BASE;
+                    root = ((Object[]) root)[digit(index, depthShift)];
+
+                    while (depthShift > BRANCHING_BASE) {
+                        depthShift -= BRANCHING_BASE;
+                        root = ((Object[]) root)[digit(index, depthShift)];
+                    }
+
+                    assert root != null;
+                    return root;
                 }
-
-                assert root != null;
-                return root;
             }
         }
 
