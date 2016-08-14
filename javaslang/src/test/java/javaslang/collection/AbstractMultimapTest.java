@@ -493,6 +493,15 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(src.remove(33)).isSameAs(src);
     }
 
+    // -- replace
+
+    @Test
+    public void shouldReplaceEntity() {
+        Multimap<Integer, Object> actual = emptyInt().put(1, "a").put(1, "b").replace(Tuple.of(1, "a"), Tuple.of(1, "c"));
+        Multimap<Integer, Object> expected = emptyInt().put(1, "c").put(1, "b");
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- removeAll
 
     @Test
