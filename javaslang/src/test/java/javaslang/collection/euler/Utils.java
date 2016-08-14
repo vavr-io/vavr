@@ -48,12 +48,12 @@ public final class Utils {
 
     public static boolean isPrime(long val) {
         return API.Match(val).of(
+                Case($(n -> n < 2L), false),
                 Case($(2L), true),
-                Case($(n -> n > 2), n -> {
+                Case($(), n -> {
                     final double upperLimitToCheck = Math.sqrt(n);
                     return !primes().takeWhile(d -> d <= upperLimitToCheck).exists(d -> n % d == 0);
-                }),
-                Case($(), false)
+                })
         );
     }
 
