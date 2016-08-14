@@ -227,7 +227,7 @@ public class BenchmarkPerformanceReporter {
                 return "";
             }
             final double ratio = baseResult.getScore() / alternativeScore;
-            return ratio == 1.0 ? "" : PERFORMANCE_FORMAT.format(ratio) + "x";
+            return ratio == 1.0 ? "" : PERFORMANCE_FORMAT.format(ratio) + "×";
         }
     }
 
@@ -365,7 +365,7 @@ public class BenchmarkPerformanceReporter {
                 final Option<TestExecution> baseExecution = baseImplExecutions.find(e -> e.getParamKey().equals(paramKey));
                 final String paramRatio = alternativeExecution.isEmpty() || baseExecution.isEmpty() || baseExecution.get().getScore() == 0.0
                                           ? ""
-                                          : PERFORMANCE_FORMAT.format(alternativeExecution.get().getScore() / baseExecution.get().getScore()) + "x";
+                                          : PERFORMANCE_FORMAT.format(alternativeExecution.get().getScore() / baseExecution.get().getScore()) + "×";
                 ratioStings = ratioStings.append(padRight(paramRatio, paramKeySize));
             }
             return ratioStings.mkString(" ");
