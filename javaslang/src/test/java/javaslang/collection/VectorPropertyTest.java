@@ -25,19 +25,34 @@ public class VectorPropertyTest {
 
     @Test
     public void shouldCreateAndGet() {
-        for (byte depth = 0; depth <= 6; depth++) {
-            final int length = getMaxSizeForDepth(depth);
-
-            final Seq<Integer> expected = Array.range(0, length);
+        for (int i = 0; i < 2000; i++) {
+            final Seq<Integer> expected = Array.range(0, i);
             final Vector<Integer> actual = Vector.ofAll(expected);
+            assertAreEqual(expected, actual);
 
-            int i = 0;
-            for (Integer value : expected) {
-                final Integer actualValue = actual.get(i++);
-                assertThat(actualValue).isEqualTo(value);
-            }
+            final Vector<Byte> actualByte = Vector.ofAll(Arrays2.<byte[]> toPrimitiveArray(byte.class, expected.map(Integer::byteValue).toJavaArray()));
+            assert actualByte.leading instanceof byte[];
+            assertAreEqual(expected, actual);
 
-            System.out.println("Depth " + depth + " ok!");
+            final Vector<Boolean> actualBoolean = Vector.ofAll(Arrays2.<boolean[]> toPrimitiveArray(boolean.class, expected.map(v -> (v % 2) == 0).toJavaArray()));
+            assert actualBoolean.leading instanceof boolean[];
+            assertAreEqual(expected, actual);
+
+            final Vector<Character> actualChar = Vector.ofAll(Arrays2.<char[]> toPrimitiveArray(char.class, expected.map(v -> (char) v.intValue()).toJavaArray()));
+            assert actualChar.leading instanceof char[];
+            assertAreEqual(expected, actual);
+
+            final Vector<Double> actualDouble = Vector.ofAll(Arrays2.<double[]> toPrimitiveArray(double.class, expected.map(Integer::doubleValue).toJavaArray()));
+            assert actualDouble.leading instanceof double[];
+            assertAreEqual(expected, actual);
+
+            final Vector<Integer> actualInt = Vector.ofAll(Arrays2.<int[]> toPrimitiveArray(int.class, expected.toJavaArray()));
+            assert actualInt.leading instanceof int[];
+            assertAreEqual(expected, actual);
+
+            final Vector<Long> actualLong = Vector.ofAll(Arrays2.<long[]> toPrimitiveArray(long.class, expected.map(Integer::longValue).toJavaArray()));
+            assert actualLong.leading instanceof long[];
+            assertAreEqual(expected, actual);
         }
     }
 
@@ -52,6 +67,21 @@ public class VectorPropertyTest {
             }
 
             System.out.println("Depth " + depth + " ok!");
+        }
+
+        Seq<Integer> expected = Array.range(0, 1000);
+        Vector<Integer> actual = Vector.ofAll(Arrays2.<int[]> toPrimitiveArray(int.class, expected.toJavaArray()));
+        for (int drop = 0; drop <= (Vector.branchingFactor() + 1); drop += 2) {
+            final Iterator<Integer> expectedIterator = expected.iterator();
+            for (int i = 0; i < actual.length(); ) {
+                for (int value : (int[]) actual.getLeafUnsafe(i)) {
+                    assertThat(value).isEqualTo(expectedIterator.next());
+                    i++;
+                }
+            }
+
+            expected = expected.tail().init();
+            actual = actual.tail().init();
         }
     }
 
@@ -171,28 +201,29 @@ public class VectorPropertyTest {
         for (int i = 0; i < 10; i++) {
             Seq<Integer> expected = Array.empty();
             Vector<Integer> actual = Vector.empty();
-            for (int j = 0; j < 100_000; j++) {
+            for (int j = 0; j < 50_000; j++) {
                 Seq<Tuple2<Seq<Integer>, Vector<Integer>>> history = Array.empty();
 
-                if (random.nextInt(100) < 10) {
+                if (random.nextInt(100) < 20) {
                     final ArrayList<Integer> values = new ArrayList<>();
                     for (int k = 0; k < random.nextInt(j + 1); k++) {
                         values.add(random.nextInt());
                     }
                     expected = Array.ofAll(values);
-                    actual = assertAreEqual(values, null, (v, p) -> Vector.ofAll(v), expected);
+                    final boolean isPrimitive = random.nextInt(100) < 50;
+                    actual = assertAreEqual(values, null, (v, p) -> isPrimitive ? Vector.ofAll(Arrays2.<int[]> toPrimitiveArray(int.class, v.toArray())) : Vector.ofAll(v), expected);
                     history = history.append(Tuple.of(expected, actual));
                 }
 
                 if (random.nextInt(100) < 50) {
-                    final int value = random.nextInt();
+                    final Integer value = randomOrNull(actual, random);
                     expected = expected.append(value);
                     actual = assertAreEqual(actual, value, Vector::append, expected);
                     history = history.append(Tuple.of(expected, actual));
                 }
 
                 if (random.nextInt(100) < 50) {
-                    final int value = random.nextInt();
+                    final Integer value = randomOrNull(actual, random);
                     expected = expected.prepend(value);
                     actual = assertAreEqual(actual, value, Vector::prepend, expected);
                     history = history.append(Tuple.of(expected, actual));
@@ -227,7 +258,7 @@ public class VectorPropertyTest {
                 if (random.nextInt(100) < 50) {
                     if (!expected.isEmpty()) {
                         final int index = random.nextInt(expected.size());
-                        final int value = random.nextInt();
+                        final Integer value = randomOrNull(actual, random);
                         expected = expected.update(index, value);
                         actual = assertAreEqual(actual, null, (a, p) -> a.update(index, value), expected);
                         history = history.append(Tuple.of(expected, actual));
@@ -247,6 +278,10 @@ public class VectorPropertyTest {
                 history.forEach(t -> assertAreEqual(t._1, t._2)); // test that the modifications are persistent
             }
         }
+    }
+    private Integer randomOrNull(Vector<Integer> actual, Random random) {
+        return (!actual.type.isPrimitive() && (random.nextInt(100) < 5)) ? null
+                                                                         : random.nextInt();
     }
 
     private static <T1, T2> Vector<Integer> assertAreEqual(T1 previousActual, T2 param, Function2<T1, T2, Vector<Integer>> actualProvider, Seq<Integer> expected) {
