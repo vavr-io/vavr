@@ -8,16 +8,22 @@ package javaslang;
 import javaslang.collection.*;
 import javaslang.collection.HashMap;
 import javaslang.collection.HashSet;
+import javaslang.collection.LinkedHashMap;
 import javaslang.collection.LinkedHashSet;
 import javaslang.collection.List;
 import javaslang.collection.Map;
 import javaslang.collection.PriorityQueue;
 import javaslang.collection.Queue;
 import javaslang.collection.Set;
+import javaslang.collection.SortedMap;
+import javaslang.collection.SortedSet;
 import javaslang.collection.Stack;
+import javaslang.collection.TreeMap;
 import javaslang.collection.TreeSet;
 import javaslang.collection.Vector;
-import javaslang.control.*;
+import javaslang.control.Either;
+import javaslang.control.Option;
+import javaslang.control.Try;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
@@ -26,6 +32,8 @@ import java.util.Collections;
 import java.util.function.Function;
 
 import static java.lang.Integer.bitCount;
+import static javaslang.Serializables.deserialize;
+import static javaslang.Serializables.serialize;
 
 public abstract class AbstractValueTest {
 
@@ -42,13 +50,11 @@ public abstract class AbstractValueTest {
     }
 
     protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
-        return new IterableAssert<T>(actual) {
-        };
+        return new IterableAssert<T>(actual) {};
     }
 
     protected <T> ObjectAssert<T> assertThat(T actual) {
-        return new ObjectAssert<T>(actual) {
-        };
+        return new ObjectAssert<T>(actual) {};
     }
 
     protected BooleanAssert assertThat(Boolean actual) {
@@ -57,23 +63,19 @@ public abstract class AbstractValueTest {
     }
 
     protected DoubleAssert assertThat(Double actual) {
-        return new DoubleAssert(actual) {
-        };
+        return new DoubleAssert(actual) {};
     }
 
     protected IntegerAssert assertThat(Integer actual) {
-        return new IntegerAssert(actual) {
-        };
+        return new IntegerAssert(actual) {};
     }
 
     protected LongAssert assertThat(Long actual) {
-        return new LongAssert(actual) {
-        };
+        return new LongAssert(actual) {};
     }
 
     protected StringAssert assertThat(String actual) {
-        return new StringAssert(actual) {
-        };
+        return new StringAssert(actual) {};
     }
 
     abstract protected <T> Value<T> empty();
@@ -207,6 +209,17 @@ public abstract class AbstractValueTest {
 
     // -- Conversions toXxx()
 
+    /**
+     * States whether the Value's elements are ordered by a Comparator.
+     * <p>
+     * Test classes override this method to return {@code true} if needed.
+     *
+     * @return false (by default), if the Value's elements are ordered, true otherwise
+     */
+    protected boolean isOrdered() {
+        return false;
+    }
+
     @Test
     public void shouldConvertToArray() {
         final Value<Integer> value = of(1, 2, 3);
@@ -216,6 +229,13 @@ public abstract class AbstractValueTest {
         } else {
             assertThat(array).isEqualTo(Array.of(1, 2, 3));
         }
+    }
+
+    @Test
+    public void shouldConvertToCharSeq() {
+        final Value<Integer> value = of(1, 2, 3);
+        final CharSeq charSeq = value.toCharSeq();
+        assertThat(charSeq).isEqualTo(CharSeq.of(value.toString()));
     }
 
     @Test
@@ -230,159 +250,97 @@ public abstract class AbstractValueTest {
     }
 
     @Test
-    public void shouldConvertToMap() {
-        final Value<Integer> value = of(1, 2, 3);
-        final Map<Integer, Integer> map = value.toMap(v -> Tuple.of(v, v));
-        if (value.isSingleValued()) {
-            assertThat(map).isEqualTo(HashMap.of(1, 1));
-        } else {
-            assertThat(map).isEqualTo(HashMap.empty().put(1, 1).put(2, 2).put(3, 3));
-        }
-    }
-
-    @Test
-    public void shouldConvertToMapWithTwoFunctions() {
-        final Value<Integer> value = of(1, 2, 3);
-        final Map<Integer, String> map = value.toMap(v -> v, String::valueOf);
-        if (value.isSingleValued()) {
-            assertThat(map).isEqualTo(HashMap.of(1, "1"));
-        } else {
-            assertThat(map).isEqualTo(HashMap.empty().put(1, "1").put(2, "2").put(3, "3"));
-        }
-    }
-
-    @Test
     public void shouldConvertToHashMap() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toMap(v -> Tuple.of(keyMapper.apply(v), v));
+        final Map<Integer, Integer> map = value.toMap(i -> Tuple.of(i, i));
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+            assertThat(map).isEqualTo(HashMap.of(9, 9));
+        } else {
+            assertThat(map).isEqualTo(HashMap.of(1, 1, 5, 5, 9, 9));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(", ")).isEqualTo(
-                "(110427681, 5), " +
-                "(663160547, 1), " +
-                "(1571254982, 9)");
     }
 
     @Test
     public void shouldConvertToHashMapTwoFunctions() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toMap(keyMapper, Function.identity());
+        final Map<Integer, Integer> map = value.toMap(Function.identity(), Function.identity());
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+            assertThat(map).isEqualTo(HashMap.of(9, 9));
+        } else {
+            assertThat(map).isEqualTo(HashMap.of(1, 1, 5, 5, 9, 9));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(", ")).isEqualTo(
-                "(110427681, 5), " +
-                "(663160547, 1), " +
-                "(1571254982, 9)");
     }
 
     @Test
     public void shouldConvertToLinkedMap() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toLinkedMap(v -> Tuple.of(keyMapper.apply(v), v));
-        final List<Integer> itemsInOrder;
+        final Map<Integer, Integer> map = value.toLinkedMap(i -> Tuple.of(i, i));
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
-            itemsInOrder = List.of(9, 5, 1);
-        } else if ((value instanceof Traversable) && !((Traversable) value).isTraversableAgain()) {
-            itemsInOrder = List.of(9, 5, 1);
+            assertThat(map).isEqualTo(LinkedHashMap.of(9, 9));
+        } else if (isOrdered()) {
+            assertThat(map).isEqualTo(LinkedHashMap.of(1, 1, 5, 5, 9, 9));
         } else {
-            itemsInOrder = value.toList();
+            assertThat(map).isEqualTo(LinkedHashMap.of(9, 9, 5, 5, 1, 1));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo(
-                itemsInOrder.map(i -> Tuple.of(keyMapper.apply(i), i)).mkString(",")
-        );
     }
 
     @Test
     public void shouldConvertToLinkedMapTwoFunctions() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
-        final Value<Integer> value = of(9, 5, 2);
-        Map<Integer, Integer> map = value.toLinkedMap(keyMapper, Function.identity());
-        final List<Integer> itemsInOrder;
+        final Value<Integer> value = of(9, 5, 1);
+        final Map<Integer, Integer> map = value.toLinkedMap(Function.identity(), Function.identity());
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(2), 2);
-            itemsInOrder = List.of(9, 5, 2);
-        } else if ((value instanceof Traversable) && !((Traversable) value).isTraversableAgain()) {
-            itemsInOrder = List.of(9, 5, 2);
+            assertThat(map).isEqualTo(LinkedHashMap.of(9, 9));
+        } else if (isOrdered()) {
+            assertThat(map).isEqualTo(LinkedHashMap.of(1, 1, 5, 5, 9, 9));
         } else {
-            itemsInOrder = value.toList();
+            assertThat(map).isEqualTo(LinkedHashMap.of(9, 9, 5, 5, 1, 1));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo(
-                itemsInOrder.map(i -> Tuple.of(keyMapper.apply(i), i)).mkString(",")
-        );
     }
 
     @Test
     public void shouldConvertToSortedMap() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toSortedMap(v -> Tuple.of(keyMapper.apply(v), v));
+        final SortedMap<Integer, Integer> map = value.toSortedMap(i -> Tuple.of(i, i));
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+            assertThat(map).isEqualTo(TreeMap.of(9, 9));
+        } else {
+            assertThat(map).isEqualTo(TreeMap.of(1, 1, 5, 5, 9, 9));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo(
-                "(110427681, 5)," +
-                "(663160547, 1)," +
-                "(1571254982, 9)"
-        );
     }
 
     @Test
     public void shouldConvertToSortedMapTwoFunctions() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toSortedMap(keyMapper, Function.identity());
+        final SortedMap<Integer, Integer> map = value.toSortedMap(Function.identity(), Function.identity());
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+            assertThat(map).isEqualTo(TreeMap.of(9, 9));
+        } else {
+            assertThat(map).isEqualTo(TreeMap.of(1, 1, 5, 5, 9, 9));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo(
-                "(110427681, 5)," +
-                "(663160547, 1)," +
-                "(1571254982, 9)"
-        );
     }
 
     @Test
     public void shouldConvertToSortedMapWithComparator() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toSortedMap(((Comparator<Integer>) Integer::compareTo).reversed(), v -> Tuple.of(keyMapper.apply(v), v));
+        final Comparator<Integer> comparator = ((Comparator<Integer>) Integer::compareTo).reversed();
+        final SortedMap<Integer, Integer> map = value.toSortedMap(comparator, i -> Tuple.of(i, i));
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+            assertThat(map).isEqualTo(TreeMap.of(comparator, 9, 9));
+        } else {
+            assertThat(map).isEqualTo(TreeMap.of(comparator, 9, 9, 5, 5, 1, 1));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo(
-                "(1571254982, 9)," +
-                "(663160547, 1)," +
-                "(110427681, 5)"
-        );
     }
 
     @Test
     public void shouldConvertToSortedMapTwoFunctionsWithComparator() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toSortedMap(((Comparator<Integer>) Integer::compareTo).reversed(), keyMapper, Function.identity());
+        final Comparator<Integer> comparator = ((Comparator<Integer>) Integer::compareTo).reversed();
+        final SortedMap<Integer, Integer> map = value.toSortedMap(comparator, Function.identity(), Function.identity());
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+            assertThat(map).isEqualTo(TreeMap.of(comparator, 9, 9));
+        } else {
+            assertThat(map).isEqualTo(TreeMap.of(comparator, 9, 9, 5, 5, 1, 1));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo(
-                "(1571254982, 9)," +
-                "(663160547, 1)," +
-                "(110427681, 5)"
-        );
     }
 
     @Test
@@ -403,14 +361,34 @@ public abstract class AbstractValueTest {
     }
 
     @Test
-    public void shouldConvertToSortedQueue() {
+    public void shouldConvertToPriorityQueueUsingImplicitComparator() {
         final Value<Integer> value = of(1, 3, 2);
-        final PriorityQueue<Integer> queue = value.toSortedQueue(Comparator.naturalOrder());
+        final PriorityQueue<Integer> queue = value.toPriorityQueue();
         if (value.isSingleValued()) {
             assertThat(queue).isEqualTo(PriorityQueue.of(1));
         } else {
             assertThat(queue).isEqualTo(PriorityQueue.of(1, 2, 3));
         }
+    }
+
+    @Test
+    public void shouldConvertToPriorityQueueUsingExplicitComparator() {
+        final Comparator<Integer> comparator = Comparator.naturalOrder();
+        final Value<Integer> value = of(1, 3, 2);
+        final PriorityQueue<Integer> queue = value.toPriorityQueue(comparator);
+        if (value.isSingleValued()) {
+            assertThat(queue).isEqualTo(PriorityQueue.of(comparator, 1));
+        } else {
+            assertThat(queue).isEqualTo(PriorityQueue.of(comparator, 1, 2, 3));
+        }
+    }
+
+    @Test
+    public void shouldConvertToPriorityQueueUsingSerializableComparator() {
+        final Value<Integer> value = of(1, 3, 2);
+        final PriorityQueue<Integer> queue = value.toPriorityQueue();
+        final PriorityQueue<Integer> actual = deserialize(serialize(queue));
+        assertThat(actual).isEqualTo(queue);
     }
 
     @Test
@@ -444,7 +422,7 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertToSortedSetWithoutComparatorOnComparable() {
         final Value<Integer> value = of(3, 7, 1, 15, 0);
-        final Set<Integer> set = value.toSortedSet();
+        final SortedSet<Integer> set = value.toSortedSet();
         if (value.isSingleValued()) {
             assertThat(set).isEqualTo(TreeSet.of(3));
         } else {
@@ -455,7 +433,7 @@ public abstract class AbstractValueTest {
     @Test(expected = ClassCastException.class)
     public void shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable() {
         final Value<StringBuilder> value = of(new StringBuilder("3"), new StringBuilder("7"), new StringBuilder("1"), new StringBuilder("15"), new StringBuilder("0"));
-        final Set<StringBuilder> set = value.toSortedSet();
+        final SortedSet<StringBuilder> set = value.toSortedSet();
         if (value.isSingleValued()) {
             //Comparator is not used yet
             set.add(new StringBuilder("7"));
@@ -466,13 +444,22 @@ public abstract class AbstractValueTest {
     public void shouldConvertToSortedSet() {
         final Value<Integer> value = of(3, 7, 1, 15, 0);
         final Comparator<Integer> comparator = (o1, o2) -> Integer.compare(bitCount(o1), bitCount(o2));
-        final Set<Integer> set = value.toSortedSet(comparator.reversed());
+        final SortedSet<Integer> set = value.toSortedSet(comparator.reversed());
         if (value.isSingleValued()) {
             assertThat(set).isEqualTo(TreeSet.of(3));
         } else {
             assertThat(set).isEqualTo(TreeSet.of(comparator.reversed(), 0, 1, 3, 7, 15));
         }
     }
+
+    @Test
+    public void shouldConvertToSortedSetUsingSerializableComparator() {
+        final Value<Integer> value = of(1, 3, 2);
+        final SortedSet<Integer> set = value.toSortedSet();
+        final SortedSet<Integer> actual = deserialize(serialize(set));
+        assertThat(actual).isEqualTo(set);
+    }
+
 
     @Test
     public void shouldConvertToStack() {
@@ -534,6 +521,17 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertToJavaArray() {
         final Value<Integer> value = of(1, 2, 3);
+        final Object[] ints = value.toJavaArray();
+        if (value.isSingleValued()) {
+            assertThat(ints).isEqualTo(new int[] { 1 });
+        } else {
+            assertThat(ints).isEqualTo(new int[] { 1, 2, 3 });
+        }
+    }
+
+    @Test
+    public void shouldConvertToJavaArrayWithTypeHint() {
+        final Value<Integer> value = of(1, 2, 3);
         final Integer[] ints = value.toJavaArray(Integer.class);
         if (value.isSingleValued()) {
             assertThat(ints).isEqualTo(new int[] { 1 });
@@ -558,7 +556,7 @@ public abstract class AbstractValueTest {
         final Value<Integer> value = of(1, 2, 3);
         final java.util.List<Integer> list = value.toJavaList();
         if (value.isSingleValued()) {
-            assertThat(list).isEqualTo(Arrays.asList(1));
+            assertThat(list).isEqualTo(Collections.singletonList(1));
         } else {
             assertThat(list).isEqualTo(Arrays.asList(1, 2, 3));
         }
@@ -765,6 +763,46 @@ public abstract class AbstractValueTest {
             assertThat(actual).contains("1");
         } else {
             assertThat(actual).contains("1", "2");
+        }
+    }
+
+    // -- Serialization
+
+    /**
+     * States whether the specific Value implementation is Serializable.
+     * <p>
+     * Test classes override this method to return false if needed.
+     *
+     * @return true (by default), if the Value is Serializable, false otherwise
+     */
+    protected boolean isSerializable() {
+        return true;
+    }
+
+    @Test
+    public void shouldSerializeDeserializeEmpty() {
+        if (isSerializable()) {
+            final Value<?> testee = empty();
+            final Value<?> actual = deserialize(serialize(testee));
+            assertThat(actual).isEqualTo(testee);
+        }
+    }
+
+    @Test
+    public void shouldSerializeDeserializeSingleValued() {
+        if (isSerializable()) {
+            final Value<?> testee = of(1);
+            final Value<?> actual = deserialize(serialize(testee));
+            assertThat(actual).isEqualTo(testee);
+        }
+    }
+
+    @Test
+    public void shouldSerializeDeserializeMultiValued() {
+        if (isSerializable()) {
+            final Value<?> testee = of(1, 2, 3);
+            final Value<?> actual = deserialize(serialize(testee));
+            assertThat(actual).isEqualTo(testee);
         }
     }
 }
