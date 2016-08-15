@@ -8,14 +8,17 @@ package javaslang;
 import javaslang.collection.*;
 import javaslang.collection.HashMap;
 import javaslang.collection.HashSet;
+import javaslang.collection.LinkedHashMap;
 import javaslang.collection.LinkedHashSet;
 import javaslang.collection.List;
 import javaslang.collection.Map;
 import javaslang.collection.PriorityQueue;
 import javaslang.collection.Queue;
 import javaslang.collection.Set;
+import javaslang.collection.SortedMap;
 import javaslang.collection.SortedSet;
 import javaslang.collection.Stack;
+import javaslang.collection.TreeMap;
 import javaslang.collection.TreeSet;
 import javaslang.collection.Vector;
 import javaslang.control.Either;
@@ -206,6 +209,17 @@ public abstract class AbstractValueTest {
 
     // -- Conversions toXxx()
 
+    /**
+     * States whether the Value's elements are ordered by a Comparator.
+     * <p>
+     * Test classes override this method to return {@code true} if needed.
+     *
+     * @return false (by default), if the Value's elements are ordered, true otherwise
+     */
+    protected boolean isOrdered() {
+        return false;
+    }
+
     @Test
     public void shouldConvertToArray() {
         final Value<Integer> value = of(1, 2, 3);
@@ -236,137 +250,97 @@ public abstract class AbstractValueTest {
     }
 
     @Test
-    public void shouldConvertToMap() {
-        final Value<Integer> value = of(1, 2, 3);
-        final Map<Integer, Integer> map = value.toMap(v -> Tuple.of(v, v));
-        if (value.isSingleValued()) {
-            assertThat(map).isEqualTo(HashMap.of(1, 1));
-        } else {
-            assertThat(map).isEqualTo(HashMap.empty().put(1, 1).put(2, 2).put(3, 3));
-        }
-    }
-
-    @Test
-    public void shouldConvertToMapWithTwoFunctions() {
-        final Value<Integer> value = of(1, 2, 3);
-        final Map<Integer, String> map = value.toMap(v -> v, String::valueOf);
-        if (value.isSingleValued()) {
-            assertThat(map).isEqualTo(HashMap.of(1, "1"));
-        } else {
-            assertThat(map).isEqualTo(HashMap.empty().put(1, "1").put(2, "2").put(3, "3"));
-        }
-    }
-
-    @Test
     public void shouldConvertToHashMap() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toMap(v -> Tuple.of(keyMapper.apply(v), v));
+        final Map<Integer, Integer> map = value.toMap(i -> Tuple.of(i, i));
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+            assertThat(map).isEqualTo(HashMap.of(9, 9));
+        } else {
+            assertThat(map).isEqualTo(HashMap.of(1, 1, 5, 5, 9, 9));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(", ")).isEqualTo("(110427681, 5), (663160547, 1), (1571254982, 9)");
     }
 
     @Test
     public void shouldConvertToHashMapTwoFunctions() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toMap(keyMapper, Function.identity());
+        final Map<Integer, Integer> map = value.toMap(Function.identity(), Function.identity());
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+            assertThat(map).isEqualTo(HashMap.of(9, 9));
+        } else {
+            assertThat(map).isEqualTo(HashMap.of(1, 1, 5, 5, 9, 9));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(", ")).isEqualTo("(110427681, 5), (663160547, 1), (1571254982, 9)");
     }
 
     @Test
     public void shouldConvertToLinkedMap() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toLinkedMap(v -> Tuple.of(keyMapper.apply(v), v));
-        final List<Integer> itemsInOrder;
+        final Map<Integer, Integer> map = value.toLinkedMap(i -> Tuple.of(i, i));
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
-            itemsInOrder = List.of(9, 5, 1);
-        } else if ((value instanceof Traversable) && !((Traversable) value).isTraversableAgain()) {
-            itemsInOrder = List.of(9, 5, 1);
+            assertThat(map).isEqualTo(LinkedHashMap.of(9, 9));
+        } else if (isOrdered()) {
+            assertThat(map).isEqualTo(LinkedHashMap.of(1, 1, 5, 5, 9, 9));
         } else {
-            itemsInOrder = value.toList();
+            assertThat(map).isEqualTo(LinkedHashMap.of(9, 9, 5, 5, 1, 1));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo(
-                itemsInOrder.map(i -> Tuple.of(keyMapper.apply(i), i)).mkString(",")
-        );
     }
 
     @Test
     public void shouldConvertToLinkedMapTwoFunctions() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
-        final Value<Integer> value = of(9, 5, 2);
-        Map<Integer, Integer> map = value.toLinkedMap(keyMapper, Function.identity());
-        final List<Integer> itemsInOrder;
+        final Value<Integer> value = of(9, 5, 1);
+        final Map<Integer, Integer> map = value.toLinkedMap(Function.identity(), Function.identity());
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(2), 2);
-            itemsInOrder = List.of(9, 5, 2);
-        } else if ((value instanceof Traversable) && !((Traversable) value).isTraversableAgain()) {
-            itemsInOrder = List.of(9, 5, 2);
+            assertThat(map).isEqualTo(LinkedHashMap.of(9, 9));
+        } else if (isOrdered()) {
+            assertThat(map).isEqualTo(LinkedHashMap.of(1, 1, 5, 5, 9, 9));
         } else {
-            itemsInOrder = value.toList();
+            assertThat(map).isEqualTo(LinkedHashMap.of(9, 9, 5, 5, 1, 1));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo(
-                itemsInOrder.map(i -> Tuple.of(keyMapper.apply(i), i)).mkString(",")
-        );
     }
 
     @Test
     public void shouldConvertToSortedMap() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toSortedMap(v -> Tuple.of(keyMapper.apply(v), v));
+        final SortedMap<Integer, Integer> map = value.toSortedMap(i -> Tuple.of(i, i));
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+            assertThat(map).isEqualTo(TreeMap.of(9, 9));
+        } else {
+            assertThat(map).isEqualTo(TreeMap.of(1, 1, 5, 5, 9, 9));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo("(110427681, 5),(663160547, 1),(1571254982, 9)");
     }
 
     @Test
     public void shouldConvertToSortedMapTwoFunctions() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toSortedMap(keyMapper, Function.identity());
+        final SortedMap<Integer, Integer> map = value.toSortedMap(Function.identity(), Function.identity());
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+            assertThat(map).isEqualTo(TreeMap.of(9, 9));
+        } else {
+            assertThat(map).isEqualTo(TreeMap.of(1, 1, 5, 5, 9, 9));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo("(110427681, 5),(663160547, 1),(1571254982, 9)");
     }
 
     @Test
     public void shouldConvertToSortedMapWithComparator() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toSortedMap(((Comparator<Integer>) Integer::compareTo).reversed(), v -> Tuple.of(keyMapper.apply(v), v));
+        final Comparator<Integer> comparator = ((Comparator<Integer>) Integer::compareTo).reversed();
+        final SortedMap<Integer, Integer> map = value.toSortedMap(comparator, i -> Tuple.of(i, i));
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+            assertThat(map).isEqualTo(TreeMap.of(comparator, 9, 9));
+        } else {
+            assertThat(map).isEqualTo(TreeMap.of(comparator, 9, 9, 5, 5, 1, 1));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo("(1571254982, 9),(663160547, 1),(110427681, 5)");
     }
 
     @Test
     public void shouldConvertToSortedMapTwoFunctionsWithComparator() {
-        final Function<Integer, Integer> keyMapper = i -> AbstractMapTest.md5(Integer.toString(i) + " unique line value").hashCode();
         final Value<Integer> value = of(9, 5, 1);
-        Map<Integer, Integer> map = value.toSortedMap(((Comparator<Integer>) Integer::compareTo).reversed(), keyMapper, Function.identity());
+        final Comparator<Integer> comparator = ((Comparator<Integer>) Integer::compareTo).reversed();
+        final SortedMap<Integer, Integer> map = value.toSortedMap(comparator, Function.identity(), Function.identity());
         if (value.isSingleValued()) {
-            map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
+            assertThat(map).isEqualTo(TreeMap.of(comparator, 9, 9));
+        } else {
+            assertThat(map).isEqualTo(TreeMap.of(comparator, 9, 9, 5, 5, 1, 1));
         }
-        //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo("(1571254982, 9),(663160547, 1),(110427681, 5)");
     }
 
     @Test

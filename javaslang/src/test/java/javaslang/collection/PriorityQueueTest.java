@@ -119,6 +119,11 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         return false;
     }
 
+    @Override
+    protected boolean isOrdered() {
+        return true;
+    }
+
     private static SerializableComparator<Object> toStringComparator() {
         return (o1, o2) -> String.valueOf(o1).compareTo(String.valueOf(o2));
     }
