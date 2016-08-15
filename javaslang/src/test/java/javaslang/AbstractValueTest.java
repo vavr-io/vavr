@@ -792,25 +792,43 @@ public abstract class AbstractValueTest {
         }
     }
 
+    // -- Serialization
+
+    /**
+     * States whether the specific Value implementation is Serializable.
+     * <p>
+     * Test classes override this method to return false if needed.
+     *
+     * @return true (by default), if the Value is Serializable, false otherwise
+     */
+    protected boolean isSerializable() {
+        return true;
+    }
+
     @Test
     public void shouldSerializeDeserializeEmpty() {
-        final Value<?> testee = empty();
-        final Value<?> actual = deserialize(serialize(testee));
-        assertThat(actual).isEqualTo(testee);
+        if (isSerializable()) {
+            final Value<?> testee = empty();
+            final Value<?> actual = deserialize(serialize(testee));
+            assertThat(actual).isEqualTo(testee);
+        }
     }
 
     @Test
     public void shouldSerializeDeserializeSingleValued() {
-        final Value<?> testee = of(1);
-        final Value<?> actual = deserialize(serialize(testee));
-        assertThat(actual).isEqualTo(testee);
+        if (isSerializable()) {
+            final Value<?> testee = of(1);
+            final Value<?> actual = deserialize(serialize(testee));
+            assertThat(actual).isEqualTo(testee);
+        }
     }
 
     @Test
     public void shouldSerializeDeserializeMultiValued() {
-        final Value<?> testee = of(1, 2, 3);
-        System.out.println(testee);
-        final Value<?> actual = deserialize(serialize(testee));
-        assertThat(actual).isEqualTo(testee);
+        if (isSerializable()) {
+            final Value<?> testee = of(1, 2, 3);
+            final Value<?> actual = deserialize(serialize(testee));
+            assertThat(actual).isEqualTo(testee);
+        }
     }
 }

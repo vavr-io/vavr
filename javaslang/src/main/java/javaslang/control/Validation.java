@@ -10,6 +10,7 @@ import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 
+import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -594,7 +595,9 @@ public interface Validation<E, T> extends Value<T> {
      * @param <E> type of the error of this Validation
      * @param <T> type of the value of this Validation
      */
-    final class Valid<E, T> implements Validation<E, T> {
+    final class Valid<E, T> implements Validation<E, T>, Serializable {
+
+        private static final long serialVersionUID = 1L;
 
         private final T value;
 
@@ -655,7 +658,9 @@ public interface Validation<E, T> extends Value<T> {
      * @param <E> type of the error of this Validation
      * @param <T> type of the value of this Validation
      */
-    final class Invalid<E, T> implements Validation<E, T> {
+    final class Invalid<E, T> implements Validation<E, T>, Serializable {
+
+        private static final long serialVersionUID = 1L;
 
         private final E error;
 

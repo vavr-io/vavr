@@ -9,6 +9,7 @@ import javaslang.collection.Queue;
 import javaslang.control.*;
 import javaslang.control.Try.CheckedSupplier;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;

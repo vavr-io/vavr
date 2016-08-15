@@ -2199,22 +2199,28 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldSerializeDeserializeNil() {
-        final Object actual = deserialize(serialize(empty()));
-        final Object expected = empty();
-        assertThat(actual).isEqualTo(expected);
+        if (isSerializable()) {
+            final Object actual = deserialize(serialize(empty()));
+            final Object expected = empty();
+            assertThat(actual).isEqualTo(expected);
+        }
     }
 
     @Test
     public void shouldPreserveSingletonInstanceOnDeserialization() {
-        final Object actual = deserialize(serialize(empty()));
-        assertThat(actual).isSameAs(empty());
+        if (isSerializable()) {
+            final Object actual = deserialize(serialize(empty()));
+            assertThat(actual).isSameAs(empty());
+        }
     }
 
     @Test
     public void shouldSerializeDeserializeNonNil() {
-        final Object actual = deserialize(serialize(of(1, 2, 3)));
-        final Object expected = of(1, 2, 3);
-        assertThat(actual).isEqualTo(expected);
+        if (isSerializable()) {
+            final Object actual = deserialize(serialize(of(1, 2, 3)));
+            final Object expected = of(1, 2, 3);
+            assertThat(actual).isEqualTo(expected);
+        }
     }
 
     // -- static collector()
