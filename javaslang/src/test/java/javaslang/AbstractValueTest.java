@@ -274,10 +274,7 @@ public abstract class AbstractValueTest {
             map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
         }
         //Check order - order is matter
-        assertThat(map.mkString(", ")).isEqualTo(
-                "(110427681, 5), " +
-                        "(663160547, 1), " +
-                        "(1571254982, 9)");
+        assertThat(map.mkString(", ")).isEqualTo("(110427681, 5), (663160547, 1), (1571254982, 9)");
     }
 
     @Test
@@ -289,10 +286,7 @@ public abstract class AbstractValueTest {
             map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
         }
         //Check order - order is matter
-        assertThat(map.mkString(", ")).isEqualTo(
-                "(110427681, 5), " +
-                        "(663160547, 1), " +
-                        "(1571254982, 9)");
+        assertThat(map.mkString(", ")).isEqualTo("(110427681, 5), (663160547, 1), (1571254982, 9)");
     }
 
     @Test
@@ -344,11 +338,7 @@ public abstract class AbstractValueTest {
             map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
         }
         //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo(
-                "(110427681, 5)," +
-                        "(663160547, 1)," +
-                        "(1571254982, 9)"
-        );
+        assertThat(map.mkString(",")).isEqualTo("(110427681, 5),(663160547, 1),(1571254982, 9)");
     }
 
     @Test
@@ -360,11 +350,7 @@ public abstract class AbstractValueTest {
             map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
         }
         //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo(
-                "(110427681, 5)," +
-                        "(663160547, 1)," +
-                        "(1571254982, 9)"
-        );
+        assertThat(map.mkString(",")).isEqualTo("(110427681, 5),(663160547, 1),(1571254982, 9)");
     }
 
     @Test
@@ -376,11 +362,7 @@ public abstract class AbstractValueTest {
             map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
         }
         //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo(
-                "(1571254982, 9)," +
-                        "(663160547, 1)," +
-                        "(110427681, 5)"
-        );
+        assertThat(map.mkString(",")).isEqualTo("(1571254982, 9),(663160547, 1),(110427681, 5)");
     }
 
     @Test
@@ -392,11 +374,7 @@ public abstract class AbstractValueTest {
             map = map.put(keyMapper.apply(5), 5).put(keyMapper.apply(1), 1);
         }
         //Check order - order is matter
-        assertThat(map.mkString(",")).isEqualTo(
-                "(1571254982, 9)," +
-                        "(663160547, 1)," +
-                        "(110427681, 5)"
-        );
+        assertThat(map.mkString(",")).isEqualTo("(1571254982, 9),(663160547, 1),(110427681, 5)");
     }
 
     @Test
