@@ -135,6 +135,11 @@ public class TreeSetTest extends AbstractSortedSetTest {
         return 1;
     }
 
+    @Override
+    protected boolean isOrdered() {
+        return true;
+    }
+
     // -- static narrow
 
     @Test

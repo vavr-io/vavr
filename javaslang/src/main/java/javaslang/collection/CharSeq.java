@@ -566,6 +566,11 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
+    public String mkString() {
+        return back;
+    }
+
+    @Override
     public CharSeq padTo(int length, Character element) {
         final int actualLength = back.length();
         if (length <= actualLength) {

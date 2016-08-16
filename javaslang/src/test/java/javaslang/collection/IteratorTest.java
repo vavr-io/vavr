@@ -5,15 +5,21 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.control.Option;
-import org.assertj.core.api.*;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.IterableAssert;
+import org.assertj.core.api.ObjectAssert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.*;
-import java.util.function.*;
-import java.util.stream.*;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 import static javaslang.collection.Iterator.*;
@@ -76,6 +82,11 @@ public class IteratorTest extends AbstractTraversableTest {
                 return (o instanceof Iterator) ? List.ofAll((Iterator<?>) o) : o;
             }
         };
+    }
+
+    @Override
+    protected boolean isSerializable() {
+        return false;
     }
 
     @Override
@@ -362,7 +373,9 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldNotCallSupplierUntilNecessary() {
-        assertThat(iterate(2, (i) -> {throw new RuntimeException();}).head()).isEqualTo(2);
+        assertThat(iterate(2, (i) -> {
+            throw new RuntimeException();
+        }).head()).isEqualTo(2);
     }
 
     // ++++++ OBJECT ++++++
@@ -446,10 +459,10 @@ public class IteratorTest extends AbstractTraversableTest {
     @Test
     public void shouldUnfoldRightSimpleList() {
         assertThat(
-            Iterator.unfoldRight(10, x -> x == 0
+                Iterator.unfoldRight(10, x -> x == 0
                         ? Option.none()
-                        : Option.of(new Tuple2<>(x, x-1))))
-            .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+                        : Option.of(new Tuple2<>(x, x - 1))))
+                .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
     }
 
     @Test
@@ -460,10 +473,10 @@ public class IteratorTest extends AbstractTraversableTest {
     @Test
     public void shouldUnfoldLeftSimpleList() {
         assertThat(
-            Iterator.unfoldLeft(10, x -> x == 0
-                                 ? Option.none()
-                                 : Option.of(new Tuple2<>(x-1, x))))
-            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                Iterator.unfoldLeft(10, x -> x == 0
+                        ? Option.none()
+                        : Option.of(new Tuple2<>(x - 1, x))))
+                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     @Test
@@ -474,32 +487,13 @@ public class IteratorTest extends AbstractTraversableTest {
     @Test
     public void shouldUnfoldSimpleList() {
         assertThat(
-            Iterator.unfold(10, x -> x == 0
-                                ? Option.none()
-                                : Option.of(new Tuple2<>(x-1, x))))
-            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-    }
-
-    // -- serialization/deserialization
-
-    @Override
-    @Test
-    public void shouldSerializeDeserializeNil() {
-        // iterators are intermediate objects and not serializable/deserializable
+                Iterator.unfold(10, x -> x == 0
+                        ? Option.none()
+                        : Option.of(new Tuple2<>(x - 1, x))))
+                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     @Override
-    @Test
-    public void shouldPreserveSingletonInstanceOnDeserialization() {
-        // iterators are intermediate objects and not serializable/deserializable
-    }
-
-    @Override
-    @Test
-    public void shouldSerializeDeserializeNonNil() {
-        // iterators are intermediate objects and not serializable/deserializable
-    }
-
     @Test
     public void shouldHaveAReasonableToString() {
         // iterators are intermediate objects and should not have an equals, hashCode or toString
