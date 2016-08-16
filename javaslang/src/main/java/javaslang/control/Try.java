@@ -523,7 +523,6 @@ public interface Try<T> extends Value<T> {
         return this;
     }
 
-    // recovers this Try with f if this is a failure of type X, otherwise returns this
     /**
      * Returns {@code this}, if this is a {@code Success} or this is a {@code Failure} and the cause is not assignable
      * from {@code cause.getClass()}. Otherwise tries to recover the exception of the failure with {@code f},
@@ -545,6 +544,22 @@ public interface Try<T> extends Value<T> {
             }
         }
         return this;
+    }
+
+    /**
+     * Returns {@code this}, if this is a {@code Success} or this is a {@code Failure} and the cause is not assignable
+     * from {@code cause.getClass()}. Otherwise returns a {@code Success} containing the given {@code value}.
+     *
+     * @param exception The specific exception type that should be handled
+     * @param value A value that is used in case of a recovery
+     * @return a {@code Try}
+     * @throws NullPointerException if {@code exception} is null
+     */
+    default <X extends Throwable> Try<T> recover(Class<X> exception, T value) {
+        Objects.requireNonNull(exception, "exception is null");
+        return (isFailure() && exception.isAssignableFrom(getCause().getClass()))
+                ? Try.success(value)
+                : this;
     }
 
     /**

@@ -369,6 +369,32 @@ public class TryTest extends AbstractValueTest {
         assertThat(testee.recover(RuntimeException.class, x -> OK)).isSameAs(testee);
     }
 
+    // -- recover(Class, Object)
+
+    @Test
+    public void shouldRecoverWithSuccessWhenFailureMatchesExactly() {
+        final Try<String> testee = failure(RuntimeException.class);
+        assertThat(testee.recover(RuntimeException.class, OK).isSuccess()).isTrue();
+    }
+
+    @Test
+    public void shouldRecoverWithSuccessWhenFailureIsAssignableFrom() {
+        final Try<String> testee = failure(UnsupportedOperationException.class);
+        assertThat(testee.recover(RuntimeException.class, OK).isSuccess()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnThisWhenRecoverWithSuccessDifferentTypeOfFailure() {
+        final Try<String> testee = failure(RuntimeException.class);
+        assertThat(testee.recover(NullPointerException.class, OK)).isSameAs(testee);
+    }
+
+    @Test
+    public void shouldReturnThisWhenRecoverWithSuccessSpecificFailureOnSuccess() {
+        final Try<String> testee = success();
+        assertThat(testee.recover(RuntimeException.class, OK)).isSameAs(testee);
+    }
+
     // -- recover(Function)
 
     @Test
