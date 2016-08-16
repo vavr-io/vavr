@@ -15,8 +15,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static javaslang.API.Case;
-import static javaslang.Predicates.instanceOf;
 import static org.assertj.core.api.Assertions.fail;
 
 public class TryTest extends AbstractValueTest {
@@ -345,11 +343,43 @@ public class TryTest extends AbstractValueTest {
         assertThat(result[0]).isEqualTo(OK);
     }
 
-    // -- recover
+    // -- recover(Class, Function)
+
+    @Test
+    public void shouldRecoverWhenFailureMatchesExactly() {
+        final Try<String> testee = failure(RuntimeException.class);
+        assertThat(testee.recover(RuntimeException.class, x -> OK).isSuccess()).isTrue();
+    }
+
+    @Test
+    public void shouldRecoverWhenFailureIsAssignableFrom() {
+        final Try<String> testee = failure(UnsupportedOperationException.class);
+        assertThat(testee.recover(RuntimeException.class, x -> OK).isSuccess()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnThisWhenRecoverDifferentTypeOfFailure() {
+        final Try<String> testee = failure(RuntimeException.class);
+        assertThat(testee.recover(NullPointerException.class, x -> OK)).isSameAs(testee);
+    }
+
+    @Test
+    public void shouldReturnThisWhenRecoverSpecificFailureOnSuccess() {
+        final Try<String> testee = success();
+        assertThat(testee.recover(RuntimeException.class, x -> OK)).isSameAs(testee);
+    }
+
+    // -- recover(Function)
 
     @Test
     public void shouldRecoverOnFailure() {
         assertThat(failure().recover(x -> OK).get()).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldReturnThisWhenRecoverOnSuccess() {
+        final Try<String> testee = success();
+        assertThat(testee.recover(x -> OK)).isSameAs(testee);
     }
 
     // -- recoverWith
@@ -851,9 +881,16 @@ public class TryTest extends AbstractValueTest {
     }
 
     private static <T> Try<T> failure() {
-        return Try.of(() -> {
-            throw new RuntimeException();
-        });
+        return Try.failure(new RuntimeException());
+    }
+
+    private static <T, X extends Throwable> Try<T> failure(Class<X> exceptionType) {
+        try {
+            final X exception = exceptionType.newInstance();
+            return Try.failure(exception);
+        } catch (InstantiationException | IllegalAccessException x) {
+            throw new IllegalStateException("Error instantiating " + exceptionType);
+        }
     }
 
     private <T> boolean filter(T t) {
