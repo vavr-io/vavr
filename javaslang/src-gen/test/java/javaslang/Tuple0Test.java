@@ -46,8 +46,7 @@ public class Tuple0Test {
 
     @Test
     public void shouldAppendTuple0() {
-        Tuple0 tuple = Tuple0.instance();
-        Tuple1<Integer> actual = tuple.append(42);
+        Tuple1<Integer> actual = Tuple0.instance().append(42);
         Tuple1<Integer> expected = new Tuple1<>(42);
 
         assertThat(actual).isEqualTo(expected);
@@ -55,8 +54,7 @@ public class Tuple0Test {
 
     @Test
     public void shouldPrependTuple0() {
-        Tuple0 tuple = Tuple0.instance();
-        Tuple1<Integer> actual = tuple.prepend(42);
+        Tuple1<Integer> actual = Tuple0.instance().prepend(42);
         Tuple1<Integer> expected = new Tuple1<>(42);
 
         assertThat(actual).isEqualTo(expected);

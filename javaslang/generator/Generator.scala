@@ -1256,37 +1256,37 @@ def generateMainClasses(): Unit = {
 
             ${(i == 0).gen(xs"""
               @Override
-              public <A> Tuple1<A> prepend(A v) {
-                 return new Tuple1<>(v);
+              public <T> Tuple1<T> prepend(T value) {
+                 return new Tuple1<>(value);
               }
 
               @Override
-              public <A> Tuple1<A> append(A v) {
-                 return new Tuple1<>(v);
+              public <T> Tuple1<T> append(T value) {
+                 return new Tuple1<>(value);
               }
             """)}
 
             ${(i > 0 && i < N).gen(xs"""
               @Override
-              public <A> Tuple${i + 1}<A, ${(1 to i).gen(j => s"T$j")(", ")}> prepend(A v) {
-                  return Tuple.of(v, ${(1 to i).gen(j => s"_$j")(", ")});
+              public <T> Tuple${i + 1}<T, ${(1 to i).gen(j => s"T$j")(", ")}> prepend(T value) {
+                  return Tuple.of(value, ${(1 to i).gen(j => s"_$j")(", ")});
               }
 
               @Override
-              public <A> Tuple${i + 1}<${(1 to i).gen(j => s"T$j")(", ")}, A> append(A v) {
-                  return Tuple.of(${(1 to i).gen(j => s"_$j")(", ")}, v);
+              public <T> Tuple${i + 1}<${(1 to i).gen(j => s"T$j")(", ")}, T> append(T value) {
+                  return Tuple.of(${(1 to i).gen(j => s"_$j")(", ")}, value);
               }
             """)}
 
             ${(i == N).gen(xs"""
               @Override
-              public <A> Tuple prepend(A v) {
-                  throw new RuntimeException("Prepend to Tuple${N}");
+              public <T> Tuple prepend(T value) {
+                  throw new UnsupportedOperationException("Prepend to Tuple${N}");
               }
 
               @Override
-              public <A> Tuple append(A v) {
-                  throw new RuntimeException("Append to Tuple${N}");
+              public <T> Tuple append(T value) {
+                  throw new UnsupportedOperationException("Append to Tuple${N}");
               }
             """)}
 
@@ -1334,6 +1334,14 @@ def generateMainClasses(): Unit = {
         public interface $className {
 
             /**
+             * The maximum arity of an Tuple.
+             * <p>
+             * Note: This value might be changed in a future version of Javaslang.
+             * So it is recommended to use this constant instead of hardcoding the current maximum arity.
+             */
+            int MAX_ARITY = ${N};
+
+            /**
              * Returns the number of elements of this tuple.
              *
              * @return the number of elements.
@@ -1347,9 +1355,23 @@ def generateMainClasses(): Unit = {
              */
             $Seq<?> toSeq();
 
-            <A> Tuple append(A v);
+            /**
+             * Appends the given {@code value} to the end of this Tuple and increases the arity by one.
+             *
+             * @param value the value that will be appended to the end of this Tuple
+             * @return a new Tuple that contains this values plus the new value
+             * @throws UnsupportedOperationException if {@code this.arity() == Tuple.MAX_ARITY}
+             */
+            <T> Tuple append(T value);
 
-            <A> Tuple prepend(A v);
+            /**
+             * Prepends the given {@code value} before the start of this Tuple and increases the arity by one.
+             *
+             * @param value the value that will be prepended before the start of this Tuple
+             * @return a new Tuple that contains the new value plus this values
+             * @throws UnsupportedOperationException if {@code this.arity() == Tuple.MAX_ARITY}
+             */
+            <T> Tuple prepend(T value);
 
             // -- factory methods
 
@@ -1958,19 +1980,15 @@ def generateTestClasses(): Unit = {
               ${(i == 0).gen(xs"""
                 @$test
                 public void shouldAppendTuple$i() {
-                    Tuple0 tuple = Tuple0.instance();
-                    Tuple1<Integer> actual = tuple.append(42);
+                    Tuple1<Integer> actual = Tuple0.instance().append(42);
                     Tuple1<Integer> expected = new Tuple1<>(42);
-
                     assertThat(actual).isEqualTo(expected);
                 }
 
                 @$test
                 public void shouldPrependTuple$i() {
-                    Tuple0 tuple = Tuple0.instance();
-                    Tuple1<Integer> actual = tuple.prepend(42);
+                    Tuple1<Integer> actual = Tuple0.instance().prepend(42);
                     Tuple1<Integer> expected = new Tuple1<>(42);
-
                     assertThat(actual).isEqualTo(expected);
                 }
               """) }
@@ -1978,32 +1996,28 @@ def generateTestClasses(): Unit = {
               ${(i > 0 && i < N).gen(xs"""
                 @$test
                 public void shouldAppendTuple$i() {
-                    Tuple${i}<${(1 to i).gen(_ => "Integer")(", ")}> tuple = Tuple.of(${(1 to i).gen("" + _)(", ")});
-                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> actual = tuple.append(42);
-                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> expected = Tuple.of(${(1 to i).gen("" + _)(", ")}, 42);
-
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> actual = createIntTuple(${(1 to i).gen()(", ")}).append(42);
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> expected = Tuple.of(${(1 to i).gen()(", ")}, 42);
                     assertThat(actual).isEqualTo(expected);
                 }
 
                 @$test
                 public void shouldPrependTuple$i() {
-                    Tuple${i}<${(1 to i).gen(_ => "Integer")(", ")}> tuple = Tuple.of(${(1 to i).gen("" + _)(", ")});
-                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> actual = tuple.prepend(42);
-                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> expected = Tuple.of(42, ${(1 to i).gen("" + _)(", ")});
-
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> actual = createIntTuple(${(1 to i).gen()(", ")}).prepend(42);
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> expected = Tuple.of(42, ${(1 to i).gen()(", ")});
                     assertThat(actual).isEqualTo(expected);
                 }
               """) }
 
               ${(i == N).gen(xs"""
-                @$test(expected = RuntimeException.class)
+                @$test(expected = UnsupportedOperationException.class)
                 public void shouldAppendTuple$i() {
-                    Tuple.of(${(1 to i).gen("" + _)(", ")}).append(42);
+                    Tuple.of(${(1 to i).gen()(", ")}).append(42);
                 }
 
-                @$test(expected = RuntimeException.class)
+                @$test(expected = UnsupportedOperationException.class)
                 public void shouldPrependTuple$i() {
-                    Tuple.of(${(1 to i).gen("" + _)(", ")}).prepend(42);
+                    Tuple.of(${(1 to i).gen()(", ")}).prepend(42);
                 }
               """) }
 

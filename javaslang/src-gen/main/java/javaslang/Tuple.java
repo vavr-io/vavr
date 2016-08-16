@@ -20,6 +20,14 @@ import javaslang.collection.Seq;
 public interface Tuple {
 
     /**
+     * The maximum arity of an Tuple.
+     * <p>
+     * Note: This value might be changed in a future version of Javaslang.
+     * So it is recommended to use this constant instead of hardcoding the current maximum arity.
+     */
+    int MAX_ARITY = 8;
+
+    /**
      * Returns the number of elements of this tuple.
      *
      * @return the number of elements.
@@ -33,9 +41,23 @@ public interface Tuple {
      */
     Seq<?> toSeq();
 
-    <A> Tuple append(A v);
+    /**
+     * Appends the given {@code value} to the end of this Tuple and increases the arity by one.
+     *
+     * @param value the value that will be appended to the end of this Tuple
+     * @return a new Tuple that contains this values plus the new value
+     * @throws UnsupportedOperationException if {@code this.arity() == Tuple.MAX_ARITY}
+     */
+    <T> Tuple append(T value);
 
-    <A> Tuple prepend(A v);
+    /**
+     * Prepends the given {@code value} before the start of this Tuple and increases the arity by one.
+     *
+     * @param value the value that will be prepended before the start of this Tuple
+     * @return a new Tuple that contains the new value plus this values
+     * @throws UnsupportedOperationException if {@code this.arity() == Tuple.MAX_ARITY}
+     */
+    <T> Tuple prepend(T value);
 
     // -- factory methods
 

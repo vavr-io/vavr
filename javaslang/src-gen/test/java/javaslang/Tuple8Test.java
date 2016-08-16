@@ -215,12 +215,12 @@ public class Tuple8Test {
       assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = UnsupportedOperationException.class)
     public void shouldAppendTuple8() {
         Tuple.of(1, 2, 3, 4, 5, 6, 7, 8).append(42);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = UnsupportedOperationException.class)
     public void shouldPrependTuple8() {
         Tuple.of(1, 2, 3, 4, 5, 6, 7, 8).prepend(42);
     }

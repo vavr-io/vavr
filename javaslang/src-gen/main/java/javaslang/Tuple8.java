@@ -499,13 +499,13 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     }
 
     @Override
-    public <A> Tuple prepend(A v) {
-        throw new RuntimeException("Prepend to Tuple8");
+    public <T> Tuple prepend(T value) {
+        throw new UnsupportedOperationException("Prepend to Tuple8");
     }
 
     @Override
-    public <A> Tuple append(A v) {
-        throw new RuntimeException("Append to Tuple8");
+    public <T> Tuple append(T value) {
+        throw new UnsupportedOperationException("Append to Tuple8");
     }
 
     public static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<Seq<? extends T1>, Seq<? extends T2>, Seq<? extends T3>, Seq<? extends T4>, Seq<? extends T5>, Seq<? extends T6>, Seq<? extends T7>, Seq<? extends T8>> sequence(Iterable<Tuple8<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7, ? extends T8>> tuples) {

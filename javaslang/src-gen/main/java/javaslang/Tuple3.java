@@ -274,13 +274,13 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2
     }
 
     @Override
-    public <A> Tuple4<A, T1, T2, T3> prepend(A v) {
-        return Tuple.of(v, _1, _2, _3);
+    public <T> Tuple4<T, T1, T2, T3> prepend(T value) {
+        return Tuple.of(value, _1, _2, _3);
     }
 
     @Override
-    public <A> Tuple4<T1, T2, T3, A> append(A v) {
-        return Tuple.of(_1, _2, _3, v);
+    public <T> Tuple4<T1, T2, T3, T> append(T value) {
+        return Tuple.of(_1, _2, _3, value);
     }
 
     public static <T1, T2, T3> Tuple3<Seq<? extends T1>, Seq<? extends T2>, Seq<? extends T3>> sequence(Iterable<Tuple3<? extends T1, ? extends T2, ? extends T3>> tuples) {
