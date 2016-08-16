@@ -2,7 +2,6 @@
 [![Build Status](https://travis-ci.org/javaslang/javaslang.png)](https://travis-ci.org/javaslang/javaslang)
 [![Coverage Status](https://codecov.io/github/javaslang/javaslang/coverage.png?branch=master)](https://codecov.io/github/javaslang/javaslang?branch=master)
 [![Gitter Chat](https://badges.gitter.im/Join%20Chat.png)](https://gitter.im/javaslang/javaslang)
-[![Stories in Ready](https://badge.waffle.io/javaslang/javaslang.png?label=ready&title=Ready)](https://waffle.io/javaslang/javaslang)
 
 # [Javaslang](http://javaslang.io/)
 
