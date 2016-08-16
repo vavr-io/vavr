@@ -160,14 +160,12 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
     }
 
     /**
-     * Wither of the 1st element of this tuple.
-     *
-     * Note: The wither is NOT named {@code _1} due to possible ambiguity when using method reference (Tuple5::_1).
+     * Sets the 1st element of this tuple to the given {@code value}.
      *
      * @return a copy of this tuple with a new value for the 1st element of this Tuple.
      */
-    public Tuple5<T1, T2, T3, T4, T5> w1(T1 t1) {
-        return new Tuple5<>(t1, _2, _3, _4, _5);
+    public Tuple5<T1, T2, T3, T4, T5> update1(T1 value) {
+        return new Tuple5<>(value, _2, _3, _4, _5);
     }
 
     /**
@@ -180,14 +178,12 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
     }
 
     /**
-     * Wither of the 2nd element of this tuple.
-     *
-     * Note: The wither is NOT named {@code _2} due to possible ambiguity when using method reference (Tuple5::_2).
+     * Sets the 2nd element of this tuple to the given {@code value}.
      *
      * @return a copy of this tuple with a new value for the 2nd element of this Tuple.
      */
-    public Tuple5<T1, T2, T3, T4, T5> w2(T2 t2) {
-        return new Tuple5<>(_1, t2, _3, _4, _5);
+    public Tuple5<T1, T2, T3, T4, T5> update2(T2 value) {
+        return new Tuple5<>(_1, value, _3, _4, _5);
     }
 
     /**
@@ -200,14 +196,12 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
     }
 
     /**
-     * Wither of the 3rd element of this tuple.
-     *
-     * Note: The wither is NOT named {@code _3} due to possible ambiguity when using method reference (Tuple5::_3).
+     * Sets the 3rd element of this tuple to the given {@code value}.
      *
      * @return a copy of this tuple with a new value for the 3rd element of this Tuple.
      */
-    public Tuple5<T1, T2, T3, T4, T5> w3(T3 t3) {
-        return new Tuple5<>(_1, _2, t3, _4, _5);
+    public Tuple5<T1, T2, T3, T4, T5> update3(T3 value) {
+        return new Tuple5<>(_1, _2, value, _4, _5);
     }
 
     /**
@@ -220,14 +214,12 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
     }
 
     /**
-     * Wither of the 4th element of this tuple.
-     *
-     * Note: The wither is NOT named {@code _4} due to possible ambiguity when using method reference (Tuple5::_4).
+     * Sets the 4th element of this tuple to the given {@code value}.
      *
      * @return a copy of this tuple with a new value for the 4th element of this Tuple.
      */
-    public Tuple5<T1, T2, T3, T4, T5> w4(T4 t4) {
-        return new Tuple5<>(_1, _2, _3, t4, _5);
+    public Tuple5<T1, T2, T3, T4, T5> update4(T4 value) {
+        return new Tuple5<>(_1, _2, _3, value, _5);
     }
 
     /**
@@ -240,14 +232,12 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
     }
 
     /**
-     * Wither of the 5th element of this tuple.
-     *
-     * Note: The wither is NOT named {@code _5} due to possible ambiguity when using method reference (Tuple5::_5).
+     * Sets the 5th element of this tuple to the given {@code value}.
      *
      * @return a copy of this tuple with a new value for the 5th element of this Tuple.
      */
-    public Tuple5<T1, T2, T3, T4, T5> w5(T5 t5) {
-        return new Tuple5<>(_1, _2, _3, _4, t5);
+    public Tuple5<T1, T2, T3, T4, T5> update5(T5 value) {
+        return new Tuple5<>(_1, _2, _3, _4, value);
     }
 
     /**

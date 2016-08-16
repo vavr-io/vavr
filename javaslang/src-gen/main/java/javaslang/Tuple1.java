@@ -88,14 +88,12 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
     }
 
     /**
-     * Wither of the 1st element of this tuple.
-     *
-     * Note: The wither is NOT named {@code _1} due to possible ambiguity when using method reference (Tuple1::_1).
+     * Sets the 1st element of this tuple to the given {@code value}.
      *
      * @return a copy of this tuple with a new value for the 1st element of this Tuple.
      */
-    public Tuple1<T1> w1(T1 t1) {
-        return new Tuple1<>(t1);
+    public Tuple1<T1> update1(T1 value) {
+        return new Tuple1<>(value);
     }
 
     /**

@@ -124,14 +124,12 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2
     }
 
     /**
-     * Wither of the 1st element of this tuple.
-     *
-     * Note: The wither is NOT named {@code _1} due to possible ambiguity when using method reference (Tuple3::_1).
+     * Sets the 1st element of this tuple to the given {@code value}.
      *
      * @return a copy of this tuple with a new value for the 1st element of this Tuple.
      */
-    public Tuple3<T1, T2, T3> w1(T1 t1) {
-        return new Tuple3<>(t1, _2, _3);
+    public Tuple3<T1, T2, T3> update1(T1 value) {
+        return new Tuple3<>(value, _2, _3);
     }
 
     /**
@@ -144,14 +142,12 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2
     }
 
     /**
-     * Wither of the 2nd element of this tuple.
-     *
-     * Note: The wither is NOT named {@code _2} due to possible ambiguity when using method reference (Tuple3::_2).
+     * Sets the 2nd element of this tuple to the given {@code value}.
      *
      * @return a copy of this tuple with a new value for the 2nd element of this Tuple.
      */
-    public Tuple3<T1, T2, T3> w2(T2 t2) {
-        return new Tuple3<>(_1, t2, _3);
+    public Tuple3<T1, T2, T3> update2(T2 value) {
+        return new Tuple3<>(_1, value, _3);
     }
 
     /**
@@ -164,14 +160,12 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2
     }
 
     /**
-     * Wither of the 3rd element of this tuple.
-     *
-     * Note: The wither is NOT named {@code _3} due to possible ambiguity when using method reference (Tuple3::_3).
+     * Sets the 3rd element of this tuple to the given {@code value}.
      *
      * @return a copy of this tuple with a new value for the 3rd element of this Tuple.
      */
-    public Tuple3<T1, T2, T3> w3(T3 t3) {
-        return new Tuple3<>(_1, _2, t3);
+    public Tuple3<T1, T2, T3> update3(T3 value) {
+        return new Tuple3<>(_1, _2, value);
     }
 
     /**
