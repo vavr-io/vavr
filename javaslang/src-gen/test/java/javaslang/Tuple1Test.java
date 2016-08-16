@@ -38,6 +38,12 @@ public class Tuple1Test {
     }
 
     @Test
+    public void shouldUpdate1() {
+      final Tuple1<Integer> tuple = createIntTuple(1).update1(42);
+      assertThat(tuple._1()).isEqualTo(42);
+    }
+
+    @Test
     public void shouldConvertToSeq() {
         final Seq<?> actual = createIntTuple(1).toSeq();
         assertThat(actual).isEqualTo(List.of(1));

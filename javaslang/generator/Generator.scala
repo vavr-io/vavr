@@ -1098,6 +1098,15 @@ def generateMainClasses(): Unit = {
               public T$j _$j() {
                   return _$j;
               }
+
+              /$javadoc
+               * Sets the ${j.ordinal} element of this tuple to the given {@code value}.
+               *
+               * @return a copy of this tuple with a new value for the ${j.ordinal} element of this Tuple.
+               */
+              public $className$generics update$j(T$j value) {
+                  return new $className<>(${(1 to (j - 1)).gen(k => s"_$k")(", ")}${(j > 1).gen(", ")}value${(j < i).gen(", ")}${((j + 1) to i).gen(k => s"_$k")(", ")});
+              }
             """)("\n\n")}
 
             ${(i == 2).gen(xs"""
@@ -1844,6 +1853,15 @@ def generateTestClasses(): Unit = {
                   final Tuple$i<$intGenerics> tuple = createIntTuple(${(1 to i).gen(j => s"$j") mkString ", "});
                   ${(1 to i).gen(j => s"$assertThat(tuple._$j()).isEqualTo($j);\n")}
               }
+
+              ${(1 to i).gen(j =>
+                xs"""
+                  @$test
+                  public void shouldUpdate$j() {
+                    final Tuple$i<$intGenerics> tuple = createIntTuple(${(1 to i).gen(j => s"$j") mkString ", "}).update$j(42);
+                    ${(1 to i).gen(k => s"$assertThat(tuple._$k()).isEqualTo(${if (j == k) 42 else k});\n")}
+                  }
+                """)("\n\n")}
 
               @$test
               public void shouldConvertToSeq() {

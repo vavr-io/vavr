@@ -39,6 +39,20 @@ public class Tuple2Test {
     }
 
     @Test
+    public void shouldUpdate1() {
+      final Tuple2<Integer, Integer> tuple = createIntTuple(1, 2).update1(42);
+      assertThat(tuple._1()).isEqualTo(42);
+      assertThat(tuple._2()).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldUpdate2() {
+      final Tuple2<Integer, Integer> tuple = createIntTuple(1, 2).update2(42);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(42);
+    }
+
+    @Test
     public void shouldConvertToSeq() {
         final Seq<?> actual = createIntTuple(1, 0).toSeq();
         assertThat(actual).isEqualTo(List.of(1, 0));
