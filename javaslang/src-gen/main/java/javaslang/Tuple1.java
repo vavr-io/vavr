@@ -167,6 +167,16 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
         return "(" + _1 + ")";
     }
 
+    @Override
+    public <T> Tuple2<T, T1> prepend(T value) {
+        return Tuple.of(value, _1);
+    }
+
+    @Override
+    public <T> Tuple2<T1, T> append(T value) {
+        return Tuple.of(_1, value);
+    }
+
     public static <T1> Tuple1<Seq<? extends T1>> sequence(Iterable<Tuple1<? extends T1>> tuples) {
       Objects.requireNonNull(tuples, "tuples is null");
       return new Tuple1<>(Iterator.ofAll(tuples).map(Tuple1::_1).toList());
