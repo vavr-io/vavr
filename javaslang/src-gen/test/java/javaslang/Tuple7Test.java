@@ -281,20 +281,6 @@ public class Tuple7Test {
     }
 
     @Test
-    public void shouldAppendTuple7() {
-        Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> actual = createIntTuple(1, 2, 3, 4, 5, 6, 7).append(42);
-        Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4, 5, 6, 7, 42);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldPrependTuple7() {
-        Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> actual = createIntTuple(1, 2, 3, 4, 5, 6, 7).prepend(42);
-        Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(42, 1, 2, 3, 4, 5, 6, 7);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
     public void shouldApplyTuple() {
         final Tuple7<Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
         final Tuple0 actual = tuple.apply((o1, o2, o3, o4, o5, o6, o7) -> Tuple0.instance());
