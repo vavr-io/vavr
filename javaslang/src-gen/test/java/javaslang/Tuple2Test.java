@@ -110,7 +110,6 @@ public class Tuple2Test {
     public void shouldAppendTuple2() {
         Tuple3<Integer, Integer, Integer> actual = createIntTuple(1, 2).append(42);
         Tuple3<Integer, Integer, Integer> expected = Tuple.of(1, 2, 42);
-
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -118,7 +117,6 @@ public class Tuple2Test {
     public void shouldPrependTuple2() {
         Tuple3<Integer, Integer, Integer> actual = createIntTuple(1, 2).prepend(42);
         Tuple3<Integer, Integer, Integer> expected = Tuple.of(42, 1, 2);
-
         assertThat(actual).isEqualTo(expected);
     }
 
