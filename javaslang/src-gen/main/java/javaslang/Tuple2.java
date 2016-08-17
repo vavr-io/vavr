@@ -257,16 +257,6 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
         return "(" + _1 + ", " + _2 + ")";
     }
 
-    @Override
-    public <T> Tuple3<T, T1, T2> prepend(T value) {
-        return Tuple.of(value, _1, _2);
-    }
-
-    @Override
-    public <T> Tuple3<T1, T2, T> append(T value) {
-        return Tuple.of(_1, _2, value);
-    }
-
     public static <T1, T2> Tuple2<Seq<? extends T1>, Seq<? extends T2>> sequence(Iterable<Tuple2<? extends T1, ? extends T2>> tuples) {
       Objects.requireNonNull(tuples, "tuples is null");
       return new Tuple2<>(Iterator.ofAll(tuples).map(Tuple2::_1).toList(), Iterator.ofAll(tuples).map(Tuple2::_2).toList());
