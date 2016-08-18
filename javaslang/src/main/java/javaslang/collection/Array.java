@@ -14,6 +14,9 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+import static java.util.Arrays.*;
+import static java.util.Arrays.copyOf;
+
 /**
  * Array is a Traversable wrapper for {@code Object[]} containing elements of type {@code T}.
  *
@@ -98,7 +101,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     @SafeVarargs
     public static <T> Array<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return wrap(Arrays.copyOf(elements, elements.length));
+        return wrap(copyOf(elements, elements.length));
     }
 
     /**
@@ -542,7 +545,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public Array<T> append(T element) {
-        final Object[] copy = Arrays.copyOf(delegate, delegate.length + 1);
+        final Object[] copy = copyOf(delegate, delegate.length + 1);
         copy[delegate.length] = element;
         return wrap(copy);
     }
@@ -554,7 +557,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         if (source.length == 0) {
             return this;
         } else {
-            final Object[] arr = Arrays.copyOf(delegate, delegate.length + source.length);
+            final Object[] arr = copyOf(delegate, delegate.length + source.length);
             System.arraycopy(source, 0, arr, delegate.length, source.length);
             return wrap(arr);
         }
@@ -651,7 +654,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         } else if (n >= length()) {
             return empty();
         } else {
-            return wrap(Arrays.copyOf(delegate, delegate.length - n));
+            return wrap(copyOf(delegate, delegate.length - n));
         }
     }
 
@@ -1084,16 +1087,16 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public Array<T> sorted() {
-        final Object[] arr = Arrays.copyOf(delegate, delegate.length);
-        Arrays.sort(arr);
+        final Object[] arr = copyOf(delegate, delegate.length);
+        sort(arr);
         return wrap(arr);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Array<T> sorted(Comparator<? super T> comparator) {
-        final Object[] arr = Arrays.copyOf(delegate, delegate.length);
-        Arrays.sort(arr, (o1, o2) -> comparator.compare((T) o1, (T) o2));
+        final Object[] arr = copyOf(delegate, delegate.length);
+        sort(arr, (o1, o2) -> comparator.compare((T) o1, (T) o2));
         return wrap(arr);
     }
 
@@ -1196,7 +1199,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         } else if (n <= 0) {
             return empty();
         } else {
-            return wrap(Arrays.copyOf(delegate, n));
+            return wrap(copyOf(delegate, n));
         }
     }
 

@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import static java.lang.Integer.bitCount;
+import static java.util.Arrays.*;
 import static javaslang.collection.HashArrayMappedTrieModule.Action.*;
 
 /**
@@ -159,7 +160,7 @@ interface HashArrayMappedTrieModule {
         }
 
         static Object[] update(Object[] arr, int index, Object newElement) {
-            Object[] newArr = Arrays.copyOf(arr, arr.length);
+            Object[] newArr = copyOf(arr, arr.length);
             newArr[index] = newElement;
             return newArr;
         }

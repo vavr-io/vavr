@@ -18,6 +18,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
+import static java.util.Arrays.asList;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 import static javaslang.collection.CharSeq.*;
@@ -1304,7 +1305,7 @@ public class CharSeqTest {
     public void shouldSplitNonNil() {
         final java.util.List<Character> actual = new java.util.ArrayList<>();
         of('1', '2', '3').spliterator().forEachRemaining(actual::add);
-        assertThat(actual).isEqualTo(Arrays.asList('1', '2', '3'));
+        assertThat(actual).isEqualTo(asList('1', '2', '3'));
     }
 
     @Test
@@ -1579,7 +1580,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldConvertNonNilToArrayList() {
-        assertThat(of('1', '2', '3').toJavaList()).isEqualTo(Arrays.asList('1', '2', '3'));
+        assertThat(of('1', '2', '3').toJavaList()).isEqualTo(asList('1', '2', '3'));
     }
 
     // -- toJavaMap(Function)
@@ -3058,7 +3059,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldCreateListOfIterable() {
-        final java.util.List<Character> arrayList = Arrays.asList('1', '2');
+        final java.util.List<Character> arrayList = asList('1', '2');
         final CharSeq actual = ofAll(arrayList);
         assertThat(actual.length()).isEqualTo(2);
         assertThat(actual.get(0)).isEqualTo('1');
@@ -3074,7 +3075,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldTabulateTheCharSeqCallingTheFunctionInTheRightOrder() {
-        final java.util.LinkedList<Character> chars = new java.util.LinkedList<>(Arrays.asList('0', '1', '2'));
+        final java.util.LinkedList<Character> chars = new java.util.LinkedList<>(asList('0', '1', '2'));
         final CharSeq actual = tabulate(3, i -> chars.remove());
         assertThat(actual).isEqualTo(of('0', '1', '2'));
     }
@@ -3091,7 +3092,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldFillTheCharSeqCallingTheSupplierInTheRightOrder() {
-        final java.util.LinkedList<Character> chars = new java.util.LinkedList<>(Arrays.asList('0', '1'));
+        final java.util.LinkedList<Character> chars = new java.util.LinkedList<>(asList('0', '1'));
         final CharSeq actual = fill(2, () -> chars.remove());
         assertThat(actual).isEqualTo(of('0', '1'));
     }
