@@ -1263,6 +1263,42 @@ def generateMainClasses(): Unit = {
               }
             """)}
 
+            ${(i == 0).gen(xs"""
+              @Override
+              public <T> Tuple1<T> prepend(T value) {
+                 return new Tuple1<>(value);
+              }
+
+              @Override
+              public <T> Tuple1<T> append(T value) {
+                 return new Tuple1<>(value);
+              }
+            """)}
+
+            ${(i > 0 && i < N).gen(xs"""
+              @Override
+              public <T> Tuple${i + 1}<T, ${(1 to i).gen(j => s"T$j")(", ")}> prepend(T value) {
+                  return Tuple.of(value, ${(1 to i).gen(j => s"_$j")(", ")});
+              }
+
+              @Override
+              public <T> Tuple${i + 1}<${(1 to i).gen(j => s"T$j")(", ")}, T> append(T value) {
+                  return Tuple.of(${(1 to i).gen(j => s"_$j")(", ")}, value);
+              }
+            """)}
+
+            ${(i == N).gen(xs"""
+              @Override
+              public <T> Tuple prepend(T value) {
+                  throw new UnsupportedOperationException("Prepend to Tuple${N}");
+              }
+
+              @Override
+              public <T> Tuple append(T value) {
+                  throw new UnsupportedOperationException("Append to Tuple${N}");
+              }
+            """)}
+
             ${(i > 0).gen(xs"""
               public static $generics $className<${(1 to i).gen(j => s"Seq<? extends T$j>")(", ")}> sequence(Iterable<$className<${(1 to i).gen(j => s"? extends T$j")(", ")}>> tuples) {
                 Objects.requireNonNull(tuples, "tuples is null");
@@ -1307,6 +1343,14 @@ def generateMainClasses(): Unit = {
         public interface $className {
 
             /**
+             * The maximum arity of an Tuple.
+             * <p>
+             * Note: This value might be changed in a future version of Javaslang.
+             * So it is recommended to use this constant instead of hardcoding the current maximum arity.
+             */
+            int MAX_ARITY = ${N};
+
+            /**
              * Returns the number of elements of this tuple.
              *
              * @return the number of elements.
@@ -1319,6 +1363,24 @@ def generateMainClasses(): Unit = {
              * @return A new {@code Seq}.
              */
             $Seq<?> toSeq();
+
+            /**
+             * Appends the given {@code value} to the end of this Tuple and increases the arity by one.
+             *
+             * @param value the value that will be appended to the end of this Tuple
+             * @return a new Tuple that contains this values plus the new value
+             * @throws UnsupportedOperationException if {@code this.arity() == Tuple.MAX_ARITY}
+             */
+            <T> Tuple append(T value);
+
+            /**
+             * Prepends the given {@code value} before the start of this Tuple and increases the arity by one.
+             *
+             * @param value the value that will be prepended before the start of this Tuple
+             * @return a new Tuple that contains the new value plus this values
+             * @throws UnsupportedOperationException if {@code this.arity() == Tuple.MAX_ARITY}
+             */
+            <T> Tuple prepend(T value);
 
             // -- factory methods
 
@@ -1819,7 +1881,7 @@ def generateTestClasses(): Unit = {
       (1 to digits).gen(i => if(i == p) "1" else "0")(", ")
     }
 
-    (1 to N).foreach(i => {
+    (0 to N).foreach(i => {
 
       genJavaslangFile("javaslang", s"Tuple${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
@@ -1828,9 +1890,9 @@ def generateTestClasses(): Unit = {
         val list = im.getType("javaslang.collection.List")
         val comparator = im.getType("java.util.Comparator")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
-        val generics = (1 to i).gen(j => s"Object")(", ")
-        val intGenerics = (1 to i).gen(j => s"Integer")(", ")
-        val functionArgs = (i > 1).gen("(") + (1 to i).gen(j => s"o$j")(", ") + (i > 1).gen(")")
+        val generics = if (i == 0) "" else s"<${(1 to i).gen(j => s"Object")(", ")}>"
+        val intGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"Integer")(", ")}>"
+        val functionArgs = if (i == 0) "()" else s"${(i > 1).gen("(") + (1 to i).gen(j => s"o$j")(", ") + (i > 1).gen(")")}"
         val nullArgs = (1 to i).gen(j => "null")(", ")
 
         xs"""
@@ -1838,27 +1900,29 @@ def generateTestClasses(): Unit = {
 
               @$test
               public void shouldCreateTuple() {
-                  final Tuple$i<$generics> tuple = createTuple();
+                  final Tuple$i$generics tuple = createTuple();
                   $assertThat(tuple).isNotNull();
               }
 
               @$test
               public void shouldGetArity() {
-                  final Tuple$i<$generics> tuple = createTuple();
+                  final Tuple$i$generics tuple = createTuple();
                   $assertThat(tuple.arity()).isEqualTo($i);
               }
 
-              @$test
-              public void shouldReturnElements() {
-                  final Tuple$i<$intGenerics> tuple = createIntTuple(${(1 to i).gen(j => s"$j") mkString ", "});
-                  ${(1 to i).gen(j => s"$assertThat(tuple._$j()).isEqualTo($j);\n")}
-              }
+              ${(i > 0).gen(xs"""
+                @$test
+                public void shouldReturnElements() {
+                    final Tuple$i$intGenerics tuple = createIntTuple(${(1 to i).gen(j => s"$j") mkString ", "});
+                    ${(1 to i).gen(j => s"$assertThat(tuple._$j()).isEqualTo($j);\n")}
+                }
+              """)}
 
               ${(1 to i).gen(j =>
                 xs"""
                   @$test
                   public void shouldUpdate$j() {
-                    final Tuple$i<$intGenerics> tuple = createIntTuple(${(1 to i).gen(j => s"$j") mkString ", "}).update$j(42);
+                    final Tuple$i$intGenerics tuple = createIntTuple(${(1 to i).gen(j => s"$j") mkString ", "}).update$j(42);
                     ${(1 to i).gen(k => s"$assertThat(tuple._$k()).isEqualTo(${if (j == k) 42 else k});\n")}
                   }
                 """)("\n\n")}
@@ -1871,7 +1935,7 @@ def generateTestClasses(): Unit = {
 
               @$test
               public void shouldCompareEqual() {
-                  final Tuple$i<$intGenerics> t0 = createIntTuple(${genArgsForComparing(i, 0)});
+                  final Tuple$i$intGenerics t0 = createIntTuple(${genArgsForComparing(i, 0)});
                   $assertThat(t0.compareTo(t0)).isZero();
                   $assertThat(intTupleComparator.compare(t0, t0)).isZero();
               }
@@ -1879,8 +1943,8 @@ def generateTestClasses(): Unit = {
               ${(1 to i).gen(j => xs"""
                 @$test
                 public void shouldCompare${j.ordinal}Arg() {
-                    final Tuple$i<$intGenerics> t0 = createIntTuple(${genArgsForComparing(i, 0)});
-                    final Tuple$i<$intGenerics> t$j = createIntTuple(${genArgsForComparing(i, j)});
+                    final Tuple$i$intGenerics t0 = createIntTuple(${genArgsForComparing(i, 0)});
+                    final Tuple$i$intGenerics t$j = createIntTuple(${genArgsForComparing(i, j)});
                     $assertThat(t0.compareTo(t$j)).isNegative();
                     $assertThat(t$j.compareTo(t0)).isPositive();
                     $assertThat(intTupleComparator.compare(t0, t$j)).isNegative();
@@ -1895,43 +1959,89 @@ def generateTestClasses(): Unit = {
                 }
               """)}
 
-              @$test
-              public void shouldMap() {
-                  final Tuple$i<$generics> tuple = createTuple();
-                  ${if (i == 1) xs"""
-                    final Tuple$i<$generics> actual = tuple.map(o -> o);
-                    $assertThat(actual).isEqualTo(tuple);
-                  """ else xs"""
-                    final Tuple$i<$generics> actual = tuple.map($functionArgs -> tuple);
-                    $assertThat(actual).isEqualTo(tuple);
-                  """}
-              }
+              ${(i > 0).gen(xs"""
+                @$test
+                public void shouldMap() {
+                    final Tuple$i$generics tuple = createTuple();
+                    ${if (i == 1) xs"""
+                      final Tuple$i$generics actual = tuple.map(o -> o);
+                      $assertThat(actual).isEqualTo(tuple);
+                    """ else xs"""
+                      final Tuple$i$generics actual = tuple.map($functionArgs -> tuple);
+                      $assertThat(actual).isEqualTo(tuple);
+                    """}
+                }
 
-              @$test
-              public void shouldMapComponents() {
-                final Tuple$i<$generics> tuple = createTuple();
-                ${(1 to i).gen(j => xs"""final Function1<Object, Object> f$j = Function1.identity();""")("\n")}
-                final Tuple$i<$generics> actual = tuple.map(${(1 to i).gen(j => s"f$j")(", ")});
-                $assertThat(actual).isEqualTo(tuple);
-              }
+                @$test
+                public void shouldMapComponents() {
+                  final Tuple$i$generics tuple = createTuple();
+                  ${(1 to i).gen(j => xs"""final Function1<Object, Object> f$j = Function1.identity();""")("\n")}
+                  final Tuple$i$generics actual = tuple.map(${(1 to i).gen(j => s"f$j")(", ")});
+                  $assertThat(actual).isEqualTo(tuple);
+                }
+              """)}
 
               ${(i > 1) gen (1 to i).gen(j => {
-                val substitutedResultTypes = (1 to i).gen(k => if (k == j) "String" else "Integer")(", ")
+                val substitutedResultTypes = if (i == 0) "" else s"<${(1 to i).gen(k => if (k == j) "String" else "Integer")(", ")}>"
                 val ones = (1 to i).gen(_ => "1")(", ")
                 val result = (1 to i).gen(k => if (k == j) "\"X\"" else "1")(", ")
                 xs"""
                   @$test
                   public void shouldMap${j.ordinal}Component() {
-                    final Tuple$i<$substitutedResultTypes> actual = Tuple.of($ones).map$j(i -> "X");
-                    final Tuple$i<$substitutedResultTypes> expected = Tuple.of($result);
+                    final Tuple$i$substitutedResultTypes actual = Tuple.of($ones).map$j(i -> "X");
+                    final Tuple$i$substitutedResultTypes expected = Tuple.of($result);
                     assertThat(actual).isEqualTo(expected);
                   }
                 """
               })("\n\n")}
 
+              ${(i == 0).gen(xs"""
+                @$test
+                public void shouldAppendTuple$i() {
+                    Tuple1<Integer> actual = Tuple0.instance().append(42);
+                    Tuple1<Integer> expected = new Tuple1<>(42);
+                    assertThat(actual).isEqualTo(expected);
+                }
+
+                @$test
+                public void shouldPrependTuple$i() {
+                    Tuple1<Integer> actual = Tuple0.instance().prepend(42);
+                    Tuple1<Integer> expected = new Tuple1<>(42);
+                    assertThat(actual).isEqualTo(expected);
+                }
+              """) }
+
+              ${(i > 0 && i < N).gen(xs"""
+                @$test
+                public void shouldAppendTuple$i() {
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> actual = createIntTuple(${(1 to i).gen()(", ")}).append(42);
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> expected = Tuple.of(${(1 to i).gen()(", ")}, 42);
+                    assertThat(actual).isEqualTo(expected);
+                }
+
+                @$test
+                public void shouldPrependTuple$i() {
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> actual = createIntTuple(${(1 to i).gen()(", ")}).prepend(42);
+                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> expected = Tuple.of(42, ${(1 to i).gen()(", ")});
+                    assertThat(actual).isEqualTo(expected);
+                }
+              """) }
+
+              ${(i == N).gen(xs"""
+                @$test(expected = UnsupportedOperationException.class)
+                public void shouldAppendTuple$i() {
+                    Tuple.of(${(1 to i).gen()(", ")}).append(42);
+                }
+
+                @$test(expected = UnsupportedOperationException.class)
+                public void shouldPrependTuple$i() {
+                    Tuple.of(${(1 to i).gen()(", ")}).prepend(42);
+                }
+              """) }
+
               @$test
               public void shouldApplyTuple() {
-                  final Tuple$i<$generics> tuple = createTuple();
+                  final Tuple$i$generics tuple = createTuple();
                   final Tuple0 actual = tuple.apply($functionArgs -> Tuple0.instance());
                   assertThat(actual).isEqualTo(Tuple0.instance());
               }
@@ -1939,33 +2049,35 @@ def generateTestClasses(): Unit = {
               @$test
               @SuppressWarnings("deprecation")
               public void shouldTransformTuple() {
-                  final Tuple$i<$generics> tuple = createTuple();
+                  final Tuple$i$generics tuple = createTuple();
                   final Tuple0 actual = tuple.transform($functionArgs -> Tuple0.instance());
                   assertThat(actual).isEqualTo(Tuple0.instance());
               }
 
               @$test
               public void shouldRecognizeEquality() {
-                  final Tuple$i<$generics> tuple1 = createTuple();
-                  final Tuple$i<$generics> tuple2 = createTuple();
+                  final Tuple$i$generics tuple1 = createTuple();
+                  final Tuple$i$generics tuple2 = createTuple();
                   $assertThat((Object) tuple1).isEqualTo(tuple2);
               }
 
               @$test
               public void shouldRecognizeNonEquality() {
-                  final Tuple$i<$generics> tuple = createTuple();
+                  final Tuple$i$generics tuple = createTuple();
                   final Object other = new Object();
                   $assertThat(tuple).isNotEqualTo(other);
               }
 
-              @$test
-              public void shouldRecognizeNonEqualityPerComponent() {
-                  final Tuple$i<${(1 to i).gen(_ => "String")(", ")}> tuple = Tuple.of(${(1 to i).gen(j => "\"" + j + "\"")(", ")});
-                  ${(1 to i).gen(j => {
-                    val that = "Tuple.of(" + (1 to i).gen(k => if (j == k) "\"X\"" else "\"" + k + "\"")(", ") + ")"
-                    s"$assertThat(tuple.equals($that)).isFalse();"
-                  })("\n")}
-              }
+              ${(i > 0).gen(xs"""
+                @$test
+                public void shouldRecognizeNonEqualityPerComponent() {
+                    final Tuple$i<${(1 to i).gen(_ => "String")(", ")}> tuple = Tuple.of(${(1 to i).gen(j => "\"" + j + "\"")(", ")});
+                    ${(1 to i).gen(j => {
+                      val that = "Tuple.of(" + (1 to i).gen(k => if (j == k) "\"X\"" else "\"" + k + "\"")(", ") + ")"
+                      s"$assertThat(tuple.equals($that)).isFalse();"
+                    })("\n")}
+                }
+              """)}
 
               @$test
               public void shouldComputeCorrectHashCode() {
@@ -1981,14 +2093,14 @@ def generateTestClasses(): Unit = {
                   $assertThat(actual).isEqualTo(expected);
               }
 
-              private $comparator<Tuple$i<$intGenerics>> intTupleComparator = Tuple$i.comparator(${(1 to i).gen($j => s"Integer::compare")(", ")});
+              private $comparator<Tuple$i$intGenerics> intTupleComparator = Tuple$i.comparator(${(1 to i).gen($j => s"Integer::compare")(", ")});
 
-              private Tuple$i<$generics> createTuple() {
-                  return new Tuple$i<>($nullArgs);
+              private Tuple$i$generics createTuple() {
+                  return ${if (i == 0) "Tuple0.instance()" else s"new Tuple$i<>($nullArgs)"};
               }
 
-              private Tuple$i<$intGenerics> createIntTuple(${(1 to i).gen(j => s"Integer i$j")(", ")}) {
-                  return new Tuple$i<>(${(1 to i).gen(j => s"i$j")(", ")});
+              private Tuple$i$intGenerics createIntTuple(${(1 to i).gen(j => s"Integer i$j")(", ")}) {
+                  return ${if (i == 0) "Tuple0.instance()" else s"new Tuple$i<>(${(1 to i).gen(j => s"i$j")(", ")})"};
               }
           }
         """
