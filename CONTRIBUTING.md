@@ -191,3 +191,62 @@ git log --date-order --date=iso --graph --full-history --all --pretty=format:'%x
 # pick one or more commits from the log, e.g. a741cf1.
 git cherry-pick a741cf1
 ```
+
+### Bugfix release
+
+#### Steps to bugfix and perform a release
+
+Given a release 1.2.2 we create a bugfix release as follows.
+
+First we clone the repository. We work on origin instead of a fork (this requires admin rights).
+
+```bash
+git clone https://github.com/javaslang/javaslang.git javaslang-1.2.3
+```
+
+We checkout the release tag and create a new (local) branch.
+
+```bash
+git checkout v1.2.2
+git checkout -b bugfix-release-1.2.3
+```
+
+Then we create the new snapshot version.
+
+```bash
+mvn versions:set -DnewVersion=1.2.3-SNAPSHOT
+```
+
+Now the changes can be performed to the repository. After that we test the changes.
+
+```bash
+mvn clean test
+mvn javadoc:javadoc
+```
+
+Then the new files can be added and the changes can be committed.
+
+```bash
+git add <files>
+git commit -a -m "fixes #<issue>"
+```
+
+The we perform the release as usual:
+
+```bash
+mvn release:clean
+mvn release:prepare
+mvn release:perform
+```
+
+Goto oss.sonatype.org and release to Maven Central.
+
+#### Housekeeping
+
+Delete the branch which was pushed by the maven release plugin to origin:
+
+```bash
+git checkout master
+git branch -D bugfix-release-1.2.3
+git push origin :bugfix-release-1.2.3
+```
