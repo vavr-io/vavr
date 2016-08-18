@@ -5,6 +5,7 @@
  */
 package javaslang.collection.euler;
 
+import static java.util.Comparator.reverseOrder;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 import static javaslang.collection.euler.Utils.isPrime;
@@ -38,8 +39,7 @@ public class Euler41Test {
         return Stream.rangeClosedBy(9, 1, -1)
                 .flatMap(n -> nDigitPandigitalNumbers(n)
                         .filter(Utils::isPrime)
-                        .sorted()
-                        .reverse())
+                        .sorted(reverseOrder()))
                 .head();
     }
 
