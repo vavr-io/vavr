@@ -43,6 +43,72 @@ public class Tuple6Test {
     }
 
     @Test
+    public void shouldUpdate1() {
+      final Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6).update1(42);
+      assertThat(tuple._1()).isEqualTo(42);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(5);
+      assertThat(tuple._6()).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldUpdate2() {
+      final Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6).update2(42);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(42);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(5);
+      assertThat(tuple._6()).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldUpdate3() {
+      final Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6).update3(42);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(42);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(5);
+      assertThat(tuple._6()).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldUpdate4() {
+      final Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6).update4(42);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(42);
+      assertThat(tuple._5()).isEqualTo(5);
+      assertThat(tuple._6()).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldUpdate5() {
+      final Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6).update5(42);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(42);
+      assertThat(tuple._6()).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldUpdate6() {
+      final Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6).update6(42);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
+      assertThat(tuple._5()).isEqualTo(5);
+      assertThat(tuple._6()).isEqualTo(42);
+    }
+
+    @Test
     public void shouldConvertToSeq() {
         final Seq<?> actual = createIntTuple(1, 0, 0, 0, 0, 0).toSeq();
         assertThat(actual).isEqualTo(List.of(1, 0, 0, 0, 0, 0));
@@ -175,20 +241,6 @@ public class Tuple6Test {
       final Tuple6<Integer, Integer, Integer, Integer, Integer, String> actual = Tuple.of(1, 1, 1, 1, 1, 1).map6(i -> "X");
       final Tuple6<Integer, Integer, Integer, Integer, Integer, String> expected = Tuple.of(1, 1, 1, 1, 1, "X");
       assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldAppendTuple6() {
-        Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> actual = createIntTuple(1, 2, 3, 4, 5, 6).append(42);
-        Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4, 5, 6, 42);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldPrependTuple6() {
-        Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> actual = createIntTuple(1, 2, 3, 4, 5, 6).prepend(42);
-        Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(42, 1, 2, 3, 4, 5, 6);
-        assertThat(actual).isEqualTo(expected);
     }
 
     @Test

@@ -124,6 +124,15 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2
     }
 
     /**
+     * Sets the 1st element of this tuple to the given {@code value}.
+     *
+     * @return a copy of this tuple with a new value for the 1st element of this Tuple.
+     */
+    public Tuple3<T1, T2, T3> update1(T1 value) {
+        return new Tuple3<>(value, _2, _3);
+    }
+
+    /**
      * Getter of the 2nd element of this tuple.
      *
      * @return the 2nd element of this Tuple.
@@ -133,12 +142,30 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2
     }
 
     /**
+     * Sets the 2nd element of this tuple to the given {@code value}.
+     *
+     * @return a copy of this tuple with a new value for the 2nd element of this Tuple.
+     */
+    public Tuple3<T1, T2, T3> update2(T2 value) {
+        return new Tuple3<>(_1, value, _3);
+    }
+
+    /**
      * Getter of the 3rd element of this tuple.
      *
      * @return the 3rd element of this Tuple.
      */
     public T3 _3() {
         return _3;
+    }
+
+    /**
+     * Sets the 3rd element of this tuple to the given {@code value}.
+     *
+     * @return a copy of this tuple with a new value for the 3rd element of this Tuple.
+     */
+    public Tuple3<T1, T2, T3> update3(T3 value) {
+        return new Tuple3<>(_1, _2, value);
     }
 
     /**
@@ -271,16 +298,6 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2
     @Override
     public String toString() {
         return "(" + _1 + ", " + _2 + ", " + _3 + ")";
-    }
-
-    @Override
-    public <T> Tuple4<T, T1, T2, T3> prepend(T value) {
-        return Tuple.of(value, _1, _2, _3);
-    }
-
-    @Override
-    public <T> Tuple4<T1, T2, T3, T> append(T value) {
-        return Tuple.of(_1, _2, _3, value);
     }
 
     public static <T1, T2, T3> Tuple3<Seq<? extends T1>, Seq<? extends T2>, Seq<? extends T3>> sequence(Iterable<Tuple3<? extends T1, ? extends T2, ? extends T3>> tuples) {

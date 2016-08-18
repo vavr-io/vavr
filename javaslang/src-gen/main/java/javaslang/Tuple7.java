@@ -196,12 +196,30 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     }
 
     /**
+     * Sets the 1st element of this tuple to the given {@code value}.
+     *
+     * @return a copy of this tuple with a new value for the 1st element of this Tuple.
+     */
+    public Tuple7<T1, T2, T3, T4, T5, T6, T7> update1(T1 value) {
+        return new Tuple7<>(value, _2, _3, _4, _5, _6, _7);
+    }
+
+    /**
      * Getter of the 2nd element of this tuple.
      *
      * @return the 2nd element of this Tuple.
      */
     public T2 _2() {
         return _2;
+    }
+
+    /**
+     * Sets the 2nd element of this tuple to the given {@code value}.
+     *
+     * @return a copy of this tuple with a new value for the 2nd element of this Tuple.
+     */
+    public Tuple7<T1, T2, T3, T4, T5, T6, T7> update2(T2 value) {
+        return new Tuple7<>(_1, value, _3, _4, _5, _6, _7);
     }
 
     /**
@@ -214,12 +232,30 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     }
 
     /**
+     * Sets the 3rd element of this tuple to the given {@code value}.
+     *
+     * @return a copy of this tuple with a new value for the 3rd element of this Tuple.
+     */
+    public Tuple7<T1, T2, T3, T4, T5, T6, T7> update3(T3 value) {
+        return new Tuple7<>(_1, _2, value, _4, _5, _6, _7);
+    }
+
+    /**
      * Getter of the 4th element of this tuple.
      *
      * @return the 4th element of this Tuple.
      */
     public T4 _4() {
         return _4;
+    }
+
+    /**
+     * Sets the 4th element of this tuple to the given {@code value}.
+     *
+     * @return a copy of this tuple with a new value for the 4th element of this Tuple.
+     */
+    public Tuple7<T1, T2, T3, T4, T5, T6, T7> update4(T4 value) {
+        return new Tuple7<>(_1, _2, _3, value, _5, _6, _7);
     }
 
     /**
@@ -232,6 +268,15 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     }
 
     /**
+     * Sets the 5th element of this tuple to the given {@code value}.
+     *
+     * @return a copy of this tuple with a new value for the 5th element of this Tuple.
+     */
+    public Tuple7<T1, T2, T3, T4, T5, T6, T7> update5(T5 value) {
+        return new Tuple7<>(_1, _2, _3, _4, value, _6, _7);
+    }
+
+    /**
      * Getter of the 6th element of this tuple.
      *
      * @return the 6th element of this Tuple.
@@ -241,12 +286,30 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     }
 
     /**
+     * Sets the 6th element of this tuple to the given {@code value}.
+     *
+     * @return a copy of this tuple with a new value for the 6th element of this Tuple.
+     */
+    public Tuple7<T1, T2, T3, T4, T5, T6, T7> update6(T6 value) {
+        return new Tuple7<>(_1, _2, _3, _4, _5, value, _7);
+    }
+
+    /**
      * Getter of the 7th element of this tuple.
      *
      * @return the 7th element of this Tuple.
      */
     public T7 _7() {
         return _7;
+    }
+
+    /**
+     * Sets the 7th element of this tuple to the given {@code value}.
+     *
+     * @return a copy of this tuple with a new value for the 7th element of this Tuple.
+     */
+    public Tuple7<T1, T2, T3, T4, T5, T6, T7> update7(T7 value) {
+        return new Tuple7<>(_1, _2, _3, _4, _5, _6, value);
     }
 
     /**
@@ -451,16 +514,6 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     @Override
     public String toString() {
         return "(" + _1 + ", " + _2 + ", " + _3 + ", " + _4 + ", " + _5 + ", " + _6 + ", " + _7 + ")";
-    }
-
-    @Override
-    public <T> Tuple8<T, T1, T2, T3, T4, T5, T6, T7> prepend(T value) {
-        return Tuple.of(value, _1, _2, _3, _4, _5, _6, _7);
-    }
-
-    @Override
-    public <T> Tuple8<T1, T2, T3, T4, T5, T6, T7, T> append(T value) {
-        return Tuple.of(_1, _2, _3, _4, _5, _6, _7, value);
     }
 
     public static <T1, T2, T3, T4, T5, T6, T7> Tuple7<Seq<? extends T1>, Seq<? extends T2>, Seq<? extends T3>, Seq<? extends T4>, Seq<? extends T5>, Seq<? extends T6>, Seq<? extends T7>> sequence(Iterable<Tuple7<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7>> tuples) {

@@ -38,6 +38,12 @@ public class Tuple1Test {
     }
 
     @Test
+    public void shouldUpdate1() {
+      final Tuple1<Integer> tuple = createIntTuple(1).update1(42);
+      assertThat(tuple._1()).isEqualTo(42);
+    }
+
+    @Test
     public void shouldConvertToSeq() {
         final Seq<?> actual = createIntTuple(1).toSeq();
         assertThat(actual).isEqualTo(List.of(1));
@@ -73,20 +79,6 @@ public class Tuple1Test {
       final Function1<Object, Object> f1 = Function1.identity();
       final Tuple1<Object> actual = tuple.map(f1);
       assertThat(actual).isEqualTo(tuple);
-    }
-
-    @Test
-    public void shouldAppendTuple1() {
-        Tuple2<Integer, Integer> actual = createIntTuple(1).append(42);
-        Tuple2<Integer, Integer> expected = Tuple.of(1, 42);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldPrependTuple1() {
-        Tuple2<Integer, Integer> actual = createIntTuple(1).prepend(42);
-        Tuple2<Integer, Integer> expected = Tuple.of(42, 1);
-        assertThat(actual).isEqualTo(expected);
     }
 
     @Test

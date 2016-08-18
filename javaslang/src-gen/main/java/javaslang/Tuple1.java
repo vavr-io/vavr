@@ -88,6 +88,15 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
     }
 
     /**
+     * Sets the 1st element of this tuple to the given {@code value}.
+     *
+     * @return a copy of this tuple with a new value for the 1st element of this Tuple.
+     */
+    public Tuple1<T1> update1(T1 value) {
+        return new Tuple1<>(value);
+    }
+
+    /**
      * Maps the components of this tuple using a mapper function.
      *
      * @param mapper the mapper function
@@ -156,16 +165,6 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
     @Override
     public String toString() {
         return "(" + _1 + ")";
-    }
-
-    @Override
-    public <T> Tuple2<T, T1> prepend(T value) {
-        return Tuple.of(value, _1);
-    }
-
-    @Override
-    public <T> Tuple2<T1, T> append(T value) {
-        return Tuple.of(_1, value);
     }
 
     public static <T1> Tuple1<Seq<? extends T1>> sequence(Iterable<Tuple1<? extends T1>> tuples) {
