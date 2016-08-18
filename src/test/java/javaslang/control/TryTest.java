@@ -16,10 +16,7 @@ import javaslang.test.Gen;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;

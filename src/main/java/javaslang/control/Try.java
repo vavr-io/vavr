@@ -14,7 +14,9 @@ import javaslang.unsafe;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * An implementation similar to Scala's Try control.
@@ -59,6 +61,34 @@ public interface Try<T> extends CheckedMonad<T, Try<?>>, ValueObject, Bivalent<T
             return new Failure<>(t);
         }
     }
+
+    // -- override methods from Valences.Bivalent due to #1366
+
+    @Override
+    T get();
+
+    @Override
+    T orElse(T other);
+
+    @Override
+    T orElseGet(Function<? super Throwable, ? extends T> other);
+
+    @Override
+    void orElseRun(Consumer<? super Throwable> action);
+
+    @Override
+    <X extends Throwable> T orElseThrow(Function<? super Throwable, X> exceptionProvider) throws X;
+
+    @Override
+    Option<T> toOption();
+
+    @Override
+    Either<?, ?> toEither();
+
+    @Override
+    Optional<T> toJavaOptional();
+
+    // -- Try
 
     /**
      * Checks if this is a Failure.

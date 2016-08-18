@@ -14,6 +14,7 @@ import javaslang.unsafe;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -62,6 +63,19 @@ public interface Option<T> extends Monad<T, Option<?>>, ValueObject, Univalent<T
     static <T> None<T> none() {
         return None.instance();
     }
+
+    // -- override methods from Valences.Univalent due to #1366
+
+    @Override
+    T get();
+
+    @Override
+    Option<T> toOption();
+
+    @Override
+    Optional<T> toJavaOptional();
+
+    // -- Option
 
     /**
      * Returns true, if this is {@code None}, otherwise false, if this is {@code Some}.
