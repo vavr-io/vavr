@@ -31,13 +31,13 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>javaslang</artifactId>
             <version>${project.version}</version>
-            <classifier>source</classifier>
+            <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>javaslang-match</artifactId>
             <version>${project.version}</version>
-            <classifier>source</classifier>
+            <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
