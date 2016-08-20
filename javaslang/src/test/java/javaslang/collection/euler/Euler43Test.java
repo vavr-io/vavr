@@ -56,21 +56,27 @@ public class Euler43Test {
         final List<Integer> DIVISORS = List.of(2, 3, 5, 7, 11, 13, 17);
         final char DUMMY_CHAR = Character.MIN_VALUE;
 
-        return ALL_DIGITS.combinations(2)
+        return ALL_DIGITS
+                .combinations(2)
                 .flatMap(CharSeq::permutations)
                 .map(cs -> Tuple.of(cs, cs.prepend(DUMMY_CHAR), Integer.valueOf(cs.mkString())))
-                .flatMap(firstTwoDigits
-                        -> DIVISORS.foldLeft(List.of(firstTwoDigits), (l, i)
-                                -> l.flatMap(digitsSoFar
-                                        -> ALL_DIGITS.removeAll(digitsSoFar._1)
+                .flatMap(firstTwoDigits -> DIVISORS
+                        .foldLeft(List.of(firstTwoDigits), (accumulator, divisor) -> accumulator
+                                .flatMap(digitsSoFar -> ALL_DIGITS
+                                        .removeAll(digitsSoFar._1)
                                         .map(nextDigit -> Tuple.of(digitsSoFar._1.append(nextDigit), digitsSoFar._2.tail().append(nextDigit)))
                                         .map(digitsToTest -> Tuple.of(digitsToTest._1, digitsToTest._2, Integer.valueOf(digitsToTest._2.mkString())))
-                                ).filter(digitsToTest -> digitsToTest._3 % i == 0))
-                ).map(tailDigitsWithProperty -> tailDigitsWithProperty._1
+                                )
+                                .filter(digitsToTest -> digitsToTest._3 % divisor == 0)
+                        )
+                )
+                .map(tailDigitsWithProperty -> tailDigitsWithProperty._1
                         .prepend(ALL_DIGITS
                                 .removeAll(tailDigitsWithProperty._1)
                                 .head()
-                        ).mkString())
+                        )
+                )
+                .map(CharSeq::mkString)
                 .map(Long::valueOf);
     }
 }
