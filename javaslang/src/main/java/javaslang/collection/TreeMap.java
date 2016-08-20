@@ -29,7 +29,7 @@ import static javaslang.collection.Comparators.naturalComparator;
  * @since 2.0.0
  */
 // DEV-NOTE: use entries.min().get() in favor of iterator().next(), it is faster!
-public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implements Kind2<TreeMap<?, ?>, K, V>, SortedMap<K, V>, Serializable {
+public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMap<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -393,16 +393,6 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
     }
 
     @Override
-    TreeMap<K, V> createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> it) {
-        return createTreeMap(entries.comparator(), it);
-    }
-
-    @Override
-    TreeMap<K, V> emptyInstance() {
-        return isEmpty() ? this : new TreeMap<>(entries.emptyInstance());
-    }
-
-    @Override
     public <K2, V2> TreeMap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
         return bimap(naturalComparator(), keyMapper, valueMapper);
     }
@@ -413,13 +403,68 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return createTreeMap(new EntryComparator<>(keyComparator),
-                             entries.iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2))));
+                entries.iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2))));
     }
 
     @Override
     public boolean containsKey(K key) {
         final V ignored = null;
         return entries.contains(new Tuple2<>(key, ignored));
+    }
+
+    @Override
+    public TreeMap<K, V> distinct() {
+        return Maps.distinct(this);
+    }
+
+    @Override
+    public TreeMap<K, V> distinctBy(Comparator<? super Tuple2<K, V>> comparator) {
+        return Maps.distinctBy(this, this::createFromEntries, comparator);
+    }
+
+    @Override
+    public <U> TreeMap<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
+        return Maps.distinctBy(this, this::createFromEntries, keyExtractor);
+    }
+
+    @Override
+    public TreeMap<K, V> drop(int n) {
+        return Maps.drop(this, this::createFromEntries, this::emptyInstance, n);
+    }
+
+    @Override
+    public TreeMap<K, V> dropRight(int n) {
+        return Maps.dropRight(this, this::createFromEntries, this::emptyInstance, n);
+    }
+
+    @Override
+    public TreeMap<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.dropUntil(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public TreeMap<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.dropWhile(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public TreeMap<K, V> filter(BiPredicate<? super K, ? super V> predicate) {
+        return Maps.filter(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public TreeMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.filter(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public TreeMap<K, V> filterKeys(Predicate<? super K> predicate) {
+        return Maps.filterKeys(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public TreeMap<K, V> filterValues(Predicate<? super V> predicate) {
+        return Maps.filterValues(this, this::createFromEntries, predicate);
     }
 
     @Override
@@ -432,13 +477,23 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
                                             BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return createTreeMap(new EntryComparator<>(keyComparator),
-                             entries.iterator().flatMap(entry -> mapper.apply(entry._1, entry._2)));
+                entries.iterator().flatMap(entry -> mapper.apply(entry._1, entry._2)));
     }
 
     @Override
     public Option<V> get(K key) {
         final V ignored = null;
         return entries.find(new Tuple2<>(key, ignored)).map(Tuple2::_2);
+    }
+
+    @Override
+    public <C> Map<C, TreeMap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {
+        return Maps.groupBy(this, this::createFromEntries, classifier);
+    }
+
+    @Override
+    public Iterator<TreeMap<K, V>> grouped(int size) {
+        return Maps.grouped(this, this::createFromEntries, size);
     }
 
     @Override
@@ -458,6 +513,11 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
             final Tuple2<K, V> max = entries.max().get();
             return new TreeMap<>(entries.delete(max));
         }
+    }
+
+    @Override
+    public Option<TreeMap<K, V>> initOption() {
+        return Maps.initOption(this);
     }
 
     @Override
@@ -491,7 +551,7 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
                                         BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return createTreeMap(new EntryComparator<>(keyComparator),
-                             entries.iterator().map(entry -> mapper.apply(entry._1, entry._2)));
+                entries.iterator().map(entry -> mapper.apply(entry._1, entry._2)));
     }
 
     @Override
@@ -513,8 +573,45 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
     }
 
     @Override
+    public TreeMap<K, V> merge(Map<? extends K, ? extends V> that) {
+        return Maps.merge(this, this::createFromEntries, that);
+    }
+
+    @Override
+    public <U extends V> TreeMap<K, V> merge(Map<? extends K, U> that,
+                                             BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
+        return Maps.merge(this, this::createFromEntries, that, collisionResolution);
+    }
+
+    @Override
+    public Tuple2<TreeMap<K, V>, TreeMap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.partition(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public TreeMap<K, V> peek(Consumer<? super Tuple2<K, V>> action) {
+        return Maps.peek(this, action);
+    }
+
+    @Override
+    public <U extends V> TreeMap<K, V> put(K key, U value, BiFunction<? super V, ? super U, ? extends V> merge) {
+        return Maps.put(this, key, value, merge);
+    }
+
+    @Override
     public TreeMap<K, V> put(K key, V value) {
         return new TreeMap<>(entries.insert(new Tuple2<>(key, value)));
+    }
+
+    @Override
+    public TreeMap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
+        return Maps.put(this, entry);
+    }
+
+    @Override
+    public <U extends V> TreeMap<K, V> put(Tuple2<? extends K, U> entry,
+                                           BiFunction<? super V, ? super U, ? extends V> merge) {
+        return Maps.put(this, entry, merge);
     }
 
     @Override
@@ -526,6 +623,11 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
         } else {
             return this;
         }
+    }
+
+    @Override
+    public TreeMap<K, V> removeAll(BiPredicate<? super K, ? super V> predicate) {
+        return Maps.removeAll(this, this::createFromEntries, predicate);
     }
 
     @Override
@@ -546,6 +648,26 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
     }
 
     @Override
+    public TreeMap<K, V> removeKeys(Predicate<? super K> predicate) {
+        return Maps.removeKeys(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public TreeMap<K, V> removeValues(Predicate<? super V> predicate) {
+        return Maps.removeValues(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public TreeMap<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
+        return Maps.replace(this, currentElement, newElement);
+    }
+
+    @Override
+    public TreeMap<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
+        return Maps.replaceAll(this, currentElement, newElement);
+    }
+
+    @Override
     public TreeMap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements) {
         Objects.requireNonNull(elements, "elements is null");
         RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(entries.comparator());
@@ -558,8 +680,30 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
     }
 
     @Override
+    public TreeMap<K, V> scan(
+            Tuple2<K, V> zero,
+            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
+        return Maps.scan(this, this::emptyInstance, zero, operation);
+    }
+
+    @Override
     public int size() {
         return entries.size();
+    }
+
+    @Override
+    public Iterator<TreeMap<K, V>> sliding(int size) {
+        return Maps.sliding(this, this::createFromEntries, size);
+    }
+
+    @Override
+    public Iterator<TreeMap<K, V>> sliding(int size, int step) {
+        return Maps.sliding(this, this::createFromEntries, size, step);
+    }
+
+    @Override
+    public Tuple2<TreeMap<K, V>, TreeMap<K, V>> span(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.span(this, this::createFromEntries, predicate);
     }
 
     @Override
@@ -570,6 +714,31 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
             final Tuple2<K, V> min = entries.min().get();
             return new TreeMap<>(entries.delete(min));
         }
+    }
+
+    @Override
+    public Option<TreeMap<K, V>> tailOption() {
+        return Maps.tailOption(this);
+    }
+
+    @Override
+    public TreeMap<K, V> take(int n) {
+        return Maps.take(this, this::createFromEntries, n);
+    }
+
+    @Override
+    public TreeMap<K, V> takeRight(int n) {
+        return Maps.takeRight(this, this::createFromEntries, n);
+    }
+
+    @Override
+    public TreeMap<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.takeUntil(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public TreeMap<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.takeWhile(this, this::createFromEntries, predicate);
     }
 
     @Override
@@ -599,7 +768,7 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
             tree = tree.insert((Tuple2<K, V>) entry);
         }
         return tree.isEmpty() ? (TreeMap<K, V>) empty()
-                              : new TreeMap<>(tree);
+                : new TreeMap<>(tree);
     }
 
     // -- Object
@@ -629,6 +798,14 @@ public final class TreeMap<K, V> extends AbstractMap<K, V, TreeMap<K, V>> implem
     @Override
     public String toString() {
         return mkString(stringPrefix() + "(", ", ", ")");
+    }
+
+    private TreeMap<K, V> createFromEntries(Iterable<Tuple2<K, V>> tuples) {
+        return createTreeMap(entries.comparator(), tuples);
+    }
+
+    private TreeMap<K, V> emptyInstance() {
+        return isEmpty() ? this : new TreeMap<>(entries.emptyInstance());
     }
 
     /**
