@@ -12,6 +12,7 @@ import javaslang.control.Option;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
@@ -24,7 +25,7 @@ import java.util.stream.Collector;
  * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  * @since 2.0.0
  */
-public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implements Kind2<HashMap<?, ?>, K, V>, Serializable {
+public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -230,16 +231,6 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
     }
 
     @Override
-    HashMap<K, V> createFromEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
-        return HashMap.ofEntries(entries);
-    }
-
-    @Override
-    HashMap<K, V> emptyInstance() {
-        return HashMap.empty();
-    }
-
-    @Override
     public <K2, V2> HashMap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
@@ -250,6 +241,46 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
     @Override
     public boolean containsKey(K key) {
         return trie.containsKey(key);
+    }
+
+    @Override
+    public HashMap<K, V> distinct() {
+        return Maps.distinct(this);
+    }
+
+    @Override
+    public HashMap<K, V> distinctBy(Comparator<? super Tuple2<K, V>> comparator) {
+        return Maps.distinctBy(this, this::createFromEntries, comparator);
+    }
+
+    @Override
+    public <U> HashMap<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
+        return Maps.distinctBy(this, this::createFromEntries, keyExtractor);
+    }
+
+    @Override
+    public HashMap<K, V> drop(long n) {
+        return Maps.drop(this, this::createFromEntries, HashMap::empty, n);
+    }
+
+    @Override
+    public HashMap<K, V> dropRight(long n) {
+        return Maps.dropRight(this, this::createFromEntries, HashMap::empty, n);
+    }
+
+    @Override
+    public HashMap<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.dropUntil(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public HashMap<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.dropWhile(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public HashMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.filter(this, this::createFromEntries, predicate);
     }
 
     @Override
@@ -269,6 +300,16 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
     }
 
     @Override
+    public <C> Map<C, HashMap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {
+        return Maps.groupBy(this, this::createFromEntries, classifier);
+    }
+
+    @Override
+    public Iterator<HashMap<K, V>> grouped(long size) {
+        return Maps.grouped(this, this::createFromEntries, size);
+    }
+
+    @Override
     public Tuple2<K, V> head() {
         if (isEmpty()) {
             throw new NoSuchElementException("head of empty HashMap");
@@ -284,6 +325,11 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
         } else {
             return remove(last()._1);
         }
+    }
+
+    @Override
+    public Option<HashMap<K, V>> initOption() {
+        return Maps.initOption(this);
     }
 
     @Override
@@ -314,8 +360,34 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
     }
 
     @Override
+    public HashMap<K, V> merge(Map<? extends K, ? extends V> that) {
+        return Maps.merge(this, this::createFromEntries, that);
+    }
+
+    @Override
+    public <U extends V> HashMap<K, V> merge(Map<? extends K, U> that,
+                                             BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
+        return Maps.merge(this, this::createFromEntries, that, collisionResolution);
+    }
+
+    @Override
+    public Tuple2<HashMap<K, V>, HashMap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.partition(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public HashMap<K, V> peek(Consumer<? super Tuple2<K, V>> action) {
+        return Maps.peek(this, action);
+    }
+
+    @Override
     public HashMap<K, V> put(K key, V value) {
         return new HashMap<>(trie.put(key, value));
+    }
+
+    @Override
+    public HashMap<K, V> put(Tuple2<? extends K, ? extends V> entry) {
+        return Maps.put(this, entry);
     }
 
     @Override
@@ -335,6 +407,16 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
     }
 
     @Override
+    public HashMap<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
+        return Maps.replace(this, currentElement, newElement);
+    }
+
+    @Override
+    public HashMap<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
+        return Maps.replaceAll(this, currentElement, newElement);
+    }
+
+    @Override
     public HashMap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
@@ -347,8 +429,30 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
     }
 
     @Override
+    public HashMap<K, V> scan(
+            Tuple2<K, V> zero,
+            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
+        return Maps.scan(this, HashMap::empty, zero, operation);
+    }
+
+    @Override
     public int size() {
         return trie.size();
+    }
+
+    @Override
+    public Iterator<HashMap<K, V>> sliding(long size) {
+        return Maps.sliding(this, this::createFromEntries, size);
+    }
+
+    @Override
+    public Iterator<HashMap<K, V>> sliding(long size, long step) {
+        return Maps.sliding(this, this::createFromEntries, size, step);
+    }
+
+    @Override
+    public Tuple2<HashMap<K, V>, HashMap<K, V>> span(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.span(this, this::createFromEntries, predicate);
     }
 
     @Override
@@ -358,6 +462,31 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
         } else {
             return remove(head()._1);
         }
+    }
+
+    @Override
+    public Option<HashMap<K, V>> tailOption() {
+        return Maps.tailOption(this);
+    }
+
+    @Override
+    public HashMap<K, V> take(long n) {
+        return Maps.take(this, this::createFromEntries, n);
+    }
+
+    @Override
+    public HashMap<K, V> takeRight(long n) {
+        return Maps.takeRight(this, this::createFromEntries, n);
+    }
+
+    @Override
+    public HashMap<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.takeUntil(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public HashMap<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.takeWhile(this, this::createFromEntries, predicate);
     }
 
     @Override
@@ -403,5 +532,11 @@ public final class HashMap<K, V> extends AbstractMap<K, V, HashMap<K, V>> implem
 
     private static <K, V> HashMap<K, V> wrap(HashArrayMappedTrie<K, V> trie) {
         return trie.isEmpty() ? empty() : new HashMap<>(trie);
+    }
+
+    // We need this method to narrow the argument of `ofEntries`.
+    // If this method is static with type args <K, V>, the jdk fails to infer types at the call site.
+    private HashMap<K, V> createFromEntries(Iterable<Tuple2<K, V>> tuples) {
+        return HashMap.ofEntries(tuples);
     }
 }
