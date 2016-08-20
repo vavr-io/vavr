@@ -767,8 +767,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             tree = tree.insert((Tuple2<K, V>) entry);
         }
-        return tree.isEmpty() ? (TreeMap<K, V>) empty()
-                : new TreeMap<>(tree);
+        return tree.isEmpty() ? (TreeMap<K, V>) empty() : new TreeMap<>(tree);
     }
 
     // -- Object
