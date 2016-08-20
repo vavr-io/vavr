@@ -533,6 +533,7 @@ public interface Try<T> extends Value<T> {
      * @return a {@code Try}
      * @throws NullPointerException if {@code exception} is null or {@code f} is null
      */
+    @GwtIncompatible
     @SuppressWarnings("unchecked")
     default <X extends Throwable> Try<T> recover(Class<X> exception, Function<? super X, ? extends T> f) {
         Objects.requireNonNull(exception, "exception is null");
@@ -555,6 +556,7 @@ public interface Try<T> extends Value<T> {
      * @return a {@code Try}
      * @throws NullPointerException if {@code exception} is null
      */
+    @GwtIncompatible
     default <X extends Throwable> Try<T> recover(Class<X> exception, T value) {
         Objects.requireNonNull(exception, "exception is null");
         return (isFailure() && exception.isAssignableFrom(getCause().getClass()))
