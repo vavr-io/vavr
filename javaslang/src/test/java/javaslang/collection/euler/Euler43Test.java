@@ -6,7 +6,10 @@
 package javaslang.collection.euler;
 
 import javaslang.collection.CharSeq;
-import javaslang.collection.Stream;
+import javaslang.Tuple;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
+
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,26 +45,32 @@ public class Euler43Test {
      */
     @Test
     public void shouldSolveProblem43() {
-        assertThat(hasSubStringDivisibilityProperty(CharSeq.of("1406357289"))).isTrue();
+        final Seq<Long> result = tenDigitPandigitalsWithProperty();
+        assertThat(result).contains(1406357289L);
 
-        assertThat(sumOfAllTenDigitPandigitalsWithProperty()).isEqualTo(16695334890L);
+        assertThat(result.sum().longValue()).isEqualTo(16695334890L);
     }
 
-    private static long sumOfAllTenDigitPandigitalsWithProperty() {
-        return CharSeq.of("0123456789")
-                .permutations()
-                .filter(Euler43Test::hasSubStringDivisibilityProperty)
-                .map(CharSeq::mkString)
-                .map(Long::valueOf)
-                .sum().longValue();
-    }
+    private static Seq<Long> tenDigitPandigitalsWithProperty() {
+        final CharSeq ALL_DIGITS = CharSeq.of("0123456789");
+        final List<Integer> DIVISORS = List.of(2, 3, 5, 7, 11, 13, 17);
+        final char DUMMY_CHAR = Character.MIN_VALUE;
 
-    private static boolean hasSubStringDivisibilityProperty(CharSeq tenDigitPandigital) {
-        return Stream.rangeClosed(2, 8)
-                .map(i -> tenDigitPandigital.subSequence(i - 1, i + 2))
-                .map(CharSeq::mkString)
-                .map(Integer::valueOf)
-                .zip(Stream.of(2, 3, 5, 7, 11, 13, 17))
-                .forAll(t -> t._1 % t._2 == 0);
+        return ALL_DIGITS.combinations(2)
+                .flatMap(CharSeq::permutations)
+                .map(cs -> Tuple.of(cs, cs.prepend(DUMMY_CHAR), Integer.valueOf(cs.mkString())))
+                .flatMap(firstTwoDigits
+                        -> DIVISORS.foldLeft(List.of(firstTwoDigits), (l, i)
+                                -> l.flatMap(digitsSoFar
+                                        -> ALL_DIGITS.removeAll(digitsSoFar._1)
+                                        .map(nextDigit -> Tuple.of(digitsSoFar._1.append(nextDigit), digitsSoFar._2.tail().append(nextDigit)))
+                                        .map(digitsToTest -> Tuple.of(digitsToTest._1, digitsToTest._2, Integer.valueOf(digitsToTest._2.mkString())))
+                                ).filter(digitsToTest -> digitsToTest._3 % i == 0))
+                ).map(tailDigitsWithProperty -> tailDigitsWithProperty._1
+                        .prepend(ALL_DIGITS
+                                .removeAll(tailDigitsWithProperty._1)
+                                .head()
+                        ).mkString())
+                .map(Long::valueOf);
     }
 }
