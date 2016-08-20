@@ -33,9 +33,8 @@ public class Euler42Test {
      * the word value is a triangle number then we shall call the word a
      * triangle word.
      * <p>
-     * Using words.txt (right click and 'Save Link/Target As...'), a 16K text
-     * file containing nearly two-thousand common English words, how many are
-     * triangle words?
+     * Using p042_words.txt, a 16K text file containing nearly two-thousand
+     * common English words, how many are triangle words?
      * <p>
      * See also <a href="https://projecteuler.net/problem=42">projecteuler.net
      * problem 42</a>.
