@@ -2521,6 +2521,98 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     // -- number conversion
 
     /**
+     * Decodes this {@code CharSeq} into a {@code Byte} by calling {@link Byte#decode(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * Byte value = charSeq.decodeByte();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Byte value = Byte.decode(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return a {@code Byte} object holding the byte value represented by this {@code CharSeq}
+     * @throws NumberFormatException if this {@code CharSeq} does not contain a parsable byte.
+     * @since 2.1.0
+     */
+    public Byte decodeByte() {
+        return Byte.decode(back);
+    }
+
+    /**
+     * Decodes this {@code CharSeq} into an {@code Integer} by calling {@link Integer#decode(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * Integer value = charSeq.decodeInteger();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Integer value = Integer.decode(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return an {@code Integer} object holding the int value represented by this {@code CharSeq}
+     * @throws NumberFormatException if this {@code CharSeq} does not contain a parsable int.
+     * @since 2.1.0
+     */
+    public Integer decodeInteger() {
+        return Integer.decode(back);
+    }
+
+    /**
+     * Decodes this {@code CharSeq} into a {@code Long} by calling {@link Long#decode(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * Long value = charSeq.decodeLong();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Long value = Long.decode(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return a {@code Long} object holding the long value represented by this {@code CharSeq}
+     * @throws NumberFormatException if this {@code CharSeq} does not contain a parsable long.
+     * @since 2.1.0
+     */
+    public Long decodeLong() {
+        return Long.decode(back);
+    }
+
+    /**
+     * Decodes this {@code CharSeq} into a {@code Short} by calling {@link Short#decode(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * Short value = charSeq.decodeShort();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Short value = Short.decode(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return a {@code Short} object holding the short value represented by this {@code CharSeq}
+     * @throws NumberFormatException if this {@code CharSeq} does not contain a parsable short.
+     * @since 2.1.0
+     */
+    public Short decodeShort() {
+        return Short.decode(back);
+    }
+
+    /**
      * Parses this {@code CharSeq} as a boolean by calling {@link Boolean#parseBoolean(String)}.
      * <p>
      * We write
