@@ -2,19 +2,26 @@ package client;
 
 import com.google.gwt.junit.client.GWTTestCase;
 import javaslang.Function1;
+import javaslang.Tuple;
+import javaslang.Tuple1;
 import javaslang.collection.*;
 
-public class CollectionsTest extends GWTTestCase {
+public class GwtTestCollections extends GWTTestCase {
 
     @Override
     public String getModuleName() {
         return "TestModule";
     }
 
-    private void applyCollection(Function1<char[], Traversable<Character>> factory) {
-        Traversable<Character> traversable = factory.apply(new char[] {'a', 'b', 'c'});
-        assertEquals(traversable.count(i -> i != 'b'), 2);
+    public void testTuple() {
+        Tuple1<Integer> t = Tuple.of(1);
+        assertEquals((int) t._1(), 1);
     }
+
+//    private void applyCollection(Function1<char[], Traversable<Character>> factory) {
+//        Traversable<Character> traversable = factory.apply(new char[] {'a', 'b', 'c'});
+//        assertEquals(traversable.count(i -> i != 'b'), 2);
+//    }
 
 //    public void testCompileArray() {
 //        applyCollection(Array::ofAll);
@@ -35,11 +42,11 @@ public class CollectionsTest extends GWTTestCase {
 //    public void testCompileLinkedHashSet() {
 //        applyCollection(LinkedHashSet::ofAll);
 //    }
-
-    public void testCompileList() {
-        applyCollection(List::ofAll);
-    }
-
+//
+//    public void testCompileList() {
+//        applyCollection(List::ofAll);
+//    }
+//
 //    public void testCompilePriorityQueue() {
 //        applyCollection(chars -> PriorityQueue.ofAll(List.ofAll(chars)));
 //    }

@@ -81,7 +81,7 @@
                     <moduleName>Javaslang</moduleName>
                     <jvmArgs>-Xmx2048m</jvmArgs>
                     <includes>
-                        <include>**/*Test.java</include>
+                        <include>**/GwtTest*.java</include>
                     </includes>
                 </configuration>
             </plugin>

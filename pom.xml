@@ -134,7 +134,7 @@ Note: The maven build currently needs to be started from the javaslang root dir
                     <executions>
                         <execution>
                             <id>attach-sources</id>
-                            <phase>verify</phase>
+                            <phase>generate-resources</phase>
                             <goals>
                                 <goal>jar-no-fork</goal>
                                 <goal>test-jar-no-fork</goal>
