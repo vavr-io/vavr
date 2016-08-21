@@ -2795,6 +2795,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned int.
      * @since 2.1.0
      */
+    @GwtIncompatible
     public int parseUnsignedInt() {
         return Integer.parseUnsignedInt(back);
     }
@@ -2820,6 +2821,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned int.
      * @since 2.1.0
      */
+    @GwtIncompatible
     public int parseUnsignedInt(int radix) {
         return Integer.parseUnsignedInt(back, radix);
     }
@@ -2891,6 +2893,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned long.
      * @since 2.1.0
      */
+    @GwtIncompatible
     public long parseUnsignedLong() {
         return Long.parseUnsignedLong(back);
     }
@@ -2916,6 +2919,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned long.
      * @since 2.1.0
      */
+    @GwtIncompatible
     public long parseUnsignedLong(int radix) {
         return Long.parseUnsignedLong(back, radix);
     }
