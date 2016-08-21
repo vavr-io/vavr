@@ -2968,6 +2968,262 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         return Short.parseShort(back, radix);
     }
 
+    /**
+     * Converts this {@code CharSeq} to a {@code Boolean} by calling {@link Boolean#valueOf(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * Boolean value = charSeq.toBoolean();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Boolean value = Boolean.valueOf(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return the {@code Boolean} value represented by this {@code CharSeq}
+     * @since 2.1.0
+     */
+    public Boolean toBoolean() {
+        return Boolean.valueOf(back);
+    }
+
+    /**
+     * Converts this {@code CharSeq} to a {@code Byte} by calling {@link Byte#valueOf(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * Byte value = charSeq.toByte();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Byte value = Byte.valueOf(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return a {@code Byte} object holding the value represented by this {@code CharSeq}
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable byte.
+     * @since 2.1.0
+     */
+    public Byte toByte() {
+        return Byte.valueOf(back);
+    }
+
+    /**
+     * Converts this {@code CharSeq} to a {@code Byte} in the specified radix
+     * by calling {@link Byte#valueOf(String, int)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * Byte value = charSeq.toByte(radix);
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Byte value = Byte.valueOf(charSeq.mkString(), radix);
+     * </code></pre>
+     *
+     * @return a {@code Byte} object holding the value represented by this {@code CharSeq}
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable byte.
+     * @since 2.1.0
+     */
+    public Byte toByte(int radix) {
+        return Byte.valueOf(back, radix);
+    }
+
+    /**
+     * Converts this {@code CharSeq} to a {@code Double} by calling {@link Double#valueOf(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * Double value = charSeq.toDouble();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Double value = Double.valueOf(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return a {@code Double} object holding the value represented by this {@code CharSeq}
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable double.
+     * @since 2.1.0
+     */
+    public Double toDouble() {
+        return Double.valueOf(back);
+    }
+
+    /**
+     * Converts this {@code CharSeq} to a {@code Float} by calling {@link Float#valueOf(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * Float value = charSeq.toFloat();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Float value = Float.valueOf(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return a {@code Float} object holding the value represented by this {@code CharSeq}
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable float.
+     * @since 2.1.0
+     */
+    public Float toFloat() {
+        return Float.valueOf(back);
+    }
+
+    /**
+     * Converts this {@code CharSeq} to an {@code Integer} by calling {@link Integer#valueOf(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * Integer value = charSeq.toInteger();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Integer value = Integer.valueOf(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return an {@code Integer} object holding the value represented by this {@code CharSeq}
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable int.
+     * @since 2.1.0
+     */
+    public Integer toInteger() {
+        return Integer.valueOf(back);
+    }
+
+    /**
+     * Converts this {@code CharSeq} to an {@code Integer} in the specified radix
+     * by calling {@link Integer#valueOf(String, int)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * Integer value = charSeq.toInteger(radix);
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Integer value = Integer.valueOf(charSeq.mkString(), radix);
+     * </code></pre>
+     *
+     * @return an {@code Integer} object holding the value represented by this {@code CharSeq}
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable int.
+     * @since 2.1.0
+     */
+    public Integer toInteger(int radix) {
+        return Integer.valueOf(back, radix);
+    }
+
+    /**
+     * Converts this {@code CharSeq} to a {@code Long} by calling {@link Long#valueOf(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * Long value = charSeq.toLong();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Long value = Long.valueOf(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return a {@code Long} object holding the value represented by this {@code CharSeq}
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable long.
+     * @since 2.1.0
+     */
+    public Long toLong() {
+        return Long.valueOf(back);
+    }
+
+    /**
+     * Converts this {@code CharSeq} to a {@code Long} in the specified radix
+     * by calling {@link Long#valueOf(String, int)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * Long value = charSeq.toLong(radix);
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Long value = Long.valueOf(charSeq.mkString(), radix);
+     * </code></pre>
+     *
+     * @return a {@code Long} object holding the value represented by this {@code CharSeq}
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable long.
+     * @since 2.1.0
+     */
+    public Long toLong(int radix) {
+        return Long.valueOf(back, radix);
+    }
+
+    /**
+     * Converts this {@code CharSeq} to a {@code Short} by calling {@link Short#valueOf(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * Short value = charSeq.toShort();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Short value = Short.valueOf(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return a {@code Short} object holding the value represented by this {@code CharSeq}
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable short.
+     * @since 2.1.0
+     */
+    public Short toShort() {
+        return Short.valueOf(back);
+    }
+
+    /**
+     * Converts this {@code CharSeq} to a {@code Short} in the specified radix
+     * by calling {@link Short#valueOf(String, int)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * Short value = charSeq.toShort(radix);
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * Short value = Short.valueOf(charSeq.mkString(), radix);
+     * </code></pre>
+     *
+     * @return a {@code Short} object holding the value represented by this {@code CharSeq}
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable short.
+     * @since 2.1.0
+     */
+    public Short toShort(int radix) {
+        return Short.valueOf(back, radix);
+    }
+
     // -- functional interfaces
 
     @FunctionalInterface
