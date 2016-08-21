@@ -3159,4 +3159,332 @@ public class CharSeqTest {
                                          : Option.of(new Tuple2<>((char) (x - 1), new Character(x)))))
                 .isEqualTo(of("bcdefghij"));
     }
+
+    // -- number conversion
+
+    // decode*
+
+    @Test
+    public void shouldDecodeByte() {
+        assertThat(CharSeq.of("1").decodeByte()).isEqualTo(Byte.decode("1"));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotDecodeByteGivenEmptyCharSeq() {
+        CharSeq.empty().decodeByte();
+    }
+
+    @Test
+    public void shouldDecodeInteger() {
+        assertThat(CharSeq.of("1").decodeInteger()).isEqualTo(Integer.decode("1"));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotDecodeIntegerGivenEmptyCharSeq() {
+        CharSeq.empty().decodeInteger();
+    }
+
+    @Test
+    public void shouldDecodeLong() {
+        assertThat(CharSeq.of("1").decodeLong()).isEqualTo(Long.decode("1"));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotDecodeLongGivenEmptyCharSeq() {
+        CharSeq.empty().decodeLong();
+    }
+
+    @Test
+    public void shouldDecodeShort() {
+        assertThat(CharSeq.of("1").decodeShort()).isEqualTo(Short.decode("1"));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotDecodeShortGivenEmptyCharSeq() {
+        CharSeq.empty().decodeShort();
+    }
+
+    // parse*
+
+    @Test
+    public void shouldParseBooleanWhenTrue() {
+        assertThat(CharSeq.of("true").parseBoolean()).isEqualTo(Boolean.parseBoolean("true"));
+    }
+
+    @Test
+    public void shouldParseBooleanWhenFalse() {
+        assertThat(CharSeq.of("false").parseBoolean()).isEqualTo(Boolean.parseBoolean("false"));
+    }
+
+    @Test
+    public void shouldParseByte() {
+        assertThat(CharSeq.of("1").parseByte()).isEqualTo((byte) 1);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseByteGivenEmptyCharSeq() {
+        CharSeq.empty().parseByte();
+    }
+
+    @Test
+    public void shouldParseByteUsingRadix() {
+        assertThat(CharSeq.of("11").parseByte(2)).isEqualTo((byte) 3);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseByteUsingRadixGivenEmptyCharSeq() {
+        CharSeq.empty().parseByte(2);
+    }
+
+    @Test
+    public void shouldParseDouble() {
+        assertThat(CharSeq.of("1.0").parseDouble()).isEqualTo(1.0d);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseDoubleGivenEmptyCharSeq() {
+        CharSeq.empty().parseDouble();
+    }
+
+    @Test
+    public void shouldParseFloat() {
+        assertThat(CharSeq.of("1.0").parseFloat()).isEqualTo(1.0f);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseFloatGivenEmptyCharSeq() {
+        CharSeq.empty().parseFloat();
+    }
+
+    @Test
+    public void shouldParseInt() {
+        assertThat(CharSeq.of("1").parseInt()).isEqualTo(1);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseIntGivenEmptyCharSeq() {
+        CharSeq.empty().parseInt();
+    }
+
+    @Test
+    public void shouldParseIntUsingRadix() {
+        assertThat(CharSeq.of("11").parseInt(2)).isEqualTo(3);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseIntUsingRadixGivenEmptyCharSeq() {
+        CharSeq.empty().parseInt(2);
+    }
+
+    @Test
+    public void shouldParseUnsignedInt() {
+        assertThat(CharSeq.of("+1").parseUnsignedInt()).isEqualTo(1);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseUnsignedIntGivenNegativeNumber() {
+        CharSeq.of("-1").parseUnsignedInt();
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseUnsignedIntGivenEmptyCharSeq() {
+        CharSeq.empty().parseUnsignedInt();
+    }
+
+    @Test
+    public void shouldParseUnsignedIntUsingRadix() {
+        assertThat(CharSeq.of("+11").parseUnsignedInt(2)).isEqualTo(3);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseUnsignedIntUsingRadixGivenNegativeNumber() {
+        CharSeq.of("-1").parseUnsignedInt(2);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseUnsignedIntUsingRadixGivenEmptyCharSeq() {
+        CharSeq.empty().parseUnsignedInt(2);
+    }
+
+    @Test
+    public void shouldParseLong() {
+        assertThat(CharSeq.of("1").parseLong()).isEqualTo(1L);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseLongGivenEmptyCharSeq() {
+        CharSeq.empty().parseLong();
+    }
+
+    @Test
+    public void shouldParseLongUsingRadix() {
+        assertThat(CharSeq.of("11").parseLong(2)).isEqualTo(3L);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseLongUsingRadixGivenEmptyCharSeq() {
+        CharSeq.empty().parseLong(2);
+    }
+
+    @Test
+    public void shouldParseUnsignedLong() {
+        assertThat(CharSeq.of("+1").parseUnsignedLong()).isEqualTo(1);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseUnsignedLongGivenNegativeNumber() {
+        CharSeq.of("-1").parseUnsignedLong();
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseUnsignedLongGivenEmptyCharSeq() {
+        CharSeq.empty().parseUnsignedLong();
+    }
+
+    @Test
+    public void shouldParseUnsignedLongUsingRadix() {
+        assertThat(CharSeq.of("+11").parseUnsignedLong(2)).isEqualTo(3);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseUnsignedLongUsingRadixGivenNegativeNumber() {
+        CharSeq.of("-1").parseUnsignedLong(2);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseUnsignedLongUsingRadixGivenEmptyCharSeq() {
+        CharSeq.empty().parseUnsignedLong(2);
+    }
+
+    @Test
+    public void shouldParseShort() {
+        assertThat(CharSeq.of("1").parseShort()).isEqualTo((short) 1);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseShortGivenEmptyCharSeq() {
+        CharSeq.empty().parseShort();
+    }
+
+    @Test
+    public void shouldParseShortUsingRadix() {
+        assertThat(CharSeq.of("11").parseShort(2)).isEqualTo((short) 3);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotParseShortUsingRadixGivenEmptyCharSeq() {
+        CharSeq.empty().parseShort(2);
+    }
+
+    // to*
+
+    @Test
+    public void shouldConvertToBooleanWhenTrue() {
+        assertThat(CharSeq.of("true").toBoolean()).isEqualTo(Boolean.valueOf("true"));
+    }
+
+    @Test
+    public void shouldConvertToBooleanWhenFalse() {
+        assertThat(CharSeq.of("false").toBoolean()).isEqualTo(Boolean.valueOf("false"));
+    }
+
+    @Test
+    public void shouldConvertToByte() {
+        assertThat(CharSeq.of("1").toByte()).isEqualTo(Byte.valueOf("1"));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotConvertToByteGivenEmptyCharSeq() {
+        CharSeq.empty().toByte();
+    }
+
+    @Test
+    public void shouldConvertToByteUsingRadix() {
+        assertThat(CharSeq.of("11").toByte(2)).isEqualTo(Byte.valueOf("11", 2));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotConvertToByteUsingRadixGivenEmptyCharSeq() {
+        CharSeq.empty().toByte(2);
+    }
+
+    @Test
+    public void shouldConvertToDouble() {
+        assertThat(CharSeq.of("1.0").toDouble()).isEqualTo(Double.valueOf("1.0"));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotConvertToDoubleGivenEmptyCharSeq() {
+        CharSeq.empty().toDouble();
+    }
+
+    @Test
+    public void shouldConvertToFloat() {
+        assertThat(CharSeq.of("1.0").toFloat()).isEqualTo(Float.valueOf("1.0"));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotConvertToFloatGivenEmptyCharSeq() {
+        CharSeq.empty().toFloat();
+    }
+
+    @Test
+    public void shouldConvertToInteger() {
+        assertThat(CharSeq.of("1").toInteger()).isEqualTo(Integer.valueOf("1"));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotConvertToIntegerGivenEmptyCharSeq() {
+        CharSeq.empty().toInteger();
+    }
+
+    @Test
+    public void shouldConvertToIntegerUsingRadix() {
+        assertThat(CharSeq.of("11").toInteger(2)).isEqualTo(Integer.valueOf("11", 2));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotConvertToIntegerUsingRadixGivenEmptyCharSeq() {
+        CharSeq.empty().toInteger(2);
+    }
+
+    @Test
+    public void shouldConvertToLong() {
+        assertThat(CharSeq.of("1").toLong()).isEqualTo(Long.valueOf("1"));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotConvertToLongGivenEmptyCharSeq() {
+        CharSeq.empty().toLong();
+    }
+
+    @Test
+    public void shouldConvertToLongUsingRadix() {
+        assertThat(CharSeq.of("11").toLong(2)).isEqualTo(Long.valueOf("11", 2));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotConvertToLongUsingRadixGivenEmptyCharSeq() {
+        CharSeq.empty().toLong(2);
+    }
+
+    @Test
+    public void shouldConvertToShort() {
+        assertThat(CharSeq.of("1").toShort()).isEqualTo(Short.valueOf("1"));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotConvertToShortGivenEmptyCharSeq() {
+        CharSeq.empty().toShort();
+    }
+
+    @Test
+    public void shouldConvertToShortUsingRadix() {
+        assertThat(CharSeq.of("11").toShort(2)).isEqualTo(Short.valueOf("11", 2));
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void shouldNotConvertToShortUsingRadixGivenEmptyCharSeq() {
+        CharSeq.empty().toShort(2);
+    }
 }
