@@ -2518,6 +2518,366 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         return back.toCharArray();
     }
 
+    // -- number conversion
+
+    /**
+     * Parses this {@code CharSeq} as a boolean by calling {@link Boolean#parseBoolean(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * boolean value = charSeq.parseBoolean();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * boolean value = Boolean.parseBoolean(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return the boolean represented by this {@code CharSeq}
+     * @since 2.1.0
+     */
+    public boolean parseBoolean() {
+        return Boolean.parseBoolean(back);
+    }
+
+    /**
+     * Parses this {@code CharSeq} as a signed decimal byte by calling {@link Byte#parseByte(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * byte value = charSeq.parseByte();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * byte value = Byte.parseByte(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return the byte value represented by this {@code CharSeq} in decimal
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable byte.
+     * @since 2.1.0
+     */
+    public byte parseByte() {
+        return Byte.parseByte(back);
+    }
+
+    /**
+     * Parses this {@code CharSeq} as a signed byte in the specified radix
+     * by calling {@link Byte#parseByte(String, int)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * byte value = charSeq.parseByte(radix);
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * byte value = Byte.parseByte(charSeq.mkString(), radix);
+     * </code></pre>
+     *
+     * @param radix the radix to be used in interpreting this {@code CharSeq}
+     * @return the byte value represented by this {@code CharSeq} in the specified radix
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable byte.
+     * @since 2.1.0
+     */
+    public byte parseByte(int radix) {
+        return Byte.parseByte(back, radix);
+    }
+
+    /**
+     * Parses this {@code CharSeq} as a double by calling {@link Double#parseDouble(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * double value = charSeq.parseDouble();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * double value = Double.parseDouble(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return the double value represented by this {@code CharSeq}
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable double.
+     * @since 2.1.0
+     */
+    public double parseDouble() {
+        return Double.parseDouble(back);
+    }
+
+    /**
+     * Parses this {@code CharSeq} as a float by calling {@link Float#parseFloat(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * float value = charSeq.parseFloat();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * float value = Double.parseFloat(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return the float value represented by this {@code CharSeq}
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable float.
+     * @since 2.1.0
+     */
+    public float parseFloat() {
+        return Float.parseFloat(back);
+    }
+
+    /**
+     * Parses this {@code CharSeq} as a signed decimal int by calling {@link Integer#parseInt(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * int value = charSeq.parseInt();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * int value = Integer.parseInt(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return the int value represented by this {@code CharSeq} in decimal
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable int.
+     * @since 2.1.0
+     */
+    public int parseInt() {
+        return Integer.parseInt(back);
+    }
+
+    /**
+     * Parses this {@code CharSeq} as a signed int in the specified radix
+     * by calling {@link Integer#parseInt(String, int)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * int value = charSeq.parseInt(radix);
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * int value = Integer.parseInt(charSeq.mkString(), radix);
+     * </code></pre>
+     *
+     * @param radix the radix to be used in interpreting this {@code CharSeq}
+     * @return the int value represented by this {@code CharSeq} in the specified radix
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable int.
+     * @since 2.1.0
+     */
+    public int parseInt(int radix) {
+        return Integer.parseInt(back, radix);
+    }
+
+    /**
+     * Parses this {@code CharSeq} as a unsigned decimal int by calling {@link Integer#parseUnsignedInt(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * int value = charSeq.parseUnsignedInt();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * int value = Integer.parseUnsignedInt(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return the unsigned int value represented by this {@code CharSeq} in decimal
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned int.
+     * @since 2.1.0
+     */
+    public int parseUnsignedInt() {
+        return Integer.parseUnsignedInt(back);
+    }
+
+    /**
+     * Parses this {@code CharSeq} as a unsigned int in the specified radix
+     * by calling {@link Integer#parseUnsignedInt(String, int)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * int value = charSeq.parseUnsignedInt(radix);
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * int value = Integer.parseUnsignedInt(charSeq.mkString(), radix);
+     * </code></pre>
+     *
+     * @param radix the radix to be used in interpreting this {@code CharSeq}
+     * @return the unsigned int value represented by this {@code CharSeq} in the specified radix
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned int.
+     * @since 2.1.0
+     */
+    public int parseUnsignedInt(int radix) {
+        return Integer.parseUnsignedInt(back, radix);
+    }
+
+    /**
+     * Parses this {@code CharSeq} as a signed decimal long by calling {@link Long#parseLong(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * long value = charSeq.parseLong();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * long value = Long.parseLong(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return the long value represented by this {@code CharSeq} in decimal
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable long.
+     * @since 2.1.0
+     */
+    public long parseLong() {
+        return Long.parseLong(back);
+    }
+
+    /**
+     * Parses this {@code CharSeq} as a signed long in the specified radix
+     * by calling {@link Long#parseLong(String, int)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * long value = charSeq.parseLong(radix);
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * long value = Long.parseLong(charSeq.mkString(), radix);
+     * </code></pre>
+     *
+     * @param radix the radix to be used in interpreting this {@code CharSeq}
+     * @return the long value represented by this {@code CharSeq} in the specified radix
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable long.
+     * @since 2.1.0
+     */
+    public long parseLong(int radix) {
+        return Long.parseLong(back, radix);
+    }
+
+    /**
+     * Parses this {@code CharSeq} as a unsigned decimal long by calling {@link Long#parseUnsignedLong(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * long value = charSeq.parseUnsignedLong();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * long value = Long.parseUnsignedLong(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return the unsigned long value represented by this {@code CharSeq} in decimal
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned long.
+     * @since 2.1.0
+     */
+    public long parseUnsignedLong() {
+        return Long.parseUnsignedLong(back);
+    }
+
+    /**
+     * Parses this {@code CharSeq} as a unsigned long in the specified radix
+     * by calling {@link Long#parseUnsignedLong(String, int)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * long value = charSeq.parseUnsignedLong(radix);
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * long value = Long.parseUnsignedLong(charSeq.mkString(), radix);
+     * </code></pre>
+     *
+     * @param radix the radix to be used in interpreting this {@code CharSeq}
+     * @return the unsigned long value represented by this {@code CharSeq} in the specified radix
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned long.
+     * @since 2.1.0
+     */
+    public long parseUnsignedLong(int radix) {
+        return Long.parseUnsignedLong(back, radix);
+    }
+
+    /**
+     * Parses this {@code CharSeq} as a signed decimal short by calling {@link Short#parseShort(String)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * short value = charSeq.parseShort();
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * short value = Short.parseShort(charSeq.mkString());
+     * </code></pre>
+     *
+     * @return the short value represented by this {@code CharSeq} in decimal
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable short.
+     * @since 2.1.0
+     */
+    public short parseShort() {
+        return Short.parseShort(back);
+    }
+
+    /**
+     * Parses this {@code CharSeq} as a signed short in the specified radix
+     * by calling {@link Short#parseShort(String, int)}.
+     * <p>
+     * We write
+     *
+     * <pre><code>
+     * short value = charSeq.parseShort(radix);
+     * </code></pre>
+     *
+     * instead of
+     *
+     * <pre><code>
+     * short value = Short.parseShort(charSeq.mkString(), radix);
+     * </code></pre>
+     *
+     * @param radix the radix to be used in interpreting this {@code CharSeq}
+     * @return the short value represented by this {@code CharSeq} in the specified radix
+     * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable short.
+     * @since 2.1.0
+     */
+    public short parseShort(int radix) {
+        return Short.parseShort(back, radix);
+    }
+
+    // -- functional interfaces
+
     @FunctionalInterface
     public interface CharUnaryOperator {
         char apply(char c);
