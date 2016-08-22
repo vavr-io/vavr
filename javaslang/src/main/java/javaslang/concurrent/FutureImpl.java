@@ -6,10 +6,10 @@
 package javaslang.concurrent;
 
 import javaslang.collection.Queue;
-import javaslang.control.*;
+import javaslang.control.Option;
+import javaslang.control.Try;
 import javaslang.control.Try.CheckedSupplier;
 
-import java.io.Serializable;
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
@@ -176,13 +176,18 @@ final class FutureImpl<T> implements Future<T> {
             if (isCompleted()) {
                 throw new IllegalStateException("The Future is completed.");
             }
-            // The current lock ensures that the job is assigned before the computation completes,
-            // if the ExecutorService runs the computation in a different thread.
-            // If the ExecutorService runs the computation in the current thread, the job is already finished and
-            // we must not overwrite the state variable 'job', which must remain null.
-            final java.util.concurrent.Future<Try<T>> tmpJob = executorService.submit(() -> complete(Try.of(computation)));
-            if (!isCompleted()) {
-                job = tmpJob;
+            // if the ExecutorService runs the computation
+            // - in a different thread, the lock ensures that the job is assigned before the computation completes
+            // - in the current thread, the job is already completed and the `job` variable remains null
+            try {
+                final java.util.concurrent.Future<Try<T>> tmpJob = executorService.submit(() -> complete(Try.of(computation)));
+                if (!isCompleted()) {
+                    job = tmpJob;
+                }
+            } catch (Throwable t) {
+                if (!isCompleted()) {
+                    complete(Try.failure(t));
+                }
             }
         }
     }
