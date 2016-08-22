@@ -6,7 +6,6 @@
 package javaslang.collection.euler;
 
 import javaslang.collection.CharSeq;
-import javaslang.Tuple;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 
@@ -64,7 +63,7 @@ public class Euler43Test {
                                         .removeAll(digitsSoFar)
                                         .map(nextDigit -> digitsSoFar.append(nextDigit))
                                 )
-                                .filter(digitsToTest -> Integer.valueOf(digitsToTest.takeRight(3).mkString()) % divisor == 0)
+                                .filter(digitsToTest -> digitsToTest.takeRight(3).parseInt() % divisor == 0)
                         )
                 )
                 .map(tailDigitsWithProperty -> tailDigitsWithProperty
@@ -73,7 +72,6 @@ public class Euler43Test {
                                 .head()
                         )
                 )
-                .map(CharSeq::mkString)
-                .map(Long::valueOf);
+                .map(CharSeq::parseLong);
     }
 }
