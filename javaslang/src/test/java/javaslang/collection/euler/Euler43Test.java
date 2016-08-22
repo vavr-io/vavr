@@ -6,7 +6,6 @@
 package javaslang.collection.euler;
 
 import javaslang.collection.CharSeq;
-import javaslang.Tuple;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 
@@ -54,29 +53,25 @@ public class Euler43Test {
     private static Seq<Long> tenDigitPandigitalsWithProperty() {
         final CharSeq ALL_DIGITS = CharSeq.of("0123456789");
         final List<Integer> DIVISORS = List.of(2, 3, 5, 7, 11, 13, 17);
-        final char DUMMY_CHAR = Character.MIN_VALUE;
 
         return ALL_DIGITS
                 .combinations(2)
                 .flatMap(CharSeq::permutations)
-                .map(cs -> Tuple.of(cs, cs.prepend(DUMMY_CHAR), Integer.valueOf(cs.mkString())))
                 .flatMap(firstTwoDigits -> DIVISORS
                         .foldLeft(List.of(firstTwoDigits), (accumulator, divisor) -> accumulator
                                 .flatMap(digitsSoFar -> ALL_DIGITS
-                                        .removeAll(digitsSoFar._1)
-                                        .map(nextDigit -> Tuple.of(digitsSoFar._1.append(nextDigit), digitsSoFar._2.tail().append(nextDigit)))
-                                        .map(digitsToTest -> Tuple.of(digitsToTest._1, digitsToTest._2, Integer.valueOf(digitsToTest._2.mkString())))
+                                        .removeAll(digitsSoFar)
+                                        .map(nextDigit -> digitsSoFar.append(nextDigit))
                                 )
-                                .filter(digitsToTest -> digitsToTest._3 % divisor == 0)
+                                .filter(digitsToTest -> digitsToTest.takeRight(3).parseInt() % divisor == 0)
                         )
                 )
-                .map(tailDigitsWithProperty -> tailDigitsWithProperty._1
+                .map(tailDigitsWithProperty -> tailDigitsWithProperty
                         .prepend(ALL_DIGITS
-                                .removeAll(tailDigitsWithProperty._1)
+                                .removeAll(tailDigitsWithProperty)
                                 .head()
                         )
                 )
-                .map(CharSeq::mkString)
-                .map(Long::valueOf);
+                .map(CharSeq::parseLong);
     }
 }
