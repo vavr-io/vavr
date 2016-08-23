@@ -11,7 +11,6 @@ import javaslang.control.Option;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.Set;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -25,7 +24,7 @@ import static javaslang.collection.Collections.*;
  * @author Ruslan Sennov
  * @since 2.0.0
  */
-public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Serializable {
+public final class Vector<T> extends AbstractsQueue<T, Vector<T>> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final Vector<?> EMPTY = new Vector<>(HashArrayMappedTrie.empty());
@@ -578,6 +577,15 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
+    public Vector<T> enqueue(T element) { return append(element); }
+
+    @Override
+    public T peekFirst() { return head(); }
+
+    @Override
+    public Option<T> peekFirstOption() { return headOption(); }
+
+    @Override
     public Vector<Vector<T>> combinations() {
         return rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
@@ -972,8 +980,9 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> replace(T currentElement, T newElement) {
-        return indexOfOption(currentElement).map(i -> update(i, newElement))
-                                            .getOrElse(this);
+        return indexOfOption(currentElement)
+                .map(i -> update(i, newElement))
+                .getOrElse(this);
     }
 
     @Override
@@ -1062,8 +1071,9 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public <U> Vector<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
         final Function<? super T, ? extends U> domain = Function1.of(mapper::apply).memoized();
-        return toJavaStream().sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
-                             .collect(collector());
+        return toJavaStream()
+                .sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
+                .collect(collector());
     }
 
     @Override

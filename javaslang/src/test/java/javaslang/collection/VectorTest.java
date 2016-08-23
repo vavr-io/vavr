@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.io.InvalidObjectException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -198,6 +199,84 @@ public class VectorTest extends AbstractIndexedSeqTest {
     public void shouldTransform() {
         final String transformed = of(42).transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("42");
+    }
+
+    // -- peekFirst
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailPeekFirstOfNil() {
+        empty().peekFirst();
+    }
+
+    @Test
+    public void shouldPeekFirstOfNonNil() {
+        assertThat(of(1).peekFirst()).isEqualTo(1);
+        assertThat(of(1, 2).peekFirst()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldPeekFirstOption() {
+        assertThat(empty().peekFirstOption()).isSameAs(Option.none());
+        assertThat(of(1).peekFirstOption()).isEqualTo(Option.of(1));
+        assertThat(of(1, 2).peekFirstOption()).isEqualTo(Option.of(1));
+    }
+
+    // -- enqueue
+
+    @Test
+    public void shouldEnqueueElementToNil() {
+        final Seq<Integer> actual = this.<Integer> empty().enqueue(1);
+        final Seq<Integer> expected = of(1);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldEnqueueNullElementToNil() {
+        final Seq<Integer> actual = this.<Integer> empty().enqueue((Integer) null);
+        final Seq<Integer> expected = this.of((Integer) null);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldEnqueueElementToNonNil() {
+        final Seq<Integer> actual = of(1, 2).enqueue(3);
+        final Seq<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- enqueueAll
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowOnEnqueueAllOfNull() {
+        empty().enqueueAll(null);
+    }
+
+    @Test
+    public void shouldEnqueueAllNilToNil() {
+        final Seq<Object> actual = empty().enqueueAll(empty());
+        final Seq<Object> expected = empty();
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldEnqueueAllNonNilToNil() {
+        final Seq<Integer> actual = this.<Integer> empty().enqueueAll(of(1, 2, 3));
+        final Seq<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldEnqueueAllNilToNonNil() {
+        final Seq<Integer> actual = of(1, 2, 3).enqueueAll(empty());
+        final Seq<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldEnqueueAllNonNilToNonNil() {
+        final Seq<Integer> actual = of(1, 2, 3).enqueueAll(of(4, 5, 6));
+        final Seq<Integer> expected = of(1, 2, 3, 4, 5, 6);
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- unfold
