@@ -72,6 +72,21 @@ public interface Stack<T> {
     Option<T> peekOption();
 
     /**
+     * Returns the head element without modifying the Stack.
+     *
+     * @return the first element
+     * @throws java.util.NoSuchElementException if this Stack is empty
+     */
+    default T peekLast() { return peek(); }
+
+    /**
+     * Returns the head element without modifying the Stack.
+     *
+     * @return {@code None} if this Stack is empty, otherwise a {@code Some} containing the head element
+     */
+    default Option<T> peekLastOption() { return peekOption(); }
+
+    /**
      * Removes the head element from this Stack.
      *
      * @return the elements of this Stack without the head element
