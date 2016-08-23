@@ -21,6 +21,7 @@ public class TryTest extends AbstractValueTest {
 
     private static final String OK = "ok";
     private static final String FAILURE = "failure";
+    private static final String WRAP_THROWABLE = "Wrap Throwable";
 
     // -- AbstractValueTest
 
@@ -535,6 +536,24 @@ public class TryTest extends AbstractValueTest {
         assertThat(actual.toString()).isEqualTo("Failure(java.lang.NumberFormatException: For input string: \"aaa\")");
     }
 
+    // -- mapFailure
+
+    @Test
+    public void shouldMapFailureOnFailure() {
+        final Try<String> actual = failure();
+        Try<String> mapped = actual.mapFailure(ex -> wrapThrowable(ex));
+        assertThat(mapped.getCause().getMessage()).isEqualTo(WRAP_THROWABLE);
+        assertThat(mapped.getCause().getCause()).isEqualTo(actual.getCause());
+    }
+
+    @Test
+    public void shouldMapFailureOnSuccess() {
+        final Try<String> actual = success();
+        assertThat(actual.mapFailure(this::wrapThrowable)).isEqualTo(actual);
+    }
+
+    private Throwable wrapThrowable(Throwable ex) {return new Exception(WRAP_THROWABLE, ex);}
+
     // -- andThen
 
     @Test
@@ -738,15 +757,13 @@ public class TryTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldFilterNonMatchingPredicateAndDefaultThrowableSupplierOnSuccess()
-    {
+    public void shouldFilterNonMatchingPredicateAndDefaultThrowableSupplierOnSuccess() {
         assertThat(success().filter(s -> false).getCause())
                 .isInstanceOf(NoSuchElementException.class);
     }
 
     @Test
-    public void shouldFilterNonMatchingPredicateAndCustomThrowableSupplierOnSuccess()
-    {
+    public void shouldFilterNonMatchingPredicateAndCustomThrowableSupplierOnSuccess() {
         assertThat(success().filter(s -> false, () -> new IllegalArgumentException()).getCause())
                 .isInstanceOf(IllegalArgumentException.class);
     }
