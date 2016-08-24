@@ -57,7 +57,7 @@ public class Euler67Test {
     static Vector<Vector<Integer>> loadTriangle(String fileName) {
         return Vector.ofAll(
                 Utils.readLines(Utils.file(fileName)).map(line ->
-                        Arrays.asList(line.split("\\s")).stream().map(Integer::parseInt)
+                        Arrays.stream(line.split("\\s")).map(Integer::parseInt)
                 ).map(s -> Vector.ofAll(s::iterator))
         );
     }

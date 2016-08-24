@@ -20,6 +20,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static java.lang.System.lineSeparator;
+import static java.util.Arrays.asList;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 import static org.assertj.core.api.Assertions.fail;
@@ -109,7 +110,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldCreateListOfIterable() {
-        final java.util.List<Integer> arrayList = Arrays.asList(1, 2);
+        final java.util.List<Integer> arrayList = asList(1, 2);
         final List<Integer> actual = ofAll(arrayList).toList();
         assertThat(actual).isEqualTo(List.of(1, 2));
     }
@@ -1617,7 +1618,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     public void shouldSplitNonNil() {
         final java.util.List<Integer> actual = new java.util.ArrayList<>();
         of(1, 2, 3).spliterator().forEachRemaining(actual::add);
-        assertThat(actual).isEqualTo(Arrays.asList(1, 2, 3));
+        assertThat(actual).isEqualTo(asList(1, 2, 3));
     }
 
     @Test
@@ -2092,7 +2093,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertNonNilToArrayList() {
-        assertThat(of(1, 2, 3).toJavaList()).isEqualTo(Arrays.asList(1, 2, 3));
+        assertThat(of(1, 2, 3).toJavaList()).isEqualTo(asList(1, 2, 3));
     }
 
     // -- toJavaMap(Function)
@@ -2300,7 +2301,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldTabulateTheSeqCallingTheFunctionInTheRightOrder() {
-        final java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 1, 2));
+        final java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(asList(0, 1, 2));
         final Function<Integer, Integer> f = i -> ints.remove();
         final Traversable<Integer> actual = tabulate(3, f);
         assertThat(actual).isEqualTo(of(0, 1, 2));
@@ -2318,7 +2319,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldFillTheSeqCallingTheSupplierInTheRightOrder() {
-        final java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 1));
+        final java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(asList(0, 1));
         final Supplier<Integer> s = () -> ints.remove();
         final Traversable<Number> actual = fill(2, s);
         assertThat(actual).isEqualTo(of(0, 1));

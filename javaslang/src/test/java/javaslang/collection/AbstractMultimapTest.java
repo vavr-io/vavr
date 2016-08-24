@@ -21,12 +21,14 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 
+import static java.util.Arrays.asList;
+
 @RunWith(Parameterized.class)
 public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
+        return asList(new Object[][] {
                 { Multimap.ContainerType.SEQ },
                 { Multimap.ContainerType.SET },
                 { Multimap.ContainerType.SORTED_SET }
@@ -767,7 +769,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldTabulateTheSeqCallingTheFunctionInTheRightOrder() {
-        LinkedList<Integer> ints = new LinkedList<>(Arrays.asList(0, 0, 1, 1, 2, 2));
+        LinkedList<Integer> ints = new LinkedList<>(asList(0, 0, 1, 1, 2, 2));
         Function<Integer, Tuple2<Long, Float>> f = i -> new Tuple2<>(ints.remove().longValue(), ints.remove().floatValue());
         Multimap<Long, Float> map = mapTabulate(3, f);
         assertThat(map).isEqualTo(mapOfTuples(new Tuple2<>(0l, 0f), new Tuple2<>(1l, 1f), new Tuple2<>(2l, 2f)));
@@ -786,7 +788,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldFillTheSeqCallingTheSupplierInTheRightOrder() {
-        LinkedList<Integer> ints = new LinkedList<>(Arrays.asList(0, 0, 1, 1, 2, 2));
+        LinkedList<Integer> ints = new LinkedList<>(asList(0, 0, 1, 1, 2, 2));
         Supplier<Tuple2<Long, Float>> s = () -> new Tuple2<>(ints.remove().longValue(), ints.remove().floatValue());
         Multimap<Long, Float> actual = mapFill(3, s);
         assertThat(actual).isEqualTo(mapOfTuples(new Tuple2<>(0l, 0f), new Tuple2<>(1l, 1f), new Tuple2<>(2l, 2f)));

@@ -48,12 +48,12 @@ public class JmhRunner {
 
     @SuppressWarnings("unused")
     public static void runNormalNoAsserts(Array<Class<?>> groups) {
-        runAndReport(groups, 10, 10, 200, ForkJvm.ENABLE, VerboseMode.NORMAL, Assertions.DISABLE, PrintInlining.DISABLE);
+        runAndReport(groups, 7, 7, 300, ForkJvm.ENABLE, VerboseMode.NORMAL, Assertions.DISABLE, PrintInlining.DISABLE);
     }
 
     @SuppressWarnings("unused")
     public static void runSlowNoAsserts(Array<Class<?>> groups) {
-        runAndReport(groups, 25, 15, 500, ForkJvm.ENABLE, VerboseMode.EXTRA, Assertions.DISABLE, PrintInlining.DISABLE);
+        runAndReport(groups, 15, 15, 400, ForkJvm.ENABLE, VerboseMode.EXTRA, Assertions.DISABLE, PrintInlining.DISABLE);
     }
 
     public static void runAndReport(Array<Class<?>> groups, int warmupIterations, int measurementIterations, int millis, ForkJvm forkJvm, VerboseMode silent, Assertions assertions, PrintInlining printInlining) {
@@ -135,6 +135,20 @@ public class JmhRunner {
             results[i] = value;
         }
         return results;
+    }
+
+    /** Randomly mutate array positions */
+    public static <T> int[] shuffle(int[] array, Random random) {
+        for (int i = array.length; i > 1; i--) {
+            swap(array, i - 1, random.nextInt(i));
+        }
+        return array;
+    }
+
+    static <T> void swap(int[] array, int i, int j) {
+        final int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
     }
 
     /** used for dead code elimination and correctness assertion inside the benchmarks */
