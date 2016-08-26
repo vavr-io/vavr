@@ -111,7 +111,7 @@ Note: Detailed information about performing a release can be found in the SCM se
 
 We following a simple git workflow/branching model:
 
-```java
+```
                          master
                            |
                            |     v2.0.x
