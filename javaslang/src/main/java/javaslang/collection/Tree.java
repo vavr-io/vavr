@@ -25,7 +25,7 @@ import static javaslang.collection.Tree.Order.PRE_ORDER;
  * A general Tree interface.
  *
  * @param <T> component type of this Tree
- * @author Daniel Dietrich
+ * @author Daniel Dietrich, Grzegorz Piwowarek
  * @since 1.1.0
  */
 public interface Tree<T> extends Traversable<T> {

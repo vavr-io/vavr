@@ -14,7 +14,7 @@ import java.util.function.Predicate;
  * Defines general-purpose predicates which are particularly useful when working with
  * {@link javaslang.API.Match}.
  *
- * @author Daniel Dietrich
+ * @author Daniel Dietrich, Grzegorz Piwowarek
  * @since 2.0.0
  */
 public final class Predicates {
