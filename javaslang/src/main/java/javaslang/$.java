@@ -15,6 +15,9 @@ import javaslang.control.Validation;
 import javaslang.match.annotation.Unapply;
 import javaslang.match.annotation.Patterns;
 
+/**
+ * <strong>INTERNAL TYPE - turned to javaslang.Patterns by javaslang-match annotation processor.</strong>
+ */
 @Patterns class $ {
 
     // -- javaslang
@@ -39,8 +42,6 @@ import javaslang.match.annotation.Patterns;
     // Stream
     @Unapply static <T> Tuple2<T, Stream<T>> Stream(Stream.Cons<T> cons) { return Tuple.of(cons.head(), cons.tail()); }
     @Unapply static <T> Tuple0 Stream(Stream.Empty<T> empty) { return Tuple.empty(); }
-
-    // TODO: Tree
 
     // -- javaslang.concurrent
 
