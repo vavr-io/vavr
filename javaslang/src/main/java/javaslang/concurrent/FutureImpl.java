@@ -17,8 +17,13 @@ import java.util.function.Consumer;
 
 /**
  * <strong>INTERNAL API - This class is subject to change.</strong>
- *
- * {@link Future} implementation, for internal use only.
+ * <p>
+ * Once a {@code FutureImpl} is created, one (and only one) of the following methods is called
+ * to complete it with a result:
+ * <ul>
+ * <li>{@link #run(CheckedSupplier)} - typically called within a {@code Future} factory method</li>
+ * <li>{@link #tryComplete(Try)} - explicit write operation, typically called by {@code Promise}</li>
+ * </ul>
  * <p>
  * <strong>Lifecycle of a {@code FutureImpl}:</strong>
  * <p>
@@ -65,25 +70,25 @@ final class FutureImpl<T> implements Future<T> {
 
     /**
      * Once the Future is completed, the value is defined.
-     *
-     * @@GuardedBy("lock")
      */
+    @GuardedBy("lock")
     private volatile Option<Try<T>> value = Option.none();
 
     /**
      * The queue of actions is filled when calling onComplete() before the Future is completed or cancelled.
      * Otherwise actions = null.
-     *
-     * @@GuardedBy("lock")
      */
+    @GuardedBy("lock")
     private Queue<Consumer<? super Try<T>>> actions = Queue.empty();
 
     /**
      * Once a computation is started via run(), job is defined and used to control the lifecycle of the computation.
-     *
-     * @@GuardedBy("lock")
+     * <p>
+     * The {@code java.util.concurrent.Future} is not intended to store the result of the computation, it is stored in
+     * {@code value} instead.
      */
-    private java.util.concurrent.Future<Try<T>> job = null;
+    @GuardedBy("lock")
+    private java.util.concurrent.Future<?> job = null;
 
     /**
      * Creates a Future, {@link #run(CheckedSupplier)} has to be called separately.
@@ -159,6 +164,14 @@ final class FutureImpl<T> implements Future<T> {
         return this;
     }
 
+    // This class is MUTABLE and therefore CANNOT CHANGE DEFAULT equals() and hashCode() behavior.
+    // See http://stackoverflow.com/questions/4718009/mutable-objects-and-hashcode
+
+    @Override
+    public String toString() {
+        return stringPrefix() + "(" + value.map(String::valueOf).getOrElse("?") + ")";
+    }
+
     /**
      * Runs a computation using the underlying ExecutorService.
      * <p>
@@ -176,48 +189,21 @@ final class FutureImpl<T> implements Future<T> {
             if (isCompleted()) {
                 throw new IllegalStateException("The Future is completed.");
             }
-            // if the ExecutorService runs the computation
-            // - in a different thread, the lock ensures that the job is assigned before the computation completes
-            // - in the current thread, the job is already completed and the `job` variable remains null
             try {
-                final java.util.concurrent.Future<Try<T>> tmpJob = executorService.submit(() -> complete(Try.of(computation)));
+                // if the ExecutorService runs the computation
+                // - in a different thread, the lock ensures that the job is assigned before the computation completes
+                // - in the current thread, the job is already completed and the `job` variable remains null
+                final java.util.concurrent.Future<?> tmpJob = executorService.submit(() -> complete(Try.of(computation)));
                 if (!isCompleted()) {
                     job = tmpJob;
                 }
             } catch (Throwable t) {
+                // ensures that the Future completes if the `executorService.submit()` method throws
                 if (!isCompleted()) {
                     complete(Try.failure(t));
                 }
             }
         }
-    }
-
-    /**
-     * Completes this Future with a value.
-     * <p>
-     * DEV-NOTE: Internally this method is called by the {@code Future.run()} method and by {@code Promise}.
-     *
-     * @param value A Success containing a result or a Failure containing an Exception.
-     * @return The given {@code value} for convenience purpose.
-     * @throws IllegalStateException if the Future is already completed or cancelled.
-     * @throws NullPointerException  if the given {@code value} is null.
-     */
-    @SuppressWarnings("unchecked")
-    Try<T> complete(Try<? extends T> value) {
-        Objects.requireNonNull(value, "value is null");
-        final Queue<Consumer<? super Try<T>>> actions;
-        // it is essential to make the completed state public *before* performing the actions
-        synchronized (lock) {
-            if (isCompleted()) {
-                throw new IllegalStateException("The Future is completed.");
-            }
-            actions = this.actions;
-            this.value = Option.some((Try<T>) value);
-            this.actions = null;
-            this.job = null;
-        }
-        actions.forEach(this::perform);
-        return (Try<T>) value;
     }
 
     boolean tryComplete(Try<? extends T> value) {
@@ -232,15 +218,33 @@ final class FutureImpl<T> implements Future<T> {
         }
     }
 
-    private void perform(Consumer<? super Try<T>> action) {
-        Try.run(() -> executorService.execute(() -> action.accept(value.get())));
+    /**
+     * Completes this Future with a value.
+     * <p>
+     * DEV-NOTE: Internally this method is called by the {@code Future.run()} method and by {@code Promise}.
+     *
+     * @param value A Success containing a result or a Failure containing an Exception.
+     * @return The given {@code value} for convenience purpose.
+     * @throws IllegalStateException if the Future is already completed or cancelled.
+     * @throws NullPointerException  if the given {@code value} is null.
+     */
+    private void complete(Try<? extends T> value) {
+        Objects.requireNonNull(value, "value is null");
+        final Queue<Consumer<? super Try<T>>> actions;
+        // it is essential to make the completed state public *before* performing the actions
+        synchronized (lock) {
+            if (isCompleted()) {
+                throw new IllegalStateException("The Future is completed.");
+            }
+            actions = this.actions;
+            this.value = Option.some(Try.narrow(value));
+            this.actions = null;
+            this.job = null;
+        }
+        actions.forEach(this::perform);
     }
 
-    // This class is MUTABLE and therefore CANNOT CHANGE DEFAULT equals() and hashCode() behavior.
-    // See http://stackoverflow.com/questions/4718009/mutable-objects-and-hashcode
-
-    @Override
-    public String toString() {
-        return stringPrefix() + "(" + value.map(String::valueOf).getOrElse("?") + ")";
+    private void perform(Consumer<? super Try<T>> action) {
+        Try.run(() -> executorService.execute(() -> action.accept(value.get())));
     }
 }

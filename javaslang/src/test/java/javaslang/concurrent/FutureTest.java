@@ -8,18 +8,18 @@ package javaslang.concurrent;
 import javaslang.AbstractValueTest;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import javaslang.collection.Iterator;
-import javaslang.collection.List;
-import javaslang.collection.Seq;
-import javaslang.collection.Stream;
+import javaslang.collection.*;
 import javaslang.control.Option;
 import javaslang.control.Try;
 import org.assertj.core.api.IterableAssert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.*;
+import java.util.function.Function;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static javaslang.concurrent.Concurrent.waitUntil;
 import static javaslang.concurrent.Concurrent.zZz;
 import static org.assertj.core.api.Assertions.fail;
@@ -147,7 +147,7 @@ public class FutureTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldFindOneSucceedingFutureWhenAllOthersFailUsingForkJoinPool() {
+    public void shouldFindOneSucceedingFutureWhenAllOthersFailUsingDefaultExecutorService() {
         final Seq<Future<Integer>> futures = Stream.from(1)
                                                    .map(i -> Future.<Integer> of(() -> {
                                                        throw new Error();
@@ -224,6 +224,35 @@ public class FutureTest extends AbstractValueTest {
     public void shouldCompleteWithFailureWhenExecutorServiceThrowsRejectedExecutionException() {
         final Future<Integer> future = Future.of(RejectingExecutorService.instance(), () -> 1);
         assertFailed(future, RejectedExecutionException.class);
+    }
+
+    // TODO: Re-enable this test when solving #1530
+    @Ignore
+    @Test
+    public void shouldCompleteOneFuturesUsingAThreadPoolExecutorLimitedToOneThread() {
+        final ExecutorService service = new ThreadPoolExecutor(1, 1, 0L, MILLISECONDS, new SynchronousQueue<>());
+        final Future<Integer> future = Future.of(service, () -> expensiveOperation(1));
+        future.await();
+        assertCompleted(future, 1);
+        service.shutdown();
+    }
+
+    // TODO: Re-enable this test when solving #1530
+    @Ignore
+    @Test
+    public void shouldCompleteThreeFuturesUsingAThreadPoolExecutorLimitedToOneThread() {
+        final ExecutorService service = new ThreadPoolExecutor(1, 1, 0L, MILLISECONDS, new SynchronousQueue<>());
+        final Stream<Future<Integer>> futures = Stream
+                .rangeClosed(1, 3)
+                .map(value -> Future.of(service, () -> expensiveOperation(value)));
+        futures.forEach(Future::await);
+        assertThat(futures.flatMap(Function.identity()).toList().sorted()).isEqualTo(List.of(1, 2, 3));
+        service.shutdown();
+    }
+
+    private static <T> T expensiveOperation(T value) throws InterruptedException {
+        Thread.sleep(500);
+        return value;
     }
 
     // -- static reduce()
