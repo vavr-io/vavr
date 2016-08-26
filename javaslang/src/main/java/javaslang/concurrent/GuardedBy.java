@@ -20,6 +20,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <p>
  * This is an annotation known from <a href="http://jcip.net">Java Concurrency in Practice</a>.
  * See also <a href="https://jcp.org/en/jsr/detail?id=305">JSR 305</a>
+ *
+ * @author Daniel Dietrich
+ * @since 2.1.0
  */
 @Documented
 @Target(value = { FIELD, METHOD })
