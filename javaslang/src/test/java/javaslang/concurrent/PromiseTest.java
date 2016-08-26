@@ -9,6 +9,7 @@ import javaslang.control.Try;
 import org.junit.Test;
 
 import static javaslang.concurrent.Concurrent.zZz;
+import static javaslang.concurrent.ExecutorServices.trivialExecutorService;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PromiseTest {
@@ -68,7 +69,7 @@ public class PromiseTest {
 
     @Test
     public void shouldCompletePromiseWithItsOwnFuture() {
-        final Promise<String> promise = Promise.make(TrivialExecutorService.instance());
+        final Promise<String> promise = Promise.make(trivialExecutorService());
         promise.completeWith(promise.future());
         assertThat(promise.isCompleted()).isFalse();
         assertThat(promise.success("ok").isCompleted()).isTrue();
