@@ -25,8 +25,7 @@ import static javaslang.collection.Tree.*;
  * A general Tree interface.
  *
  * @param <T> component type of this Tree
- * @author Daniel Dietrich
- * @author Grzegorz Piwowarek
+ * @author Daniel Dietrich, Grzegorz Piwowarek
  * @since 1.1.0
  */
 public interface Tree<T> extends Traversable<T> {
