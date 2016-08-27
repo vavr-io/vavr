@@ -82,6 +82,11 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      */
     boolean containsKey(K key);
 
+    /**
+     * Returns the type of the {@code Traversable} value container of this {@code MultiMap}.
+     *
+     * @return an enum value representing the container type
+     */
     ContainerType getContainerType();
 
     /**
@@ -106,6 +111,19 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @throws NullPointerException if {@code mapper} is null
      */
     <K2, V2> Multimap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper);
+
+    /**
+     * Performs an action on key, value pair.
+     *
+     * @param action A {@code BiConsumer}
+     * @throws NullPointerException if {@code action} is null
+     */
+    default void forEach(BiConsumer<K, V> action) {
+        Objects.requireNonNull(action, "action is null");
+        for (Tuple2<K, V> t : this) {
+            action.accept(t._1, t._2);
+        }
+    }
 
     /**
      * Returns the {@code Some} of value to which the specified key
@@ -519,18 +537,5 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     default <U> Seq<U> zipWithIndex(BiFunction<? super Tuple2<K, V>, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return Stream.ofAll(iterator().zipWithIndex(mapper));
-    }
-
-    /**
-     * Performs an action on key, value pair.
-     *
-     * @param action A {@code BiConsumer}
-     * @throws NullPointerException if {@code action} is null
-     */
-    default void forEach(BiConsumer<K, V> action) {
-        Objects.requireNonNull(action, "action is null");
-        for (Tuple2<K, V> t : this) {
-            action.accept(t._1, t._2);
-        }
     }
 }
