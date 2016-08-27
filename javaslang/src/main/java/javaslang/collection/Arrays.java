@@ -39,8 +39,7 @@ final class Arrays { // TODO reuse these in `Array` also
         final Object[] array = (Object[]) arrayObject;
         final int arrayLength = (array == null) ? 0 : array.length;
         final int length = Math.max(arrayLength, minLength);
-        return (length == arrayLength) ? array.clone()
-                                       : arrayCopy(length, array, 0, 0, arrayLength);
+        return arrayCopy(length, array, 0, 0, arrayLength);
     }
 
     /** clone the source and keep everything after the index (pre-padding the values with null) */
