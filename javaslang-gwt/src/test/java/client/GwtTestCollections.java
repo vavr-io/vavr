@@ -18,10 +18,10 @@ public class GwtTestCollections extends GWTTestCase {
         assertEquals((int) t._1(), 1);
     }
 
-//    private void applyCollection(Function1<char[], Traversable<Character>> factory) {
-//        Traversable<Character> traversable = factory.apply(new char[] {'a', 'b', 'c'});
-//        assertEquals(traversable.count(i -> i != 'b'), 2);
-//    }
+    private void applyCollection(Function1<char[], Traversable<Character>> factory) {
+        Traversable<Character> traversable = factory.apply(new char[] {'a', 'b', 'c'});
+        assertEquals(traversable.count(i -> i != 'b'), 2);
+    }
 
 //    public void testCompileArray() {
 //        applyCollection(Array::ofAll);
@@ -43,9 +43,9 @@ public class GwtTestCollections extends GWTTestCase {
 //        applyCollection(LinkedHashSet::ofAll);
 //    }
 //
-//    public void testCompileList() {
-//        applyCollection(List::ofAll);
-//    }
+    public void testCompileList() {
+        applyCollection(List::ofAll);
+    }
 //
 //    public void testCompilePriorityQueue() {
 //        applyCollection(chars -> PriorityQueue.ofAll(List.ofAll(chars)));
