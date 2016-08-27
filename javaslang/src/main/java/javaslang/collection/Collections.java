@@ -181,9 +181,9 @@ final class Collections {
         }
     }
 
-    static <T> Iterator<T> fill(int n, Supplier<? extends T> s) {
-        Objects.requireNonNull(s, "s is null");
-        return tabulate(n, anything -> s.get());
+    static <T> Iterator<T> fill(int n, Supplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return tabulate(n, ignored -> supplier.get());
     }
 
     @SuppressWarnings("unchecked")
