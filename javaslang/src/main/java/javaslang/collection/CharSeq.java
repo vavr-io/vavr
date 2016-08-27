@@ -318,7 +318,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     public static CharSeq repeat(char character, int times) {
         final int length = Math.max(times, 0);
         final char[] characters = new char[length];
-        Arrays.fill(characters, character);
+        java.util.Arrays.fill(characters, character);
         return new CharSeq(String.valueOf(characters));
     }
 
@@ -858,9 +858,8 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     @Override
     public <U> CharSeq sortBy(Comparator<? super U> comparator, Function<? super Character, ? extends U> mapper) {
         final Function<? super Character, ? extends U> domain = Function1.of(mapper::apply).memoized();
-        return toJavaStream()
-                .sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
-                .collect(collector());
+        return toJavaStream().sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
+                             .collect(collector());
     }
 
     @Override
@@ -972,8 +971,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public <T1, T2> Tuple2<IndexedSeq<T1>, IndexedSeq<T2>> unzip(
-            Function<? super Character, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    public <T1, T2> Tuple2<IndexedSeq<T1>, IndexedSeq<T2>> unzip(Function<? super Character, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         IndexedSeq<T1> xs = Vector.empty();
         IndexedSeq<T2> ys = Vector.empty();
@@ -986,8 +984,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public <T1, T2, T3> Tuple3<IndexedSeq<T1>, IndexedSeq<T2>, IndexedSeq<T3>> unzip3(
-            Function<? super Character, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+    public <T1, T2, T3> Tuple3<IndexedSeq<T1>, IndexedSeq<T2>, IndexedSeq<T3>> unzip3(Function<? super Character, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         IndexedSeq<T1> xs = Vector.empty();
         IndexedSeq<T2> ys = Vector.empty();

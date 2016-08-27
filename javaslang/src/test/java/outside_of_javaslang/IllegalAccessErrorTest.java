@@ -6,7 +6,9 @@
 package outside_of_javaslang;
 
 import javaslang.collection.Array;
+import javaslang.collection.BitSet;
 import javaslang.collection.HashMap;
+import javaslang.collection.List;
 import org.junit.Test;
 
 import java.util.function.BiFunction;
@@ -22,5 +24,12 @@ public class IllegalAccessErrorTest {
                 .map(t -> HashMap.of(t, t))
                 .reduce(merge);
         assertThat(reduced).isEqualTo(HashMap.of("a", "a", "b", "b", "c", "c"));
+    }
+
+    @Test
+    public void shouldNotThrowIllegalAccessErrorWhenUsingBitSetAddAllMethodReference() {
+        final BiFunction<BitSet<Integer>, BitSet<Integer>, BitSet<Integer>> union = BitSet::union;
+        final BitSet<Integer> reduced = List.of(BitSet.of(1, 2, 3), BitSet.of(2, 3, 4)).reduce(union);
+        assertThat(reduced).isEqualTo(BitSet.of(1, 2, 3, 4));
     }
 }

@@ -11,14 +11,16 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import static com.carrotsearch.sizeof.RamUsageEstimator.sizeOf;
 import static java.util.Arrays.asList;
-import static javaslang.JmhRunner.create;
-import static javaslang.JmhRunner.getRandomValues;
+import static javaslang.JmhRunner.*;
+import static javaslang.collection.Arrays.copyRange;
+import static javaslang.collection.BitMappedTrie.branchingFactor;
 import static javaslang.collection.Collections.areEqual;
 import static scala.collection.JavaConversions.asJavaCollection;
 import static scala.collection.JavaConversions.asScalaBuffer;
 
-@SuppressWarnings({"ALL", "unchecked"})
+@SuppressWarnings({ "ALL", "unchecked" })
 public class VectorBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
             Create.class,
@@ -45,7 +47,7 @@ public class VectorBenchmark {
 
     @State(Scope.Benchmark)
     public static class Base {
-        @Param({"32", "1024", "32768" /*, "1048576", "33554432", "1073741824" */}) /* i.e. depth 1,2,3(,4,5,6) for a branching factor of 32 */
+        @Param({ "32", "1024", "32768" /*, "1048576", "33554432", "1073741824" */ }) /* i.e. depth 1,2,3(,4,5,6) for a branching factor of 32 */
         public int CONTAINER_SIZE;
 
         int EXPECTED_AGGREGATE;
@@ -65,7 +67,7 @@ public class VectorBenchmark {
         public void setup() {
             final Random random = new Random(0);
             ELEMENTS = getRandomValues(CONTAINER_SIZE, false, random);
-            RANDOMIZED_INDICES = Arrays2.shuffle(Array.range(0, CONTAINER_SIZE).toJavaStream().mapToInt(Integer::intValue).toArray(), random);
+            RANDOMIZED_INDICES = shuffle(Array.range(0, CONTAINER_SIZE).toJavaStream().mapToInt(Integer::intValue).toArray(), random);
 
             EXPECTED_AGGREGATE = Array.of(ELEMENTS).reduce(JmhRunner::aggregate);
 
@@ -188,7 +190,7 @@ public class VectorBenchmark {
         public Object java_mutable(Initialized state) {
             java.util.List<Integer> values = state.javaMutable;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
-                values = values.subList(1, values.size()); // remove(0) would copy everything, but this will slow access down because of nesting
+                values = values.subList(1, values.size()); /* remove(0) would copy everything, but this will slow access down because of nesting */
             }
             assert values.isEmpty();
             return values;
@@ -202,6 +204,15 @@ public class VectorBenchmark {
             }
             assert values.isEmpty();
             return values;
+        }
+
+        @Benchmark
+        public void clojure_persistent(Blackhole bh) { /* stores the whole collection underneath */
+            java.util.List<?> values = clojurePersistent;
+            while (!values.isEmpty()) {
+                values = values.subList(1, values.size());
+                bh.consume(values);
+            }
         }
 
         @Benchmark
@@ -380,7 +391,7 @@ public class VectorBenchmark {
     public static class Prepend extends Base {
         @Benchmark
         public Object java_mutable() {
-            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(); // no initial value, as we're simulating dynamic usage
+            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(); /* no initial value, as we're simulating dynamic usage */
             for (Integer element : ELEMENTS) {
                 values.add(0, element);
             }
@@ -404,7 +415,7 @@ public class VectorBenchmark {
             for (int i = 0; i < ELEMENTS.length; i++) {
                 clojure.lang.PersistentVector prepended = clojure.lang.PersistentVector.create(ELEMENTS[i]);
                 for (Object value : values) {
-                    prepended = prepended.cons(value); // rebuild everything via append
+                    prepended = prepended.cons(value);  /* rebuild everything via append */
                 }
                 values = prepended;
             }
@@ -446,7 +457,7 @@ public class VectorBenchmark {
     public static class Append extends Base {
         @Benchmark
         public Object java_mutable() {
-            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(); // no initial value as we're simulating dynamic usage
+            final java.util.ArrayList<Integer> values = new java.util.ArrayList<>(); /* no initial value as we're simulating dynamic usage */
             for (Integer element : ELEMENTS) {
                 values.add(element);
             }
@@ -535,7 +546,7 @@ public class VectorBenchmark {
     /** Consume the vector one-by-one, from the front and back */
     public static class Slice extends Base {
         @Benchmark
-        public void java_mutable(Blackhole bh) { // stores the whole list underneath
+        public void java_mutable(Blackhole bh) { /* stores the whole collection underneath */
             java.util.List<Integer> values = javaMutable;
             while (!values.isEmpty()) {
                 values = values.subList(1, values.size());
@@ -545,7 +556,7 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public void clojure_persistent(Blackhole bh) { // stores the whole list underneath
+        public void clojure_persistent(Blackhole bh) { /* stores the whole collection underneath */
             java.util.List<?> values = clojurePersistent;
             while (!values.isEmpty()) {
                 values = values.subList(1, values.size());
@@ -556,7 +567,7 @@ public class VectorBenchmark {
 
         @Benchmark
         public void scala_persistent(Blackhole bh) {
-            scala.collection.immutable.Vector<Integer> values = this.scalaPersistent;
+            scala.collection.immutable.Vector<Integer> values = scalaPersistent;
             while (!values.isEmpty()) {
                 values = values.slice(1, values.size());
                 values = values.slice(0, values.size() - 1);
@@ -566,10 +577,11 @@ public class VectorBenchmark {
 
         @Benchmark
         public void slang_persistent(Blackhole bh) {
-            javaslang.collection.Vector<Integer> values = this.slangPersistent;
-            while (!values.isEmpty()) {
+            javaslang.collection.Vector<Integer> values = slangPersistent;
+            for (int i = 1; !values.isEmpty(); i++) {
                 values = values.slice(1, values.size());
                 values = values.slice(0, values.size() - 1);
+                assert sizeOf(values.trie) < (branchingFactor() * sizeOf(copyRange(ELEMENTS, i, javaMutable.size() - i))); /* detect memory leak */
                 bh.consume(values);
             }
         }

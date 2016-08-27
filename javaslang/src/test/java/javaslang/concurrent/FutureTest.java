@@ -15,16 +15,18 @@ import javaslang.collection.Stream;
 import javaslang.control.Option;
 import javaslang.control.Try;
 import org.assertj.core.api.IterableAssert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
+import java.util.function.Function;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static javaslang.concurrent.Concurrent.waitUntil;
 import static javaslang.concurrent.Concurrent.zZz;
+import static javaslang.concurrent.ExecutorServices.rejectingExecutorService;
+import static javaslang.concurrent.ExecutorServices.trivialExecutorService;
 import static org.assertj.core.api.Assertions.fail;
 
 public class FutureTest extends AbstractValueTest {
@@ -47,12 +49,12 @@ public class FutureTest extends AbstractValueTest {
 
     @Override
     protected <T> Future<T> empty() {
-        return Future.failed(TrivialExecutorService.instance(), new Error());
+        return Future.failed(trivialExecutorService(), new Error());
     }
 
     @Override
     protected <T> Future<T> of(T element) {
-        return Future.of(TrivialExecutorService.instance(), () -> element);
+        return Future.of(trivialExecutorService(), () -> element);
     }
 
     @SafeVarargs
@@ -99,7 +101,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldCreateAndFailAFutureUsingTrivialExecutorService() {
-        final Future<Integer> future = Future.of(TrivialExecutorService.instance(), () -> {
+        final Future<Integer> future = Future.of(trivialExecutorService(), () -> {
             throw new Error();
         });
         assertFailed(future, Error.class);
@@ -120,7 +122,7 @@ public class FutureTest extends AbstractValueTest {
     public void shouldCreateFutureFromJavaFutureUsingTrivialExecutorService() {
         // Create slow-resolving Java future to show that the wrapping doesn't block
         java.util.concurrent.Future<String> jFuture = generateJavaFuture("Result", 3000);
-        final Future<String> future = Future.fromJavaFuture(TrivialExecutorService.instance(), jFuture);
+        final Future<String> future = Future.fromJavaFuture(trivialExecutorService(), jFuture);
         waitUntil(future::isCompleted);
         assertCompleted(future, "Result");
     }
@@ -150,13 +152,13 @@ public class FutureTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldFindOneSucceedingFutureWhenAllOthersFailUsingForkJoinPool() {
+    public void shouldFindOneSucceedingFutureWhenAllOthersFailUsingDefaultExecutorService() {
         final Seq<Future<Integer>> futures = Stream.from(1)
-                .map(i -> Future.<Integer> of(() -> {
-                    throw new Error();
-                }))
-                .take(12)
-                .append(Future.of(() -> 13));
+                                                   .map(i -> Future.<Integer> of(() -> {
+                                                       throw new Error();
+                                                   }))
+                                                   .take(12)
+                                                   .append(Future.of(() -> 13));
         final Future<Option<Integer>> testee = Future.find(futures, i -> i == 13);
         waitUntil(testee::isCompleted);
         assertCompleted(testee, Option.some(13));
@@ -165,10 +167,10 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldFindNoneWhenAllFuturesFailUsingForkJoinPool() {
         final Seq<Future<Integer>> futures = Stream.from(1)
-                .map(i -> Future.<Integer> of(() -> {
-                    throw new Error(String.valueOf(i));
-                }))
-                .take(20);
+                                                   .map(i -> Future.<Integer> of(() -> {
+                                                       throw new Error(String.valueOf(i));
+                                                   }))
+                                                   .take(20);
         final Future<Option<Integer>> testee = Future.find(futures, i -> i == 13);
         waitUntil(testee::isCompleted);
         assertCompleted(testee, Option.none());
@@ -212,15 +214,50 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldCreateAndCompleteAFutureUsingTrivialExecutorService() {
-        final Future<Integer> future = Future.of(TrivialExecutorService.instance(), () -> 1);
+        final Future<Integer> future = Future.of(trivialExecutorService(), () -> 1);
         assertCompleted(future, 1);
     }
 
     @Test
     public void shouldNotCancelCompletedFutureUsingTrivialExecutorService() {
-        final Future<Integer> future = Future.of(TrivialExecutorService.instance(), () -> 1);
+        final Future<Integer> future = Future.of(trivialExecutorService(), () -> 1);
         assertThat(future.cancel()).isFalse();
         assertCompleted(future, 1);
+    }
+
+    @Test
+    public void shouldCompleteWithFailureWhenExecutorServiceThrowsRejectedExecutionException() {
+        final Future<Integer> future = Future.of(rejectingExecutorService(), () -> 1);
+        assertFailed(future, RejectedExecutionException.class);
+    }
+
+    // TODO: Re-enable this test when solving #1530
+    @Ignore
+    @Test
+    public void shouldCompleteOneFuturesUsingAThreadPoolExecutorLimitedToOneThread() {
+        final ExecutorService service = new ThreadPoolExecutor(1, 1, 0L, MILLISECONDS, new SynchronousQueue<>());
+        final Future<Integer> future = Future.of(service, () -> expensiveOperation(1));
+        future.await();
+        assertCompleted(future, 1);
+        service.shutdown();
+    }
+
+    // TODO: Re-enable this test when solving #1530
+    @Ignore
+    @Test
+    public void shouldCompleteThreeFuturesUsingAThreadPoolExecutorLimitedToOneThread() {
+        final ExecutorService service = new ThreadPoolExecutor(1, 1, 0L, MILLISECONDS, new SynchronousQueue<>());
+        final Stream<Future<Integer>> futures = Stream
+                .rangeClosed(1, 3)
+                .map(value -> Future.of(service, () -> expensiveOperation(value)));
+        futures.forEach(Future::await);
+        assertThat(futures.flatMap(Function.identity()).toList().sorted()).isEqualTo(List.of(1, 2, 3));
+        service.shutdown();
+    }
+
+    private static <T> T expensiveOperation(T value) throws InterruptedException {
+        Thread.sleep(500);
+        return value;
     }
 
     // -- static reduce()
@@ -312,7 +349,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldCompleteWithSuccessIfSuccessAndThenFail() {
         final Future<Integer> future = Future.of(zZz(42))
-                .andThen(t -> zZz(new Error("and then fail!")));
+                                             .andThen(t -> zZz(new Error("and then fail!")));
         waitUntil(future::isCompleted);
         assertThat(future.getValue().get()).isEqualTo(Try.success(42));
     }
@@ -587,7 +624,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldPerformActionAfterFutureCompleted() {
         final int[] actual = new int[] { -1 };
-        final Future<Integer> future = Future.of(TrivialExecutorService.instance(), () -> 1);
+        final Future<Integer> future = Future.of(trivialExecutorService(), () -> 1);
         assertCompleted(future, 1);
         assertThat(actual[0]).isEqualTo(-1);
         future.onComplete(result -> actual[0] = result.get());
@@ -640,7 +677,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldRecoverSuccessFutureWithFuture() {
         final Future<String> recovered = Future.of(() -> "oh!")
-                .recoverWith(ignored -> Future.of(() -> "ignored"));
+                                               .recoverWith(ignored -> Future.of(() -> "ignored"));
         waitUntil(recovered::isCompleted);
         assertThat(recovered.isSuccess()).isTrue();
         assertThat(recovered.get()).isEqualTo("oh!");

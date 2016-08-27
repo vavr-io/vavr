@@ -51,7 +51,7 @@ public class CharSeqBenchmark {
             }
             EXPECTED_AGGREGATE = Iterator.ofAll(ELEMENTS).reduce((x, y) -> (char) JmhRunner.aggregate((int) x, (int) y));
 
-            javaPersistent = create(java.lang.String::new, ELEMENTS, ELEMENTS.length, v -> Arrays.equals(v.toCharArray(), ELEMENTS));
+            javaPersistent = create(java.lang.String::new, ELEMENTS, ELEMENTS.length, v -> java.util.Arrays.equals(v.toCharArray(), ELEMENTS));
             fjavaPersistent = create(fj.data.LazyString::str, javaPersistent, javaPersistent.length(), v -> Objects.equals(v.toStringEager(), javaPersistent));
             slangPersistent = create(javaslang.collection.CharSeq::of, javaPersistent, javaPersistent.length(), v -> v.contentEquals(javaPersistent));
         }

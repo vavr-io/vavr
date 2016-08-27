@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static java.util.Arrays.asList;
 import static javaslang.collection.euler.Utils.file;
 import static javaslang.collection.euler.Utils.readLines;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +37,7 @@ public class Euler99Test {
 
     private static long solve() {
         return readLines(file("p099_base_exp.txt"))
-                .flatMap(s -> Arrays.asList(s.split(",")))
+                .flatMap(s -> asList(s.split(",")))
                 .map(Integer::parseInt)
                 .grouped(2)
                 .map(t -> t.get(1) * Math.log(t.get(0)))
