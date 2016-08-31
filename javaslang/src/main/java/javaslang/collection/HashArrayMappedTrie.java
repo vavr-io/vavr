@@ -34,6 +34,8 @@ interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
 
     Option<V> get(K key);
 
+    V getOrElse(K key, V defaultValue);
+
     boolean containsKey(K key);
 
     HashArrayMappedTrie<K, V> put(K key, V value);
@@ -182,6 +184,8 @@ interface HashArrayMappedTrieModule {
 
         abstract Option<V> lookup(int shift, int keyHashCode, K key);
 
+        abstract V lookup(int shift, int keyHashCode, K key, V defaultValue);
+
         abstract AbstractNode<K, V> modify(int shift, int keyHashCode, K key, V value, Action action);
 
         Iterator<LeafNode<K, V>> nodes() {
@@ -201,6 +205,11 @@ interface HashArrayMappedTrieModule {
         @Override
         public Option<V> get(K key) {
             return lookup(0, Objects.hashCode(key), key);
+        }
+
+        @Override
+        public V getOrElse(K key, V defaultValue) {
+            return lookup(0, Objects.hashCode(key), key, defaultValue);
         }
 
         @Override
@@ -263,6 +272,11 @@ interface HashArrayMappedTrieModule {
         @Override
         Option<V> lookup(int shift, int keyHashCode, K key) {
             return Option.none();
+        }
+
+        @Override
+        V lookup(int shift, int keyHashCode, K key, V defaultValue) {
+            return defaultValue;
         }
 
         @Override
@@ -359,9 +373,18 @@ interface HashArrayMappedTrieModule {
             this.value = value;
         }
 
+        private boolean itsMe(int keyHashCode, K key) {
+            return keyHashCode == hash && Objects.equals(key, this.key);
+        }
+
         @Override
         Option<V> lookup(int shift, int keyHashCode, K key) {
-            return Option.when(keyHashCode == hash && Objects.equals(key, this.key), value);
+            return Option.when(itsMe(keyHashCode, key), value);
+        }
+
+        @Override
+        V lookup(int shift, int keyHashCode, K key, V defaultValue) {
+            return itsMe(keyHashCode, key) ? value : defaultValue;
         }
 
         @Override
@@ -433,7 +456,24 @@ interface HashArrayMappedTrieModule {
             if (hash != keyHashCode) {
                 return Option.none();
             }
-            return iterator().find(t -> Objects.equals(t._1, key)).map(t -> t._2);
+            return nodes().find(node -> Objects.equals(node.key(), key)).map(LeafNode::value);
+        }
+
+        @Override
+        V lookup(int shift, int keyHashCode, K key, V defaultValue) {
+            if (hash != keyHashCode) {
+                return defaultValue;
+            }
+            V result = defaultValue;
+            Iterator<LeafNode<K, V>> iterator = nodes();
+            while (iterator.hasNext()) {
+                LeafNode<K, V> node = iterator.next();
+                if (Objects.equals(node.key(), key)) {
+                    result = node.value();
+                    break;
+                }
+            }
+            return result;
         }
 
         @Override
@@ -572,6 +612,19 @@ interface HashArrayMappedTrieModule {
 
         @SuppressWarnings("unchecked")
         @Override
+        V lookup(int shift, int keyHashCode, K key, V defaultValue) {
+            int frag = hashFragment(shift, keyHashCode);
+            int bit = toBitmap(frag);
+            if ((bitmap & bit) != 0) {
+                AbstractNode<K, V> n = (AbstractNode<K, V>) subNodes[fromBitmap(bitmap, bit)];
+                return n.lookup(shift + SIZE, keyHashCode, key, defaultValue);
+            } else {
+                return defaultValue;
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
         AbstractNode<K, V> modify(int shift, int keyHashCode, K key, V value, Action action) {
             final int frag = hashFragment(shift, keyHashCode);
             final int bit = toBitmap(frag);
@@ -669,6 +722,14 @@ interface HashArrayMappedTrieModule {
             int frag = hashFragment(shift, keyHashCode);
             AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
             return child.lookup(shift + SIZE, keyHashCode, key);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        V lookup(int shift, int keyHashCode, K key, V defaultValue) {
+            int frag = hashFragment(shift, keyHashCode);
+            AbstractNode<K, V> child = (AbstractNode<K, V>) subNodes[frag];
+            return child.lookup(shift + SIZE, keyHashCode, key, defaultValue);
         }
 
         @SuppressWarnings("unchecked")

@@ -24,6 +24,7 @@ public class HashArrayMappedTrieTest {
         hamt = hamt.put(1, 2).put(4, 5).put(null, 7);
         assertThat(hamt.containsKey(1)).isTrue();
         assertThat(hamt.get(1)).isEqualTo(Option.some(2));
+        assertThat(hamt.getOrElse(1, 42)).isEqualTo(2);
         assertThat(hamt.containsKey(4)).isTrue();
         assertThat(hamt.get(4)).isEqualTo(Option.some(5));
         assertThat(hamt.containsKey(null)).isTrue();
@@ -36,6 +37,7 @@ public class HashArrayMappedTrieTest {
         hamt = hamt.put(1, 2).put(4, 5);
         assertThat(hamt.containsKey(2)).isFalse();
         assertThat(hamt.get(2)).isEqualTo(Option.none());
+        assertThat(hamt.getOrElse(2, 42)).isEqualTo(42);
         assertThat(hamt.containsKey(null)).isFalse();
         assertThat(hamt.get(null)).isEqualTo(Option.none());
     }
