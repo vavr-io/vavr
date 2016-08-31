@@ -62,29 +62,15 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>net.ltgt.gwt.maven</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>2.8.0-rc1</version>
+                <version>${maven.gwt.plugin}</version>
+                <extensions>true</extensions>
                 <configuration>
-                    <logLevel>INFO</logLevel>
-                    <style>PRETTY</style>
-                    <hostedWebapp>${project.build.directory}/www</hostedWebapp>
-                    <draftCompile>false</draftCompile>
-                    <disableCastChecking>true</disableCastChecking>
-                    <disableClassMetadata>true</disableClassMetadata>
-                    <disableRunAsync>true</disableRunAsync>
-                    <extraJvmArgs>-Xms2048m</extraJvmArgs>
-                    <extraJvmArgs>-Xmx2048m</extraJvmArgs>
-                    <inplace>false</inplace>
+                    <skipModule>true</skipModule>
+                    <moduleName>JavaslangExample</moduleName>
+                    <jvmArgs>-Xmx2048m</jvmArgs>
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
