@@ -32,7 +32,7 @@ public class GwtTestCollections extends GWTTestCase {
     }
 
     public void testCompileCharSeq() {
-        applyCollection(chars -> CharSeq.of(new String(chars)));
+        applyCollection(chars -> CharSeq.ofAll(Iterator.ofAll(chars)));
     }
 
     public void testCompileHashSet() {
@@ -48,7 +48,7 @@ public class GwtTestCollections extends GWTTestCase {
     }
 
     public void testCompilePriorityQueue() {
-        applyCollection(chars -> PriorityQueue.ofAll(List.ofAll(chars)));
+        applyCollection(chars -> PriorityQueue.ofAll(Iterator.ofAll(chars)));
     }
 
     public void testCompileQueue() {
@@ -56,7 +56,7 @@ public class GwtTestCollections extends GWTTestCase {
     }
 
     public void testCompileTreeSet() {
-        applyCollection(chars -> TreeSet.ofAll(List.ofAll(chars)));
+        applyCollection(chars -> TreeSet.ofAll(Iterator.ofAll(chars)));
     }
 
     public void testCompileVector() {
