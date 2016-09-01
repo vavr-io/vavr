@@ -45,6 +45,57 @@ Just a few notes here. In general it is good to look at existing code to get a c
 * Package private classes are used in order to hide non-public API.
 * Inner classes are preferred over package private classes in case of one-to-one dependencies.
 
+### File structure
+
+We organize our classes and interfaces in the following way:
+
+* The Javadoc of the type contains an overview of the new (i.e. not overridden) API declared in the actual type.
+* The type consists of tree sections:
+   1. static API
+   2. non-static API
+   3. adjusted return types
+* The methods of each of these sections are alphabetically ordered. 
+
+```java
+/**
+ * Description of this class.
+ * 
+ * <ul>
+ * <li>{@link #containsKey(Object)}}</li>
+ * <li>{@link ...}</li>
+ * </ul>
+ * 
+ * @author ...
+ * @since ...
+ */
+public interface Map<K, V> extends Traversable<Tuple2<K, V>> {
+    
+    // -- static API
+    
+    static <K, V> Tuple2<K, V> entry(K key, V value) { ... }
+    
+    ...
+    
+    // -- non-static API
+
+    @Override
+    default boolean contains(Tuple2<K, V> element) { ... }
+    
+    boolean containsKey(K key);
+    
+    ...
+
+    
+    // -- Adjusted return types
+
+    @Override
+    Map<K, V> distinct();
+    
+    ...
+
+}
+```
+
 ### Unit tests
 
 * Public API is tested.
