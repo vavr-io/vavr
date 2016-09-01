@@ -17,6 +17,66 @@ import java.util.function.*;
 /**
  * An immutable {@code Map} interface.
  *
+ * <p>
+ * Basic operations:
+ *
+ * <ul>
+ * <li>{@link #containsKey(Object)}</li>
+ * <li>{@link #containsValue(Object)}</li>
+ * <li>{@link #get(Object)}</li>
+ * <li>{@link #keySet()}</li>
+ * <li>{@link #merge(Map)}</li>
+ * <li>{@link #merge(Map, BiFunction)}</li>
+ * <li>{@link #put(Object, Object)}</li>
+ * <li>{@link #put(Tuple2)}</li>
+ * <li>{@link #put(Object, Object, BiFunction)}</li>
+ * <li>{@link #put(Tuple2, BiFunction)}</li>
+ * <li>{@link #values()}</li>
+ * </ul>
+ *
+ * Conversion:
+ *
+ * <ul>
+ * <li>{@link #toJavaMap()}</li>
+ * </ul>
+ *
+ * Filtering:
+ *
+ * <ul>
+ * <li>{@link #filter(BiPredicate)}</li>
+ * <li>{@link #filterKeys(Predicate)}</li>
+ * <li>{@link #filterValues(Predicate)}</li>
+ * <li>{@link #remove(Object)}</li>
+ * <li>{@link #removeAll(BiPredicate)}</li>
+ * <li>{@link #removeAll(Iterable)}</li>
+ * <li>{@link #removeKeys(Predicate)}</li>
+ * <li>{@link #removeValues(Predicate)}</li>
+ * </ul>
+ *
+ * Iteration:
+ *
+ * <ul>
+ * <li>{@link #forEach(BiConsumer)}</li>
+ * <li>{@link #traverse(BiFunction)}</li>
+ * </ul>
+ *
+ * Transformation:
+ *
+ * <ul>
+ * <li>{@link #bimap(Function, Function)}</li>
+ * <li>{@link #flatMap(BiFunction)}</li>
+ * <li>{@link #lift()}</li>
+ * <li>{@link #map(BiFunction)}</li>
+ * <li>{@link #mapKeys(Function)}</li>
+ * <li>{@link #mapKeys(Function, BiFunction)}</li>
+ * <li>{@link #mapValues(Function)}</li>
+ * <li>{@link #transform(Function)}</li>
+ * <li>{@link #unzip(BiFunction)}</li>
+ * <li>{@link #unzip3(BiFunction)}</li>
+ * <li>{@link #withDefault(Function)}</li>
+ * <li>{@link #withDefaultValue(Object)}</li>
+ * </ul>
+ *
  * @param <K> Key type
  * @param <V> Value type
  * @author Daniel Dietrich, Ruslan Sennov
@@ -28,7 +88,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
 
     /**
      * Narrows a widened {@code Map<? extends K, ? extends V>} to {@code Map<K, V>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param map A {@code Map}.
@@ -85,6 +145,11 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      */
     <K2, V2> Map<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
 
+    @Override
+    default boolean contains(Tuple2<K, V> element) {
+        return get(element._1).map(v -> Objects.equals(v, element._2)).getOrElse(false);
+    }
+
     /**
      * Returns <code>true</code> if this map contains a mapping for the specified key.
      *
@@ -106,6 +171,33 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     }
 
     /**
+     * Returns a new Map consisting of all elements which satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> filter(BiPredicate<? super K, ? super V> predicate);
+
+    /**
+     * Returns a new Map consisting of all elements with keys which satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test keys of elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> filterKeys(Predicate<? super K> predicate);
+
+    /**
+     * Returns a new Map consisting of all elements with values which satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test values of elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> filterValues(Predicate<? super V> predicate);
+
+    /**
      * FlatMaps this {@code Map} to a new {@code Map} with different component type.
      *
      * @param mapper A mapper
@@ -115,6 +207,42 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @throws NullPointerException if {@code mapper} is null
      */
     <K2, V2> Map<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper);
+
+    /**
+     * Flat-maps this entries to a sequence of values.
+     * <p>
+     * Please use {@link #flatMap(BiFunction)} if the result should be a {@code Map}
+     *
+     * @param mapper A mapper
+     * @param <U>    Component type
+     * @return A sequence of flat-mapped values.
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        // don't remove cast, doesn't compile in Eclipse without it
+        return (Seq<U>) iterator().flatMap(mapper).toStream();
+    }
+
+    @Override
+    default <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return iterator().foldRight(zero, f);
+    }
+
+    /**
+     * Performs an action on key, value pair.
+     *
+     * @param action A {@code BiConsumer}
+     * @throws NullPointerException if {@code action} is null
+     */
+    default void forEach(BiConsumer<K, V> action) {
+        Objects.requireNonNull(action, "action is null");
+        for (Tuple2<K, V> t : this) {
+            action.accept(t._1, t._2);
+        }
+    }
 
     /**
      * Returns the {@code Some} of value to which the specified key
@@ -127,12 +255,56 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      */
     Option<V> get(K key);
 
+    @Override
+    default boolean hasDefiniteSize() {
+        return true;
+    }
+
+    @Override
+    default boolean isTraversableAgain() {
+        return true;
+    }
+
+    @Override
+    Iterator<Tuple2<K, V>> iterator();
+
     /**
      * Returns the keys contained in this map.
      *
      * @return {@code Set} of the keys contained in this map.
      */
     Set<K> keySet();
+
+    @Override
+    default int length() {
+        return size();
+    }
+
+    /**
+     * Turns this map into a plain function returning an Option result.
+     *
+     * @return a function that takes a key k and returns its value in a Some if found, otherwise a None.
+     */
+    default Function1<K, Option<V>> lift() {
+        return this::get;
+    }
+
+    /**
+     * Maps the {@code Map} entries to a sequence of values.
+     * <p>
+     * Please use {@link #map(BiFunction)} if the result has to be of type {@code Map}.
+     *
+     * @param mapper A mapper
+     * @param <U>    Component type
+     * @return A sequence of mapped values.
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        // don't remove cast, doesn't compile in Eclipse without it
+        return (Seq<U>) iterator().map(mapper).toStream();
+    }
 
     /**
      * Maps the entries of this {@code Map} to form a new {@code Map}.
@@ -181,6 +353,32 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @throws NullPointerException if {@code valueMapper} is null
      */
     <V2> Map<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper);
+
+    /**
+     * Creates a new map which by merging the entries of {@code this} map and {@code that} map.
+     * <p>
+     * If collisions occur, the value of {@code this} map is taken.
+     *
+     * @param that the other map
+     * @return A merged map
+     * @throws NullPointerException if that map is null
+     */
+    Map<K, V> merge(Map<? extends K, ? extends V> that);
+
+    /**
+     * Creates a new map which by merging the entries of {@code this} map and {@code that} map.
+     * <p>
+     * Uses the specified collision resolution function if two keys are the same.
+     * The collision resolution function will always take the first argument from <code>this</code> map
+     * and the second from <code>that</code> map.
+     *
+     * @param <U>                 value type of that Map
+     * @param that                the other map
+     * @param collisionResolution the collision resolution function
+     * @return A merged map
+     * @throws NullPointerException if that map or the given collision resolution function is null
+     */
+    <U extends V> Map<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution);
 
     /**
      * Associates the specified value with the specified key in this map.
@@ -233,6 +431,15 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     Map<K, V> remove(K key);
 
     /**
+     * Returns a new Map consisting of all elements which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> removeAll(BiPredicate<? super K, ? super V> predicate);
+
+    /**
      * Removes the mapping for a key from this map if it is present.
      *
      * @param keys keys are to be removed from the map
@@ -241,8 +448,43 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      */
     Map<K, V> removeAll(Iterable<? extends K> keys);
 
+    /**
+     * Returns a new Map consisting of all elements with keys which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test keys of elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> removeKeys(Predicate<? super K> predicate);
+
+    /**
+     * Returns a new Map consisting of all elements with values which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test values of elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> removeValues(Predicate<? super V> predicate);
+
+    @Override
+    default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+    }
+
+    @Override
+    default <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
+        Objects.requireNonNull(operation, "operation is null");
+        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+    }
+
     @Override
     int size();
+
+    @Override
+    default Spliterator<Tuple2<K, V>> spliterator() {
+        return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
+    }
 
     /**
      * Converts this Javaslang {@code Map} to a {@code java.util.Map} while preserving characteristics
@@ -275,270 +517,15 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
         return unzip(entry -> unzipper.apply(entry._1, entry._2));
     }
 
-    default <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(BiFunction<? super K, ? super V, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        return unzip3(entry -> unzipper.apply(entry._1, entry._2));
-    }
-
-    Seq<V> values();
-
-    // -- Adjusted return types of Traversable methods
-
-    @Override
-    default boolean contains(Tuple2<K, V> element) {
-        return get(element._1).map(v -> Objects.equals(v, element._2)).getOrElse(false);
-    }
-
-    @Override
-    Map<K, V> distinct();
-
-    @Override
-    Map<K, V> distinctBy(Comparator<? super Tuple2<K, V>> comparator);
-
-    @Override
-    <U> Map<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor);
-
-    @Override
-    Map<K, V> drop(int n);
-
-    @Override
-    Map<K, V> dropRight(int n);
-
-    @Override
-    Map<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate);
-
-    @Override
-    Map<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate);
-
-    @Override
-    Map<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
-
-    /**
-     * Returns a new Map consisting of all elements which satisfy the given predicate.
-     *
-     * @param predicate the predicate used to test elements
-     * @return a new Map
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    Map<K, V> filter(BiPredicate<? super K, ? super V> predicate);
-
-    /**
-     * Returns a new Map consisting of all elements with keys which satisfy the given predicate.
-     *
-     * @param predicate the predicate used to test keys of elements
-     * @return a new Map
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    Map<K, V> filterKeys(Predicate<? super K> predicate);
-
-    /**
-     * Returns a new Map consisting of all elements with values which satisfy the given predicate.
-     *
-     * @param predicate the predicate used to test values of elements
-     * @return a new Map
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    Map<K, V> filterValues(Predicate<? super V> predicate);
-
-    /**
-     * Returns a new Map consisting of all elements which do not satisfy the given predicate.
-     *
-     * @param predicate the predicate used to test elements
-     * @return a new Map
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    Map<K, V> removeAll(BiPredicate<? super K, ? super V> predicate);
-
-    /**
-     * Returns a new Map consisting of all elements with keys which do not satisfy the given predicate.
-     *
-     * @param predicate the predicate used to test keys of elements
-     * @return a new Map
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    Map<K, V> removeKeys(Predicate<? super K> predicate);
-
-    /**
-     * Returns a new Map consisting of all elements with values which do not satisfy the given predicate.
-     *
-     * @param predicate the predicate used to test values of elements
-     * @return a new Map
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    Map<K, V> removeValues(Predicate<? super V> predicate);
-
-    /**
-     * Flat-maps this entries to a sequence of values.
-     * <p>
-     * Please use {@link #flatMap(BiFunction)} if the result should be a {@code Map}
-     *
-     * @param mapper A mapper
-     * @param <U>    Component type
-     * @return A sequence of flat-mapped values.
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        // don't remove cast, doesn't compile in Eclipse without it
-        return (Seq<U>) iterator().flatMap(mapper).toStream();
-    }
-
-    @Override
-    default <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
-        return iterator().foldRight(zero, f);
-    }
-
-    @Override
-    <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
-
-    @Override
-    Iterator<? extends Map<K, V>> grouped(int size);
-
-    @Override
-    default boolean hasDefiniteSize() {
-        return true;
-    }
-
-    @Override
-    Map<K, V> init();
-
-    @Override
-    Option<? extends Map<K, V>> initOption();
-
-    @Override
-    default boolean isTraversableAgain() {
-        return true;
-    }
-
-    @Override
-    Iterator<Tuple2<K, V>> iterator();
-
-    @Override
-    default int length() {
-        return size();
-    }
-
-    /**
-     * Turns this map into a plain function returning an Option result.
-     *
-     * @return a function that takes a key k and returns its value in a Some if found, otherwise a None.
-     */
-    default Function1<K, Option<V>> lift() {
-        return this::get;
-    }
-
-    /**
-     * Maps the {@code Map} entries to a sequence of values.
-     * <p>
-     * Please use {@link #map(BiFunction)} if the result has to be of type {@code Map}.
-     *
-     * @param mapper A mapper
-     * @param <U>    Component type
-     * @return A sequence of mapped values.
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    default <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        // don't remove cast, doesn't compile in Eclipse without it
-        return (Seq<U>) iterator().map(mapper).toStream();
-    }
-
-    /**
-     * Creates a new map which by merging the entries of {@code this} map and {@code that} map.
-     * <p>
-     * If collisions occur, the value of {@code this} map is taken.
-     *
-     * @param that the other map
-     * @return A merged map
-     * @throws NullPointerException if that map is null
-     */
-    Map<K, V> merge(Map<? extends K, ? extends V> that);
-
-    /**
-     * Creates a new map which by merging the entries of {@code this} map and {@code that} map.
-     * <p>
-     * Uses the specified collision resolution function if two keys are the same.
-     * The collision resolution function will always take the first argument from <code>this</code> map
-     * and the second from <code>that</code> map.
-     *
-     * @param <U>                 value type of that Map
-     * @param that                the other map
-     * @param collisionResolution the collision resolution function
-     * @return A merged map
-     * @throws NullPointerException if that map or the given collision resolution function is null
-     */
-    <U extends V> Map<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution);
-
-    @Override
-    Tuple2<? extends Map<K, V>, ? extends Map<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate);
-
-    @Override
-    Map<K, V> peek(Consumer<? super Tuple2<K, V>> action);
-
-    @Override
-    Map<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
-
-    @Override
-    Map<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
-
-    @Override
-    Map<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements);
-
-    @Override
-    Map<K, V> scan(Tuple2<K, V> zero,
-                   BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
-
-    @Override
-    default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
-    }
-
-    @Override
-    default <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
-    }
-
-    @Override
-    Iterator<? extends Map<K, V>> sliding(int size);
-
-    @Override
-    Iterator<? extends Map<K, V>> sliding(int size, int step);
-
-    @Override
-    Tuple2<? extends Map<K, V>, ? extends Map<K, V>> span(Predicate<? super Tuple2<K, V>> predicate);
-
-    @Override
-    default Spliterator<Tuple2<K, V>> spliterator() {
-        return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
-    }
-
-    @Override
-    Map<K, V> tail();
-
-    @Override
-    Option<? extends Map<K, V>> tailOption();
-
-    @Override
-    Map<K, V> take(int n);
-
-    @Override
-    Map<K, V> takeRight(int n);
-
-    @Override
-    Map<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate);
-
-    @Override
-    Map<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate);
-
     @Override
     default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super Tuple2<K, V>, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip(unzipper).map(Stream::ofAll, Stream::ofAll);
+    }
+
+    default <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(BiFunction<? super K, ? super V, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        return unzip3(entry -> unzipper.apply(entry._1, entry._2));
     }
 
     @Override
@@ -546,6 +533,31 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
             Function<? super Tuple2<K, V>, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip3(unzipper).map(Stream::ofAll, Stream::ofAll, Stream::ofAll);
+    }
+
+    Seq<V> values();
+
+    /**
+     * Turns this map from a partial function into a total function that
+     * returns a value computed by defaultFunction for all keys
+     * absent from the map.
+     *
+     * @param defaultFunction function to evaluate for all keys not present in the map
+     * @return a total function from K to T
+     */
+    default Function1<K, V> withDefault(Function<? super K, ? extends V> defaultFunction) {
+        return k -> get(k).getOrElse(() -> defaultFunction.apply(k));
+    }
+
+    /**
+     * Turns this map from a partial function into a total function that
+     * returns defaultValue for all keys absent from the map.
+     *
+     * @param defaultValue default value to return for all keys not present in the map
+     * @return a total function from K to T
+     */
+    default Function1<K, V> withDefaultValue(V defaultValue) {
+        return k -> get(k).getOrElse(defaultValue);
     }
 
     @Override
@@ -577,39 +589,88 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
         return Stream.ofAll(iterator().zipWithIndex(mapper));
     }
 
-    /**
-     * Performs an action on key, value pair.
-     *
-     * @param action A {@code BiConsumer}
-     * @throws NullPointerException if {@code action} is null
-     */
-    default void forEach(BiConsumer<K, V> action) {
-        Objects.requireNonNull(action, "action is null");
-        for (Tuple2<K, V> t : this) {
-            action.accept(t._1, t._2);
-        }
-    }
+    // -- Adjusted return types of Traversable methods
 
-    /**
-     * Turns this map from a partial function into a total function that
-     * returns defaultValue for all keys absent from the map.
-     *
-     * @param defaultValue default value to return for all keys not present in the map
-     * @return a total function from K to T
-     */
-    default Function1<K, V> withDefaultValue(V defaultValue) {
-        return k -> get(k).getOrElse(defaultValue);
-    }
+    @Override
+    Map<K, V> distinct();
 
-    /**
-     * Turns this map from a partial function into a total function that
-     * returns a value computed by defaultFunction for all keys
-     * absent from the map.
-     *
-     * @param defaultFunction function to evaluate for all keys not present in the map
-     * @return a total function from K to T
-     */
-    default Function1<K, V> withDefault(Function<? super K, ? extends V> defaultFunction) {
-        return k -> get(k).getOrElse(() -> defaultFunction.apply(k));
-    }
+    @Override
+    Map<K, V> distinctBy(Comparator<? super Tuple2<K, V>> comparator);
+
+    @Override
+    <U> Map<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor);
+
+    @Override
+    Map<K, V> drop(int n);
+
+    @Override
+    Map<K, V> dropRight(int n);
+
+    @Override
+    Map<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
+    Map<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
+    Map<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
+    <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
+
+    @Override
+    Iterator<? extends Map<K, V>> grouped(int size);
+
+    @Override
+    Map<K, V> init();
+
+    @Override
+    Option<? extends Map<K, V>> initOption();
+
+    @Override
+    Tuple2<? extends Map<K, V>, ? extends Map<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
+    Map<K, V> peek(Consumer<? super Tuple2<K, V>> action);
+
+    @Override
+    Map<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
+
+    @Override
+    Map<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
+
+    @Override
+    Map<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements);
+
+    @Override
+    Map<K, V> scan(Tuple2<K, V> zero,
+                   BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
+
+    @Override
+    Iterator<? extends Map<K, V>> sliding(int size);
+
+    @Override
+    Iterator<? extends Map<K, V>> sliding(int size, int step);
+
+    @Override
+    Tuple2<? extends Map<K, V>, ? extends Map<K, V>> span(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
+    Map<K, V> tail();
+
+    @Override
+    Option<? extends Map<K, V>> tailOption();
+
+    @Override
+    Map<K, V> take(int n);
+
+    @Override
+    Map<K, V> takeRight(int n);
+
+    @Override
+    Map<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
+    Map<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate);
+
 }
