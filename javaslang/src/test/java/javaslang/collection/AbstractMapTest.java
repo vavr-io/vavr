@@ -954,4 +954,24 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Map<Integer, String> dst = src.removeValues(v -> isDigits.matcher(v).matches());
         assertThat(dst).isEqualTo(emptyIntString().put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f"));
     }
+
+    // -- get with nulls
+
+    @Test
+    public void shouldReturnOptionOfNullWhenAccessingKeysSetToNull() {
+        final Map<String, String> map = mapOf("1", null);
+        assertThat(map.get("1")).isEqualTo(Option.some(null));
+    }
+
+    @Test
+    public void shouldReturnOptionOfKeyWhenAccessingPresentKeysInAMapWithNulls () {
+        final Map<String, String> map = mapOf("1", "a").put("2", null);
+        assertThat(map.get("1")).isEqualTo(Option.of("a"));
+    }
+
+    @Test
+    public void shouldReturnNoneWhenAccessingAbsentKeysInAMapWithNulls() {
+        final Map<String, String> map = mapOf("1", "a").put("2", null);
+        assertThat(map.get("3")).isEqualTo(Option.none());
+    }
 }
