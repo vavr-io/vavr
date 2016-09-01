@@ -50,7 +50,7 @@ Just a few notes here. In general it is good to look at existing code to get a c
 We organize our classes and interfaces in the following way:
 
 * The Javadoc of the type contains an overview of the new (i.e. not overridden) API declared in the actual type.
-* The type consists of tree sections:
+* The type consists of three sections:
    1. static API
    2. non-static API
    3. adjusted return types
@@ -84,7 +84,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>> {
     boolean containsKey(K key);
     
     ...
-
     
     // -- Adjusted return types
 
@@ -92,7 +91,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>> {
     Map<K, V> distinct();
     
     ...
-
+    
 }
 ```
 
