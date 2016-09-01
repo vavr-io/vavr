@@ -61,7 +61,7 @@ public interface Tree<T> extends Traversable<T> {
 
     /**
      * Narrows a widened {@code Tree<? extends T>} to {@code Tree<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param tree An {@code Tree}.

@@ -128,7 +128,7 @@ public interface Value<T> extends Iterable<T> {
 
     /**
      * Narrows a widened {@code Value<? extends T>} to {@code Value<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param value A {@code Value}.

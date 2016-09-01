@@ -63,7 +63,7 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
 
     /**
      * Narrows a widened {@code HashMap<? extends K, ? extends V>} to {@code HashMap<K, V>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param hashMap A {@code HashMap}.

@@ -275,7 +275,7 @@ public interface Future<T> extends Value<T> {
 
     /**
      * Narrows a widened {@code Future<? extends T>} to {@code Future<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param future A {@code Future}.
