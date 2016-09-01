@@ -106,7 +106,7 @@ public interface Option<T> extends Value<T> {
 
     /**
      * Narrows a widened {@code Option<? extends T>} to {@code Option<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param option A {@code Option}.
@@ -151,11 +151,11 @@ public interface Option<T> extends Value<T> {
      * @param <T>      type of the value
      * @return {@code Some(optional.get())} if value is Java {@code Optional} is present, {@code None} otherwise
      */
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     static <T> Option<T> ofOptional(Optional<? extends T> optional) {
         Objects.requireNonNull(optional, "optional is null");
         return optional.isPresent() ? of(optional.get()) : none();
     }
-
 
     /**
      * Returns true, if this is {@code None}, otherwise false, if this is {@code Some}.

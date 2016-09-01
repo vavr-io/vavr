@@ -81,7 +81,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     /**
      * Narrows a widened {@code Vector<? extends T>} to {@code Vector<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param vector An {@code Vector}.

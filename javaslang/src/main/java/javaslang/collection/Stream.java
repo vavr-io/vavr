@@ -220,7 +220,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
     /**
      * Narrows a widened {@code Stream<? extends T>} to {@code Stream<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param stream A {@code Stream}.

@@ -83,7 +83,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     /**
      * Narrows a widened {@code TreeSet<? extends T>} to {@code TreeSet<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      * <p>
      * CAUTION: The underlying {@code Comparator} might fail!

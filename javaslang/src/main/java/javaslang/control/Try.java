@@ -102,7 +102,7 @@ public interface Try<T> extends Value<T> {
 
     /**
      * Narrows a widened {@code Try<? extends T>} to {@code Try<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param t   A {@code Try}.
