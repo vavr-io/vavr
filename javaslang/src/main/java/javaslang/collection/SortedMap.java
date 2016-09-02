@@ -26,7 +26,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
 
     /**
      * Narrows a widened {@code SortedMap<? extends K, ? extends V>} to {@code SortedMap<K, V>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      * <p>
      * CAUTION: If {@code K} is narrowed, the underlying {@code Comparator} might fail!

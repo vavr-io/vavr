@@ -70,7 +70,7 @@ public interface Either<L, R> extends Value<R> {
 
     /**
      * Narrows a widened {@code Either<? extends L, ? extends R>} to {@code Either<L, R>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param either A {@code Either}.

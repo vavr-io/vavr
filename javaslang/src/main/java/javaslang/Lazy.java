@@ -53,7 +53,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
 
     /**
      * Narrows a widened {@code Lazy<? extends T>} to {@code Lazy<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param lazy A {@code Lazy}.

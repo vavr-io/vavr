@@ -29,7 +29,7 @@ public interface SortedSet<T> extends Set<T> {
 
     /**
      * Narrows a widened {@code SortedSet<? extends T>} to {@code SortedSet<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      * <p>
      * CAUTION: The underlying {@code Comparator} might fail!
