@@ -6,15 +6,14 @@
 package javaslang.collection;
 
 import javaslang.Tuple2;
+import javaslang.control.Option;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
@@ -25,9 +24,21 @@ import java.util.stream.Collector;
  * @author Ruslan Sennov
  * @since 2.1.0
  */
-public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V>> implements Serializable {
+public final class HashMultimap<K, V> implements Multimap<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private final Map<K, Traversable<V>> back;
+    private final SerializableSupplier<Traversable<?>> emptyContainer;
+    private final ContainerType containerType;
+
+    private HashMultimap(Map<K, Traversable<V>> back, ContainerType containerType, SerializableSupplier<Traversable<?>> emptyContainer) {
+        this.back = back;
+        this.containerType = containerType;
+        this.emptyContainer = emptyContainer;
+    }
+
+    // -- static API
 
     public static <V> Builder<V> withSeq() {
         return new Builder<>(ContainerType.SEQ, List::empty);
@@ -136,7 +147,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
 
     /**
      * Narrows a widened {@code HashMultimap<? extends K, ? extends V>} to {@code HashMultimap<K, V>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param map A {@code Map}.
@@ -149,24 +160,92 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
         return (HashMultimap<K, V>) map;
     }
 
-    private HashMultimap(Map<K, Traversable<V>> back, ContainerType containerType, SerializableSupplier<Traversable<?>> emptyContainer) {
-        super(back, containerType, emptyContainer);
+    // -- non-static API
+
+    @Override
+    public boolean containsKey(K key) {
+        return back.containsKey(key);
     }
 
     @Override
-    protected <K2, V2> Map<K2, V2> emptyMapSupplier() {
+    public ContainerType getContainerType() {
+        return containerType;
+    }
+
+    @Override
+    public Option<Traversable<V>> get(K key) {
+        return back.get(key);
+    }
+
+    @Override
+    public Set<K> keySet() {
+        return back.keySet();
+    }
+
+    @Override
+    public <K2, V2> HashMultimap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return foldLeft(emptyInstance(), (acc, entry) -> {
+            for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
+                acc = acc.put(mappedEntry);
+            }
+            return acc;
+        });
+    }
+
+    @Override
+    public int size() {
+        return back.foldLeft(0, (s, t) -> s + t._2.size());
+    }
+
+    @Override
+    public java.util.Map<K, Collection<V>> toJavaMap() {
+        return Multimaps.toJavaMap(this);
+    }
+
+    @Override
+    public Traversable<V> values() {
+        return Iterator.concat(back.values()).toStream();
+    }
+
+    // -- Object
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof HashMultimap) {
+            final HashMultimap<?, ?> that = (HashMultimap<?, ?>) o;
+            return this.back.equals(that.back);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return back.hashCode();
+    }
+
+    @Override
+    public String stringPrefix() {
+        return getClass().getSimpleName() + "[" + emptyContainer.get().stringPrefix() + "]";
+    }
+
+    @Override
+    public String toString() {
+        return mkString(stringPrefix() + "(", ", ", ")");
+    }
+
+    private <K2, V2> Map<K2, V2> emptyMapSupplier() {
         return HashMap.empty();
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    protected <K2, V2> HashMultimap<K2, V2> emptyInstance() {
-        return new HashMultimap<>(HashMap.empty(), getContainerType(), emptyContainer);
+    private <K2, V2> HashMultimap<K2, V2> emptyInstance() {
+        return new HashMultimap<>(HashMap.empty(), containerType, emptyContainer);
     }
 
-    @Override
-    protected <K2, V2> HashMultimap<K2, V2> createFromMap(Map<K2, Traversable<V2>> back) {
-        return new HashMultimap<>(back, getContainerType(), emptyContainer);
+    private <K2, V2> HashMultimap<K2, V2> createFromMap(Map<K2, Traversable<V2>> back) {
+        return new HashMultimap<>(back, containerType, emptyContainer);
     }
-
 }

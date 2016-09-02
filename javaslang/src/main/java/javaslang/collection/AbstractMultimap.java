@@ -26,79 +26,6 @@ import java.util.function.*;
  */
 abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multimap<K, V> {
 
-    interface SerializableSupplier<T> extends Supplier<T>, Serializable {
-    }
-
-    private static final long serialVersionUID = 1L;
-
-    protected final Map<K, Traversable<V>> back;
-    protected final SerializableSupplier<Traversable<?>> emptyContainer;
-    private final ContainerType containerType;
-
-    AbstractMultimap(Map<K, Traversable<V>> back, ContainerType containerType, SerializableSupplier<Traversable<?>> emptyContainer) {
-        this.back = back;
-        this.containerType = containerType;
-        this.emptyContainer = emptyContainer;
-    }
-
-    protected abstract <K2, V2> Map<K2, V2> emptyMapSupplier();
-
-    protected abstract <K2, V2> Multimap<K2, V2> emptyInstance();
-
-    protected abstract <K2, V2> Multimap<K2, V2> createFromMap(Map<K2, Traversable<V2>> back);
-
-    @SuppressWarnings("unchecked")
-    private <K2, V2> Multimap<K2, V2> createFromEntries(Iterable<? extends Tuple2<? extends K2, ? extends V2>> entries) {
-        Map<K2, Traversable<V2>> back = emptyMapSupplier();
-        for (Tuple2<? extends K2, ? extends V2> entry : entries) {
-            if (back.containsKey(entry._1)) {
-                back = back.put(entry._1, containerType.add(back.get(entry._1).get(), entry._2));
-            } else {
-                back = back.put(entry._1, containerType.add(emptyContainer.get(), entry._2));
-            }
-        }
-        return createFromMap(back);
-    }
-
-    @Override
-    public <K2, V2> Multimap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
-        final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
-        return createFromEntries(entries);
-    }
-
-    @Override
-    public boolean containsKey(K key) {
-        return back.containsKey(key);
-    }
-
-    @Override
-    public ContainerType getContainerType() {
-        return containerType;
-    }
-
-    @Override
-    public <K2, V2> Multimap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(this.emptyInstance(), (acc, entry) -> {
-            for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
-                acc = acc.put(mappedEntry);
-            }
-            return acc;
-        });
-    }
-
-    @Override
-    public Option<Traversable<V>> get(K key) {
-        return back.get(key);
-    }
-
-    @Override
-    public Set<K> keySet() {
-        return back.keySet();
-    }
-
     @Override
     public <K2, V2> Multimap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
@@ -152,16 +79,6 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         return (M) (result == back ? this : createFromMap(result));
     }
 
-    @Override
-    public int size() {
-        return back.foldLeft(0, (s, t) -> s + t._2.size());
-    }
-
-    @Override
-    public Traversable<V> values() {
-        return Iterator.concat(back.values()).toStream();
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public M distinct() {
@@ -175,10 +92,11 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         return (M) createFromEntries(iterator().distinctBy(comparator));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <U> Multimap<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
+    public <U> M distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return createFromEntries(iterator().distinctBy(keyExtractor));
+        return (M) createFromEntries(iterator().distinctBy(keyExtractor));
     }
 
     @Override
@@ -262,7 +180,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     }
 
     @Override
-    public <C> Map<C, Multimap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {
+    public <C> Map<C, M> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {
         return Collections.groupBy(this, classifier, this::createFromEntries);
     }
 
@@ -438,49 +356,4 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         return (M) (taken.length() == length() ? this : taken);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o != null && getClass().isAssignableFrom(o.getClass())) {
-            final AbstractMultimap<?, ?, ?> that = (AbstractMultimap<?, ?, ?>) o;
-            return this.back.equals(that.back);
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return back.hashCode();
-    }
-
-    @Override
-    public String stringPrefix() {
-        return getClass().getSimpleName() + "[" + emptyContainer.get().stringPrefix() + "]";
-    }
-
-    @Override
-    public String toString() {
-        return mkString(stringPrefix() + "(", ", ", ")");
-    }
-
-    @Override
-    public java.util.Map<K, Collection<V>> toJavaMap() {
-        final java.util.Map<K, Collection<V>> javaMap = new java.util.HashMap<>();
-        final Supplier<Collection<V>> javaContainerSupplier;
-        if (containerType == ContainerType.SEQ) {
-            javaContainerSupplier = java.util.ArrayList::new;
-        } else if (containerType == ContainerType.SET) {
-            javaContainerSupplier = java.util.HashSet::new;
-        } else if (containerType == ContainerType.SORTED_SET) {
-            javaContainerSupplier = java.util.TreeSet::new;
-        } else {
-            throw new IllegalStateException("Unknown ContainerType: " + containerType);
-        }
-        for (Tuple2<K, V> t : this) {
-            javaMap.computeIfAbsent(t._1, k -> javaContainerSupplier.get()).add(t._2);
-        }
-        return javaMap;
-    }
 }

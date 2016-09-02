@@ -29,7 +29,7 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     /**
      * Narrows a widened {@code IndexedSeq<? extends T>} to {@code IndexedSeq<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param indexedSeq An {@code IndexedSeq}.

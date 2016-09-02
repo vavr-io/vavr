@@ -139,7 +139,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
 
     /**
      * Narrows a widened {@code Traversable<? extends T>} to {@code Traversable<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param traversable An {@code Traversable}.

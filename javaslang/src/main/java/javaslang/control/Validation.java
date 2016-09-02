@@ -132,7 +132,7 @@ public interface Validation<E, T> extends Value<T> {
 
     /**
      * Narrows a widened {@code Validation<? extends E, ? extends T>} to {@code Validation<E, T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param validation A {@code Validation}.

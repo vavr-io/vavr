@@ -28,7 +28,7 @@ public interface LinearSeq<T> extends Seq<T> {
 
     /**
      * Narrows a widened {@code LinearSeq<? extends T>} to {@code LinearSeq<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param linearSeq A {@code LinearSeq}.

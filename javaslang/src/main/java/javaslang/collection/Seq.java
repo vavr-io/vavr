@@ -21,10 +21,17 @@ import java.util.function.Predicate;
 /**
  * Interface for immutable sequential data structures.
  * <p>
- * Creation:
+ * Basic operations:
  *
  * <ul>
+ * <li>{@link #append(Object)}</li>
+ * <li>{@link #appendAll(Iterable)}</li>
+ * <li>{@link #insert(int, Object)}</li>
+ * <li>{@link #insertAll(int, Iterable)}</li>
+ * <li>{@link #prepend(Object)}</li>
+ * <li>{@link #prependAll(Iterable)}</li>
  * <li>{@link #unit(Iterable)}</li>
+ * <li>{@link #update(int, Object)}</li>
  * </ul>
  *
  * Filtering:
@@ -36,18 +43,6 @@ import java.util.function.Predicate;
  * <li>{@link #removeAt(int)}</li>
  * <li>{@link #removeFirst(Predicate)}</li>
  * <li>{@link #removeLast(Predicate)}</li>
- * </ul>
- *
- * Mutation:
- *
- * <ul>
- * <li>{@link #append(Object)}</li>
- * <li>{@link #appendAll(Iterable)}</li>
- * <li>{@link #insert(int, Object)}</li>
- * <li>{@link #insertAll(int, Iterable)}</li>
- * <li>{@link #prepend(Object)}</li>
- * <li>{@link #prependAll(Iterable)}</li>
- * <li>{@link #update(int, Object)}</li>
  * </ul>
  *
  * Selection:
@@ -100,7 +95,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
 
     /**
      * Narrows a widened {@code Seq<? extends T>} to {@code Seq<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param seq A {@code Seq}.

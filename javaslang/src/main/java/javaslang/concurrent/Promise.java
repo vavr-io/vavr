@@ -145,7 +145,7 @@ public interface Promise<T> {
 
     /**
      * Narrows a widened {@code Promise<? extends T>} to {@code Promise<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param promise A {@code Promise}.
