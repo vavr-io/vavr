@@ -154,25 +154,8 @@ public final class LinkedHashMultimap<K, V> implements Multimap<K, V>, Serializa
     // -- non-static API
 
     @Override
-    public <K2, V2> LinkedHashMultimap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
-        return Multimaps.bimap(this, builder()::ofEntries, keyMapper, valueMapper);
-    }
-
-    @Override
     public boolean containsKey(K key) {
         return back.containsKey(key);
-    }
-
-    // TODO: Move this implementation to Multimaps and use Map Builder instead of Multimap.put
-    @Override
-    public <K2, V2> LinkedHashMultimap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(emptyInstance(), (acc, entry) -> {
-            for (Tuple2<? extends K2, V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
-                acc = acc.put(mappedEntry);
-            }
-            return acc;
-        });
     }
 
     @Override
@@ -191,18 +174,13 @@ public final class LinkedHashMultimap<K, V> implements Multimap<K, V>, Serializa
     }
 
     @Override
-    public <K2, V2> LinkedHashMultimap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
-        return Multimaps.map(this, emptyInstance(), mapper);
-    }
-
-    @Override
-    public <V2> LinkedHashMultimap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper) {
-        return Multimaps.mapValues(this, emptyInstance(), valueMapper);
-    }
-
-    @Override
     public int size() {
         return Multimaps.size(back);
+    }
+
+    @Override
+    public String stringPrefix() {
+        return getClass().getSimpleName() + "[" + emptyContainer.stringPrefix() + "]";
     }
 
     @Override
@@ -213,6 +191,35 @@ public final class LinkedHashMultimap<K, V> implements Multimap<K, V>, Serializa
     @Override
     public Traversable<V> values() {
         return Iterator.concat(back.values()).toStream();
+    }
+
+    // -- Adjusted return types of Multimap
+
+    @Override
+    public <K2, V2> LinkedHashMultimap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
+        return Multimaps.bimap(this, builder()::ofEntries, keyMapper, valueMapper);
+    }
+
+    // TODO: Move this implementation to Multimaps and use Map Builder instead of Multimap.put
+    @Override
+    public <K2, V2> LinkedHashMultimap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return foldLeft(emptyInstance(), (acc, entry) -> {
+            for (Tuple2<? extends K2, V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
+                acc = acc.put(mappedEntry);
+            }
+            return acc;
+        });
+    }
+
+    @Override
+    public <K2, V2> LinkedHashMultimap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
+        return Multimaps.map(this, emptyInstance(), mapper);
+    }
+
+    @Override
+    public <V2> LinkedHashMultimap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper) {
+        return Multimaps.mapValues(this, emptyInstance(), valueMapper);
     }
 
     // -- Object
@@ -232,11 +239,6 @@ public final class LinkedHashMultimap<K, V> implements Multimap<K, V>, Serializa
     @Override
     public int hashCode() {
         return back.hashCode();
-    }
-
-    @Override
-    public String stringPrefix() {
-        return getClass().getSimpleName() + "[" + emptyContainer.stringPrefix() + "]";
     }
 
     @Override
