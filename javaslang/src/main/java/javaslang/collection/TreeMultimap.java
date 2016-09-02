@@ -21,7 +21,7 @@ import java.util.stream.Collector;
  *
  * @param <K> Key type
  * @param <V> Value type
- * @author Ruslan Sennov
+ * @author Ruslan Sennov, Daniel Dietrich
  * @since 2.1.0
  */
 public final class TreeMultimap<K, V> implements Multimap<K, V>, Serializable {
@@ -287,7 +287,7 @@ public final class TreeMultimap<K, V> implements Multimap<K, V>, Serializable {
 
     @Override
     public String stringPrefix() {
-        return getClass().getSimpleName() + "[" + emptyContainer.get().stringPrefix() + "]";
+        return "TreeMultimap[" + emptyContainer.get().stringPrefix() + "]";
     }
 
     @Override

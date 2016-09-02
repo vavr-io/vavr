@@ -157,6 +157,8 @@ Note: Detailed information about performing a release can be found in the SCM se
 * Commits do not mix change sets of different domains/purpose.
 * Commit messages provide enough detail to extract a changelog for a new release.
 
+_**Note:** We develop in IntelliJ IDEA. Please don't forget to check before a release that the latest Eclipse also has no compiler errors._ 
+
 ### Branching Model
 
 We following a simple git workflow/branching model:

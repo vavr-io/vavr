@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.Multimaps.OfMap;
 import javaslang.control.Option;
@@ -23,19 +22,19 @@ import java.util.stream.Collector;
  *
  * @param <K> Key type
  * @param <V> Value type
- * @author Ruslan Sennov
+ * @author Ruslan Sennov, Daniel Dietrich
  * @since 2.1.0
  */
 public final class LinkedHashMultimap<K, V> implements Multimap<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final Map<K, Traversable<V>> back;
+    private final Map<K, Traversable<V>> delegate;
     private final ContainerType containerType;
     private final Traversable<V> emptyContainer;
 
-    private LinkedHashMultimap(Map<K, Traversable<V>> back, ContainerType containerType, Traversable<V> emptyContainer) {
-        this.back = back;
+    private LinkedHashMultimap(Map<K, Traversable<V>> delegate, ContainerType containerType, Traversable<V> emptyContainer) {
+        this.delegate = delegate;
         this.containerType = containerType;
         this.emptyContainer = emptyContainer;
     }
@@ -155,7 +154,7 @@ public final class LinkedHashMultimap<K, V> implements Multimap<K, V>, Serializa
 
     @Override
     public boolean containsKey(K key) {
-        return back.containsKey(key);
+        return delegate.containsKey(key);
     }
 
     @Override
@@ -165,22 +164,22 @@ public final class LinkedHashMultimap<K, V> implements Multimap<K, V>, Serializa
 
     @Override
     public Option<Traversable<V>> get(K key) {
-        return back.get(key);
+        return delegate.get(key);
     }
 
     @Override
     public Set<K> keySet() {
-        return back.keySet();
+        return delegate.keySet();
     }
 
     @Override
     public int size() {
-        return Multimaps.size(back);
+        return Multimaps.size(delegate);
     }
 
     @Override
     public String stringPrefix() {
-        return getClass().getSimpleName() + "[" + emptyContainer.stringPrefix() + "]";
+        return "LinkedHashMultimap[" + emptyContainer.stringPrefix() + "]";
     }
 
     @Override
@@ -190,7 +189,7 @@ public final class LinkedHashMultimap<K, V> implements Multimap<K, V>, Serializa
 
     @Override
     public Traversable<V> values() {
-        return Iterator.concat(back.values()).toStream();
+        return Iterator.concat(delegate.values()).toStream();
     }
 
     // -- Adjusted return types of Multimap
@@ -230,7 +229,7 @@ public final class LinkedHashMultimap<K, V> implements Multimap<K, V>, Serializa
             return true;
         } else if (o instanceof LinkedHashMultimap) {
             final LinkedHashMultimap<?, ?> that = (LinkedHashMultimap<?, ?>) o;
-            return this.back.equals(that.back);
+            return this.delegate.equals(that.delegate);
         } else {
             return false;
         }
@@ -238,7 +237,7 @@ public final class LinkedHashMultimap<K, V> implements Multimap<K, V>, Serializa
 
     @Override
     public int hashCode() {
-        return back.hashCode();
+        return delegate.hashCode();
     }
 
     @Override

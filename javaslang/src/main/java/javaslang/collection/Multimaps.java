@@ -46,23 +46,13 @@ final class Multimaps {
         return map(multimap, emptyInstance, (k, v) -> Tuple.of(k, valueMapper.apply(v)));
     }
 
-    static <K, V> int size(Map<K, Traversable<V>> back) {
-        return back.foldLeft(0, (s, t) -> s + t._2.size());
+    static <K, V> int size(Map<K, Traversable<V>> delegate) {
+        return delegate.foldLeft(0, (s, t) -> s + t._2.size());
     }
 
     static <K, V> java.util.Map<K, Collection<V>> toJavaMap(Multimap<K, V> multimap) {
         final java.util.Map<K, Collection<V>> javaMap = new java.util.HashMap<>();
-        final Supplier<Collection<V>> javaContainerSupplier;
-        final ContainerType containerType = multimap.getContainerType();
-        if (containerType == ContainerType.SEQ) {
-            javaContainerSupplier = java.util.ArrayList::new;
-        } else if (containerType == ContainerType.SET) {
-            javaContainerSupplier = java.util.HashSet::new;
-        } else if (containerType == ContainerType.SORTED_SET) {
-            javaContainerSupplier = java.util.TreeSet::new;
-        } else {
-            throw new IllegalStateException("Unknown ContainerType: " + containerType);
-        }
+        final Supplier<Collection<V>> javaContainerSupplier = multimap.getContainerType().getJavaContainerSupplier();
         for (Tuple2<K, V> t : multimap) {
             javaMap.computeIfAbsent(t._1, k -> javaContainerSupplier.get()).add(t._2);
         }
@@ -80,7 +70,7 @@ final class Multimaps {
         private final ContainerType containerType;
         private final Traversable<V> emptyContainer;
 
-        protected Builder(ContainerType containerType, Traversable<V> emptyContainer) {
+        Builder(ContainerType containerType, Traversable<V> emptyContainer) {
             this.containerType = containerType;
             this.emptyContainer = emptyContainer;
         }
@@ -107,11 +97,13 @@ final class Multimaps {
 
         public abstract <K, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, ? extends Multimap<K, V2>> collector();
 
-        // Returns the empty Map used as back for Multimap
+        // -- Non-public, internal API. Builder implementations should no increase visibility.
+
+        // Returns the empty Map used as delegate for Multimap
         abstract <K, V2 extends V> Map<K, Traversable<V2>> emptyMap();
 
         // Implementations must override the return type. Typically passed to `build()` using `this::ofMap`.
-        abstract <K, V2 extends V> Multimap<K, V2> ofMap(Map<K, Traversable<V2>> back);
+        abstract <K, V2 extends V> Multimap<K, V2> ofMap(Map<K, Traversable<V2>> delegate);
 
         // Use by factory methods. Automatically casts to Multimap type.
         final <T, K, V2 extends V, M extends Multimap<K, V2>> M build(
@@ -121,15 +113,15 @@ final class Multimaps {
                 OfMap<K, V2, M> ofMap) {
             Objects.requireNonNull(entries, "entries is null");
             // TODO: this can be further optimized by building backing structures directly (HAMT or RedBlackTree)
-            Map<K, Traversable<V2>> back = emptyMap();
+            Map<K, Traversable<V2>> delegate = emptyMap();
             for (T entry : entries) {
                 final K key = getKey.apply(entry);
                 final V2 value = getValue.apply(entry);
-                // TODO(#1543): replace with `back.getOrElse(key, emptyContainer());`
-                final Traversable<V2> container = back.containsKey(key) ? back.get(key).get() : emptyContainer();
-                back = back.put(key, containerType.add(container, value));
+                // TODO(#1543): replace with `delegate.getOrElse(key, emptyContainer());`
+                final Traversable<V2> container = delegate.containsKey(key) ? delegate.get(key).get() : emptyContainer();
+                delegate = delegate.put(key, containerType.add(container, value));
             }
-            return ofMap.apply(back);
+            return ofMap.apply(delegate);
         }
 
         ContainerType containerType() {
@@ -157,7 +149,7 @@ final class Multimaps {
 
             Entries(Object[] pairs) {
                 Objects.requireNonNull(pairs, "pairs is null");
-                if ((pairs.length & 1) != 0) {
+                if (!hasEvenSize(pairs)) {
                     throw new IllegalArgumentException("Odd length of key-value pairs");
                 }
                 this.pairs = pairs;
@@ -182,6 +174,8 @@ final class Multimaps {
             V getValue(Object[] pair) {
                 return (V) pair[index - 1];
             }
+
+            static boolean hasEvenSize(Object[] pairs) { return (pairs.length & 1) == 0; }
         }
     }
 
