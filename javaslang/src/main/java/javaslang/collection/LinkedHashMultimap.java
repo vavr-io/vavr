@@ -192,12 +192,12 @@ public final class LinkedHashMultimap<K, V> implements Multimap<K, V>, Serializa
 
     @Override
     public <K2, V2> LinkedHashMultimap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
-        return null; // TODO ...
+        return Multimaps.map(this, emptyInstance(), mapper);
     }
 
     @Override
     public <V2> LinkedHashMultimap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper) {
-        return null; // TODO ...
+        return Multimaps.mapValues(this, emptyInstance(), valueMapper);
     }
 
     @Override

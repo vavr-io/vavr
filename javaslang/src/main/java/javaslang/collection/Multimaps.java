@@ -12,6 +12,7 @@ import javaslang.collection.Multimap.ContainerType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -33,6 +34,16 @@ final class Multimaps {
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         final Iterator<Tuple2<K2, V2>> entries = multimap.iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
         return ofEntries.apply(entries);
+    }
+
+    static <K, V, K2, V2, M extends Multimap<K2, V2>> M map(Multimap<K, V> multimap, M emptyInstance, BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return multimap.foldLeft(emptyInstance, (acc, entry) -> acc.put(mapper.apply(entry._1, entry._2)));
+    }
+
+    static <K, V, V2, M extends Multimap<K, V2>> M mapValues(Multimap<K, V> multimap, M emptyInstance, Function<? super V, ? extends V2> valueMapper) {
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return map(multimap, emptyInstance, (k, v) -> Tuple.of(k, valueMapper.apply(v)));
     }
 
     static <K, V> int size(Map<K, Traversable<V>> back) {
@@ -58,6 +69,12 @@ final class Multimaps {
         return javaMap;
     }
 
+    /**
+     * An abstract Multimap Builder that extracts common logic and defines a common builder interface for
+     * improved maintainability.
+     *
+     * @param <V> Value type
+     */
     abstract static class Builder<V> {
 
         private final ContainerType containerType;
@@ -103,6 +120,7 @@ final class Multimaps {
                 Function<T, V2> getValue,
                 OfMap<K, V2, M> ofMap) {
             Objects.requireNonNull(entries, "entries is null");
+            // TODO: this can be further optimized by building backing structures directly (HAMT or RedBlackTree)
             Map<K, Traversable<V2>> back = emptyMap();
             for (T entry : entries) {
                 final K key = getKey.apply(entry);
@@ -126,6 +144,12 @@ final class Multimaps {
             return (Traversable<V2>) emptyContainer;
         }
 
+        /**
+         * An entry iterator that operates on untyped arrays of key-value pairs.
+         *
+         * @param <K> Key type
+         * @param <V> Value type
+         */
         static class Entries<K, V> implements Iterator<Object[]> {
 
             int index = 0;
@@ -161,10 +185,30 @@ final class Multimaps {
         }
     }
 
+    /**
+     * Represents a function that creates a Multimap of an Iterable of key-value pairs.
+     * <p>
+     * This interface allows us to abstract over Multimap operations by moving creational logic into the Multimap
+     * implementations.
+     *
+     * @param <K> Key type
+     * @param <V> Value type
+     * @param <M> Multimap type
+     */
     @FunctionalInterface
     interface OfEntries<K, V, M extends Multimap<K, V>> extends Function<Iterable<Tuple2<K, V>>, M> {
     }
 
+    /**
+     * Represents a function that transforms a Map that has multiple values into a Multimap.
+     * <p>
+     * This interface allows us to abstract over Multimap operations by moving creational logic into the Multimap
+     * implementations.
+     *
+     * @param <K> Key type
+     * @param <V> Value type
+     * @param <M> Multimap type
+     */
     @FunctionalInterface
     interface OfMap<K, V, M extends Multimap<K, V>> extends Function<Map<K, Traversable<V>>, M> {
     }

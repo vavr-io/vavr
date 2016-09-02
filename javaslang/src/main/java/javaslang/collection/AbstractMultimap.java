@@ -26,18 +26,6 @@ import java.util.function.*;
  */
 abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multimap<K, V> {
 
-    @Override
-    public <K2, V2> Multimap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(this.emptyInstance(), (acc, entry) -> acc.put(mapper.apply(entry._1, entry._2)));
-    }
-
-    @Override
-    public <V2> Multimap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper) {
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
-        return map((k, v) -> Tuple.of(k, valueMapper.apply(v)));
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public M put(K key, V value) {
