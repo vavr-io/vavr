@@ -37,7 +37,7 @@ public interface Stack<T> {
 
     /**
      * Narrows a widened {@code Stack<? extends T>} to {@code Stack<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param stack A {@code Stack}.

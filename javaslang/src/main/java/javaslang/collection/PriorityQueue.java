@@ -149,7 +149,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
 
     /**
      * Narrows a widened {@code PriorityQueue<? extends T>} to {@code PriorityQueue<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param queue An {@code PriorityQueue}.

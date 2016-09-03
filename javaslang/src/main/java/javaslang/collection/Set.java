@@ -31,7 +31,7 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
 
     /**
      * Narrows a widened {@code Set<? extends T>} to {@code Set<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param set A {@code Set}.

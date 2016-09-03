@@ -95,7 +95,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
 
     /**
      * Narrows a widened {@code Queue<? extends T>} to {@code Queue<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param queue An {@code Queue}.

@@ -63,7 +63,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
 
     /**
      * Narrows a widened {@code HashSet<? extends T>} to {@code HashSet<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param hashSet A {@code HashSet}.
