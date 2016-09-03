@@ -79,7 +79,6 @@
                 <configuration>
                     <skipModule>true</skipModule>
                     <moduleName>Javaslang</moduleName>
-                    <jvmArgs>-Xmx2048m</jvmArgs>
                     <includes>
                         <include>**/GwtTest*.java</include>
                     </includes>
