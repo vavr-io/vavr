@@ -5,34 +5,41 @@
  */
 package javaslang;
 
-import javaslang.collection.*;
+import javaslang.collection.Array;
+import javaslang.collection.CharSeq;
+import javaslang.collection.Map;
 import javaslang.control.Option;
 import org.openjdk.jmh.infra.BenchmarkParams;
-import org.openjdk.jmh.results.*;
+import org.openjdk.jmh.results.BenchmarkResult;
+import org.openjdk.jmh.results.Result;
+import org.openjdk.jmh.results.RunResult;
 import org.openjdk.jmh.util.ListStatistics;
 
 import java.text.DecimalFormat;
 import java.util.Comparator;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class BenchmarkPerformanceReporter {
-    private static final Comparator<String> TO_STRING_COMPARATOR = Comparator.comparing(String::length).thenComparing(Function.identity());
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,##0.000");
-    private static final DecimalFormat PERFORMANCE_FORMAT = new DecimalFormat("#0.00");
-    private static final DecimalFormat PCT_FORMAT = new DecimalFormat("0.00%");
+    static final Comparator<String> TO_STRING_COMPARATOR = Comparator.comparing(String::length).thenComparing(Function.identity());
+    static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,##0.000");
+    static final DecimalFormat PERFORMANCE_FORMAT = new DecimalFormat("#0.00");
+    static final DecimalFormat PCT_FORMAT = new DecimalFormat("0.00%");
+
+    private final Array<String> includeNames;
     private final Array<String> benchmarkClasses;
     private final Array<RunResult> runResults;
     private final String targetImplementation;
     private final double outlierLowPct;
     private final double outlierHighPct;
 
-    public static BenchmarkPerformanceReporter of(Array<String> benchmarkClasses, Array<RunResult> runResults) {
-        return of(benchmarkClasses, runResults, "slang", 0.3, 0.1);
+    public static BenchmarkPerformanceReporter of(Array<String> includeNames, Array<String> benchmarkClasses, Array<RunResult> runResults) {
+        return of(includeNames, benchmarkClasses, runResults, "slang", 0.3, 0.05);
     }
 
-    public static BenchmarkPerformanceReporter of(Array<String> benchmarkClasses, Array<RunResult> runResults, String targetImplementation, double outlierLowPct, double outlierHighPct) {
-        return new BenchmarkPerformanceReporter(benchmarkClasses, runResults, targetImplementation, outlierLowPct, outlierHighPct);
+    public static BenchmarkPerformanceReporter of(Array<String> includeNames, Array<String> benchmarkClasses, Array<RunResult> runResults, String targetImplementation, double outlierLowPct, double outlierHighPct) {
+        return new BenchmarkPerformanceReporter(includeNames, benchmarkClasses, runResults, targetImplementation, outlierLowPct, outlierHighPct);
     }
 
     /**
@@ -46,7 +53,8 @@ public class BenchmarkPerformanceReporter {
      * @param outlierLowPct        The percentage of samples on the lower end that will be ignored from the statistics
      * @param outlierHighPct       The percentage of samples on the higher end that will be ignored from the statistics
      */
-    private BenchmarkPerformanceReporter(Array<String> benchmarkClasses, Array<RunResult> runResults, String targetImplementation, double outlierLowPct, double outlierHighPct) {
+    private BenchmarkPerformanceReporter(Array<String> includeNames, Array<String> benchmarkClasses, Array<RunResult> runResults, String targetImplementation, double outlierLowPct, double outlierHighPct) {
+        this.includeNames = includeNames;
         this.benchmarkClasses = benchmarkClasses;
         this.runResults = runResults;
         this.targetImplementation = targetImplementation;
@@ -78,7 +86,7 @@ public class BenchmarkPerformanceReporter {
      * </ul>
      */
     public void printDetailedPerformanceReport() {
-        final Array<TestExecution> results = mapToTestExecutions(runResults);
+        final Array<TestExecution> results = mapToTestExecutions();
         if (results.isEmpty()) {
             return;
         }
@@ -98,23 +106,25 @@ public class BenchmarkPerformanceReporter {
      * </ul>
      */
     public void printRatioPerformanceReport() {
-        final Array<TestExecution> results = mapToTestExecutions(runResults);
+        final Array<TestExecution> results = mapToTestExecutions();
         if (results.isEmpty()) {
             return;
         }
         new RatioPerformanceReport(results, targetImplementation).print();
     }
 
-    private Array<TestExecution> mapToTestExecutions(Array<RunResult> runResults) {
+    private Array<TestExecution> mapToTestExecutions() {
         Array<TestExecution> executions = Array.empty();
         for (RunResult runResult : runResults) {
             executions = executions.append(TestExecution.of(runResult.getAggregatedResult(), outlierLowPct, outlierHighPct));
         }
-        return sort(executions);
+        return sort(executions, includeNames);
     }
 
-    private Array<TestExecution> sort(Array<TestExecution> results) {
-        final Comparator<TestExecution> comparator = Comparator.comparing(t -> benchmarkClasses.indexWhere(c -> c.endsWith(t.getOperation())));
+    private Array<TestExecution> sort(Array<TestExecution> results, Array<String> includeNames) {
+        final Comparator<TestExecution> comparator = Comparator
+                .<TestExecution, Integer> comparing(t -> benchmarkClasses.indexWhere(c -> c.endsWith(t.getOperation())))
+                .thenComparing(t -> includeNames.indexWhere(i -> t.getImplementation().startsWith(i)));
         return results.sorted(comparator);
     }
 
@@ -151,7 +161,7 @@ public class BenchmarkPerformanceReporter {
             errorSize = Math.max(results.map(r -> r.getScoreErrorPct().length()).max().get(), 10);
             unitSize = Math.max(results.map(r -> r.getUnit().length()).max().get(), 7);
 
-            alternativeImplementations = results.map(TestExecution::getImplementation).distinct().sorted();
+            alternativeImplementations = results.map(TestExecution::getImplementation).distinct();
         }
 
         public void print() {
@@ -213,9 +223,9 @@ public class BenchmarkPerformanceReporter {
             final Array<TestExecution> alternativeResults = resultsByKey.get(aggregateKey).getOrElse(Array::empty);
 
             return alternativeImplementations.map(altImpl -> Tuple.of(altImpl, alternativeResults.find(r -> altImpl.equals(r.getImplementation()))))
-                                             .map(alt -> Tuple.of(alt._1, calculateRatioStr(result, alt._2)))
-                                             .map(alt -> padRight(alt._2, altImplColSize(alt._1)))
-                                             .mkString("  ");
+                    .map(alt -> Tuple.of(alt._1, calculateRatioStr(result, alt._2)))
+                    .map(alt -> padRight(alt._2, altImplColSize(alt._1)))
+                    .mkString("  ");
         }
 
         private String calculateRatioStr(TestExecution baseResult, Option<TestExecution> alternativeResult) {
@@ -253,7 +263,7 @@ public class BenchmarkPerformanceReporter {
             paramKeys = results.map(TestExecution::getParamKey).distinct().sorted(TO_STRING_COMPARATOR);
             paramKeySize = Math.max(results.map(r -> r.getParamKey().length()).max().get(), 8);
 
-            alternativeImplementations = results.map(TestExecution::getImplementation).distinct().sorted();
+            alternativeImplementations = results.map(TestExecution::getImplementation).distinct();
             targetImplementations = alternativeImplementations.filter(i -> i.toLowerCase().contains(targetImplementation.toLowerCase()));
             alternativeImplSize = Math.max(alternativeImplementations.map(String::length).max().getOrElse(0), 10);
 
@@ -364,8 +374,8 @@ public class BenchmarkPerformanceReporter {
                 final Option<TestExecution> alternativeExecution = alternativeExecutions.find(e -> e.getParamKey().equals(paramKey));
                 final Option<TestExecution> baseExecution = baseImplExecutions.find(e -> e.getParamKey().equals(paramKey));
                 final String paramRatio = alternativeExecution.isEmpty() || baseExecution.isEmpty() || baseExecution.get().getScore() == 0.0
-                                          ? ""
-                                          : PERFORMANCE_FORMAT.format(alternativeExecution.get().getScore() / baseExecution.get().getScore()) + "×";
+                        ? ""
+                        : PERFORMANCE_FORMAT.format(alternativeExecution.get().getScore() / baseExecution.get().getScore()) + "×";
                 ratioStings = ratioStings.append(padRight(paramRatio, paramKeySize));
             }
             return ratioStings.mkString(" ");
@@ -408,9 +418,8 @@ public class BenchmarkPerformanceReporter {
 
         private ListStatistics createStatisticsWithoutOutliers(BenchmarkResult benchmark, double outlierLowPct, double outlierHighPct) {
             Array<Double> results = benchmark.getIterationResults().stream()
-                                             .map(r -> r.getPrimaryResult().getScore())
-                                             .sorted()
-                                             .collect(Array.collector());
+                    .map(r -> r.getPrimaryResult().getScore())
+                    .collect(Array.collector());
             final int size = results.size();
             final int outliersLow = (int) (size * outlierLowPct);
             final int outliersHigh = (int) (size * outlierHighPct);
@@ -420,7 +429,7 @@ public class BenchmarkPerformanceReporter {
 
         private String getParameterKey(BenchmarkResult benchmarkResult) {
             final BenchmarkParams params = benchmarkResult.getParams();
-            return params.getParamsKeys().stream().map(params::getParam).collect(Collectors.joining(","));
+            return params.getParamsKeys().stream().map(params::getParam).collect(Collectors.joining(";"));
         }
 
         public String getTestNameParamKey() {
