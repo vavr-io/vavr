@@ -74,7 +74,6 @@
             <plugin>
                 <groupId>net.ltgt.gwt.maven</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>${maven.gwt.plugin}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <skipModule>true</skipModule>

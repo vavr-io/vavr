@@ -14,3 +14,15 @@ Ensure that your `~/.m2/settings.xml` contains the following:
   </snapshots>
 </repository>
 ```
+
+### Run tests
+
+```
+mvn -pl \!javaslang-benchmark -Pgwt test
+```
+
+### Start codeserver
+
+```
+mvn -pl \!javaslang-benchmark -DskipTests -Pgwt gwt:codeserver
+```

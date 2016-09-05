@@ -48,7 +48,6 @@
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-dev</artifactId>
             <version>${gwt.version}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>
@@ -64,7 +63,6 @@
             <plugin>
                 <groupId>net.ltgt.gwt.maven</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>${maven.gwt.plugin}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <skipModule>true</skipModule>
