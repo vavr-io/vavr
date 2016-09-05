@@ -5,6 +5,8 @@
 
 # [Javaslang](http://javaslang.io/)
 
+[![Join the chat at https://gitter.im/javaslang/javaslang](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/javaslang/javaslang?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Feature-rich & self-contained functional programming in Java&trade; 8 and above.
 Javaslang is a functional library for Java 8+ that provides persistent data types and functional control structures. Because Javaslang does not depend on any libraries (other than the JVM) you can easily add it as standalone .jar to your classpath.
 
