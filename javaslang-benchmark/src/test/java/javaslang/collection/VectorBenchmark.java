@@ -11,8 +11,6 @@ import scala.compat.java8.functionConverterImpls.FromJavaPredicate;
 
 import java.util.Objects;
 import java.util.Random;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -440,111 +438,77 @@ public class VectorBenchmark {
     }
 
     public static class Map extends Base {
-        private final Function<Integer, Integer> MAPPER = i -> i + 1;
+        private static int mapper(int i) { return i + 1; }
 
         @Benchmark
         public Object java_mutable_loop() {
             final Integer[] values = ELEMENTS.clone();
             for (int i = 0; i < CONTAINER_SIZE; i++) {
-                values[i] = MAPPER.apply(values[i]);
+                values[i] = mapper(values[i]);
             }
-            assert areEqual(Array.of(values), Array.of(ELEMENTS).map(MAPPER));
+            assert areEqual(Array.of(values), Array.of(ELEMENTS).map(Map::mapper));
             return values;
         }
 
         @Benchmark
         public Object java_mutable() {
-            final java.util.List<Integer> values = javaMutable.stream().map(MAPPER).collect(Collectors.toList());
-            assert areEqual(values, Array.of(ELEMENTS).map(MAPPER));
+            final java.util.List<Integer> values = javaMutable.stream().map(Map::mapper).collect(Collectors.toList());
+            assert areEqual(values, Array.of(ELEMENTS).map(Map::mapper));
             return values;
         }
 
         @Benchmark
         public Object ecollections_persistent() {
-            org.eclipse.collections.api.list.ImmutableList<Integer> values = eCollectionsPersistent.collect(MAPPER::apply);
-            assert areEqual(values, Array.of(ELEMENTS).map(MAPPER));
+            final org.eclipse.collections.api.list.ImmutableList<Integer> values = eCollectionsPersistent.collect(Map::mapper);
+            assert areEqual(values, Array.of(ELEMENTS).map(Map::mapper));
             return values;
         }
 
         @Benchmark
         public Object scala_persistent() {
             final CanBuildFrom canBuildFrom = scala.collection.immutable.Vector.canBuildFrom();
-            final scala.collection.immutable.Vector<Integer> values = (scala.collection.immutable.Vector<Integer>) scalaPersistent.map(new FromJavaFunction<>(MAPPER), canBuildFrom);
-            assert areEqual(asJavaCollection(values), Array.of(ELEMENTS).map(MAPPER));
+            final scala.collection.immutable.Vector<Integer> values = (scala.collection.immutable.Vector<Integer>) scalaPersistent.map(new FromJavaFunction<>(Map::mapper), canBuildFrom);
+            assert areEqual(asJavaCollection(values), Array.of(ELEMENTS).map(Map::mapper));
             return values;
         }
 
         @Benchmark
         public Object slang_persistent() {
-            final javaslang.collection.Vector<Integer> values = slangPersistent.map(MAPPER);
-            assert areEqual(values, Array.of(ELEMENTS).map(MAPPER));
+            final javaslang.collection.Vector<Integer> values = slangPersistent.map(Map::mapper);
+            assert areEqual(values, Array.of(ELEMENTS).map(Map::mapper));
             return values;
         }
     }
 
     public static class Filter extends Base {
-        private final Predicate<Integer> ALL = i -> true;
-        private final Predicate<Integer> SOME = i -> (i & 1) == 1;
-        private final Predicate<Integer> NONE = i -> false;
+        private static boolean isOdd(int i) { return (i & 1) == 1; }
 
         @Benchmark
-        public void java_mutable(Blackhole bh) {
-            final java.util.List<Integer> allValues = javaMutable.stream().filter(ALL).collect(Collectors.toList());
-            assert areEqual(allValues, Array.of(ELEMENTS).filter(ALL));
-            bh.consume(allValues);
-
-            final java.util.List<Integer> someValues = javaMutable.stream().filter(SOME).collect(Collectors.toList());
-            assert areEqual(someValues, Array.of(ELEMENTS).filter(SOME));
-            bh.consume(someValues);
-
-            final java.util.List<Integer> noValues = javaMutable.stream().filter(NONE).collect(Collectors.toList());
-            assert areEqual(noValues, Array.of(ELEMENTS).filter(NONE));
-            bh.consume(noValues);
+        public Object java_mutable() {
+            final java.util.List<Integer> someValues = javaMutable.stream().filter(Filter::isOdd).collect(Collectors.toList());
+            assert areEqual(someValues, Array.of(ELEMENTS).filter(Filter::isOdd));
+            return someValues;
         }
 
         @Benchmark
-        public void ecollections_persistent(Blackhole bh) {
-            org.eclipse.collections.api.list.ImmutableList<Integer> allValues = eCollectionsPersistent.select(ALL::test);
-            assert areEqual(allValues, Array.of(ELEMENTS).filter(ALL));
-            bh.consume(allValues);
-
-            org.eclipse.collections.api.list.ImmutableList<Integer> someValues = eCollectionsPersistent.select(SOME::test);
-            assert areEqual(someValues, Array.of(ELEMENTS).filter(SOME));
-            bh.consume(someValues);
-
-            org.eclipse.collections.api.list.ImmutableList<Integer> noValues = eCollectionsPersistent.select(NONE::test);
-            assert areEqual(noValues, Array.of(ELEMENTS).filter(NONE));
-            bh.consume(noValues);
+        public Object ecollections_persistent() {
+            final org.eclipse.collections.api.list.ImmutableList<Integer> someValues = eCollectionsPersistent.select(Filter::isOdd);
+            assert areEqual(someValues, Array.of(ELEMENTS).filter(Filter::isOdd));
+            return someValues;
         }
 
         @Benchmark
-        public void scala_persistent(Blackhole bh) {
-            final scala.collection.immutable.Vector<Integer> allValues = (scala.collection.immutable.Vector<Integer>) scalaPersistent.filter(new FromJavaPredicate(ALL));
-            assert areEqual(asJavaCollection(allValues), Array.of(ELEMENTS).filter(ALL));
-            bh.consume(allValues);
-
-            final scala.collection.immutable.Vector<Integer> someValues = (scala.collection.immutable.Vector<Integer>) scalaPersistent.filter(new FromJavaPredicate(SOME));
-            assert areEqual(asJavaCollection(someValues), Array.of(ELEMENTS).filter(SOME));
-            bh.consume(someValues);
-
-            final scala.collection.immutable.Vector<Integer> noValues = (scala.collection.immutable.Vector<Integer>) scalaPersistent.filter(new FromJavaPredicate(NONE));
-            assert areEqual(asJavaCollection(noValues), Array.of(ELEMENTS).filter(NONE));
-            bh.consume(noValues);
+        public Object scala_persistent() {
+            final scala.collection.immutable.Vector<Integer> someValues = (scala.collection.immutable.Vector<Integer>) scalaPersistent.filter(new FromJavaPredicate<>(Filter::isOdd));
+            assert areEqual(asJavaCollection(someValues), Array.of(ELEMENTS).filter(Filter::isOdd));
+            return someValues;
         }
 
         @Benchmark
-        public void slang_persistent(Blackhole bh) {
-            final javaslang.collection.Vector<Integer> allValues = slangPersistent.filter(ALL);
-            assert areEqual(allValues, Array.of(ELEMENTS).filter(ALL));
-            bh.consume(allValues);
-
-            final javaslang.collection.Vector<Integer> someValues = slangPersistent.filter(SOME);
-            assert areEqual(someValues, Array.of(ELEMENTS).filter(SOME));
-            bh.consume(someValues);
-
-            final javaslang.collection.Vector<Integer> noValues = slangPersistent.filter(NONE);
-            assert areEqual(noValues, Array.of(ELEMENTS).filter(NONE));
-            bh.consume(noValues);
+        public Object slang_persistent() {
+            final javaslang.collection.Vector<Integer> someValues = slangPersistent.filter(Filter::isOdd);
+            assert areEqual(someValues, Array.of(ELEMENTS).filter(Filter::isOdd));
+            return someValues;
         }
     }
 
@@ -626,6 +590,7 @@ public class VectorBenchmark {
         }
     }
 
+    /** Add all elements (one-by-one, as we're not testing bulk operations) */
     public static class Append extends Base {
         @Benchmark
         public Object java_mutable() {
@@ -641,9 +606,7 @@ public class VectorBenchmark {
         public Object fjava_persistent() {
             fj.data.Seq<Integer> values = fj.data.Seq.empty();
             for (Integer element : ELEMENTS) {
-                final fj.data.Seq<Integer> newValues = values.snoc(element);
-                assert values != newValues;
-                values = newValues;
+                values = values.snoc(element);
             }
             assert areEqual(values, javaMutable);
             return values;
@@ -665,9 +628,7 @@ public class VectorBenchmark {
         public Object pcollections_persistent() {
             org.pcollections.PVector<Integer> values = org.pcollections.TreePVector.empty();
             for (Integer element : ELEMENTS) {
-                final org.pcollections.PVector<Integer> newValues = values.plus(element);
-                assert values != newValues;
-                values = newValues;
+                values = values.plus(element);
             }
             assert areEqual(values, javaMutable);
             return values;
@@ -677,9 +638,7 @@ public class VectorBenchmark {
         public Object clojure_persistent() {
             clojure.lang.PersistentVector values = clojure.lang.PersistentVector.EMPTY;
             for (Integer element : ELEMENTS) {
-                final clojure.lang.PersistentVector newValues = values.cons(element);
-                assert values != newValues;
-                values = newValues;
+                values = values.cons(element);
             }
             assert areEqual(values, javaMutable);
             return values;
@@ -689,9 +648,7 @@ public class VectorBenchmark {
         public Object scala_persistent() {
             scala.collection.immutable.Vector<Integer> values = scala.collection.immutable.Vector$.MODULE$.empty();
             for (Integer element : ELEMENTS) {
-                final scala.collection.immutable.Vector<Integer> newValues = values.appendBack(element);
-                assert values != newValues;
-                values = newValues;
+                values = values.appendBack(element);
             }
             assert areEqual(asJavaCollection(values), javaMutable);
             return values;
@@ -701,9 +658,7 @@ public class VectorBenchmark {
         public Object slang_persistent() {
             javaslang.collection.Vector<Integer> values = javaslang.collection.Vector.empty();
             for (Integer element : ELEMENTS) {
-                final javaslang.collection.Vector<Integer> newValues = values.append(element);
-                assert values != newValues;
-                values = newValues;
+                values = values.append(element);
             }
             assert areEqual(values, javaMutable);
             return values;
