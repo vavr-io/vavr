@@ -59,6 +59,19 @@ final class BitMappedTrie<T> implements Serializable {
         return branchCount * fullBranchSize;
     }
 
+    static <T> BitMappedTrie<T> ofAll(Object[] array) {
+        final int size = array.length;
+        if (size == 0) {
+            return empty();
+        } else {
+            int shift = 0;
+            for (; array.length > BRANCHING_FACTOR; shift += BRANCHING_BASE) {
+                array = grouped(array, BRANCHING_FACTOR);
+            }
+            return new BitMappedTrie<>(array, 0, size, shift);
+        }
+    }
+
     BitMappedTrie<T> prepend(T leading) {
         final int newSize = length() + 1;
         if (length() == 0) {
