@@ -127,12 +127,12 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
     }
 
     @Override
-    public <T> Tuple1<T> prepend(T value) {
+    public <T> Tuple1<T> append(T value) {
        return new Tuple1<>(value);
     }
 
     @Override
-    public <T> Tuple1<T> append(T value) {
+    public <T> Tuple1<T> prepend(T value) {
        return new Tuple1<>(value);
     }
 

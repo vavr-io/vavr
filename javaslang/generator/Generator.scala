@@ -1280,46 +1280,40 @@ def generateMainClasses(): Unit = {
 
             ${(i == 0).gen(xs"""
               @Override
-              public <T> Tuple1<T> prepend(T value) {
+              public <T> Tuple1<T> append(T value) {
                  return new Tuple1<>(value);
               }
 
               @Override
-              public <T> Tuple1<T> append(T value) {
+              public <T> Tuple1<T> prepend(T value) {
                  return new Tuple1<>(value);
               }
             """)}
 
             ${(i > 0 && i < N).gen(xs"""
               @Override
-              public <T> Tuple${i + 1}<T, ${(1 to i).gen(j => s"T$j")(", ")}> prepend(T value) {
-                  return Tuple.of(value, ${(1 to i).gen(j => s"_$j")(", ")});
+              public <T> Tuple${i + 1}<${(1 to i).gen(j => s"T$j")(", ")}, T> append(T value) {
+                  return Tuple.of(${(1 to i).gen(j => s"_$j")(", ")}, value);
               }
 
               @Override
-              public <T> Tuple${i + 1}<${(1 to i).gen(j => s"T$j")(", ")}, T> append(T value) {
-                  return Tuple.of(${(1 to i).gen(j => s"_$j")(", ")}, value);
+              public <T> Tuple${i + 1}<T, ${(1 to i).gen(j => s"T$j")(", ")}> prepend(T value) {
+                  return Tuple.of(value, ${(1 to i).gen(j => s"_$j")(", ")});
               }
             """)}
 
             ${(i == N).gen(xs"""
               @Override
-              public <T> Tuple prepend(T value) {
-                  throw new UnsupportedOperationException("Prepend to Tuple${N}");
-              }
-
-              @Override
               public <T> Tuple append(T value) {
                   throw new UnsupportedOperationException("Append to Tuple${N}");
               }
-            """)}
 
-            ${(i > 0).gen(xs"""
-              public static $generics $className<${(1 to i).gen(j => s"Seq<? extends T$j>")(", ")}> sequence(Iterable<$className<${(1 to i).gen(j => s"? extends T$j")(", ")}>> tuples) {
-                Objects.requireNonNull(tuples, "tuples is null");
-                return new $className<>(${(1 to i).gen(j => s"${im.getType("javaslang.collection.Iterator")}.ofAll(tuples).map($className::_$j).toList()")(", ")});
+              @Override
+              public <T> Tuple prepend(T value) {
+                  throw new UnsupportedOperationException("Prepend to Tuple${N}");
               }
             """)}
+
         }
       """
     }
@@ -1359,6 +1353,18 @@ def generateMainClasses(): Unit = {
             }
 
               """)}
+        """
+      }
+
+      def genSeqMethod(i: Int) = {
+        val generics = (1 to i).gen(j => s"T$j")(", ")
+        val seqs = (1 to i).gen(j => s"Seq<? extends T$j>")(", ")
+        val Objects = im.getType("java.util.Objects")
+        xs"""
+            static <$generics> Tuple$i<$seqs> sequence$i(Iterable<Tuple$i<${(1 to i).gen(j => s"? extends T$j")(", ")}>> tuples) {
+                $Objects.requireNonNull(tuples, "tuples is null");
+                return new Tuple$i<>(${(1 to i).gen(j => s"${im.getType("javaslang.collection.Iterator")}.ofAll(tuples).map(Tuple$i::_$j).toList()")(", ")});
+            }
         """
       }
 
@@ -1423,6 +1429,9 @@ def generateMainClasses(): Unit = {
             }
 
             ${(1 to N).gen(genFactoryMethod)("\n\n")}
+
+            ${(1 to N).gen(genSeqMethod)("\n\n")}
+
         }
       """
     }
