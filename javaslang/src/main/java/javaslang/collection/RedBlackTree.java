@@ -68,7 +68,7 @@ interface RedBlackTree<T> extends Iterable<T> {
 
     static <T extends Comparable<? super T>> RedBlackTree<T> ofAll(Iterable<? extends T> values) {
         Objects.requireNonNull(values, "values is null");
-        return ofAll((Comparator<? super T> & Serializable) T::compareTo, values);
+        return ofAll(Comparators.naturalComparator(), values);
     }
 
     @SuppressWarnings("unchecked")

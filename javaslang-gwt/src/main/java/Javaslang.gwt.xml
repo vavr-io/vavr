@@ -1,8 +1,7 @@
 <module>
     <inherits name='com.google.gwt.user.User'/>
-    <inherits name='com.google.web.bindery.autobean.AutoBean'/>
     <super-source path="super" />
-    <source path="">
+    <source path="javaslang">
         <exclude name="concurrent/**"/>
     </source>
 </module>
