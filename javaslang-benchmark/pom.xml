@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.clojure</groupId>
             <artifactId>clojure</artifactId>
-            <version>1.9.0-alpha10</version>
+            <version>1.9.0-alpha12</version>
         </dependency>
         <dependency>
             <groupId>org.pcollections</groupId>
