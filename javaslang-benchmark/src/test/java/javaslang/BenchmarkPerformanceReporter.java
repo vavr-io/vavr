@@ -22,10 +22,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class BenchmarkPerformanceReporter {
-    static final Comparator<String> TO_STRING_COMPARATOR = Comparator.comparing(String::length).thenComparing(Function.identity());
-    static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,##0.000");
-    static final DecimalFormat PERFORMANCE_FORMAT = new DecimalFormat("#0.00");
-    static final DecimalFormat PCT_FORMAT = new DecimalFormat("0.00%");
+    private static final Comparator<String> TO_STRING_COMPARATOR = Comparator.comparing(String::length).thenComparing(Function.identity());
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,##0.00");
+    private static final DecimalFormat PERFORMANCE_FORMAT = new DecimalFormat("#0.00");
+    private static final DecimalFormat PCT_FORMAT = new DecimalFormat("0.00%");
 
     private final Array<String> includeNames;
     private final Array<String> benchmarkClasses;
