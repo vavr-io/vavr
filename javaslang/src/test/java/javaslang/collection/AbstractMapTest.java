@@ -309,6 +309,17 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(javaslang.toJavaMap()).isEqualTo(java);
     }
 
+    @Test
+    public void shouldConvertToJavaMapUsingIdentityFunction() {
+        final Map<String, Integer> javaslang = mapOfPairs("1", 1, "2", 2, "3", 3);
+        final java.util.Map<String, Integer> actual = javaslang.toJavaMap(Function.identity());
+        final java.util.Map<String, Integer> expected = javaEmptyMap();
+        expected.put("1", 1);
+        expected.put("2", 2);
+        expected.put("3", 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- apply
 
     @Test

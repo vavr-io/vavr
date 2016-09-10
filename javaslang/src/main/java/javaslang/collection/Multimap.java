@@ -82,24 +82,30 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
 
         SET(
                 (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
-                (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem)
+                (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem),
+                java.util.HashSet::new
         ),
         SORTED_SET(
                 (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
-                (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem)
+                (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem),
+                java.util.TreeSet::new
         ),
         SEQ(
                 (Traversable<?> seq, Object elem) -> ((List<Object>) seq).append(elem),
-                (Traversable<?> seq, Object elem) -> ((List<Object>) seq).remove(elem)
+                (Traversable<?> seq, Object elem) -> ((List<Object>) seq).remove(elem),
+                java.util.ArrayList::new
         );
 
         private final BiFunction<Traversable<?>, Object, Traversable<?>> add;
         private final BiFunction<Traversable<?>, Object, Traversable<?>> remove;
+        private final Supplier<? extends Collection<?>> javaContainerSupplier;
 
         ContainerType(BiFunction<Traversable<?>, Object, Traversable<?>> add,
-                      BiFunction<Traversable<?>, Object, Traversable<?>> remove) {
+                      BiFunction<Traversable<?>, Object, Traversable<?>> remove,
+                      Supplier<? extends Collection<?>> javaContainerSupplier) {
             this.add = add;
             this.remove = remove;
+            this.javaContainerSupplier = javaContainerSupplier;
         }
 
         <T> Traversable<T> add(Traversable<?> container, T elem) {
@@ -108,6 +114,10 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
 
         <T> Traversable<T> remove(Traversable<?> container, T elem) {
             return (Traversable<T>) remove.apply(container, elem);
+        }
+
+        <T> Supplier<Collection<T>> getJavaContainerSupplier() {
+            return (Supplier<Collection<T>>) javaContainerSupplier;
         }
     }
 
