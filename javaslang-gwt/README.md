@@ -18,11 +18,11 @@ Ensure that your `~/.m2/settings.xml` contains the following:
 ### Run tests
 
 ```
-mvn -pl \!javaslang-benchmark -Pgwt test
+mvn -pl \!javaslang-benchmark clean test
 ```
 
 ### Start codeserver
 
 ```
-mvn -pl \!javaslang-benchmark -DskipTests -Pgwt gwt:codeserver
+mvn -pl \!javaslang-benchmark -DskipTests gwt:codeserver
 ```

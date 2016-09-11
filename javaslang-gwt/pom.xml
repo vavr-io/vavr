@@ -10,7 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>javaslang-gwt</artifactId>
-    <packaging>gwt-lib</packaging>
+    <packaging>gwt-app</packaging>
     <name>Javaslang GWT</name>
     <description>GWT support for Javaslang.</description>
     <url>http://javaslang.io</url>
@@ -43,13 +43,11 @@
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
             <version>${gwt.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-dev</artifactId>
             <version>${gwt.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -61,15 +59,11 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven.deploy.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>net.ltgt.gwt.maven</groupId>
@@ -77,7 +71,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <skipModule>true</skipModule>
-                    <moduleName>Javaslang</moduleName>
+                    <moduleName>JavaslangExample</moduleName>
                     <includes>
                         <include>**/GwtTest*.java</include>
                     </includes>

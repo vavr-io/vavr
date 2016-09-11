@@ -37,6 +37,7 @@ Note: The maven build currently needs to be started from the javaslang root dir
     <description>Javaslang is a Java standard library extension built for Java 8 and above.</description>
     <modules>
         <module>javaslang</module>
+        <module>javaslang-gwt</module>
         <module>javaslang-benchmark</module>
         <module>javaslang-match</module>
         <module>javaslang-pure</module>
@@ -303,13 +304,6 @@ Note: The maven build currently needs to be started from the javaslang root dir
         </pluginManagement>
     </build>
     <profiles>
-        <profile>
-            <id>gwt</id>
-            <modules>
-                <module>javaslang-gwt</module>
-                <module>javaslang-gwt/example</module>
-            </modules>
-        </profile>
         <!-- A profile for code coverage analysis in ci environments -->
         <profile>
             <id>ci</id>
