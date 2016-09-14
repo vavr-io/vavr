@@ -869,6 +869,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     // -- getOrElse
 
+    @Test
     public void shouldReturnDefaultValue() {
         final Multimap<String, String> map = mapOf("1", "a").put("2", "b");
         assertThat(map.getOrElse("3", List.of("3"))).isEqualTo(List.of("3"));
