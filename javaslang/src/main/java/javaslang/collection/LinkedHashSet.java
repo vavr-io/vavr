@@ -63,7 +63,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
 
     /**
      * Narrows a widened {@code LinkedHashSet<? extends T>} to {@code LinkedHashSet<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param linkedHashSet A {@code LinkedHashSet}.

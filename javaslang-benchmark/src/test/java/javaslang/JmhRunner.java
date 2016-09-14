@@ -33,36 +33,53 @@ public class JmhRunner {
         runSlowNoAsserts(CLASSES);
     }
 
-    /** enables debugging and assertions for benchmarks and production code - the speed results will be totally unreliable */
-    public static void runDebugWithAsserts(Array<Class<?>> groups) {
-        final Array<String> classNames = groups.map(Class::getCanonicalName);
-        run(classNames, 0, 1, 1, ForkJvm.DISABLE, VerboseMode.SILENT, Assertions.ENABLE, PrintInlining.DISABLE);
+    public enum Includes {
+        JAVA("java"),
+        FUNCTIONAL_JAVA("fjava"),
+        PCOLLECTIONS("pcollections"),
+        ECOLLECTIONS("ecollections"),
+        CLOJURE("clojure"),
+        SCALAZ("scalaz"),
+        SCALA("scala"),
+        JAVASLANG("slang");
 
+        private final String name;
+
+        Includes(String name) { this.name = name; }
+
+        @Override
+        public String toString() { return name; }
+    }
+
+    /** enables debugging and assertions for benchmarks and production code - the speed results will be totally unreliable */
+    public static void runDebugWithAsserts(Array<Class<?>> groups, Includes... includes) {
+        run(0, 1, 1, ForkJvm.DISABLE, VerboseMode.SILENT, Assertions.ENABLE, PrintInlining.DISABLE, groups, includes);
         MemoryUsage.printAndReset();
     }
 
     @SuppressWarnings("unused")
-    public static void runQuickNoAsserts(Array<Class<?>> groups) {
-        runAndReport(groups, 5, 5, 10, ForkJvm.ENABLE, VerboseMode.NORMAL, Assertions.DISABLE, PrintInlining.DISABLE);
+    public static void runQuickNoAsserts(Array<Class<?>> groups, Includes... includes) {
+        run(5, 5, 10, ForkJvm.ENABLE, VerboseMode.NORMAL, Assertions.DISABLE, PrintInlining.DISABLE, groups, includes).print();
     }
 
     @SuppressWarnings("unused")
-    public static void runNormalNoAsserts(Array<Class<?>> groups) {
-        runAndReport(groups, 7, 7, 300, ForkJvm.ENABLE, VerboseMode.NORMAL, Assertions.DISABLE, PrintInlining.DISABLE);
+    public static void runNormalNoAsserts(Array<Class<?>> groups, Includes... includes) {
+        run(7, 7, 300, ForkJvm.ENABLE, VerboseMode.NORMAL, Assertions.DISABLE, PrintInlining.DISABLE, groups, includes).print();
     }
 
     @SuppressWarnings("unused")
-    public static void runSlowNoAsserts(Array<Class<?>> groups) {
-        runAndReport(groups, 15, 15, 400, ForkJvm.ENABLE, VerboseMode.EXTRA, Assertions.DISABLE, PrintInlining.DISABLE);
+    public static void runSlowNoAsserts(Array<Class<?>> groups, Includes... includes) {
+        run(15, 15, 400, ForkJvm.ENABLE, VerboseMode.EXTRA, Assertions.DISABLE, PrintInlining.DISABLE, groups, includes).print();
     }
 
-    public static void runAndReport(Array<Class<?>> groups, int warmupIterations, int measurementIterations, int millis, ForkJvm forkJvm, VerboseMode silent, Assertions assertions, PrintInlining printInlining) {
+    private static BenchmarkPerformanceReporter run(int warmupIterations, int measurementIterations, int millis, ForkJvm forkJvm, VerboseMode silent, Assertions assertions, PrintInlining printInlining, Array<Class<?>> groups, Includes[] includes) {
+        final Array<String> includeNames = Array.of(includes.length == 0 ? Includes.values() : includes).map(Includes::toString);
         final Array<String> classNames = groups.map(Class::getCanonicalName);
-        final Array<RunResult> results = run(classNames, warmupIterations, measurementIterations, millis, forkJvm, silent, assertions, printInlining);
-        BenchmarkPerformanceReporter.of(classNames, results).print();
+        final Array<RunResult> results = run(warmupIterations, measurementIterations, millis, forkJvm, silent, assertions, printInlining, classNames, includeNames);
+        return BenchmarkPerformanceReporter.of(includeNames, classNames, results);
     }
 
-    private static Array<RunResult> run(Array<String> classNames, int warmupIterations, int measurementIterations, int millis, ForkJvm forkJvm, VerboseMode verboseMode, Assertions assertions, PrintInlining printInlining) {
+    private static Array<RunResult> run(int warmupIterations, int measurementIterations, int millis, ForkJvm forkJvm, VerboseMode verboseMode, Assertions assertions, PrintInlining printInlining, Array<String> classNames, Array<String> includeNames) {
         try {
             final ChainedOptionsBuilder builder = new OptionsBuilder()
                     .shouldDoGC(true)
@@ -78,7 +95,9 @@ public class JmhRunner {
                   /* We are using 4Gb and setting NewGen to 100% to avoid GC during testing.
                      Any GC during testing will destroy the iteration (i.e. introduce unreliable noise in the measurement), which should get ignored as an outlier */
                     .jvmArgsAppend("-XX:+UseG1GC", "-Xss100m", "-Xms4g", "-Xmx4g", "-XX:MaxGCPauseMillis=1000", "-XX:+UnlockExperimentalVMOptions", "-XX:G1NewSizePercent=100", "-XX:G1MaxNewSizePercent=100", assertions.vmArg);
-            classNames.forEach(builder::include);
+
+            final String includePattern = includeNames.mkString("\\.(", "|", ")_");
+            classNames.forEach(name -> builder.include(name + includePattern));
 
             if (printInlining == PrintInlining.ENABLE) {
                 builder.jvmArgsAppend("-XX:+UnlockDiagnosticVMOptions", "-XX:+PrintInlining"); /* might help in deciding when the JVM is properly warmed up - or where to optimize the code */
@@ -166,7 +185,7 @@ public class JmhRunner {
         final R result = function.apply(source);
         assert assertion.apply(result);
 
-        MemoryUsage.storeMemoryUsages(source, elementCount, result);
+        MemoryUsage.storeMemoryUsages(elementCount, result);
 
         return result;
     }

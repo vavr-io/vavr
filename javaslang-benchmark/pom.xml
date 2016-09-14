@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.clojure</groupId>
             <artifactId>clojure</artifactId>
-            <version>1.9.0-alpha10</version>
+            <version>1.9.0-alpha12</version>
         </dependency>
         <dependency>
             <groupId>org.pcollections</groupId>
@@ -47,6 +47,11 @@
             <groupId>org.functionaljava</groupId>
             <artifactId>functionaljava</artifactId>
             <version>4.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.collections</groupId>
+            <artifactId>eclipse-collections</artifactId>
+            <version>8.0.0-M1</version>
         </dependency>
         <dependency>
             <groupId>com.carrotsearch</groupId>

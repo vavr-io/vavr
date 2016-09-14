@@ -114,7 +114,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     /**
      * Narrows a widened {@code Iterator<? extends T>} to {@code Iterator<T>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
+     * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
      * @param iterator An {@code Iterator}.

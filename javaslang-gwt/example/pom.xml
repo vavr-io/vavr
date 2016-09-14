@@ -10,7 +10,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>javaslang-gwt-example</artifactId>
-    <packaging>jar</packaging>
+    <packaging>gwt-app</packaging>
     <name>Javaslang GWT Example</name>
     <description>GWT example for Javaslang.</description>
     <url>http://javaslang.io</url>
@@ -48,7 +48,6 @@
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-dev</artifactId>
             <version>${gwt.version}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>
@@ -62,33 +61,13 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>net.ltgt.gwt.maven</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwt.version}</version>
+                <extensions>true</extensions>
                 <configuration>
-                    <logLevel>INFO</logLevel>
-                    <style>PRETTY</style>
-                    <hostedWebapp>${project.build.directory}/www</hostedWebapp>
-                    <draftCompile>false</draftCompile>
-                    <disableCastChecking>true</disableCastChecking>
-                    <disableClassMetadata>true</disableClassMetadata>
-                    <disableRunAsync>true</disableRunAsync>
-                    <extraJvmArgs>-Xms2048m</extraJvmArgs>
-                    <extraJvmArgs>-Xmx2048m</extraJvmArgs>
-                    <inplace>false</inplace>
+                    <skipModule>true</skipModule>
+                    <moduleName>JavaslangExample</moduleName>
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

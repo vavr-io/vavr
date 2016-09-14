@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <inherits name='Javaslang'/>
+    <source path="client"/>
+    <source path="javaslang"/>
+</module>
