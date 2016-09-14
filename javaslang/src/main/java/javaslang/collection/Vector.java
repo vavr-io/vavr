@@ -669,10 +669,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final Vector<T> results = ofAll(iterator().filter(predicate));
-        return (results.length() == length()) ? this
-                                              : results;
+        return wrap(trie.filter(predicate));
     }
 
     @Override

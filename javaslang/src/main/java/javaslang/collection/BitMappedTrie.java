@@ -8,6 +8,7 @@ package javaslang.collection;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static javaslang.collection.Arrays.*;
 import static javaslang.collection.NodeModifier.*;
@@ -262,6 +263,25 @@ final class BitMappedTrie<T> implements Serializable {
         return globalIndex;
     }
 
+    BitMappedTrie<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+
+        final Object[] results = new Object[length()];
+        final int length = this.<T> visit((index, leaf, start, end) -> {
+            for (int i = start; i < end; i++) {
+                final T value = leaf[i];
+                if (predicate.test(value)) {
+                    results[index++] = value;
+                }
+            }
+            return index;
+        });
+
+        return (length() == length)
+               ? this
+               : BitMappedTrie.ofAll(copyRange(results, 0, length));
+    }
+
     <U> BitMappedTrie<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
 
@@ -273,7 +293,7 @@ final class BitMappedTrie<T> implements Serializable {
             return index;
         });
 
-        return BitMappedTrie.ofAll(results, length);
+        return BitMappedTrie.ofAll(results);
     }
 
     int length() { return length; }
