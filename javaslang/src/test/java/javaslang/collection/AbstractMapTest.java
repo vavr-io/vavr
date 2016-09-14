@@ -974,4 +974,11 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Map<String, String> map = mapOf("1", "a").put("2", null);
         assertThat(map.get("3")).isEqualTo(Option.none());
     }
+
+    // -- getOrElse
+
+    public void shouldReturnDefaultValue() {
+        final Map<String, String> map = mapOf("1", "a").put("2", "b");
+        assertThat(map.getOrElse("3", "3")).isEqualTo("3");
+    }
 }

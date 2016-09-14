@@ -866,4 +866,11 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         Multimap<Integer, String> dst = src.removeValues(v -> isDigits.matcher(v).matches());
         assertThat(dst).isEqualTo(emptyIntString().put(0, "a").put(1, "b").put(2, "c").put(3, "d").put(4, "e").put(5, "f"));
     }
+
+    // -- getOrElse
+
+    public void shouldReturnDefaultValue() {
+        final Multimap<String, String> map = mapOf("1", "a").put("2", "b");
+        assertThat(map.getOrElse("3", List.of("3"))).isEqualTo(List.of("3"));
+    }
 }

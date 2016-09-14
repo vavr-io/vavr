@@ -315,6 +315,11 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     }
 
     @Override
+    public V getOrElse(K key, V defaultValue) {
+        return trie.getOrElse(key, defaultValue);
+    }
+
+    @Override
     public <C> Map<C, HashMap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {
         return Maps.groupBy(this, this::createFromEntries, classifier);
     }

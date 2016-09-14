@@ -95,6 +95,11 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     }
 
     @Override
+    public Traversable<V> getOrElse(K key, Traversable<V> defaultValue) {
+        return back.getOrElse(key, defaultValue);
+    }
+
+    @Override
     public Set<K> keySet() {
         return back.keySet();
     }
