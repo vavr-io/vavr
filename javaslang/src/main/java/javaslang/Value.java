@@ -1032,8 +1032,8 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Tests equality of two objects assuming one, or both might be instances of Value.
      *
-     * If one is congruence with other is what's being examined.
-     * If none is Objects{@link Objects#equals} is being invoked for two.
+     * If one of a or b is Value instance congruence is tested.
+     * If neither is Objects{@link Objects#equals} is being invoked for two.
      *
      * @param a first object to test
      * @param b fecond object to test
