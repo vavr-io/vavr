@@ -173,24 +173,30 @@ final class BitMappedTrie<T> implements Serializable {
      * Node: the offset and length should be taken into consideration as there may be leading and trailing garbage.
      * Also, the returned array is mutable, but should not be mutated!
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "WeakerAccess" })
     T[] getLeaf(int index) {
-        index += offset;
-        Object[] leaf = array;
-        for (int shift = depthShift; shift > 0; shift -= BRANCHING_BASE) {
-            leaf = getAt(leaf, digit(index, shift));
+        if (depthShift == 0) {
+            return (T[]) array;
+        } else if (depthShift == BRANCHING_BASE) {
+            return getAt(array, firstDigit(offset + index, depthShift));
+        } else {
+            index += offset;
+            Object[] leaf = getAt(array, firstDigit(index, depthShift));
+            for (int shift = depthShift - BRANCHING_BASE; shift > 0; shift -= BRANCHING_BASE) {
+                leaf = getAt(leaf, digit(index, shift));
+            }
+            return (T[]) leaf;
         }
-        return (T[]) leaf;
     }
 
     Iterator<T> iterator() {
         return new Iterator<T>() {
-            final int globalLength = BitMappedTrie.this.length();
-            int globalIndex = 0;
+            private final int globalLength = BitMappedTrie.this.length();
+            private int globalIndex = 0;
 
-            int index = lastDigit(offset);
-            T[] leaf = getLeaf(globalIndex);
-            int length = leaf.length;
+            private int index = lastDigit(offset);
+            private T[] leaf = getLeaf(globalIndex);
+            private int length = leaf.length;
 
             @Override
             public boolean hasNext() { return globalIndex < globalLength; }
@@ -208,7 +214,7 @@ final class BitMappedTrie<T> implements Serializable {
                 return next;
             }
 
-            void setCurrentArray() {
+            private void setCurrentArray() {
                 index = 0;
                 leaf = getLeaf(globalIndex);
                 length = leaf.length;
