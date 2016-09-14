@@ -1,22 +1,30 @@
+/*     / \____  _    _  ____   ______  / \ ____  __    _______
+ *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
+ *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2016 Javaslang, http://javaslang.io
+ * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+ */
 package javaslang.collection;
 
 import javaslang.Value;
 
 import java.util.function.Predicate;
 
-abstract class AbstractSet<T> implements Set<T> {
+/**
+ * @since 2.0.5
+ */
+public abstract class AbstractSet<T> implements Set<T> {
 
     @Override
     public boolean equals(Object obj) {
-        return trueIfSameOrWhenSet(obj, this::euqalsTypeUnsafe);
+        return trueIfSameOrWhenInstanceOfASet(obj, this::euqalsTypeUnsafe);
     }
 
     @Override
     public boolean eq(Object obj) {
-        return trueIfSameOrWhenSet(obj, this::eqTypeUnsafe);
+        return trueIfSameOrWhenInstanceOfASet(obj, this::eqTypeUnsafe);
     }
 
-    private boolean trueIfSameOrWhenSet(Object obj, Predicate<Set> predicate) {
+    private boolean trueIfSameOrWhenInstanceOfASet(Object obj, Predicate<Set> predicate) {
         if (this == obj) {
             return true;
         } else if (obj instanceof Set) {
