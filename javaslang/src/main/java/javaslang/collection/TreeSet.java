@@ -29,7 +29,7 @@ import static javaslang.collection.Comparators.naturalComparator;
  * @since 2.0.0
  */
 // DEV-NOTE: it is not possible to create an EMPTY TreeSet without a Comparator type in scope
-public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Serializable {
+public final class TreeSet<T> extends AbstractSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -188,7 +188,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     @SuppressWarnings("unchecked")
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(Iterable<? extends T> values) {
         Objects.requireNonNull(values, "values is null");
-        if(values instanceof TreeSet) {
+        if (values instanceof TreeSet) {
             return (TreeSet<T>) values;
         } else {
             return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(values)) : empty();
@@ -203,8 +203,8 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
             return (TreeSet<T>) values;
         } else {
             return values.iterator().hasNext()
-                    ? new TreeSet<>(RedBlackTree.ofAll(comparator, values))
-                    : (TreeSet<T>) empty();
+                   ? new TreeSet<>(RedBlackTree.ofAll(comparator, values))
+                   : (TreeSet<T>) empty();
         }
     }
 
@@ -734,7 +734,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     public Tuple2<TreeSet<T>, TreeSet<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return iterator().partition(predicate).map(i1 -> TreeSet.ofAll(tree.comparator(), i1),
-                i2 -> TreeSet.ofAll(tree.comparator(), i2));
+                                                   i2 -> TreeSet.ofAll(tree.comparator(), i2));
     }
 
     @Override
@@ -824,7 +824,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     public Tuple2<TreeSet<T>, TreeSet<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return iterator().span(predicate).map(i1 -> TreeSet.ofAll(tree.comparator(), i1),
-                i2 -> TreeSet.ofAll(tree.comparator(), i2));
+                                              i2 -> TreeSet.ofAll(tree.comparator(), i2));
     }
 
     @Override
@@ -912,7 +912,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip(unzipper).map(i1 -> TreeSet.ofAll(naturalComparator(), i1),
-                i2 -> TreeSet.ofAll(naturalComparator(), i2));
+                                              i2 -> TreeSet.ofAll(naturalComparator(), i2));
     }
 
     @Override
@@ -960,13 +960,11 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof TreeSet) {
+        if (o instanceof TreeSet) {
             final TreeSet<?> that = (TreeSet<?>) o;
             return tree.equals(that.tree);
         } else {
-            return false;
+            return super.equals(o);
         }
     }
 

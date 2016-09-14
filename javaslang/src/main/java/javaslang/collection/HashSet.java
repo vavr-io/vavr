@@ -26,7 +26,7 @@ import java.util.stream.Collector;
  * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  * @since 2.0.0
  */
-public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializable {
+public final class HashSet<T> extends AbstractSet<T> implements Kind1<HashSet<?>, T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -559,7 +559,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
             return empty();
         } else {
             final HashArrayMappedTrie<U, U> that = foldLeft(HashArrayMappedTrie.empty(),
-                    (tree, t) -> addAll(tree, mapper.apply(t)));
+                                                            (tree, t) -> addAll(tree, mapper.apply(t)));
             return new HashSet<>(that);
         }
     }
@@ -883,13 +883,11 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof HashSet) {
+        if (o instanceof HashSet) {
             final HashSet<?> that = (HashSet<?>) o;
             return this.tree.equals(that.tree);
         } else {
-            return false;
+            return super.equals(o);
         }
     }
 
