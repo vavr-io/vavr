@@ -775,10 +775,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public <U> Vector<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-
-        final Iterator<? extends U> results = iterator().map(mapper);
-        return ofAll(results);
+        return ofAll(trie.map(mapper));
     }
 
     @Override

@@ -7,7 +7,7 @@ package javaslang.collection;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.function.Predicate;
+import java.util.function.Function;
 
 import static javaslang.collection.Arrays.*;
 import static javaslang.collection.NodeModifier.*;
@@ -247,6 +247,35 @@ final class BitMappedTrie<T> implements Serializable {
         };
     }
 
+    @SuppressWarnings("unchecked")
+    <T2> int visit(LeafVisitor<T2[]> visitor) {
+        int globalIndex = 0, start = lastDigit(offset);
+        for (int index = 0; index < length; ) {
+            final T2[] leaf = (T2[]) getLeaf(index);
+            final int end = Math.min(leaf.length, start + length - index);
+
+            globalIndex = visitor.visit(globalIndex, leaf, start, end);
+
+            index += end - start;
+            start = 0;
+        }
+        return globalIndex;
+    }
+
+    <U> BitMappedTrie<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+
+        final Object[] results = newInstance(length);
+        this.<T> visit((index, leaf, start, end) -> {
+            for (int i = start; i < end; i++) {
+                results[index++] = mapper.apply(leaf[i]);
+            }
+            return index;
+        });
+
+        return BitMappedTrie.ofAll(results, length);
+    }
+
     int length() { return length; }
 }
 
@@ -257,4 +286,9 @@ interface NodeModifier {
     static <T> NodeModifier updateLeafWith(T element) { return (o, i) -> copyUpdate(o, i, element); }
     NodeModifier COPY_NODE = (o, i) -> copy(o, i + 1);
     NodeModifier IDENTITY = (o, i) -> (Object[]) o;
+}
+
+@FunctionalInterface
+interface LeafVisitor<T> {
+    int visit(int index, T leaf, int start, int end);
 }
