@@ -7,10 +7,10 @@ package javaslang.collection;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import static javaslang.collection.Arrays.*;
-import static javaslang.collection.NodeModifier.COPY_NODE;
-import static javaslang.collection.NodeModifier.updateLeafWith;
+import static javaslang.collection.NodeModifier.*;
 
 /**
  * A `bit-mapped trie` is a very wide and shallow tree (for integer indices the depth will be `≤6`).
@@ -121,8 +121,11 @@ final class BitMappedTrie<T> implements Serializable {
         } else if (n >= length()) {
             return empty();
         } else {
-            final Object[] root = modifyLeaf(array, depthShift, offset + n, Arrays::copyDrop, Arrays::copyDrop);
-            return new BitMappedTrie<>(root, offset + n, length() - n, depthShift);
+            final int index = offset + n;
+            final Object[] root = arePointingToSameLeaf(0, n)
+                                  ? array
+                                  : modifyLeaf(array, depthShift, index, Arrays::copyDrop, IDENTITY);
+            return collapsed(root, index, length() - n, depthShift);
         }
     }
 
@@ -132,9 +135,31 @@ final class BitMappedTrie<T> implements Serializable {
         } else if (n <= 0) {
             return empty();
         } else {
-            final Object[] root = modifyLeaf(array, depthShift, (offset + n) - 1, Arrays::copyTake, Arrays::copyTake);
-            return new BitMappedTrie<>(root, offset, n, depthShift);
+            final int index = n - 1;
+            final Object[] root = arePointingToSameLeaf(index, length() - 1)
+                                  ? array
+                                  : modifyLeaf(array, depthShift, offset + index, Arrays::copyTake, IDENTITY);
+            return collapsed(root, offset, n, depthShift);
         }
+    }
+
+    private boolean arePointingToSameLeaf(int i, int j) {
+        final boolean result = firstDigit(offset + i, BRANCHING_BASE) == firstDigit(offset + j, BRANCHING_BASE);
+        assert result == (getLeaf(i) == getLeaf(j));
+        return result;
+    }
+
+    /* drop root node while it has a single element */
+    private static <T> BitMappedTrie<T> collapsed(Object[] array, int offset, int length, int shift) {
+        for (; shift > 0; shift -= BRANCHING_BASE) {
+            final int skippedElements = array.length - 1;
+            if (skippedElements != digit(offset, shift)) {
+                break;
+            }
+            array = getAt(array, skippedElements);
+            offset -= treeSize(skippedElements, shift);
+        }
+        return new BitMappedTrie<>(array, offset, length, shift);
     }
 
     /* descend the tree from root to leaf, applying the given modifications along the way, returning the new root */
