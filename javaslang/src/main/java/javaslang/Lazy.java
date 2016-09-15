@@ -133,9 +133,11 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      */
     @Override
     public T get() {
-        if (!isEvaluated()) {
+        Supplier<? extends T> tmp = supplier;
+        if (tmp != null) {
             synchronized (this) {
-                if (!isEvaluated()) {
+                tmp = supplier;
+                if (tmp != null) {
                     value = supplier.get();
                     supplier = null; // free mem
                 }
