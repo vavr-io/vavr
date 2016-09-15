@@ -123,8 +123,12 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>> {
 * Check for new plugin version: `mvn versions:display-plugin-updates`
 
 ### Benchmarks
-
-mvn clean test -Pbenchmark
+If you have dedicated hardware (i.e. no virtual machines) and are interested in how Javaslang compares to other alternatives,
+you can run all benchmarks from the `javaslang-benchmark` module via `javaslang.JmhRunner.main` or running the following Maven command:
+```
+mvn clean test -P benchmark -pl javaslang-benchmark 
+```
+Note: running all the tests will require several hours, during which there should be no other activity done on the given machine.
 
 ### Releasing
 
