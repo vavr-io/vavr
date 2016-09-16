@@ -14,6 +14,8 @@ import java.util.function.Predicate;
  */
 public abstract class AbstractSet<T> implements Set<T> {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     public boolean equals(Object obj) {
         return trueIfSameOrWhenInstanceOfASet(obj, this::euqalsTypeUnsafe);
@@ -24,22 +26,22 @@ public abstract class AbstractSet<T> implements Set<T> {
         return trueIfSameOrWhenInstanceOfASet(obj, this::eqTypeUnsafe);
     }
 
-    private boolean trueIfSameOrWhenInstanceOfASet(Object obj, Predicate<Set> predicate) {
+    private boolean trueIfSameOrWhenInstanceOfASet(Object obj, Predicate<Set<?>> predicate) {
         if (this == obj) {
             return true;
-        } else if (obj instanceof Set) {
-            final Set setObj = (Set) obj;
+        } else if (obj instanceof Set<?>) {
+            final Set<?> setObj = (Set<?>) obj;
             return this.size() == setObj.size() && predicate.test(setObj);
         } else {
             return false;
         }
     }
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private boolean euqalsTypeUnsafe(Set other) {
         return this.forAll(other::contains);
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private boolean eqTypeUnsafe(Set other) {
         return this.forAll(thisElem -> other.existsUnique(otherElem -> Value.eq(thisElem, otherElem)));
     }
