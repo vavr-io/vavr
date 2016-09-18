@@ -11,7 +11,9 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.AbstractMap;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Objects;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
@@ -88,6 +90,13 @@ public class Tuple2Test {
     @Test
     public void shouldSwap() {
         assertThat(createIntTuple(1, 2).swap()).isEqualTo(createIntTuple(2, 1));
+    }
+
+    @Test
+    public void shouldConvertToEntry() {
+        Tuple2<Integer, Integer> tuple= createIntTuple(1,2);
+        Map.Entry<Integer,Integer> entry = new AbstractMap.SimpleEntry<>(1, 2);
+        assertThat(tuple.toEntry().equals(entry));
     }
 
     @Test

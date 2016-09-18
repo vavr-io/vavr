@@ -8,6 +8,7 @@ package javaslang;
 import javaslang.collection.List;
 import org.junit.Test;
 
+import java.util.AbstractMap;
 import java.util.Objects;
 
 import static javaslang.Serializables.deserialize;
@@ -130,6 +131,12 @@ public class TupleTest {
     @Test
     public void shouldCreatePair() {
         assertThat(tuple2().toString()).isEqualTo("(1, 2)");
+    }
+
+    @Test
+    public void shouldCreateTuple2FromEntry() {
+        Tuple2<Integer, Integer> tuple2FromEntry = Tuple.fromEntry(new AbstractMap.SimpleEntry<>(1, 2));
+        assertThat(tuple2FromEntry.toString()).isEqualTo("(1, 2)");
     }
 
     @Test

@@ -9,6 +9,7 @@ package javaslang;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import java.util.Map;
 import javaslang.collection.Seq;
 
 /**
@@ -93,6 +94,15 @@ public interface Tuple {
     static <T1, T2> Tuple2<T1, T2> of(T1 t1, T2 t2) {
         return new Tuple2<>(t1, t2);
     }
+
+    /**
+    * Creates a tuple of two elements from java.util.Map.Entry.
+    * @param entry A java.util.Map.Entry
+    * @return a tuple of two elements.
+    */
+     static <T1, T2> Tuple2<T1, T2> fromEntry(Map.Entry<T1, T2> entry) {
+         return new Tuple2<>(entry.getKey(), entry.getValue());
+     }
 
     /**
      * Creates a tuple of three elements.
