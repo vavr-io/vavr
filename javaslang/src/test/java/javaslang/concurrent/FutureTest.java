@@ -18,6 +18,7 @@ import org.assertj.core.api.IterableAssert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 import java.util.function.Function;
@@ -663,6 +664,16 @@ public class FutureTest extends AbstractValueTest {
         assertThat(recovered.get()).isEqualTo(42);
     }
 
+    @Test
+    public void shouldNotCrashWhenRecoverFails() {
+        final Future<Integer> recovered = Future.<Integer> of(zZz(new Error())).recover(t -> {
+            throw new ArithmeticException();
+        });
+        waitUntil(recovered::isCompleted);
+        waitUntil(recovered::isFailure);
+        assertThat(recovered.getCause().get().getClass()).isEqualTo(ArithmeticException.class);
+    }
+
     // -- recoverWith()
 
     @Test
@@ -691,11 +702,11 @@ public class FutureTest extends AbstractValueTest {
         assertThat(transformed).isEqualTo("42");
     }
 
-    // -- transformResult()
+    // -- transformValue()
 
     @Test
     public void shouldTransformResultFromSuccessToSuccess() {
-        Future<String> future = Future.of(zZz(42)).transformResult(t -> Try.of(() -> "forty two"));
+        Future<String> future = Future.of(zZz(42)).transformValue(t -> Try.of(() -> "forty two"));
         waitUntil(future::isCompleted);
         waitUntil(future::isSuccess);
         assertThat(future.get()).isEqualTo("forty two");
@@ -703,7 +714,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldTransformResultFromSuccessToFailure() {
-        Future<String> future = Future.of(zZz(42)).transformResult(t -> Try.failure(new Error()));
+        Future<String> future = Future.of(zZz(42)).transformValue(t -> Try.failure(new Error()));
         waitUntil(future::isCompleted);
         waitUntil(future::isFailure);
         assertThat(future.getCause().get().getClass()).isEqualTo(Error.class);
@@ -711,7 +722,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldTransformResultFromSuccessToFailureThroughError() {
-        Future<String> future = Future.of(zZz(42)).transformResult(t -> Try.of(() -> {throw new ArithmeticException();}));
+        Future<String> future = Future.of(zZz(42)).transformValue(t -> Try.of(() -> {throw new ArithmeticException();}));
         waitUntil(future::isCompleted);
         waitUntil(future::isFailure);
         assertThat(future.getCause().get().getClass()).isEqualTo(ArithmeticException.class);
@@ -719,7 +730,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldTransformResultFromFailureToSuccess() {
-        Future<String> future = Future.of(zZz(new Error())).transformResult(t -> Try.of(() -> "forty two"));
+        Future<String> future = Future.of(zZz(new Error())).transformValue(t -> Try.of(() -> "forty two"));
         waitUntil(future::isCompleted);
         waitUntil(future::isSuccess);
         assertThat(future.get()).isEqualTo("forty two");
@@ -727,7 +738,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldTransformResultFromFailureToFailure() {
-        Future<String> future = Future.of(() -> {throw new ArithmeticException();}).transformResult(t -> Try.failure(new Error()));
+        Future<String> future = Future.of(() -> {throw new ArithmeticException();}).transformValue(t -> Try.failure(new Error()));
         waitUntil(future::isCompleted);
         waitUntil(future::isFailure);
         assertThat(future.getCause().get().getClass()).isEqualTo(Error.class);
@@ -735,7 +746,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldTransformResultFromFailureToFailureThroughError() {
-        Future<String> future = Future.of(zZz(new Error())).transformResult(t -> Try.of(() -> {throw new ArithmeticException();}));
+        Future<String> future = Future.of(zZz(new Error())).transformValue(t -> Try.of(() -> {throw new ArithmeticException();}));
         waitUntil(future::isCompleted);
         waitUntil(future::isFailure);
         assertThat(future.getCause().get().getClass()).isEqualTo(ArithmeticException.class);
@@ -775,6 +786,14 @@ public class FutureTest extends AbstractValueTest {
         waitUntil(future::isCompleted);
         waitUntil(future::isFailure);
         assertThat(future.getCause().get().getClass()).isEqualTo(Error.class);
+    }
+
+    @Test
+    public void shouldZipWithCombinatorFailure() {
+        Future<List<Integer>> future = Future.<Integer> of(zZz(3)).zipWith(Future.of(zZz(2)), (t, u) -> {throw new RuntimeException();});
+        waitUntil(future::isCompleted);
+        waitUntil(future::isFailure);
+        assertThat(future.getCause().get().getClass()).isEqualTo(RuntimeException.class);
     }
 
     // -- Value implementation
@@ -843,6 +862,31 @@ public class FutureTest extends AbstractValueTest {
         });
         waitUntil(testee::isCompleted);
         assertFailed(testee, IllegalStateException.class);
+    }
+
+    // -- mapTry()
+
+    @Test
+    public void shouldMapTryTheHappyPath() {
+        final Future<String> testee = Future.of(zZz(1)).mapTry(Object::toString);
+        waitUntil(testee::isCompleted);
+        assertCompleted(testee, "1");
+    }
+
+    @Test
+    public void shouldMapTryWhenCrashingDuringFutureComputation() {
+        final Future<String> testee = Future.<Integer> of(zZz(new Error())).mapTry(Object::toString);
+        waitUntil(testee::isCompleted);
+        assertFailed(testee, Error.class);
+    }
+
+    @Test
+    public void shouldMapTryWhenCrashingDuringMapping() {
+        final Future<String> testee = Future.of(zZz(1)).mapTry(i -> {
+            throw new IOException();
+        });
+        waitUntil(testee::isCompleted);
+        assertFailed(testee, IOException.class);
     }
 
     // -- (helpers)

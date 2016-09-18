@@ -5,7 +5,6 @@
  */
 package javaslang.concurrent;
 
-import javaslang.Function2;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
@@ -748,7 +747,7 @@ public interface Future<T> extends Value<T> {
      */
     default Future<T> recover(Function<? super Throwable, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return transformResult(t -> t.recover(f::apply));
+        return transformValue(t -> t.recover(f::apply));
     }
 
     /**
@@ -791,14 +790,14 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
-     * Transforms the result of this {@code Future}, whether it is a success or a failure.
+     * Transforms the value of this {@code Future}, whether it is a success or a failure.
      *
      * @param f   A transformation
      * @param <U> Generic type of transformation {@code Try} result
      * @return A {@code Future} of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> Future<U> transformResult(Function<? super Try<T>, ? extends Try<U>> f) {
+    default <U> Future<U> transformValue(Function<? super Try<T>, ? extends Try<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
         final Promise<U> promise = Promise.make(executorService());
         onComplete(t -> {
@@ -837,7 +836,7 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if {@code that} is null
      */
     @SuppressWarnings("unchecked")
-    default <U, R> Future<R> zipWith(Future<? extends U> that, Function2<T, U, R> combinator) {
+    default <U, R> Future<R> zipWith(Future<? extends U> that, BiFunction<? super T, ? super U, ? extends R> combinator) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(combinator, "combinator is null");
         final Promise<R> promise = Promise.make(executorService());
@@ -933,12 +932,12 @@ public interface Future<T> extends Value<T> {
     @Override
     default <U> Future<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return transformResult(t -> t.map(mapper::apply));
+        return transformValue(t -> t.map(mapper::apply));
     }
 
     default <U> Future<U> mapTry(CheckedFunction<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return transformResult(t -> t.mapTry(mapper::apply));
+        return transformValue(t -> t.mapTry(mapper::apply));
     }
 
     default Future<T> orElse(Future<? extends T> other) {
