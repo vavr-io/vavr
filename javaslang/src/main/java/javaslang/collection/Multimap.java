@@ -233,6 +233,15 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     Option<Traversable<V>> get(K key);
 
     /**
+     * Returns the value associated with a key, or a default value if the key is not contained in the map
+     *
+     * @param key the key
+     * @param defaultValue a default value
+     * @return the value associated with key if it exists, otherwise the result of the default value
+     */
+    Traversable<V> getOrElse(K key, Traversable<? extends V> defaultValue);
+
+    /**
      * Returns the type of the {@code Traversable} value container of this {@code MultiMap}.
      *
      * @return an enum value representing the container type
