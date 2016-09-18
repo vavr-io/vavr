@@ -933,7 +933,7 @@ public interface Future<T> extends Value<T> {
     @Override
     default <U> Future<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return mapTry(mapper::apply);
+        return transformResult(t -> t.map(mapper::apply));
     }
 
     default <U> Future<U> mapTry(CheckedFunction<? super T, ? extends U> mapper) {
