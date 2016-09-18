@@ -100,7 +100,7 @@ public interface Tuple {
     * @param entry A java.util.Map.Entry
     * @return a tuple of two elements.
     */
-     static <T1, T2> Tuple2<T1, T2> fromEntry(Map.Entry<T1, T2> entry) {
+     static <T1, T2> Tuple2<T1, T2> fromEntry(Map.Entry<? extends T1, ? extends T2> entry) {
          return new Tuple2<>(entry.getKey(), entry.getValue());
      }
 

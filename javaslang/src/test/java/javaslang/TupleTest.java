@@ -135,7 +135,7 @@ public class TupleTest {
 
     @Test
     public void shouldCreateTuple2FromEntry() {
-        Tuple2<Integer, Integer> tuple2FromEntry = Tuple.fromEntry(new AbstractMap.SimpleImmutableEntry<>(1, 2));
+        Tuple2<Integer, Integer> tuple2FromEntry = Tuple.fromEntry(new AbstractMap.SimpleEntry<>(1, 2));
         assertThat(tuple2FromEntry.toString()).isEqualTo("(1, 2)");
     }
 

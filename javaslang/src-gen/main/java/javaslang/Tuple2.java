@@ -152,7 +152,7 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
     * element is the value.
     */
      public Map.Entry<T1, T2> toEntry(){
-         return new AbstractMap.SimpleImmutableEntry<>(_1, _2);
+         return new AbstractMap.SimpleEntry<>(_1, _2);
      }
 
     /**

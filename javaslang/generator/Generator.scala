@@ -1131,7 +1131,7 @@ def generateMainClasses(): Unit = {
              * element is the value.
              */
               public Map.Entry$generics toEntry(){
-                  return new AbstractMap.SimpleImmutableEntry<>(_1, _2);
+                  return new AbstractMap.SimpleEntry<>(_1, _2);
               }
 
             """)}
@@ -1336,6 +1336,7 @@ def generateMainClasses(): Unit = {
         val generics = (1 to i).gen(j => s"T$j")(", ")
         val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
         val params = (1 to i).gen(j => s"t$j")(", ")
+        val wideGenerics = (1 to i).gen(j => s"? extends T$j")(", ")
         xs"""
           /**
            * Creates a tuple of ${i.numerus("element")}.
@@ -1353,7 +1354,7 @@ def generateMainClasses(): Unit = {
            * @param entry A java.util.Map.Entry
            * @return a tuple of ${i.numerus("element")}.
            */
-            static <$generics> Tuple$i<$generics> fromEntry(Map.Entry<$generics> entry) {
+            static <$generics> Tuple$i<$generics> fromEntry(Map.Entry<$wideGenerics> entry) {
                 return new Tuple$i<>(entry.getKey(), entry.getValue());
             }
 
@@ -1994,7 +1995,7 @@ def generateTestClasses(): Unit = {
                 @$test
                 public void shouldConvertToEntry() {
                     Tuple$i$intGenerics tuple= createIntTuple(1,2);
-                    Map.Entry$intGenerics entry = new AbstractMap.SimpleImmutableEntry<>(1, 2);
+                    Map.Entry$intGenerics entry = new AbstractMap.SimpleEntry<>(1, 2);
                     assertThat(tuple.toEntry().equals(entry));
                 }
 
