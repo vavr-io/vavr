@@ -95,7 +95,7 @@ public class Tuple2Test {
     @Test
     public void shouldConvertToEntry() {
         Tuple2<Integer, Integer> tuple= createIntTuple(1,2);
-        Map.Entry<Integer,Integer> entry = new AbstractMap.SimpleEntry<>(1, 2);
+        Map.Entry<Integer, Integer> entry = new AbstractMap.SimpleImmutableEntry<>(1, 2);
         assertThat(tuple.toEntry().equals(entry));
     }
 

@@ -1130,8 +1130,8 @@ def generateMainClasses(): Unit = {
              * @return A  java.util.Map.Entry where the first element is the key and the second
              * element is the value.
              */
-              public Map.Entry<T1,T2> toEntry(){
-                  return new AbstractMap.SimpleEntry<>(_1, _2);
+              public Map.Entry$generics toEntry(){
+                  return new AbstractMap.SimpleImmutableEntry<>(_1, _2);
               }
 
             """)}
@@ -1353,7 +1353,7 @@ def generateMainClasses(): Unit = {
            * @param entry A java.util.Map.Entry
            * @return a tuple of ${i.numerus("element")}.
            */
-            static <$generics> Tuple$i<$generics> fromEntry(Map.Entry<T1, T2> entry) {
+            static <$generics> Tuple$i<$generics> fromEntry(Map.Entry<$generics> entry) {
                 return new Tuple$i<>(entry.getKey(), entry.getValue());
             }
 
@@ -1993,8 +1993,8 @@ def generateTestClasses(): Unit = {
 
                 @$test
                 public void shouldConvertToEntry() {
-                    Tuple2<Integer, Integer> tuple= createIntTuple(1,2);
-                    Map.Entry<Integer,Integer> entry = new AbstractMap.SimpleEntry<>(1, 2);
+                    Tuple$i$intGenerics tuple= createIntTuple(1,2);
+                    Map.Entry$intGenerics entry = new AbstractMap.SimpleImmutableEntry<>(1, 2);
                     assertThat(tuple.toEntry().equals(entry));
                 }
 
