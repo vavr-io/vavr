@@ -5,8 +5,13 @@
 
 # [Javaslang](http://javaslang.io/)
 
-Feature-rich & self-contained functional programming in Java&trade; 8 and above.
-Javaslang is a functional library for Java 8+ that provides persistent data types and functional control structures. Because Javaslang does not depend on any libraries (other than the JVM) you can easily add it as standalone .jar to your classpath.
+Javaslang is an object-functional language extension to Java 8, which aims to reduce the lines of code and increase code quality.
+It provides persistent collections, functional abstractions for error handling, concurrent programming, pattern matching and much more.
+
+Javaslang fuses the power of object-oriented programming with the elegance and robustness of functional programming.
+The most interesting part is a feature-rich, persistent collection library that smoothly integrates with Java's standard collections.
+
+Because Javaslang does not depend on any libraries (other than the JVM) you can easily add it as standalone .jar to your classpath.
 
 To stay up to date please follow the [blog](http://blog.javaslang.io).
 
@@ -28,6 +33,6 @@ See [User Guide](http://docs.javaslang.io)
 
 Currently only basic microbenchmarks are available. To run
 
-```
-mvn clean test -Pbenchmark
+```bash
+mvn clean test -P benchmark -pl javaslang-benchmark
 ```

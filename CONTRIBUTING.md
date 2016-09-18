@@ -28,6 +28,7 @@ Just a few notes here. In general it is good to look at existing code to get a c
 * Unit tests contain no javadoc at all (because they introduce no new API and contain no business logic).
 * Running `mvn javadoc:javadoc` results in no javadoc errors.
 * All classes start with the following copyright notice, which contains the list of core developers:
+
 ```java
 /*     / \____  _    _  ____   ______  / \ ____  __    _______
  *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
@@ -123,11 +124,14 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>> {
 * Check for new plugin version: `mvn versions:display-plugin-updates`
 
 ### Benchmarks
+
 If you have dedicated hardware (i.e. no virtual machines) and are interested in how Javaslang compares to other alternatives,
 you can run all benchmarks from the `javaslang-benchmark` module via `javaslang.JmhRunner.main` or running the following Maven command:
-```
+
+```bash
 mvn clean test -P benchmark -pl javaslang-benchmark 
 ```
+
 Note: running all the tests will require several hours, during which there should be no other activity done on the given machine.
 
 ### Releasing
@@ -198,7 +202,7 @@ release v2.1.0 - - - - - - + - - - X - - - + 2.1.1-SNAPSHOT
 Performing a release requires admin-rights.
 
 1. get a fresh copy of the repo `git clone https://github.com/javaslang/javaslang.git`
-2  run `mvn clean test` and(!) `mvn javadoc:javadoc` to ensure all is working fine
+2. run `mvn clean test` and(!) `mvn javadoc:javadoc` to ensure all is working fine
 3. perform the release
 
     ```bash

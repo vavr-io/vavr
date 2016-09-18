@@ -50,7 +50,7 @@ public interface Future<T> extends Value<T> {
 
     /**
      * The default executor service is {@link Executors#newCachedThreadPool()}.
-     * Please note that it may prevent the VM from shutdown.}
+     * Please note that it may prevent the VM from shutdown.
      */
     ExecutorService DEFAULT_EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
