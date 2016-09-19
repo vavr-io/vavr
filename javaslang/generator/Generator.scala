@@ -987,6 +987,10 @@ def generateMainClasses(): Unit = {
       val Seq = im.getType("javaslang.collection.Seq")
       val List = im.getType("javaslang.collection.List")
       val Iterator = im.getType("javaslang.collection.Iterator")
+      if(i==2){
+        im.getType("java.util.Map")
+        im.getType("java.util.AbstractMap")
+      }
 
       xs"""
         /**
@@ -1117,8 +1121,19 @@ def generateMainClasses(): Unit = {
                *   and the second element is the first element of this Tuple.
                */
               public Tuple2<T2, T1> swap() {
-                return Tuple.of(_2, _1);
+                  return Tuple.of(_2, _1);
               }
+
+              /$javadoc
+               * Converts the tuple to java.util.Map.Entry {@code Tuple}.
+               *
+               * @return A  java.util.Map.Entry where the first element is the key and the second
+               * element is the value.
+               */
+              public Map.Entry$generics toEntry() {
+                  return new AbstractMap.SimpleEntry<>(_1, _2);
+              }
+
             """)}
 
             ${(i > 0).gen(xs"""
@@ -1315,11 +1330,13 @@ def generateMainClasses(): Unit = {
     def genBaseTuple(im: ImportManager, packageName: String, className: String): String = {
 
       val Seq = im.getType("javaslang.collection.Seq")
+      val Map = im.getType("java.util.Map")
 
       def genFactoryMethod(i: Int) = {
         val generics = (1 to i).gen(j => s"T$j")(", ")
         val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
         val params = (1 to i).gen(j => s"t$j")(", ")
+        val wideGenerics = (1 to i).gen(j => s"? extends T$j")(", ")
         xs"""
           /**
            * Creates a tuple of ${i.numerus("element")}.
@@ -1330,6 +1347,18 @@ def generateMainClasses(): Unit = {
           static <$generics> Tuple$i<$generics> of($paramsDecl) {
               return new Tuple$i<>($params);
           }
+          ${(i == 2).gen(xs"""
+
+           /**
+           * Creates a tuple of ${i.numerus("element")} from java.util.Map.Entry.
+           * @param entry A java.util.Map.Entry
+           * @return a tuple of ${i.numerus("element")}.
+           */
+            static <$generics> Tuple$i<$generics> fromEntry(Map.Entry<$wideGenerics> entry) {
+                return new Tuple$i<>(entry.getKey(), entry.getValue());
+            }
+
+              """)}
         """
       }
 
@@ -1894,6 +1923,11 @@ def generateTestClasses(): Unit = {
         val intGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"Integer")(", ")}>"
         val functionArgs = if (i == 0) "()" else s"${(i > 1).gen("(") + (1 to i).gen(j => s"o$j")(", ") + (i > 1).gen(")")}"
         val nullArgs = (1 to i).gen(j => "null")(", ")
+        if(i==2){
+          im.getType("java.util.AbstractMap")
+          im.getType("java.util.Map")
+        }
+
 
         xs"""
           public class Tuple${i}Test {
@@ -1957,6 +1991,14 @@ def generateTestClasses(): Unit = {
                 public void shouldSwap() {
                     $assertThat(createIntTuple(1, 2).swap()).isEqualTo(createIntTuple(2, 1));
                 }
+
+                @$test
+                public void shouldConvertToEntry() {
+                    Tuple$i$intGenerics tuple = createIntTuple(1,2);
+                    Map.Entry$intGenerics entry = new AbstractMap.SimpleEntry<>(1, 2);
+                    assertThat(tuple.toEntry().equals(entry));
+                }
+
               """)}
 
               ${(i > 0).gen(xs"""
