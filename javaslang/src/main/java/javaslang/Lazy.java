@@ -135,14 +135,13 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      */
     @Override
     public T get() {
-        // using a local var speeds up the double-check idiom by 25%, see Effective Java, Item 71
-        Supplier<? extends T> tmp = supplier;
-        if (tmp != null) {
+        if (this.supplier != null) {
             synchronized (this) {
-                tmp = supplier;
-                if (tmp != null) {
-                    value = tmp.get();
-                    supplier = null; // free mem
+                // only one volatile read from main-memory
+                final Supplier<? extends T> supplier = this.supplier;
+                if (supplier != null) {
+                    value = supplier.get();
+                    this.supplier = null; // free mem
                 }
             }
         }
