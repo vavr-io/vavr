@@ -1131,7 +1131,7 @@ def generateMainClasses(): Unit = {
                * element is the value.
                */
               public Map.Entry$generics toEntry() {
-                   return new AbstractMap.SimpleEntry<>(_1, _2);
+                  return new AbstractMap.SimpleEntry<>(_1, _2);
               }
 
             """)}
