@@ -1121,17 +1121,17 @@ def generateMainClasses(): Unit = {
                *   and the second element is the first element of this Tuple.
                */
               public Tuple2<T2, T1> swap() {
-                return Tuple.of(_2, _1);
+                  return Tuple.of(_2, _1);
               }
 
-             /$javadoc
-             * Converts the tuple to java.util.Map.Entry {@code Tuple}.
-             *
-             * @return A  java.util.Map.Entry where the first element is the key and the second
-             * element is the value.
-             */
-              public Map.Entry$generics toEntry(){
-                  return new AbstractMap.SimpleEntry<>(_1, _2);
+              /$javadoc
+               * Converts the tuple to java.util.Map.Entry {@code Tuple}.
+               *
+               * @return A  java.util.Map.Entry where the first element is the key and the second
+               * element is the value.
+               */
+              public Map.Entry$generics toEntry() {
+                   return new AbstractMap.SimpleEntry<>(_1, _2);
               }
 
             """)}
@@ -1994,7 +1994,7 @@ def generateTestClasses(): Unit = {
 
                 @$test
                 public void shouldConvertToEntry() {
-                    Tuple$i$intGenerics tuple= createIntTuple(1,2);
+                    Tuple$i$intGenerics tuple = createIntTuple(1,2);
                     Map.Entry$intGenerics entry = new AbstractMap.SimpleEntry<>(1, 2);
                     assertThat(tuple.toEntry().equals(entry));
                 }
