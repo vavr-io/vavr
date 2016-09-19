@@ -5,16 +5,19 @@
  */
 package javaslang;
 
-import javaslang.collection.List;
-import javaslang.collection.Seq;
+import javaslang.collection.*;
 import javaslang.control.Option;
 import javaslang.control.Try;
 import org.junit.Test;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
+import static javaslang.collection.Iterator.range;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LazyTest {
@@ -77,7 +80,7 @@ public class LazyTest {
         final Lazy<Integer> testee = Lazy.of(() -> 42);
         final Lazy<Integer> expected = Lazy.of(() -> 21);
 
-        assertThat(testee.map( i -> i / 2)).isEqualTo(expected);
+        assertThat(testee.map(i -> i / 2)).isEqualTo(expected);
     }
 
     @Test
@@ -86,8 +89,8 @@ public class LazyTest {
         final Option<Integer> expectedPositive = Option.some(42);
         final Option<Integer> expectedNegative = Option.none();
 
-        assertThat(testee.filter( i -> i % 2 == 0)).isEqualTo(expectedPositive);
-        assertThat(testee.filter( i -> i % 2 != 0)).isEqualTo(expectedNegative);
+        assertThat(testee.filter(i -> i % 2 == 0)).isEqualTo(expectedPositive);
+        assertThat(testee.filter(i -> i % 2 != 0)).isEqualTo(expectedNegative);
     }
 
     @Test
@@ -95,7 +98,7 @@ public class LazyTest {
         final Lazy<Integer> testee = Lazy.of(() -> 42);
         final Integer expected = 21;
 
-        final Integer actual = testee.transform( lazy -> lazy.get() / 2 );
+        final Integer actual = testee.transform(lazy -> lazy.get() / 2);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -173,9 +176,10 @@ public class LazyTest {
 
     @Test
     public void shouldSupportMultithreading() {
-        final boolean[] lock = new boolean[] { true };
+        final AtomicBoolean isEvaluated = new AtomicBoolean();
+        final AtomicBoolean lock = new AtomicBoolean();
         final Lazy<Integer> lazy = Lazy.of(() -> {
-            while (lock[0]) {
+            while (lock.get()) {
                 Try.run(() -> Thread.sleep(300));
             }
             return 1;
@@ -184,12 +188,38 @@ public class LazyTest {
             Try.run(() -> Thread.sleep(100));
             new Thread(() -> {
                 Try.run(() -> Thread.sleep(100));
-                lock[0] = false;
+                lock.set(false);
             }).start();
-            assertThat(lazy.isEvaluated()).isFalse();
+            isEvaluated.compareAndSet(false, lazy.isEvaluated());
             lazy.get();
         }).start();
+        assertThat(isEvaluated.get()).isFalse();
         assertThat(lazy.get()).isEqualTo(1);
+    }
+
+    @Test
+    @SuppressWarnings({ "StatementWithEmptyBody", "rawtypes" })
+    public void shouldBeConsistentFromMultipleThreads() throws Exception {
+        for (int i = 0; i < 100; i++) {
+            final AtomicBoolean canProceed = new AtomicBoolean(false);
+            final Vector<CompletableFuture<Void>> futures = Vector.range(0, 10).map(j -> {
+                final AtomicBoolean isEvaluated = new AtomicBoolean(false);
+                final Integer expected = ((j % 2) == 1) ? null : j;
+                Lazy<Integer> lazy = Lazy.of(() -> {
+                    assertThat(isEvaluated.getAndSet(true)).isFalse();
+                    return expected;
+                });
+                return Tuple.of(lazy, expected);
+            }).flatMap(t -> range(0, 5).map(j -> runAsync(() -> {
+                        while (!canProceed.get()) { /* busy wait */ }
+                        assertThat(t._1.get()).isEqualTo(t._2);
+                    }))
+            );
+
+            final CompletableFuture all = CompletableFuture.allOf(futures.toJavaList().toArray(new CompletableFuture<?>[0]));
+            canProceed.set(true);
+            all.join();
+        }
     }
 
     // -- equals
@@ -199,7 +229,7 @@ public class LazyTest {
         assertThat(Lazy.of(() -> 1).equals("")).isFalse();
         assertThat(Lazy.of(() -> 1).equals(Lazy.of(() -> 1))).isTrue();
         assertThat(Lazy.of(() -> 1).equals(Lazy.of(() -> 2))).isFalse();
-        Lazy<Integer> same = Lazy.of(() -> 1);
+        final Lazy<Integer> same = Lazy.of(() -> 1);
         assertThat(same.equals(same)).isTrue();
     }
 
