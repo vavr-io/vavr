@@ -28,12 +28,14 @@ import org.assertj.core.api.*;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Function;
 
 import static java.lang.Integer.bitCount;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
+import static javaslang.control.Option.some;
 
 public abstract class AbstractValueTest {
 
@@ -460,7 +462,6 @@ public abstract class AbstractValueTest {
         assertThat(actual).isEqualTo(set);
     }
 
-
     @Test
     public void shouldConvertToStack() {
         final Value<Integer> value = of(1, 2, 3);
@@ -534,9 +535,21 @@ public abstract class AbstractValueTest {
         final Value<Integer> value = of(1, 2, 3);
         final Integer[] ints = value.toJavaArray(Integer.class);
         if (value.isSingleValued()) {
-            assertThat(ints).isEqualTo(new int[] { 1 });
+            assertThat(ints).isEqualTo(new Integer[] { 1 });
         } else {
-            assertThat(ints).isEqualTo(new int[] { 1, 2, 3 });
+            assertThat(ints).isEqualTo(new Integer[] { 1, 2, 3 });
+        }
+    }
+
+    @Test
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void shouldConvertToJavaArrayWithGenericsTypeHint() {
+        final Value<Option<Integer>> value = of(some(1), some(2));
+        final Option<Integer>[] options = value.toJavaArray(Option.class);
+        if (value.isSingleValued()) {
+            assertThat(options).isEqualTo(new Option[] { some(1) });
+        } else {
+            assertThat(options).isEqualTo(new Option[] { some(1), some(2) });
         }
     }
 
@@ -648,44 +661,44 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldConvertToEitherLeftFromValueSupplier() {
-        Either<Integer, String> either = of(0).toLeft(() -> "fallback");
+        final Either<Integer, String> either = of(0).toLeft(() -> "fallback");
         assertThat(either.isLeft()).isTrue();
         assertThat(either.getLeft()).isEqualTo(0);
 
-        Either<Object, String> either2 = empty().toLeft(() -> "fallback");
+        final Either<Object, String> either2 = empty().toLeft(() -> "fallback");
         assertThat(either2.isRight()).isTrue();
         assertThat(either2.get()).isEqualTo("fallback");
     }
 
     @Test
     public void shouldConvertToEitherLeftFromValue() {
-        Either<Integer, String> either = of(0).toLeft("fallback");
+        final Either<Integer, String> either = of(0).toLeft("fallback");
         assertThat(either.isLeft()).isTrue();
         assertThat(either.getLeft()).isEqualTo(0);
 
-        Either<Object, String> either2 = empty().toLeft("fallback");
+        final Either<Object, String> either2 = empty().toLeft("fallback");
         assertThat(either2.isRight()).isTrue();
         assertThat(either2.get()).isEqualTo("fallback");
     }
 
     @Test
     public void shouldConvertToEitherRightFromValueSupplier() {
-        Either<String, Integer> either = of(0).toRight(() -> "fallback");
+        final Either<String, Integer> either = of(0).toRight(() -> "fallback");
         assertThat(either.isRight()).isTrue();
         assertThat(either.get()).isEqualTo(0);
 
-        Either<String, Object> either2 = empty().toRight(() -> "fallback");
+        final Either<String, Object> either2 = empty().toRight(() -> "fallback");
         assertThat(either2.isLeft()).isTrue();
         assertThat(either2.getLeft()).isEqualTo("fallback");
     }
 
     @Test
     public void shouldConvertToEitherRightFromValue() {
-        Either<String, Integer> either = of(0).toRight("fallback");
+        final Either<String, Integer> either = of(0).toRight("fallback");
         assertThat(either.isRight()).isTrue();
         assertThat(either.get()).isEqualTo(0);
 
-        Either<String, Object> either2 = empty().toRight("fallback");
+        final Either<String, Object> either2 = empty().toRight("fallback");
         assertThat(either2.isLeft()).isTrue();
         assertThat(either2.getLeft()).isEqualTo("fallback");
     }
