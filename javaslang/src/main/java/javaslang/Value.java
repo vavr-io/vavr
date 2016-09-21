@@ -516,7 +516,7 @@ public interface Value<T> extends Iterable<T> {
      */
     @SuppressWarnings("unchecked")
     @GwtIncompatible("reflection is not supported")
-    default T[] toJavaArray(Class<? super T> componentType) {
+    default T[] toJavaArray(Class<T> componentType) {
         Objects.requireNonNull(componentType, "componentType is null");
         final java.util.List<T> list = toJavaList();
         return list.toArray((T[]) java.lang.reflect.Array.newInstance(componentType, list.size()));
@@ -1063,8 +1063,8 @@ interface ValueModule {
                 container.add(value.get());
             } else {
                 final int size = value instanceof Traversable && ((Traversable) value).isTraversableAgain()
-                                 ? ((Traversable<V>) value).size()
-                                 : 0;
+                        ? ((Traversable<V>) value).size()
+                        : 0;
                 container = containerSupplier.apply(size);
                 value.forEach(container::add);
             }
