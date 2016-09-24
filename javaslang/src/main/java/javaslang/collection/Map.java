@@ -522,7 +522,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     }
 
     default Tuple2<Seq<K>, Seq<V>> unzip() {
-        return this.unzip(Function.identity());
+        return unzip(Function.identity());
     }
 
     default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends T1, ? extends T2>> unzipper) {
