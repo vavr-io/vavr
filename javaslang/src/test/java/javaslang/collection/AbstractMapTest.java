@@ -15,7 +15,9 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -84,17 +86,17 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
             private ArrayList<Tuple2<Integer, T>> toTuples(java.util.List<T> list) {
                 final ArrayList<Tuple2<Integer, T>> result = new ArrayList<>();
                 Stream.ofAll(list)
-                      .zipWithIndex()
-                      .map(tu -> Tuple.of(tu._2.intValue(), tu._1))
-                      .forEach(result::add);
+                        .zipWithIndex()
+                        .map(tu -> Tuple.of(tu._2.intValue(), tu._1))
+                        .forEach(result::add);
                 return result;
             }
 
             private ArrayList<T> fromTuples(java.util.List<Tuple2<Integer, T>> list) {
                 final ArrayList<T> result = new ArrayList<>();
                 Stream.ofAll(list)
-                      .map(tu -> tu._2)
-                      .forEach(result::add);
+                        .map(tu -> tu._2)
+                        .forEach(result::add);
                 return result;
             }
         };
@@ -546,6 +548,19 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     // -- unzip
 
     @Test
+    public void shouldUnzipIdentityNil() {
+        assertThat(emptyMap().unzip()).isEqualTo(Tuple.of(Stream.empty(), Stream.empty()));
+    }
+
+    @Test
+    public void shouldUnzipIdentityNonNil() {
+        final Map<Integer, Integer> map = emptyIntInt().put(0, 10).put(1, 11).put(2, 12);
+        final Tuple actual = map.unzip();
+        final Tuple expected = Tuple.of(Stream.of(0, 1, 2), Stream.of(10, 11, 12));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldUnzipNil() {
         assertThat(emptyMap().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(Stream.empty(), Stream.empty()));
         assertThat(emptyMap().unzip((k, v) -> Tuple.of(Tuple.of(k, v), Tuple.of(k, v))))
@@ -867,20 +882,20 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void mapOfTuplesShouldReturnTheSingletonEmpty() {
-        if (!emptyMapShouldBeSingleton()) return;
+        if (!emptyMapShouldBeSingleton()) { return; }
         assertThat(mapOfTuples()).isSameAs(emptyMap());
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void mapOfEntriesShouldReturnTheSingletonEmpty() {
-        if (!emptyMapShouldBeSingleton()) return;
+        if (!emptyMapShouldBeSingleton()) { return; }
         assertThat(mapOfEntries()).isSameAs(emptyMap());
     }
 
     @Test
     public void mapOfPairsShouldReturnTheSingletonEmpty() {
-        if (!emptyMapShouldBeSingleton()) return;
+        if (!emptyMapShouldBeSingleton()) { return; }
         assertThat(mapOfPairs()).isSameAs(emptyMap());
     }
 
@@ -964,7 +979,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     }
 
     @Test
-    public void shouldReturnOptionOfKeyWhenAccessingPresentKeysInAMapWithNulls () {
+    public void shouldReturnOptionOfKeyWhenAccessingPresentKeysInAMapWithNulls() {
         final Map<String, String> map = mapOf("1", "a").put("2", null);
         assertThat(map.get("1")).isEqualTo(Option.of("a"));
     }
