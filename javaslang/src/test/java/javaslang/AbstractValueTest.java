@@ -35,9 +35,12 @@ public abstract class AbstractValueTest {
         };
     }
 
+    protected <T> ObjectArrayAssert<T> assertThat(T[] actual) {
+        return new ObjectArrayAssert<T>(actual) {};
+    }
+
     protected BooleanAssert assertThat(Boolean actual) {
-        return new BooleanAssert(actual) {
-        };
+        return new BooleanAssert(actual) {};
     }
 
     protected DoubleAssert assertThat(Double actual) {
@@ -314,10 +317,105 @@ public abstract class AbstractValueTest {
         final Value<Integer> value = of(1, 2, 3);
         final Integer[] ints = value.toJavaArray(Integer.class);
         if (value.isSingleValued()) {
-            assertThat(ints).isEqualTo(new int[] { 1 });
+            assertThat(ints).containsOnly(1);
         } else {
-            assertThat(ints).isEqualTo(new int[] { 1, 2, 3 });
+            assertThat(ints).containsOnly(1, 2, 3);
         }
+    }
+
+    @Test
+    public void shouldConvertToJavaArrayWithTypeHintPrimitiveBoolean() {
+        final Value<Boolean> value = of(true, false);
+        final Boolean[] array = value.toJavaArray(boolean.class);
+        if (value.isSingleValued()) {
+            assertThat(array).containsOnly(true);
+        } else {
+            assertThat(array).containsOnly(true, false);
+        }
+    }
+
+    @Test
+    public void shouldConvertToJavaArrayWithTypeHintPrimitiveByte() {
+        final Value<Byte> value = of((byte) 1, (byte) 2);
+        final Byte[] array = value.toJavaArray(byte.class);
+        if (value.isSingleValued()) {
+            assertThat(array).containsOnly((byte) 1);
+        } else {
+            assertThat(array).containsOnly((byte) 1, (byte) 2);
+        }
+    }
+
+    @Test
+    public void shouldConvertToJavaArrayWithTypeHintPrimitiveChar() {
+        final Value<Character> value = of('a', 'b');
+        final Character[] array = value.toJavaArray(char.class);
+        if (value.isSingleValued()) {
+            assertThat(array).containsOnly('a');
+        } else {
+            assertThat(array).containsOnly('a', 'b');
+        }
+    }
+
+    @Test
+    public void shouldConvertToJavaArrayWithTypeHintPrimitiveDouble() {
+        final Value<Double> value = of(.1, .2);
+        final Double[] array = value.toJavaArray(double.class);
+        if (value.isSingleValued()) {
+            assertThat(array).containsOnly(.1);
+        } else {
+            assertThat(array).containsOnly(.1, .2);
+        }
+    }
+
+    @Test
+    public void shouldConvertToJavaArrayWithTypeHintPrimitiveFloat() {
+        final Value<Float> value = of(.1f, .2f);
+        final Float[] array = value.toJavaArray(float.class);
+        if (value.isSingleValued()) {
+            assertThat(array).containsOnly(.1f);
+        } else {
+            assertThat(array).containsOnly(.1f, .2f);
+        }
+    }
+
+    @Test
+    public void shouldConvertToJavaArrayWithTypeHintPrimitiveInt() {
+        final Value<Integer> value = of(1, 2);
+        final Integer[] array = value.toJavaArray(int.class);
+        if (value.isSingleValued()) {
+            assertThat(array).containsOnly(1);
+        } else {
+            assertThat(array).containsOnly(1, 2);
+        }
+    }
+
+    @Test
+    public void shouldConvertToJavaArrayWithTypeHintPrimitiveLong() {
+        final Value<Long> value = of(1L, 2L);
+        final Long[] array = value.toJavaArray(long.class);
+        if (value.isSingleValued()) {
+            assertThat(array).containsOnly(1L);
+        } else {
+            assertThat(array).containsOnly(1L, 2L);
+        }
+    }
+
+    @Test
+    public void shouldConvertToJavaArrayWithTypeHintPrimitiveShort() {
+        final Value<Short> value = of((short) 1, (short) 2);
+        final Short[] array = value.toJavaArray(short.class);
+        if (value.isSingleValued()) {
+            assertThat(array).containsOnly((short) 1);
+        } else {
+            assertThat(array).containsOnly((short) 1, (short) 2);
+        }
+    }
+
+    @Test
+    public void shouldConvertToJavaArrayWithTypeHintPrimitiveVoid() {
+        final Value<Void> value = of((Void) null);
+        final Void[] array = value.toJavaArray(void.class);
+        assertThat(array).containsOnly((Void) null);
     }
 
     @Test

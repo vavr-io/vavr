@@ -472,8 +472,22 @@ public interface Value<T> extends Iterable<T> {
     @SuppressWarnings("unchecked")
     default T[] toJavaArray(Class<T> componentType) {
         Objects.requireNonNull(componentType, "componentType is null");
-        final java.util.List<T> list = toJavaList();
-        return list.toArray((T[]) java.lang.reflect.Array.newInstance(componentType, list.size()));
+        if (componentType.isPrimitive()) {
+            final Class<?> boxedType =
+                    componentType == boolean.class ? Boolean.class   :
+                    componentType == byte.class    ? Byte.class      :
+                    componentType == char.class    ? Character.class :
+                    componentType == double.class  ? Double.class    :
+                    componentType == float.class   ? Float.class     :
+                    componentType == int.class     ? Integer.class   :
+                    componentType == long.class    ? Long.class      :
+                    componentType == short.class   ? Short.class     :
+                    componentType == void.class    ? Void.class      : null;
+            return toJavaArray((Class<T>) boxedType);
+        } else {
+            final java.util.List<T> list = toJavaList();
+            return list.toArray((T[]) java.lang.reflect.Array.newInstance(componentType, list.size()));
+        }
     }
 
     /**
