@@ -923,7 +923,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         boolean found = false;
         while (!found && !tail.isEmpty()) {
             final T head = tail.head();
-            if (head.equals(element)) {
+            if (Objects.equals(head, element)) {
                 found = true;
             } else {
                 preceding = preceding.prepend(head);
