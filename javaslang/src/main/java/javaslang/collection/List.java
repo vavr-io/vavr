@@ -1039,7 +1039,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         boolean found = false;
         while (!found && !result.isEmpty()) {
             final T head = result.head();
-            if (head.equals(element)) {
+            if (Objects.equals(head, element)) {
                 found = true;
             } else {
                 preceding.addFirst(head);
