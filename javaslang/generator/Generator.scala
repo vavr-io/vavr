@@ -1358,12 +1358,16 @@ def generateMainClasses(): Unit = {
 
       def genSeqMethod(i: Int) = {
         val generics = (1 to i).gen(j => s"T$j")(", ")
-        val seqs = (1 to i).gen(j => s"Seq<? extends T$j>")(", ")
+        val seqs = (1 to i).gen(j => s"Seq<T$j>")(", ")
         val Objects = im.getType("java.util.Objects")
+        val Stream = im.getType("javaslang.collection.Stream");
+        val Iterator  = im.getType("javaslang.collection.Iterator");
+        val emptyString = " "*38; // for indentation
+        val args  = (1 to i).gen(j => s"$Stream.narrow($Iterator.ofAll(tuples).map(Tuple$i::_$j).toStream())")(s",\n$emptyString")
         xs"""
-            static <$generics> Tuple$i<$seqs> sequence$i(Iterable<Tuple$i<${(1 to i).gen(j => s"? extends T$j")(", ")}>> tuples) {
+            static <$generics> Tuple$i<$seqs> sequence$i(Iterable<? extends Tuple$i<${(1 to i).gen(j => s"? extends T$j")(", ")}>> tuples) {
                 $Objects.requireNonNull(tuples, "tuples is null");
-                return new Tuple$i<>(${(1 to i).gen(j => s"${im.getType("javaslang.collection.Iterator")}.ofAll(tuples).map(Tuple$i::_$j).toList()")(", ")});
+                return new Tuple$i<>($args);
             }
         """
       }
