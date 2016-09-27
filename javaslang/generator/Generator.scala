@@ -1324,13 +1324,13 @@ def generateMainClasses(): Unit = {
         val generics = (1 to i).gen(j => s"T$j")(", ")
         val seqs = (1 to i).gen(j => s"Seq<T$j>")(", ")
         val Objects = im.getType("java.util.Objects")
-        val Stream = im.getType("javaslang.collection.Stream");
-        val emptyString = " "*38; // for indentation
-        val args  = (1 to i).gen(j => s"$Stream.ofAll(tuples).map(Tuple$i::_$j)")(s",\n$emptyString")
+        val Stream = im.getType("javaslang.collection.Stream")
+        val widenedGenerics = (1 to i).gen(j => s"? extends T$j")(", ")
         xs"""
-            static <$generics> Tuple$i<$seqs> sequence$i(Iterable<? extends Tuple$i<${(1 to i).gen(j => s"? extends T$j")(", ")}>> tuples) {
+            static <$generics> Tuple$i<$seqs> sequence$i(Iterable<? extends Tuple$i<$widenedGenerics>> tuples) {
                 $Objects.requireNonNull(tuples, "tuples is null");
-                return new Tuple$i<>($args);
+                final Stream<Tuple$i<$widenedGenerics>> s = $Stream.ofAll(tuples);
+                return new Tuple$i<>(${(1 to i).gen(j => s"s.map(Tuple$i::_$j)")(s", ")});
             }
         """
       }
