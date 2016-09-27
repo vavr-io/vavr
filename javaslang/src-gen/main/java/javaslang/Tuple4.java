@@ -354,14 +354,4 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
         return "(" + _1 + ", " + _2 + ", " + _3 + ", " + _4 + ")";
     }
 
-    @Override
-    public <T> Tuple5<T1, T2, T3, T4, T> append(T value) {
-        return Tuple.of(_1, _2, _3, _4, value);
-    }
-
-    @Override
-    public <T> Tuple5<T, T1, T2, T3, T4> prepend(T value) {
-        return Tuple.of(value, _1, _2, _3, _4);
-    }
-
 }

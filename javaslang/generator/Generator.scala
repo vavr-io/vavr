@@ -1278,42 +1278,6 @@ def generateMainClasses(): Unit = {
               }
             """)}
 
-            ${(i == 0).gen(xs"""
-              @Override
-              public <T> Tuple1<T> append(T value) {
-                 return new Tuple1<>(value);
-              }
-
-              @Override
-              public <T> Tuple1<T> prepend(T value) {
-                 return new Tuple1<>(value);
-              }
-            """)}
-
-            ${(i > 0 && i < N).gen(xs"""
-              @Override
-              public <T> Tuple${i + 1}<${(1 to i).gen(j => s"T$j")(", ")}, T> append(T value) {
-                  return Tuple.of(${(1 to i).gen(j => s"_$j")(", ")}, value);
-              }
-
-              @Override
-              public <T> Tuple${i + 1}<T, ${(1 to i).gen(j => s"T$j")(", ")}> prepend(T value) {
-                  return Tuple.of(value, ${(1 to i).gen(j => s"_$j")(", ")});
-              }
-            """)}
-
-            ${(i == N).gen(xs"""
-              @Override
-              public <T> Tuple append(T value) {
-                  throw new UnsupportedOperationException("Append to Tuple${N}");
-              }
-
-              @Override
-              public <T> Tuple prepend(T value) {
-                  throw new UnsupportedOperationException("Prepend to Tuple${N}");
-              }
-            """)}
-
         }
       """
     }
@@ -1361,9 +1325,8 @@ def generateMainClasses(): Unit = {
         val seqs = (1 to i).gen(j => s"Seq<T$j>")(", ")
         val Objects = im.getType("java.util.Objects")
         val Stream = im.getType("javaslang.collection.Stream");
-        val Iterator  = im.getType("javaslang.collection.Iterator");
         val emptyString = " "*38; // for indentation
-        val args  = (1 to i).gen(j => s"$Stream.narrow($Iterator.ofAll(tuples).map(Tuple$i::_$j).toStream())")(s",\n$emptyString")
+        val args  = (1 to i).gen(j => s"$Stream.ofAll(tuples).map(Tuple$i::_$j)")(s",\n$emptyString")
         xs"""
             static <$generics> Tuple$i<$seqs> sequence$i(Iterable<? extends Tuple$i<${(1 to i).gen(j => s"? extends T$j")(", ")}>> tuples) {
                 $Objects.requireNonNull(tuples, "tuples is null");
@@ -1402,24 +1365,6 @@ def generateMainClasses(): Unit = {
              * @return A new {@code Seq}.
              */
             $Seq<?> toSeq();
-
-            /**
-             * Appends the given {@code value} to the end of this Tuple and increases the arity by one.
-             *
-             * @param value the value that will be appended to the end of this Tuple
-             * @return a new Tuple that contains this values plus the new value
-             * @throws UnsupportedOperationException if {@code this.arity() == Tuple.MAX_ARITY}
-             */
-            <T> Tuple append(T value);
-
-            /**
-             * Prepends the given {@code value} before the start of this Tuple and increases the arity by one.
-             *
-             * @param value the value that will be prepended before the start of this Tuple
-             * @return a new Tuple that contains the new value plus this values
-             * @throws UnsupportedOperationException if {@code this.arity() == Tuple.MAX_ARITY}
-             */
-            <T> Tuple prepend(T value);
 
             // -- factory methods
 
@@ -2049,50 +1994,6 @@ def generateTestClasses(): Unit = {
                   }
                 """
               })("\n\n")}
-
-              ${(i == 0).gen(xs"""
-                @$test
-                public void shouldAppendTuple$i() {
-                    Tuple1<Integer> actual = Tuple0.instance().append(42);
-                    Tuple1<Integer> expected = new Tuple1<>(42);
-                    assertThat(actual).isEqualTo(expected);
-                }
-
-                @$test
-                public void shouldPrependTuple$i() {
-                    Tuple1<Integer> actual = Tuple0.instance().prepend(42);
-                    Tuple1<Integer> expected = new Tuple1<>(42);
-                    assertThat(actual).isEqualTo(expected);
-                }
-              """) }
-
-              ${(i > 0 && i < N).gen(xs"""
-                @$test
-                public void shouldAppendTuple$i() {
-                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> actual = createIntTuple(${(1 to i).gen()(", ")}).append(42);
-                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> expected = Tuple.of(${(1 to i).gen()(", ")}, 42);
-                    assertThat(actual).isEqualTo(expected);
-                }
-
-                @$test
-                public void shouldPrependTuple$i() {
-                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> actual = createIntTuple(${(1 to i).gen()(", ")}).prepend(42);
-                    Tuple${i + 1}<${(1 to i + 1).gen(_ => "Integer")(", ")}> expected = Tuple.of(42, ${(1 to i).gen()(", ")});
-                    assertThat(actual).isEqualTo(expected);
-                }
-              """) }
-
-              ${(i == N).gen(xs"""
-                @$test(expected = UnsupportedOperationException.class)
-                public void shouldAppendTuple$i() {
-                    Tuple.of(${(1 to i).gen()(", ")}).append(42);
-                }
-
-                @$test(expected = UnsupportedOperationException.class)
-                public void shouldPrependTuple$i() {
-                    Tuple.of(${(1 to i).gen()(", ")}).prepend(42);
-                }
-              """) }
 
               @$test
               public void shouldApplyTuple() {

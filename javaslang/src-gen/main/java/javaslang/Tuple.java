@@ -10,7 +10,9 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Map;
+import java.util.Objects;
 import javaslang.collection.Seq;
+import javaslang.collection.Stream;
 
 /**
  * The base interface of all tuples.
@@ -41,24 +43,6 @@ public interface Tuple {
      * @return A new {@code Seq}.
      */
     Seq<?> toSeq();
-
-    /**
-     * Appends the given {@code value} to the end of this Tuple and increases the arity by one.
-     *
-     * @param value the value that will be appended to the end of this Tuple
-     * @return a new Tuple that contains this values plus the new value
-     * @throws UnsupportedOperationException if {@code this.arity() == Tuple.MAX_ARITY}
-     */
-    <T> Tuple append(T value);
-
-    /**
-     * Prepends the given {@code value} before the start of this Tuple and increases the arity by one.
-     *
-     * @param value the value that will be prepended before the start of this Tuple
-     * @return a new Tuple that contains the new value plus this values
-     * @throws UnsupportedOperationException if {@code this.arity() == Tuple.MAX_ARITY}
-     */
-    <T> Tuple prepend(T value);
 
     // -- factory methods
 
@@ -223,4 +207,73 @@ public interface Tuple {
     static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> of(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
         return new Tuple8<>(t1, t2, t3, t4, t5, t6, t7, t8);
     }
+
+    static <T1> Tuple1<Seq<T1>> sequence1(Iterable<? extends Tuple1<? extends T1>> tuples) {
+        Objects.requireNonNull(tuples, "tuples is null");
+        return new Tuple1<>(Stream.ofAll(tuples).map(Tuple1::_1));
+    }
+
+    static <T1, T2> Tuple2<Seq<T1>, Seq<T2>> sequence2(Iterable<? extends Tuple2<? extends T1, ? extends T2>> tuples) {
+        Objects.requireNonNull(tuples, "tuples is null");
+        return new Tuple2<>(Stream.ofAll(tuples).map(Tuple2::_1),
+                            Stream.ofAll(tuples).map(Tuple2::_2));
+    }
+
+    static <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> sequence3(Iterable<? extends Tuple3<? extends T1, ? extends T2, ? extends T3>> tuples) {
+        Objects.requireNonNull(tuples, "tuples is null");
+        return new Tuple3<>(Stream.ofAll(tuples).map(Tuple3::_1),
+                            Stream.ofAll(tuples).map(Tuple3::_2),
+                            Stream.ofAll(tuples).map(Tuple3::_3));
+    }
+
+    static <T1, T2, T3, T4> Tuple4<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>> sequence4(Iterable<? extends Tuple4<? extends T1, ? extends T2, ? extends T3, ? extends T4>> tuples) {
+        Objects.requireNonNull(tuples, "tuples is null");
+        return new Tuple4<>(Stream.ofAll(tuples).map(Tuple4::_1),
+                            Stream.ofAll(tuples).map(Tuple4::_2),
+                            Stream.ofAll(tuples).map(Tuple4::_3),
+                            Stream.ofAll(tuples).map(Tuple4::_4));
+    }
+
+    static <T1, T2, T3, T4, T5> Tuple5<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>> sequence5(Iterable<? extends Tuple5<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5>> tuples) {
+        Objects.requireNonNull(tuples, "tuples is null");
+        return new Tuple5<>(Stream.ofAll(tuples).map(Tuple5::_1),
+                            Stream.ofAll(tuples).map(Tuple5::_2),
+                            Stream.ofAll(tuples).map(Tuple5::_3),
+                            Stream.ofAll(tuples).map(Tuple5::_4),
+                            Stream.ofAll(tuples).map(Tuple5::_5));
+    }
+
+    static <T1, T2, T3, T4, T5, T6> Tuple6<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>, Seq<T6>> sequence6(Iterable<? extends Tuple6<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6>> tuples) {
+        Objects.requireNonNull(tuples, "tuples is null");
+        return new Tuple6<>(Stream.ofAll(tuples).map(Tuple6::_1),
+                            Stream.ofAll(tuples).map(Tuple6::_2),
+                            Stream.ofAll(tuples).map(Tuple6::_3),
+                            Stream.ofAll(tuples).map(Tuple6::_4),
+                            Stream.ofAll(tuples).map(Tuple6::_5),
+                            Stream.ofAll(tuples).map(Tuple6::_6));
+    }
+
+    static <T1, T2, T3, T4, T5, T6, T7> Tuple7<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>, Seq<T6>, Seq<T7>> sequence7(Iterable<? extends Tuple7<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7>> tuples) {
+        Objects.requireNonNull(tuples, "tuples is null");
+        return new Tuple7<>(Stream.ofAll(tuples).map(Tuple7::_1),
+                            Stream.ofAll(tuples).map(Tuple7::_2),
+                            Stream.ofAll(tuples).map(Tuple7::_3),
+                            Stream.ofAll(tuples).map(Tuple7::_4),
+                            Stream.ofAll(tuples).map(Tuple7::_5),
+                            Stream.ofAll(tuples).map(Tuple7::_6),
+                            Stream.ofAll(tuples).map(Tuple7::_7));
+    }
+
+    static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>, Seq<T6>, Seq<T7>, Seq<T8>> sequence8(Iterable<? extends Tuple8<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7, ? extends T8>> tuples) {
+        Objects.requireNonNull(tuples, "tuples is null");
+        return new Tuple8<>(Stream.ofAll(tuples).map(Tuple8::_1),
+                            Stream.ofAll(tuples).map(Tuple8::_2),
+                            Stream.ofAll(tuples).map(Tuple8::_3),
+                            Stream.ofAll(tuples).map(Tuple8::_4),
+                            Stream.ofAll(tuples).map(Tuple8::_5),
+                            Stream.ofAll(tuples).map(Tuple8::_6),
+                            Stream.ofAll(tuples).map(Tuple8::_7),
+                            Stream.ofAll(tuples).map(Tuple8::_8));
+    }
+
 }
