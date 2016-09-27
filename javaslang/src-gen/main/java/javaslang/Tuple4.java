@@ -354,18 +354,4 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
         return "(" + _1 + ", " + _2 + ", " + _3 + ", " + _4 + ")";
     }
 
-    @Override
-    public <T> Tuple5<T, T1, T2, T3, T4> prepend(T value) {
-        return Tuple.of(value, _1, _2, _3, _4);
-    }
-
-    @Override
-    public <T> Tuple5<T1, T2, T3, T4, T> append(T value) {
-        return Tuple.of(_1, _2, _3, _4, value);
-    }
-
-    public static <T1, T2, T3, T4> Tuple4<Seq<? extends T1>, Seq<? extends T2>, Seq<? extends T3>, Seq<? extends T4>> sequence(Iterable<Tuple4<? extends T1, ? extends T2, ? extends T3, ? extends T4>> tuples) {
-      Objects.requireNonNull(tuples, "tuples is null");
-      return new Tuple4<>(Iterator.ofAll(tuples).map(Tuple4::_1).toList(), Iterator.ofAll(tuples).map(Tuple4::_2).toList(), Iterator.ofAll(tuples).map(Tuple4::_3).toList(), Iterator.ofAll(tuples).map(Tuple4::_4).toList());
-    }
 }
