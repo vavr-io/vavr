@@ -113,6 +113,8 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toStream()}</li>
  * <li>{@link #toString()}</li>
  * <li>{@link #toTree()}</li>
+ * <li>{@link #toTree(Comparator)}</li>
+ * <li>{@link #toTree(ToIntFunction)}</li>
  * <li>{@link #toTry()}</li>
  * <li>{@link #toTry(Supplier)}</li>
  * <li>{@link #toVector()}</li>
@@ -955,6 +957,35 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
+     * Converts this to a {@link Tree}.
+     *
+     * @return A new {@link Tree}.
+     */
+    default Tree<T> toTree() {
+        return ValueModule.toTraversable(this, Tree.empty(), Tree::of, Tree::ofAll);
+    }
+
+    /**
+     * Converts this to a {@link Tree} using a {@code Comparator}
+     *
+     * @param comparator An element comparator that computes the tree level difference of two elements {@code e1}, {@code e2}.
+     * @return The result of {@code Tree.ofAll(this, comparator)}.
+     */
+    default Tree<T> toTree(Comparator<? super T> comparator) {
+        return Tree.ofAll(this, comparator);
+    }
+
+    /**
+     * Converts this to a {@link Tree} using a {@code Comparator}
+     *
+     * @param treeLevel A function that computes the tree level of an element.
+     * @return The result of {@code Tree.ofAll(this, treeLevel)}.
+     */
+    default Tree<T> toTree(ToIntFunction<? super T> treeLevel) {
+        return Tree.ofAll(this, treeLevel);
+    }
+
+    /**
      * Converts this to a {@link Try}.
      * <p>
      * If this value is undefined, i.e. empty, then a new {@code Failure(NoSuchElementException)} is returned,
@@ -982,15 +1013,6 @@ public interface Value<T> extends Iterable<T> {
     default Try<T> toTry(Supplier<? extends Throwable> ifEmpty) {
         Objects.requireNonNull(ifEmpty, "ifEmpty is null");
         return isEmpty() ? Try.failure(ifEmpty.get()) : toTry();
-    }
-
-    /**
-     * Converts this to a {@link Tree}.
-     *
-     * @return A new {@link Tree}.
-     */
-    default Tree<T> toTree() {
-        return ValueModule.toTraversable(this, Tree.empty(), Tree::of, Tree::ofAll);
     }
 
     /**

@@ -150,6 +150,182 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     /**
+     * Converts the given {@code iterable} to a {@code Tree} using a tree level {@code Comparator}.
+     * <p>
+     * The given {@code comparator} computes the tree level difference in the following way:
+     * <p>
+     * Let {@code e1} and {@code e2} be two subsequent elements (in iteration order).<br>
+     * Let {@code comp := comparator.compare(e1, e2)}.<br>
+     * Let {@code level: T -&gt; int} be the tree level for an element {@code e} of type {@code T}, i.e. {@code level(e) &gt;= 0}.<br>
+     * Then
+     *
+     * <ul>
+     * <li>{@code comp &lt; 0 &lt;=&gt; level(e1) &lt; level(e2)}</li>
+     * <li>{@code comp == 0 &lt;=&gt; level(e1) == level(e2)}</li>
+     * <li>{@code comp &gt; 0 &lt;=&gt; level(e1) &gt; level(e2)}</li>
+     * </ul>
+     *
+     * <strong>Example 1</strong>: Proper tree
+     *
+     * <pre><code>
+     * List&lt;String&gt; rows = List.of(
+     *     "/",
+     *     "  home",
+     *     "    daniel",
+     *     "  var"
+     * );
+     * String result = Tree.ofAll(rows, s -&gt; CharSeq.of(s).indexWhere(c -&gt; c != ' '))
+     *                     .map(String::trim)
+     *                     .draw();
+     * </code></pre>
+     *
+     * Result:
+     *
+     * <pre><code>
+     * /
+     * ├──home
+     * │  └──daniel
+     * └──var
+     * </code></pre>
+     * <p>
+     *
+     * <strong>Example 2</strong>: Automatic root addition
+     *
+     * <pre>
+     * <code>
+     * List&lt;String&gt; rows = List.of(
+     *     "&lt;dependency&gt;",
+     *     "  &lt;groupId&gt;io.javaslang&lt;/groupId&gt;",
+     *     "  &lt;artifactId&gt;javaslang&lt;/artifactId&gt;",
+     *     "  &lt;version&gt;BLEEDING-EDGE&lt;/version&gt;",
+     *     "&lt;/dependency&gt;"
+     * );
+     * String result = Tree.ofAll(rows, s -&gt; CharSeq.of(s).indexWhere(c -&gt; c != ' '))
+     *                     .map(s -&gt; (s == null) ? "" : s.trim())
+     *                     .draw();
+     * </code>
+     * </pre>
+     *
+     * Result:
+     *
+     * <pre><code>
+     * ├──&lt;dependency&gt;
+     * │  ├──&lt;groupId&gt;io.javaslang&lt;/groupId&gt;
+     * │  ├──&lt;artifactId&gt;javaslang&lt;/artifactId&gt;
+     * │  └──&lt;version&gt;BLEEDING-EDGE&lt;/version&gt;
+     * └──&lt;/dependency&gt;
+     * </code></pre>
+     * <p>
+     *
+     * <strong>Example 3</strong>: Automatic tree expansion
+     *
+     * <pre>
+     * <code>
+     * List&lt;String&gt; rows = List.of(
+     *     "   a",
+     *     "  b",
+     *     "c",
+     *     "  d",
+     *     "    e"
+     * );
+     * String result = Tree.ofAll(rows, s -&gt; CharSeq.of(s).indexWhere(c -&gt; c != ' '))
+     *                     .map(s -&gt; (s == null) ? "" : s.trim())
+     *                     .draw();
+     * </code>
+     * </pre>
+     *
+     * Result:
+     *
+     * <pre>
+     * <code>
+     * ├──
+     * │  ├──
+     * │  │  └──a
+     * │  └──b
+     * └──c
+     *    └──d
+     *       └──e
+     * </code>
+     * </pre>
+     *
+     * @param <T>        Component type
+     * @param iterable   The elements which should be aligned as {@code Tree}
+     * @param comparator An element comparator that computes the tree level difference of two elements {@code e1}, {@code e2}.
+     * @return A tree representation of this {@code Value}
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Tree<T> ofAll(Iterable<? extends T> iterable, Comparator<? super T> comparator) {
+
+        Objects.requireNonNull(iterable, "iterable is null");
+        Objects.requireNonNull(comparator, "comparator is null");
+
+        final java.util.Iterator<? extends T> iterator = iterable.iterator();
+        if (!iterator.hasNext()) {
+            return Tree.empty();
+        }
+
+        T currentElement = iterator.next();
+        List<Node<T>> currentChildren = List.empty();
+
+        Stack<T> path = List.empty();
+        Stack<List<Node<T>>> levels = List.empty();
+
+        final Tuple2<T, Stack<T>> pathExpander = Tuple.of(null, List.empty());
+        final Tuple2<List<Node<T>>, Stack<List<Node<T>>>> levelExpander = Tuple.of(List.empty(), List.empty());
+
+        while (iterator.hasNext()) {
+
+            final T nextElement = iterator.next();
+            final int distance = comparator.compare(currentElement, nextElement);
+
+            if (distance < 0) {
+                path = path.push(currentElement);
+                levels = levels.push(currentChildren);
+                currentElement = nextElement;
+                currentChildren = List.empty();
+            } else if (distance > 0) {
+                final Node<T> currentNode = Tree.of(currentElement, currentChildren.reverse());
+                final Tuple2<T, Stack<T>> parentElement = ((Option<Tuple2<T, Stack<T>>>) path.pop2Option()).getOrElse(pathExpander);
+                final Tuple2<List<Node<T>>, Stack<List<Node<T>>>> parentLevel = ((Option<Tuple2<List<Node<T>>, Stack<List<Node<T>>>>>) levels.pop2Option()).getOrElse(levelExpander);
+                final Node<T> parentNode = Tree.of(parentElement._1, parentLevel._1.prepend(currentNode).reverse());
+                path = parentElement._2;
+                levels = ((Option<Tuple2<List<Node<T>>, Stack<List<Node<T>>>>>) parentLevel._2.pop2Option()).getOrElse(levelExpander).apply((children, stack) -> stack.push(children.prepend(parentNode)));
+                currentElement = nextElement;
+                currentChildren = List.empty();
+            } else {
+                final Node<T> node = Tree.of(currentElement, currentChildren.reverse());
+                levels = ((Option<Tuple2<List<Node<T>>, Stack<List<Node<T>>>>>) levels.pop2Option()).getOrElse(levelExpander).apply((children, stack) -> stack.push(children.prepend(node)));
+                currentElement = nextElement;
+                currentChildren = List.empty();
+            }
+        }
+
+        do {
+            final Node<T> node = Tree.of(currentElement, currentChildren.reverse());
+            final Tuple2<T, Stack<T>> parentElement = ((Option<Tuple2<T, Stack<T>>>) path.pop2Option()).getOrElse(pathExpander);
+            final Tuple2<List<Node<T>>, Stack<List<Node<T>>>> parentLevel = ((Option<Tuple2<List<Node<T>>, Stack<List<Node<T>>>>>) levels.pop2Option()).getOrElse(levelExpander);
+            currentElement = parentElement._1;
+            currentChildren = parentLevel._1.prepend(node);
+            path = parentElement._2;
+            levels = parentLevel._2;
+        } while (!levels.isEmpty());
+
+        return Tree.of(currentElement, currentChildren.reverse());
+    }
+
+    /**
+     * Converts the given {@code iterable} to a {@code Tree} using a tree level function.
+     *
+     * @param <T>       Component type
+     * @param iterable  The elements which should be aligned as {@code Tree}
+     * @param treeLevel An element comparator that computes the tree level difference of two elements {@code e1}, {@code e2}.
+     * @return The result of {@code Tree.ofAll(iterable, Comparator.comparingInt(treeLevel))}.
+     */
+    static <T> Tree<T> ofAll(Iterable<? extends T> iterable, ToIntFunction<? super T> treeLevel) {
+        return ofAll(iterable, Comparator.comparingInt(treeLevel));
+    }
+
+    /**
      * Creates a Tree that contains the elements of the given {@link java.util.stream.Stream}.
      *
      * @param javaStream A {@link java.util.stream.Stream}
@@ -792,8 +968,8 @@ public interface Tree<T> extends Traversable<T> {
             for (List<Node<T>> it = children; !it.isEmpty(); it = it.tail()) {
                 final boolean isLast = it.tail().isEmpty();
                 builder.append('\n')
-                       .append(indent)
-                       .append(isLast ? "└──" : "├──");
+                        .append(indent)
+                        .append(isLast ? "└──" : "├──");
                 it.head().drawAux(indent + (isLast ? "   " : "│  "), builder);
             }
         }
@@ -1090,7 +1266,7 @@ interface TreeModule {
 
         static <T> Stream<Node<T>> preOrder(Node<T> node) {
             return node.getChildren().foldLeft(Stream.of(node),
-                    (acc, child) -> acc.appendAll(preOrder(child)));
+                                               (acc, child) -> acc.appendAll(preOrder(child)));
         }
 
         static <T> Stream<Node<T>> inOrder(Node<T> node) {
@@ -1143,7 +1319,7 @@ interface TreeModule {
                                                                            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
             final Tuple3<? extends T1, ? extends T2, ? extends T3> value = unzipper.apply(node.getValue());
             final List<Tuple3<Node<T1>, Node<T2>, Node<T3>>> children = node.getChildren()
-                                                                            .map(child -> Unzip.apply3(child, unzipper));
+                    .map(child -> Unzip.apply3(child, unzipper));
             final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
             final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
             final Node<T3> node3 = new Node<>(value._3, children.map(t -> t._3));

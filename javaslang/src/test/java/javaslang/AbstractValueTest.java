@@ -28,12 +28,14 @@ import org.assertj.core.api.*;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Function;
 
 import static java.lang.Integer.bitCount;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
+import static org.junit.Assert.fail;
 
 public abstract class AbstractValueTest {
 
@@ -463,7 +465,6 @@ public abstract class AbstractValueTest {
         assertThat(actual).isEqualTo(set);
     }
 
-
     @Test
     public void shouldConvertToStack() {
         final Value<Integer> value = of(1, 2, 3);
@@ -484,6 +485,90 @@ public abstract class AbstractValueTest {
         } else {
             assertThat(stream).isEqualTo(Stream.of(1, 2, 3));
         }
+    }
+
+    @Test
+    public void shouldConvertEmptyToTree() {
+        final Value<Integer> value = empty();
+        final Tree<Integer> tree = value.toTree();
+        assertThat(tree).isEqualTo(Tree.empty());
+    }
+
+    @Test
+    public void shouldConvertNonEmptyToTree() {
+        final Value<Integer> value = of(1, 2, 3);
+        final Tree<Integer> tree = value.toTree();
+        if (value.isSingleValued()) {
+            assertThat(tree).isEqualTo(Tree.of(1));
+        } else {
+            assertThat(tree).isEqualTo(Tree.of(1, 2, 3));
+        }
+    }
+
+    @Test
+    public void shouldConvertEmptyToTreeUsingComparator() {
+        fail("not implemented");
+    }
+
+    @Test
+    public void shouldConvertNonEmptyToProperTreeUsingComparator() {
+        final String actual = List.of(
+                "/",
+                "  home",
+                "    daniel",
+                "  var")
+                .toTree(s -> CharSeq.of(s).indexWhere(c -> c != ' '))
+                .map(String::trim).draw();
+        final String expected = String.join("\n",
+                                            "/",
+                                            "├──home",
+                                            "│  └──daniel",
+                                            "└──var");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConvertNonEmptyToTreeAddingRootUsingComparator() {
+        final String actual = List.of(
+                "<dependency>",
+                "  <groupId>io.javaslang</groupId>",
+                "  <artifactId>javaslang</artifactId>",
+                "  <version>BLEEDING-EDGE</version>",
+                "</dependency>")
+                .toTree(s -> CharSeq.of(s).indexWhere(c -> c != ' '))
+                .map(s -> (s == null) ? "" : s.trim())
+                .draw();
+        final String expected = String.join("\n",
+                                            "",
+                                            "├──<dependency>",
+                                            "│  ├──<groupId>io.javaslang</groupId>",
+                                            "│  ├──<artifactId>javaslang</artifactId>",
+                                            "│  └──<version>BLEEDING-EDGE</version>",
+                                            "└──</dependency>");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConvertNonEmptyNonToExpandedTreeUsingComparator() {
+        final String actual = List.of(
+                "   a",
+                "  b",
+                "c",
+                "  d",
+                "    e")
+                .toTree(s -> CharSeq.of(s).indexWhere(c -> c != ' '))
+                .map(s -> (s == null) ? "" : s.trim())
+                .draw();
+        final String expected = String.join("\n",
+                                            "",
+                                            "├──",
+                                            "│  ├──",
+                                            "│  │  └──a",
+                                            "│  └──b",
+                                            "└──c",
+                                            "   └──d",
+                                            "      └──e");
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test

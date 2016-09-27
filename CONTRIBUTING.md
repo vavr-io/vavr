@@ -195,6 +195,16 @@ release v2.1.0 - - - - - - + - - - X - - - + 2.1.1-SNAPSHOT
                           ...             ...
 ```
 
+### Backward compatibility
+
+We check backward compatibility by running the baseline goal of the maven-bundle-plugin:
+
+**Example:** Comparing API changes of current branch with version 2.0.0
+
+```bash
+mvn org.apache.felix:maven-bundle-plugin:baseline -DcomparisonVersion=2.0.0 -DskipTests
+```
+
 ### Major release
 
 #### Performing a release
