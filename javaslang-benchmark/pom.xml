@@ -54,9 +54,9 @@
             <version>8.0.0-M1</version>
         </dependency>
         <dependency>
-            <groupId>com.carrotsearch</groupId>
-            <artifactId>java-sizeof</artifactId>
-            <version>0.0.5</version>
+            <groupId>org.openjdk.jol</groupId>
+            <artifactId>jol-core</artifactId>
+            <version>0.6</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>

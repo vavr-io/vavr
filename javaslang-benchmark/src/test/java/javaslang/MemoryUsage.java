@@ -1,13 +1,12 @@
 package javaslang;
 
 import javaslang.collection.*;
+import org.openjdk.jol.info.GraphLayout;
 
 import java.text.DecimalFormat;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import static com.carrotsearch.sizeof.RamUsageEstimator.humanReadableUnits;
-import static com.carrotsearch.sizeof.RamUsageEstimator.sizeOf;
 import static java.lang.Math.max;
 
 public class MemoryUsage {
@@ -20,10 +19,9 @@ public class MemoryUsage {
             final Seq<Integer> columnSizes = columnSizes(entry._1);
             System.out.println(String.format("\nfor `%d` elements", entry._1));
             for (Seq<CharSeq> stats : entry._2) {
-                final String format = String.format("  %s → %s bytes - %s",
+                final String format = String.format("  %s → %s bytes",
                         stats.get(0).padTo(columnSizes.get(0), ' '),
-                        stats.get(1).leftPadTo(columnSizes.get(1), ' '),
-                        stats.get(2).leftPadTo(columnSizes.get(2), ' ')
+                        stats.get(1).leftPadTo(columnSizes.get(1), ' ')
                 );
                 System.out.println(format);
             }
@@ -40,10 +38,11 @@ public class MemoryUsage {
     static void storeMemoryUsages(int elementCount, Object target) {
         memoryUsages = memoryUsages.put(elementCount, memoryUsages.get(elementCount).getOrElse(LinkedHashSet.empty()).add(Array.of(
                 toHumanReadableName(target),
-                FORMAT.format(sizeOf(target)),
-                humanReadableUnits(sizeOf(target))
+                toHumanReadableByteSize(target)
         ).map(CharSeq::of)));
     }
+    private static String toHumanReadableByteSize(Object target) { return FORMAT.format(byteSize(target)); }
+    private static long byteSize(Object target)                  { return GraphLayout.parseInstance(target).totalSize(); }
 
     private static HashMap<Predicate<String>, String> names = HashMap.ofEntries(
             Tuple.of("^java\\.", "Java mutable @ "),

@@ -15,12 +15,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static com.carrotsearch.sizeof.RamUsageEstimator.sizeOf;
 import static java.util.Arrays.asList;
 import static javaslang.JmhRunner.Includes.*;
 import static javaslang.JmhRunner.*;
-import static javaslang.collection.Arrays.copyRange;
-import static javaslang.collection.BitMappedTrie.branchingFactor;
 import static javaslang.collection.Collections.areEqual;
 import static scala.collection.JavaConversions.asJavaCollection;
 import static scala.collection.JavaConversions.asScalaBuffer;
@@ -778,7 +775,6 @@ public class VectorBenchmark {
             for (int i = 1; !values.isEmpty(); i++) {
                 values = values.slice(1, values.size());
                 values = values.slice(0, values.size() - 1);
-                assert sizeOf(values.trie) < (branchingFactor() * sizeOf(copyRange(ELEMENTS, i, javaMutable.size() - i))); /* detect memory leak */
                 bh.consume(values);
             }
         }
