@@ -58,6 +58,77 @@ def generateMainClasses(): Unit = {
       val TryType = im.getType("javaslang.control.Try")
       val ValidationType = im.getType("javaslang.control.Validation")
       val CharSeqType = im.getType("javaslang.collection.CharSeq")
+      val ArrayType = im.getType("javaslang.collection.Array")
+      val VectorType = im.getType("javaslang.collection.Vector")
+      val ListType = im.getType("javaslang.collection.List")
+      val StreamType = im.getType("javaslang.collection.Stream")
+      val QueueType = im.getType("javaslang.collection.Queue")
+      val LinkedHashSetType = im.getType("javaslang.collection.LinkedHashSet")
+      val HashSetType = im.getType("javaslang.collection.HashSet")
+      val JavaStreamType = im.getType("java.util.stream.Stream")
+
+      def genTraversableAliases(traversableType: String, name: String): String = {
+        xs"""
+          /$javadoc
+           * Alias for {@link $traversableType#empty()}
+           *
+           * @param <T> Component type of element.
+           * @return A singleton instance of empty {@link $traversableType}
+           */
+          public static <T> $traversableType<T> $name() {
+              return $traversableType.empty();
+          }
+
+          /$javadoc
+           * Alias for {@link $traversableType#of(Object)}
+           *
+           * @param <T>     Component type of element.
+           * @param element An element.
+           * @return A new {@link $traversableType} instance containing the given element
+           */
+          public static <T> $traversableType<T> $name(T element) {
+              return $traversableType.of(element);
+          }
+
+          /$javadoc
+           * Alias for {@link $traversableType#of(Object...)}
+           *
+           * @param <T>      Component type of elements.
+           * @param elements Zero or more elements.
+           * @return A new {@link $traversableType} instance containing the given elements
+           * @throws NullPointerException if {@code elements} is null
+           */
+          @SuppressWarnings("varargs")
+          @SafeVarargs
+          public static <T> $traversableType<T> $name(T... elements) {
+              return $traversableType.of(elements);
+          }
+
+          /$javadoc
+           * Alias for {@link $traversableType#ofAll(Iterable)}
+           *
+           * @param <T>      Component type of elements.
+           * @param elements Zero or more elements.
+           * @return A new {@link $traversableType} instance containing the given elements
+           * @throws NullPointerException if {@code elements} is null
+           */
+          public static <T> $traversableType<T> $name(Iterable<? extends T> elements) {
+              return $traversableType.ofAll(elements);
+          }
+
+          /$javadoc
+           * Alias for {@link $traversableType#ofAll($JavaStreamType)}
+           *
+           * @param <T>      Component type of elements.
+           * @param elements Zero or more elements.
+           * @return A new {@link $traversableType} instance containing the given elements
+           * @throws NullPointerException if {@code elements} is null
+           */
+          public static <T> $traversableType<T> $name($JavaStreamType<? extends T> elements) {
+              return $traversableType.ofAll(elements);
+          }
+        """
+      }
 
       def genAliases(im: ImportManager, packageName: String, className: String): String = {
         xs"""
@@ -367,6 +438,23 @@ def generateMainClasses(): Unit = {
               return $CharSeqType.of(sequence);
           }
 
+          ${genTraversableAliases(ArrayType, "Array")}
+
+          ${genTraversableAliases(VectorType, "Vector")}
+
+          ${genTraversableAliases(ListType, "List")}
+
+          ${genTraversableAliases(StreamType, "Stream")}
+
+          ${genTraversableAliases(QueueType, "Queue")}
+
+          ${genTraversableAliases(LinkedHashSetType, "LinkedSet")}
+
+          ${genTraversableAliases(HashSetType, "Set")}
+
+          ${genTraversableAliases(ListType, "Seq")}
+
+          ${genTraversableAliases(VectorType, "IndexedSeq")}
         """
       }
 
@@ -1748,6 +1836,7 @@ def generateTestClasses(): Unit = {
       val ExecutorServiceType = im.getType("java.util.concurrent.Executors")
       val ExecutorService = s"${ExecutorServiceType}.newSingleThreadExecutor()"
       val TryType = im.getType("javaslang.control.Try")
+      val JavaStreamType = im.getType("java.util.stream.Stream")
 
       val d = "$";
 
@@ -1786,6 +1875,21 @@ def generateTestClasses(): Unit = {
       def genMediumAliasTest(name: String, func: String, value: String): String = genExtAliasTest(s"${name}ReturnNotNull", func, value, "isNotNull()")
 
       def genSimpleAliasTest(name: String, value: String): String = genMediumAliasTest(name, name, value)
+
+      def genTraversableTests(func: String): String = {
+        xs"""
+          ${genMediumAliasTest(s"Empty${func}", func, "")}
+
+          ${genMediumAliasTest(s"${func}WithSingle", func, "'1'")}
+
+          ${genMediumAliasTest(s"${func}WithVarArg", func, "'1', '2', '3'")}
+
+          ${genMediumAliasTest(s"${func}WithIterable", func, "CharSeq('1', '2', '3')")}
+
+          ${genMediumAliasTest(s"${func}WithStream", func, s"$JavaStreamType.of('1', '2', '3')")}
+
+        """
+      }
 
       def genTryTests(func: String, value: String, success: Boolean): String = {
         val check = if (success) "isSuccess" else "isFailure"
@@ -1868,6 +1972,15 @@ def generateTestClasses(): Unit = {
 
           ${genMediumAliasTest("CharSeq", "(Iterable<Character>) CharSeq", "\"123\"")}
 
+          ${genTraversableTests("Array")}
+          ${genTraversableTests("Vector")}
+          ${genTraversableTests("List")}
+          ${genTraversableTests("Stream")}
+          ${genTraversableTests("Queue")}
+          ${genTraversableTests("LinkedSet")}
+          ${genTraversableTests("Set")}
+          ${genTraversableTests("Seq")}
+          ${genTraversableTests("IndexedSeq")}
         """
       }
 

@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.concurrent.Executors;
+import java.util.stream.Stream;
 import javaslang.collection.CharSeq;
 import javaslang.collection.List;
 import javaslang.concurrent.Future;
@@ -290,6 +291,231 @@ public class APITest {
     @Test
     public void shouldCharSeqReturnNotNull() {
         assertThat((Iterable<Character>) CharSeq("123")).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptyArrayReturnNotNull() {
+        assertThat(Array()).isNotNull();
+    }
+
+    @Test
+    public void shouldArrayWithSingleReturnNotNull() {
+        assertThat(Array('1')).isNotNull();
+    }
+
+    @Test
+    public void shouldArrayWithVarArgReturnNotNull() {
+        assertThat(Array('1', '2', '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldArrayWithIterableReturnNotNull() {
+        assertThat(Array(CharSeq('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldArrayWithStreamReturnNotNull() {
+        assertThat(Array(Stream.of('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptyVectorReturnNotNull() {
+        assertThat(Vector()).isNotNull();
+    }
+
+    @Test
+    public void shouldVectorWithSingleReturnNotNull() {
+        assertThat(Vector('1')).isNotNull();
+    }
+
+    @Test
+    public void shouldVectorWithVarArgReturnNotNull() {
+        assertThat(Vector('1', '2', '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldVectorWithIterableReturnNotNull() {
+        assertThat(Vector(CharSeq('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldVectorWithStreamReturnNotNull() {
+        assertThat(Vector(Stream.of('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptyListReturnNotNull() {
+        assertThat(List()).isNotNull();
+    }
+
+    @Test
+    public void shouldListWithSingleReturnNotNull() {
+        assertThat(List('1')).isNotNull();
+    }
+
+    @Test
+    public void shouldListWithVarArgReturnNotNull() {
+        assertThat(List('1', '2', '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldListWithIterableReturnNotNull() {
+        assertThat(List(CharSeq('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldListWithStreamReturnNotNull() {
+        assertThat(List(Stream.of('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptyStreamReturnNotNull() {
+        assertThat(Stream()).isNotNull();
+    }
+
+    @Test
+    public void shouldStreamWithSingleReturnNotNull() {
+        assertThat(Stream('1')).isNotNull();
+    }
+
+    @Test
+    public void shouldStreamWithVarArgReturnNotNull() {
+        assertThat(Stream('1', '2', '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldStreamWithIterableReturnNotNull() {
+        assertThat(Stream(CharSeq('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldStreamWithStreamReturnNotNull() {
+        assertThat(Stream(Stream.of('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptyQueueReturnNotNull() {
+        assertThat(Queue()).isNotNull();
+    }
+
+    @Test
+    public void shouldQueueWithSingleReturnNotNull() {
+        assertThat(Queue('1')).isNotNull();
+    }
+
+    @Test
+    public void shouldQueueWithVarArgReturnNotNull() {
+        assertThat(Queue('1', '2', '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldQueueWithIterableReturnNotNull() {
+        assertThat(Queue(CharSeq('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldQueueWithStreamReturnNotNull() {
+        assertThat(Queue(Stream.of('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptyLinkedSetReturnNotNull() {
+        assertThat(LinkedSet()).isNotNull();
+    }
+
+    @Test
+    public void shouldLinkedSetWithSingleReturnNotNull() {
+        assertThat(LinkedSet('1')).isNotNull();
+    }
+
+    @Test
+    public void shouldLinkedSetWithVarArgReturnNotNull() {
+        assertThat(LinkedSet('1', '2', '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldLinkedSetWithIterableReturnNotNull() {
+        assertThat(LinkedSet(CharSeq('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldLinkedSetWithStreamReturnNotNull() {
+        assertThat(LinkedSet(Stream.of('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptySetReturnNotNull() {
+        assertThat(Set()).isNotNull();
+    }
+
+    @Test
+    public void shouldSetWithSingleReturnNotNull() {
+        assertThat(Set('1')).isNotNull();
+    }
+
+    @Test
+    public void shouldSetWithVarArgReturnNotNull() {
+        assertThat(Set('1', '2', '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldSetWithIterableReturnNotNull() {
+        assertThat(Set(CharSeq('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldSetWithStreamReturnNotNull() {
+        assertThat(Set(Stream.of('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptySeqReturnNotNull() {
+        assertThat(Seq()).isNotNull();
+    }
+
+    @Test
+    public void shouldSeqWithSingleReturnNotNull() {
+        assertThat(Seq('1')).isNotNull();
+    }
+
+    @Test
+    public void shouldSeqWithVarArgReturnNotNull() {
+        assertThat(Seq('1', '2', '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldSeqWithIterableReturnNotNull() {
+        assertThat(Seq(CharSeq('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldSeqWithStreamReturnNotNull() {
+        assertThat(Seq(Stream.of('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptyIndexedSeqReturnNotNull() {
+        assertThat(IndexedSeq()).isNotNull();
+    }
+
+    @Test
+    public void shouldIndexedSeqWithSingleReturnNotNull() {
+        assertThat(IndexedSeq('1')).isNotNull();
+    }
+
+    @Test
+    public void shouldIndexedSeqWithVarArgReturnNotNull() {
+        assertThat(IndexedSeq('1', '2', '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldIndexedSeqWithIterableReturnNotNull() {
+        assertThat(IndexedSeq(CharSeq('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldIndexedSeqWithStreamReturnNotNull() {
+        assertThat(IndexedSeq(Stream.of('1', '2', '3'))).isNotNull();
     }
 
     // -- run

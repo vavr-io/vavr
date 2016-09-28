@@ -17,8 +17,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import javaslang.collection.CharSeq;
-import javaslang.collection.Iterator;
+import javaslang.collection.*;
 import javaslang.concurrent.Future;
 import javaslang.control.Either;
 import javaslang.control.Option;
@@ -769,6 +768,537 @@ public final class API {
      */
     public static CharSeq CharSeq(CharSequence sequence) {
         return CharSeq.of(sequence);
+    }
+
+    /**
+     * Alias for {@link Array#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link Array}
+     */
+    public static <T> Array<T> Array() {
+        return Array.empty();
+    }
+
+    /**
+     * Alias for {@link Array#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link Array} instance containing the given element
+     */
+    public static <T> Array<T> Array(T element) {
+        return Array.of(element);
+    }
+
+    /**
+     * Alias for {@link Array#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Array} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> Array<T> Array(T... elements) {
+        return Array.of(elements);
+    }
+
+    /**
+     * Alias for {@link Array#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Array} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Array<T> Array(Iterable<? extends T> elements) {
+        return Array.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Array#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Array} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Array<T> Array(java.util.stream.Stream<? extends T> elements) {
+        return Array.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Vector#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link Vector}
+     */
+    public static <T> Vector<T> Vector() {
+        return Vector.empty();
+    }
+
+    /**
+     * Alias for {@link Vector#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link Vector} instance containing the given element
+     */
+    public static <T> Vector<T> Vector(T element) {
+        return Vector.of(element);
+    }
+
+    /**
+     * Alias for {@link Vector#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Vector} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> Vector<T> Vector(T... elements) {
+        return Vector.of(elements);
+    }
+
+    /**
+     * Alias for {@link Vector#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Vector} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Vector<T> Vector(Iterable<? extends T> elements) {
+        return Vector.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Vector#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Vector} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Vector<T> Vector(java.util.stream.Stream<? extends T> elements) {
+        return Vector.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link List#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link List}
+     */
+    public static <T> List<T> List() {
+        return List.empty();
+    }
+
+    /**
+     * Alias for {@link List#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link List} instance containing the given element
+     */
+    public static <T> List<T> List(T element) {
+        return List.of(element);
+    }
+
+    /**
+     * Alias for {@link List#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link List} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> List<T> List(T... elements) {
+        return List.of(elements);
+    }
+
+    /**
+     * Alias for {@link List#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link List} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> List<T> List(Iterable<? extends T> elements) {
+        return List.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link List#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link List} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> List<T> List(java.util.stream.Stream<? extends T> elements) {
+        return List.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Stream#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link Stream}
+     */
+    public static <T> Stream<T> Stream() {
+        return Stream.empty();
+    }
+
+    /**
+     * Alias for {@link Stream#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link Stream} instance containing the given element
+     */
+    public static <T> Stream<T> Stream(T element) {
+        return Stream.of(element);
+    }
+
+    /**
+     * Alias for {@link Stream#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Stream} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> Stream<T> Stream(T... elements) {
+        return Stream.of(elements);
+    }
+
+    /**
+     * Alias for {@link Stream#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Stream} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Stream<T> Stream(Iterable<? extends T> elements) {
+        return Stream.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Stream#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Stream} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Stream<T> Stream(java.util.stream.Stream<? extends T> elements) {
+        return Stream.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Queue#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link Queue}
+     */
+    public static <T> Queue<T> Queue() {
+        return Queue.empty();
+    }
+
+    /**
+     * Alias for {@link Queue#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link Queue} instance containing the given element
+     */
+    public static <T> Queue<T> Queue(T element) {
+        return Queue.of(element);
+    }
+
+    /**
+     * Alias for {@link Queue#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Queue} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> Queue<T> Queue(T... elements) {
+        return Queue.of(elements);
+    }
+
+    /**
+     * Alias for {@link Queue#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Queue} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Queue<T> Queue(Iterable<? extends T> elements) {
+        return Queue.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Queue#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Queue} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Queue<T> Queue(java.util.stream.Stream<? extends T> elements) {
+        return Queue.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link LinkedHashSet#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link LinkedHashSet}
+     */
+    public static <T> LinkedHashSet<T> LinkedSet() {
+        return LinkedHashSet.empty();
+    }
+
+    /**
+     * Alias for {@link LinkedHashSet#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link LinkedHashSet} instance containing the given element
+     */
+    public static <T> LinkedHashSet<T> LinkedSet(T element) {
+        return LinkedHashSet.of(element);
+    }
+
+    /**
+     * Alias for {@link LinkedHashSet#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link LinkedHashSet} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> LinkedHashSet<T> LinkedSet(T... elements) {
+        return LinkedHashSet.of(elements);
+    }
+
+    /**
+     * Alias for {@link LinkedHashSet#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link LinkedHashSet} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> LinkedHashSet<T> LinkedSet(Iterable<? extends T> elements) {
+        return LinkedHashSet.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link LinkedHashSet#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link LinkedHashSet} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> LinkedHashSet<T> LinkedSet(java.util.stream.Stream<? extends T> elements) {
+        return LinkedHashSet.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link HashSet#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link HashSet}
+     */
+    public static <T> HashSet<T> Set() {
+        return HashSet.empty();
+    }
+
+    /**
+     * Alias for {@link HashSet#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link HashSet} instance containing the given element
+     */
+    public static <T> HashSet<T> Set(T element) {
+        return HashSet.of(element);
+    }
+
+    /**
+     * Alias for {@link HashSet#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link HashSet} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> HashSet<T> Set(T... elements) {
+        return HashSet.of(elements);
+    }
+
+    /**
+     * Alias for {@link HashSet#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link HashSet} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> HashSet<T> Set(Iterable<? extends T> elements) {
+        return HashSet.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link HashSet#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link HashSet} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> HashSet<T> Set(java.util.stream.Stream<? extends T> elements) {
+        return HashSet.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link List#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link List}
+     */
+    public static <T> List<T> Seq() {
+        return List.empty();
+    }
+
+    /**
+     * Alias for {@link List#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link List} instance containing the given element
+     */
+    public static <T> List<T> Seq(T element) {
+        return List.of(element);
+    }
+
+    /**
+     * Alias for {@link List#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link List} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> List<T> Seq(T... elements) {
+        return List.of(elements);
+    }
+
+    /**
+     * Alias for {@link List#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link List} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> List<T> Seq(Iterable<? extends T> elements) {
+        return List.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link List#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link List} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> List<T> Seq(java.util.stream.Stream<? extends T> elements) {
+        return List.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Vector#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link Vector}
+     */
+    public static <T> Vector<T> IndexedSeq() {
+        return Vector.empty();
+    }
+
+    /**
+     * Alias for {@link Vector#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link Vector} instance containing the given element
+     */
+    public static <T> Vector<T> IndexedSeq(T element) {
+        return Vector.of(element);
+    }
+
+    /**
+     * Alias for {@link Vector#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Vector} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> Vector<T> IndexedSeq(T... elements) {
+        return Vector.of(elements);
+    }
+
+    /**
+     * Alias for {@link Vector#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Vector} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Vector<T> IndexedSeq(Iterable<? extends T> elements) {
+        return Vector.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Vector#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Vector} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Vector<T> IndexedSeq(java.util.stream.Stream<? extends T> elements) {
+        return Vector.ofAll(elements);
     }
 
     //
