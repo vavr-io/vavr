@@ -17,6 +17,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import javaslang.collection.CharSeq;
 import javaslang.collection.Iterator;
 import javaslang.concurrent.Future;
 import javaslang.control.Either;
@@ -737,6 +738,37 @@ public final class API {
      */
     public static <E, T> Validation<E, T> Invalid(E error) {
         return Validation.invalid(error);
+    }
+
+    /**
+     * Alias for {@link CharSeq#of(char)}
+     *
+     * @param character A character.
+     * @return A new {@link CharSeq} instance containing the given element
+     */
+    public static CharSeq CharSeq(char character) {
+        return CharSeq.of(character);
+    }
+
+    /**
+     * Alias for {@link CharSeq#of(char...)}
+     *
+     * @param characters Zero or more characters.
+     * @return A new {@link CharSeq} instance containing the given characters in the same order.
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static CharSeq CharSeq(char... characters) {
+        return CharSeq.of(characters);
+    }
+
+    /**
+     * Alias for {@link CharSeq#of(CharSequence)}
+     *
+     * @param sequence {@code CharSequence} instance.
+     * @return A new {@link CharSeq} instance
+     */
+    public static CharSeq CharSeq(CharSequence sequence) {
+        return CharSeq.of(sequence);
     }
 
     //

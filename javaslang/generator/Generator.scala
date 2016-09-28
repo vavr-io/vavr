@@ -57,6 +57,7 @@ def generateMainClasses(): Unit = {
       val ExecutorServiceType = im.getType("java.util.concurrent.ExecutorService")
       val TryType = im.getType("javaslang.control.Try")
       val ValidationType = im.getType("javaslang.control.Validation")
+      val CharSeqType = im.getType("javaslang.collection.CharSeq")
 
       def genAliases(im: ImportManager, packageName: String, className: String): String = {
         xs"""
@@ -333,6 +334,37 @@ def generateMainClasses(): Unit = {
            */
           public static <E, T> $ValidationType<E, T> Invalid(E error) {
               return $ValidationType.invalid(error);
+          }
+
+          /$javadoc
+           * Alias for {@link $CharSeqType#of(char)}
+           *
+           * @param character A character.
+           * @return A new {@link $CharSeqType} instance containing the given element
+           */
+          public static $CharSeqType CharSeq(char character) {
+              return $CharSeqType.of(character);
+          }
+
+          /$javadoc
+           * Alias for {@link $CharSeqType#of(char...)}
+           *
+           * @param characters Zero or more characters.
+           * @return A new {@link $CharSeqType} instance containing the given characters in the same order.
+           * @throws NullPointerException if {@code elements} is null
+           */
+          public static $CharSeqType CharSeq(char... characters) {
+              return $CharSeqType.of(characters);
+          }
+
+          /$javadoc
+           * Alias for {@link $CharSeqType#of(CharSequence)}
+           *
+           * @param sequence {@code CharSequence} instance.
+           * @return A new {@link $CharSeqType} instance
+           */
+          public static $CharSeqType CharSeq(CharSequence sequence) {
+              return $CharSeqType.of(sequence);
           }
 
         """
@@ -1829,6 +1861,12 @@ def generateTestClasses(): Unit = {
           ${genSimpleAliasTest("Valid", "1")}
 
           ${genSimpleAliasTest("Invalid", "new Error()")}
+
+          ${genMediumAliasTest("Char", "(Iterable<Character>) CharSeq", "'1'")}
+
+          ${genMediumAliasTest("CharArray", "(Iterable<Character>) CharSeq", "'1', '2', '3'")}
+
+          ${genMediumAliasTest("CharSeq", "(Iterable<Character>) CharSeq", "\"123\"")}
 
         """
       }

@@ -277,6 +277,21 @@ public class APITest {
         assertThat(Invalid(new Error())).isNotNull();
     }
 
+    @Test
+    public void shouldCharReturnNotNull() {
+        assertThat((Iterable<Character>) CharSeq('1')).isNotNull();
+    }
+
+    @Test
+    public void shouldCharArrayReturnNotNull() {
+        assertThat((Iterable<Character>) CharSeq('1', '2', '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldCharSeqReturnNotNull() {
+        assertThat((Iterable<Character>) CharSeq("123")).isNotNull();
+    }
+
     // -- run
 
     @Test
