@@ -18,6 +18,7 @@ import javaslang.collection.CharSeq;
 import javaslang.collection.List;
 import javaslang.concurrent.Future;
 import javaslang.control.Option;
+import javaslang.control.Try;
 import org.junit.Test;
 
 public class APITest {
@@ -243,6 +244,27 @@ public class APITest {
     @Test
     public void shouldNoneReturnNotNull() {
         assertThat(None()).isNotNull();
+    }
+
+    @Test
+    public void shouldTryReturnNotNull() {
+        final Try<?> t = Try(() -> 1);
+        assertThat(t).isNotNull();
+        assertThat(t.isSuccess()).isTrue();
+    }
+
+    @Test
+    public void shouldSuccessReturnNotNull() {
+        final Try<?> t = Success(1);
+        assertThat(t).isNotNull();
+        assertThat(t.isSuccess()).isTrue();
+    }
+
+    @Test
+    public void shouldFailureReturnNotNull() {
+        final Try<?> t = Failure(new Error());
+        assertThat(t).isNotNull();
+        assertThat(t.isFailure()).isTrue();
     }
 
     // -- run

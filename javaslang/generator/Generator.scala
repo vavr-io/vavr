@@ -55,6 +55,7 @@ def generateMainClasses(): Unit = {
       val FutureType = im.getType("javaslang.concurrent.Future")
       val CheckedSupplierType = im.getType("javaslang.control.Try.CheckedSupplier")
       val ExecutorServiceType = im.getType("java.util.concurrent.ExecutorService")
+      val TryType = im.getType("javaslang.control.Try")
 
       def genAliases(im: ImportManager, packageName: String, className: String): String = {
         xs"""
@@ -271,6 +272,40 @@ def generateMainClasses(): Unit = {
            */
           public static <T> $OptionType<T> None() {
               return $OptionType.none();
+          }
+
+          /$javadoc
+           * Alias for {@link $TryType#of($CheckedSupplierType)}
+           *
+           * @param <T>      Component type
+           * @param supplier A checked supplier
+           * @return {@link $TryType.Success} if no exception occurs, otherwise {@link $TryType.Failure} if an
+           * exception occurs calling {@code supplier.get()}.
+           */
+          public static <T> $TryType<T> Try($CheckedSupplierType<? extends T> supplier) {
+              return $TryType.of(supplier);
+          }
+
+          /$javadoc
+           * Alias for {@link $TryType#success(Object)}
+           *
+           * @param <T>   Type of the given {@code value}.
+           * @param value A value.
+           * @return A new {@link $TryType.Success}.
+           */
+          public static <T> $TryType<T> Success(T value) {
+              return $TryType.success(value);
+          }
+
+          /$javadoc
+           * Alias for {@link $TryType#failure(Throwable)}
+           *
+           * @param <T>       Component type of the {@code Try}.
+           * @param exception An exception.
+           * @return A new {@link $TryType.Failure}.
+           */
+          public static <T> $TryType<T> Failure(Throwable exception) {
+              return $TryType.failure(exception);
           }
 
         """
@@ -1653,6 +1688,7 @@ def generateTestClasses(): Unit = {
       val FutureType = im.getType("javaslang.concurrent.Future")
       val ExecutorServiceType = im.getType("java.util.concurrent.Executors")
       val ExecutorService = s"${ExecutorServiceType}.newSingleThreadExecutor()"
+      val TryType = im.getType("javaslang.control.Try")
 
       val d = "$";
 
@@ -1691,6 +1727,18 @@ def generateTestClasses(): Unit = {
       def genMediumAliasTest(name: String, func: String, value: String): String = genExtAliasTest(s"${name}ReturnNotNull", func, value, "isNotNull()")
 
       def genSimpleAliasTest(name: String, value: String): String = genMediumAliasTest(name, name, value)
+
+      def genTryTests(func: String, value: String, success: Boolean): String = {
+        val check = if (success) "isSuccess" else "isFailure"
+        xs"""
+          @$test
+          public void should${func.firstUpper}ReturnNotNull() {
+              final $TryType<?> t = $func($value);
+              assertThat(t).isNotNull();
+              assertThat(t.$check()).isTrue();
+          }
+        """
+      }
 
       def genAliasesTests(im: ImportManager, packageName: String, className: String): String = {
         xs"""
@@ -1744,6 +1792,12 @@ def generateTestClasses(): Unit = {
           ${genSimpleAliasTest("Some", "1")}
 
           ${genSimpleAliasTest("None", "")}
+
+          ${genTryTests("Try", "() -> 1", success = true)}
+
+          ${genTryTests("Success", "1", success = true)}
+
+          ${genTryTests("Failure", "new Error()", success = false)}
 
         """
       }

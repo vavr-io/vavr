@@ -21,6 +21,7 @@ import javaslang.collection.Iterator;
 import javaslang.concurrent.Future;
 import javaslang.control.Either;
 import javaslang.control.Option;
+import javaslang.control.Try;
 import javaslang.control.Try.CheckedSupplier;
 
 /**
@@ -675,6 +676,40 @@ public final class API {
      */
     public static <T> Option<T> None() {
         return Option.none();
+    }
+
+    /**
+     * Alias for {@link Try#of(CheckedSupplier)}
+     *
+     * @param <T>      Component type
+     * @param supplier A checked supplier
+     * @return {@link Try.Success} if no exception occurs, otherwise {@link Try.Failure} if an
+     * exception occurs calling {@code supplier.get()}.
+     */
+    public static <T> Try<T> Try(CheckedSupplier<? extends T> supplier) {
+        return Try.of(supplier);
+    }
+
+    /**
+     * Alias for {@link Try#success(Object)}
+     *
+     * @param <T>   Type of the given {@code value}.
+     * @param value A value.
+     * @return A new {@link Try.Success}.
+     */
+    public static <T> Try<T> Success(T value) {
+        return Try.success(value);
+    }
+
+    /**
+     * Alias for {@link Try#failure(Throwable)}
+     *
+     * @param <T>       Component type of the {@code Try}.
+     * @param exception An exception.
+     * @return A new {@link Try.Failure}.
+     */
+    public static <T> Try<T> Failure(Throwable exception) {
+        return Try.failure(exception);
     }
 
     //
