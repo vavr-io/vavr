@@ -17,6 +17,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javaslang.collection.Iterator;
+import javaslang.control.Either;
 import javaslang.control.Option;
 
 /**
@@ -524,6 +525,30 @@ public final class API {
      */
     public static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> Tuple(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
         return Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8);
+    }
+
+    /**
+     * Alias for {@link Either#right(Object)}
+     *
+     * @param <L>   Type of left value.
+     * @param <R>   Type of right value.
+     * @param right The value.
+     * @return A new {@link Either.Right} instance.
+     */
+    public static <L, R> Either<L, R> Right(R right) {
+        return Either.right(right);
+    }
+
+    /**
+     * Alias for {@link Either#left(Object)}
+     *
+     * @param <L>  Type of left value.
+     * @param <R>  Type of right value.
+     * @param left The value.
+     * @return A new {@link Either.Left} instance.
+     */
+    public static <L, R> Either<L, R> Left(L left) {
+        return Either.left(left);
     }
 
     //

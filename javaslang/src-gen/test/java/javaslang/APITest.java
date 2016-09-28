@@ -165,6 +165,16 @@ public class APITest {
         assertThat(Tuple(1, 2, 3, 4, 5, 6, 7, 8)).isNotNull();
     }
 
+    @Test
+    public void shouldRightReturnNotNull() {
+        assertThat(Right(null)).isNotNull();
+    }
+
+    @Test
+    public void shouldLeftReturnNotNull() {
+        assertThat(Left(null)).isNotNull();
+    }
+
     // -- run
 
     @Test

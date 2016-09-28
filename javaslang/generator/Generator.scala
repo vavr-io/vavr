@@ -51,6 +51,7 @@ def generateMainClasses(): Unit = {
       val PredicateType = im.getType("java.util.function.Predicate")
       val SupplierType = im.getType("java.util.function.Supplier")
       val IteratorType = im.getType("javaslang.collection.Iterator")
+      val EitherType = im.getType("javaslang.control.Either")
 
       def genAliases(im: ImportManager, packageName: String, className: String): String = {
         xs"""
@@ -121,6 +122,30 @@ def generateMainClasses(): Unit = {
               }
             """
           })("\n\n")}
+
+          /$javadoc
+           * Alias for {@link $EitherType#right(Object)}
+           *
+           * @param <L>   Type of left value.
+           * @param <R>   Type of right value.
+           * @param right The value.
+           * @return A new {@link $EitherType.Right} instance.
+           */
+          public static <L, R> $EitherType<L, R> Right(R right) {
+              return $EitherType.right(right);
+          }
+
+          /$javadoc
+           * Alias for {@link $EitherType#left(Object)}
+           *
+           * @param <L>  Type of left value.
+           * @param <R>  Type of right value.
+           * @param left The value.
+           * @return A new {@link $EitherType.Left} instance.
+           */
+          public static <L, R> $EitherType<L, R> Left(L left) {
+              return $EitherType.left(left);
+          }
 
         """
       }
@@ -1528,6 +1553,16 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldTuple${i}ReturnNotNull() {
                   assertThat(Tuple($params)).isNotNull();
+              }
+
+            """
+          })("\n\n")}
+
+          ${Seq("Right", "Left").gen(name => {
+            xs"""
+              @$test
+              public void should${name}ReturnNotNull() {
+                  assertThat($name(null)).isNotNull();
               }
 
             """
