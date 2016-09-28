@@ -225,6 +225,11 @@ public class APITest {
         assertThat(future.isFailure()).isTrue();
     }
 
+    @Test
+    public void shouldLazyReturnNotNull() {
+        assertThat(Lazy(() -> 1)).isNotNull();
+    }
+
     // -- run
 
     @Test

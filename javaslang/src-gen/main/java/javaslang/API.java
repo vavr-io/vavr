@@ -634,6 +634,17 @@ public final class API {
         return Future.failed(executorService, exception);
     }
 
+    /**
+     * Alias for {@link Lazy#of(Supplier)}
+     *
+     * @param <T>      type of the lazy value
+     * @param supplier A supplier
+     * @return A new instance of {@link Lazy}
+     */
+    public static <T> Lazy<T> Lazy(Supplier<? extends T> supplier) {
+        return Lazy.of(supplier);
+    }
+
     //
     // Java type tweaks
     //

@@ -230,6 +230,17 @@ def generateMainClasses(): Unit = {
               return $FutureType.failed(executorService, exception);
           }
 
+          /$javadoc
+           * Alias for {@link Lazy#of($SupplierType)}
+           *
+           * @param <T>      type of the lazy value
+           * @param supplier A supplier
+           * @return A new instance of {@link Lazy}
+           */
+          public static <T> Lazy<T> Lazy($SupplierType<? extends T> supplier) {
+              return Lazy.of(supplier);
+          }
+
         """
       }
 
@@ -1636,6 +1647,19 @@ def generateTestClasses(): Unit = {
         """
       }
 
+      def genExtAliasTest(name: String, func: String, value: String, check: String): String = {
+        xs"""
+          @$test
+          public void should${name}() {
+              assertThat($func($value)).$check;
+          }
+        """
+      }
+
+      def genMediumAliasTest(name: String, func: String, value: String): String = genExtAliasTest(s"${name}ReturnNotNull", func, value, "isNotNull()")
+
+      def genSimpleAliasTest(name: String, value: String): String = genMediumAliasTest(name, name, value)
+
       def genAliasesTests(im: ImportManager, packageName: String, className: String): String = {
         xs"""
           ${(0 to N).gen(i => {
@@ -1680,6 +1704,8 @@ def generateTestClasses(): Unit = {
           ${genFutureTests("Value", "1", success = true)}
 
           ${genFutureTests("Error", "new Error()", success = false)}
+
+          ${genSimpleAliasTest("Lazy", "() -> 1")}
 
         """
       }
