@@ -23,6 +23,7 @@ import javaslang.control.Either;
 import javaslang.control.Option;
 import javaslang.control.Try;
 import javaslang.control.Try.CheckedSupplier;
+import javaslang.control.Validation;
 
 /**
  * The most basic Javaslang functionality is accessed through this API class.
@@ -710,6 +711,32 @@ public final class API {
      */
     public static <T> Try<T> Failure(Throwable exception) {
         return Try.failure(exception);
+    }
+
+    /**
+     * Alias for {@link Validation#valid(Object)}
+     *
+     * @param <E>   type of the error
+     * @param <T>   type of the given {@code value}
+     * @param value A value
+     * @return {@link Validation.Valid}
+     * @throws NullPointerException if value is null
+     */
+    public static <E, T> Validation<E, T> Valid(T value) {
+        return Validation.valid(value);
+    }
+
+    /**
+     * Alias for {@link Validation#invalid(Object)}
+     *
+     * @param <E>   type of the given {@code error}
+     * @param <T>   type of the value
+     * @param error An error
+     * @return {@link Validation.Invalid}
+     * @throws NullPointerException if error is null
+     */
+    public static <E, T> Validation<E, T> Invalid(E error) {
+        return Validation.invalid(error);
     }
 
     //

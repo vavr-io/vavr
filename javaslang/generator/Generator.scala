@@ -56,6 +56,7 @@ def generateMainClasses(): Unit = {
       val CheckedSupplierType = im.getType("javaslang.control.Try.CheckedSupplier")
       val ExecutorServiceType = im.getType("java.util.concurrent.ExecutorService")
       val TryType = im.getType("javaslang.control.Try")
+      val ValidationType = im.getType("javaslang.control.Validation")
 
       def genAliases(im: ImportManager, packageName: String, className: String): String = {
         xs"""
@@ -306,6 +307,32 @@ def generateMainClasses(): Unit = {
            */
           public static <T> $TryType<T> Failure(Throwable exception) {
               return $TryType.failure(exception);
+          }
+
+          /$javadoc
+           * Alias for {@link $ValidationType#valid(Object)}
+           *
+           * @param <E>   type of the error
+           * @param <T>   type of the given {@code value}
+           * @param value A value
+           * @return {@link $ValidationType.Valid}
+           * @throws NullPointerException if value is null
+           */
+          public static <E, T> $ValidationType<E, T> Valid(T value) {
+              return $ValidationType.valid(value);
+          }
+
+          /$javadoc
+           * Alias for {@link $ValidationType#invalid(Object)}
+           *
+           * @param <E>   type of the given {@code error}
+           * @param <T>   type of the value
+           * @param error An error
+           * @return {@link $ValidationType.Invalid}
+           * @throws NullPointerException if error is null
+           */
+          public static <E, T> $ValidationType<E, T> Invalid(E error) {
+              return $ValidationType.invalid(error);
           }
 
         """
@@ -1798,6 +1825,10 @@ def generateTestClasses(): Unit = {
           ${genTryTests("Success", "1", success = true)}
 
           ${genTryTests("Failure", "new Error()", success = false)}
+
+          ${genSimpleAliasTest("Valid", "1")}
+
+          ${genSimpleAliasTest("Invalid", "new Error()")}
 
         """
       }

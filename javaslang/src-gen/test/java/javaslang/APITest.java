@@ -267,6 +267,16 @@ public class APITest {
         assertThat(t.isFailure()).isTrue();
     }
 
+    @Test
+    public void shouldValidReturnNotNull() {
+        assertThat(Valid(1)).isNotNull();
+    }
+
+    @Test
+    public void shouldInvalidReturnNotNull() {
+        assertThat(Invalid(new Error())).isNotNull();
+    }
+
     // -- run
 
     @Test
