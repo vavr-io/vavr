@@ -13,8 +13,10 @@ import static javaslang.API.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.concurrent.Executors;
 import javaslang.collection.CharSeq;
 import javaslang.collection.List;
+import javaslang.concurrent.Future;
 import javaslang.control.Option;
 import org.junit.Test;
 
@@ -173,6 +175,54 @@ public class APITest {
     @Test
     public void shouldLeftReturnNotNull() {
         assertThat(Left(null)).isNotNull();
+    }
+
+    @Test
+    public void shouldFutureWithSupplierReturnNotNull() {
+        final Future<?> future = Future(() -> 1);
+        future.await();
+        assertThat(future).isNotNull();
+        assertThat(future.isSuccess()).isTrue();
+    }
+
+    @Test
+    public void shouldFutureWithinExecutorWithSupplierReturnNotNull() {
+        final Future<?> future = Future(Executors.newSingleThreadExecutor(), () -> 1);
+        future.await();
+        assertThat(future).isNotNull();
+        assertThat(future.isSuccess()).isTrue();
+    }
+
+    @Test
+    public void shouldFutureWithValueReturnNotNull() {
+        final Future<?> future = Future(1);
+        future.await();
+        assertThat(future).isNotNull();
+        assertThat(future.isSuccess()).isTrue();
+    }
+
+    @Test
+    public void shouldFutureWithinExecutorWithValueReturnNotNull() {
+        final Future<?> future = Future(Executors.newSingleThreadExecutor(), 1);
+        future.await();
+        assertThat(future).isNotNull();
+        assertThat(future.isSuccess()).isTrue();
+    }
+
+    @Test
+    public void shouldFutureWithErrorReturnNotNull() {
+        final Future<?> future = Future(new Error());
+        future.await();
+        assertThat(future).isNotNull();
+        assertThat(future.isFailure()).isTrue();
+    }
+
+    @Test
+    public void shouldFutureWithinExecutorWithErrorReturnNotNull() {
+        final Future<?> future = Future(Executors.newSingleThreadExecutor(), new Error());
+        future.await();
+        assertThat(future).isNotNull();
+        assertThat(future.isFailure()).isTrue();
     }
 
     // -- run

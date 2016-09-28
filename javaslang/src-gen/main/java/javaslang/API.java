@@ -12,13 +12,16 @@ package javaslang;
 import static javaslang.API.Match.*;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javaslang.collection.Iterator;
+import javaslang.concurrent.Future;
 import javaslang.control.Either;
 import javaslang.control.Option;
+import javaslang.control.Try.CheckedSupplier;
 
 /**
  * The most basic Javaslang functionality is accessed through this API class.
@@ -549,6 +552,86 @@ public final class API {
      */
     public static <L, R> Either<L, R> Left(L left) {
         return Either.left(left);
+    }
+
+    /**
+     * Alias for {@link Future#of(CheckedSupplier)}
+     *
+     * @param <T>         Type of the computation result.
+     * @param computation A computation.
+     * @return A new {@link Future} instance.
+     * @throws NullPointerException if computation is null.
+     */
+    @GwtIncompatible
+    public static <T> Future<T> Future(CheckedSupplier<? extends T> computation) {
+        return Future.of(computation);
+    }
+
+    /**
+     * Alias for {@link Future#of(ExecutorService, CheckedSupplier)}
+     *
+     * @param <T>             Type of the computation result.
+     * @param executorService An executor service.
+     * @param computation     A computation.
+     * @return A new {@link Future} instance.
+     * @throws NullPointerException if one of executorService or computation is null.
+     */
+    @GwtIncompatible
+    public static <T> Future<T> Future(ExecutorService executorService, CheckedSupplier<? extends T> computation) {
+        return Future.of(executorService, computation);
+    }
+
+    /**
+     * Alias for {@link Future#successful(Object)}
+     *
+     * @param <T>    The value type of a successful result.
+     * @param result The result.
+     * @return A succeeded {@link Future}.
+     */
+    @GwtIncompatible
+    public static <T> Future<T> Future(T result) {
+        return Future.successful(result);
+    }
+
+    /**
+     * Alias for {@link Future#successful(ExecutorService, Object)}
+     *
+     * @param <T>             The value type of a successful result.
+     * @param executorService An {@code ExecutorService}.
+     * @param result          The result.
+     * @return A succeeded {@link Future}.
+     * @throws NullPointerException if executorService is null
+     */
+    @GwtIncompatible
+    public static <T> Future<T> Future(ExecutorService executorService, T result) {
+        return Future.successful(executorService, result);
+    }
+
+    /**
+     * Alias for {@link Future#failed(Throwable)}
+     *
+     * @param <T>       The value type of a successful result.
+     * @param exception The reason why it failed.
+     * @return A failed {@link Future}.
+     * @throws NullPointerException if exception is null
+     */
+    @GwtIncompatible
+    public static <T> Future<T> Future(Throwable exception) {
+        return Future.failed(exception);
+    }
+
+    /**
+     * Alias for {@link Future#failed(ExecutorService, Throwable)}
+     *
+     * @param <T>             The value type of a successful result.
+     * @param executorService An executor service.
+     * @param exception       The reason why it failed.
+     * @return A failed {@link Future}.
+     * @throws NullPointerException if executorService or exception is null
+     */
+    @GwtIncompatible
+    public static <T> Future<T> Future(ExecutorService executorService, Throwable exception) {
+        return Future.failed(executorService, exception);
     }
 
     //

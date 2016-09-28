@@ -52,6 +52,9 @@ def generateMainClasses(): Unit = {
       val SupplierType = im.getType("java.util.function.Supplier")
       val IteratorType = im.getType("javaslang.collection.Iterator")
       val EitherType = im.getType("javaslang.control.Either")
+      val FutureType = im.getType("javaslang.concurrent.Future")
+      val CheckedSupplierType = im.getType("javaslang.control.Try.CheckedSupplier")
+      val ExecutorServiceType = im.getType("java.util.concurrent.ExecutorService")
 
       def genAliases(im: ImportManager, packageName: String, className: String): String = {
         xs"""
@@ -145,6 +148,86 @@ def generateMainClasses(): Unit = {
            */
           public static <L, R> $EitherType<L, R> Left(L left) {
               return $EitherType.left(left);
+          }
+
+          /$javadoc
+           * Alias for {@link $FutureType#of($CheckedSupplierType)}
+           *
+           * @param <T>         Type of the computation result.
+           * @param computation A computation.
+           * @return A new {@link $FutureType} instance.
+           * @throws NullPointerException if computation is null.
+           */
+          @GwtIncompatible
+          public static <T> $FutureType<T> Future($CheckedSupplierType<? extends T> computation) {
+              return $FutureType.of(computation);
+          }
+
+          /$javadoc
+           * Alias for {@link $FutureType#of($ExecutorServiceType, $CheckedSupplierType)}
+           *
+           * @param <T>             Type of the computation result.
+           * @param executorService An executor service.
+           * @param computation     A computation.
+           * @return A new {@link $FutureType} instance.
+           * @throws NullPointerException if one of executorService or computation is null.
+           */
+          @GwtIncompatible
+          public static <T> $FutureType<T> Future($ExecutorServiceType executorService, $CheckedSupplierType<? extends T> computation) {
+              return $FutureType.of(executorService, computation);
+          }
+
+          /$javadoc
+           * Alias for {@link $FutureType#successful(Object)}
+           *
+           * @param <T>    The value type of a successful result.
+           * @param result The result.
+           * @return A succeeded {@link $FutureType}.
+           */
+          @GwtIncompatible
+          public static <T> $FutureType<T> Future(T result) {
+              return $FutureType.successful(result);
+          }
+
+          /$javadoc
+           * Alias for {@link $FutureType#successful($ExecutorServiceType, Object)}
+           *
+           * @param <T>             The value type of a successful result.
+           * @param executorService An {@code ExecutorService}.
+           * @param result          The result.
+           * @return A succeeded {@link $FutureType}.
+           * @throws NullPointerException if executorService is null
+           */
+          @GwtIncompatible
+          public static <T> $FutureType<T> Future($ExecutorServiceType executorService, T result) {
+              return $FutureType.successful(executorService, result);
+          }
+
+          /$javadoc
+           * Alias for {@link $FutureType#failed(Throwable)}
+           *
+           * @param <T>       The value type of a successful result.
+           * @param exception The reason why it failed.
+           * @return A failed {@link $FutureType}.
+           * @throws NullPointerException if exception is null
+           */
+          @GwtIncompatible
+          public static <T> $FutureType<T> Future(Throwable exception) {
+              return $FutureType.failed(exception);
+          }
+
+          /$javadoc
+           * Alias for {@link $FutureType#failed($ExecutorServiceType, Throwable)}
+           *
+           * @param <T>             The value type of a successful result.
+           * @param executorService An executor service.
+           * @param exception       The reason why it failed.
+           * @return A failed {@link $FutureType}.
+           * @throws NullPointerException if executorService or exception is null
+           */
+          @GwtIncompatible
+          public static <T> $FutureType<T> Future($ExecutorServiceType executorService, Throwable exception) {
+              return $FutureType.failed(executorService, exception);
           }
 
         """
@@ -1524,10 +1607,34 @@ def generateTestClasses(): Unit = {
       val AssertionsExtensions = im.getType("javaslang.AssertionsExtensions")
       val ListType = im.getType("javaslang.collection.List")
       val OptionType = im.getType("javaslang.control.Option")
+      val FutureType = im.getType("javaslang.concurrent.Future")
+      val ExecutorServiceType = im.getType("java.util.concurrent.Executors")
+      val ExecutorService = s"${ExecutorServiceType}.newSingleThreadExecutor()"
 
       val d = "$";
 
       im.getStatic("javaslang.API.*")
+
+      def genFutureTests(name: String, value: String, success: Boolean): String = {
+        val check = if (success) "isSuccess" else "isFailure"
+        xs"""
+          @$test
+          public void shouldFutureWith${name}ReturnNotNull() {
+              final $FutureType<?> future = Future($value);
+              future.await();
+              assertThat(future).isNotNull();
+              assertThat(future.$check()).isTrue();
+          }
+
+          @$test
+          public void shouldFutureWithinExecutorWith${name}ReturnNotNull() {
+              final $FutureType<?> future = Future($ExecutorService, $value);
+              future.await();
+              assertThat(future).isNotNull();
+              assertThat(future.$check()).isTrue();
+          }
+        """
+      }
 
       def genAliasesTests(im: ImportManager, packageName: String, className: String): String = {
         xs"""
@@ -1567,6 +1674,13 @@ def generateTestClasses(): Unit = {
 
             """
           })("\n\n")}
+
+          ${genFutureTests("Supplier", "() -> 1", success = true)}
+
+          ${genFutureTests("Value", "1", success = true)}
+
+          ${genFutureTests("Error", "new Error()", success = false)}
+
         """
       }
 
