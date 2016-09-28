@@ -645,6 +645,38 @@ public final class API {
         return Lazy.of(supplier);
     }
 
+    /**
+     * Alias for {@link Option#of(Object)}
+     *
+     * @param <T>   type of the value
+     * @param value A value
+     * @return {@link Option.Some} if value is not {@code null}, {@link Option.None} otherwise
+     */
+    public static <T> Option<T> Option(T value) {
+        return Option.of(value);
+    }
+
+    /**
+     * Alias for {@link Option#some(Object)}
+     *
+     * @param <T>   type of the value
+     * @param value A value
+     * @return {@link Option.Some}
+     */
+    public static <T> Option<T> Some(T value) {
+        return Option.some(value);
+    }
+
+    /**
+     * Alias for {@link Option#none()}
+     *
+     * @param <T> component type
+     * @return the singleton instance of {@link Option.None}
+     */
+    public static <T> Option<T> None() {
+        return Option.none();
+    }
+
     //
     // Java type tweaks
     //

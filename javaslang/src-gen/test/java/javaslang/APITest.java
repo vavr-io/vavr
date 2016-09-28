@@ -230,6 +230,21 @@ public class APITest {
         assertThat(Lazy(() -> 1)).isNotNull();
     }
 
+    @Test
+    public void shouldOptionReturnNotNull() {
+        assertThat(Option(1)).isNotNull();
+    }
+
+    @Test
+    public void shouldSomeReturnNotNull() {
+        assertThat(Some(1)).isNotNull();
+    }
+
+    @Test
+    public void shouldNoneReturnNotNull() {
+        assertThat(None()).isNotNull();
+    }
+
     // -- run
 
     @Test

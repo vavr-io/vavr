@@ -241,6 +241,38 @@ def generateMainClasses(): Unit = {
               return Lazy.of(supplier);
           }
 
+          /$javadoc
+           * Alias for {@link $OptionType#of(Object)}
+           *
+           * @param <T>   type of the value
+           * @param value A value
+           * @return {@link $OptionType.Some} if value is not {@code null}, {@link $OptionType.None} otherwise
+           */
+          public static <T> $OptionType<T> Option(T value) {
+              return $OptionType.of(value);
+          }
+
+          /$javadoc
+           * Alias for {@link $OptionType#some(Object)}
+           *
+           * @param <T>   type of the value
+           * @param value A value
+           * @return {@link $OptionType.Some}
+           */
+          public static <T> $OptionType<T> Some(T value) {
+              return $OptionType.some(value);
+          }
+
+          /$javadoc
+           * Alias for {@link $OptionType#none()}
+           *
+           * @param <T> component type
+           * @return the singleton instance of {@link $OptionType.None}
+           */
+          public static <T> $OptionType<T> None() {
+              return $OptionType.none();
+          }
+
         """
       }
 
@@ -1706,6 +1738,12 @@ def generateTestClasses(): Unit = {
           ${genFutureTests("Error", "new Error()", success = false)}
 
           ${genSimpleAliasTest("Lazy", "() -> 1")}
+
+          ${genSimpleAliasTest("Option", "1")}
+
+          ${genSimpleAliasTest("Some", "1")}
+
+          ${genSimpleAliasTest("None", "")}
 
         """
       }
