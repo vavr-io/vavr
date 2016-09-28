@@ -120,6 +120,51 @@ public class APITest {
         assertThat(CheckedFunction8((v1, v2, v3, v4, v5, v6, v7, v8) -> null)).isNotNull();
     }
 
+    @Test
+    public void shouldTuple0ReturnNotNull() {
+        assertThat(Tuple()).isNotNull();
+    }
+
+    @Test
+    public void shouldTuple1ReturnNotNull() {
+        assertThat(Tuple(1)).isNotNull();
+    }
+
+    @Test
+    public void shouldTuple2ReturnNotNull() {
+        assertThat(Tuple(1, 2)).isNotNull();
+    }
+
+    @Test
+    public void shouldTuple3ReturnNotNull() {
+        assertThat(Tuple(1, 2, 3)).isNotNull();
+    }
+
+    @Test
+    public void shouldTuple4ReturnNotNull() {
+        assertThat(Tuple(1, 2, 3, 4)).isNotNull();
+    }
+
+    @Test
+    public void shouldTuple5ReturnNotNull() {
+        assertThat(Tuple(1, 2, 3, 4, 5)).isNotNull();
+    }
+
+    @Test
+    public void shouldTuple6ReturnNotNull() {
+        assertThat(Tuple(1, 2, 3, 4, 5, 6)).isNotNull();
+    }
+
+    @Test
+    public void shouldTuple7ReturnNotNull() {
+        assertThat(Tuple(1, 2, 3, 4, 5, 6, 7)).isNotNull();
+    }
+
+    @Test
+    public void shouldTuple8ReturnNotNull() {
+        assertThat(Tuple(1, 2, 3, 4, 5, 6, 7, 8)).isNotNull();
+    }
+
     // -- run
 
     @Test

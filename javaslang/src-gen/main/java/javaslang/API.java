@@ -357,6 +357,175 @@ public final class API {
         return CheckedFunction8.of(methodReference);
     }
 
+    /**
+     * Alias for {@link Tuple#empty()}
+     *
+     * @return the empty tuple.
+     */
+    public static Tuple0 Tuple() {
+        return Tuple.empty();
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object)}
+     *
+     * Creates a tuple of one element.
+     *
+     * @param <T1> type of the 1st element
+     * @param t1   the 1st element
+     * @return a tuple of one element.
+     */
+    public static <T1> Tuple1<T1> Tuple(T1 t1) {
+        return Tuple.of(t1);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object)}
+     *
+     * Creates a tuple of two elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @return a tuple of two elements.
+     */
+    public static <T1, T2> Tuple2<T1, T2> Tuple(T1 t1, T2 t2) {
+        return Tuple.of(t1, t2);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object, Object)}
+     *
+     * Creates a tuple of three elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param <T3> type of the 3rd element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @param t3   the 3rd element
+     * @return a tuple of three elements.
+     */
+    public static <T1, T2, T3> Tuple3<T1, T2, T3> Tuple(T1 t1, T2 t2, T3 t3) {
+        return Tuple.of(t1, t2, t3);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object, Object, Object)}
+     *
+     * Creates a tuple of 4 elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param <T3> type of the 3rd element
+     * @param <T4> type of the 4th element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @param t3   the 3rd element
+     * @param t4   the 4th element
+     * @return a tuple of 4 elements.
+     */
+    public static <T1, T2, T3, T4> Tuple4<T1, T2, T3, T4> Tuple(T1 t1, T2 t2, T3 t3, T4 t4) {
+        return Tuple.of(t1, t2, t3, t4);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object, Object, Object, Object)}
+     *
+     * Creates a tuple of 5 elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param <T3> type of the 3rd element
+     * @param <T4> type of the 4th element
+     * @param <T5> type of the 5th element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @param t3   the 3rd element
+     * @param t4   the 4th element
+     * @param t5   the 5th element
+     * @return a tuple of 5 elements.
+     */
+    public static <T1, T2, T3, T4, T5> Tuple5<T1, T2, T3, T4, T5> Tuple(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) {
+        return Tuple.of(t1, t2, t3, t4, t5);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object, Object, Object, Object, Object)}
+     *
+     * Creates a tuple of 6 elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param <T3> type of the 3rd element
+     * @param <T4> type of the 4th element
+     * @param <T5> type of the 5th element
+     * @param <T6> type of the 6th element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @param t3   the 3rd element
+     * @param t4   the 4th element
+     * @param t5   the 5th element
+     * @param t6   the 6th element
+     * @return a tuple of 6 elements.
+     */
+    public static <T1, T2, T3, T4, T5, T6> Tuple6<T1, T2, T3, T4, T5, T6> Tuple(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) {
+        return Tuple.of(t1, t2, t3, t4, t5, t6);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object, Object, Object, Object, Object, Object)}
+     *
+     * Creates a tuple of 7 elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param <T3> type of the 3rd element
+     * @param <T4> type of the 4th element
+     * @param <T5> type of the 5th element
+     * @param <T6> type of the 6th element
+     * @param <T7> type of the 7th element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @param t3   the 3rd element
+     * @param t4   the 4th element
+     * @param t5   the 5th element
+     * @param t6   the 6th element
+     * @param t7   the 7th element
+     * @return a tuple of 7 elements.
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> Tuple(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) {
+        return Tuple.of(t1, t2, t3, t4, t5, t6, t7);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object, Object, Object, Object, Object, Object, Object)}
+     *
+     * Creates a tuple of 8 elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param <T3> type of the 3rd element
+     * @param <T4> type of the 4th element
+     * @param <T5> type of the 5th element
+     * @param <T6> type of the 6th element
+     * @param <T7> type of the 7th element
+     * @param <T8> type of the 8th element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @param t3   the 3rd element
+     * @param t4   the 4th element
+     * @param t5   the 5th element
+     * @param t6   the 6th element
+     * @param t7   the 7th element
+     * @param t8   the 8th element
+     * @return a tuple of 8 elements.
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> Tuple(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
+        return Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8);
+    }
+
     //
     // Java type tweaks
     //

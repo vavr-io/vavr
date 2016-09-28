@@ -92,6 +92,36 @@ def generateMainClasses(): Unit = {
             """
           })("\n\n")}
 
+          /$javadoc
+           * Alias for {@link Tuple#empty()}
+           *
+           * @return the empty tuple.
+           */
+          public static Tuple0 Tuple() {
+              return Tuple.empty();
+          }
+
+          ${(1 to N).gen(i => {
+            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val links = (1 to i).gen(j => s"Object")(", ")
+            val params = (1 to i).gen(j => s"T$j t$j")(", ")
+            val args = (1 to i).gen(j => s"t$j")(", ")
+            xs"""
+              /$javadoc
+               * Alias for {@link Tuple#of($links)}
+               *
+               * Creates a tuple of ${i.numerus("element")}.
+               *
+               ${(1 to i).gen(j => s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
+               ${(1 to i).gen(j => s"* @param t$j   the ${j.ordinal} element")("\n")}
+               * @return a tuple of ${i.numerus("element")}.
+               */
+              public static <$generics> Tuple$i<$generics> Tuple($params) {
+                  return Tuple.of($args);
+              }
+            """
+          })("\n\n")}
+
         """
       }
 
@@ -1487,6 +1517,17 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldCheckedFunction${i}ReturnNotNull() {
                   assertThat(CheckedFunction$i(($params) -> null)).isNotNull();
+              }
+
+            """
+          })("\n\n")}
+
+          ${(0 to N).gen(i => {
+            val params = (1 to i).gen(j => s"$j")(", ")
+            xs"""
+              @$test
+              public void shouldTuple${i}ReturnNotNull() {
+                  assertThat(Tuple($params)).isNotNull();
               }
 
             """
