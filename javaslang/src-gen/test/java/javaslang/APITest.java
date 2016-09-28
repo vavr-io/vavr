@@ -25,6 +25,101 @@ public class APITest {
         AssertionsExtensions.assertThat(API.class).isNotInstantiable();
     }
 
+    //
+    // Alias should return not null.
+    // More specific test for each aliased class implemented in separate test class
+    //
+
+    @Test
+    public void shouldFunction0ReturnNotNull() {
+        assertThat(Function0(() -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCheckedFunction0ReturnNotNull() {
+        assertThat(CheckedFunction0(() -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldFunction1ReturnNotNull() {
+        assertThat(Function1((v1) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCheckedFunction1ReturnNotNull() {
+        assertThat(CheckedFunction1((v1) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldFunction2ReturnNotNull() {
+        assertThat(Function2((v1, v2) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCheckedFunction2ReturnNotNull() {
+        assertThat(CheckedFunction2((v1, v2) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldFunction3ReturnNotNull() {
+        assertThat(Function3((v1, v2, v3) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCheckedFunction3ReturnNotNull() {
+        assertThat(CheckedFunction3((v1, v2, v3) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldFunction4ReturnNotNull() {
+        assertThat(Function4((v1, v2, v3, v4) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCheckedFunction4ReturnNotNull() {
+        assertThat(CheckedFunction4((v1, v2, v3, v4) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldFunction5ReturnNotNull() {
+        assertThat(Function5((v1, v2, v3, v4, v5) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCheckedFunction5ReturnNotNull() {
+        assertThat(CheckedFunction5((v1, v2, v3, v4, v5) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldFunction6ReturnNotNull() {
+        assertThat(Function6((v1, v2, v3, v4, v5, v6) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCheckedFunction6ReturnNotNull() {
+        assertThat(CheckedFunction6((v1, v2, v3, v4, v5, v6) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldFunction7ReturnNotNull() {
+        assertThat(Function7((v1, v2, v3, v4, v5, v6, v7) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCheckedFunction7ReturnNotNull() {
+        assertThat(CheckedFunction7((v1, v2, v3, v4, v5, v6, v7) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldFunction8ReturnNotNull() {
+        assertThat(Function8((v1, v2, v3, v4, v5, v6, v7, v8) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldCheckedFunction8ReturnNotNull() {
+        assertThat(CheckedFunction8((v1, v2, v3, v4, v5, v6, v7, v8) -> null)).isNotNull();
+    }
+
     // -- run
 
     @Test

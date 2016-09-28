@@ -52,6 +52,49 @@ def generateMainClasses(): Unit = {
       val SupplierType = im.getType("java.util.function.Supplier")
       val IteratorType = im.getType("javaslang.collection.Iterator")
 
+      def genAliases(im: ImportManager, packageName: String, className: String): String = {
+        xs"""
+          //
+          // Aliases for static factories
+          //
+
+          ${(0 to N).gen(i => {
+            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
+            xs"""
+              /$javadoc
+               * Alias for {@link Function$i#of(Function$i)}
+               *
+               ${(0 to i).gen(j => if (j == 0) "* @param <R>             return type" else s"* @param <T$j>            type of the ${j.ordinal} argument")("\n")}
+               * @param methodReference A method reference
+               * @return A {@link Function$i}
+               */
+              public static $fullGenerics Function$i$fullGenerics Function$i(Function$i$fullGenerics methodReference) {
+                  return Function$i.of(methodReference);
+              }
+            """
+          })("\n\n")}
+
+          ${(0 to N).gen(i => {
+            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
+            xs"""
+              /$javadoc
+               * Alias for {@link CheckedFunction$i#of(CheckedFunction$i)}
+               *
+               ${(0 to i).gen(j => if (j == 0) "* @param <R>             return type" else s"* @param <T$j>            type of the ${j.ordinal} argument")("\n")}
+               * @param methodReference A method reference
+               * @return A {@link CheckedFunction$i}
+               */
+              public static $fullGenerics CheckedFunction$i$fullGenerics CheckedFunction$i(CheckedFunction$i$fullGenerics methodReference) {
+                  return CheckedFunction$i.of(methodReference);
+              }
+            """
+          })("\n\n")}
+
+        """
+      }
+
       im.getStatic("javaslang.API.Match.*")
 
       def genJavaTypeTweaks(im: ImportManager, packageName: String, className: String): String = {
@@ -571,6 +614,8 @@ def generateMainClasses(): Unit = {
 
             private API() {
             }
+
+            ${genAliases(im, packageName, className)}
 
             ${genJavaTypeTweaks(im, packageName, className)}
 
@@ -1429,6 +1474,26 @@ def generateTestClasses(): Unit = {
 
       im.getStatic("javaslang.API.*")
 
+      def genAliasesTests(im: ImportManager, packageName: String, className: String): String = {
+        xs"""
+          ${(0 to N).gen(i => {
+            val params = (1 to i).gen(j => s"v$j")(", ")
+            xs"""
+              @$test
+              public void shouldFunction${i}ReturnNotNull() {
+                  assertThat(Function$i(($params) -> null)).isNotNull();
+              }
+
+              @$test
+              public void shouldCheckedFunction${i}ReturnNotNull() {
+                  assertThat(CheckedFunction$i(($params) -> null)).isNotNull();
+              }
+
+            """
+          })("\n\n")}
+        """
+      }
+
       xs"""
         public class $className {
 
@@ -1436,6 +1501,13 @@ def generateTestClasses(): Unit = {
             public void shouldNotBeInstantiable() {
                 $AssertionsExtensions.assertThat($API.class).isNotInstantiable();
             }
+
+            //
+            // Alias should return not null.
+            // More specific test for each aliased class implemented in separate test class
+            //
+
+            ${genAliasesTests(im, packageName, className)}
 
             // -- run
 

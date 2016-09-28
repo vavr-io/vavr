@@ -84,6 +84,280 @@ public final class API {
     }
 
     //
+    // Aliases for static factories
+    //
+
+    /**
+     * Alias for {@link Function0#of(Function0)}
+     *
+     * @param <R>             return type
+     * @param methodReference A method reference
+     * @return A {@link Function0}
+     */
+    public static <R> Function0<R> Function0(Function0<R> methodReference) {
+        return Function0.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function1#of(Function1)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param methodReference A method reference
+     * @return A {@link Function1}
+     */
+    public static <T1, R> Function1<T1, R> Function1(Function1<T1, R> methodReference) {
+        return Function1.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function2#of(Function2)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param methodReference A method reference
+     * @return A {@link Function2}
+     */
+    public static <T1, T2, R> Function2<T1, T2, R> Function2(Function2<T1, T2, R> methodReference) {
+        return Function2.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function3#of(Function3)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param methodReference A method reference
+     * @return A {@link Function3}
+     */
+    public static <T1, T2, T3, R> Function3<T1, T2, T3, R> Function3(Function3<T1, T2, T3, R> methodReference) {
+        return Function3.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function4#of(Function4)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param methodReference A method reference
+     * @return A {@link Function4}
+     */
+    public static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> Function4(Function4<T1, T2, T3, T4, R> methodReference) {
+        return Function4.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function5#of(Function5)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param methodReference A method reference
+     * @return A {@link Function5}
+     */
+    public static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> Function5(Function5<T1, T2, T3, T4, T5, R> methodReference) {
+        return Function5.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function6#of(Function6)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param methodReference A method reference
+     * @return A {@link Function6}
+     */
+    public static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, R> Function6(Function6<T1, T2, T3, T4, T5, T6, R> methodReference) {
+        return Function6.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function7#of(Function7)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param <T7>            type of the 7th argument
+     * @param methodReference A method reference
+     * @return A {@link Function7}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> Function7(Function7<T1, T2, T3, T4, T5, T6, T7, R> methodReference) {
+        return Function7.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function8#of(Function8)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param <T7>            type of the 7th argument
+     * @param <T8>            type of the 8th argument
+     * @param methodReference A method reference
+     * @return A {@link Function8}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> Function8(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> methodReference) {
+        return Function8.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction0#of(CheckedFunction0)}
+     *
+     * @param <R>             return type
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction0}
+     */
+    public static <R> CheckedFunction0<R> CheckedFunction0(CheckedFunction0<R> methodReference) {
+        return CheckedFunction0.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction1#of(CheckedFunction1)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction1}
+     */
+    public static <T1, R> CheckedFunction1<T1, R> CheckedFunction1(CheckedFunction1<T1, R> methodReference) {
+        return CheckedFunction1.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction2#of(CheckedFunction2)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction2}
+     */
+    public static <T1, T2, R> CheckedFunction2<T1, T2, R> CheckedFunction2(CheckedFunction2<T1, T2, R> methodReference) {
+        return CheckedFunction2.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction3#of(CheckedFunction3)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction3}
+     */
+    public static <T1, T2, T3, R> CheckedFunction3<T1, T2, T3, R> CheckedFunction3(CheckedFunction3<T1, T2, T3, R> methodReference) {
+        return CheckedFunction3.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction4#of(CheckedFunction4)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction4}
+     */
+    public static <T1, T2, T3, T4, R> CheckedFunction4<T1, T2, T3, T4, R> CheckedFunction4(CheckedFunction4<T1, T2, T3, T4, R> methodReference) {
+        return CheckedFunction4.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction5#of(CheckedFunction5)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction5}
+     */
+    public static <T1, T2, T3, T4, T5, R> CheckedFunction5<T1, T2, T3, T4, T5, R> CheckedFunction5(CheckedFunction5<T1, T2, T3, T4, T5, R> methodReference) {
+        return CheckedFunction5.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction6#of(CheckedFunction6)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction6}
+     */
+    public static <T1, T2, T3, T4, T5, T6, R> CheckedFunction6<T1, T2, T3, T4, T5, T6, R> CheckedFunction6(CheckedFunction6<T1, T2, T3, T4, T5, T6, R> methodReference) {
+        return CheckedFunction6.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction7#of(CheckedFunction7)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param <T7>            type of the 7th argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction7}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, R> CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> CheckedFunction7(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> methodReference) {
+        return CheckedFunction7.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction8#of(CheckedFunction8)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param <T7>            type of the 7th argument
+     * @param <T8>            type of the 8th argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction8}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> CheckedFunction8(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> methodReference) {
+        return CheckedFunction8.of(methodReference);
+    }
+
+    //
     // Java type tweaks
     //
 
