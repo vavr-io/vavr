@@ -13,6 +13,7 @@ import static javaslang.API.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 import javaslang.collection.CharSeq;
@@ -516,6 +517,106 @@ public class APITest {
     @Test
     public void shouldIndexedSeqWithStreamReturnNotNull() {
         assertThat(IndexedSeq(Stream.of('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptySortedSetReturnNotNull() {
+        assertThat(SortedSet()).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptySortedSetWithComparatorReturnNotNull() {
+        assertThat(SortedSet((Comparator<Character>) Character::compareTo)).isNotNull();
+    }
+
+    @Test
+    public void shouldSortedSetWithSingleReturnNotNull() {
+        assertThat(SortedSet('1')).isNotNull();
+    }
+
+    @Test
+    public void shouldSortedSetWithSingleAndComparatorReturnNotNull() {
+        assertThat(SortedSet(Character::compareTo, '1')).isNotNull();
+    }
+
+    @Test
+    public void shouldSortedSetWithVarArgReturnNotNull() {
+        assertThat(SortedSet('1', '2', '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldSortedSetWithVarArgAndComparatorReturnNotNull() {
+        assertThat(SortedSet((Comparator<Character>) Character::compareTo, '1', '2', '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldSortedSetWithIterableReturnNotNull() {
+        assertThat(SortedSet(CharSeq('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldSortedSetWithIterableAndComparatorReturnNotNull() {
+        assertThat(SortedSet(Character::compareTo, CharSeq('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldSortedSetWithStreamReturnNotNull() {
+        assertThat(SortedSet(Stream.of('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldSortedSetWithStreamAndComparatorReturnNotNull() {
+        assertThat(SortedSet(Character::compareTo, Stream.of('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptyPriorityQueueReturnNotNull() {
+        assertThat(PriorityQueue()).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptyPriorityQueueWithComparatorReturnNotNull() {
+        assertThat(PriorityQueue((Comparator<Character>) Character::compareTo)).isNotNull();
+    }
+
+    @Test
+    public void shouldPriorityQueueWithSingleReturnNotNull() {
+        assertThat(PriorityQueue('1')).isNotNull();
+    }
+
+    @Test
+    public void shouldPriorityQueueWithSingleAndComparatorReturnNotNull() {
+        assertThat(PriorityQueue(Character::compareTo, '1')).isNotNull();
+    }
+
+    @Test
+    public void shouldPriorityQueueWithVarArgReturnNotNull() {
+        assertThat(PriorityQueue('1', '2', '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldPriorityQueueWithVarArgAndComparatorReturnNotNull() {
+        assertThat(PriorityQueue((Comparator<Character>) Character::compareTo, '1', '2', '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldPriorityQueueWithIterableReturnNotNull() {
+        assertThat(PriorityQueue(CharSeq('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldPriorityQueueWithIterableAndComparatorReturnNotNull() {
+        assertThat(PriorityQueue(Character::compareTo, CharSeq('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldPriorityQueueWithStreamReturnNotNull() {
+        assertThat(PriorityQueue(Stream.of('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldPriorityQueueWithStreamAndComparatorReturnNotNull() {
+        assertThat(PriorityQueue(Character::compareTo, Stream.of('1', '2', '3'))).isNotNull();
     }
 
     // -- run

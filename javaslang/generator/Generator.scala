@@ -66,6 +66,9 @@ def generateMainClasses(): Unit = {
       val LinkedHashSetType = im.getType("javaslang.collection.LinkedHashSet")
       val HashSetType = im.getType("javaslang.collection.HashSet")
       val JavaStreamType = im.getType("java.util.stream.Stream")
+      val TreeSetType = im.getType("javaslang.collection.TreeSet")
+      val PriorityQueueType = im.getType("javaslang.collection.PriorityQueue")
+      val JavaComparatorType = im.getType("java.util.Comparator")
 
       def genTraversableAliases(traversableType: String, name: String): String = {
         xs"""
@@ -126,6 +129,126 @@ def generateMainClasses(): Unit = {
            */
           public static <T> $traversableType<T> $name($JavaStreamType<? extends T> elements) {
               return $traversableType.ofAll(elements);
+          }
+        """
+      }
+
+      def genSortedTraversableAliases(traversableType: String, name: String, comparableExt: String): String = {
+        xs"""
+          /$javadoc
+           * Alias for {@link $traversableType#empty()}
+           *
+           * @param <T> Component type of element.
+           * @return A new {@link $traversableType} empty instance
+           */
+          public static <T $comparableExt> $traversableType<T> $name() {
+              return $traversableType.empty();
+          }
+
+          /$javadoc
+           * Alias for {@link $traversableType#empty($JavaComparatorType)}
+           *
+           * @param <T> Component type of element.
+           * @return A new {@link $traversableType} empty instance
+           */
+          public static <T $comparableExt> $traversableType<T> $name($JavaComparatorType<? super T> comparator) {
+              return $traversableType.empty(comparator);
+          }
+
+          /$javadoc
+           * Alias for {@link $traversableType#of(Comparable)}
+           *
+           * @param <T>     Component type of element.
+           * @param element An element.
+           * @return A new {@link $traversableType} instance containing the given element
+           */
+          public static <T $comparableExt> $traversableType<T> $name(T element) {
+              return $traversableType.of(element);
+          }
+
+          /$javadoc
+           * Alias for {@link $traversableType#of($JavaComparatorType, Object)}
+           *
+           * @param <T>     Component type of element.
+           * @param comparator The comparator used to sort the elements
+           * @param element An element.
+           * @return A new {@link $traversableType} instance containing the given element
+           */
+          public static <T> $traversableType<T> $name($JavaComparatorType<? super T> comparator, T element) {
+              return $traversableType.of(comparator, element);
+          }
+
+          /$javadoc
+           * Alias for {@link $traversableType#of(Comparable...)}
+           *
+           * @param <T>      Component type of element.
+           * @param elements Zero or more elements.
+           * @return A new {@link $traversableType} instance containing the given elements
+           */
+          @SuppressWarnings("varargs")
+          @SafeVarargs
+          public static <T $comparableExt> $traversableType<T> $name(T... elements) {
+              return $traversableType.of(elements);
+          }
+
+          /$javadoc
+           * Alias for {@link $traversableType#of($JavaComparatorType, Object...)}
+           *
+           * @param <T>      Component type of element.
+           * @param comparator The comparator used to sort the elements
+           * @param elements Zero or more elements.
+           * @return A new {@link $traversableType} instance containing the given elements
+           */
+          @SuppressWarnings("varargs")
+          @SafeVarargs
+          public static <T> $traversableType<T> $name($JavaComparatorType<? super T> comparator, T... elements) {
+              return $traversableType.of(comparator, elements);
+          }
+
+          /$javadoc
+           * Alias for {@link $traversableType#ofAll(Iterable)}
+           *
+           * @param <T>      Component type of element.
+           * @param elements Zero or more elements.
+           * @return A new {@link $traversableType} instance containing the given elements
+           */
+          public static <T $comparableExt> $traversableType<T> $name(Iterable<? extends T> elements) {
+              return $traversableType.ofAll(elements);
+          }
+
+          /$javadoc
+           * Alias for {@link $traversableType#ofAll($JavaComparatorType, Iterable)}
+           *
+           * @param <T>      Component type of element.
+           * @param comparator The comparator used to sort the elements
+           * @param elements Zero or more elements.
+           * @return A new {@link $traversableType} instance containing the given elements
+           */
+          public static <T> $traversableType<T> $name($JavaComparatorType<? super T> comparator, Iterable<? extends T> elements) {
+              return $traversableType.ofAll(comparator, elements);
+          }
+
+          /$javadoc
+           * Alias for {@link $traversableType#ofAll($JavaStreamType)}
+           *
+           * @param <T>      Component type of element.
+           * @param elements Zero or more elements.
+           * @return A new {@link $traversableType} instance containing the given elements
+           */
+          public static <T $comparableExt> $traversableType<T> $name($JavaStreamType<? extends T> elements) {
+              return $traversableType.ofAll(elements);
+          }
+
+          /$javadoc
+           * Alias for {@link $traversableType#ofAll($JavaComparatorType, $JavaStreamType)}
+           *
+           * @param <T>      Component type of element.
+           * @param comparator The comparator used to sort the elements
+           * @param elements Zero or more elements.
+           * @return A new {@link $traversableType} instance containing the given elements
+           */
+          public static <T> $traversableType<T> $name($JavaComparatorType<? super T> comparator, $JavaStreamType<? extends T> elements) {
+              return $traversableType.ofAll(comparator, elements);
           }
         """
       }
@@ -455,6 +578,10 @@ def generateMainClasses(): Unit = {
           ${genTraversableAliases(ListType, "Seq")}
 
           ${genTraversableAliases(VectorType, "IndexedSeq")}
+
+          ${genSortedTraversableAliases(TreeSetType, "SortedSet", "extends Comparable<? super T>")}
+
+          ${genSortedTraversableAliases(PriorityQueueType, "PriorityQueue", "extends Comparable<T>")}
         """
       }
 
@@ -1837,6 +1964,7 @@ def generateTestClasses(): Unit = {
       val ExecutorService = s"${ExecutorServiceType}.newSingleThreadExecutor()"
       val TryType = im.getType("javaslang.control.Try")
       val JavaStreamType = im.getType("java.util.stream.Stream")
+      val JavaComparatorType = im.getType("java.util.Comparator")
 
       val d = "$";
 
@@ -1887,6 +2015,31 @@ def generateTestClasses(): Unit = {
           ${genMediumAliasTest(s"${func}WithIterable", func, "CharSeq('1', '2', '3')")}
 
           ${genMediumAliasTest(s"${func}WithStream", func, s"$JavaStreamType.of('1', '2', '3')")}
+
+        """
+      }
+
+      def genSortedTraversableTests(func: String): String = {
+        xs"""
+          ${genMediumAliasTest(s"Empty${func}", func, "")}
+
+          ${genMediumAliasTest(s"Empty${func}WithComparator", func, s"($JavaComparatorType<Character>) Character::compareTo")}
+
+          ${genMediumAliasTest(s"${func}WithSingle", func, "'1'")}
+
+          ${genMediumAliasTest(s"${func}WithSingleAndComparator", func, "Character::compareTo, '1'")}
+
+          ${genMediumAliasTest(s"${func}WithVarArg", func, "'1', '2', '3'")}
+
+          ${genMediumAliasTest(s"${func}WithVarArgAndComparator", func, s"($JavaComparatorType<Character>) Character::compareTo, '1', '2', '3'")}
+
+          ${genMediumAliasTest(s"${func}WithIterable", func, "CharSeq('1', '2', '3')")}
+
+          ${genMediumAliasTest(s"${func}WithIterableAndComparator", func, "Character::compareTo, CharSeq('1', '2', '3')")}
+
+          ${genMediumAliasTest(s"${func}WithStream", func, s"$JavaStreamType.of('1', '2', '3')")}
+
+          ${genMediumAliasTest(s"${func}WithStreamAndComparator", func, s"Character::compareTo, $JavaStreamType.of('1', '2', '3')")}
 
         """
       }
@@ -1981,6 +2134,9 @@ def generateTestClasses(): Unit = {
           ${genTraversableTests("Set")}
           ${genTraversableTests("Seq")}
           ${genTraversableTests("IndexedSeq")}
+
+          ${genSortedTraversableTests("SortedSet")}
+          ${genSortedTraversableTests("PriorityQueue")}
         """
       }
 

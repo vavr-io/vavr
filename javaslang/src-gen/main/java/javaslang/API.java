@@ -11,6 +11,7 @@ package javaslang;
 
 import static javaslang.API.Match.*;
 
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiFunction;
@@ -1299,6 +1300,238 @@ public final class API {
      */
     public static <T> Vector<T> IndexedSeq(java.util.stream.Stream<? extends T> elements) {
         return Vector.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link TreeSet#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A new {@link TreeSet} empty instance
+     */
+    public static <T extends Comparable<? super T>> TreeSet<T> SortedSet() {
+        return TreeSet.empty();
+    }
+
+    /**
+     * Alias for {@link TreeSet#empty(Comparator)}
+     *
+     * @param <T> Component type of element.
+     * @return A new {@link TreeSet} empty instance
+     */
+    public static <T extends Comparable<? super T>> TreeSet<T> SortedSet(Comparator<? super T> comparator) {
+        return TreeSet.empty(comparator);
+    }
+
+    /**
+     * Alias for {@link TreeSet#of(Comparable)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link TreeSet} instance containing the given element
+     */
+    public static <T extends Comparable<? super T>> TreeSet<T> SortedSet(T element) {
+        return TreeSet.of(element);
+    }
+
+    /**
+     * Alias for {@link TreeSet#of(Comparator, Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param element An element.
+     * @return A new {@link TreeSet} instance containing the given element
+     */
+    public static <T> TreeSet<T> SortedSet(Comparator<? super T> comparator, T element) {
+        return TreeSet.of(comparator, element);
+    }
+
+    /**
+     * Alias for {@link TreeSet#of(Comparable...)}
+     *
+     * @param <T>      Component type of element.
+     * @param elements Zero or more elements.
+     * @return A new {@link TreeSet} instance containing the given elements
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T extends Comparable<? super T>> TreeSet<T> SortedSet(T... elements) {
+        return TreeSet.of(elements);
+    }
+
+    /**
+     * Alias for {@link TreeSet#of(Comparator, Object...)}
+     *
+     * @param <T>      Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param elements Zero or more elements.
+     * @return A new {@link TreeSet} instance containing the given elements
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> TreeSet<T> SortedSet(Comparator<? super T> comparator, T... elements) {
+        return TreeSet.of(comparator, elements);
+    }
+
+    /**
+     * Alias for {@link TreeSet#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of element.
+     * @param elements Zero or more elements.
+     * @return A new {@link TreeSet} instance containing the given elements
+     */
+    public static <T extends Comparable<? super T>> TreeSet<T> SortedSet(Iterable<? extends T> elements) {
+        return TreeSet.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link TreeSet#ofAll(Comparator, Iterable)}
+     *
+     * @param <T>      Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param elements Zero or more elements.
+     * @return A new {@link TreeSet} instance containing the given elements
+     */
+    public static <T> TreeSet<T> SortedSet(Comparator<? super T> comparator, Iterable<? extends T> elements) {
+        return TreeSet.ofAll(comparator, elements);
+    }
+
+    /**
+     * Alias for {@link TreeSet#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of element.
+     * @param elements Zero or more elements.
+     * @return A new {@link TreeSet} instance containing the given elements
+     */
+    public static <T extends Comparable<? super T>> TreeSet<T> SortedSet(java.util.stream.Stream<? extends T> elements) {
+        return TreeSet.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link TreeSet#ofAll(Comparator, java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param elements Zero or more elements.
+     * @return A new {@link TreeSet} instance containing the given elements
+     */
+    public static <T> TreeSet<T> SortedSet(Comparator<? super T> comparator, java.util.stream.Stream<? extends T> elements) {
+        return TreeSet.ofAll(comparator, elements);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A new {@link PriorityQueue} empty instance
+     */
+    public static <T extends Comparable<T>> PriorityQueue<T> PriorityQueue() {
+        return PriorityQueue.empty();
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#empty(Comparator)}
+     *
+     * @param <T> Component type of element.
+     * @return A new {@link PriorityQueue} empty instance
+     */
+    public static <T extends Comparable<T>> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator) {
+        return PriorityQueue.empty(comparator);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#of(Comparable)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link PriorityQueue} instance containing the given element
+     */
+    public static <T extends Comparable<T>> PriorityQueue<T> PriorityQueue(T element) {
+        return PriorityQueue.of(element);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#of(Comparator, Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param element An element.
+     * @return A new {@link PriorityQueue} instance containing the given element
+     */
+    public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, T element) {
+        return PriorityQueue.of(comparator, element);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#of(Comparable...)}
+     *
+     * @param <T>      Component type of element.
+     * @param elements Zero or more elements.
+     * @return A new {@link PriorityQueue} instance containing the given elements
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T extends Comparable<T>> PriorityQueue<T> PriorityQueue(T... elements) {
+        return PriorityQueue.of(elements);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#of(Comparator, Object...)}
+     *
+     * @param <T>      Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param elements Zero or more elements.
+     * @return A new {@link PriorityQueue} instance containing the given elements
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, T... elements) {
+        return PriorityQueue.of(comparator, elements);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of element.
+     * @param elements Zero or more elements.
+     * @return A new {@link PriorityQueue} instance containing the given elements
+     */
+    public static <T extends Comparable<T>> PriorityQueue<T> PriorityQueue(Iterable<? extends T> elements) {
+        return PriorityQueue.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#ofAll(Comparator, Iterable)}
+     *
+     * @param <T>      Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param elements Zero or more elements.
+     * @return A new {@link PriorityQueue} instance containing the given elements
+     */
+    public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, Iterable<? extends T> elements) {
+        return PriorityQueue.ofAll(comparator, elements);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of element.
+     * @param elements Zero or more elements.
+     * @return A new {@link PriorityQueue} instance containing the given elements
+     */
+    public static <T extends Comparable<T>> PriorityQueue<T> PriorityQueue(java.util.stream.Stream<? extends T> elements) {
+        return PriorityQueue.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#ofAll(Comparator, java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param elements Zero or more elements.
+     * @return A new {@link PriorityQueue} instance containing the given elements
+     */
+    public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, java.util.stream.Stream<? extends T> elements) {
+        return PriorityQueue.ofAll(comparator, elements);
     }
 
     //
