@@ -13,6 +13,7 @@ import static javaslang.API.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
@@ -617,6 +618,96 @@ public class APITest {
     @Test
     public void shouldPriorityQueueWithStreamAndComparatorReturnNotNull() {
         assertThat(PriorityQueue(Character::compareTo, Stream.of('1', '2', '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptyLinkedMapReturnNotNull() {
+        assertThat(LinkedMap()).isNotNull();
+    }
+
+    @Test
+    public void shouldLinkedMapFromSingleReturnNotNull() {
+        assertThat(LinkedMap(1, '1')).isNotNull();
+    }
+
+    @Test
+    public void shouldLinkedMapFromTuplesReturnNotNull() {
+        assertThat(LinkedMap(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldLinkedMapFromMapReturnNotNull() {
+        assertThat(LinkedMap(Collections.singletonMap(1, '1'))).isNotNull();
+    }
+
+    @Test
+    public void shouldLinkedMapFromPairsReturnNotNull() {
+        assertThat(LinkedMap(1, '1', 2, '2', 3, '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptyMapReturnNotNull() {
+        assertThat(Map()).isNotNull();
+    }
+
+    @Test
+    public void shouldMapFromSingleReturnNotNull() {
+        assertThat(Map(1, '1')).isNotNull();
+    }
+
+    @Test
+    public void shouldMapFromTuplesReturnNotNull() {
+        assertThat(Map(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldMapFromMapReturnNotNull() {
+        assertThat(Map(Collections.singletonMap(1, '1'))).isNotNull();
+    }
+
+    @Test
+    public void shouldMapFromPairsReturnNotNull() {
+        assertThat(Map(1, '1', 2, '2', 3, '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptySortedMapReturnNotNull() {
+        assertThat(SortedMap()).isNotNull();
+    }
+
+    @Test
+    public void shouldSortedMapFromSingleReturnNotNull() {
+        assertThat(SortedMap(1, '1')).isNotNull();
+    }
+
+    @Test
+    public void shouldSortedMapFromTuplesReturnNotNull() {
+        assertThat(SortedMap(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
+    }
+
+    @Test
+    public void shouldSortedMapFromMapReturnNotNull() {
+        assertThat(SortedMap(Collections.singletonMap(1, '1'))).isNotNull();
+    }
+
+    @Test
+    public void shouldSortedMapFromPairsReturnNotNull() {
+        assertThat(SortedMap(1, '1', 2, '2', 3, '3')).isNotNull();
+    }
+
+    @Test
+    public void shouldEmptySortedMapFromComparatorReturnNotNull() {
+        assertThat(SortedMap(Integer::compareTo)).isNotNull();
+    }
+
+    @Test
+    public void shouldSortedMapFromSingleAndComparatorReturnNotNull() {
+        assertThat(SortedMap((Comparator<Integer>)Integer::compareTo, 1, '1')).isNotNull();
+    }
+
+    @Test
+    public void shouldSortedMapFromTuplesAndComparatorReturnNotNull() {
+        assertThat(SortedMap((Comparator<Integer>)Integer::compareTo, Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
     }
 
     // -- run

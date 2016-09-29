@@ -12,6 +12,7 @@ package javaslang;
 import static javaslang.API.Match.*;
 
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiFunction;
@@ -1532,6 +1533,233 @@ public final class API {
      */
     public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, java.util.stream.Stream<? extends T> elements) {
         return PriorityQueue.ofAll(comparator, elements);
+    }
+
+    /**
+     * Alias for {@link LinkedHashMap#empty()}
+     *
+     * @param <K> The key type.
+     * @param <V> The value type.
+     * @return A singleton instance of empty {@link LinkedHashMap}
+     */
+    public static <K, V> LinkedHashMap<K, V> LinkedMap() {
+        return LinkedHashMap.empty();
+    }
+
+    /**
+     * Alias for {@link LinkedHashMap#of(Object, Object)}
+     *
+     * @param <K>   The key type.
+     * @param <V>   The value type.
+     * @param key   A singleton map key.
+     * @param value A singleton map value.
+     * @return A new {@link LinkedHashMap} instance containing the given entry
+     */
+    public static <K, V> LinkedHashMap<K, V> LinkedMap(K key, V value) {
+        return LinkedHashMap.of(key, value);
+    }
+
+    /**
+     * Alias for {@link LinkedHashMap#ofEntries(Tuple2...)}
+     *
+     * @param <K>     The key type.
+     * @param <V>     The value type.
+     * @param entries Map entries.
+     * @return A new {@link LinkedHashMap} instance containing the given entries
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <K, V> LinkedHashMap<K, V> LinkedMap(Tuple2<? extends K, ? extends V>... entries) {
+        return LinkedHashMap.ofEntries(entries);
+    }
+
+    /**
+     * Alias for {@link LinkedHashMap#ofAll(Map)}
+     *
+     * @param <K> The key type.
+     * @param <V> The value type.
+     * @param map A map entry.
+     * @return A new {@link LinkedHashMap} instance containing the given map
+     */
+    public static <K, V> LinkedHashMap<K, V> LinkedMap(Map<? extends K, ? extends V> map) {
+        return LinkedHashMap.ofAll(map);
+    }
+
+    /**
+     * Alias for {@link LinkedHashMap#of(Object...)}
+     *
+     * @param <K>   The key type.
+     * @param <V>   The value type.
+     * @param pairs A list of key-value pairs.
+     * @return A new {@link LinkedHashMap} instance containing the given entries
+     */
+    public static <K, V> LinkedHashMap<K, V> LinkedMap(Object... pairs) {
+        return LinkedHashMap.of(pairs);
+    }
+
+    /**
+     * Alias for {@link HashMap#empty()}
+     *
+     * @param <K> The key type.
+     * @param <V> The value type.
+     * @return A singleton instance of empty {@link HashMap}
+     */
+    public static <K, V> HashMap<K, V> Map() {
+        return HashMap.empty();
+    }
+
+    /**
+     * Alias for {@link HashMap#of(Object, Object)}
+     *
+     * @param <K>   The key type.
+     * @param <V>   The value type.
+     * @param key   A singleton map key.
+     * @param value A singleton map value.
+     * @return A new {@link HashMap} instance containing the given entry
+     */
+    public static <K, V> HashMap<K, V> Map(K key, V value) {
+        return HashMap.of(key, value);
+    }
+
+    /**
+     * Alias for {@link HashMap#ofEntries(Tuple2...)}
+     *
+     * @param <K>     The key type.
+     * @param <V>     The value type.
+     * @param entries Map entries.
+     * @return A new {@link HashMap} instance containing the given entries
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <K, V> HashMap<K, V> Map(Tuple2<? extends K, ? extends V>... entries) {
+        return HashMap.ofEntries(entries);
+    }
+
+    /**
+     * Alias for {@link HashMap#ofAll(Map)}
+     *
+     * @param <K> The key type.
+     * @param <V> The value type.
+     * @param map A map entry.
+     * @return A new {@link HashMap} instance containing the given map
+     */
+    public static <K, V> HashMap<K, V> Map(Map<? extends K, ? extends V> map) {
+        return HashMap.ofAll(map);
+    }
+
+    /**
+     * Alias for {@link HashMap#of(Object...)}
+     *
+     * @param <K>   The key type.
+     * @param <V>   The value type.
+     * @param pairs A list of key-value pairs.
+     * @return A new {@link HashMap} instance containing the given entries
+     */
+    public static <K, V> HashMap<K, V> Map(Object... pairs) {
+        return HashMap.of(pairs);
+    }
+
+    /**
+     * Alias for {@link TreeMap#empty()}
+     *
+     * @param <K> The key type.
+     * @param <V> The value type.
+     * @return A new empty {@link TreeMap} instance
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> SortedMap() {
+        return TreeMap.empty();
+    }
+
+    /**
+     * Alias for {@link TreeMap#empty(Comparator)}
+     *
+     * @param <K>           The key type.
+     * @param <V>           The value type.
+     * @param keyComparator The comparator used to sort the entries by their key
+     * @return A new empty {@link TreeMap} instance
+     */
+    public static <K, V> TreeMap<K, V> SortedMap(Comparator<? super K> keyComparator) {
+        return TreeMap.empty(keyComparator);
+    }
+
+    /**
+     * Alias for {@link TreeMap#of(Comparable, Object)}
+     *
+     * @param <K>   The key type.
+     * @param <V>   The value type.
+     * @param key   A singleton map key.
+     * @param value A singleton map value.
+     * @return A new {@link TreeMap} instance containing the given entry
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> SortedMap(K key, V value) {
+        return TreeMap.of(key, value);
+    }
+
+    /**
+     * Alias for {@link TreeMap#of(Comparator, Object, Object)}
+     *
+     * @param <K>           The key type.
+     * @param <V>           The value type.
+     * @param keyComparator The comparator used to sort the entries by their key
+     * @param key           A singleton map key.
+     * @param value         A singleton map value.
+     * @return A new {@link TreeMap} instance containing the given entry
+     */
+    public static <K, V> TreeMap<K, V> SortedMap(Comparator<? super K> keyComparator, K key, V value) {
+        return TreeMap.of(keyComparator, key, value);
+    }
+
+    /**
+     * Alias for {@link TreeMap#ofEntries(Tuple2...)}
+     *
+     * @param <K>     The key type.
+     * @param <V>     The value type.
+     * @param entries Map entries.
+     * @return A new {@link TreeMap} instance containing the given entries
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> SortedMap(Tuple2<? extends K, ? extends V>... entries) {
+        return TreeMap.ofEntries(entries);
+    }
+
+    /**
+     * Alias for {@link TreeMap#ofEntries(Comparator, Tuple2...)}
+     *
+     * @param <K>           The key type.
+     * @param <V>           The value type.
+     * @param keyComparator The comparator used to sort the entries by their key
+     * @param entries       Map entries.
+     * @return A new {@link TreeMap} instance containing the given entry
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <K, V> TreeMap<K, V> SortedMap(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V>... entries) {
+        return TreeMap.ofEntries(keyComparator, entries);
+    }
+
+    /**
+     * Alias for {@link TreeMap#ofAll(Map)}
+     *
+     * @param <K> The key type.
+     * @param <V> The value type.
+     * @param map A map entry.
+     * @return A new {@link TreeMap} instance containing the given map
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> SortedMap(Map<? extends K, ? extends V> map) {
+        return TreeMap.ofAll(map);
+    }
+
+    /**
+     * Alias for {@link TreeMap#of(Object...)}
+     *
+     * @param <K>   The key type.
+     * @param <V>   The value type.
+     * @param pairs A list of key-value pairs.
+     * @return A new {@link TreeMap} instance containing the given entries
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> SortedMap(Object... pairs) {
+        return TreeMap.of(pairs);
     }
 
     //
