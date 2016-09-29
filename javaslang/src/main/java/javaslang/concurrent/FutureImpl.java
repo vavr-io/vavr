@@ -180,8 +180,9 @@ final class FutureImpl<T> implements Future<T> {
      * @throws IllegalStateException if the Future is pending, completed or cancelled
      * @throws NullPointerException  if {@code computation} is null.
      */
-    void run(CheckedSupplier<? extends T> computation) {
+    void run(CheckedSupplier<? extends T> computation, long delay) {
         Objects.requireNonNull(computation, "computation is null");
+        final long start = System.currentTimeMillis();
         synchronized (lock) {
             if (job != null) {
                 throw new IllegalStateException("The Future is already running.");
@@ -193,7 +194,13 @@ final class FutureImpl<T> implements Future<T> {
                 // if the ExecutorService runs the computation
                 // - in a different thread, the lock ensures that the job is assigned before the computation completes
                 // - in the current thread, the job is already completed and the `job` variable remains null
-                final java.util.concurrent.Future<?> tmpJob = executorService.submit(() -> complete(Try.of(computation)));
+                final java.util.concurrent.Future<?> tmpJob = executorService.submit(() -> complete(Try.of(() -> {
+                    final long delta  = delay - System.currentTimeMillis() + start;
+                    if (delta > 0) {
+                        Thread.sleep(delta);
+                    }
+                    return computation.get();
+                })));
                 if (!isCompleted()) {
                     job = tmpJob;
                 }

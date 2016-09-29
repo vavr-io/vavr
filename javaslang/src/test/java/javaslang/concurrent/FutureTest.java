@@ -26,8 +26,7 @@ import java.util.function.Function;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static javaslang.concurrent.Concurrent.waitUntil;
 import static javaslang.concurrent.Concurrent.zZz;
-import static javaslang.concurrent.ExecutorServices.rejectingExecutorService;
-import static javaslang.concurrent.ExecutorServices.trivialExecutorService;
+import static javaslang.concurrent.ExecutorServices.*;
 import static org.assertj.core.api.Assertions.fail;
 
 public class FutureTest extends AbstractValueTest {
@@ -155,11 +154,11 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldFindOneSucceedingFutureWhenAllOthersFailUsingDefaultExecutorService() {
         final Seq<Future<Integer>> futures = Stream.from(1)
-                                                   .map(i -> Future.<Integer> of(() -> {
-                                                       throw new Error();
-                                                   }))
-                                                   .take(12)
-                                                   .append(Future.of(() -> 13));
+                .map(i -> Future.<Integer> of(() -> {
+                    throw new Error();
+                }))
+                .take(12)
+                .append(Future.of(() -> 13));
         final Future<Option<Integer>> testee = Future.find(futures, i -> i == 13);
         waitUntil(testee::isCompleted);
         assertCompleted(testee, Option.some(13));
@@ -168,10 +167,10 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldFindNoneWhenAllFuturesFailUsingForkJoinPool() {
         final Seq<Future<Integer>> futures = Stream.from(1)
-                                                   .map(i -> Future.<Integer> of(() -> {
-                                                       throw new Error(String.valueOf(i));
-                                                   }))
-                                                   .take(20);
+                .map(i -> Future.<Integer> of(() -> {
+                    throw new Error(String.valueOf(i));
+                }))
+                .take(20);
         final Future<Option<Integer>> testee = Future.find(futures, i -> i == 13);
         waitUntil(testee::isCompleted);
         assertCompleted(testee, Option.none());
@@ -230,6 +229,42 @@ public class FutureTest extends AbstractValueTest {
     public void shouldCompleteWithFailureWhenExecutorServiceThrowsRejectedExecutionException() {
         final Future<Integer> future = Future.of(rejectingExecutorService(), () -> 1);
         assertFailed(future, RejectedExecutionException.class);
+    }
+
+    @Test
+    public void shouldWaitGivenDelayBeforeComputingUsingDefaultExecutorService() {
+        final long delay = 250;
+        final long start = System.currentTimeMillis();
+        final Future<Long> future = Future.of(() -> System.currentTimeMillis() - start, delay);
+        waitUntil(future::isCompleted);
+        assertThat(future.get()).isGreaterThanOrEqualTo(delay);
+    }
+
+    @Test
+    public void shouldWaitGivenDelayBeforeComputingUsingSpecificExecutorService() {
+        final long delay = 250;
+        final long start = System.currentTimeMillis();
+        final Future<Long> future = Future.of(waitingExecutorService(100), () -> System.currentTimeMillis() - start, delay);
+        waitUntil(future::isCompleted);
+        assertThat(future.get()).isGreaterThanOrEqualTo(delay);
+    }
+
+    @Test
+    public void shouldWaitGivenDelayBeforeRunningUsingDefaultExecutorService() {
+        final long delay = 250;
+        final long[] time = new long[] { System.currentTimeMillis() };
+        final Future<Void> future = Future.run(() -> time[0] = System.currentTimeMillis() - time[0], delay);
+        waitUntil(future::isCompleted);
+        assertThat(time[0]).isGreaterThanOrEqualTo(delay);
+    }
+
+    @Test
+    public void shouldWaitGivenDelayBeforeRunningUsingSpecificExecutorService() {
+        final long delay = 250;
+        final long[] time = new long[] { System.currentTimeMillis() };
+        final Future<Void> future = Future.run(waitingExecutorService(100), () -> time[0] = System.currentTimeMillis() - time[0], delay);
+        waitUntil(future::isCompleted);
+        assertThat(time[0]).isGreaterThanOrEqualTo(delay);
     }
 
     // TODO: Re-enable this test when solving #1530
@@ -350,7 +385,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldCompleteWithSuccessIfSuccessAndThenFail() {
         final Future<Integer> future = Future.of(zZz(42))
-                                             .andThen(t -> zZz(new Error("and then fail!")));
+                .andThen(t -> zZz(new Error("and then fail!")));
         waitUntil(future::isCompleted);
         assertThat(future.getValue().get()).isEqualTo(Try.success(42));
     }
@@ -688,7 +723,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldRecoverSuccessFutureWithFuture() {
         final Future<String> recovered = Future.of(() -> "oh!")
-                                               .recoverWith(ignored -> Future.of(() -> "ignored"));
+                .recoverWith(ignored -> Future.of(() -> "ignored"));
         waitUntil(recovered::isCompleted);
         assertThat(recovered.isSuccess()).isTrue();
         assertThat(recovered.get()).isEqualTo("oh!");
@@ -722,7 +757,9 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldTransformResultFromSuccessToFailureThroughError() {
-        Future<String> future = Future.of(zZz(42)).transformValue(t -> Try.of(() -> {throw new ArithmeticException();}));
+        Future<String> future = Future.of(zZz(42)).transformValue(t -> Try.of(() -> {
+            throw new ArithmeticException();
+        }));
         waitUntil(future::isCompleted);
         waitUntil(future::isFailure);
         assertThat(future.getCause().get().getClass()).isEqualTo(ArithmeticException.class);
@@ -738,7 +775,9 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldTransformResultFromFailureToFailure() {
-        Future<String> future = Future.of(() -> {throw new ArithmeticException();}).transformValue(t -> Try.failure(new Error()));
+        Future<String> future = Future.of(() -> {
+            throw new ArithmeticException();
+        }).transformValue(t -> Try.failure(new Error()));
         waitUntil(future::isCompleted);
         waitUntil(future::isFailure);
         assertThat(future.getCause().get().getClass()).isEqualTo(Error.class);
@@ -746,7 +785,9 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldTransformResultFromFailureToFailureThroughError() {
-        Future<String> future = Future.of(zZz(new Error())).transformValue(t -> Try.of(() -> {throw new ArithmeticException();}));
+        Future<String> future = Future.of(zZz(new Error())).transformValue(t -> Try.of(() -> {
+            throw new ArithmeticException();
+        }));
         waitUntil(future::isCompleted);
         waitUntil(future::isFailure);
         assertThat(future.getCause().get().getClass()).isEqualTo(ArithmeticException.class);
@@ -790,7 +831,9 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldZipWithCombinatorFailure() {
-        Future<List<Integer>> future = Future.<Integer> of(zZz(3)).zipWith(Future.of(zZz(2)), (t, u) -> {throw new RuntimeException();});
+        Future<List<Integer>> future = Future.<Integer> of(zZz(3)).zipWith(Future.of(zZz(2)), (t, u) -> {
+            throw new RuntimeException();
+        });
         waitUntil(future::isCompleted);
         waitUntil(future::isFailure);
         assertThat(future.getCause().get().getClass()).isEqualTo(RuntimeException.class);

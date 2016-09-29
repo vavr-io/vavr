@@ -27,6 +27,10 @@ final class ExecutorServices {
         return REJECTING_EXECUTOR_SERVICE;
     }
 
+    static ExecutorService waitingExecutorService(long delay) {
+        return new WaitingExecutorService(delay);
+    }
+
     private static final class TrivialExecutorService extends AbstractExecutorService {
 
         @Override
@@ -37,40 +41,6 @@ final class ExecutorServices {
                 throw new IllegalStateException("Error calling task.", x);
             }
         }
-
-        private static class ImmediatelyDoneFuture<T> implements java.util.concurrent.Future<T> {
-
-            final T value;
-
-            ImmediatelyDoneFuture(T value) {
-                this.value = value;
-            }
-
-            @Override
-            public boolean cancel(boolean mayInterruptIfRunning) {
-                return false;
-            }
-
-            @Override
-            public boolean isCancelled() {
-                return false;
-            }
-
-            @Override
-            public boolean isDone() {
-                return true;
-            }
-
-            @Override
-            public T get() {
-                return value;
-            }
-
-            @Override
-            public T get(long timeout, TimeUnit unit) {
-                return value;
-            }
-        }
     }
 
     private static final class RejectingExecutorService extends AbstractExecutorService {
@@ -78,6 +48,25 @@ final class ExecutorServices {
         @Override
         public <T> java.util.concurrent.Future<T> submit(Callable<T> task) {
             throw new RejectedExecutionException();
+        }
+    }
+
+    private static final class WaitingExecutorService extends AbstractExecutorService {
+
+        final long delay;
+
+        WaitingExecutorService(long delay) {
+            this.delay = delay;
+        }
+
+        @Override
+        public <T> java.util.concurrent.Future<T> submit(Callable<T> task) {
+            try {
+                Thread.sleep(delay);
+                return new ImmediatelyDoneFuture<>(task.call());
+            } catch (Exception x) {
+                throw new IllegalStateException("Error calling task.", x);
+            }
         }
     }
 
@@ -148,6 +137,40 @@ final class ExecutorServices {
         @Override
         public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    private static class ImmediatelyDoneFuture<T> implements java.util.concurrent.Future<T> {
+
+        final T value;
+
+        ImmediatelyDoneFuture(T value) {
+            this.value = value;
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            return false;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return false;
+        }
+
+        @Override
+        public boolean isDone() {
+            return true;
+        }
+
+        @Override
+        public T get() {
+            return value;
+        }
+
+        @Override
+        public T get(long timeout, TimeUnit unit) {
+            return value;
         }
     }
 }

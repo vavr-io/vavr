@@ -296,7 +296,7 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if computation is null.
      */
     static <T> Future<T> of(CheckedSupplier<? extends T> computation) {
-        return Future.of(DEFAULT_EXECUTOR_SERVICE, computation);
+        return Future.of(DEFAULT_EXECUTOR_SERVICE, computation, 0);
     }
 
     /**
@@ -309,10 +309,41 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if one of executorService of computation is null.
      */
     static <T> Future<T> of(ExecutorService executorService, CheckedSupplier<? extends T> computation) {
+        return Future.of(executorService, computation, 0);
+    }
+
+    /**
+     * Starts an asynchronous computation after delaying, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
+     * The thread supplied by the {@code DEFAULT_EXECUTOR_SERVICE} will be blocked at least {@code delay} milliseconds.
+     * If the {@code delay} &lt;= 0, the {@code computation} will be executed immediately.
+     *
+     * @param computation A computation.
+     * @param delay       The time in milliseconds to wait before executing the given {@code computation}.
+     * @param <T>         Type of the computation result.
+     * @return A new Future instance.
+     * @throws NullPointerException if computation is null.
+     */
+    static <T> Future<T> of(CheckedSupplier<? extends T> computation, long delay) {
+        return Future.of(DEFAULT_EXECUTOR_SERVICE, computation, delay);
+    }
+
+    /**
+     * Starts an asynchronous computation after delaying, backed by the given {@link ExecutorService}.
+     * The thread supplied by the {@code ExecutorService} will be blocked at least {@code delay} milliseconds.
+     * If the {@code delay} &lt;= 0, the {@code computation} will be executed immediately.
+     *
+     * @param executorService An executor service.
+     * @param computation     A computation.
+     * @param delay           The time in milliseconds to wait before executing the given {@code computation}.
+     * @param <T>             Type of the computation result.
+     * @return A new Future instance.
+     * @throws NullPointerException if one of executorService of computation is null.
+     */
+    static <T> Future<T> of(ExecutorService executorService, CheckedSupplier<? extends T> computation, long delay) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(computation, "computation is null");
         final FutureImpl<T> future = new FutureImpl<>(executorService);
-        future.run(computation);
+        future.run(computation, delay);
         return future;
     }
 
@@ -364,11 +395,11 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if unit is null.
      */
     static Future<Void> run(CheckedRunnable unit) {
-        return run(DEFAULT_EXECUTOR_SERVICE, unit);
+        return run(DEFAULT_EXECUTOR_SERVICE, unit, 0);
     }
 
     /**
-     * Starts an asynchronous computation, backed by the given {@link ExecutorService}.
+     * Runs an asynchronous computation, backed by the given {@link ExecutorService}.
      *
      * @param executorService An executor service.
      * @param unit            A unit of work.
@@ -376,12 +407,41 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if one of executorService of unit is null.
      */
     static Future<Void> run(ExecutorService executorService, CheckedRunnable unit) {
+        return run(executorService, unit, 0);
+    }
+
+    /**
+     * Runs an asynchronous computation after delaying, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
+     * The thread supplied by the {@code DEFAULT_EXECUTOR_SERVICE} will be blocked at least {@code delay} milliseconds.
+     * If the {@code delay} &lt;= 0, the {@code unit} of work will be run immediately.
+     *
+     * @param unit  A unit of work.
+     * @param delay The time in milliseconds to wait before running the given {@code unit} of work.
+     * @return A new Future instance which results in nothing.
+     * @throws NullPointerException if unit is null.
+     */
+    static Future<Void> run(CheckedRunnable unit, long delay) {
+        return run(DEFAULT_EXECUTOR_SERVICE, unit, delay);
+    }
+
+    /**
+     * Runs an asynchronous computation after delaying, backed by the given {@link ExecutorService}.
+     * The thread supplied by the {@code ExecutorService} will be blocked at least {@code delay} milliseconds.
+     * If the {@code delay} &lt;= 0, the {@code unit} of work will be run immediately.
+     *
+     * @param executorService An executor service.
+     * @param unit            A unit of work.
+     * @param delay           The time in milliseconds to wait before running the given {@code unit} of work.
+     * @return A new Future instance which results in nothing.
+     * @throws NullPointerException if one of executorService of unit is null.
+     */
+    static Future<Void> run(ExecutorService executorService, CheckedRunnable unit, long delay) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(unit, "unit is null");
         return Future.of(executorService, () -> {
             unit.run();
             return null;
-        });
+        }, delay);
     }
 
     /**
@@ -800,9 +860,7 @@ public interface Future<T> extends Value<T> {
     default <U> Future<U> transformValue(Function<? super Try<T>, ? extends Try<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
         final Promise<U> promise = Promise.make(executorService());
-        onComplete(t -> {
-            Try.run(() -> promise.complete(f.apply(t))).onFailure(promise::failure);
-        });
+        onComplete(t -> Try.run(() -> promise.complete(f.apply(t))).onFailure(promise::failure));
         return promise.future();
     }
 
@@ -828,10 +886,10 @@ public interface Future<T> extends Value<T> {
      * If this Future failed the result contains this failure. Otherwise the result contains that failure or
      * a combination of both successful Future results.
      *
-     * @param that Another Future
+     * @param that       Another Future
      * @param combinator The combinator function
-     * @param <U>  Result type of {@code that}
-     * @param <R>  Result type of {@code f}
+     * @param <U>        Result type of {@code that}
+     * @param <R>        Result type of {@code f}
      * @return A new Future that returns both Future results.
      * @throws NullPointerException if {@code that} is null
      */
