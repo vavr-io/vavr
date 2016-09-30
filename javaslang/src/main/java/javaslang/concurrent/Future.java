@@ -306,7 +306,7 @@ public interface Future<T> extends Value<T> {
      * @param computation     A computation.
      * @param <T>             Type of the computation result.
      * @return A new Future instance.
-     * @throws NullPointerException if one of executorService of computation is null.
+     * @throws NullPointerException if one of executorService or computation is null.
      */
     static <T> Future<T> of(ExecutorService executorService, CheckedSupplier<? extends T> computation) {
         Objects.requireNonNull(executorService, "executorService is null");
@@ -373,7 +373,7 @@ public interface Future<T> extends Value<T> {
      * @param executorService An executor service.
      * @param unit            A unit of work.
      * @return A new Future instance which results in nothing.
-     * @throws NullPointerException if one of executorService of unit is null.
+     * @throws NullPointerException if one of executorService or unit is null.
      */
     static Future<Void> run(ExecutorService executorService, CheckedRunnable unit) {
         Objects.requireNonNull(executorService, "executorService is null");
