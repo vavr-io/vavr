@@ -480,10 +480,12 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds
+     * @param <U>  type of unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return an Array with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
     public static <T, U> Array<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toArray();
@@ -507,10 +509,12 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds
+     * @param <U>  type of unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return an Array with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
     public static <T, U> Array<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toArray();
@@ -534,10 +538,11 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds and unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return an Array with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
     public static <T> Array<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toArray();

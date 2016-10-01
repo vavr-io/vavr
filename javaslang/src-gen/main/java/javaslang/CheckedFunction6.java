@@ -200,6 +200,13 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
      * Returns a function that always returns the constant
      * value that you give in parameter.
      *
+     * @param <T1> generic parameter type 1 of the resulting function
+     * @param <T2> generic parameter type 2 of the resulting function
+     * @param <T3> generic parameter type 3 of the resulting function
+     * @param <T4> generic parameter type 4 of the resulting function
+     * @param <T5> generic parameter type 5 of the resulting function
+     * @param <T6> generic parameter type 6 of the resulting function
+     * @param <R> the result type
      * @param value the value to be returned
      * @return a function always returning the given value
      */
@@ -264,6 +271,7 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
      * wrapped by {@code exceptionMapper} in case of throwable
      *
      * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
+     * @return a new Function6 that wraps this CheckedFunction6 by throwing a {@code RuntimeException} issued by the given {@code exceptionMapper} in the case of a failure
      */
     default Function6<T1, T2, T3, T4, T5, T6, R> unchecked(Function<? super Throwable, ? extends RuntimeException> exceptionMapper) {
         return recover(throwable -> {
@@ -273,7 +281,9 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
 
     /**
      * Return unchecked function that will return this CheckedFunction6 result in correct case and throw exception
-     * wrapped by {@link IllegalStateException} in case of throwable
+     * wrapped by {@link IllegalStateException} in case of throwable.
+     *
+     * @return a new Function6 that wraps this CheckedFunction6 by throwing an {@code IllegalStateException} in the case of a failure
      */
     default Function6<T1, T2, T3, T4, T5, T6, R> unchecked() {
         return unchecked(IllegalStateException::new);

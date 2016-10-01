@@ -29,9 +29,8 @@ import java.util.stream.StreamSupport;
  * How the empty state is interpreted depends on the context, i.e. it may be <em>undefined</em>, <em>failed</em>,
  * <em>no elements</em>, etc.
  * <p>
- * <p>
  * Basic operations:
- * <p>
+ *
  * <ul>
  * <li>{@link #get()}</li>
  * <li>{@link #getOption()}</li>
@@ -43,16 +42,16 @@ import java.util.stream.StreamSupport;
  * <li>{@link #map(Function)}</li>
  * <li>{@link #stringPrefix()}</li>
  * </ul>
- * <p>
+ *
  * Equality checks:
- * <p>
+ *
  * <ul>
  * <li>{@link #corresponds(Iterable, BiPredicate)}</li>
  * <li>{@link #eq(Object)}</li>
  * </ul>
- * <p>
+ *
  * Iterable extensions:
- * <p>
+ *
  * <ul>
  * <li>{@link #contains(Object)}</li>
  * <li>{@link #exists(Predicate)}</li>
@@ -60,9 +59,9 @@ import java.util.stream.StreamSupport;
  * <li>{@link #forEach(Consumer)}</li>
  * <li>{@link #iterator()}</li>
  * </ul>
- * <p>
+ *
  * Side-effects:
- * <p>
+ *
  * <ul>
  * <li>{@link #out(PrintStream)}</li>
  * <li>{@link #out(PrintWriter)}</li>
@@ -70,9 +69,9 @@ import java.util.stream.StreamSupport;
  * <li>{@link #stderr()}</li>
  * <li>{@link #stdout()}</li>
  * </ul>
- * <p>
+ *
  * Type conversion:
- * <p>
+ *
  * <ul>
  * <li>{@link #toArray()}</li>
  * <li>{@link #toCharSeq()}</li>
@@ -117,7 +116,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toTry(Supplier)}</li>
  * <li>{@link #toVector()}</li>
  * </ul>
- * <p>
+ *
  * <strong>Please note:</strong> flatMap signatures are manifold and have to be declared by subclasses of Value.
  *
  * @param <T> The type of the wrapped value.
@@ -143,6 +142,8 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Collects the underlying value(s) (if present) using the provided {@code collector}.
      *
+     * @param <A> the mutable accumulation type of the reduction operation
+     * @param <R> the result type of the reduction operation
      * @param collector Collector performing reduction
      * @return R reduction result
      */
@@ -154,6 +155,7 @@ public interface Value<T> extends Iterable<T> {
      * Collects the underlying value(s) (if present) using the given {@code supplier}, {@code accumulator} and
      * {@code combiner}.
      *
+     * @param <R> type of the result
      * @param supplier    provide unit value for reduction
      * @param accumulator perform reduction with unit value
      * @param combiner    function for combining two values, which must be
@@ -203,7 +205,7 @@ public interface Value<T> extends Iterable<T> {
      * In a nutshell: eq checks <strong>congruence of structures</strong> and <strong>equality of contained values</strong>.
      * <p>
      * Example:
-     * <p>
+     *
      * <pre><code>
      * // ((1, 2), ((3))) =&gt; structure: (()(())) values: 1, 2, 3
      * final Value&lt;?&gt; i1 = List.of(List.of(1, 2), Arrays.asList(List.of(3)));
@@ -212,7 +214,7 @@ public interface Value<T> extends Iterable<T> {
      * </code></pre>
      * <p>
      * Semantics:
-     * <p>
+     *
      * <pre><code>
      * o == this             : true
      * o instanceof Value    : iterable elements are eq, non-iterable elements equals, for all (o1, o2) in (this, o)

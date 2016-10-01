@@ -565,7 +565,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
                 return new Node<>(value, rank, children);
             }
 
-            /**
+            /*
              * fun link (t1 as Node (x1,r1,c1), t2 as Node (x2,r2,c2)) = (∗ r1 = r2 ∗)
              * *  if Elem.leq (x1,x2) then Node (x1,r1+1,t2 :: c1)
              * *  else                     Node (x2,r2+1,t1 :: c2
@@ -578,12 +578,12 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
                         : of(tree.root, tree.rank + 1, this.appendTo(tree.children));
             }
 
-            /**
+            /*
              * fun skewLink (t0 as Node (x0,r0, _), t1 as Node (x1,r1,c1), t2 as Node (x2,r2,c2)) =
              * *  if Elem.leq (x1,x0) andalso Elem.leq (x1,x2) then      Node (x1,r1+1,t0 :: t2 :: c1)
              * *  else if Elem.leq (x2,x0) andalso Elem.leq (x2,x1) then Node (x2,r2+1,t0 :: t1 :: c2)
              * *  else                                                   Node (x0,r1+1,[t1, t2])
-             **/
+             */
             protected Node<T> skewLink(SerializableComparator<? super T> comparator, Node<T> left, Node<T> right) {
                 assert rank == 0 && left.rank == right.rank;
 

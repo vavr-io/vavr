@@ -16,7 +16,7 @@ import java.util.stream.Collector;
  * An immutable {@code Queue} stores elements allowing a first-in-first-out (FIFO) retrieval.
  * <p>
  * Queue API:
- * <p>
+ *
  * <ul>
  * <li>{@link #dequeue()}</li>
  * <li>{@link #dequeueOption()}</li>
@@ -26,7 +26,7 @@ import java.util.stream.Collector;
  * <li>{@link #peek()}</li>
  * <li>{@link #peekOption()}</li>
  * </ul>
- * <p>
+ *
  * A Queue internally consists of a front List containing the front elements of the Queue in the correct order and a
  * rear List containing the rear elements of the Queue in reverse order.
  * <p>
@@ -520,10 +520,12 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds
+     * @param <U>  type of unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return a Queue with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
     public static <T, U> Queue<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toQueue();
@@ -547,10 +549,12 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds
+     * @param <U>  type of unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return a Queue with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
     public static <T, U> Queue<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toQueue();
@@ -574,10 +578,11 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds and unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return a Queue with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
     public static <T> Queue<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toQueue();

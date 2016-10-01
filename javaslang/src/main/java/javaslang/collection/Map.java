@@ -258,7 +258,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     /**
      * Returns the value associated with a key, or a default value if the key is not contained in the map.
      *
-     * @param key the key
+     * @param key          the key
      * @param defaultValue a default value
      * @return the value associated with key if it exists, otherwise the default value.
      */
@@ -341,13 +341,14 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     <K2> Map<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper);
 
     /**
-     * Maps the keys of this {@code Map} while preserving the corresponding values.
+     * Maps the keys of this {@code Map} while preserving the corresponding values and applying a value merge function on collisions.
      * <p>
      * The size of the result map may be smaller if {@code keyMapper} maps two or more distinct keys to the same new key.
      * In this case the associated values will be combined using {@code valueMerge}.
      *
-     * @param <K2>      the new key type
-     * @param keyMapper a {@code Function} that maps keys of type {@code V} to keys of type {@code V2}
+     * @param <K2>       the new key type
+     * @param keyMapper  a {@code Function} that maps keys of type {@code V} to keys of type {@code V2}
+     * @param valueMerge a {@code BiFunction} that merges values
      * @return a new {@code Map}
      * @throws NullPointerException if {@code keyMapper} is null
      */
@@ -414,6 +415,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * function is used to combine the previous value to the value to
      * be inserted, and the result of that call is inserted in the map.
      *
+     * @param <U>   the value type
      * @param key   key with which the specified value is to be associated
      * @param value value to be associated with the specified key
      * @param merge function taking the old and new values and merging them.
@@ -424,6 +426,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     /**
      * Convenience method for {@code put(entry._1, entry._2, merge)}.
      *
+     * @param <U>   the value type
      * @param entry A Tuple2 containing the key and value
      * @param merge function taking the old and new values and merging them.
      * @return A new Map containing these elements and that entry.

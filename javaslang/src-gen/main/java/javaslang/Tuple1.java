@@ -90,6 +90,7 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
     /**
      * Sets the 1st element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 1st element of this Tuple.
      */
     public Tuple1<T1> update1(T1 value) {

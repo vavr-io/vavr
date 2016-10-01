@@ -119,6 +119,8 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
      * Returns a function that always returns the constant
      * value that you give in parameter.
      *
+
+     * @param <R> the result type
      * @param value the value to be returned
      * @return a function always returning the given value
      */

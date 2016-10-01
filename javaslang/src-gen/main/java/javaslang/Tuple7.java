@@ -198,6 +198,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     /**
      * Sets the 1st element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 1st element of this Tuple.
      */
     public Tuple7<T1, T2, T3, T4, T5, T6, T7> update1(T1 value) {
@@ -216,6 +217,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     /**
      * Sets the 2nd element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 2nd element of this Tuple.
      */
     public Tuple7<T1, T2, T3, T4, T5, T6, T7> update2(T2 value) {
@@ -234,6 +236,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     /**
      * Sets the 3rd element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 3rd element of this Tuple.
      */
     public Tuple7<T1, T2, T3, T4, T5, T6, T7> update3(T3 value) {
@@ -252,6 +255,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     /**
      * Sets the 4th element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 4th element of this Tuple.
      */
     public Tuple7<T1, T2, T3, T4, T5, T6, T7> update4(T4 value) {
@@ -270,6 +274,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     /**
      * Sets the 5th element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 5th element of this Tuple.
      */
     public Tuple7<T1, T2, T3, T4, T5, T6, T7> update5(T5 value) {
@@ -288,6 +293,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     /**
      * Sets the 6th element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 6th element of this Tuple.
      */
     public Tuple7<T1, T2, T3, T4, T5, T6, T7> update6(T6 value) {
@@ -306,6 +312,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     /**
      * Sets the 7th element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 7th element of this Tuple.
      */
     public Tuple7<T1, T2, T3, T4, T5, T6, T7> update7(T7 value) {

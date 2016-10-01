@@ -1197,12 +1197,13 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds and unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return a list with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
-    static <T> Iterator<T> unfold(T seed, Function<? super T,Option<Tuple2<? extends T, ? extends T>>> f) {
+    static <T> Iterator<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return unfoldLeft(seed, f);
     }
 
@@ -1224,15 +1225,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds
+     * @param <U>  type of unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return a list with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
-    static <T,U> Iterator<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
-        return Stream.<U>ofAll(
-            unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(t -> Tuple.of(t._2, t._1)))))
-            .reverse().iterator();
+    static <T, U> Iterator<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
+        return Stream.<U> ofAll(
+                unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(t -> Tuple.of(t._2, t._1)))))
+                .reverse().iterator();
     }
 
     /**
@@ -1253,12 +1256,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds
+     * @param <U>  type of unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return a list with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
-    static <T,U> Iterator<U> unfoldRight(T seed, Function<? super T,Option<Tuple2<? extends U, ? extends T>>> f) {
+    static <T, U> Iterator<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         Objects.requireNonNull(f, "the unfold iterating function is null");
         return new AbstractIterator<U>() {
             private Option<Tuple2<? extends U, ? extends T>> nextVal = f.apply(seed);
@@ -1812,7 +1817,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         // the focus of the Stream API is on random-access collections of *known size*
         final Stream<T> stream = Stream.ofAll(this);
         return Spliterators.spliterator(stream.iterator(), stream.length(),
-                Spliterator.ORDERED | Spliterator.IMMUTABLE);
+                                        Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
     @Override
