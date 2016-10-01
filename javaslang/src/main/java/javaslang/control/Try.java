@@ -942,7 +942,7 @@ public interface Try<T> extends Value<T> {
          * @throws Error                if the given exception is fatal, i.e. not recoverable
          * @throws NullPointerException if exception is null
          */
-        public static NonFatalException of(Throwable exception) {
+        static NonFatalException of(Throwable exception) {
             Objects.requireNonNull(exception, "exception is null");
             if (exception instanceof NonFatalException) {
                 return (NonFatalException) exception;
