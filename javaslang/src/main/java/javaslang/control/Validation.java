@@ -70,10 +70,8 @@ public interface Validation<E, T> extends Value<T> {
      * @param <T>   type of the given {@code value}
      * @param value A value
      * @return {@code Valid(value)}
-     * @throws NullPointerException if value is null
      */
     static <E, T> Validation<E, T> valid(T value) {
-        Objects.requireNonNull(value, "value is null");
         return new Valid<>(value);
     }
 

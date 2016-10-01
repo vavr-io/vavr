@@ -487,6 +487,11 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     @Override
+    public V getOrElse(K key, V defaultValue) {
+        return get(key).getOrElse(defaultValue);
+    }
+
+    @Override
     public <C> Map<C, TreeMap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {
         return Maps.groupBy(this, this::createFromEntries, classifier);
     }

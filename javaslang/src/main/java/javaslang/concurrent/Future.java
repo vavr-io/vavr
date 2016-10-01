@@ -50,7 +50,7 @@ public interface Future<T> extends Value<T> {
 
     /**
      * The default executor service is {@link Executors#newCachedThreadPool()}.
-     * Please note that it may prevent the VM from shutdown.}
+     * Please note that it may prevent the VM from shutdown.
      */
     ExecutorService DEFAULT_EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
@@ -747,9 +747,7 @@ public interface Future<T> extends Value<T> {
      */
     default Future<T> recover(Function<? super Throwable, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        final Promise<T> promise = Promise.make(executorService());
-        onComplete(t -> promise.complete(t.recover(f)));
-        return promise.future();
+        return transformValue(t -> t.recover(f::apply));
     }
 
     /**
@@ -792,6 +790,23 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
+     * Transforms the value of this {@code Future}, whether it is a success or a failure.
+     *
+     * @param f   A transformation
+     * @param <U> Generic type of transformation {@code Try} result
+     * @return A {@code Future} of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    default <U> Future<U> transformValue(Function<? super Try<T>, ? extends Try<? extends U>> f) {
+        Objects.requireNonNull(f, "f is null");
+        final Promise<U> promise = Promise.make(executorService());
+        onComplete(t -> {
+            Try.run(() -> promise.complete(f.apply(t))).onFailure(promise::failure);
+        });
+        return promise.future();
+    }
+
+    /**
      * Returns a tuple of this and that Future result.
      * <p>
      * If this Future failed the result contains this failure. Otherwise the result contains that failure or
@@ -802,16 +817,35 @@ public interface Future<T> extends Value<T> {
      * @return A new Future that returns both Future results.
      * @throws NullPointerException if {@code that} is null
      */
-    @SuppressWarnings("unchecked")
     default <U> Future<Tuple2<T, U>> zip(Future<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
-        final Promise<Tuple2<T, U>> promise = Promise.make(executorService());
+        return zipWith(that, Tuple::of);
+    }
+
+    /**
+     * Returns a this and that Future result combined using a given combinator function.
+     * <p>
+     * If this Future failed the result contains this failure. Otherwise the result contains that failure or
+     * a combination of both successful Future results.
+     *
+     * @param that Another Future
+     * @param combinator The combinator function
+     * @param <U>  Result type of {@code that}
+     * @param <R>  Result type of {@code f}
+     * @return A new Future that returns both Future results.
+     * @throws NullPointerException if {@code that} is null
+     */
+    @SuppressWarnings("unchecked")
+    default <U, R> Future<R> zipWith(Future<? extends U> that, BiFunction<? super T, ? super U, ? extends R> combinator) {
+        Objects.requireNonNull(that, "that is null");
+        Objects.requireNonNull(combinator, "combinator is null");
+        final Promise<R> promise = Promise.make(executorService());
         onComplete(res1 -> {
             if (res1.isFailure()) {
-                promise.complete((Try.Failure<Tuple2<T, U>>) res1);
+                promise.complete((Try.Failure<R>) res1);
             } else {
                 that.onComplete(res2 -> {
-                    final Try<Tuple2<T, U>> result = res1.flatMap(t -> res2.map(u -> Tuple.of(t, u)));
+                    final Try<R> result = res1.flatMap(t -> res2.map(u -> combinator.apply(t, u)));
                     promise.complete(result);
                 });
             }
@@ -898,14 +932,12 @@ public interface Future<T> extends Value<T> {
     @Override
     default <U> Future<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return mapTry(mapper::apply);
+        return transformValue(t -> t.map(mapper::apply));
     }
 
     default <U> Future<U> mapTry(CheckedFunction<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        final Promise<U> promise = Promise.make(executorService());
-        onComplete(result -> promise.complete(result.mapTry(mapper)));
-        return promise.future();
+        return transformValue(t -> t.mapTry(mapper::apply));
     }
 
     default Future<T> orElse(Future<? extends T> other) {

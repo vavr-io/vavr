@@ -11,7 +11,9 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.AbstractMap;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Objects;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
@@ -91,6 +93,13 @@ public class Tuple2Test {
     }
 
     @Test
+    public void shouldConvertToEntry() {
+        Tuple2<Integer, Integer> tuple = createIntTuple(1,2);
+        Map.Entry<Integer, Integer> entry = new AbstractMap.SimpleEntry<>(1, 2);
+        assertThat(tuple.toEntry().equals(entry));
+    }
+
+    @Test
     public void shouldMap() {
         final Tuple2<Object, Object> tuple = createTuple();
         final Tuple2<Object, Object> actual = tuple.map((o1, o2) -> tuple);
@@ -118,20 +127,6 @@ public class Tuple2Test {
       final Tuple2<Integer, String> actual = Tuple.of(1, 1).map2(i -> "X");
       final Tuple2<Integer, String> expected = Tuple.of(1, "X");
       assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldAppendTuple2() {
-        Tuple3<Integer, Integer, Integer> actual = createIntTuple(1, 2).append(42);
-        Tuple3<Integer, Integer, Integer> expected = Tuple.of(1, 2, 42);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldPrependTuple2() {
-        Tuple3<Integer, Integer, Integer> actual = createIntTuple(1, 2).prepend(42);
-        Tuple3<Integer, Integer, Integer> expected = Tuple.of(42, 1, 2);
-        assertThat(actual).isEqualTo(expected);
     }
 
     @Test

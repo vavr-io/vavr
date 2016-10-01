@@ -7,13 +7,20 @@ package javaslang;
 
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
-import javaslang.collection.*;
+import javaslang.collection.Seq;
 import javaslang.control.Option;
 
-import java.io.*;
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.function.*;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Represents a lazy evaluated value. Compared to a Supplier, Lazy is memoizing, i.e. it evaluates only once and
@@ -44,7 +51,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
 
     // read http://javarevisited.blogspot.de/2014/05/double-checked-locking-on-singleton-in-java.html
     private transient volatile Supplier<? extends T> supplier;
-    private volatile T value;
+    private T value; // will behave as a volatile in reality, because a supplier volatile read will update all fields (see https://www.cs.umd.edu/~pugh/java/memoryModel/jsr-133-faq.html#volatile)
 
     // should not be called directly
     private Lazy(Supplier<? extends T> supplier) {
@@ -133,13 +140,13 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      */
     @Override
     public T get() {
-        if (!isEvaluated()) {
-            synchronized (this) {
-                if (!isEvaluated()) {
-                    value = supplier.get();
-                    supplier = null; // free mem
-                }
-            }
+        return (supplier == null) ? value : computeValue();
+    }
+    private synchronized T computeValue() {
+        final Supplier<? extends T> s = supplier;
+        if (s != null) {
+            value = s.get();
+            supplier = null;
         }
         return value;
     }

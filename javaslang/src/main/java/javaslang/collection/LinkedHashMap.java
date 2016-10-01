@@ -325,6 +325,11 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     }
 
     @Override
+    public V getOrElse(K key, V defaultValue) {
+        return map.getOrElse(key, defaultValue);
+    }
+
+    @Override
     public <C> Map<C, LinkedHashMap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {
         return Maps.groupBy(this, this::createFromEntries, classifier);
     }
