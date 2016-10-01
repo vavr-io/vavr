@@ -15,6 +15,7 @@ public class GwtTestCollections extends GWTTestCase {
 
     public void testTuple() {
         Tuple1<Integer> t = Tuple.of(1);
+        assertEquals((int) t._1, 1);
         assertEquals((int) t._1(), 1);
     }
 

@@ -518,6 +518,12 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(emptyIntInt().put(Tuple.of(1, 2))).isEqualTo(emptyIntInt().put(1, 2));
     }
 
+    @Test
+    public void shouldPutNullKeyIntoMapThatContainsNullKey() {
+        final Map<Integer, String> map = mapOfPairs(1, "a", null, "b", 2, "c");
+        assertThat(map.put(null, "!")).isEqualTo(mapOfPairs(1, "a", null, "!", 2, "c"));
+    }
+
     // -- remove
 
     @Test
@@ -525,6 +531,12 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Map<Integer, Object> src = emptyInt().put(1, 'a').put(2, 'b').put(3, 'c');
         assertThat(src.remove(2)).isEqualTo(emptyInt().put(1, 'a').put(3, 'c'));
         assertThat(src.remove(33)).isSameAs(src);
+    }
+
+    @Test
+    public void shouldRemoveFromMapThatContainsFirstEntryHavingNullKey() {
+        final Map<Integer, String> map = mapOfPairs(null, "a", 1, "b", 2, "c");
+        assertThat(map.remove(1)).isEqualTo(mapOfPairs(null, "a", 2, "c"));
     }
 
     // -- removeAll
