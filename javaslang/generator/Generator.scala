@@ -1500,11 +1500,13 @@ def generateTestClasses(): Unit = {
                   $assertThat(tuple.arity()).isEqualTo($i);
               }
 
-              @$test
-              public void shouldReturnElements() {
-                  final Tuple$i<$intGenerics> tuple = createIntTuple(${(1 to i).gen(j => s"$j") mkString ", "});
-                  ${(1 to i).gen(j => s"$assertThat(tuple._$j()).isEqualTo($j);\n")}
-              }
+              ${(i > 0).gen(xs"""
+                @$test
+                public void shouldReturnElements() {
+                    final Tuple$i<$intGenerics> tuple = createIntTuple(${(1 to i).gen(j => s"$j") mkString ", "});
+                    ${(1 to i).gen(j => s"$assertThat(tuple._$j).isEqualTo($j);\n")}
+                }
+              """)}
 
               @$test
               public void shouldConvertToSeq() {

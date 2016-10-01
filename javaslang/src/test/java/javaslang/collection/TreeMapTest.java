@@ -146,7 +146,20 @@ public class TreeMapTest extends AbstractSortedMapTest {
         // The empty TreeMap encapsulates a comparator and therefore cannot be a singleton
     }
 
+    @Override
+    public void shouldPutNullKeyIntoMapThatContainsNullKey() {
+        // This test is relevant for LinkedHashMap and not of importance for this bug-fix release.
+        // In 2.1.0 it is also implemented for TreeMapTest
+    }
+
+    @Override
+    public void shouldRemoveFromMapThatContainsFirstEntryHavingNullKey() {
+        // This test is relevant for LinkedHashMap and not of importance for this bug-fix release.
+        // In 2.1.0 it is also implemented for TreeMapTest
+    }
+
     private static Comparator<Object> toStringComparator() { // moveup
         return (Comparator<Object> & Serializable) (o1, o2) -> String.valueOf(o1).compareTo(String.valueOf(o2));
     }
+
 }

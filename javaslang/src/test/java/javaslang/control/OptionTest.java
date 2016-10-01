@@ -70,41 +70,41 @@ public class OptionTest extends AbstractValueTest {
 
     @Test
     public void shouldWrapIfTrue() {
-        assertThat(Option.some(null)).isEqualTo(Option.when(true, () -> null));
-        assertThat(Option.some(null)).isEqualTo(Option.when(true, (Object) null));
+        assertThat(Option.when(true, () -> null)).isEqualTo(Option.some(null));
+        assertThat(Option.when(true, (Object) null)).isEqualTo(Option.some(null));
     }
 
     @Test
     public void shouldNotWrapIfFalse() {
-        assertThat(Option.none()).isEqualTo(Option.when(false, () -> null));
-        assertThat(Option.none()).isEqualTo(Option.when(false, (Object) null));
+        assertThat(Option.when(false, () -> null)).isEqualTo(Option.none());
+        assertThat(Option.when(false, (Object) null)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldNotExecuteIfFalse() {
-        assertThat(Option.none()).isEqualTo(Option.when(false, () -> {
+        assertThat(Option.when(false, () -> {
             throw new RuntimeException();
-        }));
+        })).isEqualTo(Option.none());
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowExceptionOnWhenWithProvider() {
-        assertThat(Option.none()).isEqualTo(Option.when(false, (Supplier<?>) null));
+        assertThat(Option.when(false, (Supplier<?>) null)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldWrapEmptyOptional() {
-        assertThat(Option.none()).isEqualTo(Option.ofOptional(Optional.empty()));
+        assertThat(Option.ofOptional(Optional.empty())).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldWrapSomeOptional() {
-        assertThat(Option.of(1)).isEqualTo(Option.ofOptional(Optional.of(1)));
+        assertThat(Option.ofOptional(Optional.of(1))).isEqualTo(Option.of(1));
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowExceptionOnNullOptional() {
-        assertThat(Option.none()).isEqualTo(Option.ofOptional(null));
+        assertThat(Option.ofOptional(null)).isEqualTo(Option.none());
     }
 
     // -- sequence

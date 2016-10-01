@@ -391,7 +391,7 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
         Queue<Tuple2<K, V>> newList = list;
         HashMap<K, V> newMap = map;
         if (containsKey(key)) {
-            newList = newList.filter(t -> !t._1.equals(key));
+            newList = newList.filter(t -> !Objects.equals(t._1, key));
             newMap = newMap.remove(key);
         }
         newList = newList.append(Tuple.of(key, value));
@@ -407,7 +407,7 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     @Override
     public LinkedHashMap<K, V> remove(K key) {
         if (containsKey(key)) {
-            final Queue<Tuple2<K, V>> newList = list.removeFirst(t -> t._1.equals(key));
+            final Queue<Tuple2<K, V>> newList = list.removeFirst(t -> Objects.equals(t._1, key));
             final HashMap<K, V> newMap = map.remove(key);
             return wrap(newList, newMap);
         } else {

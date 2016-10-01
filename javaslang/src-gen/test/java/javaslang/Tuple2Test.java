@@ -34,8 +34,8 @@ public class Tuple2Test {
     @Test
     public void shouldReturnElements() {
         final Tuple2<Integer, Integer> tuple = createIntTuple(1, 2);
-        assertThat(tuple._1()).isEqualTo(1);
-        assertThat(tuple._2()).isEqualTo(2);
+        assertThat(tuple._1).isEqualTo(1);
+        assertThat(tuple._2).isEqualTo(2);
     }
 
     @Test

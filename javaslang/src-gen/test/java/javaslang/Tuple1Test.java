@@ -34,7 +34,7 @@ public class Tuple1Test {
     @Test
     public void shouldReturnElements() {
         final Tuple1<Integer> tuple = createIntTuple(1);
-        assertThat(tuple._1()).isEqualTo(1);
+        assertThat(tuple._1).isEqualTo(1);
     }
 
     @Test
