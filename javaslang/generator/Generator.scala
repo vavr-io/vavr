@@ -1906,7 +1906,7 @@ def generateTestClasses(): Unit = {
                 @$test
                 public void shouldReturnElements() {
                     final Tuple$i$intGenerics tuple = createIntTuple(${(1 to i).gen(j => s"$j") mkString ", "});
-                    ${(1 to i).gen(j => s"$assertThat(tuple._$j()).isEqualTo($j);\n")}
+                    ${(1 to i).gen(j => s"$assertThat(tuple._$j).isEqualTo($j);\n")}
                 }
               """)}
 
@@ -1915,7 +1915,7 @@ def generateTestClasses(): Unit = {
                   @$test
                   public void shouldUpdate$j() {
                     final Tuple$i$intGenerics tuple = createIntTuple(${(1 to i).gen(j => s"$j") mkString ", "}).update$j(42);
-                    ${(1 to i).gen(k => s"$assertThat(tuple._$k()).isEqualTo(${if (j == k) 42 else k});\n")}
+                    ${(1 to i).gen(k => s"$assertThat(tuple._$k).isEqualTo(${if (j == k) 42 else k});\n")}
                   }
                 """)("\n\n")}
 

@@ -10,9 +10,11 @@ import javaslang.Tuple;
 import javaslang.Tuple2;
 import org.junit.Test;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -35,7 +37,7 @@ public class TreeMapTest extends AbstractSortedMapTest {
 
     @Override
     protected <T1 extends Comparable<? super T1>, T2> TreeMap<T1, T2> emptyMap() {
-        return TreeMap.empty();
+        return TreeMap.empty(nullsFirst());
     }
 
     @Override
@@ -57,34 +59,34 @@ public class TreeMapTest extends AbstractSortedMapTest {
     @SafeVarargs
     @Override
     protected final <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
-        return TreeMap.ofEntries(entries);
+        return TreeMap.ofEntries(nullsFirst(), entries);
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
     protected final <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        return TreeMap.ofEntries(entries);
+        return TreeMap.ofEntries(nullsFirst(), entries);
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfPairs(Object... pairs) {
-        return TreeMap.of(pairs);
+        return TreeMap.of(nullsFirst(), pairs);
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K key, V value) {
-        return TreeMap.of(key, value);
+        return TreeMap.of(nullsFirst(), key, value);
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
-        return TreeMap.tabulate(n, f);
+        return TreeMap.tabulate(nullsFirst(), n, f);
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
-        return TreeMap.fill(n, s);
+        return TreeMap.fill(nullsFirst(), n, s);
     }
 
     // -- static narrow
@@ -159,4 +161,12 @@ public class TreeMapTest extends AbstractSortedMapTest {
         final Map<Integer, String> expected = TreeMap.of(1, "3");
         assertThat(actual).isEqualTo(expected);
     }
+
+    // -- helpers
+
+    // A comparator that allows null to be inserted into a TreeMap
+    private static <K extends Comparable<? super K>> Comparator<K> nullsFirst() {
+        return Comparator.nullsFirst((Comparator<K> & Serializable) K::compareTo);
+    }
+
 }
