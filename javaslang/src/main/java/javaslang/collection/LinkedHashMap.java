@@ -426,7 +426,35 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
 
     @Override
     public LinkedHashMap<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
-        return Maps.replace(this, currentElement, newElement);
+        Objects.requireNonNull(currentElement, "currentElement is null");
+        Objects.requireNonNull(newElement, "newElement is null");
+
+        // We replace the whole element, i.e. key and value have to be present.
+        if (!Objects.equals(currentElement, newElement) && contains(currentElement)) {
+
+            Queue<Tuple2<K, V>> newList = list;
+            HashMap<K, V> newMap = map;
+
+            final K currentKey = currentElement._1;
+            final K newKey = newElement._1;
+
+            // If current key and new key are equal, the element will be automatically replaced,
+            // otherwise we need to remove the pair (newKey, ?) from the list manually.
+            if (!Objects.equals(currentKey, newKey)) {
+                final Option<V> value = newMap.get(newKey);
+                if (value.isDefined()) {
+                    newList = newList.remove(Tuple.of(newKey, value.get()));
+                }
+            }
+
+            newList = newList.replace(currentElement, newElement);
+            newMap = newMap.remove(currentKey).put(newElement);
+
+            return wrap(newList, newMap);
+
+        } else {
+            return this;
+        }
     }
 
     @Override

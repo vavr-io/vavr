@@ -677,11 +677,13 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
         return (that == map) ? this : new LinkedHashSet<>(that);
     }
 
-    // DEV-NOTE: replace does not preserve the order, the new element may already be in the set
     @Override
     public LinkedHashSet<T> replace(T currentElement, T newElement) {
-        if (map.containsKey(currentElement)) {
-            return remove(currentElement).add(newElement);
+        if (!Objects.equals(currentElement, newElement) && contains(currentElement)) {
+            final Tuple2<T, T> currentPair = Tuple.of(currentElement, currentElement);
+            final Tuple2<T, T> newPair = Tuple.of(newElement, newElement);
+            final LinkedHashMap<T, T> newMap = map.replace(currentPair, newPair);
+            return new LinkedHashSet<>(newMap);
         } else {
             return this;
         }

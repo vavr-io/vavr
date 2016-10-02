@@ -1,5 +1,6 @@
 package javaslang.collection;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -183,20 +184,46 @@ public class LinkedHashSetTest extends AbstractSetTest {
         assertThat(actual).isEqualTo(3);
     }
 
-    // -- transform()
+    // -- replace
+
+    @Test
+    public void shouldReturnSameInstanceIfReplacingNonExistingElement() {
+        final Set<Integer> set = LinkedHashSet.of(1, 2, 3);
+        final Set<Integer> actual = set.replace(4, 0);
+        assertThat(actual).isSameAs(set);
+    }
+
+    @Test
+    public void shouldPreserveOrderWhenReplacingExistingElement() {
+        final Set<Integer> set = LinkedHashSet.of(1, 2, 3);
+        final Set<Integer> actual = set.replace(2, 0);
+        final Set<Integer> expected = LinkedHashSet.of(1, 0, 3);
+        assertThat(actual).isEqualTo(expected);
+        Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll(expected));
+    }
+
+    @Test
+    public void shouldPreserveOrderWhenReplacingExistingElementAndRemoveOtherIfElementAlreadyExists() {
+        final Set<Integer> set = LinkedHashSet.of(1, 2, 3, 4, 5);
+        final Set<Integer> actual = set.replace(2, 4);
+        final Set<Integer> expected = LinkedHashSet.of(1, 4, 3, 5);
+        assertThat(actual).isEqualTo(expected);
+        Assertions.assertThat(List.ofAll(actual)).isEqualTo(List.ofAll(expected));
+    }
+
+    @Test
+    public void shouldReturnSameInstanceWhenReplacingExistingElementWithIdentity() {
+        final Set<Integer> set = LinkedHashSet.of(1, 2, 3);
+        final Set<Integer> actual = set.replace(2, 2);
+        assertThat(actual).isSameAs(set);
+    }
+
+    // -- transform
 
     @Test
     public void shouldTransform() {
         String transformed = of(42).transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("42");
-    }
-
-    // -- replace(old, new)
-
-    @Override
-    @Test
-    public void shouldReplaceElementOfNonNilUsingCurrNewWhenOneOccurrenceExists() {
-        assertThat(of(0, 1, 2).replace(1, 3)).isEqualTo(of(0, 2, 3));
     }
 
 }
