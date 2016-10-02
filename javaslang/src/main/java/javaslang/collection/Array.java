@@ -742,7 +742,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     @Override
     public Array<T> init() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("init of empty vector");
+            throw new UnsupportedOperationException("init of empty Array");
         }
         return dropRight(1);
     }
@@ -764,7 +764,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     @Override
     public Array<T> insert(int index, T element) {
         if (index < 0 || index > length()) {
-            throw new IndexOutOfBoundsException("insert(" + index + ", e) on Vector of length " + length());
+            throw new IndexOutOfBoundsException("insert(" + index + ", e) on Array of length " + length());
         }
         final Object[] arr = new Object[delegate.length + 1];
         System.arraycopy(delegate, 0, arr, 0, index);
