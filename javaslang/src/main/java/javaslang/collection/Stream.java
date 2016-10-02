@@ -23,11 +23,14 @@ import java.util.stream.Collector;
  * A {@code Stream} is composed of a {@code head} element and a lazy evaluated {@code tail} {@code Stream}.
  * <p>
  * There are two implementations of the {@code Stream} interface:
+ *
  * <ul>
  * <li>{@link Empty}, which represents the empty {@code Stream}.</li>
  * <li>{@link Cons}, which represents a {@code Stream} containing one or more elements.</li>
  * </ul>
+ *
  * Methods to obtain a {@code Stream}:
+ *
  * <pre>
  * <code>
  * // factory methods
@@ -48,9 +51,9 @@ import java.util.stream.Collector;
  * Stream.iterate(Object, Function)// e.g. Stream.iterate(1, i -&gt; i * 2);
  * </code>
  * </pre>
- * <p>
+ *
  * Factory method applications:
- * <p>
+ *
  * <pre>
  * <code>
  * Stream&lt;Integer&gt;       s1 = Stream.of(1);
@@ -67,9 +70,9 @@ import java.util.stream.Collector;
  * Stream&lt;Integer[]&gt;     s7 = Stream.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
  * </code>
  * </pre>
- * <p>
+ *
  * Example: Generating prime numbers
- * <p>
+ *
  * <pre>
  * <code>
  * // = Stream(2L, 3L, 5L, 7L, ...)
@@ -86,7 +89,7 @@ import java.util.stream.Collector;
  * }
  * </code>
  * </pre>
- * <p>
+ *
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 34 ff.). Cambridge, 2003.
  *
  * @param <T> component type of this Stream
@@ -245,7 +248,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
     /**
      * Creates a Stream of the given elements.
-     * <p>
+     *
      * <pre><code>  Stream.of(1, 2, 3, 4)
      * = Nil.instance().prepend(4).prepend(3).prepend(2).prepend(1)
      * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))</code></pre>
@@ -646,10 +649,12 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds
+     * @param <U>  type of unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return a Stream with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
     static <T, U> Stream<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toStream();
@@ -673,10 +678,12 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds
+     * @param <U>  type of unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return a Stream with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
     static <T, U> Stream<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toStream();
@@ -700,10 +707,11 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds and unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return a Stream with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
     static <T> Stream<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toStream();

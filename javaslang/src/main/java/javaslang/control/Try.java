@@ -8,11 +8,16 @@ package javaslang.control;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
-import javaslang.collection.*;
+import javaslang.collection.Seq;
 
 import java.io.Serializable;
-import java.util.*;
-import java.util.function.*;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * An implementation similar to Scala's Try control.
@@ -131,7 +136,7 @@ public interface Try<T> extends Value<T> {
      * Passes the result to the given {@code consumer} if this is a {@code Success}.
      * <p>
      * The main use case is chaining checked functions using method references:
-     * <p>
+     *
      * <pre>
      * <code>
      * Try.of(() -&gt; 100)
@@ -176,15 +181,15 @@ public interface Try<T> extends Value<T> {
      * Runs the given runnable if this is a {@code Success}, otherwise returns this {@code Failure}.
      * <p>
      * The main use case is chaining runnables using method references:
-     * <p>
+     *
      * <pre>
      * <code>
      * Try.run(A::methodRef).andThen(B::methodRef).andThen(C::methodRef);
      * </code>
      * </pre>
-     * <p>
+     *
      * Please note that these lines are semantically the same:
-     * <p>
+     *
      * <pre>
      * <code>
      * Try.run(this::doStuff)
@@ -236,7 +241,8 @@ public interface Try<T> extends Value<T> {
      * Shortcut for {@code filterTry(predicate::test, throwableSupplier)}, see
      * {@link #filterTry(CheckedPredicate, Supplier)}}.
      *
-     * @param predicate A predicate
+     * @param predicate         A predicate
+     * @param throwableSupplier A supplier of a throwable
      * @return a {@code Try} instance
      * @throws NullPointerException if {@code predicate} or {@code throwableSupplier} is null
      */
@@ -265,7 +271,8 @@ public interface Try<T> extends Value<T> {
      * occurs testing the predicate. The returned Failure wraps a Throwable instance provided by the given
      * {@code throwableSupplier}.
      *
-     * @param predicate A checked predicate
+     * @param predicate         A checked predicate
+     * @param throwableSupplier A supplier of a throwable
      * @return a {@code Try} instance
      * @throws NullPointerException if {@code predicate} or {@code throwableSupplier} is null
      */
@@ -413,7 +420,7 @@ public interface Try<T> extends Value<T> {
      * {@code Failure} of type R with the original exception.
      * <p>
      * The main use case is chaining checked functions using method references:
-     * <p>
+     *
      * <pre>
      * <code>
      * Try.of(() -&gt; 0)
@@ -528,8 +535,9 @@ public interface Try<T> extends Value<T> {
      * from {@code cause.getClass()}. Otherwise tries to recover the exception of the failure with {@code f},
      * i.e. calling {@code Try.of(() -> f.apply((X) getCause())}.
      *
+     * @param <X>       Exception type
      * @param exception The specific exception type that should be handled
-     * @param f A recovery function taking an exception of type {@çode X}
+     * @param f         A recovery function taking an exception of type {@code X}
      * @return a {@code Try}
      * @throws NullPointerException if {@code exception} is null or {@code f} is null
      */
@@ -551,8 +559,9 @@ public interface Try<T> extends Value<T> {
      * Returns {@code this}, if this is a {@code Success} or this is a {@code Failure} and the cause is not assignable
      * from {@code cause.getClass()}. Otherwise returns a {@code Success} containing the given {@code value}.
      *
+     * @param <X>       Exception type
      * @param exception The specific exception type that should be handled
-     * @param value A value that is used in case of a recovery
+     * @param value     A value that is used in case of a recovery
      * @return a {@code Try}
      * @throws NullPointerException if {@code exception} is null
      */
@@ -560,8 +569,8 @@ public interface Try<T> extends Value<T> {
     default <X extends Throwable> Try<T> recover(Class<X> exception, T value) {
         Objects.requireNonNull(exception, "exception is null");
         return (isFailure() && exception.isAssignableFrom(getCause().getClass()))
-                ? Try.success(value)
-                : this;
+               ? Try.success(value)
+               : this;
     }
 
     /**

@@ -500,10 +500,12 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds
+     * @param <U>  type of unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return a Vector with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
     public static <T, U> Vector<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toVector();
@@ -527,10 +529,12 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds
+     * @param <U>  type of unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return a Vector with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
     public static <T, U> Vector<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toVector();
@@ -554,10 +558,11 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds and unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return a Vector with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
     public static <T> Vector<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toVector();

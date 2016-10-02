@@ -807,6 +807,8 @@ def generateMainClasses(): Unit = {
                * Returns a function that always returns the constant
                * value that you give in parameter.
                *
+               ${(1 to i).gen(j => s"* @param <T$j> generic parameter type $j of the resulting function")("\n")}
+               * @param <R> the result type
                * @param value the value to be returned
                * @return a function always returning the given value
                */
@@ -898,6 +900,7 @@ def generateMainClasses(): Unit = {
                  * wrapped by {@code exceptionMapper} in case of throwable
                  *
                  * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
+                 * @return a new Function$i that wraps this CheckedFunction$i by throwing a {@code RuntimeException} issued by the given {@code exceptionMapper} in the case of a failure
                  */
                 default Function$i$fullGenerics unchecked(${im.getType("java.util.function.Function")}<? super Throwable, ? extends RuntimeException> exceptionMapper) {
                     return recover(throwable -> {
@@ -907,7 +910,9 @@ def generateMainClasses(): Unit = {
 
                 /$javadoc
                  * Return unchecked function that will return this $className result in correct case and throw exception
-                 * wrapped by {@link IllegalStateException} in case of throwable
+                 * wrapped by {@link IllegalStateException} in case of throwable.
+                 *
+                 * @return a new Function$i that wraps this CheckedFunction$i by throwing an {@code IllegalStateException} in the case of a failure
                  */
                 default Function$i$fullGenerics unchecked() {
                     return unchecked(IllegalStateException::new);
@@ -1106,6 +1111,7 @@ def generateMainClasses(): Unit = {
               /$javadoc
                * Sets the ${j.ordinal} element of this tuple to the given {@code value}.
                *
+               * @param value the new value
                * @return a copy of this tuple with a new value for the ${j.ordinal} element of this Tuple.
                */
               public $className$generics update$j(T$j value) {
@@ -1287,8 +1293,9 @@ def generateMainClasses(): Unit = {
      */
     def genBaseTuple(im: ImportManager, packageName: String, className: String): String = {
 
-      val Seq = im.getType("javaslang.collection.Seq")
       val Map = im.getType("java.util.Map")
+      val Objects = im.getType("java.util.Objects")
+      val Seq = im.getType("javaslang.collection.Seq")
 
       def genFactoryMethod(i: Int) = {
         val generics = (1 to i).gen(j => s"T$j")(", ")
@@ -1305,28 +1312,22 @@ def generateMainClasses(): Unit = {
           static <$generics> Tuple$i<$generics> of($paramsDecl) {
               return new Tuple$i<>($params);
           }
-          ${(i == 2).gen(xs"""
-
-           /**
-           * Creates a tuple of ${i.numerus("element")} from java.util.Map.Entry.
-           * @param entry A java.util.Map.Entry
-           * @return a tuple of ${i.numerus("element")}.
-           */
-            static <$generics> Tuple$i<$generics> fromEntry(Map.Entry<$wideGenerics> entry) {
-                return new Tuple$i<>(entry.getKey(), entry.getValue());
-            }
-
-              """)}
         """
       }
 
       def genSeqMethod(i: Int) = {
         val generics = (1 to i).gen(j => s"T$j")(", ")
         val seqs = (1 to i).gen(j => s"Seq<T$j>")(", ")
-        val Objects = im.getType("java.util.Objects")
         val Stream = im.getType("javaslang.collection.Stream")
         val widenedGenerics = (1 to i).gen(j => s"? extends T$j")(", ")
         xs"""
+            /**
+             * Turns a sequence of {@code Tuple$i} into a Tuple$i of {@code Seq}${(i > 1).gen("s")}.
+             *
+             ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type")("\n")}
+             * @param tuples an {@code Iterable} of tuples
+             * @return a tuple of ${i.numerus(s"{@link $Seq}")}.
+             */
             static <$generics> Tuple$i<$seqs> sequence$i(Iterable<? extends Tuple$i<$widenedGenerics>> tuples) {
                 $Objects.requireNonNull(tuples, "tuples is null");
                 final Stream<Tuple$i<$widenedGenerics>> s = $Stream.ofAll(tuples);
@@ -1342,7 +1343,7 @@ def generateMainClasses(): Unit = {
          * @author Daniel Dietrich
          * @since 1.1.0
          */
-        public interface $className {
+        public interface Tuple {
 
             /**
              * The maximum arity of an Tuple.
@@ -1375,6 +1376,19 @@ def generateMainClasses(): Unit = {
              */
             static Tuple0 empty() {
                 return Tuple0.instance();
+            }
+
+            /**
+             * Creates a {@code Tuple2} from a {@link $Map.Entry}.
+             *
+             * @param <T1> Type of first component (entry key)
+             * @param <T2> Type of second component (entry value)
+             * @param      entry A {@link java.util.Map.Entry}
+             * @return a new {@code Tuple2} containing key and value of the given {@code entry}
+             */
+            static <T1, T2> Tuple2<T1, T2> fromEntry($Map.Entry<? extends T1, ? extends T2> entry) {
+                $Objects.requireNonNull(entry, "entry is null");
+                return new Tuple2<>(entry.getKey(), entry.getValue());
             }
 
             ${(1 to N).gen(genFactoryMethod)("\n\n")}

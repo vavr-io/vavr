@@ -22,11 +22,14 @@ import java.util.stream.Collector;
  * A {@code List} is composed of a {@code head} element and a {@code tail} {@code List}.
  * <p>
  * There are two implementations of the {@code List} interface:
+ *
  * <ul>
  * <li>{@link Nil}, which represents the empty {@code List}.</li>
  * <li>{@link Cons}, which represents a {@code List} containing one or more elements.</li>
  * </ul>
+ *
  * Methods to obtain a {@code List}:
+ *
  * <pre>
  * <code>
  * // factory methods
@@ -41,19 +44,20 @@ import java.util.stream.Collector;
  * List.rangeClosed(0, 3)        // = 0, 1, 2, 3
  * </code>
  * </pre>
- * <p>
+ *
  * Note: A {@code List} is primary a {@code Seq} and extends {@code Stack} for technical reasons (so {@code Stack} does not need to wrap {@code List}).
  * <p>
  * If operating on a {@code List}, please prefer
+ *
  * <ul>
  * <li>{@link #prepend(Object)} over {@link #push(Object)}</li>
  * <li>{@link #prependAll(Iterable)} over {@link #pushAll(Iterable)}</li>
  * <li>{@link #tail()} over {@link #pop()}</li>
  * <li>{@link #tailOption()} over {@link #popOption()}</li>
  * </ul>
- * <p>
+ *
  * Factory method applications:
- * <p>
+ *
  * <pre>
  * <code>
  * List&lt;Integer&gt;       s1 = List.of(1);
@@ -70,16 +74,16 @@ import java.util.stream.Collector;
  * List&lt;Integer[]&gt;     s7 = List.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
  * </code>
  * </pre>
- * <p>
+ *
  * Example: Converting a String to digits
- * <p>
+ *
  * <pre>
  * <code>
  * // = List(1, 2, 3)
  * List.of("123".toCharArray()).map(c -&gt; Character.digit(c, 10))
  * </code>
  * </pre>
- * <p>
+ *
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 7 ff.). Cambridge, 2003.
  *
  * @param <T> Component type of the List
@@ -576,10 +580,12 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds
+     * @param <U>  type of unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return a list with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
     static <T, U> List<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toList();
@@ -603,10 +609,12 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds
+     * @param <U>  type of unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return a list with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
     static <T, U> List<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toList();
@@ -630,10 +638,11 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * </code>
      * </pre>
      *
+     * @param <T>  type of seeds and unfolded values
      * @param seed the start value for the iteration
      * @param f    the function to get the next step of the iteration
      * @return a list with the values built up by the iteration
-     * @throws IllegalArgumentException if {@code f} is null
+     * @throws NullPointerException if {@code f} is null
      */
     static <T> List<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toList();

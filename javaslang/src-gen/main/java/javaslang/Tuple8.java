@@ -216,6 +216,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     /**
      * Sets the 1st element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 1st element of this Tuple.
      */
     public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> update1(T1 value) {
@@ -234,6 +235,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     /**
      * Sets the 2nd element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 2nd element of this Tuple.
      */
     public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> update2(T2 value) {
@@ -252,6 +254,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     /**
      * Sets the 3rd element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 3rd element of this Tuple.
      */
     public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> update3(T3 value) {
@@ -270,6 +273,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     /**
      * Sets the 4th element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 4th element of this Tuple.
      */
     public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> update4(T4 value) {
@@ -288,6 +292,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     /**
      * Sets the 5th element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 5th element of this Tuple.
      */
     public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> update5(T5 value) {
@@ -306,6 +311,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     /**
      * Sets the 6th element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 6th element of this Tuple.
      */
     public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> update6(T6 value) {
@@ -324,6 +330,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     /**
      * Sets the 7th element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 7th element of this Tuple.
      */
     public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> update7(T7 value) {
@@ -342,6 +349,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     /**
      * Sets the 8th element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 8th element of this Tuple.
      */
     public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> update8(T8 value) {

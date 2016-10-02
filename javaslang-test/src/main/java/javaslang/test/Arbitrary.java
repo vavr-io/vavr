@@ -88,6 +88,7 @@ public interface Arbitrary<T> {
     /**
      * Returns an Arbitrary based on this Arbitrary which produces unique values based on the given function.
      *
+     * @param <U>          key type
      * @param keyExtractor A function
      * @return A new generator
      */

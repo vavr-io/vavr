@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 /**
  * Represents a lazy evaluated value. Compared to a Supplier, Lazy is memoizing, i.e. it evaluates only once and
  * therefore is referential transparent.
- * <p>
+ *
  * <pre>
  * <code>
  * final Lazy&lt;Double&gt; l = Lazy.of(Math::random);
@@ -35,9 +35,9 @@ import java.util.function.Supplier;
  * l.get();         // = 0.123 (memoized)
  * </code>
  * </pre>
- * <p>
+ *
  * Since 2.0.0 you may also create a <em>real</em> lazy value (works only with interfaces):
- * <p>
+ *
  * <pre><code>final CharSequence chars = Lazy.val(() -&gt; "Yay!", CharSequence.class);</code></pre>
  *
  * @author Daniel Dietrich

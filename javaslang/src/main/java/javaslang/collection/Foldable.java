@@ -14,7 +14,7 @@ import java.util.function.BiFunction;
  * Interface of foldable data structures.
  * <p>
  * <strong>Example:</strong>
- * <p>
+ *
  * <pre><code>
  * // = "123"
  * Stream.of("1", "2", "3").fold("", (a1, a2) -&gt; a1 + a2);

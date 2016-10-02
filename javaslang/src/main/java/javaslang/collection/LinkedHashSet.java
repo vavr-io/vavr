@@ -88,7 +88,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
 
     /**
      * Creates a LinkedHashSet of the given elements.
-     * <p>
+     *
      * <pre><code>LinkedHashSet.of(1, 2, 3, 4)</code></pre>
      *
      * @param <T>      Component type of the LinkedHashSet.

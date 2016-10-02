@@ -125,6 +125,8 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
      * Returns a function that always returns the constant
      * value that you give in parameter.
      *
+     * @param <T1> generic parameter type 1 of the resulting function
+     * @param <R> the result type
      * @param value the value to be returned
      * @return a function always returning the given value
      */
@@ -188,6 +190,7 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
      * wrapped by {@code exceptionMapper} in case of throwable
      *
      * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
+     * @return a new Function1 that wraps this CheckedFunction1 by throwing a {@code RuntimeException} issued by the given {@code exceptionMapper} in the case of a failure
      */
     default Function1<T1, R> unchecked(Function<? super Throwable, ? extends RuntimeException> exceptionMapper) {
         return recover(throwable -> {
@@ -197,7 +200,9 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
 
     /**
      * Return unchecked function that will return this CheckedFunction1 result in correct case and throw exception
-     * wrapped by {@link IllegalStateException} in case of throwable
+     * wrapped by {@link IllegalStateException} in case of throwable.
+     *
+     * @return a new Function1 that wraps this CheckedFunction1 by throwing an {@code IllegalStateException} in the case of a failure
      */
     default Function1<T1, R> unchecked() {
         return unchecked(IllegalStateException::new);

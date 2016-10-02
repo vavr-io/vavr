@@ -88,7 +88,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
 
     /**
      * Creates a HashSet of the given elements.
-     * <p>
+     *
      * <pre><code>HashSet.of(1, 2, 3, 4)</code></pre>
      *
      * @param <T>      Component type of the HashSet.

@@ -144,6 +144,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
     /**
      * Sets the 1st element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 1st element of this Tuple.
      */
     public Tuple4<T1, T2, T3, T4> update1(T1 value) {
@@ -162,6 +163,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
     /**
      * Sets the 2nd element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 2nd element of this Tuple.
      */
     public Tuple4<T1, T2, T3, T4> update2(T2 value) {
@@ -180,6 +182,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
     /**
      * Sets the 3rd element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 3rd element of this Tuple.
      */
     public Tuple4<T1, T2, T3, T4> update3(T3 value) {
@@ -198,6 +201,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
     /**
      * Sets the 4th element of this tuple to the given {@code value}.
      *
+     * @param value the new value
      * @return a copy of this tuple with a new value for the 4th element of this Tuple.
      */
     public Tuple4<T1, T2, T3, T4> update4(T4 value) {
