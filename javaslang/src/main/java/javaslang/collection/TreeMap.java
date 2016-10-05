@@ -763,7 +763,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
 
     @Override
     public Seq<V> values() {
-        return iterator().map(Tuple2::_2).toStream();
+        return  Stream.ofAll(iterator()).map(Tuple2::_2);
     }
 
     /**

@@ -243,8 +243,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     @Override
     default <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        // don't remove cast, doesn't compile in Eclipse without it
-        return (Seq<U>) iterator().flatMap(mapper).toStream();
+        return Stream.ofAll(iterator()).flatMap(mapper);
     }
 
     @Override
@@ -333,8 +332,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     @Override
     default <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        // don't remove cast, doesn't compile in Eclipse without it
-        return (Seq<U>) iterator().map(mapper).toStream();
+        return Stream.ofAll(iterator()).map(mapper);
     }
 
     /**
@@ -503,13 +501,13 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     @Override
     default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+        return Collections.scanLeft(this, zero, operation, Stream.empty(), Stream::append, Function.identity());
     }
 
     @Override
     default <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, Stream.empty(), Stream::prepend, Function.identity());
     }
 
     @Override
@@ -543,7 +541,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
 
     default <U> Seq<U> traverse(BiFunction<K, V, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(List.empty(), (acc, entry) -> acc.append(mapper.apply(entry._1, entry._2)));
+        return foldLeft(Stream.empty(), (acc, entry) -> acc.append(mapper.apply(entry._1, entry._2)));
     }
 
     default Tuple2<Seq<K>, Seq<V>> unzip() {

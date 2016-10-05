@@ -6,8 +6,8 @@
 package javaslang;
 
 import javaslang.collection.Iterator;
-import javaslang.collection.List;
 import javaslang.collection.Seq;
+import javaslang.collection.Stream;
 import javaslang.control.Option;
 
 import java.io.IOException;
@@ -101,7 +101,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      */
     public static <T> Lazy<Seq<T>> sequence(Iterable<? extends Lazy<? extends T>> values) {
         Objects.requireNonNull(values, "values is null");
-        return Lazy.of(() -> List.ofAll(values).map(Lazy::get));
+        return Lazy.of(() -> Stream.ofAll(values).map(Lazy::get));
     }
 
     /**
