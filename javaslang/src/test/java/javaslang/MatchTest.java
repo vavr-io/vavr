@@ -16,7 +16,10 @@ import java.math.BigDecimal;
 import java.time.Year;
 import java.util.function.Predicate;
 
-import static javaslang.API.*;
+import static javaslang.API.$;
+import static javaslang.API.Case;
+import static javaslang.API.Match;
+import static javaslang.API.run;
 import static javaslang.MatchTest_DeveloperPatterns.Developer;
 import static javaslang.Patterns.*;
 import static javaslang.Predicates.*;

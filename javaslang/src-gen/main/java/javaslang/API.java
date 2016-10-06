@@ -11,13 +11,21 @@ package javaslang;
 
 import static javaslang.API.Match.*;
 
+import java.util.Comparator;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import javaslang.collection.Iterator;
+import javaslang.collection.*;
+import javaslang.concurrent.Future;
+import javaslang.control.Either;
 import javaslang.control.Option;
+import javaslang.control.Try;
+import javaslang.control.Try.CheckedSupplier;
+import javaslang.control.Validation;
 
 /**
  * The most basic Javaslang functionality is accessed through this API class.
@@ -81,6 +89,1677 @@ import javaslang.control.Option;
 public final class API {
 
     private API() {
+    }
+
+    //
+    // Aliases for static factories
+    //
+
+    /**
+     * Alias for {@link Function0#of(Function0)}
+     *
+     * @param <R>             return type
+     * @param methodReference A method reference
+     * @return A {@link Function0}
+     */
+    public static <R> Function0<R> Function0(Function0<R> methodReference) {
+        return Function0.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function1#of(Function1)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param methodReference A method reference
+     * @return A {@link Function1}
+     */
+    public static <T1, R> Function1<T1, R> Function1(Function1<T1, R> methodReference) {
+        return Function1.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function2#of(Function2)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param methodReference A method reference
+     * @return A {@link Function2}
+     */
+    public static <T1, T2, R> Function2<T1, T2, R> Function2(Function2<T1, T2, R> methodReference) {
+        return Function2.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function3#of(Function3)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param methodReference A method reference
+     * @return A {@link Function3}
+     */
+    public static <T1, T2, T3, R> Function3<T1, T2, T3, R> Function3(Function3<T1, T2, T3, R> methodReference) {
+        return Function3.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function4#of(Function4)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param methodReference A method reference
+     * @return A {@link Function4}
+     */
+    public static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> Function4(Function4<T1, T2, T3, T4, R> methodReference) {
+        return Function4.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function5#of(Function5)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param methodReference A method reference
+     * @return A {@link Function5}
+     */
+    public static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> Function5(Function5<T1, T2, T3, T4, T5, R> methodReference) {
+        return Function5.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function6#of(Function6)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param methodReference A method reference
+     * @return A {@link Function6}
+     */
+    public static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, R> Function6(Function6<T1, T2, T3, T4, T5, T6, R> methodReference) {
+        return Function6.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function7#of(Function7)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param <T7>            type of the 7th argument
+     * @param methodReference A method reference
+     * @return A {@link Function7}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> Function7(Function7<T1, T2, T3, T4, T5, T6, T7, R> methodReference) {
+        return Function7.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function8#of(Function8)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param <T7>            type of the 7th argument
+     * @param <T8>            type of the 8th argument
+     * @param methodReference A method reference
+     * @return A {@link Function8}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> Function8(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> methodReference) {
+        return Function8.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction0#of(CheckedFunction0)}
+     *
+     * @param <R>             return type
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction0}
+     */
+    public static <R> CheckedFunction0<R> CheckedFunction0(CheckedFunction0<R> methodReference) {
+        return CheckedFunction0.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction1#of(CheckedFunction1)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction1}
+     */
+    public static <T1, R> CheckedFunction1<T1, R> CheckedFunction1(CheckedFunction1<T1, R> methodReference) {
+        return CheckedFunction1.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction2#of(CheckedFunction2)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction2}
+     */
+    public static <T1, T2, R> CheckedFunction2<T1, T2, R> CheckedFunction2(CheckedFunction2<T1, T2, R> methodReference) {
+        return CheckedFunction2.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction3#of(CheckedFunction3)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction3}
+     */
+    public static <T1, T2, T3, R> CheckedFunction3<T1, T2, T3, R> CheckedFunction3(CheckedFunction3<T1, T2, T3, R> methodReference) {
+        return CheckedFunction3.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction4#of(CheckedFunction4)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction4}
+     */
+    public static <T1, T2, T3, T4, R> CheckedFunction4<T1, T2, T3, T4, R> CheckedFunction4(CheckedFunction4<T1, T2, T3, T4, R> methodReference) {
+        return CheckedFunction4.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction5#of(CheckedFunction5)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction5}
+     */
+    public static <T1, T2, T3, T4, T5, R> CheckedFunction5<T1, T2, T3, T4, T5, R> CheckedFunction5(CheckedFunction5<T1, T2, T3, T4, T5, R> methodReference) {
+        return CheckedFunction5.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction6#of(CheckedFunction6)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction6}
+     */
+    public static <T1, T2, T3, T4, T5, T6, R> CheckedFunction6<T1, T2, T3, T4, T5, T6, R> CheckedFunction6(CheckedFunction6<T1, T2, T3, T4, T5, T6, R> methodReference) {
+        return CheckedFunction6.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction7#of(CheckedFunction7)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param <T7>            type of the 7th argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction7}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, R> CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> CheckedFunction7(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> methodReference) {
+        return CheckedFunction7.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction8#of(CheckedFunction8)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param <T7>            type of the 7th argument
+     * @param <T8>            type of the 8th argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction8}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> CheckedFunction8(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> methodReference) {
+        return CheckedFunction8.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Tuple#empty()}
+     *
+     * @return the empty tuple.
+     */
+    public static Tuple0 Tuple() {
+        return Tuple.empty();
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object)}
+     *
+     * Creates a tuple of one element.
+     *
+     * @param <T1> type of the 1st element
+     * @param t1   the 1st element
+     * @return a tuple of one element.
+     */
+    public static <T1> Tuple1<T1> Tuple(T1 t1) {
+        return Tuple.of(t1);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object)}
+     *
+     * Creates a tuple of two elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @return a tuple of two elements.
+     */
+    public static <T1, T2> Tuple2<T1, T2> Tuple(T1 t1, T2 t2) {
+        return Tuple.of(t1, t2);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object, Object)}
+     *
+     * Creates a tuple of three elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param <T3> type of the 3rd element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @param t3   the 3rd element
+     * @return a tuple of three elements.
+     */
+    public static <T1, T2, T3> Tuple3<T1, T2, T3> Tuple(T1 t1, T2 t2, T3 t3) {
+        return Tuple.of(t1, t2, t3);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object, Object, Object)}
+     *
+     * Creates a tuple of 4 elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param <T3> type of the 3rd element
+     * @param <T4> type of the 4th element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @param t3   the 3rd element
+     * @param t4   the 4th element
+     * @return a tuple of 4 elements.
+     */
+    public static <T1, T2, T3, T4> Tuple4<T1, T2, T3, T4> Tuple(T1 t1, T2 t2, T3 t3, T4 t4) {
+        return Tuple.of(t1, t2, t3, t4);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object, Object, Object, Object)}
+     *
+     * Creates a tuple of 5 elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param <T3> type of the 3rd element
+     * @param <T4> type of the 4th element
+     * @param <T5> type of the 5th element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @param t3   the 3rd element
+     * @param t4   the 4th element
+     * @param t5   the 5th element
+     * @return a tuple of 5 elements.
+     */
+    public static <T1, T2, T3, T4, T5> Tuple5<T1, T2, T3, T4, T5> Tuple(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) {
+        return Tuple.of(t1, t2, t3, t4, t5);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object, Object, Object, Object, Object)}
+     *
+     * Creates a tuple of 6 elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param <T3> type of the 3rd element
+     * @param <T4> type of the 4th element
+     * @param <T5> type of the 5th element
+     * @param <T6> type of the 6th element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @param t3   the 3rd element
+     * @param t4   the 4th element
+     * @param t5   the 5th element
+     * @param t6   the 6th element
+     * @return a tuple of 6 elements.
+     */
+    public static <T1, T2, T3, T4, T5, T6> Tuple6<T1, T2, T3, T4, T5, T6> Tuple(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) {
+        return Tuple.of(t1, t2, t3, t4, t5, t6);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object, Object, Object, Object, Object, Object)}
+     *
+     * Creates a tuple of 7 elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param <T3> type of the 3rd element
+     * @param <T4> type of the 4th element
+     * @param <T5> type of the 5th element
+     * @param <T6> type of the 6th element
+     * @param <T7> type of the 7th element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @param t3   the 3rd element
+     * @param t4   the 4th element
+     * @param t5   the 5th element
+     * @param t6   the 6th element
+     * @param t7   the 7th element
+     * @return a tuple of 7 elements.
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> Tuple(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) {
+        return Tuple.of(t1, t2, t3, t4, t5, t6, t7);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object, Object, Object, Object, Object, Object, Object)}
+     *
+     * Creates a tuple of 8 elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param <T3> type of the 3rd element
+     * @param <T4> type of the 4th element
+     * @param <T5> type of the 5th element
+     * @param <T6> type of the 6th element
+     * @param <T7> type of the 7th element
+     * @param <T8> type of the 8th element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @param t3   the 3rd element
+     * @param t4   the 4th element
+     * @param t5   the 5th element
+     * @param t6   the 6th element
+     * @param t7   the 7th element
+     * @param t8   the 8th element
+     * @return a tuple of 8 elements.
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> Tuple(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
+        return Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8);
+    }
+
+    /**
+     * Alias for {@link Either#right(Object)}
+     *
+     * @param <L>   Type of left value.
+     * @param <R>   Type of right value.
+     * @param right The value.
+     * @return A new {@link Either.Right} instance.
+     */
+    public static <L, R> Either<L, R> Right(R right) {
+        return Either.right(right);
+    }
+
+    /**
+     * Alias for {@link Either#left(Object)}
+     *
+     * @param <L>  Type of left value.
+     * @param <R>  Type of right value.
+     * @param left The value.
+     * @return A new {@link Either.Left} instance.
+     */
+    public static <L, R> Either<L, R> Left(L left) {
+        return Either.left(left);
+    }
+
+    /**
+     * Alias for {@link Future#of(CheckedSupplier)}
+     *
+     * @param <T>         Type of the computation result.
+     * @param computation A computation.
+     * @return A new {@link Future} instance.
+     * @throws NullPointerException if computation is null.
+     */
+    @GwtIncompatible
+    public static <T> Future<T> Future(CheckedSupplier<? extends T> computation) {
+        return Future.of(computation);
+    }
+
+    /**
+     * Alias for {@link Future#of(ExecutorService, CheckedSupplier)}
+     *
+     * @param <T>             Type of the computation result.
+     * @param executorService An executor service.
+     * @param computation     A computation.
+     * @return A new {@link Future} instance.
+     * @throws NullPointerException if one of executorService or computation is null.
+     */
+    @GwtIncompatible
+    public static <T> Future<T> Future(ExecutorService executorService, CheckedSupplier<? extends T> computation) {
+        return Future.of(executorService, computation);
+    }
+
+    /**
+     * Alias for {@link Future#successful(Object)}
+     *
+     * @param <T>    The value type of a successful result.
+     * @param result The result.
+     * @return A succeeded {@link Future}.
+     */
+    @GwtIncompatible
+    public static <T> Future<T> Future(T result) {
+        return Future.successful(result);
+    }
+
+    /**
+     * Alias for {@link Future#successful(ExecutorService, Object)}
+     *
+     * @param <T>             The value type of a successful result.
+     * @param executorService An {@code ExecutorService}.
+     * @param result          The result.
+     * @return A succeeded {@link Future}.
+     * @throws NullPointerException if executorService is null
+     */
+    @GwtIncompatible
+    public static <T> Future<T> Future(ExecutorService executorService, T result) {
+        return Future.successful(executorService, result);
+    }
+
+    /**
+     * Alias for {@link Future#failed(Throwable)}
+     *
+     * @param <T>       The value type of a successful result.
+     * @param exception The reason why it failed.
+     * @return A failed {@link Future}.
+     * @throws NullPointerException if exception is null
+     */
+    @GwtIncompatible
+    public static <T> Future<T> Future(Throwable exception) {
+        return Future.failed(exception);
+    }
+
+    /**
+     * Alias for {@link Future#failed(ExecutorService, Throwable)}
+     *
+     * @param <T>             The value type of a successful result.
+     * @param executorService An executor service.
+     * @param exception       The reason why it failed.
+     * @return A failed {@link Future}.
+     * @throws NullPointerException if executorService or exception is null
+     */
+    @GwtIncompatible
+    public static <T> Future<T> Future(ExecutorService executorService, Throwable exception) {
+        return Future.failed(executorService, exception);
+    }
+
+    /**
+     * Alias for {@link Lazy#of(Supplier)}
+     *
+     * @param <T>      type of the lazy value
+     * @param supplier A supplier
+     * @return A new instance of {@link Lazy}
+     */
+    public static <T> Lazy<T> Lazy(Supplier<? extends T> supplier) {
+        return Lazy.of(supplier);
+    }
+
+    /**
+     * Alias for {@link Option#of(Object)}
+     *
+     * @param <T>   type of the value
+     * @param value A value
+     * @return {@link Option.Some} if value is not {@code null}, {@link Option.None} otherwise
+     */
+    public static <T> Option<T> Option(T value) {
+        return Option.of(value);
+    }
+
+    /**
+     * Alias for {@link Option#some(Object)}
+     *
+     * @param <T>   type of the value
+     * @param value A value
+     * @return {@link Option.Some}
+     */
+    public static <T> Option<T> Some(T value) {
+        return Option.some(value);
+    }
+
+    /**
+     * Alias for {@link Option#none()}
+     *
+     * @param <T> component type
+     * @return the singleton instance of {@link Option.None}
+     */
+    public static <T> Option<T> None() {
+        return Option.none();
+    }
+
+    /**
+     * Alias for {@link Try#of(CheckedSupplier)}
+     *
+     * @param <T>      Component type
+     * @param supplier A checked supplier
+     * @return {@link Try.Success} if no exception occurs, otherwise {@link Try.Failure} if an
+     * exception occurs calling {@code supplier.get()}.
+     */
+    public static <T> Try<T> Try(CheckedSupplier<? extends T> supplier) {
+        return Try.of(supplier);
+    }
+
+    /**
+     * Alias for {@link Try#success(Object)}
+     *
+     * @param <T>   Type of the given {@code value}.
+     * @param value A value.
+     * @return A new {@link Try.Success}.
+     */
+    public static <T> Try<T> Success(T value) {
+        return Try.success(value);
+    }
+
+    /**
+     * Alias for {@link Try#failure(Throwable)}
+     *
+     * @param <T>       Component type of the {@code Try}.
+     * @param exception An exception.
+     * @return A new {@link Try.Failure}.
+     */
+    public static <T> Try<T> Failure(Throwable exception) {
+        return Try.failure(exception);
+    }
+
+    /**
+     * Alias for {@link Validation#valid(Object)}
+     *
+     * @param <E>   type of the error
+     * @param <T>   type of the given {@code value}
+     * @param value A value
+     * @return {@link Validation.Valid}
+     * @throws NullPointerException if value is null
+     */
+    public static <E, T> Validation<E, T> Valid(T value) {
+        return Validation.valid(value);
+    }
+
+    /**
+     * Alias for {@link Validation#invalid(Object)}
+     *
+     * @param <E>   type of the given {@code error}
+     * @param <T>   type of the value
+     * @param error An error
+     * @return {@link Validation.Invalid}
+     * @throws NullPointerException if error is null
+     */
+    public static <E, T> Validation<E, T> Invalid(E error) {
+        return Validation.invalid(error);
+    }
+
+    /**
+     * Alias for {@link CharSeq#of(char)}
+     *
+     * @param character A character.
+     * @return A new {@link CharSeq} instance containing the given element
+     */
+    public static CharSeq CharSeq(char character) {
+        return CharSeq.of(character);
+    }
+
+    /**
+     * Alias for {@link CharSeq#of(char...)}
+     *
+     * @param characters Zero or more characters.
+     * @return A new {@link CharSeq} instance containing the given characters in the same order.
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static CharSeq CharSeq(char... characters) {
+        return CharSeq.of(characters);
+    }
+
+    /**
+     * Alias for {@link CharSeq#of(CharSequence)}
+     *
+     * @param sequence {@code CharSequence} instance.
+     * @return A new {@link CharSeq} instance
+     */
+    public static CharSeq CharSeq(CharSequence sequence) {
+        return CharSeq.of(sequence);
+    }
+
+    /**
+     * Alias for {@link Array#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link Array}
+     */
+    public static <T> Array<T> Array() {
+        return Array.empty();
+    }
+
+    /**
+     * Alias for {@link Array#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link Array} instance containing the given element
+     */
+    public static <T> Array<T> Array(T element) {
+        return Array.of(element);
+    }
+
+    /**
+     * Alias for {@link Array#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Array} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> Array<T> Array(T... elements) {
+        return Array.of(elements);
+    }
+
+    /**
+     * Alias for {@link Array#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Array} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Array<T> Array(Iterable<? extends T> elements) {
+        return Array.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Array#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Array} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Array<T> Array(java.util.stream.Stream<? extends T> elements) {
+        return Array.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Vector#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link Vector}
+     */
+    public static <T> Vector<T> Vector() {
+        return Vector.empty();
+    }
+
+    /**
+     * Alias for {@link Vector#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link Vector} instance containing the given element
+     */
+    public static <T> Vector<T> Vector(T element) {
+        return Vector.of(element);
+    }
+
+    /**
+     * Alias for {@link Vector#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Vector} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> Vector<T> Vector(T... elements) {
+        return Vector.of(elements);
+    }
+
+    /**
+     * Alias for {@link Vector#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Vector} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Vector<T> Vector(Iterable<? extends T> elements) {
+        return Vector.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Vector#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Vector} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Vector<T> Vector(java.util.stream.Stream<? extends T> elements) {
+        return Vector.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link List#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link List}
+     */
+    public static <T> List<T> List() {
+        return List.empty();
+    }
+
+    /**
+     * Alias for {@link List#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link List} instance containing the given element
+     */
+    public static <T> List<T> List(T element) {
+        return List.of(element);
+    }
+
+    /**
+     * Alias for {@link List#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link List} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> List<T> List(T... elements) {
+        return List.of(elements);
+    }
+
+    /**
+     * Alias for {@link List#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link List} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> List<T> List(Iterable<? extends T> elements) {
+        return List.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link List#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link List} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> List<T> List(java.util.stream.Stream<? extends T> elements) {
+        return List.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Stream#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link Stream}
+     */
+    public static <T> Stream<T> Stream() {
+        return Stream.empty();
+    }
+
+    /**
+     * Alias for {@link Stream#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link Stream} instance containing the given element
+     */
+    public static <T> Stream<T> Stream(T element) {
+        return Stream.of(element);
+    }
+
+    /**
+     * Alias for {@link Stream#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Stream} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> Stream<T> Stream(T... elements) {
+        return Stream.of(elements);
+    }
+
+    /**
+     * Alias for {@link Stream#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Stream} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Stream<T> Stream(Iterable<? extends T> elements) {
+        return Stream.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Stream#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Stream} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Stream<T> Stream(java.util.stream.Stream<? extends T> elements) {
+        return Stream.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Queue#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link Queue}
+     */
+    public static <T> Queue<T> Queue() {
+        return Queue.empty();
+    }
+
+    /**
+     * Alias for {@link Queue#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link Queue} instance containing the given element
+     */
+    public static <T> Queue<T> Queue(T element) {
+        return Queue.of(element);
+    }
+
+    /**
+     * Alias for {@link Queue#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Queue} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> Queue<T> Queue(T... elements) {
+        return Queue.of(elements);
+    }
+
+    /**
+     * Alias for {@link Queue#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Queue} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Queue<T> Queue(Iterable<? extends T> elements) {
+        return Queue.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Queue#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Queue} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Queue<T> Queue(java.util.stream.Stream<? extends T> elements) {
+        return Queue.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link LinkedHashSet#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link LinkedHashSet}
+     */
+    public static <T> LinkedHashSet<T> LinkedSet() {
+        return LinkedHashSet.empty();
+    }
+
+    /**
+     * Alias for {@link LinkedHashSet#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link LinkedHashSet} instance containing the given element
+     */
+    public static <T> LinkedHashSet<T> LinkedSet(T element) {
+        return LinkedHashSet.of(element);
+    }
+
+    /**
+     * Alias for {@link LinkedHashSet#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link LinkedHashSet} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> LinkedHashSet<T> LinkedSet(T... elements) {
+        return LinkedHashSet.of(elements);
+    }
+
+    /**
+     * Alias for {@link LinkedHashSet#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link LinkedHashSet} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> LinkedHashSet<T> LinkedSet(Iterable<? extends T> elements) {
+        return LinkedHashSet.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link LinkedHashSet#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link LinkedHashSet} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> LinkedHashSet<T> LinkedSet(java.util.stream.Stream<? extends T> elements) {
+        return LinkedHashSet.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link HashSet#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link HashSet}
+     */
+    public static <T> HashSet<T> Set() {
+        return HashSet.empty();
+    }
+
+    /**
+     * Alias for {@link HashSet#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link HashSet} instance containing the given element
+     */
+    public static <T> HashSet<T> Set(T element) {
+        return HashSet.of(element);
+    }
+
+    /**
+     * Alias for {@link HashSet#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link HashSet} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> HashSet<T> Set(T... elements) {
+        return HashSet.of(elements);
+    }
+
+    /**
+     * Alias for {@link HashSet#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link HashSet} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> HashSet<T> Set(Iterable<? extends T> elements) {
+        return HashSet.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link HashSet#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link HashSet} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> HashSet<T> Set(java.util.stream.Stream<? extends T> elements) {
+        return HashSet.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link List#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link List}
+     */
+    public static <T> List<T> Seq() {
+        return List.empty();
+    }
+
+    /**
+     * Alias for {@link List#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link List} instance containing the given element
+     */
+    public static <T> List<T> Seq(T element) {
+        return List.of(element);
+    }
+
+    /**
+     * Alias for {@link List#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link List} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> List<T> Seq(T... elements) {
+        return List.of(elements);
+    }
+
+    /**
+     * Alias for {@link List#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link List} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> List<T> Seq(Iterable<? extends T> elements) {
+        return List.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link List#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link List} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> List<T> Seq(java.util.stream.Stream<? extends T> elements) {
+        return List.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Vector#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A singleton instance of empty {@link Vector}
+     */
+    public static <T> Vector<T> IndexedSeq() {
+        return Vector.empty();
+    }
+
+    /**
+     * Alias for {@link Vector#of(Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link Vector} instance containing the given element
+     */
+    public static <T> Vector<T> IndexedSeq(T element) {
+        return Vector.of(element);
+    }
+
+    /**
+     * Alias for {@link Vector#of(Object...)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Vector} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> Vector<T> IndexedSeq(T... elements) {
+        return Vector.of(elements);
+    }
+
+    /**
+     * Alias for {@link Vector#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Vector} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Vector<T> IndexedSeq(Iterable<? extends T> elements) {
+        return Vector.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link Vector#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of elements.
+     * @param elements Zero or more elements.
+     * @return A new {@link Vector} instance containing the given elements
+     * @throws NullPointerException if {@code elements} is null
+     */
+    public static <T> Vector<T> IndexedSeq(java.util.stream.Stream<? extends T> elements) {
+        return Vector.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link TreeSet#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A new {@link TreeSet} empty instance
+     */
+    public static <T extends Comparable<? super T>> TreeSet<T> SortedSet() {
+        return TreeSet.empty();
+    }
+
+    /**
+     * Alias for {@link TreeSet#empty(Comparator)}
+     *
+     * @param <T> Component type of element.
+     * @return A new {@link TreeSet} empty instance
+     */
+    public static <T extends Comparable<? super T>> TreeSet<T> SortedSet(Comparator<? super T> comparator) {
+        return TreeSet.empty(comparator);
+    }
+
+    /**
+     * Alias for {@link TreeSet#of(Comparable)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link TreeSet} instance containing the given element
+     */
+    public static <T extends Comparable<? super T>> TreeSet<T> SortedSet(T element) {
+        return TreeSet.of(element);
+    }
+
+    /**
+     * Alias for {@link TreeSet#of(Comparator, Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param element An element.
+     * @return A new {@link TreeSet} instance containing the given element
+     */
+    public static <T> TreeSet<T> SortedSet(Comparator<? super T> comparator, T element) {
+        return TreeSet.of(comparator, element);
+    }
+
+    /**
+     * Alias for {@link TreeSet#of(Comparable...)}
+     *
+     * @param <T>      Component type of element.
+     * @param elements Zero or more elements.
+     * @return A new {@link TreeSet} instance containing the given elements
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T extends Comparable<? super T>> TreeSet<T> SortedSet(T... elements) {
+        return TreeSet.of(elements);
+    }
+
+    /**
+     * Alias for {@link TreeSet#of(Comparator, Object...)}
+     *
+     * @param <T>      Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param elements Zero or more elements.
+     * @return A new {@link TreeSet} instance containing the given elements
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> TreeSet<T> SortedSet(Comparator<? super T> comparator, T... elements) {
+        return TreeSet.of(comparator, elements);
+    }
+
+    /**
+     * Alias for {@link TreeSet#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of element.
+     * @param elements Zero or more elements.
+     * @return A new {@link TreeSet} instance containing the given elements
+     */
+    public static <T extends Comparable<? super T>> TreeSet<T> SortedSet(Iterable<? extends T> elements) {
+        return TreeSet.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link TreeSet#ofAll(Comparator, Iterable)}
+     *
+     * @param <T>      Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param elements Zero or more elements.
+     * @return A new {@link TreeSet} instance containing the given elements
+     */
+    public static <T> TreeSet<T> SortedSet(Comparator<? super T> comparator, Iterable<? extends T> elements) {
+        return TreeSet.ofAll(comparator, elements);
+    }
+
+    /**
+     * Alias for {@link TreeSet#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of element.
+     * @param elements Zero or more elements.
+     * @return A new {@link TreeSet} instance containing the given elements
+     */
+    public static <T extends Comparable<? super T>> TreeSet<T> SortedSet(java.util.stream.Stream<? extends T> elements) {
+        return TreeSet.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link TreeSet#ofAll(Comparator, java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param elements Zero or more elements.
+     * @return A new {@link TreeSet} instance containing the given elements
+     */
+    public static <T> TreeSet<T> SortedSet(Comparator<? super T> comparator, java.util.stream.Stream<? extends T> elements) {
+        return TreeSet.ofAll(comparator, elements);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#empty()}
+     *
+     * @param <T> Component type of element.
+     * @return A new {@link PriorityQueue} empty instance
+     */
+    public static <T extends Comparable<T>> PriorityQueue<T> PriorityQueue() {
+        return PriorityQueue.empty();
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#empty(Comparator)}
+     *
+     * @param <T> Component type of element.
+     * @return A new {@link PriorityQueue} empty instance
+     */
+    public static <T extends Comparable<T>> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator) {
+        return PriorityQueue.empty(comparator);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#of(Comparable)}
+     *
+     * @param <T>     Component type of element.
+     * @param element An element.
+     * @return A new {@link PriorityQueue} instance containing the given element
+     */
+    public static <T extends Comparable<T>> PriorityQueue<T> PriorityQueue(T element) {
+        return PriorityQueue.of(element);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#of(Comparator, Object)}
+     *
+     * @param <T>     Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param element An element.
+     * @return A new {@link PriorityQueue} instance containing the given element
+     */
+    public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, T element) {
+        return PriorityQueue.of(comparator, element);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#of(Comparable...)}
+     *
+     * @param <T>      Component type of element.
+     * @param elements Zero or more elements.
+     * @return A new {@link PriorityQueue} instance containing the given elements
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T extends Comparable<T>> PriorityQueue<T> PriorityQueue(T... elements) {
+        return PriorityQueue.of(elements);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#of(Comparator, Object...)}
+     *
+     * @param <T>      Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param elements Zero or more elements.
+     * @return A new {@link PriorityQueue} instance containing the given elements
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, T... elements) {
+        return PriorityQueue.of(comparator, elements);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#ofAll(Iterable)}
+     *
+     * @param <T>      Component type of element.
+     * @param elements Zero or more elements.
+     * @return A new {@link PriorityQueue} instance containing the given elements
+     */
+    public static <T extends Comparable<T>> PriorityQueue<T> PriorityQueue(Iterable<? extends T> elements) {
+        return PriorityQueue.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#ofAll(Comparator, Iterable)}
+     *
+     * @param <T>      Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param elements Zero or more elements.
+     * @return A new {@link PriorityQueue} instance containing the given elements
+     */
+    public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, Iterable<? extends T> elements) {
+        return PriorityQueue.ofAll(comparator, elements);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#ofAll(java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of element.
+     * @param elements Zero or more elements.
+     * @return A new {@link PriorityQueue} instance containing the given elements
+     */
+    public static <T extends Comparable<T>> PriorityQueue<T> PriorityQueue(java.util.stream.Stream<? extends T> elements) {
+        return PriorityQueue.ofAll(elements);
+    }
+
+    /**
+     * Alias for {@link PriorityQueue#ofAll(Comparator, java.util.stream.Stream)}
+     *
+     * @param <T>      Component type of element.
+     * @param comparator The comparator used to sort the elements
+     * @param elements Zero or more elements.
+     * @return A new {@link PriorityQueue} instance containing the given elements
+     */
+    public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, java.util.stream.Stream<? extends T> elements) {
+        return PriorityQueue.ofAll(comparator, elements);
+    }
+
+    /**
+     * Alias for {@link LinkedHashMap#empty()}
+     *
+     * @param <K> The key type.
+     * @param <V> The value type.
+     * @return A singleton instance of empty {@link LinkedHashMap}
+     */
+    public static <K, V> LinkedHashMap<K, V> LinkedMap() {
+        return LinkedHashMap.empty();
+    }
+
+    /**
+     * Alias for {@link LinkedHashMap#of(Object, Object)}
+     *
+     * @param <K>   The key type.
+     * @param <V>   The value type.
+     * @param key   A singleton map key.
+     * @param value A singleton map value.
+     * @return A new {@link LinkedHashMap} instance containing the given entry
+     */
+    public static <K, V> LinkedHashMap<K, V> LinkedMap(K key, V value) {
+        return LinkedHashMap.of(key, value);
+    }
+
+    /**
+     * Alias for {@link LinkedHashMap#ofEntries(Tuple2...)}
+     *
+     * @param <K>     The key type.
+     * @param <V>     The value type.
+     * @param entries Map entries.
+     * @return A new {@link LinkedHashMap} instance containing the given entries
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <K, V> LinkedHashMap<K, V> LinkedMap(Tuple2<? extends K, ? extends V>... entries) {
+        return LinkedHashMap.ofEntries(entries);
+    }
+
+    /**
+     * Alias for {@link LinkedHashMap#ofAll(Map)}
+     *
+     * @param <K> The key type.
+     * @param <V> The value type.
+     * @param map A map entry.
+     * @return A new {@link LinkedHashMap} instance containing the given map
+     */
+    public static <K, V> LinkedHashMap<K, V> LinkedMap(Map<? extends K, ? extends V> map) {
+        return LinkedHashMap.ofAll(map);
+    }
+
+    /**
+     * Alias for {@link LinkedHashMap#of(Object...)}
+     *
+     * @param <K>   The key type.
+     * @param <V>   The value type.
+     * @param pairs A list of key-value pairs.
+     * @return A new {@link LinkedHashMap} instance containing the given entries
+     */
+    public static <K, V> LinkedHashMap<K, V> LinkedMap(Object... pairs) {
+        return LinkedHashMap.of(pairs);
+    }
+
+    /**
+     * Alias for {@link HashMap#empty()}
+     *
+     * @param <K> The key type.
+     * @param <V> The value type.
+     * @return A singleton instance of empty {@link HashMap}
+     */
+    public static <K, V> HashMap<K, V> Map() {
+        return HashMap.empty();
+    }
+
+    /**
+     * Alias for {@link HashMap#of(Object, Object)}
+     *
+     * @param <K>   The key type.
+     * @param <V>   The value type.
+     * @param key   A singleton map key.
+     * @param value A singleton map value.
+     * @return A new {@link HashMap} instance containing the given entry
+     */
+    public static <K, V> HashMap<K, V> Map(K key, V value) {
+        return HashMap.of(key, value);
+    }
+
+    /**
+     * Alias for {@link HashMap#ofEntries(Tuple2...)}
+     *
+     * @param <K>     The key type.
+     * @param <V>     The value type.
+     * @param entries Map entries.
+     * @return A new {@link HashMap} instance containing the given entries
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <K, V> HashMap<K, V> Map(Tuple2<? extends K, ? extends V>... entries) {
+        return HashMap.ofEntries(entries);
+    }
+
+    /**
+     * Alias for {@link HashMap#ofAll(Map)}
+     *
+     * @param <K> The key type.
+     * @param <V> The value type.
+     * @param map A map entry.
+     * @return A new {@link HashMap} instance containing the given map
+     */
+    public static <K, V> HashMap<K, V> Map(Map<? extends K, ? extends V> map) {
+        return HashMap.ofAll(map);
+    }
+
+    /**
+     * Alias for {@link HashMap#of(Object...)}
+     *
+     * @param <K>   The key type.
+     * @param <V>   The value type.
+     * @param pairs A list of key-value pairs.
+     * @return A new {@link HashMap} instance containing the given entries
+     */
+    public static <K, V> HashMap<K, V> Map(Object... pairs) {
+        return HashMap.of(pairs);
+    }
+
+    /**
+     * Alias for {@link TreeMap#empty()}
+     *
+     * @param <K> The key type.
+     * @param <V> The value type.
+     * @return A new empty {@link TreeMap} instance
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> SortedMap() {
+        return TreeMap.empty();
+    }
+
+    /**
+     * Alias for {@link TreeMap#empty(Comparator)}
+     *
+     * @param <K>           The key type.
+     * @param <V>           The value type.
+     * @param keyComparator The comparator used to sort the entries by their key
+     * @return A new empty {@link TreeMap} instance
+     */
+    public static <K, V> TreeMap<K, V> SortedMap(Comparator<? super K> keyComparator) {
+        return TreeMap.empty(keyComparator);
+    }
+
+    /**
+     * Alias for {@link TreeMap#of(Comparable, Object)}
+     *
+     * @param <K>   The key type.
+     * @param <V>   The value type.
+     * @param key   A singleton map key.
+     * @param value A singleton map value.
+     * @return A new {@link TreeMap} instance containing the given entry
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> SortedMap(K key, V value) {
+        return TreeMap.of(key, value);
+    }
+
+    /**
+     * Alias for {@link TreeMap#of(Comparator, Object, Object)}
+     *
+     * @param <K>           The key type.
+     * @param <V>           The value type.
+     * @param keyComparator The comparator used to sort the entries by their key
+     * @param key           A singleton map key.
+     * @param value         A singleton map value.
+     * @return A new {@link TreeMap} instance containing the given entry
+     */
+    public static <K, V> TreeMap<K, V> SortedMap(Comparator<? super K> keyComparator, K key, V value) {
+        return TreeMap.of(keyComparator, key, value);
+    }
+
+    /**
+     * Alias for {@link TreeMap#ofEntries(Tuple2...)}
+     *
+     * @param <K>     The key type.
+     * @param <V>     The value type.
+     * @param entries Map entries.
+     * @return A new {@link TreeMap} instance containing the given entries
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> SortedMap(Tuple2<? extends K, ? extends V>... entries) {
+        return TreeMap.ofEntries(entries);
+    }
+
+    /**
+     * Alias for {@link TreeMap#ofEntries(Comparator, Tuple2...)}
+     *
+     * @param <K>           The key type.
+     * @param <V>           The value type.
+     * @param keyComparator The comparator used to sort the entries by their key
+     * @param entries       Map entries.
+     * @return A new {@link TreeMap} instance containing the given entry
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <K, V> TreeMap<K, V> SortedMap(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V>... entries) {
+        return TreeMap.ofEntries(keyComparator, entries);
+    }
+
+    /**
+     * Alias for {@link TreeMap#ofAll(Map)}
+     *
+     * @param <K> The key type.
+     * @param <V> The value type.
+     * @param map A map entry.
+     * @return A new {@link TreeMap} instance containing the given map
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> SortedMap(Map<? extends K, ? extends V> map) {
+        return TreeMap.ofAll(map);
+    }
+
+    /**
+     * Alias for {@link TreeMap#of(Object...)}
+     *
+     * @param <K>   The key type.
+     * @param <V>   The value type.
+     * @param pairs A list of key-value pairs.
+     * @return A new {@link TreeMap} instance containing the given entries
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> SortedMap(Object... pairs) {
+        return TreeMap.of(pairs);
     }
 
     //
