@@ -888,6 +888,17 @@ def generateMainClasses(): Unit = {
                             $IteratorType.ofAll(ts$i).map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")}))${")" * (i - 1)};
                       """}
                   }
+
+                  ${(i == 1).gen(xs"""
+                    /$javadoc
+                     * A shortcut for {@code yield(Function.identity())}.
+                     *
+                     * @return an {@code Iterator} of mapped results
+                     */
+                    public $IteratorType<T1> yield() {
+                        return yield(Function.identity());
+                    }
+                  """)}
               }
             """
           })("\n\n")}
@@ -2382,6 +2393,13 @@ def generateTestClasses(): Unit = {
             }
 
             // -- For
+
+            @$test
+            public void shouldIterateFor1UsingSimpleYield() {
+                final $ListType<Integer> list = List.of(1, 2, 3);
+                final $ListType<Integer> actual = For(list).yield().toList();
+                $assertThat(actual).isEqualTo(list);
+            }
 
             ${(1 to N).gen(i => xs"""
               @$test
