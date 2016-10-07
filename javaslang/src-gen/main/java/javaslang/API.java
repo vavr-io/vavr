@@ -366,6 +366,132 @@ public final class API {
     }
 
     /**
+     * Alias for {@link CheckedFunction0#unchecked}
+     *
+     * @param <R>  return type
+     * @return A unchecked wrapper of supplied {@link CheckedFunction0}
+     */
+    public static <R> Function0<R> Unchecked(CheckedFunction0<R> f) {
+        return f.unchecked();
+    }
+
+    /**
+     * Alias for {@link CheckedFunction1#unchecked}
+     *
+     * @param <R>  return type
+     * @param <T1> type of the 1st argument
+     * @return A unchecked wrapper of supplied {@link CheckedFunction1}
+     */
+    public static <T1, R> Function1<T1, R> Unchecked(CheckedFunction1<T1, R> f) {
+        return f.unchecked();
+    }
+
+    /**
+     * Alias for {@link CheckedFunction2#unchecked}
+     *
+     * @param <R>  return type
+     * @param <T1> type of the 1st argument
+     * @param <T2> type of the 2nd argument
+     * @return A unchecked wrapper of supplied {@link CheckedFunction2}
+     */
+    public static <T1, T2, R> Function2<T1, T2, R> Unchecked(CheckedFunction2<T1, T2, R> f) {
+        return f.unchecked();
+    }
+
+    /**
+     * Alias for {@link CheckedFunction3#unchecked}
+     *
+     * @param <R>  return type
+     * @param <T1> type of the 1st argument
+     * @param <T2> type of the 2nd argument
+     * @param <T3> type of the 3rd argument
+     * @return A unchecked wrapper of supplied {@link CheckedFunction3}
+     */
+    public static <T1, T2, T3, R> Function3<T1, T2, T3, R> Unchecked(CheckedFunction3<T1, T2, T3, R> f) {
+        return f.unchecked();
+    }
+
+    /**
+     * Alias for {@link CheckedFunction4#unchecked}
+     *
+     * @param <R>  return type
+     * @param <T1> type of the 1st argument
+     * @param <T2> type of the 2nd argument
+     * @param <T3> type of the 3rd argument
+     * @param <T4> type of the 4th argument
+     * @return A unchecked wrapper of supplied {@link CheckedFunction4}
+     */
+    public static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> Unchecked(CheckedFunction4<T1, T2, T3, T4, R> f) {
+        return f.unchecked();
+    }
+
+    /**
+     * Alias for {@link CheckedFunction5#unchecked}
+     *
+     * @param <R>  return type
+     * @param <T1> type of the 1st argument
+     * @param <T2> type of the 2nd argument
+     * @param <T3> type of the 3rd argument
+     * @param <T4> type of the 4th argument
+     * @param <T5> type of the 5th argument
+     * @return A unchecked wrapper of supplied {@link CheckedFunction5}
+     */
+    public static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> Unchecked(CheckedFunction5<T1, T2, T3, T4, T5, R> f) {
+        return f.unchecked();
+    }
+
+    /**
+     * Alias for {@link CheckedFunction6#unchecked}
+     *
+     * @param <R>  return type
+     * @param <T1> type of the 1st argument
+     * @param <T2> type of the 2nd argument
+     * @param <T3> type of the 3rd argument
+     * @param <T4> type of the 4th argument
+     * @param <T5> type of the 5th argument
+     * @param <T6> type of the 6th argument
+     * @return A unchecked wrapper of supplied {@link CheckedFunction6}
+     */
+    public static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, R> Unchecked(CheckedFunction6<T1, T2, T3, T4, T5, T6, R> f) {
+        return f.unchecked();
+    }
+
+    /**
+     * Alias for {@link CheckedFunction7#unchecked}
+     *
+     * @param <R>  return type
+     * @param <T1> type of the 1st argument
+     * @param <T2> type of the 2nd argument
+     * @param <T3> type of the 3rd argument
+     * @param <T4> type of the 4th argument
+     * @param <T5> type of the 5th argument
+     * @param <T6> type of the 6th argument
+     * @param <T7> type of the 7th argument
+     * @return A unchecked wrapper of supplied {@link CheckedFunction7}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> Unchecked(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> f) {
+        return f.unchecked();
+    }
+
+    /**
+     * Alias for {@link CheckedFunction8#unchecked}
+     *
+     * @param <R>  return type
+     * @param <T1> type of the 1st argument
+     * @param <T2> type of the 2nd argument
+     * @param <T3> type of the 3rd argument
+     * @param <T4> type of the 4th argument
+     * @param <T5> type of the 5th argument
+     * @param <T6> type of the 6th argument
+     * @param <T7> type of the 7th argument
+     * @param <T8> type of the 8th argument
+     * @return A unchecked wrapper of supplied {@link CheckedFunction8}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> Unchecked(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
+        return f.unchecked();
+    }
+
+    /**
      * Alias for {@link Tuple#empty()}
      *
      * @return the empty tuple.

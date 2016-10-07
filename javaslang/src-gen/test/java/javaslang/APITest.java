@@ -127,6 +127,51 @@ public class APITest {
     }
 
     @Test
+    public void shouldUnchecked0ReturnNonCheckedFunction() {
+        assertThat(Unchecked(() -> null)).isInstanceOf(Function0.class);
+    }
+
+    @Test
+    public void shouldUnchecked1ReturnNonCheckedFunction() {
+        assertThat(Unchecked((v1) -> null)).isInstanceOf(Function1.class);
+    }
+
+    @Test
+    public void shouldUnchecked2ReturnNonCheckedFunction() {
+        assertThat(Unchecked((v1, v2) -> null)).isInstanceOf(Function2.class);
+    }
+
+    @Test
+    public void shouldUnchecked3ReturnNonCheckedFunction() {
+        assertThat(Unchecked((v1, v2, v3) -> null)).isInstanceOf(Function3.class);
+    }
+
+    @Test
+    public void shouldUnchecked4ReturnNonCheckedFunction() {
+        assertThat(Unchecked((v1, v2, v3, v4) -> null)).isInstanceOf(Function4.class);
+    }
+
+    @Test
+    public void shouldUnchecked5ReturnNonCheckedFunction() {
+        assertThat(Unchecked((v1, v2, v3, v4, v5) -> null)).isInstanceOf(Function5.class);
+    }
+
+    @Test
+    public void shouldUnchecked6ReturnNonCheckedFunction() {
+        assertThat(Unchecked((v1, v2, v3, v4, v5, v6) -> null)).isInstanceOf(Function6.class);
+    }
+
+    @Test
+    public void shouldUnchecked7ReturnNonCheckedFunction() {
+        assertThat(Unchecked((v1, v2, v3, v4, v5, v6, v7) -> null)).isInstanceOf(Function7.class);
+    }
+
+    @Test
+    public void shouldUnchecked8ReturnNonCheckedFunction() {
+        assertThat(Unchecked((v1, v2, v3, v4, v5, v6, v7, v8) -> null)).isInstanceOf(Function8.class);
+    }
+
+    @Test
     public void shouldTuple0ReturnNotNull() {
         assertThat(Tuple()).isNotNull();
     }
