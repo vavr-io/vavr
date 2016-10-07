@@ -363,6 +363,22 @@ def generateMainClasses(): Unit = {
             """
           })("\n\n")}
 
+          ${(0 to N).gen(i => {
+            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
+            xs"""
+              /$javadoc
+               * Alias for {@link CheckedFunction$i#unchecked}
+               *
+               ${(0 to i).gen(j => if (j == 0) "* @param <R>  return type" else s"* @param <T$j> type of the ${j.ordinal} argument")("\n")}
+               * @return A unchecked wrapper of supplied {@link CheckedFunction$i}
+               */
+              public static $fullGenerics Function$i$fullGenerics Unchecked(CheckedFunction$i$fullGenerics f) {
+                  return f.unchecked();
+              }
+            """
+          })("\n\n")}
+
           /$javadoc
            * Alias for {@link Tuple#empty()}
            *
@@ -2258,6 +2274,11 @@ def generateTestClasses(): Unit = {
               }
 
             """
+          })("\n\n")}
+
+          ${(0 to N).gen(i => {
+            val params = (1 to i).gen(j => s"v$j")(", ")
+            genExtAliasTest(s"Unchecked${i}ReturnNonCheckedFunction", "Unchecked", s"($params) -> null", s"isInstanceOf(Function$i.class)")
           })("\n\n")}
 
           ${(0 to N).gen(i => {
