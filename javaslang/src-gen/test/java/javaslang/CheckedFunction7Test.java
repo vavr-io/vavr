@@ -60,7 +60,7 @@ public class CheckedFunction7Test {
     @Test
     public void shouldCurry() {
         final CheckedFunction7<Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7) -> null;
-        final CheckedFunction1<Object, CheckedFunction1<Object, CheckedFunction1<Object, CheckedFunction1<Object, CheckedFunction1<Object, CheckedFunction1<Object, CheckedFunction1<Object, Object>>>>>>> curried = f.curried();
+        final Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, CheckedFunction1<Object, Object>>>>>>> curried = f.curried();
         assertThat(curried).isNotNull();
     }
 

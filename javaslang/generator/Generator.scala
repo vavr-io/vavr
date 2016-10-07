@@ -1347,17 +1347,10 @@ def generateMainClasses(): Unit = {
         }
         val callApply = s"$refApply($params)"
 
-        def curriedType(max: Int, function: String): String = {
-          if (max == 0) {
-            s"$className<R>"
-          } else {
-            def returnType(curr: Int, max: Int): String = {
-              val isParam = curr < max
-              val next = if (isParam) returnType(curr + 1, max) else "R"
-              s"${function}1<T$curr, $next>"
-            }
-            returnType(1, max)
-          }
+        def curriedType(max: Int, function: String, idx: Int = 1): String = max match {
+          case 0 => s"$className<R>"
+          case 1 => s"${function}1<T$idx, R>"
+          case _ => s"Function1<T$idx, ${curriedType(max - 1, function, idx + 1)}>"
         }
 
         def arguments(count: Int): String = count match {
@@ -2472,17 +2465,10 @@ def generateTestClasses(): Unit = {
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
         val recFuncF1 = if (i == 0) "11;" else s"i1 <= 0 ? i1 : $className.recurrent2.apply(${(1 to i).gen(j => s"i$j" + (j == 1).gen(s" - 1"))(", ")}) + 1;"
 
-        def curriedType(max: Int, function: String): String = {
-          if (max == 0) {
-            s"${function}0<Object>"
-          } else {
-            def returnType(curr: Int, max: Int): String = {
-              val isParam = curr < max
-              val next = if (isParam) returnType(curr + 1, max) else "Object"
-              s"${function}1<Object, $next>"
-            }
-            returnType(1, max)
-          }
+        def curriedType(max: Int, function: String): String = max match {
+          case 0 => s"${function}0<Object>"
+          case 1 => s"${function}1<Object, Object>"
+          case _ => s"Function1<Object, ${curriedType(max - 1, function)}>"
         }
 
         xs"""
