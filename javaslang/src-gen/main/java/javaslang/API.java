@@ -2138,6 +2138,15 @@ public final class API {
             Objects.requireNonNull(f, "f is null");
             return Iterator.ofAll(ts1).map(f);
         }
+
+        /**
+         * A shortcut for {@code yield(Function.identity())}.
+         *
+         * @return an {@code Iterator} of mapped results
+         */
+        public Iterator<T1> yield() {
+            return yield(Function.identity());
+        }
     }
 
     /**
@@ -2166,6 +2175,7 @@ public final class API {
                 Iterator.ofAll(ts1).flatMap(t1 ->
                 Iterator.ofAll(ts2).map(t2 -> f.apply(t1, t2)));
         }
+
     }
 
     /**
@@ -2197,6 +2207,7 @@ public final class API {
                 Iterator.ofAll(ts2).flatMap(t2 ->
                 Iterator.ofAll(ts3).map(t3 -> f.apply(t1, t2, t3))));
         }
+
     }
 
     /**
@@ -2231,6 +2242,7 @@ public final class API {
                 Iterator.ofAll(ts3).flatMap(t3 ->
                 Iterator.ofAll(ts4).map(t4 -> f.apply(t1, t2, t3, t4)))));
         }
+
     }
 
     /**
@@ -2268,6 +2280,7 @@ public final class API {
                 Iterator.ofAll(ts4).flatMap(t4 ->
                 Iterator.ofAll(ts5).map(t5 -> f.apply(t1, t2, t3, t4, t5))))));
         }
+
     }
 
     /**
@@ -2308,6 +2321,7 @@ public final class API {
                 Iterator.ofAll(ts5).flatMap(t5 ->
                 Iterator.ofAll(ts6).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6)))))));
         }
+
     }
 
     /**
@@ -2351,6 +2365,7 @@ public final class API {
                 Iterator.ofAll(ts6).flatMap(t6 ->
                 Iterator.ofAll(ts7).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7))))))));
         }
+
     }
 
     /**
@@ -2397,6 +2412,7 @@ public final class API {
                 Iterator.ofAll(ts7).flatMap(t7 ->
                 Iterator.ofAll(ts8).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8)))))))));
         }
+
     }
 
     //

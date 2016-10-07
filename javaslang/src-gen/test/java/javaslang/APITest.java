@@ -768,6 +768,13 @@ public class APITest {
     // -- For
 
     @Test
+    public void shouldIterateFor1UsingSimpleYield() {
+        final List<Integer> list = List.of(1, 2, 3);
+        final List<Integer> actual = For(list).yield().toList();
+        assertThat(actual).isEqualTo(list);
+    }
+
+    @Test
     public void shouldIterateFor1() {
         final List<Integer> result = For(
             List.of(1, 2, 3)
