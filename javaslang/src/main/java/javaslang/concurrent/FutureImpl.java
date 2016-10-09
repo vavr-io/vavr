@@ -101,7 +101,7 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     @Override
-    public void await() {
+    public Future<T> await() {
         final Object monitor = new Object();
         onComplete(ignored -> {
             synchronized (monitor) {
@@ -113,6 +113,7 @@ final class FutureImpl<T> implements Future<T> {
                 Try.run(monitor::wait);
             }
         }
+        return this;
     }
 
     @Override

@@ -228,48 +228,42 @@ public class APITest {
 
     @Test
     public void shouldFutureWithSupplierReturnNotNull() {
-        final Future<?> future = Future(() -> 1);
-        future.await();
+        final Future<?> future = Future(() -> 1).await();
         assertThat(future).isNotNull();
         assertThat(future.isSuccess()).isTrue();
     }
 
     @Test
     public void shouldFutureWithinExecutorWithSupplierReturnNotNull() {
-        final Future<?> future = Future(Executors.newSingleThreadExecutor(), () -> 1);
-        future.await();
+        final Future<?> future = Future(Executors.newSingleThreadExecutor(), () -> 1).await();
         assertThat(future).isNotNull();
         assertThat(future.isSuccess()).isTrue();
     }
 
     @Test
     public void shouldFutureWithValueReturnNotNull() {
-        final Future<?> future = Future(1);
-        future.await();
+        final Future<?> future = Future(1).await();
         assertThat(future).isNotNull();
         assertThat(future.isSuccess()).isTrue();
     }
 
     @Test
     public void shouldFutureWithinExecutorWithValueReturnNotNull() {
-        final Future<?> future = Future(Executors.newSingleThreadExecutor(), 1);
-        future.await();
+        final Future<?> future = Future(Executors.newSingleThreadExecutor(), 1).await();
         assertThat(future).isNotNull();
         assertThat(future.isSuccess()).isTrue();
     }
 
     @Test
     public void shouldFutureWithErrorReturnNotNull() {
-        final Future<?> future = Future(new Error());
-        future.await();
+        final Future<?> future = Future(new Error()).await();
         assertThat(future).isNotNull();
         assertThat(future.isFailure()).isTrue();
     }
 
     @Test
     public void shouldFutureWithinExecutorWithErrorReturnNotNull() {
-        final Future<?> future = Future(Executors.newSingleThreadExecutor(), new Error());
-        future.await();
+        final Future<?> future = Future(Executors.newSingleThreadExecutor(), new Error()).await();
         assertThat(future).isNotNull();
         assertThat(future.isFailure()).isTrue();
     }

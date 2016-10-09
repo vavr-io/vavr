@@ -538,8 +538,10 @@ public interface Future<T> extends Value<T> {
 
     /**
      * Blocks the current Thread until this Future completed or returns immediately if this Future is already completed.
+     *
+     * @return this {@code Future} instance
      */
-    void await();
+    Future<T> await();
 
     /**
      * Cancels the Future. A running thread is interrupted.
