@@ -190,8 +190,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldGetFirstCompletedOfSucceedingFuturesUsingForkJoinPool() {
         final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.of(zZz(i))).take(3);
-        final Future<?> testee = Future.firstCompletedOf(futures);
-        testee.await();
+        final Future<?> testee = Future.firstCompletedOf(futures).await();
         assertThat(testee.getValue().get().isSuccess()).isTrue();
     }
 
@@ -237,8 +236,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldCompleteOneFuturesUsingAThreadPoolExecutorLimitedToOneThread() {
         final ExecutorService service = new ThreadPoolExecutor(1, 1, 0L, MILLISECONDS, new SynchronousQueue<>());
-        final Future<Integer> future = Future.of(service, () -> expensiveOperation(1));
-        future.await();
+        final Future<Integer> future = Future.of(service, () -> expensiveOperation(1)).await();
         assertCompleted(future, 1);
         service.shutdown();
     }

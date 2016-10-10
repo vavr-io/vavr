@@ -2173,16 +2173,14 @@ def generateTestClasses(): Unit = {
         xs"""
           @$test
           public void shouldFutureWith${name}ReturnNotNull() {
-              final $FutureType<?> future = Future($value);
-              future.await();
+              final $FutureType<?> future = Future($value).await();
               assertThat(future).isNotNull();
               assertThat(future.$check()).isTrue();
           }
 
           @$test
           public void shouldFutureWithinExecutorWith${name}ReturnNotNull() {
-              final $FutureType<?> future = Future($ExecutorService, $value);
-              future.await();
+              final $FutureType<?> future = Future($ExecutorService, $value).await();
               assertThat(future).isNotNull();
               assertThat(future.$check()).isTrue();
           }
