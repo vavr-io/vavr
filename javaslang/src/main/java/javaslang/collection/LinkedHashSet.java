@@ -26,7 +26,7 @@ import java.util.stream.Collector;
  * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  * @since 2.0.0
  */
-public final class LinkedHashSet<T> extends AbstractSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T>, Serializable {
+public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -556,7 +556,7 @@ public final class LinkedHashSet<T> extends AbstractSet<T> implements Kind1<Link
             return empty();
         } else {
             final LinkedHashMap<U, U> that = foldLeft(LinkedHashMap.empty(),
-                                                      (tree, t) -> addAll(tree, mapper.apply(t)));
+                    (tree, t) -> addAll(tree, mapper.apply(t)));
             return new LinkedHashSet<>(that);
         }
     }
@@ -881,12 +881,7 @@ public final class LinkedHashSet<T> extends AbstractSet<T> implements Kind1<Link
     @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object o) {
-        if (o instanceof LinkedHashSet) {
-            final LinkedHashSet<?> that = (LinkedHashSet<?>) o;
-            return this.map.equals(that.map);
-        } else {
-            return super.equals(o);
-        }
+        return Sets.equals(this, o);
     }
 
     @Override

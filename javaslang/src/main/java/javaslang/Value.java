@@ -230,7 +230,15 @@ public interface Value<T> extends Iterable<T> {
             return true;
         } else if (o instanceof Value) {
             final Value<?> that = (Value<?>) o;
-            return this.iterator().corresponds(that.iterator(), Value::eq);
+            return this.iterator().corresponds(that.iterator(), (o1, o2) -> {
+                if (o1 instanceof Value) {
+                    return ((Value<?>) o1).eq(o2);
+                } else if (o2 instanceof Value) {
+                    return ((Value<?>) o2).eq(o1);
+                } else {
+                    return Objects.equals(o1, o2);
+                }
+            });
         } else if (o instanceof Iterable) {
             final Value<?> that = Iterator.ofAll((Iterable<?>) o);
             return this.eq(that);
@@ -1029,26 +1037,6 @@ public interface Value<T> extends Iterable<T> {
     @Override
     String toString();
 
-    /**
-     * Tests equality of two objects assuming one, or both might be instances of Value.
-     *
-     * If one of a or b is Value instance congruence is tested.
-     * If neither is Objects{@link Objects#equals} is being invoked for two.
-     *
-     * @param a first object to test
-     * @param b fecond object to test
-     * @return true, if this equals o according to the rules defined above, otherwise false.
-     */
-    static boolean eq(Object a, Object b) {
-        if (a instanceof Value) {
-            return ((Value<?>) a).eq(b);
-        } else if (b instanceof Value) {
-            return ((Value<?>) b).eq(a);
-        } else {
-            return Objects.equals(a, b);
-        }
-    }
-
 }
 
 interface ValueModule {
@@ -1091,8 +1079,8 @@ interface ValueModule {
                 container.add(value.get());
             } else {
                 final int size = value instanceof Traversable && ((Traversable) value).isTraversableAgain()
-                                 ? ((Traversable<V>) value).size()
-                                 : 0;
+                        ? ((Traversable<V>) value).size()
+                        : 0;
                 container = containerSupplier.apply(size);
                 value.forEach(container::add);
             }
