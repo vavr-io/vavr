@@ -12,7 +12,7 @@ import javaslang.concurrent.Promise;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class GwtTestConcurrent extends GWTTestCase {
+public class ConcurrentTestGwt extends GWTTestCase {
 
     @Override public String getModuleName()  {
         return "TestModule";
