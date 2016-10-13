@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
+    <inherits name="com.google.common.util.concurrent.Concurrent"/>
     <inherits name='Javaslang'/>
     <source path="client"/>
-    <source path="javaslang"/>
 </module>
