@@ -19,37 +19,37 @@ public class GwtTestConcurrent extends GWTTestCase {
     }
 
     public void testFutureSuccess() {
-        AtomicBoolean onCompleteCalled = new AtomicBoolean(false);
+        boolean[] onCompleteCalled = new boolean[] { false };
         Promise<String> promise = Promise.make();
-        promise.future().onComplete(value -> onCompleteCalled.set(true));
+        promise.future().onComplete(value -> onCompleteCalled[0] = true);
         promise.success("value");
 
-        if (!onCompleteCalled.get()) {
+        if (!onCompleteCalled[0]) {
             fail("onComplete handler should have been called");
         }
     }
 
     public void testFutureFailure() {
-        AtomicBoolean onFailureCalled = new AtomicBoolean(false);
+        boolean[] onFailureCalled = new boolean[] { false };
         Promise<String> promise = Promise.make();
-        promise.future().onFailure(e -> onFailureCalled.set(true));
+        promise.future().onFailure(e -> onFailureCalled[0] = true);
         promise.failure(new Exception());
 
-        if (!onFailureCalled.get()) {
+        if (!onFailureCalled[0]) {
             fail("onFailure handler should have been called");
         }
     }
 
     public void testFutureSequence() {
-        AtomicBoolean onCompleteCalled = new AtomicBoolean(false);
+        boolean[] onCompleteCalled = new boolean[] { false };
         Promise<String> promise1 = Promise.make();
         Promise<String> promise2 = Promise.make();
         Future.sequence(List.of(promise1.future(), promise2.future()))
-              .onComplete(results -> onCompleteCalled.set(true));
+              .onComplete(results -> onCompleteCalled[0] = true);
         promise1.success("success1");
         promise2.success("success2");
 
-        if (!onCompleteCalled.get()) {
+        if (!onCompleteCalled[0]) {
             fail("onComplete handler should have been called");
         }
     }
