@@ -249,6 +249,16 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     }
 
     @Override
+    public Tuple2<V, LinkedHashMap<K, V>> computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
+        return Maps.computeIfAbsent(this, key, mappingFunction);
+    }
+
+    @Override
+    public Tuple2<Option<V>, LinkedHashMap<K, V>> computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        return Maps.computeIfPresent(this, key, remappingFunction);
+    }
+
+    @Override
     public boolean containsKey(K key) {
         return map.containsKey(key);
     }

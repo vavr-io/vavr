@@ -21,6 +21,31 @@ import java.util.function.*;
  */
 final class Maps {
 
+    @SuppressWarnings("unchecked")
+    static <K, V, M extends Map<K, V>> Tuple2<V, M> computeIfAbsent(M map, K key, Function<? super K, ? extends V> mappingFunction) {
+        Objects.requireNonNull(mappingFunction, "mappingFunction is null");
+        final Option<V> value = map.get(key);
+        if (value.isDefined()) {
+            return Tuple.of(value.get(), map);
+        } else {
+            final V newValue = mappingFunction.apply(key);
+            final M newMap = (M) map.put(key, newValue);
+            return Tuple.of(newValue, newMap);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    static <K, V, M extends Map<K, V>> Tuple2<Option<V>, M> computeIfPresent(M map, K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        final Option<V> value = map.get(key);
+        if (value.isDefined()) {
+            final V newValue = remappingFunction.apply(key, value.get());
+            final M newMap = (M) map.put(key, newValue);
+            return Tuple.of(Option.of(newValue), newMap);
+        } else {
+            return Tuple.of(Option.none(), map);
+        }
+    }
+
     static <K, V, M extends Map<K, V>> M distinct(M map) {
         return map;
     }

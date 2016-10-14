@@ -982,6 +982,24 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(dst).isEqualTo(emptyIntString().put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f"));
     }
 
+    // -- computeIfAbsent
+
+    @Test
+    public void shouldComputeIfAbsent() {
+        final Map<Integer, String> map = emptyIntString().put(1, "v");
+        assertThat(map.computeIfAbsent(1, k -> "b")).isEqualTo(Tuple.of("v", map));
+        assertThat(map.computeIfAbsent(2, k -> "n")).isEqualTo(Tuple.of("n", emptyIntString().put(1, "v").put(2, "n")));
+    }
+
+    // -- computeIfAbsent
+
+    @Test
+    public void shouldComputeIfPresent() {
+        final Map<Integer, String> map = emptyIntString().put(1, "v");
+        assertThat(map.computeIfPresent(1, (k, v) -> "b")).isEqualTo(Tuple.of(Option.of("b"), emptyIntString().put(1, "b")));
+        assertThat(map.computeIfPresent(2, (k, v) -> "n")).isEqualTo(Tuple.of(Option.none(), map));
+    }
+
     // -- get with nulls
 
     @Test

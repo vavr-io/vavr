@@ -239,6 +239,16 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     }
 
     @Override
+    public Tuple2<V, HashMap<K, V>> computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
+        return Maps.computeIfAbsent(this, key, mappingFunction);
+    }
+
+    @Override
+    public Tuple2<Option<V>, HashMap<K, V>> computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        return Maps.computeIfPresent(this, key, remappingFunction);
+    }
+
+    @Override
     public boolean containsKey(K key) {
         return trie.containsKey(key);
     }
