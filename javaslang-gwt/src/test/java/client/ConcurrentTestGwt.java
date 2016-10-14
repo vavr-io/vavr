@@ -10,8 +10,6 @@ import javaslang.collection.List;
 import javaslang.concurrent.Future;
 import javaslang.concurrent.Promise;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class ConcurrentTestGwt extends GWTTestCase {
 
     @Override public String getModuleName()  {
