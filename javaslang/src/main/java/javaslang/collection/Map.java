@@ -151,6 +151,28 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     }
 
     /**
+     * If the specified key is not already associated with a value,
+     * attempts to compute its value using the given mapping
+     * function and enters it into this map.
+     *
+     * @param key key whose presence in this map is to be tested
+     * @param mappingFunction mapping function
+     * @return the {@link Tuple2} of current or modified map and existing or computed value associated with the specified key
+     */
+    Tuple2<V, ? extends Map<K, V>> computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction);
+
+    /**
+     * If the value for the specified key is present, attempts to
+     * compute a new mapping given the key and its current mapped value.
+     *
+     * @param key key whose presence in this map is to be tested
+     * @param remappingFunction remapping function
+     * @return the {@link Tuple2} of current or modified map and the {@code Some} of the value associated
+     * with the specified key, or {@code None} if none
+     */
+    Tuple2<Option<V>, ? extends Map<K, V>> computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction);
+
+    /**
      * Returns <code>true</code> if this map contains a mapping for the specified key.
      *
      * @param key key whose presence in this map is to be tested

@@ -398,6 +398,16 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     @Override
+    public Tuple2<V, TreeMap<K, V>> computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
+        return Maps.computeIfAbsent(this, key, mappingFunction);
+    }
+
+    @Override
+    public Tuple2<Option<V>, TreeMap<K, V>> computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        return Maps.computeIfPresent(this, key, remappingFunction);
+    }
+
+    @Override
     public <K2, V2> TreeMap<K2, V2> bimap(Comparator<? super K2> keyComparator,
                                           Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
