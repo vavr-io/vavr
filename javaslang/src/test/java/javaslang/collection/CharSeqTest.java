@@ -1555,6 +1555,16 @@ public class CharSeqTest {
         assertThat(of("JaVasLAng").toUpperCase(Locale.ENGLISH)).isEqualTo(of("JAVASLANG"));
     }
 
+    // -- capitalize
+
+    @Test
+    public void shouldCapitalize() {
+        assertThat(of("javasLang").capitalize()).isEqualTo(of("JavasLang"));
+        assertThat(of("").capitalize()).isEqualTo(of(""));
+        assertThat(of("javasLang").capitalize(Locale.ENGLISH)).isEqualTo(of("JavasLang"));
+        assertThat(of("").capitalize(Locale.ENGLISH)).isEqualTo(of(""));
+    }
+
     // -- toJavaArray(Class)
 
     @Test
