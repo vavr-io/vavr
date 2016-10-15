@@ -378,6 +378,22 @@ public interface Validation<E, T> extends Value<T> {
     T get();
 
     /**
+     * Gets the value if it is a Valid or an value calculated from the error
+     *
+     * @param other a function which converts an error to an alternative value
+     * @return the value, if the underlying Validation is a Valid, or else the alternative value
+     * provided by {@code other} by applying the error.
+     */
+    default T getOrElseGet(Function<? super E, ? extends T> other) {
+        Objects.requireNonNull(other, "other is null");
+        if (isValid()) {
+            return get();
+        } else {
+            return other.apply(getError());
+        }
+    }
+
+    /**
      * Gets the error of this Validation if is an Invalid or throws if this is a Valid
      *
      * @return The error of this Invalid

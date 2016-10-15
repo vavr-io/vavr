@@ -193,6 +193,20 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(invalid().orElse(() -> validValidation)).isSameAs(validValidation);
     }
 
+    // -- getOrElseGet
+
+    @Test
+    public void shouldReturnValueOnGetOrElseGetIfValid() {
+        Validation<Integer, String> validValidation = valid();
+        assertThat(validValidation.getOrElseGet(e -> "error" + e)).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldReturnCalculationOnGetOrElseGetIfInvalid() {
+        Validation<Integer, String> invalidValidation = Validation.invalid(42);
+        assertThat(invalidValidation.getOrElseGet(e -> "error" + e)).isEqualTo("error42");
+    }
+
     // -- fold
 
     @Test
