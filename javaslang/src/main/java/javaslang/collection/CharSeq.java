@@ -2460,6 +2460,83 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     /**
+     * Converts the first character in this {@code CharSeq} to upper
+     * case using the rules of the given {@code Locale}. If the {@code CharSeq} is
+     * empty, it won't have any effect. Case mapping is based
+     * on the Unicode Standard version specified by the {@link Character Character}
+     * class. Since case mappings are not always 1:1 char mappings, the resulting
+     * {@code CharSeq} may be a different length than the original {@code CharSeq}.
+     * <p>
+     * Examples of locale-sensitive and 1:M case mappings are in the following table.
+     *
+     * <table border="1" summary="Examples of locale-sensitive and 1:M case mappings. Shows Language code of locale, lower case, upper case, and description.">
+     * <tr>
+     * <th>Language Code of Locale</th>
+     * <th>Lower Case</th>
+     * <th>Upper Case</th>
+     * <th>Description</th>
+     * </tr>
+     * <tr>
+     * <td>tr (Turkish)</td>
+     * <td>&#92;u0069</td>
+     * <td>&#92;u0130</td>
+     * <td>small letter i -&gt; capital letter I with dot above</td>
+     * </tr>
+     * <tr>
+     * <td>tr (Turkish)</td>
+     * <td>&#92;u0131</td>
+     * <td>&#92;u0049</td>
+     * <td>small letter dotless i -&gt; capital letter I</td>
+     * </tr>
+     * <tr>
+     * <td>(all)</td>
+     * <td>&#92;u00df</td>
+     * <td>&#92;u0053 &#92;u0053</td>
+     * <td>small letter sharp s -&gt; two letters: SS</td>
+     * </tr>
+     * <tr>
+     * <td>(all)</td>
+     * <td>Fahrvergn&uuml;gen</td>
+     * <td>FAHRVERGN&Uuml;GEN</td>
+     * <td></td>
+     * </tr>
+     * </table>
+     *
+     * @param locale use the case transformation rules for this locale
+     * @return the {@code CharSeq}, capitalized.
+     */
+    public CharSeq capitalize(Locale locale) {
+        if (back.isEmpty()) {
+            return this;
+        }
+        return CharSeq.of(back.substring(0,1).toUpperCase(locale) + back.substring(1));
+    }
+
+    /**
+     * Converts the first character in this {@code CharSeq} to upper
+     * case using the rules of the default locale. If the {@code CharSeq} is
+     * empty, it won't have any effect. This method is equivalent to
+     * {@code capitalize(Locale.getDefault())}.
+     * <p>
+     * <b>Note:</b> This method is locale sensitive, and may produce unexpected
+     * results if used for strings that are intended to be interpreted locale
+     * independently.
+     * Examples are programming language identifiers, protocol keys, and HTML
+     * tags.
+     * For instance, {@code "title".toUpperCase()} in a Turkish locale
+     * returns {@code "T\u005Cu0130TLE"}, where '\u005Cu0130' is the
+     * LATIN CAPITAL LETTER I WITH DOT ABOVE character.
+     * To obtain correct results for locale insensitive strings, use
+     * {@code toUpperCase(Locale.ROOT)}.
+     * <p>
+     *
+     * @return the {@code CharSeq}, capitalized.
+     */
+    public CharSeq capitalize() {
+        return capitalize(Locale.getDefault());
+    }
+
+    /**
      * Returns a string whose value is this string, with any leading and trailing
      * whitespace removed.
      * <p>
