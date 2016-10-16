@@ -94,11 +94,14 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     /**
      * Creates a LinkedHashMap of the given list of key-value pairs.
      *
+     * @deprecated Should not be used any more because unsafe
+     *
      * @param pairs A list of key-value pairs
      * @param <K>   The key type
      * @param <V>   The value type
      * @return A new Map containing the given entries
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> of(Object... pairs) {
         Objects.requireNonNull(pairs, "pairs is null");
@@ -145,6 +148,123 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     public static <K, V> LinkedHashMap<K, V> of(K key, V value) {
         final HashMap<K, V> map = HashMap.of(key, value);
         final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(key, value));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a LinkedHashMap of the given list of key-value pairs.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2) {
+        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2);
+        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a LinkedHashMap of the given list of key-value pairs.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
+        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3);
+        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a LinkedHashMap of the given list of key-value pairs.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4);
+        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a LinkedHashMap of the given list of key-value pairs.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
+        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5);
+        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a LinkedHashMap of the given list of key-value pairs.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
+        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6);
+        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5), Tuple.of(k6, v6));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a LinkedHashMap of the given list of key-value pairs.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
+        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7);
+        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5), Tuple.of(k6, v6), Tuple.of(k7, v7));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a LinkedHashMap of the given list of key-value pairs.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8) {
+        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8);
+        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5), Tuple.of(k6, v6), Tuple.of(k7, v7), Tuple.of(k8, v8));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a LinkedHashMap of the given list of key-value pairs.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9) {
+        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9);
+        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5), Tuple.of(k6, v6), Tuple.of(k7, v7), Tuple.of(k8, v8), Tuple.of(k9, v9));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a LinkedHashMap of the given list of key-value pairs.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10) {
+        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9, k10, v10);
+        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5), Tuple.of(k6, v6), Tuple.of(k7, v7), Tuple.of(k8, v8), Tuple.of(k9, v9), Tuple.of(k10, v10));
         return new LinkedHashMap<>(list, map);
     }
 

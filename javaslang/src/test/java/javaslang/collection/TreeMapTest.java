@@ -70,13 +70,18 @@ public class TreeMapTest extends AbstractSortedMapTest {
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfPairs(Object... pairs) {
-        return TreeMap.of(nullsFirst(), pairs);
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K key, V value) {
+        return TreeMap.of(nullsFirst(), key, value);
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K key, V value) {
-        return TreeMap.of(nullsFirst(), key, value);
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2) {
+        return TreeMap.of(nullsFirst(), k1, v1, k2, v2);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return TreeMap.of(nullsFirst(), k1, v1, k2, v2, k3, v3);
     }
 
     @Override

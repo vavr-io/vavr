@@ -11,6 +11,7 @@ import JavaGenerator._
 import scala.language.implicitConversions
 
 val N = 8
+val VARARGS = 10
 val TARGET_MAIN = "javaslang/src-gen/main/java"
 val TARGET_TEST = "javaslang/src-gen/test/java"
 val CHARSET = java.nio.charset.StandardCharsets.UTF_8
@@ -309,17 +310,20 @@ def generateMainClasses(): Unit = {
               return $mapType.ofAll(map);
           }
 
-          /$javadoc
-           * Alias for {@link $mapType#of(Object...)}
-           *
-           * @param <K>   The key type.
-           * @param <V>   The value type.
-           * @param pairs A list of key-value pairs.
-           * @return A new {@link $mapType} instance containing the given entries
-           */
-          public static <K, V> $mapType<K, V> $name(Object... pairs) {
-              return $mapType.of(pairs);
-          }
+          ${(2 to VARARGS).gen(i => {
+            xs"""
+              /$javadoc
+               * Alias for {@link $mapType#of(${(1 to i).gen(j => "K, V")(", ")})}
+               *
+               * @param <K>   The key type.
+               * @param <V>   The value type.
+               * @return A new {@link $mapType} instance containing the given entries
+               */
+              public static <K, V> $mapType<K, V> $name(${(1 to i).gen(j => xs"K k$j, V v$j")(", ")}) {
+                  return $mapType.of(${(1 to i).gen(j => xs"k$j, v$j")(", ")});
+              }
+            """
+          })("\n\n")}
         """
       }
 
@@ -764,17 +768,20 @@ def generateMainClasses(): Unit = {
               return $TreeMapType.ofAll(map);
           }
 
-          /$javadoc
-           * Alias for {@link $TreeMapType#of(Object...)}
-           *
-           * @param <K>   The key type.
-           * @param <V>   The value type.
-           * @param pairs A list of key-value pairs.
-           * @return A new {@link $TreeMapType} instance containing the given entries
-           */
-          public static <K extends Comparable<? super K>, V> $TreeMapType<K, V> SortedMap(Object... pairs) {
-              return $TreeMapType.of(pairs);
-          }
+          ${(2 to VARARGS).gen(i => {
+            xs"""
+              /$javadoc
+               * Alias for {@link $TreeMapType#of(${(1 to i).gen(j => "K, V")(", ")})}
+               *
+               * @param <K>   The key type.
+               * @param <V>   The value type.
+               * @return A new {@link $TreeMapType} instance containing the given entries
+               */
+              public static <K extends Comparable<? super K>, V> $TreeMapType<K, V> SortedMap(${(1 to i).gen(j => xs"K k$j, V v$j")(", ")}) {
+                  return $TreeMapType.of(${(1 to i).gen(j => xs"k$j, v$j")(", ")});
+              }
+            """
+          })("\n\n")}
         """
       }
 

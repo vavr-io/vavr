@@ -67,7 +67,7 @@ public class Euler17Test {
     }
 
     static final String CONJUNCTION = "and";
-    static final Map<Integer, String> LENGTHS = TreeMap.of(
+    static final Map<Integer, String> LENGTHS = List.of(
             1, "one",
             2, "two",
             3, "three",
@@ -99,7 +99,7 @@ public class Euler17Test {
             1_000, "thousand",
             1_000_000, "million",
             1_000_000_000, "billion"
-    );
+    ).grouped(2).toSortedMap(pair -> Tuple.of((Integer) pair.get(0), (String) pair.get(1)));
 
     /**
      * Solution using Javaslang Pattern Matching.
