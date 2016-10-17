@@ -152,7 +152,8 @@ def generateMainClasses(): Unit = {
           /$javadoc
            * Alias for {@link $traversableType#empty($JavaComparatorType)}
            *
-           * @param <T> Component type of element.
+           * @param <T>        Component type of element.
+           * @param comparator The comparator used to sort the elements
            * @return A new {@link $traversableType} empty instance
            */
           public static <T $comparableExt> $traversableType<T> $name($JavaComparatorType<? super T> comparator) {
@@ -173,9 +174,9 @@ def generateMainClasses(): Unit = {
           /$javadoc
            * Alias for {@link $traversableType#of($JavaComparatorType, Object)}
            *
-           * @param <T>     Component type of element.
+           * @param <T>        Component type of element.
            * @param comparator The comparator used to sort the elements
-           * @param element An element.
+           * @param element    An element.
            * @return A new {@link $traversableType} instance containing the given element
            */
           public static <T> $traversableType<T> $name($JavaComparatorType<? super T> comparator, T element) {
@@ -198,9 +199,9 @@ def generateMainClasses(): Unit = {
           /$javadoc
            * Alias for {@link $traversableType#of($JavaComparatorType, Object...)}
            *
-           * @param <T>      Component type of element.
+           * @param <T>        Component type of element.
            * @param comparator The comparator used to sort the elements
-           * @param elements Zero or more elements.
+           * @param elements   Zero or more elements.
            * @return A new {@link $traversableType} instance containing the given elements
            */
           @SuppressWarnings("varargs")
@@ -223,9 +224,9 @@ def generateMainClasses(): Unit = {
           /$javadoc
            * Alias for {@link $traversableType#ofAll($JavaComparatorType, Iterable)}
            *
-           * @param <T>      Component type of element.
+           * @param <T>        Component type of element.
            * @param comparator The comparator used to sort the elements
-           * @param elements Zero or more elements.
+           * @param elements   Zero or more elements.
            * @return A new {@link $traversableType} instance containing the given elements
            */
           public static <T> $traversableType<T> $name($JavaComparatorType<? super T> comparator, Iterable<? extends T> elements) {
@@ -246,9 +247,9 @@ def generateMainClasses(): Unit = {
           /$javadoc
            * Alias for {@link $traversableType#ofAll($JavaComparatorType, $JavaStreamType)}
            *
-           * @param <T>      Component type of element.
+           * @param <T>        Component type of element.
            * @param comparator The comparator used to sort the elements
-           * @param elements Zero or more elements.
+           * @param elements   Zero or more elements.
            * @return A new {@link $traversableType} instance containing the given elements
            */
           public static <T> $traversableType<T> $name($JavaComparatorType<? super T> comparator, $JavaStreamType<? extends T> elements) {
@@ -371,6 +372,7 @@ def generateMainClasses(): Unit = {
                * Alias for {@link CheckedFunction$i#unchecked}
                *
                ${(0 to i).gen(j => if (j == 0) "* @param <R>  return type" else s"* @param <T$j> type of the ${j.ordinal} argument")("\n")}
+               * @param f    A method reference
                * @return A unchecked wrapper of supplied {@link CheckedFunction$i}
                */
               public static $fullGenerics Function$i$fullGenerics Unchecked(CheckedFunction$i$fullGenerics f) {
