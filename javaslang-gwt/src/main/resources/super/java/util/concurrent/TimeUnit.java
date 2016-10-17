@@ -219,7 +219,7 @@ public enum TimeUnit {
      * overflow, or {@code Long.MAX_VALUE} if it would positively overflow.
      */
     public long convert(long sourceDuration, TimeUnit sourceUnit) {
-        throw new AbstractMethodError();
+        throw new Error();
     }
 
     /**
@@ -231,7 +231,7 @@ public enum TimeUnit {
      * overflow, or {@code Long.MAX_VALUE} if it would positively overflow.
      */
     public long toNanos(long duration) {
-        throw new AbstractMethodError();
+        throw new Error();
     }
 
     /**
@@ -243,7 +243,7 @@ public enum TimeUnit {
      * overflow, or {@code Long.MAX_VALUE} if it would positively overflow.
      */
     public long toMicros(long duration) {
-        throw new AbstractMethodError();
+        throw new Error();
     }
 
     /**
@@ -255,7 +255,7 @@ public enum TimeUnit {
      * overflow, or {@code Long.MAX_VALUE} if it would positively overflow.
      */
     public long toMillis(long duration) {
-        throw new AbstractMethodError();
+        throw new Error();
     }
 
     /**
@@ -267,7 +267,7 @@ public enum TimeUnit {
      * overflow, or {@code Long.MAX_VALUE} if it would positively overflow.
      */
     public long toSeconds(long duration) {
-        throw new AbstractMethodError();
+        throw new Error();
     }
 
     /**
@@ -280,7 +280,7 @@ public enum TimeUnit {
      * @since 1.6
      */
     public long toMinutes(long duration) {
-        throw new AbstractMethodError();
+        throw new Error();
     }
 
     /**
@@ -293,7 +293,7 @@ public enum TimeUnit {
      * @since 1.6
      */
     public long toHours(long duration) {
-        throw new AbstractMethodError();
+        throw new Error();
     }
 
     /**
@@ -304,7 +304,7 @@ public enum TimeUnit {
      * @since 1.6
      */
     public long toDays(long duration) {
-        throw new AbstractMethodError();
+        throw new Error();
     }
 
     /**
@@ -315,76 +315,4 @@ public enum TimeUnit {
      * @return the number of nanoseconds
      */
     abstract int excessNanos(long d, long m);
-
-    /**
-     * Performs a timed {@link Object#wait(long, int) Object.wait}
-     * using this time unit.
-     * This is a convenience method that converts timeout arguments
-     * into the form required by the {@code Object.wait} method.
-     *
-     * <p>For example, you could implement a blocking {@code poll}
-     * method (see {@link BlockingQueue#poll BlockingQueue.poll})
-     * using:
-     *
-     *  <pre> {@code
-     * public synchronized Object poll(long timeout, TimeUnit unit)
-     *     throws InterruptedException {
-     *   while (empty) {
-     *     unit.timedWait(this, timeout);
-     *     ...
-     *   }
-     * }}</pre>
-     *
-     * @param obj the object to wait on
-     * @param timeout the maximum time to wait. If less than
-     * or equal to zero, do not wait at all.
-     * @throws InterruptedException if interrupted while waiting
-     */
-    public void timedWait(Object obj, long timeout)
-            throws InterruptedException {
-        if (timeout > 0) {
-            long ms = toMillis(timeout);
-            int ns = excessNanos(timeout, ms);
-            obj.wait(ms, ns);
-        }
-    }
-
-    /**
-     * Performs a timed {@link Thread#join(long, int) Thread.join}
-     * using this time unit.
-     * This is a convenience method that converts time arguments into the
-     * form required by the {@code Thread.join} method.
-     *
-     * @param thread the thread to wait for
-     * @param timeout the maximum time to wait. If less than
-     * or equal to zero, do not wait at all.
-     * @throws InterruptedException if interrupted while waiting
-     */
-    public void timedJoin(Thread thread, long timeout)
-            throws InterruptedException {
-        if (timeout > 0) {
-            long ms = toMillis(timeout);
-            int ns = excessNanos(timeout, ms);
-            thread.join(ms, ns);
-        }
-    }
-
-    /**
-     * Performs a {@link Thread#sleep(long, int) Thread.sleep} using
-     * this time unit.
-     * This is a convenience method that converts time arguments into the
-     * form required by the {@code Thread.sleep} method.
-     *
-     * @param timeout the minimum time to sleep. If less than
-     * or equal to zero, do not sleep at all.
-     * @throws InterruptedException if interrupted while sleeping
-     */
-    public void sleep(long timeout) throws InterruptedException {
-        if (timeout > 0) {
-            long ms = toMillis(timeout);
-            int ns = excessNanos(timeout, ms);
-            Thread.sleep(ms, ns);
-        }
-    }
-
 }
