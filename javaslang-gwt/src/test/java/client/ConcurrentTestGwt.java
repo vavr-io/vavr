@@ -5,6 +5,7 @@
  */
 package client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.junit.client.GWTTestCase;
 import javaslang.collection.List;
 import javaslang.concurrent.Future;
@@ -19,23 +20,23 @@ public class ConcurrentTestGwt extends GWTTestCase {
     public void testFutureSuccess() {
         boolean[] onCompleteCalled = new boolean[] { false };
         Promise<String> promise = Promise.make();
-        promise.future().onComplete(value -> onCompleteCalled[0] = true);
+        promise.future().onComplete(value -> {
+            onCompleteCalled[0] = true;
+            assertEquals("value", value.get());
+        });
         promise.success("value");
-
-        if (!onCompleteCalled[0]) {
-            fail("onComplete handler should have been called");
-        }
+        assertTrue("onComplete handler should have been called", onCompleteCalled[0]);
     }
 
     public void testFutureFailure() {
         boolean[] onFailureCalled = new boolean[] { false };
         Promise<String> promise = Promise.make();
-        promise.future().onFailure(e -> onFailureCalled[0] = true);
-        promise.failure(new Exception());
-
-        if (!onFailureCalled[0]) {
-            fail("onFailure handler should have been called");
-        }
+        promise.future().onFailure(e -> {
+            onFailureCalled[0] = true;
+            assertEquals("message", e.getMessage());
+        });
+        promise.failure(new Exception("message"));
+        assertTrue("onFailure handler should have been called", onFailureCalled[0]);
     }
 
     public void testFutureSequence() {
@@ -43,12 +44,12 @@ public class ConcurrentTestGwt extends GWTTestCase {
         Promise<String> promise1 = Promise.make();
         Promise<String> promise2 = Promise.make();
         Future.sequence(List.of(promise1.future(), promise2.future()))
-              .onComplete(results -> onCompleteCalled[0] = true);
+              .onComplete(results -> {
+                  onCompleteCalled[0] = true;
+                  assertEquals(2, results.get().size());
+              });
         promise1.success("success1");
         promise2.success("success2");
-
-        if (!onCompleteCalled[0]) {
-            fail("onComplete handler should have been called");
-        }
+        assertTrue("onComplete handler should have been called", onCompleteCalled[0]);
     }
 }

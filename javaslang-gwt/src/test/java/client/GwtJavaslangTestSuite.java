@@ -9,7 +9,7 @@ import com.google.gwt.junit.tools.GWTTestSuite;
 import junit.framework.Test;
 import junit.framework.TestCase;
 
-public class JavaslangGwtTestSuite extends TestCase {
+public class GwtJavaslangTestSuite extends TestCase {
 
     public static Test suite() {
         GWTTestSuite suite = new GWTTestSuite("Javaslang test suite.");

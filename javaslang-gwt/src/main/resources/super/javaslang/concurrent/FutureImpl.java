@@ -16,45 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
 /**
- * <strong>INTERNAL API - This class is subject to change.</strong>
- * <p>
- * Once a {@code FutureImpl} is created, one (and only one) of the following methods is called
- * to complete it with a result:
- * <ul>
- * <li>{@link #run(CheckedSupplier)} - typically called within a {@code Future} factory method</li>
- * <li>{@link #tryComplete(Try)} - explicit write operation, typically called by {@code Promise}</li>
- * </ul>
- * <p>
- * <strong>Lifecycle of a {@code FutureImpl}:</strong>
- * <p>
- * 1) Creation
- * <ul>
- * <li>{@code value = None}</li>
- * <li>{@code actions = Queue.empty()}</li>
- * <li>{@code job = null}</li>
- * </ul>
- * 2) Run
- * <ul>
- * <li>{@code value = None}</li>
- * <li>{@code actions = Queue(...)}</li>
- * <li>{@code job = java.util.concurrent.Future}</li>
- * </ul>
- * 3) Complete
- * <ul>
- * <li>{@code value = Some(Try)}</li>
- * <li>{@code actions = null}</li>
- * <li>{@code job = null}</li>
- * </ul>
- * 4) Cancel
- * <ul>
- * <li>{@code value = Some(Failure(CancellationException))}</li>
- * <li>{@code actions = null}</li>
- * <li>{@code job = null}</li>
- * </ul>
- *
- * @param <T> Result of the computation.
- * @author Daniel Dietrich
- * @since 2.0.0
+ * GWT emulated version of {@link FutureImpl} with removed uses of Object's wait and notify methods.
  */
 final class FutureImpl<T> implements Future<T> {
 
