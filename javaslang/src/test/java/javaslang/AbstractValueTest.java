@@ -745,6 +745,20 @@ public abstract class AbstractValueTest {
     }
 
     @Test
+    public void shouldConvertToJavaParallelStream() {
+        final Value<Integer> value = of(1, 2, 3);
+        final java.util.stream.Stream<Integer> s1 = value.toJavaParallelStream();
+        assertThat(s1.isParallel()).isTrue();
+        if (value.isSingleValued()) {
+            final java.util.stream.Stream<Integer> s2 = java.util.stream.Stream.of(1);
+            assertThat(List.ofAll(s1::iterator)).isEqualTo(List.ofAll(s2::iterator));
+        } else {
+            final java.util.stream.Stream<Integer> s2 = java.util.stream.Stream.of(1, 2, 3);
+            assertThat(List.ofAll(s1::iterator)).isEqualTo(List.ofAll(s2::iterator));
+        }
+    }
+
+    @Test
     public void shouldConvertToEitherLeftFromValueSupplier() {
         Either<Integer, String> either = of(0).toLeft(() -> "fallback");
         assertThat(either.isLeft()).isTrue();

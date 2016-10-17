@@ -645,12 +645,21 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to a {@link java.util.stream.Stream}.
+     * Converts this to a sequential {@link java.util.stream.Stream}.
      *
-     * @return A new {@link java.util.stream.Stream}.
+     * @return A new sequential {@link java.util.stream.Stream}.
      */
     default java.util.stream.Stream<T> toJavaStream() {
         return StreamSupport.stream(spliterator(), false);
+    }
+
+    /**
+     * Converts this to a parallel {@link java.util.stream.Stream}.
+     *
+     * @return A new parallel {@link java.util.stream.Stream}.
+     */
+    default java.util.stream.Stream<T> toJavaParallelStream() {
+        return StreamSupport.stream(spliterator(), true);
     }
 
     /**
