@@ -130,7 +130,7 @@ final class Collections {
     @SuppressWarnings("unchecked")
     static <T, S extends Seq<T>> Iterator<S> crossProduct(S empty, S seq, int power) {
         if (power < 0) {
-            throw new IllegalArgumentException("negative power");
+            return Iterator.empty();
         }
         return Iterator.range(0, power)
                        .foldLeft(Iterator.of(empty), (product, ignored) -> product.flatMap(el -> seq.map(t -> (S) el.append(t))));
