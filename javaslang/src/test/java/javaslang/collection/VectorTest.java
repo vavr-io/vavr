@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
+import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
 import javaslang.control.Option;
@@ -14,6 +15,7 @@ import org.junit.Test;
 import java.io.InvalidObjectException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -198,6 +200,160 @@ public class VectorTest extends AbstractIndexedSeqTest {
     public void shouldTransform() {
         final String transformed = of(42).transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("42");
+    }
+
+    // -- peekLast
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailPeekLastOfNil() {
+        empty().peekLast();
+    }
+
+    @Test
+    public void shouldPeekLastOfNonNil() {
+        assertThat(of(1).peekLast()).isEqualTo(1);
+        assertThat(of(1, 2).peekLast()).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldPeekLastOption() {
+        assertThat(empty().peekLastOption()).isSameAs(Option.none());
+        assertThat(of(1).peekLastOption()).isEqualTo(Option.of(1));
+        assertThat(of(1, 2).peekLastOption()).isEqualTo(Option.of(2));
+    }
+
+    // -- pop
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailPopOfNil() {
+        empty().pop();
+    }
+
+    @Test
+    public void shouldPopOfNonNil() {
+        assertThat(of(1).pop()).isSameAs(empty());
+        assertThat(of(1, 2).pop()).isEqualTo(of(2));
+    }
+
+    // -- popOption
+
+    @Test
+    public void shouldPopOption() {
+        assertThat(empty().popOption()).isSameAs(Option.none());
+        assertThat(of(1).popOption()).isEqualTo(Option.of(empty()));
+        assertThat(of(1, 2).popOption()).isEqualTo(Option.of(of(2)));
+    }
+
+    // -- pop2
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailPop2OfNil() {
+        empty().pop2();
+    }
+
+    @Test
+    public void shouldPop2OfNonNil() {
+        assertThat(of(1).pop2()).isEqualTo(Tuple.of(1, empty()));
+        assertThat(of(1, 2).pop2()).isEqualTo(Tuple.of(1, of(2)));
+    }
+
+    // -- pop2Option
+
+    @Test
+    public void shouldPop2Option() {
+        assertThat(empty().pop2Option()).isSameAs(Option.none());
+        assertThat(of(1).pop2Option()).isEqualTo(Option.of(Tuple.of(1, empty())));
+        assertThat(of(1, 2).pop2Option()).isEqualTo(Option.of(Tuple.of(1, of(2))));
+    }
+
+    // -- push
+
+    @Test
+    public void shouldPushElements() {
+        assertThat(empty().push(1)).isEqualTo(of(1));
+        assertThat(empty().push(1, 2, 3)).isEqualTo(of(3, 2, 1));
+        assertThat(empty().pushAll(of(1, 2, 3))).isEqualTo(of(3, 2, 1));
+        assertThat(of(0).push(1)).isEqualTo(of(1, 0));
+        assertThat(of(0).push(1, 2, 3)).isEqualTo(of(3, 2, 1, 0));
+        assertThat(of(0).pushAll(of(1, 2, 3))).isEqualTo(of(3, 2, 1, 0));
+    }
+
+    // -- peekFirst
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailPeekFirstOfNil() {
+        empty().peekFirst();
+    }
+
+    @Test
+    public void shouldPeekFirstOfNonNil() {
+        assertThat(of(1).peekFirst()).isEqualTo(1);
+        assertThat(of(1, 2).peekFirst()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldPeekFirstOption() {
+        assertThat(empty().peekFirstOption()).isSameAs(Option.none());
+        assertThat(of(1).peekFirstOption()).isEqualTo(Option.of(1));
+        assertThat(of(1, 2).peekFirstOption()).isEqualTo(Option.of(1));
+    }
+
+    // -- enqueue
+
+    @Test
+    public void shouldEnqueueElementToNil() {
+        final Seq<Integer> actual = this.<Integer> empty().enqueue(1);
+        final Seq<Integer> expected = of(1);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldEnqueueNullElementToNil() {
+        final Seq<Integer> actual = this.<Integer> empty().enqueue((Integer) null);
+        final Seq<Integer> expected = this.of((Integer) null);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldEnqueueElementToNonNil() {
+        final Seq<Integer> actual = of(1, 2).enqueue(3);
+        final Seq<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- enqueueAll
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowOnEnqueueAllOfNull() {
+        empty().enqueueAll(null);
+    }
+
+    @Test
+    public void shouldEnqueueAllNilToNil() {
+        final Seq<Object> actual = empty().enqueueAll(empty());
+        final Seq<Object> expected = empty();
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldEnqueueAllNonNilToNil() {
+        final Seq<Integer> actual = this.<Integer> empty().enqueueAll(of(1, 2, 3));
+        final Seq<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldEnqueueAllNilToNonNil() {
+        final Seq<Integer> actual = of(1, 2, 3).enqueueAll(empty());
+        final Seq<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldEnqueueAllNonNilToNonNil() {
+        final Seq<Integer> actual = of(1, 2, 3).enqueueAll(of(4, 5, 6));
+        final Seq<Integer> expected = of(1, 2, 3, 4, 5, 6);
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- unfold

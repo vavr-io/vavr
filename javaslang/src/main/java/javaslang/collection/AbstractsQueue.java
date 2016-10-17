@@ -6,11 +6,14 @@
 
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.Option;
 
-import java.util.*;
-import java.util.function.*;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * @author Pap Lőrinc, Daniel Dietrich
@@ -97,6 +100,29 @@ abstract class AbstractsQueue<T, Q extends AbstractsQueue<T, Q>> implements Trav
      * @return {@code None} if this Queue is empty, otherwise a {@code Some} containing the first element
      */
     public Option<T> peekOption() {
+        return isEmpty() ? Option.none() : Option.some(peek());
+    }
+
+    /**
+     * Returns the first element without modifying it.
+     *
+     * @return the first element
+     * @throws NoSuchElementException if this Queue is empty
+     */
+    public T peekFirst() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("peek of empty " + getClass().getSimpleName());
+        } else {
+            return head();
+        }
+    }
+
+    /**
+     * Returns the first element without modifying the Queue.
+     *
+     * @return {@code None} if this Queue is empty, otherwise a {@code Some} containing the first element
+     */
+    public Option<T> peekFirstOption() {
         return isEmpty() ? Option.none() : Option.some(peek());
     }
 

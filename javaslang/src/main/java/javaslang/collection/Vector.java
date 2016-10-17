@@ -26,7 +26,7 @@ import static javaslang.collection.Collections.*;
  * @author Ruslan Sennov, Pap Lőrinc
  * @since 2.0.0
  */
-public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Serializable {
+public final class Vector<T> extends AbstractsQueue<T, Vector<T>> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Stack<T>, Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final Vector<?> EMPTY = new Vector<>(BitMappedTrie.empty());
@@ -589,6 +589,15 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
+    public Vector<T> enqueue(T element) { return append(element); }
+
+    @Override
+    public T peekFirst() { return head(); }
+
+    @Override
+    public Option<T> peekFirstOption() { return headOption(); }
+
+    @Override
     public Vector<Vector<T>> combinations() {
         return rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
@@ -772,6 +781,46 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public boolean isEmpty() {
         return length() == 0;
+    }
+
+    @Override
+    public T peekLast() { return last(); }
+
+    @Override
+    public Option<T> peekLastOption() { return lastOption(); }
+
+    @Override
+    public Vector<T> pop() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("pop of empty list");
+        } else {
+            return tail();
+        }
+    }
+
+    @Override
+    public Option<Vector<T>> popOption() { return isEmpty() ? Option.none() : Option.some(pop()); }
+
+    @Override
+    public Tuple2<T, Vector<T>> pop2() { return Tuple.of(head(), tail()); }
+
+    @Override
+    public Option<Tuple2<T, Vector<T>>> pop2Option() { return isEmpty() ? Option.none() : Option.some(Tuple.of(head(), pop())); }
+
+    @Override
+    public Vector<T> push(T element) { return pushAll(Iterator.of(element)); }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Vector<T> push(T... elements) { return pushAll(Iterator.of(elements)); }
+
+    @Override
+    public Vector<T> pushAll(Iterable<T> elements) {
+        Vector<T> results = this;
+        for (T element : elements) {
+            results = results.prepend(element);
+        }
+        return results;
     }
 
     @Override
