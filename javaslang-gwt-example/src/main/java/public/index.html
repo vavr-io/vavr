@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Javaslang Tests</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <style>
+        pre { border: solid; margin: 5px; margin-top: 25px; padding: 5px; width: 600px; }
+    </style>
+</head>
+<body>
+<pre>
+private void shouldGeneratePrimes() {
+    Stream&lt;Integer> primes = Stream.of(2)
+            .appendSelf(self -> Stream
+                    .iterate(3, i -> i + 2)
+                    .filter(i -> self.takeWhile(j -> j * j <= i)
+                            .forAll(k -> i % k > 0)));
+    echo("result1", primes.take(10).mkString("primes: ", ", ", ""));
+}
+</pre>
+result1: <span id="result1"></span>
+<pre>
+private void shouldCatchTry() {
+    Try&lt;Void> t = Try.of(() -> {
+        throw new RuntimeException();
+    });
+    echo("result2", t.toString());
+}
+</pre>
+result2: <span id="result2"></span>
+<pre>
+private void shouldReturnOption() {
+    Map&lt;Integer, String> map = HashMap.of(1, "One", 2, "Two");
+    Option&lt;String> opt = map.get(2);
+    echo("result3", opt.toString());
+}
+</pre>
+result3: <span id="result3"></span>
+<pre>
+private void shouldBimapLeftEither() {
+    Either&lt;Integer, String> either = Either.&lt;Integer, String>left(1)
+            .bimap(i -> i + 1, s -> s + "1");
+    echo("result4", either.toString());
+}
+</pre>
+result4: <span id="result4"></span>
+<pre>
+private void shouldIterateFor2() {
+    List&lt;Integer> result = For(
+            List.of(1, 2, 3),
+            List.of(1, 2, 3)
+    ).yield((i1, i2) -> i1 + i2).toList();
+    echo("result5", result.toString());
+}
+</pre>
+result5: <span id="result5"></span>
+<script src="JavaslangExample.nocache.js"></script>
+</body>
+</html>
