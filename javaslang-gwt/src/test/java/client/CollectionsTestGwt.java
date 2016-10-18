@@ -6,7 +6,7 @@ import javaslang.Tuple;
 import javaslang.Tuple1;
 import javaslang.collection.*;
 
-public class GwtTestCollections extends GWTTestCase {
+public class CollectionsTestGwt extends GWTTestCase {
 
     @Override
     public String getModuleName() {

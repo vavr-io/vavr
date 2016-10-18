@@ -10,7 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>javaslang-gwt</artifactId>
-    <packaging>gwt-app</packaging>
+    <packaging>jar</packaging>
     <name>Javaslang GWT</name>
     <description>GWT support for Javaslang.</description>
     <url>http://javaslang.io</url>
@@ -43,11 +43,13 @@
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
             <version>${gwt.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-dev</artifactId>
             <version>${gwt.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -58,23 +60,33 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>${maven.deploy.version}</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>net.ltgt.gwt.maven</groupId>
+                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <extensions>true</extensions>
+                <version>${gwt.version}</version>
+                <executions>
+                    <execution>
+                        <id>testing</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>compiling</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <skipModule>true</skipModule>
-                    <moduleName>JavaslangExample</moduleName>
-                    <includes>
-                        <include>**/GwtTest*.java</include>
-                    </includes>
+                    <testTimeOut>0</testTimeOut>
+                    <extraJvmArgs>-Xmx1024m</extraJvmArgs>
+                    <productionMode>true</productionMode>
                 </configuration>
             </plugin>
         </plugins>

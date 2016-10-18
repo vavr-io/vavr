@@ -2,5 +2,4 @@
 <module>
     <inherits name='Javaslang'/>
     <source path="client"/>
-    <source path="javaslang"/>
 </module>
