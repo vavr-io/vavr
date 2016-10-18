@@ -272,19 +272,6 @@ def generateMainClasses(): Unit = {
           }
 
           /$javadoc
-           * Alias for {@link $mapType#of(Object, Object)}
-           *
-           * @param <K>   The key type.
-           * @param <V>   The value type.
-           * @param key   A singleton map key.
-           * @param value A singleton map value.
-           * @return A new {@link $mapType} instance containing the given entry
-           */
-          public static <K, V> $mapType<K, V> $name(K key, V value) {
-              return $mapType.of(key, value);
-          }
-
-          /$javadoc
            * Alias for {@link $mapType#ofEntries(Tuple2...)}
            *
            * @param <K>     The key type.
@@ -310,10 +297,10 @@ def generateMainClasses(): Unit = {
               return $mapType.ofAll(map);
           }
 
-          ${(2 to VARARGS).gen(i => {
+          ${(1 to VARARGS).gen(i => {
             xs"""
               /$javadoc
-               * Alias for {@link $mapType#of(${(1 to i).gen(j => "K, V")(", ")})}
+               * Alias for {@link $mapType#of(${(1 to i).gen(j => "Object, Object")(", ")})}
                *
                * @param <K>   The key type.
                * @param <V>   The value type.
@@ -701,19 +688,6 @@ def generateMainClasses(): Unit = {
           }
 
           /$javadoc
-           * Alias for {@link $TreeMapType#of(Comparable, Object)}
-           *
-           * @param <K>   The key type.
-           * @param <V>   The value type.
-           * @param key   A singleton map key.
-           * @param value A singleton map value.
-           * @return A new {@link $TreeMapType} instance containing the given entry
-           */
-          public static <K extends Comparable<? super K>, V> $TreeMapType<K, V> SortedMap(K key, V value) {
-              return $TreeMapType.of(key, value);
-          }
-
-          /$javadoc
            * Alias for {@link $TreeMapType#of(Comparator, Object, Object)}
            *
            * @param <K>           The key type.
@@ -768,10 +742,10 @@ def generateMainClasses(): Unit = {
               return $TreeMapType.ofAll(map);
           }
 
-          ${(2 to VARARGS).gen(i => {
+          ${(1 to VARARGS).gen(i => {
             xs"""
               /$javadoc
-               * Alias for {@link $TreeMapType#of(${(1 to i).gen(j => "K, V")(", ")})}
+               * Alias for {@link $TreeMapType#of(${(1 to i).gen(j => "Object, Object")(", ")})}
                *
                * @param <K>   The key type.
                * @param <V>   The value type.

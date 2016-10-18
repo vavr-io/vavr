@@ -1673,19 +1673,6 @@ public final class API {
     }
 
     /**
-     * Alias for {@link LinkedHashMap#of(Object, Object)}
-     *
-     * @param <K>   The key type.
-     * @param <V>   The value type.
-     * @param key   A singleton map key.
-     * @param value A singleton map value.
-     * @return A new {@link LinkedHashMap} instance containing the given entry
-     */
-    public static <K, V> LinkedHashMap<K, V> LinkedMap(K key, V value) {
-        return LinkedHashMap.of(key, value);
-    }
-
-    /**
      * Alias for {@link LinkedHashMap#ofEntries(Tuple2...)}
      *
      * @param <K>     The key type.
@@ -1712,7 +1699,18 @@ public final class API {
     }
 
     /**
-     * Alias for {@link LinkedHashMap#of(K, V, K, V)}
+     * Alias for {@link LinkedHashMap#of(Object, Object)}
+     *
+     * @param <K>   The key type.
+     * @param <V>   The value type.
+     * @return A new {@link LinkedHashMap} instance containing the given entries
+     */
+    public static <K, V> LinkedHashMap<K, V> LinkedMap(K k1, V v1) {
+        return LinkedHashMap.of(k1, v1);
+    }
+
+    /**
+     * Alias for {@link LinkedHashMap#of(Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1723,7 +1721,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link LinkedHashMap#of(K, V, K, V, K, V)}
+     * Alias for {@link LinkedHashMap#of(Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1734,7 +1732,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link LinkedHashMap#of(K, V, K, V, K, V, K, V)}
+     * Alias for {@link LinkedHashMap#of(Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1745,7 +1743,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link LinkedHashMap#of(K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link LinkedHashMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1756,7 +1754,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link LinkedHashMap#of(K, V, K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link LinkedHashMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1767,7 +1765,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link LinkedHashMap#of(K, V, K, V, K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link LinkedHashMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1778,7 +1776,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link LinkedHashMap#of(K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link LinkedHashMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1789,7 +1787,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link LinkedHashMap#of(K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link LinkedHashMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1800,7 +1798,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link LinkedHashMap#of(K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link LinkedHashMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1819,19 +1817,6 @@ public final class API {
      */
     public static <K, V> HashMap<K, V> Map() {
         return HashMap.empty();
-    }
-
-    /**
-     * Alias for {@link HashMap#of(Object, Object)}
-     *
-     * @param <K>   The key type.
-     * @param <V>   The value type.
-     * @param key   A singleton map key.
-     * @param value A singleton map value.
-     * @return A new {@link HashMap} instance containing the given entry
-     */
-    public static <K, V> HashMap<K, V> Map(K key, V value) {
-        return HashMap.of(key, value);
     }
 
     /**
@@ -1861,7 +1846,18 @@ public final class API {
     }
 
     /**
-     * Alias for {@link HashMap#of(K, V, K, V)}
+     * Alias for {@link HashMap#of(Object, Object)}
+     *
+     * @param <K>   The key type.
+     * @param <V>   The value type.
+     * @return A new {@link HashMap} instance containing the given entries
+     */
+    public static <K, V> HashMap<K, V> Map(K k1, V v1) {
+        return HashMap.of(k1, v1);
+    }
+
+    /**
+     * Alias for {@link HashMap#of(Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1872,7 +1868,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link HashMap#of(K, V, K, V, K, V)}
+     * Alias for {@link HashMap#of(Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1883,7 +1879,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link HashMap#of(K, V, K, V, K, V, K, V)}
+     * Alias for {@link HashMap#of(Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1894,7 +1890,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link HashMap#of(K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link HashMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1905,7 +1901,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link HashMap#of(K, V, K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link HashMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1916,7 +1912,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link HashMap#of(K, V, K, V, K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link HashMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1927,7 +1923,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link HashMap#of(K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link HashMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1938,7 +1934,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link HashMap#of(K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link HashMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1949,7 +1945,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link HashMap#of(K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link HashMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -1980,19 +1976,6 @@ public final class API {
      */
     public static <K, V> TreeMap<K, V> SortedMap(Comparator<? super K> keyComparator) {
         return TreeMap.empty(keyComparator);
-    }
-
-    /**
-     * Alias for {@link TreeMap#of(Comparable, Object)}
-     *
-     * @param <K>   The key type.
-     * @param <V>   The value type.
-     * @param key   A singleton map key.
-     * @param value A singleton map value.
-     * @return A new {@link TreeMap} instance containing the given entry
-     */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> SortedMap(K key, V value) {
-        return TreeMap.of(key, value);
     }
 
     /**
@@ -2051,7 +2034,18 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(K, V, K, V)}
+     * Alias for {@link TreeMap#of(Object, Object)}
+     *
+     * @param <K>   The key type.
+     * @param <V>   The value type.
+     * @return A new {@link TreeMap} instance containing the given entries
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> SortedMap(K k1, V v1) {
+        return TreeMap.of(k1, v1);
+    }
+
+    /**
+     * Alias for {@link TreeMap#of(Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -2062,7 +2056,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(K, V, K, V, K, V)}
+     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -2073,7 +2067,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(K, V, K, V, K, V, K, V)}
+     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -2084,7 +2078,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -2095,7 +2089,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(K, V, K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -2106,7 +2100,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(K, V, K, V, K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -2117,7 +2111,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -2128,7 +2122,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.
@@ -2139,7 +2133,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V, K, V)}
+     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
      *
      * @param <K>   The key type.
      * @param <V>   The value type.

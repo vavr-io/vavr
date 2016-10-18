@@ -143,11 +143,18 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     @Deprecated
     @SuppressWarnings("unchecked")
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Object... pairs) {
+        return of((Comparator<? super K> & Serializable) K::compareTo, pairs);
+    }
+
+    @Deprecated
+    @SuppressWarnings("unchecked")
+    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, Object... pairs) {
+        Objects.requireNonNull(keyComparator, "keyComparator is null");
         Objects.requireNonNull(pairs, "pairs is null");
         if ((pairs.length & 1) != 0) {
             throw new IllegalArgumentException("Odd length of key-value pairs list");
         }
-        RedBlackTree<Tuple2<K, V>> result = RedBlackTree.empty(new EntryComparator<>((Comparator<? super K> & Serializable) K::compareTo));
+        RedBlackTree<Tuple2<K, V>> result = RedBlackTree.empty(new EntryComparator<>(keyComparator));
         for (int i = 0; i < pairs.length; i += 2) {
             result = result.insert(Tuple.of((K) pairs[i], (V) pairs[i + 1]));
         }
