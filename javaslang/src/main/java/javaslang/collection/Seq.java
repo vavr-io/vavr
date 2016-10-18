@@ -208,6 +208,16 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * CharSeq.rangeClosed('A', 'Z').crossProduct(2);
      * </code>
      * </pre>
+     * <p>
+     * Cartesian power of negative value will return empty iterator.
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * // = ()
+     * CharSeq.rangeClosed('A', 'Z').crossProduct(-1);
+     * </code>
+     * </pre>
      *
      * @param power the number of cartesian multiplications
      * @return A new Iterator representing the n-ary cartesian power of this
