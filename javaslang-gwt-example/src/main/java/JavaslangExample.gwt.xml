@@ -1,0 +1,4 @@
+<module>
+    <inherits name='Javaslang'/>
+    <entry-point class="javaslang.JavaslangEntryPoint"/>
+</module>
