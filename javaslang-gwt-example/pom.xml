@@ -9,10 +9,10 @@
         <version>3.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>javaslang-gwt</artifactId>
-    <packaging>jar</packaging>
-    <name>Javaslang GWT</name>
-    <description>GWT support for Javaslang.</description>
+    <artifactId>javaslang-gwt-example</artifactId>
+    <packaging>gwt-app</packaging>
+    <name>Javaslang GWT Example</name>
+    <description>GWT example for Javaslang.</description>
     <url>http://javaslang.io</url>
     <licenses>
         <license>
@@ -24,32 +24,18 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>javaslang</artifactId>
+            <artifactId>javaslang-gwt</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>javaslang</artifactId>
-            <version>${project.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>javaslang-match</artifactId>
-            <version>${project.version}</version>
-            <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
             <version>${gwt.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-dev</artifactId>
             <version>${gwt.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -60,33 +46,23 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven.deploy.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>net.ltgt.gwt.maven</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwt.version}</version>
-                <executions>
-                    <execution>
-                        <id>testing</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>compiling</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <extensions>true</extensions>
                 <configuration>
-                    <testTimeOut>0</testTimeOut>
-                    <extraJvmArgs>-Xmx1024m</extraJvmArgs>
-                    <productionMode>true</productionMode>
+                    <skipModule>true</skipModule>
+                    <moduleName>JavaslangExample</moduleName>
+                    <includes>
+                        <include>**/GwtTest*.java</include>
+                    </includes>
                 </configuration>
             </plugin>
         </plugins>

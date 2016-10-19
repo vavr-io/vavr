@@ -39,6 +39,7 @@ Note: The maven build currently needs to be started from the javaslang root dir
     <modules>
         <module>javaslang</module>
         <module>javaslang-gwt</module>
+        <module>javaslang-gwt-example</module>
         <module>javaslang-benchmark</module>
         <module>javaslang-match</module>
         <module>javaslang-pure</module>
@@ -113,16 +114,6 @@ Note: The maven build currently needs to be started from the javaslang root dir
                 <groupId>org.openjdk.jmh</groupId>
                 <artifactId>jmh-generator-annprocess</artifactId>
                 <version>${jmh.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.gwt</groupId>
-                <artifactId>gwt-user</artifactId>
-                <version>${gwt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.gwt</groupId>
-                <artifactId>gwt-dev</artifactId>
-                <version>${gwt.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -297,11 +288,6 @@ Note: The maven build currently needs to be started from the javaslang root dir
                             </goals>
                         </execution>
                     </executions>
-                </plugin>
-                <plugin>
-                    <groupId>net.ltgt.gwt.maven</groupId>
-                    <artifactId>gwt-maven-plugin</artifactId>
-                    <version>${maven.gwt.plugin}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

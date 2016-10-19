@@ -1,0 +1,5 @@
+<module>
+    <inherits name="com.google.gwt.user.User"/>
+    <source path="javaslang"/>
+    <super-source path="super"/>
+</module>
