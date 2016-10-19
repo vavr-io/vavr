@@ -24,6 +24,7 @@ import javaslang.collection.Vector;
 import javaslang.control.Either;
 import javaslang.control.Option;
 import javaslang.control.Try;
+import javaslang.control.Validation;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
@@ -757,6 +758,8 @@ public abstract class AbstractValueTest {
             assertThat(List.ofAll(s1::iterator)).isEqualTo(List.ofAll(s2::iterator));
         }
     }
+    
+    // toLeft / toRight
 
     @Test
     public void shouldConvertToEitherLeftFromValueSupplier() {
@@ -800,6 +803,52 @@ public abstract class AbstractValueTest {
         Either<String, Object> either2 = empty().toRight("fallback");
         assertThat(either2.isLeft()).isTrue();
         assertThat(either2.getLeft()).isEqualTo("fallback");
+    }
+
+    // toValid / toInvalid
+
+    @Test
+    public void shouldConvertToValidationInvalidFromValueSupplier() {
+        Validation<Integer, String> validation = of(0).toInvalid(() -> "fallback");
+        assertThat(validation.isInvalid()).isTrue();
+        assertThat(validation.getError()).isEqualTo(0);
+
+        Validation<Object, String> validation2 = empty().toInvalid(() -> "fallback");
+        assertThat(validation2.isValid()).isTrue();
+        assertThat(validation2.get()).isEqualTo("fallback");
+    }
+
+    @Test
+    public void shouldConvertToValidationInvalidFromValue() {
+        Validation<Integer, String> validation = of(0).toInvalid("fallback");
+        assertThat(validation.isInvalid()).isTrue();
+        assertThat(validation.getError()).isEqualTo(0);
+
+        Validation<Object, String> validation2 = empty().toInvalid("fallback");
+        assertThat(validation2.isValid()).isTrue();
+        assertThat(validation2.get()).isEqualTo("fallback");
+    }
+
+    @Test
+    public void shouldConvertToValidationRightFromValueSupplier() {
+        Validation<String, Integer> validation = of(0).toValid(() -> "fallback");
+        assertThat(validation.isValid()).isTrue();
+        assertThat(validation.get()).isEqualTo(0);
+
+        Validation<String, Object> validation2 = empty().toValid(() -> "fallback");
+        assertThat(validation2.isInvalid()).isTrue();
+        assertThat(validation2.getError()).isEqualTo("fallback");
+    }
+
+    @Test
+    public void shouldConvertToValidationValidFromValue() {
+        Validation<String, Integer> validation = of(0).toValid("fallback");
+        assertThat(validation.isValid()).isTrue();
+        assertThat(validation.get()).isEqualTo(0);
+
+        Validation<String, Object> validation2 = empty().toValid("fallback");
+        assertThat(validation2.isInvalid()).isTrue();
+        assertThat(validation2.getError()).isEqualTo("fallback");
     }
 
     // -- exists
