@@ -1244,6 +1244,98 @@ def generateMainClasses(): Unit = {
         """
       }
 
+      def genShortcuts(im: ImportManager, packageName: String, className: String): String = {
+
+        val FormatterType = im.getType("java.util.Formatter")
+        val PrintStreamType = im.getType("java.io.PrintStream")
+
+        xs"""
+          //
+          // Shortcuts
+          //
+
+          /**
+           * A temporary replacement for an implementations used during prototyping.
+           * <p>
+           * Example:
+           *
+           * <pre><code>
+           * public HttpResponse getResponse(HttpRequest request) {
+           *     return TODO();
+           * }
+           *
+           * final HttpResponse response = getHttpResponse(TODO());
+           * </code></pre>
+           *
+           * @param <T> The result type of the missing implementation.
+           * @return Nothing - this methods always throws.
+           * @throws NotImplementedError when this methods is called
+           * @see NotImplementedError#NotImplementedError()
+           */
+          public static <T> T TODO() {
+              throw new NotImplementedError();
+          }
+
+          /**
+           * A temporary replacement for an implementations used during prototyping.
+           * <p>
+           * Example:
+           *
+           * <pre><code>
+           * public HttpResponse getResponse(HttpRequest request) {
+           *     return TODO("fake response");
+           * }
+           *
+           * final HttpResponse response = getHttpResponse(TODO("fake request"));
+           * </code></pre>
+           *
+           * @param msg An error message
+           * @param <T> The result type of the missing implementation.
+           * @return Nothing - this methods always throws.
+           * @throws NotImplementedError when this methods is called
+           * @see NotImplementedError#NotImplementedError(String)
+           */
+          public static <T> T TODO(String msg) {
+              throw new NotImplementedError(msg);
+          }
+
+          /**
+           * Shortcut for {@code System.out.print(obj)}. See {@link $PrintStreamType#print(Object)}.
+           *
+           * @param obj The <code>Object</code> to be printed
+           */
+          public static void print(Object obj) {
+              System.out.print(obj);
+          }
+
+          /**
+           * Shortcut for {@code System.out.printf(format, args)}. See {@link $PrintStreamType#printf(String, Object...)}.
+           *
+           * @param format A format string as described in {@link $FormatterType}.
+           * @param args   Arguments referenced by the format specifiers
+           */
+          public static void printf(String format, Object... args) {
+              System.out.printf(format, args);
+          }
+
+          /**
+           * Shortcut for {@code System.out.println(obj)}. See {@link $PrintStreamType#println(Object)}.
+           *
+           * @param obj The <code>Object</code> to be printed
+           */
+          public static void println(Object obj) {
+              System.out.println(obj);
+          }
+
+          /**
+           * Shortcut for {@code System.out.println()}. See {@link $PrintStreamType#println()}.
+           */
+          public static void println() {
+              System.out.println();
+          }
+        """
+      }
+
       xs"""
         /**
          * The most basic Javaslang functionality is accessed through this API class.
@@ -1308,6 +1400,8 @@ def generateMainClasses(): Unit = {
 
             private API() {
             }
+
+            ${genShortcuts(im, packageName, className)}
 
             ${genAliases(im, packageName, className)}
 
@@ -2365,6 +2459,54 @@ def generateTestClasses(): Unit = {
         """
       }
 
+      def genShortcutsTests(im: ImportManager, packageName: String, className: String): String = {
+
+        val fail = im.getStatic("org.junit.Assert.fail");
+
+        xs"""
+          @$test
+          public void shouldCompileTODOAndThrowDefaultMessageAtRuntime() {
+              try {
+                  final String s = TODO();
+                  $fail("TODO() should throw. s: " + s);
+              } catch(NotImplementedError err) {
+                  assertThat(err.getMessage()).isEqualTo("an implementation is missing");
+              }
+          }
+
+          @$test
+          public void shouldCompileTODOAndThrowGivenMessageAtRuntime() {
+              final String msg = "Don't try this in production!";
+              try {
+                  final String s = TODO(msg);
+                  $fail("TODO(String) should throw. s: " + s);
+              } catch(NotImplementedError err) {
+                  assertThat(err.getMessage()).isEqualTo(msg);
+              }
+          }
+
+          @$test
+          public void shouldCallprint_Object() {
+              print("ok");
+          }
+
+          @$test
+          public void shouldCallprintf() {
+              printf("%s", "ok");
+          }
+
+          @$test
+          public void shouldCallprintln_Object() {
+              println("ok");
+          }
+
+          @$test
+          public void shouldCallprintln() {
+              println();
+          }
+        """
+      }
+
       xs"""
         public class $className {
 
@@ -2372,6 +2514,10 @@ def generateTestClasses(): Unit = {
             public void shouldNotBeInstantiable() {
                 $AssertionsExtensions.assertThat($API.class).isNotInstantiable();
             }
+
+            // -- shortcuts
+
+            ${genShortcutsTests(im, packageName, className)}
 
             //
             // Alias should return not null.
