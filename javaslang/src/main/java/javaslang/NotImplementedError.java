@@ -18,7 +18,7 @@ public class NotImplementedError extends Error {
      * Creates a {@code NotImplementedError} containing the message "an implementation is missing".
      */
     public NotImplementedError() {
-        super("an implementation is missing");
+        super("An implementation is missing.");
     }
 
     /**

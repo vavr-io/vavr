@@ -1,13 +1,25 @@
 # GWT support for Javaslang
 
-### Run tests
+### Using Javaslang in GWT maven projects
+
+* Add the following maven dependency to your project:
 
 ```
-mvn -pl \!javaslang-benchmark clean test
+<dependency>
+    <groupId>io.javaslang</groupId>
+    <artifactId>javaslang-gwt</artifactId>
+    <version>{javaslang-current-version}</version>
+</dependency>
 ```
 
-### Start codeserver
+* Inherit the `Javaslang` module in your GWT module's descriptor file:
 
 ```
-mvn -pl \!javaslang-benchmark -DskipTests gwt:codeserver
+<module>
+    <!-- ... -->
+    <inherits name="Javaslang"/>
+    <!-- ... -->
+</module>
 ```
+
+* Use the Javaslang APIs in your code.

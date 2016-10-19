@@ -1,7 +1,0 @@
-<module>
-    <inherits name='com.google.gwt.user.User'/>
-    <super-source path="super" />
-    <source path="javaslang">
-        <exclude name="concurrent/**"/>
-    </source>
-</module>

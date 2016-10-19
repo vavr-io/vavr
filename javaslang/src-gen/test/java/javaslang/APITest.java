@@ -40,7 +40,7 @@ public class APITest {
             final String s = TODO();
             fail("TODO() should throw. s: " + s);
         } catch(NotImplementedError err) {
-            assertThat(err.getMessage()).isEqualTo("an implementation is missing");
+            assertThat(err.getMessage()).isEqualTo("An implementation is missing.");
         }
     }
 

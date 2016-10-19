@@ -157,6 +157,7 @@ public final class API {
      * @param format A format string as described in {@link Formatter}.
      * @param args   Arguments referenced by the format specifiers
      */
+    @GwtIncompatible
     public static void printf(String format, Object... args) {
         System.out.printf(format, args);
     }
@@ -455,6 +456,7 @@ public final class API {
      * Alias for {@link CheckedFunction0#unchecked}
      *
      * @param <R>  return type
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction0}
      */
     public static <R> Function0<R> Unchecked(CheckedFunction0<R> f) {
@@ -466,6 +468,7 @@ public final class API {
      *
      * @param <R>  return type
      * @param <T1> type of the 1st argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction1}
      */
     public static <T1, R> Function1<T1, R> Unchecked(CheckedFunction1<T1, R> f) {
@@ -478,6 +481,7 @@ public final class API {
      * @param <R>  return type
      * @param <T1> type of the 1st argument
      * @param <T2> type of the 2nd argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction2}
      */
     public static <T1, T2, R> Function2<T1, T2, R> Unchecked(CheckedFunction2<T1, T2, R> f) {
@@ -491,6 +495,7 @@ public final class API {
      * @param <T1> type of the 1st argument
      * @param <T2> type of the 2nd argument
      * @param <T3> type of the 3rd argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction3}
      */
     public static <T1, T2, T3, R> Function3<T1, T2, T3, R> Unchecked(CheckedFunction3<T1, T2, T3, R> f) {
@@ -505,6 +510,7 @@ public final class API {
      * @param <T2> type of the 2nd argument
      * @param <T3> type of the 3rd argument
      * @param <T4> type of the 4th argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction4}
      */
     public static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> Unchecked(CheckedFunction4<T1, T2, T3, T4, R> f) {
@@ -520,6 +526,7 @@ public final class API {
      * @param <T3> type of the 3rd argument
      * @param <T4> type of the 4th argument
      * @param <T5> type of the 5th argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction5}
      */
     public static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> Unchecked(CheckedFunction5<T1, T2, T3, T4, T5, R> f) {
@@ -536,6 +543,7 @@ public final class API {
      * @param <T4> type of the 4th argument
      * @param <T5> type of the 5th argument
      * @param <T6> type of the 6th argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction6}
      */
     public static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, R> Unchecked(CheckedFunction6<T1, T2, T3, T4, T5, T6, R> f) {
@@ -553,6 +561,7 @@ public final class API {
      * @param <T5> type of the 5th argument
      * @param <T6> type of the 6th argument
      * @param <T7> type of the 7th argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction7}
      */
     public static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> Unchecked(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> f) {
@@ -571,6 +580,7 @@ public final class API {
      * @param <T6> type of the 6th argument
      * @param <T7> type of the 7th argument
      * @param <T8> type of the 8th argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction8}
      */
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> Unchecked(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
@@ -1528,7 +1538,8 @@ public final class API {
     /**
      * Alias for {@link TreeSet#empty(Comparator)}
      *
-     * @param <T> Component type of element.
+     * @param <T>        Component type of element.
+     * @param comparator The comparator used to sort the elements
      * @return A new {@link TreeSet} empty instance
      */
     public static <T extends Comparable<? super T>> TreeSet<T> SortedSet(Comparator<? super T> comparator) {
@@ -1549,9 +1560,9 @@ public final class API {
     /**
      * Alias for {@link TreeSet#of(Comparator, Object)}
      *
-     * @param <T>     Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param element An element.
+     * @param element    An element.
      * @return A new {@link TreeSet} instance containing the given element
      */
     public static <T> TreeSet<T> SortedSet(Comparator<? super T> comparator, T element) {
@@ -1574,9 +1585,9 @@ public final class API {
     /**
      * Alias for {@link TreeSet#of(Comparator, Object...)}
      *
-     * @param <T>      Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param elements Zero or more elements.
+     * @param elements   Zero or more elements.
      * @return A new {@link TreeSet} instance containing the given elements
      */
     @SuppressWarnings("varargs")
@@ -1599,9 +1610,9 @@ public final class API {
     /**
      * Alias for {@link TreeSet#ofAll(Comparator, Iterable)}
      *
-     * @param <T>      Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param elements Zero or more elements.
+     * @param elements   Zero or more elements.
      * @return A new {@link TreeSet} instance containing the given elements
      */
     public static <T> TreeSet<T> SortedSet(Comparator<? super T> comparator, Iterable<? extends T> elements) {
@@ -1622,9 +1633,9 @@ public final class API {
     /**
      * Alias for {@link TreeSet#ofAll(Comparator, java.util.stream.Stream)}
      *
-     * @param <T>      Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param elements Zero or more elements.
+     * @param elements   Zero or more elements.
      * @return A new {@link TreeSet} instance containing the given elements
      */
     public static <T> TreeSet<T> SortedSet(Comparator<? super T> comparator, java.util.stream.Stream<? extends T> elements) {
@@ -1644,7 +1655,8 @@ public final class API {
     /**
      * Alias for {@link PriorityQueue#empty(Comparator)}
      *
-     * @param <T> Component type of element.
+     * @param <T>        Component type of element.
+     * @param comparator The comparator used to sort the elements
      * @return A new {@link PriorityQueue} empty instance
      */
     public static <T extends Comparable<T>> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator) {
@@ -1665,9 +1677,9 @@ public final class API {
     /**
      * Alias for {@link PriorityQueue#of(Comparator, Object)}
      *
-     * @param <T>     Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param element An element.
+     * @param element    An element.
      * @return A new {@link PriorityQueue} instance containing the given element
      */
     public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, T element) {
@@ -1690,9 +1702,9 @@ public final class API {
     /**
      * Alias for {@link PriorityQueue#of(Comparator, Object...)}
      *
-     * @param <T>      Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param elements Zero or more elements.
+     * @param elements   Zero or more elements.
      * @return A new {@link PriorityQueue} instance containing the given elements
      */
     @SuppressWarnings("varargs")
@@ -1715,9 +1727,9 @@ public final class API {
     /**
      * Alias for {@link PriorityQueue#ofAll(Comparator, Iterable)}
      *
-     * @param <T>      Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param elements Zero or more elements.
+     * @param elements   Zero or more elements.
      * @return A new {@link PriorityQueue} instance containing the given elements
      */
     public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, Iterable<? extends T> elements) {
@@ -1738,9 +1750,9 @@ public final class API {
     /**
      * Alias for {@link PriorityQueue#ofAll(Comparator, java.util.stream.Stream)}
      *
-     * @param <T>      Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param elements Zero or more elements.
+     * @param elements   Zero or more elements.
      * @return A new {@link PriorityQueue} instance containing the given elements
      */
     public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, java.util.stream.Stream<? extends T> elements) {

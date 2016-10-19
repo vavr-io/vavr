@@ -267,6 +267,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(range(0, 10).crossProduct(100).take(1).get()).isEqualTo(tabulate(100, i -> 0));
     }
 
+    @Test
+    public void shouldCrossProductOfNegativePowerBeEmpty() {
+        assertThat(of(1, 2).crossProduct(-1).toList()).isEqualTo(List.empty());
+    }
+
     // -- crossProduct(Iterable)
 
     @Test
