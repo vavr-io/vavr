@@ -11,7 +11,9 @@ package javaslang;
 
 import static javaslang.API.Match.*;
 
+import java.io.PrintStream;
 import java.util.Comparator;
+import java.util.Formatter;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -89,6 +91,91 @@ import javaslang.control.Validation;
 public final class API {
 
     private API() {
+    }
+
+    //
+    // Shortcuts
+    //
+
+    /**
+     * A temporary replacement for an implementations used during prototyping.
+     * <p>
+     * Example:
+     *
+     * <pre><code>
+     * public HttpResponse getResponse(HttpRequest request) {
+     *     return TODO();
+     * }
+     *
+     * final HttpResponse response = getHttpResponse(TODO());
+     * </code></pre>
+     *
+     * @param <T> The result type of the missing implementation.
+     * @return Nothing - this methods always throws.
+     * @throws NotImplementedError when this methods is called
+     * @see NotImplementedError#NotImplementedError()
+     */
+    public static <T> T TODO() {
+        throw new NotImplementedError();
+    }
+
+    /**
+     * A temporary replacement for an implementations used during prototyping.
+     * <p>
+     * Example:
+     *
+     * <pre><code>
+     * public HttpResponse getResponse(HttpRequest request) {
+     *     return TODO("fake response");
+     * }
+     *
+     * final HttpResponse response = getHttpResponse(TODO("fake request"));
+     * </code></pre>
+     *
+     * @param msg An error message
+     * @param <T> The result type of the missing implementation.
+     * @return Nothing - this methods always throws.
+     * @throws NotImplementedError when this methods is called
+     * @see NotImplementedError#NotImplementedError(String)
+     */
+    public static <T> T TODO(String msg) {
+        throw new NotImplementedError(msg);
+    }
+
+    /**
+     * Shortcut for {@code System.out.print(obj)}. See {@link PrintStream#print(Object)}.
+     *
+     * @param obj The <code>Object</code> to be printed
+     */
+    public static void print(Object obj) {
+        System.out.print(obj);
+    }
+
+    /**
+     * Shortcut for {@code System.out.printf(format, args)}. See {@link PrintStream#printf(String, Object...)}.
+     *
+     * @param format A format string as described in {@link Formatter}.
+     * @param args   Arguments referenced by the format specifiers
+     */
+    @GwtIncompatible
+    public static void printf(String format, Object... args) {
+        System.out.printf(format, args);
+    }
+
+    /**
+     * Shortcut for {@code System.out.println(obj)}. See {@link PrintStream#println(Object)}.
+     *
+     * @param obj The <code>Object</code> to be printed
+     */
+    public static void println(Object obj) {
+        System.out.println(obj);
+    }
+
+    /**
+     * Shortcut for {@code System.out.println()}. See {@link PrintStream#println()}.
+     */
+    public static void println() {
+        System.out.println();
     }
 
     //
