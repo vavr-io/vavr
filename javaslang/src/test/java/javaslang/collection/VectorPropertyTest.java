@@ -29,6 +29,53 @@ public class VectorPropertyTest {
             for (int j = 0; j < actual.size(); j++) {
                 assertThat(expected.get(j)).isEqualTo(actual.get(j));
             }
+
+            /* boolean */
+            final Seq<Boolean> expectedBoolean = expected.map(v -> v > 0);
+            final Vector<Boolean> actualBoolean = Vector.ofAll(ArrayType.<boolean[]> asPrimitives(boolean.class, expectedBoolean));
+            assert (i == 0) || (actualBoolean.trie.type.type() == boolean.class);
+            assertAreEqual(expectedBoolean, actualBoolean);
+
+            /* byte */
+            final Seq<Byte> expectedByte = expected.map(Integer::byteValue);
+            final Vector<Byte> actualByte = Vector.ofAll(ArrayType.<byte[]> asPrimitives(byte.class, expectedByte));
+            assert (i == 0) || (actualByte.trie.type.type() == byte.class);
+            assertAreEqual(expectedByte, actualByte);
+
+            /* char */
+            final Seq<Character> expectedChar = expected.map(v -> (char) v.intValue());
+            final Vector<Character> actualChar = Vector.ofAll(ArrayType.<char[]> asPrimitives(char.class, expectedChar));
+            assert (i == 0) || (actualChar.trie.type.type() == char.class);
+            assertAreEqual(expectedChar, actualChar);
+
+            /* double */
+            final Seq<Double> expectedDouble = expected.map(Integer::doubleValue);
+            final Vector<Double> actualDouble = Vector.ofAll(ArrayType.<double[]> asPrimitives(double.class, expectedDouble));
+            assert (i == 0) || (actualDouble.trie.type.type() == double.class);
+            assertAreEqual(expectedDouble, actualDouble);
+
+            /* float */
+            final Seq<Float> expectedFloat = expected.map(Integer::floatValue);
+            final Vector<Float> actualFloat = Vector.ofAll(ArrayType.<float[]> asPrimitives(float.class, expectedFloat));
+            assert (i == 0) || (actualFloat.trie.type.type() == float.class);
+            assertAreEqual(expectedFloat, actualFloat);
+
+            /* int */
+            final Vector<Integer> actualInt = Vector.ofAll(ArrayType.<int[]> asPrimitives(int.class, expected));
+            assert (i == 0) || (actualInt.trie.type.type() == int.class);
+            assertAreEqual(expected, actualInt);
+
+            /* long */
+            final Seq<Long> expectedLong = expected.map(Integer::longValue);
+            final Vector<Long> actualLog = Vector.ofAll(ArrayType.<long[]> asPrimitives(long.class, expectedLong));
+            assert (i == 0) || (actualLog.trie.type.type() == long.class);
+            assertAreEqual(expectedLong, actualLog);
+
+            /* short */
+            final Seq<Short> expectedShort = expected.map(Integer::shortValue);
+            final Vector<Short> actualShort = Vector.ofAll(ArrayType.<short[]> asPrimitives(short.class, expectedShort));
+            assert (i == 0) || (actualShort.trie.type.type() == short.class);
+            assertAreEqual(expectedShort, actualShort);
         }
     }
 
@@ -43,10 +90,10 @@ public class VectorPropertyTest {
         }
 
         Seq<Integer> expected = Array.range(0, 1000);
-        Vector<Integer> actual = Vector.ofAll(expected);
+        Vector<Integer> actual = Vector.ofAll(ArrayType.<int[]> asPrimitives(int.class, expected));
         for (int drop = 0; drop <= (BRANCHING_FACTOR + 1); drop++) {
             final Iterator<Integer> expectedIterator = expected.iterator();
-            actual.trie.<Object[]> visit((index, leaf, start, end) -> {
+            actual.trie.<int[]> visit((index, leaf, start, end) -> {
                 for (int i = start; i < end; i++) {
                     assertThat(leaf[i]).isEqualTo(expectedIterator.next());
                 }
@@ -181,7 +228,8 @@ public class VectorPropertyTest {
                         values.add(random.nextInt());
                     }
                     expected = Array.ofAll(values);
-                    actual = Vector.ofAll(values);
+                    final boolean isPrimitive = percent(random) < 30;
+                    actual = isPrimitive ? Vector.narrow(Vector.ofAll(ArrayType.<int[]> asPrimitives(int.class, values))) : Vector.ofAll(values);
                     assertAreEqual(expected, actual);
                     history = history.append(Tuple.of(expected, actual));
                 }
