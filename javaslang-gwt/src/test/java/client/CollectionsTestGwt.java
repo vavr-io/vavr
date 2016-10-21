@@ -60,7 +60,8 @@ public class CollectionsTestGwt extends GWTTestCase {
         applyCollection(chars -> TreeSet.ofAll(Iterator.ofAll(chars)));
     }
 
+    @SuppressWarnings("Convert2MethodRef")
     public void testCompileVector() {
-        applyCollection(Vector::ofAll);
+        applyCollection(chars -> Vector.ofAll(chars));
     }
 }
