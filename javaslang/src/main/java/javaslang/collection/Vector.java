@@ -17,6 +17,8 @@ import java.util.stream.Collector;
 import static javaslang.collection.ArrayType.asArray;
 import static javaslang.collection.Collections.areEqual;
 import static javaslang.collection.Collections.seq;
+import static javaslang.collection.ArrayType.asArray;
+import static javaslang.collection.ArrayType.lengthOf;
 
 /**
  * Vector is the default Seq implementation that provides effectively constant time access to any element.
@@ -162,11 +164,11 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         if (iterable instanceof Vector) {
             return (Vector<T>) iterable;
         } else if (iterable instanceof Collection<?>) {
-            final Object[] array = ((Collection<? extends T>) iterable).toArray();
+            final Object array = ((Collection<? extends T>) iterable).toArray();
             return ofAll(BitMappedTrie.ofAll(array));
         } else {
             final Seq<? extends T> elems = seq(iterable);
-            final Object[] array = asArray(elems.iterator(), elems.size());
+            final Object array = asArray(elems.iterator(), elems.size());
             return ofAll(BitMappedTrie.ofAll(array));
         }
     }

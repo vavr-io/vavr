@@ -289,7 +289,7 @@ public class VectorTest extends AbstractIndexedSeqTest {
 
     @Test
     public void shouldReturnSelfOnConvertToVector() {
-        Value<Integer> value = of(1, 2, 3);
+        final Value<Integer> value = of(1, 2, 3);
         assertThat(value.toVector()).isSameAs(value);
     }
 }

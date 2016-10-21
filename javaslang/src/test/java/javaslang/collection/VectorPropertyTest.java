@@ -46,7 +46,7 @@ public class VectorPropertyTest {
         Vector<Integer> actual = Vector.ofAll(expected);
         for (int drop = 0; drop <= (BRANCHING_FACTOR + 1); drop++) {
             final Iterator<Integer> expectedIterator = expected.iterator();
-            actual.trie.<Object> visit((index, leaf, start, end) -> {
+            actual.trie.<Object[]> visit((index, leaf, start, end) -> {
                 for (int i = start; i < end; i++) {
                     assertThat(leaf[i]).isEqualTo(expectedIterator.next());
                 }
