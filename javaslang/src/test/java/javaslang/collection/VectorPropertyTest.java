@@ -8,28 +8,22 @@ package javaslang.collection;
 import javaslang.Function2;
 import javaslang.Tuple;
 import javaslang.Tuple2;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
-import static javaslang.collection.BitMappedTrie.BRANCHING_BASE;
-import static javaslang.collection.BitMappedTrie.branchingFactor;
+import static javaslang.collection.BitMappedTrie.BRANCHING_FACTOR;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VectorPropertyTest {
-    @Before
-    public void setUp() { BRANCHING_BASE = 2; }
-    @After
-    public void tearDown() { BRANCHING_BASE = 5; }
-
     @Test
     public void shouldCreateAndGet() {
-        for (int i = 0; i < 5000; i++) {
+        for (int i = 0; i < 2000; i++) {
             final Seq<Integer> expected = Array.range(0, i);
             final Vector<Integer> actual = Vector.ofAll(expected);
             for (int j = 0; j < actual.size(); j++) {
@@ -47,6 +41,21 @@ public class VectorPropertyTest {
                 assertAreEqual(actual, expected);
             }
         }
+
+        Seq<Integer> expected = Array.range(0, 1000);
+        Vector<Integer> actual = Vector.ofAll(expected);
+        for (int drop = 0; drop <= (BRANCHING_FACTOR + 1); drop++) {
+            final Iterator<Integer> expectedIterator = expected.iterator();
+            actual.trie.<Object> visit((index, leaf, start, end) -> {
+                for (int i = start; i < end; i++) {
+                    assertThat(leaf[i]).isEqualTo(expectedIterator.next());
+                }
+                return -1;
+            });
+
+            expected = expected.tail().init();
+            actual = actual.tail().init();
+        }
     }
 
     @Test
@@ -54,8 +63,8 @@ public class VectorPropertyTest {
         Seq<Integer> expected = Array.empty();
         Vector<Integer> actual = Vector.empty();
 
-        for (int drop = 0; drop <= (branchingFactor() + 1); drop++) {
-            for (Integer value : Iterator.range(0, getMaxSizeForDepth(3) + branchingFactor())) {
+        for (int drop = 0; drop <= (BRANCHING_FACTOR + 1); drop++) {
+            for (Integer value : Iterator.range(0, getMaxSizeForDepth(3) + BRANCHING_FACTOR)) {
                 expected = expected.drop(drop);
                 actual = assertAreEqual(actual, drop, Vector::drop, expected);
 
@@ -70,8 +79,8 @@ public class VectorPropertyTest {
         Seq<Integer> expected = Array.empty();
         Vector<Integer> actual = Vector.empty();
 
-        for (int drop = 0; drop <= (branchingFactor() + 1); drop++) {
-            for (Integer value : Iterator.range(0, getMaxSizeForDepth(2) + branchingFactor())) {
+        for (int drop = 0; drop <= (BRANCHING_FACTOR + 1); drop++) {
+            for (Integer value : Iterator.range(0, getMaxSizeForDepth(2) + BRANCHING_FACTOR)) {
                 expected = expected.drop(drop);
                 actual = assertAreEqual(actual, drop, Vector::drop, expected);
 
@@ -86,9 +95,9 @@ public class VectorPropertyTest {
         final Function<Integer, Integer> mapper = i -> i + 1;
 
         for (byte depth = 0; depth <= 6; depth++) {
-            final int length = getMaxSizeForDepth(depth) + branchingFactor();
+            final int length = getMaxSizeForDepth(depth) + BRANCHING_FACTOR;
 
-            for (int drop = 0; drop <= (branchingFactor() + 1); drop++) {
+            for (int drop = 0; drop <= (BRANCHING_FACTOR + 1); drop++) {
                 Seq<Integer> expected = Array.range(0, length);
                 Vector<Integer> actual = Vector.ofAll(expected);
 
@@ -107,7 +116,7 @@ public class VectorPropertyTest {
 
     @Test
     public void shouldDrop() {
-        final int length = getMaxSizeForDepth(6) + branchingFactor();
+        final int length = getMaxSizeForDepth(6) + BRANCHING_FACTOR;
 
         final Seq<Integer> expected = Array.range(0, length);
         final Vector<Integer> actual = Vector.ofAll(expected);
@@ -125,7 +134,7 @@ public class VectorPropertyTest {
 
     @Test
     public void shouldDropRight() {
-        final int length = getMaxSizeForDepth(4) + branchingFactor();
+        final int length = getMaxSizeForDepth(4) + BRANCHING_FACTOR;
 
         final Seq<Integer> expected = Array.range(0, length);
         final Vector<Integer> actual = Vector.ofAll(expected);
@@ -143,7 +152,7 @@ public class VectorPropertyTest {
 
     @Test
     public void shouldSlice() {
-        for (int length = 1, end = getMaxSizeForDepth(2) + branchingFactor(); length <= end; length++) {
+        for (int length = 1, end = getMaxSizeForDepth(2) + BRANCHING_FACTOR; length <= end; length++) {
             Seq<Integer> expected = Array.range(0, length);
             Vector<Integer> actual = Vector.ofAll(expected);
 
@@ -156,50 +165,49 @@ public class VectorPropertyTest {
 
     @Test
     public void shouldBehaveLikeArray() {
-        Random random = new Random();
-        final int seed = random.nextInt();
+        final int seed = ThreadLocalRandom.current().nextInt();
         System.out.println("using seed " + seed);
-        random = new Random(seed);
+        final Random random = new Random(seed);
 
         for (int i = 1; i < 10; i++) {
-            BRANCHING_BASE = i;
-            Seq<Integer> expected = Array.empty();
-            Vector<Integer> actual = Vector.empty();
+            Seq<Object> expected = Array.empty();
+            Vector<Object> actual = Vector.empty();
             for (int j = 0; j < 50_000; j++) {
-                Seq<Tuple2<Seq<Integer>, Vector<Integer>>> history = Array.empty();
+                Seq<Tuple2<Seq<Object>, Vector<Object>>> history = Array.empty();
 
-                if (random.nextInt(100) < 20) {
-                    final ArrayList<Integer> values = new ArrayList<>();
+                if (percent(random) < 20) {
+                    final ArrayList<Object> values = new ArrayList<>();
                     for (int k = 0; k < random.nextInt(j + 1); k++) {
                         values.add(random.nextInt());
                     }
                     expected = Array.ofAll(values);
-                    actual = assertAreEqual(values, null, (v, p) -> Vector.ofAll(v), expected);
+                    actual = Vector.ofAll(values);
+                    assertAreEqual(expected, actual);
                     history = history.append(Tuple.of(expected, actual));
                 }
 
-                if (random.nextInt(100) < 50) {
-                    final Integer value = randomOrNull(random);
+                if (percent(random) < 50) {
+                    final Object value = randomValue(random);
                     expected = expected.append(value);
                     actual = assertAreEqual(actual, value, Vector::append, expected);
                     history = history.append(Tuple.of(expected, actual));
                 }
 
-                if (random.nextInt(100) < 50) {
-                    final Integer value = randomOrNull(random);
+                if (percent(random) < 50) {
+                    final Object value = randomValue(random);
                     expected = expected.prepend(value);
                     actual = assertAreEqual(actual, value, Vector::prepend, expected);
                     history = history.append(Tuple.of(expected, actual));
                 }
 
-                if (random.nextInt(100) < 30) {
+                if (percent(random) < 30) {
                     final int n = random.nextInt(expected.size() + 1);
                     expected = expected.drop(n);
                     actual = assertAreEqual(actual, n, Vector::drop, expected);
                     history = history.append(Tuple.of(expected, actual));
                 }
 
-                if (random.nextInt(100) < 30) {
+                if (percent(random) < 30) {
                     final int n = random.nextInt(expected.size() + 1);
                     expected = expected.take(n);
                     actual = assertAreEqual(actual, n, Vector::take, expected);
@@ -218,17 +226,31 @@ public class VectorPropertyTest {
                     history = history.append(Tuple.of(expected, actual));
                 }
 
-                if (random.nextInt(100) < 50) {
+                if (percent(random) < 50) {
                     if (!expected.isEmpty()) {
                         final int index = random.nextInt(expected.size());
-                        final Integer value = randomOrNull(random);
+                        final Object value = randomValue(random);
                         expected = expected.update(index, value);
                         actual = assertAreEqual(actual, null, (a, p) -> a.update(index, value), expected);
                         history = history.append(Tuple.of(expected, actual));
                     }
                 }
 
-                if (random.nextInt(100) < 30) {
+                if (percent(random) < 20) {
+                    final Function<Object, Object> mapper = val -> (val instanceof Integer) ? ((Integer) val + 1) : val;
+                    expected = expected.map(mapper);
+                    actual = assertAreEqual(actual, null, (a, p) -> a.map(mapper), expected);
+                    history = history.append(Tuple.of(expected, actual));
+                }
+
+                if (percent(random) < 30) {
+                    final Predicate<Object> filter = val -> (String.valueOf(val).length() % 10) == 0;
+                    expected = expected.filter(filter);
+                    actual = assertAreEqual(actual, null, (a, p) -> a.filter(filter), expected);
+                    history = history.append(Tuple.of(expected, actual));
+                }
+
+                if (percent(random) < 30) {
                     for (int k = 0; k < 2; k++) {
                         if (!expected.isEmpty()) {
                             final int to = random.nextInt(expected.size());
@@ -244,12 +266,22 @@ public class VectorPropertyTest {
             }
         }
     }
-    private Integer randomOrNull(Random random) {
-        return (random.nextInt(100) < 5) ? null : random.nextInt();
+
+    private int percent(Random random) { return random.nextInt(100); }
+
+    private Object randomValue(Random random) {
+        final int percent = percent(random);
+        if (percent < 5) {
+            return null;
+        } else if (percent < 10) {
+            return "String";
+        } else {
+            return random.nextInt();
+        }
     }
 
-    private static <T1, T2> Vector<Integer> assertAreEqual(T1 previousActual, T2 param, Function2<T1, T2, Vector<Integer>> actualProvider, Seq<Integer> expected) {
-        final Vector<Integer> actual = actualProvider.apply(previousActual, param);
+    private static <T extends Seq<?>, P> T assertAreEqual(T previousActual, P param, Function2<T, P, T> actualProvider, Seq<?> expected) {
+        final T actual = actualProvider.apply(previousActual, param);
         assertAreEqual(expected, actual);
         return actual; // makes debugging a lot easier, as the frame can be dropped and rerun on AssertError
     }
@@ -261,7 +293,7 @@ public class VectorPropertyTest {
     }
 
     private static int getMaxSizeForDepth(int depth) {
-        final int max = branchingFactor() + (int) Math.pow(branchingFactor(), depth) + branchingFactor();
+        final int max = BRANCHING_FACTOR + (int) Math.pow(BRANCHING_FACTOR, depth) + BRANCHING_FACTOR;
         return Math.min(max, 10_000);
     }
 }

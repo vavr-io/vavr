@@ -6,29 +6,34 @@
 package javaslang.collection;
 
 import java.io.Serializable;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static javaslang.collection.Arrays.*;
-import static javaslang.collection.NodeModifier.copyLeaf;
-import static javaslang.collection.NodeModifier.updateLeafWith;
+import static javaslang.collection.NodeModifier.*;
 
 /**
- * A `bit-mapped trie` is a very wide and shallow tree (for integer indices the depth will be ≤ 6).
+ * A `bit-mapped trie` is a very wide and shallow tree (for integer indices the depth will be `≤6`).
  * Each node has a maximum of `32` children (configurable).
  * Access to a given position is done by converting the index to a base 32 number and using each digit to descend down the tree.
  * Modifying the tree is done similarly, but along the way the path is copied, returning a new root every time.
- * Append inserts in the last leaf, or if the tree is full from the right, it adds another layer on top of it (the old root will be the first of the new one).
- * Prepend is done similarly, but an offset is needed, because adding a new top node (where the current root would be the last node of the new root)
+ * `Append` inserts in the last leaf, or if the tree is full from the right, it adds another layer on top of it (the old root will be the first of the new one).
+ * `Prepend` is done similarly, but an offset is needed, because adding a new top node (where the current root would be the last node of the new root)
  * shifts the indices by half of the current tree's full size. The `offset` shifts them back to the correct index.
+ * `Slice` is done by trimming the path from the root and discarding any `leading`/`trailing` values in effectively constant time (without memory leak, as in `Java`/`Clojure`).
  *
  * @author Pap Lőrinc
  * @since 2.1.0
  */
 final class BitMappedTrie<T> implements Serializable {
-    static int BRANCHING_BASE = 5;
-    static int branchingFactor()                   { return 1 << BRANCHING_BASE; }
+    static final int BRANCHING_BASE = 5;
+    static final int BRANCHING_FACTOR = 1 << BRANCHING_BASE;
+    static final int BRANCHING_MASK = -1 >>> -BRANCHING_BASE;
+
     static int firstDigit(int num, int depthShift) { return num >> depthShift; }
     static int digit(int num, int depthShift)      { return lastDigit(firstDigit(num, depthShift)); }
-    static int lastDigit(int num)                  { return num & (-1 >>> -BRANCHING_BASE); }
+    static int lastDigit(int num)                  { return num & BRANCHING_MASK; }
 
     private static final long serialVersionUID = 1L;
 
@@ -40,19 +45,32 @@ final class BitMappedTrie<T> implements Serializable {
     private final int offset, length;
     private final int depthShift;
 
-    BitMappedTrie(Object[] array, int offset, int length, int depthShift) {
+    private BitMappedTrie(Object[] array, int offset, int length, int depthShift) {
         this.array = array;
         this.offset = offset;
         this.length = length;
         this.depthShift = depthShift;
 
-        assert length <= treeSize(branchingFactor(), depthShift);
+        assert length <= treeSize(BRANCHING_FACTOR, depthShift);
         assert (EMPTY == null) || ((length > 0) && (array.length > 0));
     }
 
     private static int treeSize(int branchCount, int depthShift) {
         final int fullBranchSize = 1 << depthShift;
         return branchCount * fullBranchSize;
+    }
+
+    static <T> BitMappedTrie<T> ofAll(Object[] array) {
+        final int size = array.length;
+        if (size == 0) {
+            return empty();
+        } else {
+            int shift = 0;
+            for (; array.length > BRANCHING_FACTOR; shift += BRANCHING_BASE) {
+                array = grouped(array, BRANCHING_FACTOR);
+            }
+            return new BitMappedTrie<>(array, 0, size, shift);
+        }
     }
 
     BitMappedTrie<T> prepend(T leading) {
@@ -63,13 +81,13 @@ final class BitMappedTrie<T> implements Serializable {
             Object[] array = this.array;
             int shift = depthShift, offset = this.offset;
             if (isFullLeft()) {
-                array = copyUpdate(Arrays.empty(), branchingFactor() - 1, array);
+                array = copyUpdate(Arrays.empty(), BRANCHING_FACTOR - 1, array);
                 shift += BRANCHING_BASE;
-                offset = treeSize(branchingFactor() - 1, shift);
+                offset = treeSize(BRANCHING_FACTOR - 1, shift);
             }
 
             offset -= 1;
-            array = modifyLeaf(array, shift, offset, copyLeaf, updateLeafWith(leading));
+            array = modifyLeaf(array, shift, offset, COPY_NODE, updateLeafWith(leading));
             return new BitMappedTrie<>(array, offset, newSize, shift);
         }
     }
@@ -87,14 +105,14 @@ final class BitMappedTrie<T> implements Serializable {
                 shift += BRANCHING_BASE;
             }
 
-            array = modifyLeaf(array, shift, offset + length(), copyLeaf, updateLeafWith(trailing));
+            array = modifyLeaf(array, shift, offset + length(), COPY_NODE, updateLeafWith(trailing));
             return new BitMappedTrie<>(array, offset, newSize, shift);
         }
     }
-    private boolean isFullRight(int newSize) { return (offset + newSize) > treeSize(branchingFactor(), depthShift); }
+    private boolean isFullRight(int newSize) { return (offset + newSize) > treeSize(BRANCHING_FACTOR, depthShift); }
 
     BitMappedTrie<T> update(int index, T element) {
-        final Object[] root = modifyLeaf(array, depthShift, offset + index, copyLeaf, updateLeafWith(element));
+        final Object[] root = modifyLeaf(array, depthShift, offset + index, COPY_NODE, updateLeafWith(element));
         return new BitMappedTrie<>(root, offset, length(), depthShift);
     }
 
@@ -104,9 +122,11 @@ final class BitMappedTrie<T> implements Serializable {
         } else if (n >= length()) {
             return empty();
         } else {
-            final NodeModifier drop = Arrays::copyDrop;
-            final Object[] root = modifyLeaf(array, depthShift, offset + n, drop, drop);
-            return new BitMappedTrie<>(root, offset + n, length() - n, depthShift);
+            final int index = offset + n;
+            final Object[] root = arePointingToSameLeaf(0, n)
+                                  ? array
+                                  : modifyLeaf(array, depthShift, index, Arrays::copyDrop, IDENTITY);
+            return collapsed(root, index, length() - n, depthShift);
         }
     }
 
@@ -116,14 +136,35 @@ final class BitMappedTrie<T> implements Serializable {
         } else if (n <= 0) {
             return empty();
         } else {
-            final NodeModifier take = Arrays::copyTake;
-            final Object[] root = modifyLeaf(array, depthShift, (offset + n) - 1, take, take);
-            return new BitMappedTrie<>(root, offset, n, depthShift);
+            final int index = n - 1;
+            final Object[] root = arePointingToSameLeaf(index, length() - 1)
+                                  ? array
+                                  : modifyLeaf(array, depthShift, offset + index, Arrays::copyTake, IDENTITY);
+            return collapsed(root, offset, n, depthShift);
         }
     }
 
+    private boolean arePointingToSameLeaf(int i, int j) {
+        final boolean result = firstDigit(offset + i, BRANCHING_BASE) == firstDigit(offset + j, BRANCHING_BASE);
+        assert result == (getLeaf(i) == getLeaf(j));
+        return result;
+    }
+
+    /* drop root node while it has a single element */
+    private static <T> BitMappedTrie<T> collapsed(Object[] array, int offset, int length, int shift) {
+        for (; shift > 0; shift -= BRANCHING_BASE) {
+            final int skippedElements = array.length - 1;
+            if (skippedElements != digit(offset, shift)) {
+                break;
+            }
+            array = getAt(array, skippedElements);
+            offset -= treeSize(skippedElements, shift);
+        }
+        return new BitMappedTrie<>(array, offset, length, shift);
+    }
+
     /* descend the tree from root to leaf, applying the given modifications along the way, returning the new root */
-    private static Object[] modifyLeaf(Object[] root, int depthShift, int index, NodeModifier node, NodeModifier leaf) {
+    private Object[] modifyLeaf(Object[] root, int depthShift, int index, NodeModifier node, NodeModifier leaf) {
         if (depthShift == 0) {
             return leaf.apply(root, index);
         } else {
@@ -134,7 +175,8 @@ final class BitMappedTrie<T> implements Serializable {
             for (int shift = depthShift - BRANCHING_BASE; shift >= BRANCHING_BASE; shift -= BRANCHING_BASE) {
                 final int offset = digit(index, shift);
 
-                final Object[] newNode = node.apply(array[previousIndex], offset);
+                final Object previous = array[previousIndex];
+                final Object[] newNode = node.apply(previous, offset);
                 array[previousIndex] = newNode;
 
                 previousIndex = offset;
@@ -148,31 +190,39 @@ final class BitMappedTrie<T> implements Serializable {
 
     T get(int index) {
         final T[] leaf = getLeaf(index);
-        final int leafIndex = lastDigit(offset() + index);
+        final int leafIndex = lastDigit(offset + index);
         return leaf[leafIndex];
     }
 
     /**
      * fetch the leaf, corresponding to the given index.
      * Node: the offset and length should be taken into consideration as there may be leading and trailing garbage.
+     * Also, the returned array is mutable, but should not be mutated!
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "WeakerAccess" })
     T[] getLeaf(int index) {
-        Object[] leaf = array;
-        for (int shift = depthShift; shift > 0; shift -= BRANCHING_BASE) {
-            leaf = getAt(leaf, digit(offset + index, shift));
+        if (depthShift == 0) {
+            return (T[]) array;
+        } else if (depthShift == BRANCHING_BASE) {
+            return getAt(array, firstDigit(offset + index, depthShift));
+        } else {
+            index += offset;
+            Object[] leaf = getAt(array, firstDigit(index, depthShift));
+            for (int shift = depthShift - BRANCHING_BASE; shift > 0; shift -= BRANCHING_BASE) {
+                leaf = getAt(leaf, digit(index, shift));
+            }
+            return (T[]) leaf;
         }
-        return (T[]) leaf;
     }
 
     Iterator<T> iterator() {
         return new Iterator<T>() {
-            final int globalLength = BitMappedTrie.this.length();
-            int globalIndex = 0;
+            private final int globalLength = BitMappedTrie.this.length();
+            private int globalIndex = 0;
 
-            int index = lastDigit(offset());
-            T[] leaf = getLeaf(globalIndex);
-            int length = leaf.length;
+            private int index = lastDigit(offset);
+            private T[] leaf = getLeaf(globalIndex);
+            private int length = leaf.length;
 
             @Override
             public boolean hasNext() { return globalIndex < globalLength; }
@@ -182,6 +232,7 @@ final class BitMappedTrie<T> implements Serializable {
                 if (index == length) { setCurrentArray(); }
 
                 final T next = leaf[index];
+                assert Objects.equals(next, BitMappedTrie.this.get(globalIndex));
 
                 index++;
                 globalIndex++;
@@ -189,16 +240,62 @@ final class BitMappedTrie<T> implements Serializable {
                 return next;
             }
 
-            void setCurrentArray() {
+            private void setCurrentArray() {
                 index = 0;
                 leaf = getLeaf(globalIndex);
                 length = leaf.length;
-                assert leaf != null;
             }
         };
     }
 
-    int offset() { return offset; }
+    @SuppressWarnings("unchecked")
+    <T2> int visit(LeafVisitor<T2[]> visitor) {
+        int globalIndex = 0, start = lastDigit(offset);
+        for (int index = 0; index < length; ) {
+            final T2[] leaf = (T2[]) getLeaf(index);
+            final int end = Math.min(leaf.length, start + length - index);
+
+            globalIndex = visitor.visit(globalIndex, leaf, start, end);
+
+            index += end - start;
+            start = 0;
+        }
+        return globalIndex;
+    }
+
+    BitMappedTrie<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+
+        final Object[] results = new Object[length()];
+        final int length = this.<T> visit((index, leaf, start, end) -> {
+            for (int i = start; i < end; i++) {
+                final T value = leaf[i];
+                if (predicate.test(value)) {
+                    results[index++] = value;
+                }
+            }
+            return index;
+        });
+
+        return (length() == length)
+               ? this
+               : BitMappedTrie.ofAll(copyRange(results, 0, length));
+    }
+
+    <U> BitMappedTrie<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+
+        final Object[] results = newInstance(length);
+        this.<T> visit((index, leaf, start, end) -> {
+            for (int i = start; i < end; i++) {
+                results[index++] = mapper.apply(leaf[i]);
+            }
+            return index;
+        });
+
+        return BitMappedTrie.ofAll(results);
+    }
+
     int length() { return length; }
 }
 
@@ -206,6 +303,12 @@ final class BitMappedTrie<T> implements Serializable {
 interface NodeModifier {
     Object[] apply(Object arrayObject, int index);
 
-    static NodeModifier copyLeaf = (o, i) -> copy(o, i + 1);
-    static NodeModifier updateLeafWith(Object element) { return (o, i) -> copyUpdate(o, i, element); }
+    static <T> NodeModifier updateLeafWith(T element) { return (o, i) -> copyUpdate(o, i, element); }
+    NodeModifier COPY_NODE = (o, i) -> copy(o, i + 1);
+    NodeModifier IDENTITY = (o, i) -> (Object[]) o;
+}
+
+@FunctionalInterface
+interface LeafVisitor<T> {
+    int visit(int index, T leaf, int start, int end);
 }
