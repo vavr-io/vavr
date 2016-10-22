@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.collection.Arrays.asArray;
+import static javaslang.collection.ArrayType.asArray;
 import static javaslang.collection.Collections.areEqual;
 import static javaslang.collection.Collections.seq;
 

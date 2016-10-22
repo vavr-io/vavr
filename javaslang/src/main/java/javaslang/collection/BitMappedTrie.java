@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static javaslang.collection.Arrays.*;
+import static javaslang.collection.ArrayType.*;
 import static javaslang.collection.NodeModifier.*;
 
 /**
@@ -37,7 +37,7 @@ final class BitMappedTrie<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final BitMappedTrie<?> EMPTY = new BitMappedTrie<>(Arrays.empty(), 0, 0, 0);
+    private static final BitMappedTrie<?> EMPTY = new BitMappedTrie<>(ArrayType.empty(), 0, 0, 0);
     @SuppressWarnings("unchecked")
     static <T> BitMappedTrie<T> empty() { return (BitMappedTrie<T>) EMPTY; }
 
@@ -81,7 +81,7 @@ final class BitMappedTrie<T> implements Serializable {
             Object[] array = this.array;
             int shift = depthShift, offset = this.offset;
             if (isFullLeft()) {
-                array = copyUpdate(Arrays.empty(), BRANCHING_FACTOR - 1, array);
+                array = copyUpdate(ArrayType.empty(), BRANCHING_FACTOR - 1, array);
                 shift += BRANCHING_BASE;
                 offset = treeSize(BRANCHING_FACTOR - 1, shift);
             }
@@ -125,7 +125,7 @@ final class BitMappedTrie<T> implements Serializable {
             final int index = offset + n;
             final Object[] root = arePointingToSameLeaf(0, n)
                                   ? array
-                                  : modifyLeaf(array, depthShift, index, Arrays::copyDrop, IDENTITY);
+                                  : modifyLeaf(array, depthShift, index, ArrayType::copyDrop, IDENTITY);
             return collapsed(root, index, length() - n, depthShift);
         }
     }
@@ -139,7 +139,7 @@ final class BitMappedTrie<T> implements Serializable {
             final int index = n - 1;
             final Object[] root = arePointingToSameLeaf(index, length() - 1)
                                   ? array
-                                  : modifyLeaf(array, depthShift, offset + index, Arrays::copyTake, IDENTITY);
+                                  : modifyLeaf(array, depthShift, offset + index, ArrayType::copyTake, IDENTITY);
             return collapsed(root, offset, n, depthShift);
         }
     }

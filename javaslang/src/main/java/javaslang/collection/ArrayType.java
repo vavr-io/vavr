@@ -12,7 +12,7 @@ package javaslang.collection;
  * @author Pap Lőrinc
  * @since 2.1.0
  */
-final class Arrays {
+final class ArrayType {
     private static final Object[] EMPTY = {};
     static Object[] empty() { return EMPTY; }
 
