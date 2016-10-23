@@ -34,6 +34,7 @@ def generateMainClasses(): Unit = {
   genAPI()
   genFunctions()
   genTuples()
+  genArrayTypes()
 
   /**
    * Generator of Match
@@ -2273,6 +2274,76 @@ def generateMainClasses(): Unit = {
 
             ${(1 to N).gen(genSeqMethod)("\n\n")}
 
+        }
+      """
+    }
+  }
+
+  /**
+    * Generator of javaslang.collection.*ArrayType
+    */
+  def genArrayTypes(): Unit = {
+    val types = Map(
+      "Object" -> "Object",
+      "boolean" -> "Boolean",
+      "byte" -> "Byte",
+      "char" -> "Character",
+      "double" -> "Double",
+      "float" -> "Float",
+      "int" -> "Integer",
+      "long" -> "Long",
+      "short" -> "Short"
+    ) // note: there is no void[] in Java
+
+    types.keys.foreach { arrayType =>
+      genJavaslangFile("javaslang.collection", s"${arrayType.capitalize}ArrayType")(genArrayType(arrayType))
+    }
+
+    /*
+     * Generates *ArrayType
+     */
+    def genArrayType(arrayType: String)(im: ImportManager, packageName: String, className: String): String = {
+      val wrapperType = types(arrayType)
+      val cast = if (wrapperType != "Object") s"($wrapperType)" else ""
+
+      xs"""
+         /**
+         * $arrayType[] helper to replace reflective array access.
+         * @author Pap Lőrinc
+         * @since 2.1.0
+         */
+        final class $className extends ArrayType<$wrapperType> {
+            private static final long serialVersionUID = 1L;
+            static final $className INSTANCE = new $className();
+            static final $arrayType[] EMPTY = new $arrayType[0];
+
+            private static $arrayType[] cast(Object array) { return ($arrayType[]) array; }
+
+            @Override
+            Class<$wrapperType> type() { return $arrayType.class; }
+
+            @Override
+            $arrayType[] empty() { return EMPTY; }
+
+            @Override
+            int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+
+            @Override
+            $wrapperType getAt(Object array, int index) { return cast(array)[index]; }
+
+            @Override
+            void setAt(Object array, int index, Object value) { cast(array)[index] = $cast value; }
+
+            @Override
+            Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+                if (size == 0) {
+                    return new $arrayType[arraySize];
+                } else {
+                    final $arrayType[] result = new $arrayType[arraySize];
+                    System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
+                    return result;
+                }
+            }
         }
       """
     }
