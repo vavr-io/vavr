@@ -418,7 +418,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
         if (isEmpty()) {
             return Option.none();
         } else {
-            if (head()._2 instanceof Comparator) {
+            if (head()._2 instanceof Comparable) {
                 final Comparator<Tuple2<K, V>> comparator = (e1, e2) -> ((Comparable<V>) e1._2).compareTo(e2._2);
                 return iterator().maxBy(comparator);
             } else {
