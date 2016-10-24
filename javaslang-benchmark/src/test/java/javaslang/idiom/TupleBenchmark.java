@@ -2,28 +2,23 @@ package javaslang.idiom;
 
 import javaslang.JmhRunner;
 import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
 import javaslang.collection.Array;
-import javaslang.collection.Iterator;
 import org.junit.Test;
-import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.infra.Blackhole;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.State;
 
-import java.util.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
-import static javaslang.API.For;
-import static javaslang.JmhRunner.getRandomValues;
+import static javaslang.API.Array;
 
 /**
- * Benchmark for Tuple2, Tuple3 vs an array.
+ * Benchmark for Tuple[2,4,8] vs an array.
  */
+@State(Scope.Benchmark)
 public class TupleBenchmark {
-    static final Array<Class<?>> CLASSES = Array.of(
+    static final Array<Class<?>> CLASSES = Array(
             Tuple2Benchmark.class,
-            Tuple3Benchmark.class
+            Tuple4Benchmark.class,
+            Tuple8Benchmark.class
     );
 
     @Test
@@ -35,38 +30,27 @@ public class TupleBenchmark {
         JmhRunner.runNormalNoAsserts(CLASSES);
     }
 
-    @State(Scope.Benchmark)
-    public static class Base {
+    public static class Tuple2Benchmark {
+        @Benchmark
+        public Object java_tuple() { return new Integer[] { 0, 1 }; }
+
+        @Benchmark
+        public Object slang_tuple() { return Tuple.of(0, 1); }
     }
 
-    public static class Tuple2Benchmark extends Base {
+    public static class Tuple4Benchmark {
+        @Benchmark
+        public Object java_tuple() { return new Integer[] { 0, 1, 2 }; }
 
         @Benchmark
-        public Object slang_tuple2_creation() {
-            Tuple2<String, String> pair = Tuple.of("some", "string");
-            return pair;
-        }
-
-        @Benchmark
-        public Object java_tuple2_creation() {
-            String[] pair = new String[] { "some", "string" };
-            return pair;
-        }
+        public Object slang_tuple() { return Tuple.of(0, 1, 2, 3); }
     }
 
-    public static class Tuple3Benchmark extends Base {
+    public static class Tuple8Benchmark {
+        @Benchmark
+        public Object java_tuple() { return new Integer[] { 0, 1, 2, 3, 4, 5, 6, 7 }; }
 
         @Benchmark
-        public Object slang_tuple2_creation() {
-            Tuple3<String, String, String> triplet = Tuple.of("some", "string", "value");
-            return triplet;
-        }
-
-        @Benchmark
-        public Object java_tuple2_creation() {
-            String[] triplet = new String[] { "some", "string", "value" };
-            return triplet;
-        }
+        public Object slang_tuple() { return Tuple.of(0, 1, 2, 3, 4, 5, 6, 7); }
     }
-
 }
