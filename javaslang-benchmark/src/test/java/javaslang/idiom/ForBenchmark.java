@@ -2,28 +2,26 @@ package javaslang.idiom;
 
 import javaslang.JmhRunner;
 import javaslang.collection.Array;
-import javaslang.collection.Iterator;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.infra.Blackhole;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
-import static javaslang.API.For;
+import static java.util.stream.Collectors.toList;
+import static javaslang.API.*;
 import static javaslang.JmhRunner.getRandomValues;
 
 /**
  * Benchmark for nested loops vs javaslang's For().yield comprehensions.
  *
- * @see javaslang.API.For2
+ * @see For2
  */
 public class ForBenchmark {
-    static final Array<Class<?>> CLASSES = Array.of(
-            ForComprehensionNestedFor.class
+    static final Array<Class<?>> CLASSES = Array(
+            For.class
     );
 
     @Test
@@ -37,39 +35,45 @@ public class ForBenchmark {
 
     @State(Scope.Benchmark)
     public static class Base {
-        @Param({ "10", "20", "30" })
-        public int CONTAINER_SIZE;
-
+        int CONTAINER_SIZE = 1000;
+        int AGGREGATE;
         List<Integer> ELEMENTS;
 
+        final BiFunction<Integer, Integer, Integer> AGGREGATOR = (i, j) -> i ^ j;
+
         @Setup
-        public void setup(Blackhole bh) {
-            Integer[] array = getRandomValues(CONTAINER_SIZE, 0, true);
-            ELEMENTS = Arrays.asList(array);
-        }
-    }
+        public void setup() {
+            ELEMENTS = Arrays.asList(getRandomValues(CONTAINER_SIZE, 0, true));
 
-    public static class ForComprehensionNestedFor extends Base {
-
-        @Benchmark
-        public void slang_for(Blackhole bh) {
-            BiFunction<Integer,Integer,Integer> bf = (i,j) -> {bh.consume(i);bh.consume(j); return 0;};
-            List<Integer> res = For(ELEMENTS, ELEMENTS).yield(bf).collect(Collectors.toList());
-
-            assert Iterator.ofAll(res).forAll(i -> i == 0);
-        }
-
-        @Benchmark
-        public void java_for(Blackhole bh) {
-            BiFunction<Integer,Integer,Integer> bf = (i,j) -> {bh.consume(i);bh.consume(j); return 0;};
-            List<Integer> result = new ArrayList<>(CONTAINER_SIZE * CONTAINER_SIZE);
+            AGGREGATE = 0;
             for (Integer i : ELEMENTS) {
                 for (Integer j : ELEMENTS) {
-                    result.add(bf.apply(i,j));
+                    AGGREGATE += AGGREGATOR.apply(i, j);
                 }
             }
 
-            assert Iterator.ofAll(result).forAll(i -> i == 0);
+        }
+    }
+
+    public static class For extends Base {
+        @Benchmark
+        public Object java_for() {
+            final List<Integer> result = new ArrayList<>(CONTAINER_SIZE * CONTAINER_SIZE);
+            for (Integer i : ELEMENTS) {
+                for (Integer j : ELEMENTS) {
+                    result.add(AGGREGATOR.apply(i, j));
+                }
+            }
+
+            assert Array(result).sum().intValue() == AGGREGATE;
+            return result;
+        }
+
+        @Benchmark
+        public Object slang_for() {
+            final List<Integer> result = For(ELEMENTS, ELEMENTS).yield(AGGREGATOR).collect(toList());
+            assert Array(result).sum().intValue() == AGGREGATE;
+            return result;
         }
     }
 

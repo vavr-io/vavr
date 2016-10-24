@@ -2,22 +2,21 @@ package javaslang.idiom;
 
 import javaslang.JmhRunner;
 import javaslang.collection.Array;
-import javaslang.control.Try;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 
-import java.util.Random;
+import static javaslang.API.Array;
+import static javaslang.API.Try;
 
 /**
  * Benchmark for Try vs try/catch.
  */
 public class TryBenchmark {
-    static final Array<Class<?>> CLASSES = Array.of(
-            TryThrowsCatchBenchmark.class,
-            TryNoThrowsCatchBenchmark.class
+    static final Array<Class<?>> CLASSES = Array(
+            Try.class
     );
 
     @Test
@@ -29,64 +28,37 @@ public class TryBenchmark {
         JmhRunner.runNormalNoAsserts(CLASSES);
     }
 
-
     @State(Scope.Benchmark)
     public static class Base {
-
-        Integer throwsException() {
-            throw new RuntimeException();
-        }
-
-        Integer doesntThrow() {
-            return 0;
-        }
+        int inverse(int divisor) throws ArithmeticException { return 1 / divisor; }
     }
 
-    public static class TryThrowsCatchBenchmark extends Base {
-
+    public static class Try extends Base {
         @Benchmark
-        public void slang_try_actual_exception(Blackhole bh) {
-            Integer res = Try.of(this::throwsException)
-                    .recover(RuntimeException.class, 1)
-                    .getOrElse(0);
-
-            assert res == 1;
-            bh.consume(res);
+        public void java_try(Blackhole bh) {
+            for (int i = 0; i <= 1; i++) {
+                int result;
+                try {
+                    result = inverse(i);
+                } catch (ArithmeticException e) {
+                    result = 0;
+                }
+                assert result == i;
+                bh.consume(result);
+            }
         }
 
         @Benchmark
-        public void java_try_actual_exception(Blackhole bh) {
-            try {
-                this.throwsException();
-                assert false;
-            } catch (RuntimeException e) {
-                bh.consume(e);
+        public void slang_try(Blackhole bh) {
+            for (int i = 0; i <= 1; i++) {
+                int i2 = i;
+                final int result = Try(() -> inverse(i2))
+                        .recover(ArithmeticException.class, 0)
+                        .get();
+
+                assert result == i;
+                bh.consume(result);
             }
         }
     }
-
-    public static class TryNoThrowsCatchBenchmark extends Base {
-
-        @Benchmark
-        public void slang_try_no_exception(Blackhole bh) {
-            Integer res = Try.of(this::doesntThrow)
-                    .recover(RuntimeException.class, 1)
-                    .getOrElse(0);
-
-            assert res == 0;
-            bh.consume(res);
-        }
-
-        @Benchmark
-        public void java_try_no_exception(Blackhole bh) {
-            try {
-                Integer res = this.doesntThrow();
-                bh.consume(res);
-            } catch (RuntimeException e) {
-                assert false;
-            }
-        }
-    }
-
-
 }

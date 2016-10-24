@@ -8,11 +8,12 @@ import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
+import static javaslang.API.Array;
 import static javaslang.JmhRunner.Includes.JAVA;
 import static javaslang.JmhRunner.Includes.JAVASLANG;
 
 public class LazyBenchmark {
-    static final Array<Class<?>> CLASSES = Array.of(
+    static final Array<Class<?>> CLASSES = Array(
             Get.class
     );
 
