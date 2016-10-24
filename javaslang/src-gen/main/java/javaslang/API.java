@@ -2802,6 +2802,55 @@ public final class API {
 
     /**
      * Guard pattern, checks if a predicate is satisfied.
+     * <p>
+     * This method is intended to be used with lambdas and method references, for example:
+     *
+     * <pre><code>
+     * String evenOrOdd(int num) {
+     *     return Match(num).of(
+     *             Case($(i -&gt; i % 2 == 0), "even"),
+     *             Case($(this::isOdd), "odd")
+     *     );
+     * }
+     *
+     * boolean isOdd(int i) {
+     *     return i % 2 == 1;
+     * }
+     * </code></pre>
+     *
+     * It is also valid to pass {@code Predicate} instances:
+     *
+     * <pre><code>
+     * Predicate&lt;Integer&gt; isOdd = i -&gt; i % 2 == 1;
+     *
+     * Match(num).of(
+     *         Case($(i -&gt; i % 2 == 0), "even"),
+     *         Case($(isOdd), "odd")
+     * );
+     * </code></pre>
+     *
+     * <strong>Note:</strong> Please take care when matching {@code Predicate} instances. In general,
+     * <a href="http://cstheory.stackexchange.com/a/14152" target="_blank">function equality</a>
+     * is an undecidable problem in computer science. In Javaslang we are only able to check,
+     * if two functions are the same instance.
+     * <p>
+     * However, this code will fail:
+     *
+     * <pre><code>
+     * Predicate&lt;Integer&gt; p = i -&gt; true;
+     * Match(p).of(
+     *     Case($(p), 1) // WRONG! It calls $(Predicate)
+     * );
+     * </code></pre>
+     *
+     * Instead we have to use {@link Predicates#is(Object)}:
+     *
+     * <pre><code>
+     * Predicate&lt;Integer&gt; p = i -&gt; true;
+     * Match(p).of(
+     *     Case(is(p), 1) // CORRECT! It calls $(T)
+     * );
+     * </code></pre>
      *
      * @param <T>       type of the prototype
      * @param predicate the predicate that tests a given value
