@@ -7,7 +7,8 @@ package javaslang.collection;
 
 import javaslang.control.Option;
 
-import java.util.*;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 /**
@@ -27,7 +28,33 @@ import java.util.function.BiFunction;
 public interface Foldable<T> {
 
     /**
-     * Folds this elements from the left, starting with {@code zero} and successively calling {@code combine}.
+     * Folds this elements using the given associative binary operator, starting with {@code zero} and
+     * successively calling {@code combine}. The order in which the elements are combined is
+     * non-deterministic.
+     * <p>
+     * The methods {@code fold}, {@code foldLeft} and {@code foldRight} differ in how the elements are combined:
+     *
+     * <ul>
+     * <li>{@link #foldLeft(Object, BiFunction)} associates to the left</li>
+     * <li>{@link #foldRight(Object, BiFunction)} associates to the right</li>
+     * <li>
+     * {@code fold} takes an associative combine operation because the traversal of elements is
+     * unordered/non-deterministic. The associativity guarantees that in each case the result will
+     * be the same, it does not matter in which order the elements are combined. Generally binary
+     * operators aren't associative, i.e. the result may differ if elements are combined in a different
+     * order.
+     * <p>
+     * We say that this Foldable and the associative combine operation form a
+     * <a href="https://en.wikipedia.org/wiki/Monoid" target="_blank">Monoid</a>.
+     * </li>
+     * </ul>
+     *
+     * Example:
+     *
+     * <pre><code>
+     * // = 6
+     * Set(1, 2, 3).fold(0, (a, b) -> a + b);
+     * </code></pre>
      *
      * @param zero    A zero element to start with.
      * @param combine A function which combines elements.
@@ -41,6 +68,13 @@ public interface Foldable<T> {
 
     /**
      * Folds this elements from the left, starting with {@code zero} and successively calling {@code combine}.
+     * <p>
+     * Example:
+     *
+     * <pre><code>
+     * // = "cba!"
+     * List("a", "b", "c").foldLeft("!", (xs, x) -> x + xs)
+     * </code></pre>
      *
      * @param <U>     the type to fold over
      * @param zero    A zero element to start with.
@@ -52,6 +86,13 @@ public interface Foldable<T> {
 
     /**
      * Folds this elements from the right, starting with {@code zero} and successively calling {@code combine}.
+     * <p>
+     * Example:
+     *
+     * <pre><code>
+     * // = "!cba"
+     * List("a", "b", "c").foldRight("!", (x, xs) -> xs + x)
+     * </code></pre>
      *
      * @param <U>     the type of the folded value
      * @param zero    A zero element to start with.
