@@ -292,7 +292,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
-     * @param keyComparator key comparator
+     * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -304,7 +304,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
-     * @param keyComparator key comparator
+     * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -316,7 +316,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
-     * @param keyComparator key comparator
+     * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -328,7 +328,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
-     * @param keyComparator key comparator
+     * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -340,7 +340,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
-     * @param keyComparator key comparator
+     * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -352,7 +352,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
-     * @param keyComparator key comparator
+     * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -364,7 +364,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
-     * @param keyComparator key comparator
+     * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -376,7 +376,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
-     * @param keyComparator key comparator
+     * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -388,7 +388,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
-     * @param keyComparator key comparator
+     * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
