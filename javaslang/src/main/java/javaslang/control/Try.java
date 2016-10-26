@@ -45,6 +45,23 @@ public interface Try<T> extends Value<T> {
     }
 
     /**
+     * Creates a Try of a CheckedVoidSupplier.
+     *
+     * @param supplier A checked supplier
+     * @param <T>      Component type
+     * @return {@code Success(supplier.get())} if no exception occurs, otherwise {@code Failure(throwable)} if an
+     * exception occurs calling {@code supplier.get()}.
+     */
+    static <T> Try<T> of(CheckedVoidSupplier supplier) {
+        try {
+            supplier.get();
+            return new Success<>(null);
+        } catch (Throwable t) {
+            return new Failure<>(t);
+        }
+    }
+
+    /**
      * Creates a Try of a CheckedRunnable.
      *
      * @param runnable A checked runnable
@@ -740,6 +757,20 @@ public interface Try<T> extends Value<T> {
          * @throws Throwable if an error occurs
          */
         R get() throws Throwable;
+    }
+
+    /**
+     * A {@linkplain java.util.function.Supplier} which may throw.
+     */
+    @FunctionalInterface
+    interface CheckedVoidSupplier {
+
+        /**
+         * Gets a result.
+         *
+         * @throws Throwable if an error occurs
+         */
+        void get() throws Throwable;
     }
 
     /**
