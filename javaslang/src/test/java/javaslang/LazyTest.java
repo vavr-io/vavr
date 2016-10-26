@@ -49,14 +49,14 @@ public class LazyTest {
 
     @Test
     public void shouldSequenceEmpty() {
-        final Seq<Lazy<Integer>> testee = Stream.empty();
+        final List<Lazy<Integer>> testee = List.empty();
         final Lazy<Seq<Integer>> sequence = Lazy.sequence(testee);
         assertThat(sequence.get()).isEqualTo(Stream.empty());
     }
 
     @Test
     public void shouldSequenceNonEmptyLazy() {
-        final Stream<Lazy<Integer>> testee = Stream.of(1, 2, 3).map(i -> Lazy.of(() -> i));
+        final List<Lazy<Integer>> testee = List.of(1, 2, 3).map(i -> Lazy.of(() -> i));
         final Lazy<Seq<Integer>> sequence = Lazy.sequence(testee);
         assertThat(sequence.get()).isEqualTo(Stream.of(1, 2, 3));
     }

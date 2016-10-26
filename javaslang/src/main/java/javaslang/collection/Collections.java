@@ -191,7 +191,7 @@ final class Collections {
         if (iterable instanceof Seq) {
             return (Seq<T>) iterable;
         } else {
-            return Stream.ofAll(iterable);
+            return List.ofAll(iterable);
         }
     }
 }

@@ -9,6 +9,7 @@ import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.Seq;
 import javaslang.collection.Stream;
+import javaslang.collection.Vector;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
@@ -59,14 +60,14 @@ public interface Option<T> extends Value<T> {
      */
     static <T> Option<Seq<T>> sequence(Iterable<? extends Option<? extends T>> values) {
         Objects.requireNonNull(values, "values is null");
-        Stream<T> stream = Stream.empty();
+        Vector<T> vector = Vector.empty();
         for (Option<? extends T> value : values) {
             if (value.isEmpty()) {
                 return Option.none();
             }
-            stream = stream.append(value.get());
+            vector = vector.append(value.get());
         }
-        return Option.some(stream);
+        return Option.some(vector);
     }
 
     /**

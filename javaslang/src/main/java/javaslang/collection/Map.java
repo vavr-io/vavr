@@ -243,7 +243,8 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     @Override
     default <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return Stream.ofAll(iterator()).flatMap(mapper);
+        // don't remove cast, doesn't compile in Eclipse without it
+        return (Seq<U>) iterator().flatMap(mapper).toStream();
     }
 
     @Override
@@ -332,7 +333,8 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     @Override
     default <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return Stream.ofAll(iterator()).map(mapper);
+        // don't remove cast, doesn't compile in Eclipse without it
+        return (Seq<U>) iterator().map(mapper).toStream();
     }
 
     /**
@@ -501,7 +503,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     @Override
     default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, Stream.empty(), Stream::append, Function.identity());
+        return iterator().scanLeft(zero, operation).toStream();
     }
 
     @Override
@@ -541,7 +543,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
 
     default <U> Seq<U> traverse(BiFunction<K, V, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(Stream.empty(), (acc, entry) -> acc.append(mapper.apply(entry._1, entry._2)));
+        return iterator().<U> map(entry -> mapper.apply(entry._1, entry._2)).toStream();
     }
 
     default Tuple2<Seq<K>, Seq<V>> unzip() {
