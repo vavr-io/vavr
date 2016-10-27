@@ -489,8 +489,13 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldDropWhileCorrect() {
+    public void shouldDropWhileAccordingToPredicate() {
         assertThat(of(1, 2, 3).dropWhile(i -> i < 2)).isEqualTo(of(2, 3));
+    }
+
+    @Test
+    public void shouldDropWhileAndNotTruncate() {
+        assertThat(of(1, 2, 3).dropWhile(i -> i % 2 == 1)).isEqualTo(of(2, 3));
     }
 
     // -- existsUnique
@@ -1536,7 +1541,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test // #201
+    @Test
     public void shouldSlideNonNilBySize2() {
         final List<Traversable<Integer>> actual = of(1, 2, 3, 4, 5).sliding(2).toList().map(Vector::ofAll);
         final List<Traversable<Integer>> expected = List.of(Vector.of(1, 2), Vector.of(2, 3), Vector.of(3, 4), Vector.of(4, 5));
@@ -1603,6 +1608,12 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldSpanNonNil() {
         assertThat(of(0, 1, 2, 3).span(i -> i < 2)).isEqualTo(Tuple.of(of(0, 1), of(2, 3)));
+    }
+
+    @Test
+    public void shouldSpanAndNotTruncate() {
+        assertThat(of(1, 1, 2, 2, 3, 3).span(x -> x % 2 == 1)).isEqualTo(Tuple.of(of(1, 1), of(2, 2, 3, 3)));
+        assertThat(of(1, 1, 2, 2, 4, 4).span(x -> x == 1)).isEqualTo(Tuple.of(of(1, 1), of(2, 2, 4, 4)));
     }
 
     // -- spliterator
