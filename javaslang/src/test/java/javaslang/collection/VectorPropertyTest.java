@@ -23,19 +23,66 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class VectorPropertyTest {
     @Test
     public void shouldCreateAndGet() {
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 500; i++) {
             final Seq<Integer> expected = Array.range(0, i);
             final Vector<Integer> actual = Vector.ofAll(expected);
             for (int j = 0; j < actual.size(); j++) {
                 assertThat(expected.get(j)).isEqualTo(actual.get(j));
             }
+
+            /* boolean */
+            final Seq<Boolean> expectedBoolean = expected.map(v -> v > 0);
+            final Vector<Boolean> actualBoolean = Vector.ofAll(ArrayType.<boolean[]> asPrimitives(boolean.class, expectedBoolean));
+            assert (i == 0) || (actualBoolean.trie.type.type() == boolean.class);
+            assertAreEqual(expectedBoolean, actualBoolean);
+
+            /* byte */
+            final Seq<Byte> expectedByte = expected.map(Integer::byteValue);
+            final Vector<Byte> actualByte = Vector.ofAll(ArrayType.<byte[]> asPrimitives(byte.class, expectedByte));
+            assert (i == 0) || (actualByte.trie.type.type() == byte.class);
+            assertAreEqual(expectedByte, actualByte);
+
+            /* char */
+            final Seq<Character> expectedChar = expected.map(v -> (char) v.intValue());
+            final Vector<Character> actualChar = Vector.ofAll(ArrayType.<char[]> asPrimitives(char.class, expectedChar));
+            assert (i == 0) || (actualChar.trie.type.type() == char.class);
+            assertAreEqual(expectedChar, actualChar);
+
+            /* double */
+            final Seq<Double> expectedDouble = expected.map(Integer::doubleValue);
+            final Vector<Double> actualDouble = Vector.ofAll(ArrayType.<double[]> asPrimitives(double.class, expectedDouble));
+            assert (i == 0) || (actualDouble.trie.type.type() == double.class);
+            assertAreEqual(expectedDouble, actualDouble);
+
+            /* float */
+            final Seq<Float> expectedFloat = expected.map(Integer::floatValue);
+            final Vector<Float> actualFloat = Vector.ofAll(ArrayType.<float[]> asPrimitives(float.class, expectedFloat));
+            assert (i == 0) || (actualFloat.trie.type.type() == float.class);
+            assertAreEqual(expectedFloat, actualFloat);
+
+            /* int */
+            final Vector<Integer> actualInt = Vector.ofAll(ArrayType.<int[]> asPrimitives(int.class, expected));
+            assert (i == 0) || (actualInt.trie.type.type() == int.class);
+            assertAreEqual(expected, actualInt);
+
+            /* long */
+            final Seq<Long> expectedLong = expected.map(Integer::longValue);
+            final Vector<Long> actualLog = Vector.ofAll(ArrayType.<long[]> asPrimitives(long.class, expectedLong));
+            assert (i == 0) || (actualLog.trie.type.type() == long.class);
+            assertAreEqual(expectedLong, actualLog);
+
+            /* short */
+            final Seq<Short> expectedShort = expected.map(Integer::shortValue);
+            final Vector<Short> actualShort = Vector.ofAll(ArrayType.<short[]> asPrimitives(short.class, expectedShort));
+            assert (i == 0) || (actualShort.trie.type.type() == short.class);
+            assertAreEqual(expectedShort, actualShort);
         }
     }
 
     @Test
     public void shouldIterate() {
-        for (byte depth = 0; depth <= 4; depth++) {
-            for (int i = 0; i < getMaxSizeForDepth(depth); i++) {
+        for (byte depth = 0; depth <= 2; depth++) {
+            for (int i = 0; i < 5000; i++) {
                 final Seq<Integer> expected = Array.range(0, i);
                 final Vector<Integer> actual = Vector.ofAll(expected);
                 assertAreEqual(actual, expected);
@@ -43,10 +90,10 @@ public class VectorPropertyTest {
         }
 
         Seq<Integer> expected = Array.range(0, 1000);
-        Vector<Integer> actual = Vector.ofAll(expected);
+        Vector<Integer> actual = Vector.ofAll(ArrayType.<int[]> asPrimitives(int.class, expected));
         for (int drop = 0; drop <= (BRANCHING_FACTOR + 1); drop++) {
             final Iterator<Integer> expectedIterator = expected.iterator();
-            actual.trie.<Object> visit((index, leaf, start, end) -> {
+            actual.trie.<int[]> visit((index, leaf, start, end) -> {
                 for (int i = start; i < end; i++) {
                     assertThat(leaf[i]).isEqualTo(expectedIterator.next());
                 }
@@ -64,7 +111,7 @@ public class VectorPropertyTest {
         Vector<Integer> actual = Vector.empty();
 
         for (int drop = 0; drop <= (BRANCHING_FACTOR + 1); drop++) {
-            for (Integer value : Iterator.range(0, getMaxSizeForDepth(3) + BRANCHING_FACTOR)) {
+            for (Integer value : Iterator.range(0, 1000)) {
                 expected = expected.drop(drop);
                 actual = assertAreEqual(actual, drop, Vector::drop, expected);
 
@@ -80,7 +127,7 @@ public class VectorPropertyTest {
         Vector<Integer> actual = Vector.empty();
 
         for (int drop = 0; drop <= (BRANCHING_FACTOR + 1); drop++) {
-            for (Integer value : Iterator.range(0, getMaxSizeForDepth(2) + BRANCHING_FACTOR)) {
+            for (Integer value : Iterator.range(0, 500)) {
                 expected = expected.drop(drop);
                 actual = assertAreEqual(actual, drop, Vector::drop, expected);
 
@@ -94,8 +141,8 @@ public class VectorPropertyTest {
     public void shouldUpdate() {
         final Function<Integer, Integer> mapper = i -> i + 1;
 
-        for (byte depth = 0; depth <= 6; depth++) {
-            final int length = getMaxSizeForDepth(depth) + BRANCHING_FACTOR;
+        for (byte depth = 0; depth <= 2; depth++) {
+            final int length = 10_000;
 
             for (int drop = 0; drop <= (BRANCHING_FACTOR + 1); drop++) {
                 Seq<Integer> expected = Array.range(0, length);
@@ -116,13 +163,11 @@ public class VectorPropertyTest {
 
     @Test
     public void shouldDrop() {
-        final int length = getMaxSizeForDepth(6) + BRANCHING_FACTOR;
-
-        final Seq<Integer> expected = Array.range(0, length);
+        final Seq<Integer> expected = Array.range(0, 2_000);
         final Vector<Integer> actual = Vector.ofAll(expected);
 
         Vector<Integer> actualSingleDrop = actual;
-        for (int i = 0; i <= length; i++) {
+        for (int i = 0; i <= expected.length(); i++) {
             final Seq<Integer> expectedDrop = expected.drop(i);
 
             assertAreEqual(actual, i, Vector::drop, expectedDrop);
@@ -134,13 +179,11 @@ public class VectorPropertyTest {
 
     @Test
     public void shouldDropRight() {
-        final int length = getMaxSizeForDepth(4) + BRANCHING_FACTOR;
-
-        final Seq<Integer> expected = Array.range(0, length);
+        final Seq<Integer> expected = Array.range(0, 2_000);
         final Vector<Integer> actual = Vector.ofAll(expected);
 
         Vector<Integer> actualSingleDrop = actual;
-        for (int i = 0; i <= length; i++) {
+        for (int i = 0; i <= expected.length(); i++) {
             final Seq<Integer> expectedDrop = expected.dropRight(i);
 
             assertAreEqual(actual, i, Vector::dropRight, expectedDrop);
@@ -152,7 +195,7 @@ public class VectorPropertyTest {
 
     @Test
     public void shouldSlice() {
-        for (int length = 1, end = getMaxSizeForDepth(2) + BRANCHING_FACTOR; length <= end; length++) {
+        for (int length = 1, end = 500; length <= end; length++) {
             Seq<Integer> expected = Array.range(0, length);
             Vector<Integer> actual = Vector.ofAll(expected);
 
@@ -172,7 +215,7 @@ public class VectorPropertyTest {
         for (int i = 1; i < 10; i++) {
             Seq<Object> expected = Array.empty();
             Vector<Object> actual = Vector.empty();
-            for (int j = 0; j < 50_000; j++) {
+            for (int j = 0; j < 20_000; j++) {
                 Seq<Tuple2<Seq<Object>, Vector<Object>>> history = Array.empty();
 
                 if (percent(random) < 20) {
@@ -181,7 +224,8 @@ public class VectorPropertyTest {
                         values.add(random.nextInt());
                     }
                     expected = Array.ofAll(values);
-                    actual = Vector.ofAll(values);
+                    final boolean isPrimitive = percent(random) < 30;
+                    actual = isPrimitive ? Vector.narrow(Vector.ofAll(ArrayType.<int[]> asPrimitives(int.class, values))) : Vector.ofAll(values);
                     assertAreEqual(expected, actual);
                     history = history.append(Tuple.of(expected, actual));
                 }
@@ -290,10 +334,5 @@ public class VectorPropertyTest {
         final List<?> actualList = actual.toJavaList();
         final List<?> expectedList = expected.toJavaList();
         assertThat(actualList).isEqualTo(expectedList); // a lot faster than `hasSameElementsAs`
-    }
-
-    private static int getMaxSizeForDepth(int depth) {
-        final int max = BRANCHING_FACTOR + (int) Math.pow(BRANCHING_FACTOR, depth) + BRANCHING_FACTOR;
-        return Math.min(max, 10_000);
     }
 }
