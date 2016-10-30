@@ -5,7 +5,6 @@ import org.eclipse.collections.api.list.MutableList;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-import scala.Tuple2;
 import scala.collection.generic.CanBuildFrom;
 import scala.compat.java8.functionConverterImpls.FromJavaFunction;
 import scala.compat.java8.functionConverterImpls.FromJavaPredicate;
@@ -48,12 +47,12 @@ public class VectorBenchmark {
 
     public static void main(String... args) {
         JmhRunner.runDebugWithAsserts(CLASSES);
-        JmhRunner.runNormalNoAsserts(CLASSES, /*FUNCTIONAL_JAVA, PCOLLECTIONS, ECOLLECTIONS,*/ JAVA, CLOJURE, SCALA, JAVASLANG);
+        JmhRunner.runNormalNoAsserts(CLASSES, JAVA, FUNCTIONAL_JAVA, PCOLLECTIONS, ECOLLECTIONS, CLOJURE, SCALA, JAVASLANG);
     }
 
     @State(Scope.Benchmark)
     public static class Base {
-        @Param({ "100", "10000" })
+        @Param({ "10", "100", "1026" })
         public int CONTAINER_SIZE;
 
         int EXPECTED_AGGREGATE;

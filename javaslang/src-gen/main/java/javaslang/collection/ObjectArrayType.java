@@ -9,12 +9,15 @@ package javaslang.collection;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
- /**
+import java.io.Serializable;
+
+/**
  * Object[] helper to replace reflective array access.
+ *
  * @author Pap Lőrinc
  * @since 2.1.0
  */
-final class ObjectArrayType extends ArrayType<Object> {
+final class ObjectArrayType implements ArrayType<Object>, Serializable {
     private static final long serialVersionUID = 1L;
     static final ObjectArrayType INSTANCE = new ObjectArrayType();
     static final Object[] EMPTY = new Object[0];
@@ -22,22 +25,22 @@ final class ObjectArrayType extends ArrayType<Object> {
     private static Object[] cast(Object array) { return (Object[]) array; }
 
     @Override
-    Class<Object> type() { return Object.class; }
+    public Class<Object> type() { return Object.class; }
 
     @Override
-    Object[] empty() { return EMPTY; }
+    public Object[] empty() { return EMPTY; }
 
     @Override
-    int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+    public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
 
     @Override
-    Object getAt(Object array, int index) { return cast(array)[index]; }
+    public Object getAt(Object array, int index) { return cast(array)[index]; }
 
     @Override
-    void setAt(Object array, int index, Object value) { cast(array)[index] =  value; }
+    public void setAt(Object array, int index, Object value) { cast(array)[index] = value; }
 
     @Override
-    Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+    public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
         if (size == 0) {
             return new Object[arraySize];
         } else {

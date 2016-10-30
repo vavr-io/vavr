@@ -9,12 +9,15 @@ package javaslang.collection;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
- /**
+import java.io.Serializable;
+
+/**
  * byte[] helper to replace reflective array access.
+ *
  * @author Pap Lőrinc
  * @since 2.1.0
  */
-final class ByteArrayType extends ArrayType<Byte> {
+final class ByteArrayType implements ArrayType<Byte>, Serializable {
     private static final long serialVersionUID = 1L;
     static final ByteArrayType INSTANCE = new ByteArrayType();
     static final byte[] EMPTY = new byte[0];
@@ -22,22 +25,22 @@ final class ByteArrayType extends ArrayType<Byte> {
     private static byte[] cast(Object array) { return (byte[]) array; }
 
     @Override
-    Class<Byte> type() { return byte.class; }
+    public Class<Byte> type() { return byte.class; }
 
     @Override
-    byte[] empty() { return EMPTY; }
+    public byte[] empty() { return EMPTY; }
 
     @Override
-    int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+    public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
 
     @Override
-    Byte getAt(Object array, int index) { return cast(array)[index]; }
+    public Byte getAt(Object array, int index) { return cast(array)[index]; }
 
     @Override
-    void setAt(Object array, int index, Object value) { cast(array)[index] = (Byte) value; }
+    public void setAt(Object array, int index, Object value) { cast(array)[index] = (Byte) value; }
 
     @Override
-    Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+    public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
         if (size == 0) {
             return new byte[arraySize];
         } else {

@@ -9,12 +9,15 @@ package javaslang.collection;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
- /**
+import java.io.Serializable;
+
+/**
  * double[] helper to replace reflective array access.
+ *
  * @author Pap Lőrinc
  * @since 2.1.0
  */
-final class DoubleArrayType extends ArrayType<Double> {
+final class DoubleArrayType implements ArrayType<Double>, Serializable {
     private static final long serialVersionUID = 1L;
     static final DoubleArrayType INSTANCE = new DoubleArrayType();
     static final double[] EMPTY = new double[0];
@@ -22,22 +25,22 @@ final class DoubleArrayType extends ArrayType<Double> {
     private static double[] cast(Object array) { return (double[]) array; }
 
     @Override
-    Class<Double> type() { return double.class; }
+    public Class<Double> type() { return double.class; }
 
     @Override
-    double[] empty() { return EMPTY; }
+    public double[] empty() { return EMPTY; }
 
     @Override
-    int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+    public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
 
     @Override
-    Double getAt(Object array, int index) { return cast(array)[index]; }
+    public Double getAt(Object array, int index) { return cast(array)[index]; }
 
     @Override
-    void setAt(Object array, int index, Object value) { cast(array)[index] = (Double) value; }
+    public void setAt(Object array, int index, Object value) { cast(array)[index] = (Double) value; }
 
     @Override
-    Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+    public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
         if (size == 0) {
             return new double[arraySize];
         } else {

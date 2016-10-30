@@ -9,12 +9,15 @@ package javaslang.collection;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
- /**
+import java.io.Serializable;
+
+/**
  * float[] helper to replace reflective array access.
+ *
  * @author Pap Lőrinc
  * @since 2.1.0
  */
-final class FloatArrayType extends ArrayType<Float> {
+final class FloatArrayType implements ArrayType<Float>, Serializable {
     private static final long serialVersionUID = 1L;
     static final FloatArrayType INSTANCE = new FloatArrayType();
     static final float[] EMPTY = new float[0];
@@ -22,22 +25,22 @@ final class FloatArrayType extends ArrayType<Float> {
     private static float[] cast(Object array) { return (float[]) array; }
 
     @Override
-    Class<Float> type() { return float.class; }
+    public Class<Float> type() { return float.class; }
 
     @Override
-    float[] empty() { return EMPTY; }
+    public float[] empty() { return EMPTY; }
 
     @Override
-    int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+    public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
 
     @Override
-    Float getAt(Object array, int index) { return cast(array)[index]; }
+    public Float getAt(Object array, int index) { return cast(array)[index]; }
 
     @Override
-    void setAt(Object array, int index, Object value) { cast(array)[index] = (Float) value; }
+    public void setAt(Object array, int index, Object value) { cast(array)[index] = (Float) value; }
 
     @Override
-    Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+    public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
         if (size == 0) {
             return new float[arraySize];
         } else {

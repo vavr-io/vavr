@@ -10,9 +10,9 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static javaslang.Function1.identity;
-import static javaslang.collection.ArrayType.asPrimitive;
+import static java.util.function.Function.identity;
 import static javaslang.collection.ArrayType.obj;
+import static javaslang.collection.ArrayType.primitiveType;
 import static javaslang.collection.NodeModifier.*;
 
 /**
@@ -79,9 +79,11 @@ final class BitMappedTrie<T> implements Serializable {
         }
     }
 
+    private BitMappedTrie<T> boxed() { return map(identity()); }
+
     BitMappedTrie<T> prepend(T leading) {
         if (cannotAdd(leading)) {
-            return map(identity()).prepend(leading);
+            return boxed().prepend(leading);
         } else {
             final int newSize = length() + 1;
             if (length() == 0) {
@@ -105,7 +107,7 @@ final class BitMappedTrie<T> implements Serializable {
 
     BitMappedTrie<T> append(T trailing) {
         if (cannotAdd(trailing)) {
-            return map(identity()).append(trailing);
+            return boxed().append(trailing);
         } else {
             final int newSize = length() + 1;
             if (length() == 0) {
@@ -127,7 +129,7 @@ final class BitMappedTrie<T> implements Serializable {
 
     BitMappedTrie<T> update(int index, T element) {
         if (cannotAdd(element)) {
-            return map(identity()).update(index, element);
+            return boxed().update(index, element);
         } else {
             final Object root = modifyLeaf(array, depthShift, offset + index, COPY_NODE, updateLeafWith(type, element));
             return new BitMappedTrie<>(type, root, offset, length(), depthShift);
@@ -314,7 +316,7 @@ final class BitMappedTrie<T> implements Serializable {
     }
 
     int length()                         { return length; }
-    private boolean cannotAdd(T element) { return type != obj() && ((element == null) || (type.type() != asPrimitive(element.getClass()))); }
+    private boolean cannotAdd(T element) { return (type != obj()) && (type.type() != primitiveType(element)); }
 }
 
 @FunctionalInterface

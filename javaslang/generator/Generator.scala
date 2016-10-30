@@ -2299,20 +2299,18 @@ def generateMainClasses(): Unit = {
       genJavaslangFile("javaslang.collection", s"${arrayType.capitalize}ArrayType")(genArrayType(arrayType))
     }
 
-    /*
-     * Generates *ArrayType
-     */
     def genArrayType(arrayType: String)(im: ImportManager, packageName: String, className: String): String = {
       val wrapperType = types(arrayType)
-      val cast = if (wrapperType != "Object") s"($wrapperType)" else ""
+      val cast = if (wrapperType != "Object") s" ($wrapperType)" else ""
 
       xs"""
-         /**
+        /**
          * $arrayType[] helper to replace reflective array access.
+         *
          * @author Pap Lőrinc
          * @since 2.1.0
          */
-        final class $className extends ArrayType<$wrapperType> {
+        final class $className implements ArrayType<$wrapperType>, ${im.getType("java.io.Serializable")} {
             private static final long serialVersionUID = 1L;
             static final $className INSTANCE = new $className();
             static final $arrayType[] EMPTY = new $arrayType[0];
@@ -2320,22 +2318,22 @@ def generateMainClasses(): Unit = {
             private static $arrayType[] cast(Object array) { return ($arrayType[]) array; }
 
             @Override
-            Class<$wrapperType> type() { return $arrayType.class; }
+            public Class<$wrapperType> type() { return $arrayType.class; }
 
             @Override
-            $arrayType[] empty() { return EMPTY; }
+            public $arrayType[] empty() { return EMPTY; }
 
             @Override
-            int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+            public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
 
             @Override
-            $wrapperType getAt(Object array, int index) { return cast(array)[index]; }
+            public $wrapperType getAt(Object array, int index) { return cast(array)[index]; }
 
             @Override
-            void setAt(Object array, int index, Object value) { cast(array)[index] = $cast value; }
+            public void setAt(Object array, int index, Object value) { cast(array)[index] =$cast value; }
 
             @Override
-            Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+            public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
                 if (size == 0) {
                     return new $arrayType[arraySize];
                 } else {

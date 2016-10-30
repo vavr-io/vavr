@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class VectorPropertyTest {
     @Test
     public void shouldCreateAndGet() {
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 500; i++) {
             final Seq<Integer> expected = Array.range(0, i);
             final Vector<Integer> actual = Vector.ofAll(expected);
             for (int j = 0; j < actual.size(); j++) {
@@ -81,8 +81,8 @@ public class VectorPropertyTest {
 
     @Test
     public void shouldIterate() {
-        for (byte depth = 0; depth <= 4; depth++) {
-            for (int i = 0; i < getMaxSizeForDepth(depth); i++) {
+        for (byte depth = 0; depth <= 2; depth++) {
+            for (int i = 0; i < 5000; i++) {
                 final Seq<Integer> expected = Array.range(0, i);
                 final Vector<Integer> actual = Vector.ofAll(expected);
                 assertAreEqual(actual, expected);
@@ -111,7 +111,7 @@ public class VectorPropertyTest {
         Vector<Integer> actual = Vector.empty();
 
         for (int drop = 0; drop <= (BRANCHING_FACTOR + 1); drop++) {
-            for (Integer value : Iterator.range(0, getMaxSizeForDepth(3) + BRANCHING_FACTOR)) {
+            for (Integer value : Iterator.range(0, 1000)) {
                 expected = expected.drop(drop);
                 actual = assertAreEqual(actual, drop, Vector::drop, expected);
 
@@ -127,7 +127,7 @@ public class VectorPropertyTest {
         Vector<Integer> actual = Vector.empty();
 
         for (int drop = 0; drop <= (BRANCHING_FACTOR + 1); drop++) {
-            for (Integer value : Iterator.range(0, getMaxSizeForDepth(2) + BRANCHING_FACTOR)) {
+            for (Integer value : Iterator.range(0, 500)) {
                 expected = expected.drop(drop);
                 actual = assertAreEqual(actual, drop, Vector::drop, expected);
 
@@ -141,8 +141,8 @@ public class VectorPropertyTest {
     public void shouldUpdate() {
         final Function<Integer, Integer> mapper = i -> i + 1;
 
-        for (byte depth = 0; depth <= 6; depth++) {
-            final int length = getMaxSizeForDepth(depth) + BRANCHING_FACTOR;
+        for (byte depth = 0; depth <= 2; depth++) {
+            final int length = 10_000;
 
             for (int drop = 0; drop <= (BRANCHING_FACTOR + 1); drop++) {
                 Seq<Integer> expected = Array.range(0, length);
@@ -163,13 +163,11 @@ public class VectorPropertyTest {
 
     @Test
     public void shouldDrop() {
-        final int length = getMaxSizeForDepth(6) + BRANCHING_FACTOR;
-
-        final Seq<Integer> expected = Array.range(0, length);
+        final Seq<Integer> expected = Array.range(0, 2_000);
         final Vector<Integer> actual = Vector.ofAll(expected);
 
         Vector<Integer> actualSingleDrop = actual;
-        for (int i = 0; i <= length; i++) {
+        for (int i = 0; i <= expected.length(); i++) {
             final Seq<Integer> expectedDrop = expected.drop(i);
 
             assertAreEqual(actual, i, Vector::drop, expectedDrop);
@@ -181,13 +179,11 @@ public class VectorPropertyTest {
 
     @Test
     public void shouldDropRight() {
-        final int length = getMaxSizeForDepth(4) + BRANCHING_FACTOR;
-
-        final Seq<Integer> expected = Array.range(0, length);
+        final Seq<Integer> expected = Array.range(0, 2_000);
         final Vector<Integer> actual = Vector.ofAll(expected);
 
         Vector<Integer> actualSingleDrop = actual;
-        for (int i = 0; i <= length; i++) {
+        for (int i = 0; i <= expected.length(); i++) {
             final Seq<Integer> expectedDrop = expected.dropRight(i);
 
             assertAreEqual(actual, i, Vector::dropRight, expectedDrop);
@@ -199,7 +195,7 @@ public class VectorPropertyTest {
 
     @Test
     public void shouldSlice() {
-        for (int length = 1, end = getMaxSizeForDepth(2) + BRANCHING_FACTOR; length <= end; length++) {
+        for (int length = 1, end = 500; length <= end; length++) {
             Seq<Integer> expected = Array.range(0, length);
             Vector<Integer> actual = Vector.ofAll(expected);
 
@@ -219,7 +215,7 @@ public class VectorPropertyTest {
         for (int i = 1; i < 10; i++) {
             Seq<Object> expected = Array.empty();
             Vector<Object> actual = Vector.empty();
-            for (int j = 0; j < 50_000; j++) {
+            for (int j = 0; j < 20_000; j++) {
                 Seq<Tuple2<Seq<Object>, Vector<Object>>> history = Array.empty();
 
                 if (percent(random) < 20) {
@@ -338,10 +334,5 @@ public class VectorPropertyTest {
         final List<?> actualList = actual.toJavaList();
         final List<?> expectedList = expected.toJavaList();
         assertThat(actualList).isEqualTo(expectedList); // a lot faster than `hasSameElementsAs`
-    }
-
-    private static int getMaxSizeForDepth(int depth) {
-        final int max = BRANCHING_FACTOR + (int) Math.pow(BRANCHING_FACTOR, depth) + BRANCHING_FACTOR;
-        return Math.min(max, 10_000);
     }
 }
