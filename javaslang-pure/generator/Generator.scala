@@ -454,18 +454,19 @@ object Generator {
   }
 
   /**
-   * Generates a String based on a sequence of objects. Objects are converted to Strings via toString.
-   * {{{
-   * // val a = "A"
-   * // val b = "B"
-   * // val c = "C"
-   * Seq("a", "b", "c").gen(s => raw"""val $s = "${s.toUpperCase}"""")("\n")
-   * }}}
-   * @param seq A Seq
-   */
-  implicit class SeqExtensions(seq: Seq[Any]) {
+    * Generates a String based on an Iterable of objects. Objects are converted to Strings via toString.
+    * {{{
+    * // val a = "A"
+    * // val b = "B"
+    * // val c = "C"
+    * Seq("a", "b", "c").gen(s => raw"""val $s = "${s.toUpperCase}"""")("\n")
+    * }}}
+    *
+    * @param iterable An Interable
+    */
+  implicit class IterableExtensions(iterable: Iterable[Any]) {
     def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      seq.map(x => f.apply(x.toString)) mkString delimiter
+      iterable.map(x => f.apply(x.toString)) mkString delimiter
   }
 
   implicit class Tuple1Extensions(tuple: Tuple1[Any]) {
