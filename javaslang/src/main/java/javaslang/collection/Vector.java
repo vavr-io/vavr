@@ -16,8 +16,6 @@ import java.util.stream.Collector;
 
 import static javaslang.collection.ArrayType.asArray;
 import static javaslang.collection.Collections.areEqual;
-import static javaslang.collection.Collections.seq;
-import static javaslang.collection.ArrayType.asArray;
 
 /**
  * Vector is the default Seq implementation that provides effectively constant time access to any element.
@@ -162,13 +160,9 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         Objects.requireNonNull(iterable, "iterable is null");
         if (iterable instanceof Vector) {
             return (Vector<T>) iterable;
-        } else if (iterable instanceof Collection<?>) {
-            final Object array = ((Collection<? extends T>) iterable).toArray();
-            return ofAll(BitMappedTrie.ofAll(array));
         } else {
-            final Seq<? extends T> elems = seq(iterable);
-            final Object array = asArray(elems.iterator(), elems.size());
-            return ofAll(BitMappedTrie.ofAll(array));
+            final BitMappedTrie<T> trie = BitMappedTrie.ofAll(asArray(iterable));
+            return ofAll(trie);
         }
     }
 
@@ -569,23 +563,13 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Vector<T> append(T element) {
-        return wrap(trie.append(element));
-    }
+    public Vector<T> append(T element) { return appendAll(Iterator.of(element)); }
 
     @Override
-    public Vector<T> appendAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty()) {
-            return ofAll(elements);
-        } else {
-            Vector<T> result = this;
-            for (T element : elements) {
-                result = result.append(element);
-            }
-            return result.isEmpty() ? empty()
-                                    : result;
-        }
+    public Vector<T> appendAll(Iterable<? extends T> iterable) {
+        Objects.requireNonNull(iterable, "iterable is null");
+        return isEmpty() ? ofAll(iterable)
+                         : wrap(trie.appendAll(iterable));
     }
 
     @Override
@@ -616,13 +600,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> drop(int n) {
-        if (n <= 0) {
-            return this;
-        } else if (n >= length()) {
-            return empty();
-        } else {
-            return wrap(trie.drop(n));
-        }
+        return wrap(trie.drop(n));
     }
 
     @Override
@@ -644,13 +622,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> dropRight(int n) {
-        if (n <= 0) {
-            return this;
-        } else if (n >= length()) {
-            return empty();
-        } else {
-            return take(length() - n);
-        }
+        return take(length() - n);
     }
 
     public Vector<T> dropRightWhile(Predicate<? super T> predicate) {
@@ -737,9 +709,11 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         if ((index < 0) || (index > length())) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e) on Vector of length " + length());
         } else {
-            final Vector<T> begin = take(index);
+            final Vector<T> begin = take(index).appendAll(elements);
             final Vector<T> end = drop(index);
-            return begin.appendAll(elements).appendAll(end);
+            return (begin.size() > end.size())
+                   ? begin.appendAll(end)
+                   : end.prependAll(begin);
         }
     }
 
@@ -844,23 +818,13 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Vector<T> prepend(T element) {
-        return wrap(trie.prepend(element));
-    }
+    public Vector<T> prepend(T element) { return prependAll(Iterator.of(element)); }
 
     @Override
-    public Vector<T> prependAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty()) {
-            return ofAll(elements);
-        } else {
-            Vector<T> result = this;
-            for (T element : seq(elements).reverse()) {
-                result = result.prepend(element);
-            }
-            return result.isEmpty() ? empty()
-                                    : result;
-        }
+    public Vector<T> prependAll(Iterable<? extends T> iterable) {
+        Objects.requireNonNull(iterable, "iterable is null");
+        return isEmpty() ? ofAll(iterable)
+                         : wrap(trie.prependAll(iterable));
     }
 
     @Override
@@ -1081,24 +1045,12 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> take(int n) {
-        if (n >= length()) {
-            return this;
-        } else if (n <= 0) {
-            return empty();
-        } else {
-            return wrap(trie.take(n));
-        }
+        return wrap(trie.take(n));
     }
 
     @Override
     public Vector<T> takeRight(int n) {
-        if (n >= length()) {
-            return this;
-        } else if (n <= 0) {
-            return empty();
-        } else {
-            return drop(length() - n);
-        }
+        return drop(length() - n);
     }
 
     @Override
