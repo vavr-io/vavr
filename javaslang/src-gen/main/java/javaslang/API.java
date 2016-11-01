@@ -11,7 +11,9 @@ package javaslang;
 
 import static javaslang.API.Match.*;
 
+import java.io.PrintStream;
 import java.util.Comparator;
+import java.util.Formatter;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -89,6 +91,91 @@ import javaslang.control.Validation;
 public final class API {
 
     private API() {
+    }
+
+    //
+    // Shortcuts
+    //
+
+    /**
+     * A temporary replacement for an implementations used during prototyping.
+     * <p>
+     * Example:
+     *
+     * <pre><code>
+     * public HttpResponse getResponse(HttpRequest request) {
+     *     return TODO();
+     * }
+     *
+     * final HttpResponse response = getHttpResponse(TODO());
+     * </code></pre>
+     *
+     * @param <T> The result type of the missing implementation.
+     * @return Nothing - this methods always throws.
+     * @throws NotImplementedError when this methods is called
+     * @see NotImplementedError#NotImplementedError()
+     */
+    public static <T> T TODO() {
+        throw new NotImplementedError();
+    }
+
+    /**
+     * A temporary replacement for an implementations used during prototyping.
+     * <p>
+     * Example:
+     *
+     * <pre><code>
+     * public HttpResponse getResponse(HttpRequest request) {
+     *     return TODO("fake response");
+     * }
+     *
+     * final HttpResponse response = getHttpResponse(TODO("fake request"));
+     * </code></pre>
+     *
+     * @param msg An error message
+     * @param <T> The result type of the missing implementation.
+     * @return Nothing - this methods always throws.
+     * @throws NotImplementedError when this methods is called
+     * @see NotImplementedError#NotImplementedError(String)
+     */
+    public static <T> T TODO(String msg) {
+        throw new NotImplementedError(msg);
+    }
+
+    /**
+     * Shortcut for {@code System.out.print(obj)}. See {@link PrintStream#print(Object)}.
+     *
+     * @param obj The <code>Object</code> to be printed
+     */
+    public static void print(Object obj) {
+        System.out.print(obj);
+    }
+
+    /**
+     * Shortcut for {@code System.out.printf(format, args)}. See {@link PrintStream#printf(String, Object...)}.
+     *
+     * @param format A format string as described in {@link Formatter}.
+     * @param args   Arguments referenced by the format specifiers
+     */
+    @GwtIncompatible
+    public static void printf(String format, Object... args) {
+        System.out.printf(format, args);
+    }
+
+    /**
+     * Shortcut for {@code System.out.println(obj)}. See {@link PrintStream#println(Object)}.
+     *
+     * @param obj The <code>Object</code> to be printed
+     */
+    public static void println(Object obj) {
+        System.out.println(obj);
+    }
+
+    /**
+     * Shortcut for {@code System.out.println()}. See {@link PrintStream#println()}.
+     */
+    public static void println() {
+        System.out.println();
     }
 
     //
@@ -369,6 +456,7 @@ public final class API {
      * Alias for {@link CheckedFunction0#unchecked}
      *
      * @param <R>  return type
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction0}
      */
     public static <R> Function0<R> Unchecked(CheckedFunction0<R> f) {
@@ -380,6 +468,7 @@ public final class API {
      *
      * @param <R>  return type
      * @param <T1> type of the 1st argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction1}
      */
     public static <T1, R> Function1<T1, R> Unchecked(CheckedFunction1<T1, R> f) {
@@ -392,6 +481,7 @@ public final class API {
      * @param <R>  return type
      * @param <T1> type of the 1st argument
      * @param <T2> type of the 2nd argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction2}
      */
     public static <T1, T2, R> Function2<T1, T2, R> Unchecked(CheckedFunction2<T1, T2, R> f) {
@@ -405,6 +495,7 @@ public final class API {
      * @param <T1> type of the 1st argument
      * @param <T2> type of the 2nd argument
      * @param <T3> type of the 3rd argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction3}
      */
     public static <T1, T2, T3, R> Function3<T1, T2, T3, R> Unchecked(CheckedFunction3<T1, T2, T3, R> f) {
@@ -419,6 +510,7 @@ public final class API {
      * @param <T2> type of the 2nd argument
      * @param <T3> type of the 3rd argument
      * @param <T4> type of the 4th argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction4}
      */
     public static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> Unchecked(CheckedFunction4<T1, T2, T3, T4, R> f) {
@@ -434,6 +526,7 @@ public final class API {
      * @param <T3> type of the 3rd argument
      * @param <T4> type of the 4th argument
      * @param <T5> type of the 5th argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction5}
      */
     public static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> Unchecked(CheckedFunction5<T1, T2, T3, T4, T5, R> f) {
@@ -450,6 +543,7 @@ public final class API {
      * @param <T4> type of the 4th argument
      * @param <T5> type of the 5th argument
      * @param <T6> type of the 6th argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction6}
      */
     public static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, R> Unchecked(CheckedFunction6<T1, T2, T3, T4, T5, T6, R> f) {
@@ -467,6 +561,7 @@ public final class API {
      * @param <T5> type of the 5th argument
      * @param <T6> type of the 6th argument
      * @param <T7> type of the 7th argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction7}
      */
     public static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> Unchecked(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> f) {
@@ -485,6 +580,7 @@ public final class API {
      * @param <T6> type of the 6th argument
      * @param <T7> type of the 7th argument
      * @param <T8> type of the 8th argument
+     * @param f    A method reference
      * @return A unchecked wrapper of supplied {@link CheckedFunction8}
      */
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> Unchecked(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
@@ -1442,7 +1538,8 @@ public final class API {
     /**
      * Alias for {@link TreeSet#empty(Comparator)}
      *
-     * @param <T> Component type of element.
+     * @param <T>        Component type of element.
+     * @param comparator The comparator used to sort the elements
      * @return A new {@link TreeSet} empty instance
      */
     public static <T extends Comparable<? super T>> TreeSet<T> SortedSet(Comparator<? super T> comparator) {
@@ -1463,9 +1560,9 @@ public final class API {
     /**
      * Alias for {@link TreeSet#of(Comparator, Object)}
      *
-     * @param <T>     Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param element An element.
+     * @param element    An element.
      * @return A new {@link TreeSet} instance containing the given element
      */
     public static <T> TreeSet<T> SortedSet(Comparator<? super T> comparator, T element) {
@@ -1488,9 +1585,9 @@ public final class API {
     /**
      * Alias for {@link TreeSet#of(Comparator, Object...)}
      *
-     * @param <T>      Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param elements Zero or more elements.
+     * @param elements   Zero or more elements.
      * @return A new {@link TreeSet} instance containing the given elements
      */
     @SuppressWarnings("varargs")
@@ -1513,9 +1610,9 @@ public final class API {
     /**
      * Alias for {@link TreeSet#ofAll(Comparator, Iterable)}
      *
-     * @param <T>      Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param elements Zero or more elements.
+     * @param elements   Zero or more elements.
      * @return A new {@link TreeSet} instance containing the given elements
      */
     public static <T> TreeSet<T> SortedSet(Comparator<? super T> comparator, Iterable<? extends T> elements) {
@@ -1536,9 +1633,9 @@ public final class API {
     /**
      * Alias for {@link TreeSet#ofAll(Comparator, java.util.stream.Stream)}
      *
-     * @param <T>      Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param elements Zero or more elements.
+     * @param elements   Zero or more elements.
      * @return A new {@link TreeSet} instance containing the given elements
      */
     public static <T> TreeSet<T> SortedSet(Comparator<? super T> comparator, java.util.stream.Stream<? extends T> elements) {
@@ -1558,7 +1655,8 @@ public final class API {
     /**
      * Alias for {@link PriorityQueue#empty(Comparator)}
      *
-     * @param <T> Component type of element.
+     * @param <T>        Component type of element.
+     * @param comparator The comparator used to sort the elements
      * @return A new {@link PriorityQueue} empty instance
      */
     public static <T extends Comparable<T>> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator) {
@@ -1579,9 +1677,9 @@ public final class API {
     /**
      * Alias for {@link PriorityQueue#of(Comparator, Object)}
      *
-     * @param <T>     Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param element An element.
+     * @param element    An element.
      * @return A new {@link PriorityQueue} instance containing the given element
      */
     public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, T element) {
@@ -1604,9 +1702,9 @@ public final class API {
     /**
      * Alias for {@link PriorityQueue#of(Comparator, Object...)}
      *
-     * @param <T>      Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param elements Zero or more elements.
+     * @param elements   Zero or more elements.
      * @return A new {@link PriorityQueue} instance containing the given elements
      */
     @SuppressWarnings("varargs")
@@ -1629,9 +1727,9 @@ public final class API {
     /**
      * Alias for {@link PriorityQueue#ofAll(Comparator, Iterable)}
      *
-     * @param <T>      Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param elements Zero or more elements.
+     * @param elements   Zero or more elements.
      * @return A new {@link PriorityQueue} instance containing the given elements
      */
     public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, Iterable<? extends T> elements) {
@@ -1652,9 +1750,9 @@ public final class API {
     /**
      * Alias for {@link PriorityQueue#ofAll(Comparator, java.util.stream.Stream)}
      *
-     * @param <T>      Component type of element.
+     * @param <T>        Component type of element.
      * @param comparator The comparator used to sort the elements
-     * @param elements Zero or more elements.
+     * @param elements   Zero or more elements.
      * @return A new {@link PriorityQueue} instance containing the given elements
      */
     public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, java.util.stream.Stream<? extends T> elements) {
@@ -3289,6 +3387,55 @@ public final class API {
 
     /**
      * Guard pattern, checks if a predicate is satisfied.
+     * <p>
+     * This method is intended to be used with lambdas and method references, for example:
+     *
+     * <pre><code>
+     * String evenOrOdd(int num) {
+     *     return Match(num).of(
+     *             Case($(i -&gt; i % 2 == 0), "even"),
+     *             Case($(this::isOdd), "odd")
+     *     );
+     * }
+     *
+     * boolean isOdd(int i) {
+     *     return i % 2 == 1;
+     * }
+     * </code></pre>
+     *
+     * It is also valid to pass {@code Predicate} instances:
+     *
+     * <pre><code>
+     * Predicate&lt;Integer&gt; isOdd = i -&gt; i % 2 == 1;
+     *
+     * Match(num).of(
+     *         Case($(i -&gt; i % 2 == 0), "even"),
+     *         Case($(isOdd), "odd")
+     * );
+     * </code></pre>
+     *
+     * <strong>Note:</strong> Please take care when matching {@code Predicate} instances. In general,
+     * <a href="http://cstheory.stackexchange.com/a/14152" target="_blank">function equality</a>
+     * is an undecidable problem in computer science. In Javaslang we are only able to check,
+     * if two functions are the same instance.
+     * <p>
+     * However, this code will fail:
+     *
+     * <pre><code>
+     * Predicate&lt;Integer&gt; p = i -&gt; true;
+     * Match(p).of(
+     *     Case($(p), 1) // WRONG! It calls $(Predicate)
+     * );
+     * </code></pre>
+     *
+     * Instead we have to use {@link Predicates#is(Object)}:
+     *
+     * <pre><code>
+     * Predicate&lt;Integer&gt; p = i -&gt; true;
+     * Match(p).of(
+     *     Case(is(p), 1) // CORRECT! It calls $(T)
+     * );
+     * </code></pre>
      *
      * @param <T>       type of the prototype
      * @param predicate the predicate that tests a given value

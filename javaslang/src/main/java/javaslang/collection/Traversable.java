@@ -384,22 +384,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
-    /**
-     * Accumulates the elements of this Traversable by successively calling the given function {@code f} from the left,
-     * starting with a value {@code zero} of type B.
-     * <p>
-     * Example: Reverse and map a Traversable in one pass
-     * <pre><code>
-     * List.of("a", "b", "c").foldLeft(List.empty(), (xs, x) -&gt; xs.prepend(x.toUpperCase()))
-     * // = List("C", "B", "A")
-     * </code></pre>
-     *
-     * @param zero Value to start the accumulation with.
-     * @param f    The accumulator function.
-     * @param <U>  Result type of the accumulator.
-     * @return an accumulated version of this.
-     * @throws NullPointerException if {@code f} is null
-     */
     @Override
     default <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
@@ -410,18 +394,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
         return xs;
     }
 
-    /**
-     * Accumulates the elements of this Traversable by successively calling the given function {@code f} from the right,
-     * starting with a value {@code zero} of type B.
-     * <p>
-     * Example: {@code List.of("a", "b", "c").foldRight("", (x, xs) -> x + xs) = "abc"}
-     *
-     * @param zero Value to start the accumulation with.
-     * @param f    The accumulator function.
-     * @param <U>  Result type of the accumulator.
-     * @return an accumulated version of this.
-     * @throws NullPointerException if {@code f} is null
-     */
     @Override
     <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f);
 

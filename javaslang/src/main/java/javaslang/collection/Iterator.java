@@ -1392,24 +1392,37 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             final Iterator<T> that = this;
             return new AbstractIterator<T>() {
 
-                private T next = null;
+                private T next;
+                private boolean cached = false;
+                private boolean first = true;
 
                 @Override
                 public boolean hasNext() {
-                    while (next == null && that.hasNext()) {
-                        final T value = that.next();
-                        if (!predicate.test(value)) {
-                            next = value;
+                    if (cached) {
+                        return true;
+                    } else if (first) {
+                        first = false;
+                        while (that.hasNext()) {
+                            next = that.next();
+                            if (!predicate.test(next)) {
+                                cached = true;
+                                return true;
+                            }
                         }
+                        return false;
+                    } else if (that.hasNext()) {
+                        next = that.next();
+                        cached = true;
+                        return true;
+                    } else {
+                        return false;
                     }
-                    return next != null;
                 }
 
                 @Override
                 public T getNext() {
-                    final T result = next;
-                    next = null;
-                    return result;
+                    cached = false;
+                    return next;
                 }
             };
         }
@@ -1920,27 +1933,31 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             final Iterator<T> that = this;
             return new AbstractIterator<T>() {
 
-                private T next = null;
+                private T next;
+                private boolean cached = false;
                 private boolean finished = false;
 
                 @Override
                 public boolean hasNext() {
-                    while (!finished && next == null && that.hasNext()) {
-                        final T value = that.next();
-                        if (predicate.test(value)) {
-                            next = value;
-                        } else {
-                            finished = true;
+                    if (cached) {
+                        return true;
+                    } else if (finished) {
+                        return false;
+                    } else if (that.hasNext()) {
+                        next = that.next();
+                        if (predicate.test(next)) {
+                            cached = true;
+                            return true;
                         }
                     }
-                    return next != null;
+                    finished = true;
+                    return false;
                 }
 
                 @Override
                 public T getNext() {
-                    final T result = next;
-                    next = null;
-                    return result;
+                    cached = false;
+                    return next;
                 }
             };
         }

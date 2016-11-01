@@ -9,6 +9,7 @@ import javaslang.collection.*;
 import javaslang.control.Either;
 import javaslang.control.Option;
 import javaslang.control.Try;
+import javaslang.control.Validation;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -142,8 +143,8 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Collects the underlying value(s) (if present) using the provided {@code collector}.
      *
-     * @param <A> the mutable accumulation type of the reduction operation
-     * @param <R> the result type of the reduction operation
+     * @param <A>       the mutable accumulation type of the reduction operation
+     * @param <R>       the result type of the reduction operation
      * @param collector Collector performing reduction
      * @return R reduction result
      */
@@ -155,7 +156,7 @@ public interface Value<T> extends Iterable<T> {
      * Collects the underlying value(s) (if present) using the given {@code supplier}, {@code accumulator} and
      * {@code combiner}.
      *
-     * @param <R> type of the result
+     * @param <R>         type of the result
      * @param supplier    provide unit value for reduction
      * @param accumulator perform reduction with unit value
      * @param combiner    function for combining two values, which must be
@@ -489,15 +490,29 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to a specific {@link java.util.Collection}.
+     * Converts this to a {@link Validation}.
      *
-     * @param factory A {@code java.util.Collection} factory
-     *                that returns empty collection with the specified initial capacity
-     * @param <C>     a sub-type of {@code java.util.Collection}
-     * @return a new {@code java.util.Collection} of type {@code C}
+     * @param <U>   value type of a {@code Valid}
+     * @param value An instance of a {@code Valid} value
+     * @return A new {@link Validation.Valid} containing the given {@code value} if this is empty, otherwise
+     * a new {@link Validation.Invalid} containing this value.
      */
-    default <C extends java.util.Collection<T>> C toJavaCollection(Function<Integer, C> factory) {
-        return ValueModule.toJavaCollection(this, factory);
+    default <U> Validation<T, U> toInvalid(U value) {
+        return isEmpty() ? Validation.valid(value) : Validation.invalid(get());
+    }
+
+    /**
+     * Converts this to a {@link Validation}.
+     *
+     * @param <U>           value type of a {@code Valid}
+     * @param valueSupplier A supplier of a {@code Valid} value
+     * @return A new {@link Validation.Valid} containing the result of {@code valueSupplier} if this is empty,
+     * otherwise a new {@link Validation.Invalid} containing this value.
+     * @throws NullPointerException if {@code valueSupplier} is null
+     */
+    default <U> Validation<T, U> toInvalid(Supplier<? extends U> valueSupplier) {
+        Objects.requireNonNull(valueSupplier, "valueSupplier is null");
+        return isEmpty() ? Validation.valid(valueSupplier.get()) : Validation.invalid(get());
     }
 
     /**
@@ -522,20 +537,32 @@ public interface Value<T> extends Iterable<T> {
         Objects.requireNonNull(componentType, "componentType is null");
         if (componentType.isPrimitive()) {
             final Class<?> boxedType =
-                    componentType == boolean.class ? Boolean.class   :
-                    componentType == byte.class    ? Byte.class      :
-                    componentType == char.class    ? Character.class :
-                    componentType == double.class  ? Double.class    :
-                    componentType == float.class   ? Float.class     :
-                    componentType == int.class     ? Integer.class   :
-                    componentType == long.class    ? Long.class      :
-                    componentType == short.class   ? Short.class     :
-                    componentType == void.class    ? Void.class      : null;
+                    componentType == boolean.class ? Boolean.class :
+                    componentType == byte.class ? Byte.class :
+                    componentType == char.class ? Character.class :
+                    componentType == double.class ? Double.class :
+                    componentType == float.class ? Float.class :
+                    componentType == int.class ? Integer.class :
+                    componentType == long.class ? Long.class :
+                    componentType == short.class ? Short.class :
+                    componentType == void.class ? Void.class : null;
             return toJavaArray((Class<T>) boxedType);
         } else {
             final java.util.List<T> list = toJavaList();
             return list.toArray((T[]) java.lang.reflect.Array.newInstance(componentType, list.size()));
         }
+    }
+
+    /**
+     * Converts this to a specific {@link java.util.Collection}.
+     *
+     * @param factory A {@code java.util.Collection} factory
+     *                that returns empty collection with the specified initial capacity
+     * @param <C>     a sub-type of {@code java.util.Collection}
+     * @return a new {@code java.util.Collection} of type {@code C}
+     */
+    default <C extends java.util.Collection<T>> C toJavaCollection(Function<Integer, C> factory) {
+        return ValueModule.toJavaCollection(this, factory);
     }
 
     /**
@@ -645,12 +672,33 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to a {@link java.util.stream.Stream}.
+     * Converts this to a sequential {@link java.util.stream.Stream}.
      *
-     * @return A new {@link java.util.stream.Stream}.
+     * @return A new sequential {@link java.util.stream.Stream}.
      */
     default java.util.stream.Stream<T> toJavaStream() {
         return StreamSupport.stream(spliterator(), false);
+    }
+
+    /**
+     * Converts this to a parallel {@link java.util.stream.Stream}.
+     *
+     * @return A new parallel {@link java.util.stream.Stream}.
+     */
+    default java.util.stream.Stream<T> toJavaParallelStream() {
+        return StreamSupport.stream(spliterator(), true);
+    }
+
+    /**
+     * Converts this to a {@link Either}.
+     *
+     * @param <R>   right type
+     * @param right An instance of a right value
+     * @return A new {@link Either.Right} containing the value of {@code right} if this is empty, otherwise
+     * a new {@link Either.Left} containing this value.
+     */
+    default <R> Either<T, R> toLeft(R right) {
+        return isEmpty() ? Either.right(right) : Either.left(get());
     }
 
     /**
@@ -665,19 +713,6 @@ public interface Value<T> extends Iterable<T> {
     default <R> Either<T, R> toLeft(Supplier<? extends R> right) {
         Objects.requireNonNull(right, "right is null");
         return isEmpty() ? Either.right(right.get()) : Either.left(get());
-    }
-
-    /**
-     * Converts this to a {@link Either}.
-     *
-     * @param <R>   right type
-     * @param right An instance of a right value
-     * @return A new {@link Either.Right} containing the value of {@code right} if this is empty, otherwise
-     * a new {@link Either.Left} containing this value.
-     * @throws NullPointerException if {@code right} is null
-     */
-    default <R> Either<T, R> toLeft(R right) {
-        return isEmpty() ? Either.right(right) : Either.left(get());
     }
 
     /**
@@ -866,6 +901,18 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to a {@link Either}.
      *
      * @param <L>  left type
+     * @param left An instance of a left value
+     * @return A new {@link Either.Left} containing the value of {@code left} if this is empty, otherwise
+     * a new {@link Either.Right} containing this value.
+     */
+    default <L> Either<L, T> toRight(L left) {
+        return isEmpty() ? Either.left(left) : Either.right(get());
+    }
+
+    /**
+     * Converts this to a {@link Either}.
+     *
+     * @param <L>  left type
      * @param left A supplier of a left value
      * @return A new {@link Either.Left} containing the result of {@code left} if this is empty, otherwise
      * a new {@link Either.Right} containing this value.
@@ -874,19 +921,6 @@ public interface Value<T> extends Iterable<T> {
     default <L> Either<L, T> toRight(Supplier<? extends L> left) {
         Objects.requireNonNull(left, "left is null");
         return isEmpty() ? Either.left(left.get()) : Either.right(get());
-    }
-
-    /**
-     * Converts this to a {@link Either}.
-     *
-     * @param <L>  left type
-     * @param left An instance of a left value
-     * @return A new {@link Either.Left} containing the value of {@code left} if this is empty, otherwise
-     * a new {@link Either.Right} containing this value.
-     * @throws NullPointerException if {@code left} is null
-     */
-    default <L> Either<L, T> toRight(L left) {
-        return isEmpty() ? Either.left(left) : Either.right(get());
     }
 
     /**
@@ -996,6 +1030,32 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
+     * Converts this to a {@link Validation}.
+     *
+     * @param <E>   error type of an {@code Invalid}
+     * @param error An error
+     * @return A new {@link Validation.Invalid} containing the given {@code error} if this is empty, otherwise
+     * a new {@link Validation.Valid} containing this value.
+     */
+    default <E> Validation<E, T> toValid(E error) {
+        return isEmpty() ? Validation.invalid(error) : Validation.valid(get());
+    }
+
+    /**
+     * Converts this to a {@link Validation}.
+     *
+     * @param <E>           error type of an {@code Invalid}
+     * @param errorSupplier A supplier of an error
+     * @return A new {@link Validation.Invalid} containing the result of {@code errorSupplier} if this is empty,
+     * otherwise a new {@link Validation.Valid} containing this value.
+     * @throws NullPointerException if {@code valueSupplier} is null
+     */
+    default <E> Validation<E, T> toValid(Supplier<? extends E> errorSupplier) {
+        Objects.requireNonNull(errorSupplier, "errorSupplier is null");
+        return isEmpty() ? Validation.invalid(errorSupplier.get()) : Validation.valid(get());
+    }
+
+    /**
      * Converts this to a {@link Vector}.
      *
      * @return A new {@link Vector}.
@@ -1043,8 +1103,8 @@ interface ValueModule {
 
     @SuppressWarnings("unchecked")
     static <T extends Traversable<V>, V> T toTraversable(Value<V> value, T empty,
-                                                         Function<V, T> ofElement,
-                                                         Function<Iterable<V>, T> ofAll) {
+            Function<V, T> ofElement,
+            Function<Iterable<V>, T> ofAll) {
         if (value.isEmpty()) {
             return empty;
         } else if (value.isSingleValued()) {
@@ -1079,8 +1139,8 @@ interface ValueModule {
                 container.add(value.get());
             } else {
                 final int size = value instanceof Traversable && ((Traversable) value).isTraversableAgain()
-                        ? ((Traversable<V>) value).size()
-                        : 0;
+                                 ? ((Traversable<V>) value).size()
+                                 : 0;
                 container = containerSupplier.apply(size);
                 value.forEach(container::add);
             }

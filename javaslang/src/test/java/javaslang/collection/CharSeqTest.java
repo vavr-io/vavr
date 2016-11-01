@@ -1238,7 +1238,7 @@ public class CharSeqTest {
                 .isEqualTo(List.of(of('1'), of('2'), of('3')));
     }
 
-    @Test // #201
+    @Test
     public void shouldSlideNonNilBySize2() {
         assertThat(of('1', '2', '3', '4', '5').sliding(2).toList())
                 .isEqualTo(List.of(of('1', '2'), of('2', '3'), of('3', '4'), of('4', '5')));

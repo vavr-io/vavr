@@ -6,7 +6,7 @@ import javaslang.Tuple;
 import javaslang.Tuple1;
 import javaslang.collection.*;
 
-public class GwtTestCollections extends GWTTestCase {
+public class CollectionsTestGwt extends GWTTestCase {
 
     @Override
     public String getModuleName() {
@@ -60,7 +60,8 @@ public class GwtTestCollections extends GWTTestCase {
         applyCollection(chars -> TreeSet.ofAll(Iterator.ofAll(chars)));
     }
 
+    @SuppressWarnings("Convert2MethodRef")
     public void testCompileVector() {
-        applyCollection(Vector::ofAll);
+        applyCollection(chars -> Vector.ofAll(chars));
     }
 }

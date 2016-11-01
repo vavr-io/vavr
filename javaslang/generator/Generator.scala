@@ -35,6 +35,7 @@ def generateMainClasses(): Unit = {
   genAPI()
   genFunctions()
   genTuples()
+  genArrayTypes()
 
   /**
    * Generator of Match
@@ -153,7 +154,8 @@ def generateMainClasses(): Unit = {
           /$javadoc
            * Alias for {@link $traversableType#empty($JavaComparatorType)}
            *
-           * @param <T> Component type of element.
+           * @param <T>        Component type of element.
+           * @param comparator The comparator used to sort the elements
            * @return A new {@link $traversableType} empty instance
            */
           public static <T $comparableExt> $traversableType<T> $name($JavaComparatorType<? super T> comparator) {
@@ -174,9 +176,9 @@ def generateMainClasses(): Unit = {
           /$javadoc
            * Alias for {@link $traversableType#of($JavaComparatorType, Object)}
            *
-           * @param <T>     Component type of element.
+           * @param <T>        Component type of element.
            * @param comparator The comparator used to sort the elements
-           * @param element An element.
+           * @param element    An element.
            * @return A new {@link $traversableType} instance containing the given element
            */
           public static <T> $traversableType<T> $name($JavaComparatorType<? super T> comparator, T element) {
@@ -199,9 +201,9 @@ def generateMainClasses(): Unit = {
           /$javadoc
            * Alias for {@link $traversableType#of($JavaComparatorType, Object...)}
            *
-           * @param <T>      Component type of element.
+           * @param <T>        Component type of element.
            * @param comparator The comparator used to sort the elements
-           * @param elements Zero or more elements.
+           * @param elements   Zero or more elements.
            * @return A new {@link $traversableType} instance containing the given elements
            */
           @SuppressWarnings("varargs")
@@ -224,9 +226,9 @@ def generateMainClasses(): Unit = {
           /$javadoc
            * Alias for {@link $traversableType#ofAll($JavaComparatorType, Iterable)}
            *
-           * @param <T>      Component type of element.
+           * @param <T>        Component type of element.
            * @param comparator The comparator used to sort the elements
-           * @param elements Zero or more elements.
+           * @param elements   Zero or more elements.
            * @return A new {@link $traversableType} instance containing the given elements
            */
           public static <T> $traversableType<T> $name($JavaComparatorType<? super T> comparator, Iterable<? extends T> elements) {
@@ -247,9 +249,9 @@ def generateMainClasses(): Unit = {
           /$javadoc
            * Alias for {@link $traversableType#ofAll($JavaComparatorType, $JavaStreamType)}
            *
-           * @param <T>      Component type of element.
+           * @param <T>        Component type of element.
            * @param comparator The comparator used to sort the elements
-           * @param elements Zero or more elements.
+           * @param elements   Zero or more elements.
            * @return A new {@link $traversableType} instance containing the given elements
            */
           public static <T> $traversableType<T> $name($JavaComparatorType<? super T> comparator, $JavaStreamType<? extends T> elements) {
@@ -363,6 +365,7 @@ def generateMainClasses(): Unit = {
                * Alias for {@link CheckedFunction$i#unchecked}
                *
                ${(0 to i).gen(j => if (j == 0) "* @param <R>  return type" else s"* @param <T$j> type of the ${j.ordinal} argument")("\n")}
+               * @param f    A method reference
                * @return A unchecked wrapper of supplied {@link CheckedFunction$i}
                */
               public static $fullGenerics Function$i$fullGenerics Unchecked(CheckedFunction$i$fullGenerics f) {
@@ -1037,6 +1040,55 @@ def generateMainClasses(): Unit = {
 
           /**
            * Guard pattern, checks if a predicate is satisfied.
+           * <p>
+           * This method is intended to be used with lambdas and method references, for example:
+           *
+           * <pre><code>
+           * String evenOrOdd(int num) {
+           *     return Match(num).of(
+           *             Case($$(i -&gt; i % 2 == 0), "even"),
+           *             Case($$(this::isOdd), "odd")
+           *     );
+           * }
+           *
+           * boolean isOdd(int i) {
+           *     return i % 2 == 1;
+           * }
+           * </code></pre>
+           *
+           * It is also valid to pass {@code Predicate} instances:
+           *
+           * <pre><code>
+           * Predicate&lt;Integer&gt; isOdd = i -&gt; i % 2 == 1;
+           *
+           * Match(num).of(
+           *         Case($$(i -&gt; i % 2 == 0), "even"),
+           *         Case($$(isOdd), "odd")
+           * );
+           * </code></pre>
+           *
+           * <strong>Note:</strong> Please take care when matching {@code Predicate} instances. In general,
+           * <a href="http://cstheory.stackexchange.com/a/14152" target="_blank">function equality</a>
+           * is an undecidable problem in computer science. In Javaslang we are only able to check,
+           * if two functions are the same instance.
+           * <p>
+           * However, this code will fail:
+           *
+           * <pre><code>
+           * Predicate&lt;Integer&gt; p = i -&gt; true;
+           * Match(p).of(
+           *     Case($$(p), 1) // WRONG! It calls $$(Predicate)
+           * );
+           * </code></pre>
+           *
+           * Instead we have to use {@link Predicates#is(Object)}:
+           *
+           * <pre><code>
+           * Predicate&lt;Integer&gt; p = i -&gt; true;
+           * Match(p).of(
+           *     Case(is(p), 1) // CORRECT! It calls $$(T)
+           * );
+           * </code></pre>
            *
            * @param <T>       type of the prototype
            * @param predicate the predicate that tests a given value
@@ -1227,6 +1279,99 @@ def generateMainClasses(): Unit = {
         """
       }
 
+      def genShortcuts(im: ImportManager, packageName: String, className: String): String = {
+
+        val FormatterType = im.getType("java.util.Formatter")
+        val PrintStreamType = im.getType("java.io.PrintStream")
+
+        xs"""
+          //
+          // Shortcuts
+          //
+
+          /**
+           * A temporary replacement for an implementations used during prototyping.
+           * <p>
+           * Example:
+           *
+           * <pre><code>
+           * public HttpResponse getResponse(HttpRequest request) {
+           *     return TODO();
+           * }
+           *
+           * final HttpResponse response = getHttpResponse(TODO());
+           * </code></pre>
+           *
+           * @param <T> The result type of the missing implementation.
+           * @return Nothing - this methods always throws.
+           * @throws NotImplementedError when this methods is called
+           * @see NotImplementedError#NotImplementedError()
+           */
+          public static <T> T TODO() {
+              throw new NotImplementedError();
+          }
+
+          /**
+           * A temporary replacement for an implementations used during prototyping.
+           * <p>
+           * Example:
+           *
+           * <pre><code>
+           * public HttpResponse getResponse(HttpRequest request) {
+           *     return TODO("fake response");
+           * }
+           *
+           * final HttpResponse response = getHttpResponse(TODO("fake request"));
+           * </code></pre>
+           *
+           * @param msg An error message
+           * @param <T> The result type of the missing implementation.
+           * @return Nothing - this methods always throws.
+           * @throws NotImplementedError when this methods is called
+           * @see NotImplementedError#NotImplementedError(String)
+           */
+          public static <T> T TODO(String msg) {
+              throw new NotImplementedError(msg);
+          }
+
+          /**
+           * Shortcut for {@code System.out.print(obj)}. See {@link $PrintStreamType#print(Object)}.
+           *
+           * @param obj The <code>Object</code> to be printed
+           */
+          public static void print(Object obj) {
+              System.out.print(obj);
+          }
+
+          /**
+           * Shortcut for {@code System.out.printf(format, args)}. See {@link $PrintStreamType#printf(String, Object...)}.
+           *
+           * @param format A format string as described in {@link $FormatterType}.
+           * @param args   Arguments referenced by the format specifiers
+           */
+          @GwtIncompatible
+          public static void printf(String format, Object... args) {
+              System.out.printf(format, args);
+          }
+
+          /**
+           * Shortcut for {@code System.out.println(obj)}. See {@link $PrintStreamType#println(Object)}.
+           *
+           * @param obj The <code>Object</code> to be printed
+           */
+          public static void println(Object obj) {
+              System.out.println(obj);
+          }
+
+          /**
+           * Shortcut for {@code System.out.println()}. See {@link $PrintStreamType#println()}.
+           */
+          public static void println() {
+              System.out.println();
+          }
+        """
+      }
+
       xs"""
         /**
          * The most basic Javaslang functionality is accessed through this API class.
@@ -1291,6 +1436,8 @@ def generateMainClasses(): Unit = {
 
             private API() {
             }
+
+            ${genShortcuts(im, packageName, className)}
 
             ${genAliases(im, packageName, className)}
 
@@ -2114,6 +2261,217 @@ def generateMainClasses(): Unit = {
       """
     }
   }
+
+  /**
+    * Generator of javaslang.collection.*ArrayType
+    */
+  def genArrayTypes(): Unit = {
+
+    val types = Map(
+      "Object" -> "Object",
+      "boolean" -> "Boolean",
+      "byte" -> "Byte",
+      "char" -> "Character",
+      "double" -> "Double",
+      "float" -> "Float",
+      "int" -> "Integer",
+      "long" -> "Long",
+      "short" -> "Short"
+    ) // note: there is no void[] in Java
+
+    genJavaslangFile("javaslang.collection", "ArrayType")((im: ImportManager, packageName: String, className: String) => xs"""
+      /**
+       * Helper to replace reflective array access.
+       *
+       * @author Pap Lőrinc
+       * @since 2.1.0
+       */
+      interface ArrayType<T> {
+
+          @SuppressWarnings("unchecked")
+          static <T> ArrayType<T> obj() { return (ArrayType<T>) ObjectArrayType.INSTANCE; }
+
+          Class<T> type();
+          int lengthOf(Object array);
+          T getAt(Object array, int index);
+
+          Object empty();
+          void setAt(Object array, int index, Object value);
+          Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size);
+
+          @SuppressWarnings("unchecked")
+          static <T> ArrayType<T> of(Object array) { return of((Class<T>) array.getClass().getComponentType()); }
+          @SuppressWarnings("unchecked")
+          static <T> ArrayType<T> of(Class<T> type) {
+              if (!type.isPrimitive()) {
+                  return (ArrayType<T>) obj();
+              } else if (boolean.class == type) {
+                  return (ArrayType<T>) BooleanArrayType.INSTANCE;
+              } else if (byte.class == type) {
+                  return (ArrayType<T>) ByteArrayType.INSTANCE;
+              } else if (char.class == type) {
+                  return (ArrayType<T>) CharArrayType.INSTANCE;
+              } else if (double.class == type) {
+                  return (ArrayType<T>) DoubleArrayType.INSTANCE;
+              } else if (float.class == type) {
+                  return (ArrayType<T>) FloatArrayType.INSTANCE;
+              } else if (int.class == type) {
+                  return (ArrayType<T>) IntArrayType.INSTANCE;
+              } else if (long.class == type) {
+                  return (ArrayType<T>) LongArrayType.INSTANCE;
+              } else if (short.class == type) {
+                  return (ArrayType<T>) ShortArrayType.INSTANCE;
+              } else {
+                  throw new IllegalArgumentException("Unknown type: " + type);
+              }
+          }
+
+          default Object newInstance(int length) { return copy(empty(), length); }
+
+          /** System.arrayCopy with same source and destination */
+          default Object copyRange(Object array, int from, int to) {
+              final int length = to - from;
+              return copy(array, length, from, 0, length);
+          }
+
+          /** Repeatedly group an array into equal sized sub-trees */
+          default Object grouped(Object array, int groupSize) {
+              final int arrayLength = lengthOf(array);
+              assert arrayLength > groupSize;
+              final Object results = obj().newInstance(1 + ((arrayLength - 1) / groupSize));
+              obj().setAt(results, 0, copyRange(array, 0, groupSize));
+
+              for (int start = groupSize, i = 1; start < arrayLength; i++) {
+                  final int nextLength = Math.min(groupSize, arrayLength - (i * groupSize));
+                  obj().setAt(results, i, copyRange(array, start, start + nextLength));
+                  start += nextLength;
+              }
+
+              return results;
+          }
+
+          /** clone the source and set the value at the given position */
+          default Object copyUpdate(Object array, int index, T element) {
+              final Object copy = copy(array, index + 1);
+              setAt(copy, index, element);
+              return copy;
+          }
+
+          default Object copy(Object array, int minLength) {
+              final int arrayLength = lengthOf(array);
+              final int length = Math.max(arrayLength, minLength);
+              return copy(array, length, 0, 0, arrayLength);
+          }
+
+          /** clone the source and keep everything after the index (pre-padding the values with null) */
+          default Object copyDrop(Object array, int index) {
+              final int length = lengthOf(array);
+              return copy(array, length, index, index, length - index);
+          }
+
+          /** clone the source and keep everything before and including the index */
+          default Object copyTake(Object array, int lastIndex) {
+              return copyRange(array, 0, lastIndex + 1);
+          }
+
+          /** Create a single element array */
+          default Object asArray(T element) {
+              final Object result = newInstance(1);
+              setAt(result, 0, element);
+              return result;
+          }
+
+          /** Store the content of an iterable in an array */
+          static Object[] asArray(java.util.Iterator<?> it, int length) {
+              final Object[] array = new Object[length];
+              for (int i = 0; i < length; i++) {
+                  array[i] = it.next();
+              }
+              return array;
+          }
+
+          @SuppressWarnings("unchecked")
+          static <T> T asPrimitives(Class<?> primitiveClass, Iterable<?> values) {
+              final Object[] array = Array.ofAll(values).toJavaArray();
+              assert (array.length == 0) || (primitiveClass == primitiveType(array[0])) && !primitiveClass.isArray();
+              final ArrayType<T> type = of((Class<T>) primitiveClass);
+              final Object results = type.newInstance(array.length);
+              for (int i = 0; i < array.length; i++) {
+                  type.setAt(results, i, array[i]);
+              }
+              return (T) results;
+          }
+
+          static <T> Class<?> primitiveType(T element) {
+              final Class<?> wrapper = (element == null) ? Object.class : element.getClass();
+              if (wrapper == Boolean.class) {
+                  return boolean.class;
+              } else if (wrapper == Byte.class) {
+                  return byte.class;
+              } else if (wrapper == Character.class) {
+                  return char.class;
+              } else if (wrapper == Double.class) {
+                  return double.class;
+              } else if (wrapper == Float.class) {
+                  return float.class;
+              } else if (wrapper == Integer.class) {
+                  return int.class;
+              } else if (wrapper == Long.class) {
+                  return long.class;
+              } else if (wrapper == Short.class) {
+                  return short.class;
+              } else {
+                  return wrapper;
+              }
+          }
+
+          ${types.keys.toSeq.sorted.gen(arrayType =>
+            genArrayType(arrayType)(im, packageName, arrayType.capitalize + className)
+          )("\n\n")}
+      }
+    """)
+
+    def genArrayType(arrayType: String)(im: ImportManager, packageName: String, className: String): String = {
+      val wrapperType = types(arrayType)
+      val cast = if (wrapperType != "Object") s" ($wrapperType)" else ""
+
+      xs"""
+        final class $className implements ArrayType<$wrapperType>, ${im.getType("java.io.Serializable")} {
+            private static final long serialVersionUID = 1L;
+            static final $className INSTANCE = new $className();
+            static final $arrayType[] EMPTY = new $arrayType[0];
+
+            private static $arrayType[] cast(Object array) { return ($arrayType[]) array; }
+
+            @Override
+            public Class<$wrapperType> type() { return $arrayType.class; }
+
+            @Override
+            public $arrayType[] empty() { return EMPTY; }
+
+            @Override
+            public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+
+            @Override
+            public $wrapperType getAt(Object array, int index) { return cast(array)[index]; }
+
+            @Override
+            public void setAt(Object array, int index, Object value) { cast(array)[index] =$cast value; }
+
+            @Override
+            public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+                if (size == 0) {
+                    return new $arrayType[arraySize];
+                } else {
+                    final $arrayType[] result = new $arrayType[arraySize];
+                    System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
+                    return result;
+                }
+            }
+        }
+      """
+    }
+  }
 }
 
 /**
@@ -2359,6 +2717,54 @@ def generateTestClasses(): Unit = {
         """
       }
 
+      def genShortcutsTests(im: ImportManager, packageName: String, className: String): String = {
+
+        val fail = im.getStatic("org.junit.Assert.fail");
+
+        xs"""
+          @$test
+          public void shouldCompileTODOAndThrowDefaultMessageAtRuntime() {
+              try {
+                  final String s = TODO();
+                  $fail("TODO() should throw. s: " + s);
+              } catch(NotImplementedError err) {
+                  assertThat(err.getMessage()).isEqualTo("An implementation is missing.");
+              }
+          }
+
+          @$test
+          public void shouldCompileTODOAndThrowGivenMessageAtRuntime() {
+              final String msg = "Don't try this in production!";
+              try {
+                  final String s = TODO(msg);
+                  $fail("TODO(String) should throw. s: " + s);
+              } catch(NotImplementedError err) {
+                  assertThat(err.getMessage()).isEqualTo(msg);
+              }
+          }
+
+          @$test
+          public void shouldCallprint_Object() {
+              print("ok");
+          }
+
+          @$test
+          public void shouldCallprintf() {
+              printf("%s", "ok");
+          }
+
+          @$test
+          public void shouldCallprintln_Object() {
+              println("ok");
+          }
+
+          @$test
+          public void shouldCallprintln() {
+              println();
+          }
+        """
+      }
+
       xs"""
         public class $className {
 
@@ -2366,6 +2772,10 @@ def generateTestClasses(): Unit = {
             public void shouldNotBeInstantiable() {
                 $AssertionsExtensions.assertThat($API.class).isNotInstantiable();
             }
+
+            // -- shortcuts
+
+            ${genShortcutsTests(im, packageName, className)}
 
             //
             // Alias should return not null.
@@ -3223,7 +3633,7 @@ object Generator {
   }
 
   /**
-   * Generates a String based on a sequence of objects. Objects are converted to Strings via toString.
+   * Generates a String based on an Iterable of objects. Objects are converted to Strings via toString.
    * {{{
    * // val a = "A"
    * // val b = "B"
@@ -3231,11 +3641,11 @@ object Generator {
    * Seq("a", "b", "c").gen(s => raw"""val $s = "${s.toUpperCase}"""")("\n")
    * }}}
     *
-    * @param seq A Seq
+    * @param iterable An Interable
    */
-  implicit class SeqExtensions(seq: Seq[Any]) {
+  implicit class IterableExtensions(iterable: Iterable[Any]) {
     def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
-      seq.map(x => f.apply(x.toString)) mkString delimiter
+      iterable.map(x => f.apply(x.toString)) mkString delimiter
   }
 
   implicit class Tuple1Extensions(tuple: Tuple1[Any]) {

@@ -172,7 +172,7 @@ public class ListBenchmark {
                 java.util.Collections.addAll(javaMutable, state.ELEMENTS);
                 javaMutableLinked.addAll(javaMutable);
                 assert areEqual(javaMutable, asList(state.ELEMENTS))
-                       && areEqual(javaMutableLinked, javaMutable);
+                        && areEqual(javaMutableLinked, javaMutable);
             }
 
             @TearDown(Level.Invocation)
@@ -332,8 +332,8 @@ public class ListBenchmark {
                 }
 
                 assert areEqual(javaMutable, asList(state.ELEMENTS))
-                       && areEqual(javaMutableLinked, javaMutable)
-                       && areEqual(asJavaCollection(scalaMutable), javaMutable);
+                        && areEqual(javaMutableLinked, javaMutable)
+                        && areEqual(asJavaCollection(scalaMutable), javaMutable);
             }
 
             @TearDown(Level.Invocation)

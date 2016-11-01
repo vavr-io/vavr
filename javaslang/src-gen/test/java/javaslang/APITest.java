@@ -11,6 +11,7 @@ package javaslang;
 
 import static javaslang.API.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,6 +31,49 @@ public class APITest {
     @Test
     public void shouldNotBeInstantiable() {
         AssertionsExtensions.assertThat(API.class).isNotInstantiable();
+    }
+
+    // -- shortcuts
+
+    @Test
+    public void shouldCompileTODOAndThrowDefaultMessageAtRuntime() {
+        try {
+            final String s = TODO();
+            fail("TODO() should throw. s: " + s);
+        } catch(NotImplementedError err) {
+            assertThat(err.getMessage()).isEqualTo("An implementation is missing.");
+        }
+    }
+
+    @Test
+    public void shouldCompileTODOAndThrowGivenMessageAtRuntime() {
+        final String msg = "Don't try this in production!";
+        try {
+            final String s = TODO(msg);
+            fail("TODO(String) should throw. s: " + s);
+        } catch(NotImplementedError err) {
+            assertThat(err.getMessage()).isEqualTo(msg);
+        }
+    }
+
+    @Test
+    public void shouldCallprint_Object() {
+        print("ok");
+    }
+
+    @Test
+    public void shouldCallprintf() {
+        printf("%s", "ok");
+    }
+
+    @Test
+    public void shouldCallprintln_Object() {
+        println("ok");
+    }
+
+    @Test
+    public void shouldCallprintln() {
+        println();
     }
 
     //

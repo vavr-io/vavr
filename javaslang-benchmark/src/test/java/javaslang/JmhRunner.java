@@ -1,6 +1,11 @@
 package javaslang;
 
 import javaslang.collection.*;
+import javaslang.control.LazyBenchmark;
+import javaslang.idiom.ForBenchmark;
+import javaslang.idiom.PatternMatchingBenchmark;
+import javaslang.idiom.TryBenchmark;
+import javaslang.idiom.TupleBenchmark;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.results.RunResult;
 import org.openjdk.jmh.runner.Runner;
@@ -14,20 +19,29 @@ import java.util.Collection;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import static javaslang.API.Array;
+
 public class JmhRunner {
     /**
      * Runs all the available benchmarks in precision mode.
      * Note: it takes about 3 hours.
      */
     public static void main(String[] args) {
-        final Array<Class<?>> CLASSES = Array.of(
+        final Array<Class<?>> CLASSES = Array(
                 ArrayBenchmark.class,
                 BitSetBenchmark.class,
                 CharSeqBenchmark.class,
                 HashSetBenchmark.class,
                 ListBenchmark.class,
                 PriorityQueueBenchmark.class,
-                VectorBenchmark.class
+                VectorBenchmark.class,
+
+                LazyBenchmark.class,
+
+                ForBenchmark.class,
+                PatternMatchingBenchmark.class,
+                TryBenchmark.class,
+                TupleBenchmark.class
         );
         runDebugWithAsserts(CLASSES);
         runSlowNoAsserts(CLASSES);
