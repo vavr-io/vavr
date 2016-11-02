@@ -546,11 +546,10 @@ public interface Value<T> extends Iterable<T> {
                     componentType == long.class ? Long.class :
                     componentType == short.class ? Short.class :
                     componentType == void.class ? Void.class : null;
-            return toJavaArray((Class<T>) boxedType);
-        } else {
-            final java.util.List<T> list = toJavaList();
-            return list.toArray((T[]) java.lang.reflect.Array.newInstance(componentType, list.size()));
+            componentType = (Class<T>) boxedType;
         }
+        final java.util.List<T> list = toJavaList();
+        return list.toArray((T[]) java.lang.reflect.Array.newInstance(componentType, list.size()));
     }
 
     /**
