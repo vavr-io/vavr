@@ -69,8 +69,14 @@ public class LinkedHashMapTest extends AbstractMapTest {
 
     @Test
     public void shouldKeepOrder() {
-        CharSeq actual = LinkedHashMap.<Integer, Character> empty().put(3, 'a').put(2, 'b').put(1, 'c').foldLeft(CharSeq.empty(), (s, t) -> s.append(t._2));
-        assertThat(actual).isEqualTo(CharSeq.of("abc"));
+        List<Character> actual = LinkedHashMap.<Integer, Character> empty().put(3, 'a').put(2, 'b').put(1, 'c').foldLeft(List.empty(), (s, t) -> s.append(t._2));
+        Assertions.assertThat(actual).isEqualTo(List.of('a', 'b', 'c'));
+    }
+
+    @Test
+    public void shouldKeepValuesOrder() {
+        List<Character> actual = LinkedHashMap.<Integer, Character> empty().put(3, 'a').put(2, 'b').put(1, 'c').values().foldLeft(List.empty(), List::append);
+        Assertions.assertThat(actual).isEqualTo(List.of('a', 'b', 'c'));
     }
 
     // -- static narrow
