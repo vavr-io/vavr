@@ -609,7 +609,7 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
 
     @Override
     public Seq<V> values() {
-        return map.values();
+        return map(t -> t._2);
     }
 
     @Override
