@@ -131,6 +131,168 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
+     * Creates a {@code TreeMap} of the given entries.
+     * The underlying key comparator is the natural comparator of K.
+     *
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @return A new TreeMap containing the given entries.
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2) {
+        return ofEntries((Comparator<? super K> & Serializable) K::compareTo, e1, e2);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of the given entries.
+     * The underlying key comparator is the natural comparator of K.
+     *
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @return A new TreeMap containing the given entries.
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3) {
+        return ofEntries((Comparator<? super K> & Serializable) K::compareTo, e1, e2, e3);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of the given entries.
+     * The underlying key comparator is the natural comparator of K.
+     *
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @return A new TreeMap containing the given entries.
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3, Tuple2<? extends K, ? extends V> e4) {
+        return ofEntries((Comparator<? super K> & Serializable) K::compareTo, e1, e2, e3, e4);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of the given entries.
+     * The underlying key comparator is the natural comparator of K.
+     *
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @return A new TreeMap containing the given entries.
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3, Tuple2<? extends K, ? extends V> e4, Tuple2<? extends K, ? extends V> e5) {
+        return ofEntries((Comparator<? super K> & Serializable) K::compareTo, e1, e2, e3, e4, e5);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of the given entries.
+     * The underlying key comparator is the natural comparator of K.
+     *
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @return A new TreeMap containing the given entries.
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3, Tuple2<? extends K, ? extends V> e4, Tuple2<? extends K, ? extends V> e5, Tuple2<? extends K, ? extends V> e6) {
+        return ofEntries((Comparator<? super K> & Serializable) K::compareTo, e1, e2, e3, e4, e5, e6);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of the given entries.
+     * The underlying key comparator is the natural comparator of K.
+     *
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @return A new TreeMap containing the given entries.
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3, Tuple2<? extends K, ? extends V> e4, Tuple2<? extends K, ? extends V> e5, Tuple2<? extends K, ? extends V> e6, Tuple2<? extends K, ? extends V> e7) {
+        return ofEntries((Comparator<? super K> & Serializable) K::compareTo, e1, e2, e3, e4, e5, e6, e7);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of the given entries.
+     * The underlying key comparator is the natural comparator of K.
+     *
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @param e8  The 8th entry
+     * @return A new TreeMap containing the given entries.
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3, Tuple2<? extends K, ? extends V> e4, Tuple2<? extends K, ? extends V> e5, Tuple2<? extends K, ? extends V> e6, Tuple2<? extends K, ? extends V> e7, Tuple2<? extends K, ? extends V> e8) {
+        return ofEntries((Comparator<? super K> & Serializable) K::compareTo, e1, e2, e3, e4, e5, e6, e7, e8);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of the given entries.
+     * The underlying key comparator is the natural comparator of K.
+     *
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @param e8  The 8th entry
+     * @param e9  The 9th entry
+     * @return A new TreeMap containing the given entries.
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3, Tuple2<? extends K, ? extends V> e4, Tuple2<? extends K, ? extends V> e5, Tuple2<? extends K, ? extends V> e6, Tuple2<? extends K, ? extends V> e7, Tuple2<? extends K, ? extends V> e8, Tuple2<? extends K, ? extends V> e9) {
+        return ofEntries((Comparator<? super K> & Serializable) K::compareTo, e1, e2, e3, e4, e5, e6, e7, e8, e9);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of the given entries.
+     * The underlying key comparator is the natural comparator of K.
+     *
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @param e8  The 8th entry
+     * @param e9  The 9th entry
+     * @param e10 The 10th entry
+     * @return A new TreeMap containing the given entries.
+     */
+    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3, Tuple2<? extends K, ? extends V> e4, Tuple2<? extends K, ? extends V> e5, Tuple2<? extends K, ? extends V> e6, Tuple2<? extends K, ? extends V> e7, Tuple2<? extends K, ? extends V> e8, Tuple2<? extends K, ? extends V> e9, Tuple2<? extends K, ? extends V> e10) {
+        return ofEntries((Comparator<? super K> & Serializable) K::compareTo, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10);
+    }
+
+    /**
      * Returns a {@code TreeMap}, from a source java.util.Map.
      *
      * @param map A map entry.
@@ -160,6 +322,177 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
         Objects.requireNonNull(keyComparator, "keyComparator is null");
         Objects.requireNonNull(entry, "entry is null");
         return TreeMap.<K, V> empty(keyComparator).put(entry);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param keyComparator The comparator used to sort the entries by their key.
+     * @return A new TreeMap containing the given entry.
+     */
+    public static <K, V> TreeMap<K, V> ofEntries(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2) {
+        Objects.requireNonNull(2, "The 2nd entry is null");
+        return TreeMap.<K, V> of(keyComparator, e1).put(e2);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param keyComparator The comparator used to sort the entries by their key.
+     * @return A new TreeMap containing the given entry.
+     */
+    public static <K, V> TreeMap<K, V> ofEntries(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3) {
+        Objects.requireNonNull(e3, "The 3rd entry is null");
+        return TreeMap.<K, V> ofEntries(keyComparator, e1, e2).put(e3);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param keyComparator The comparator used to sort the entries by their key.
+     * @return A new TreeMap containing the given entry.
+     */
+    public static <K, V> TreeMap<K, V> ofEntries(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3, Tuple2<? extends K, ? extends V> e4) {
+        Objects.requireNonNull(e4, "The 4th entry is null");
+        return TreeMap.<K, V> ofEntries(keyComparator, e1, e2, e3).put(e4);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param keyComparator The comparator used to sort the entries by their key.
+     * @return A new TreeMap containing the given entry.
+     */
+    public static <K, V> TreeMap<K, V> ofEntries(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3, Tuple2<? extends K, ? extends V> e4, Tuple2<? extends K, ? extends V> e5) {
+        Objects.requireNonNull(e5, "The 5th entry is null");
+        return TreeMap.<K, V> ofEntries(keyComparator, e1, e2, e3, e4).put(e5);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param keyComparator The comparator used to sort the entries by their key.
+     * @return A new TreeMap containing the given entry.
+     */
+    public static <K, V> TreeMap<K, V> ofEntries(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3, Tuple2<? extends K, ? extends V> e4, Tuple2<? extends K, ? extends V> e5, Tuple2<? extends K, ? extends V> e6) {
+        Objects.requireNonNull(e6, "The 6th entry is null");
+        return TreeMap.<K, V> ofEntries(keyComparator, e1, e2, e3, e4, e5).put(e6);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @param keyComparator The comparator used to sort the entries by their key.
+     * @return A new TreeMap containing the given entry.
+     */
+    public static <K, V> TreeMap<K, V> ofEntries(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3, Tuple2<? extends K, ? extends V> e4, Tuple2<? extends K, ? extends V> e5, Tuple2<? extends K, ? extends V> e6, Tuple2<? extends K, ? extends V> e7) {
+        Objects.requireNonNull(e7, "The 7th entry is null");
+        return TreeMap.<K, V> ofEntries(keyComparator, e1, e2, e3, e4, e5, e6).put(e7);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @param e8  The 8th entry
+     * @param keyComparator The comparator used to sort the entries by their key.
+     * @return A new TreeMap containing the given entry.
+     */
+    public static <K, V> TreeMap<K, V> ofEntries(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3, Tuple2<? extends K, ? extends V> e4, Tuple2<? extends K, ? extends V> e5, Tuple2<? extends K, ? extends V> e6, Tuple2<? extends K, ? extends V> e7, Tuple2<? extends K, ? extends V> e8) {
+        Objects.requireNonNull(e8, "The 8th entry is null");
+        return TreeMap.<K, V> ofEntries(keyComparator, e1, e2, e3, e4, e5, e6, e7).put(e8);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @param e8  The 8th entry
+     * @param e9  The 9th entry
+     * @param keyComparator The comparator used to sort the entries by their key.
+     * @return A new TreeMap containing the given entry.
+     */
+    public static <K, V> TreeMap<K, V> ofEntries(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3, Tuple2<? extends K, ? extends V> e4, Tuple2<? extends K, ? extends V> e5, Tuple2<? extends K, ? extends V> e6, Tuple2<? extends K, ? extends V> e7, Tuple2<? extends K, ? extends V> e8, Tuple2<? extends K, ? extends V> e9) {
+        Objects.requireNonNull(e9, "The 9th entry is null");
+        return TreeMap.<K, V> ofEntries(keyComparator, e1, e2, e3, e4, e5, e6, e7, e8).put(e9);
+    }
+
+    /**
+     * Creates a {@code TreeMap} of given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @param e8  The 8th entry
+     * @param e9  The 9th entry
+     * @param e10 The 10th entry
+     * @param keyComparator The comparator used to sort the entries by their key.
+     * @return A new TreeMap containing the given entry.
+     */
+    public static <K, V> TreeMap<K, V> ofEntries(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V> e1, Tuple2<? extends K, ? extends V> e2, Tuple2<? extends K, ? extends V> e3, Tuple2<? extends K, ? extends V> e4, Tuple2<? extends K, ? extends V> e5, Tuple2<? extends K, ? extends V> e6, Tuple2<? extends K, ? extends V> e7, Tuple2<? extends K, ? extends V> e8, Tuple2<? extends K, ? extends V> e9, Tuple2<? extends K, ? extends V> e10) {
+        Objects.requireNonNull(e10, "The 10th entry is null");
+        return TreeMap.<K, V> ofEntries(keyComparator, e1, e2, e3, e4, e5, e6, e7, e8, e9).put(e10);
     }
 
     /**
@@ -290,110 +623,110 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2) {
+    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2) {
         return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2);
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3) {
+    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3) {
         return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3);
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
         return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3).put(k4, v4);
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
+    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
         return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3).put(k4, v4).put(k5, v5);
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
+    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
         return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3).put(k4, v4).put(k5, v5).put(k6, v6);
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
+    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
         return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3).put(k4, v4).put(k5, v5).put(k6, v6).put(k7, v7);
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8) {
+    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8) {
         return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3).put(k4, v4).put(k5, v5).put(k6, v6).put(k7, v7).put(k8, v8);
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9) {
+    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9) {
         return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3).put(k4, v4).put(k5, v5).put(k6, v6).put(k7, v7).put(k8, v8).put(k9, v9);
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10) {
+    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10) {
         return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3).put(k4, v4).put(k5, v5).put(k6, v6).put(k7, v7).put(k8, v8).put(k9, v9).put(k10, v10);
     }
 
@@ -477,43 +810,8 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(Tuple2<? extends K, ? extends V>... entries) {
-        return ofEntries((Comparator<? super K> & Serializable) K::compareTo, entries);
-    }
-
-    /**
-     * Creates a {@code TreeMap} of the given entries using the natural key comparator.
-     *
-     * @param <K>     The key type
-     * @param <V>     The value type
-     * @param entries Map entries
-     * @return A new TreeMap containing the given entries.
-     */
-    @SuppressWarnings("varargs")
-    @SafeVarargs
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         return ofEntries((Comparator<? super K> & Serializable) K::compareTo, entries);
-    }
-
-    /**
-     * Creates a {@code TreeMap} of the given entries using the given key comparator.
-     *
-     * @param <K>           The key type
-     * @param <V>           The value type
-     * @param entries       Map entries
-     * @param keyComparator A key comparator
-     * @return A new TreeMap containing the given entries.
-     */
-    @SuppressWarnings("unchecked")
-    @SafeVarargs
-    public static <K, V> TreeMap<K, V> ofEntries(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V>... entries) {
-        Objects.requireNonNull(keyComparator, "keyComparator is null");
-        Objects.requireNonNull(entries, "entries is null");
-        RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(new EntryComparator<>(keyComparator));
-        for (Tuple2<? extends K, ? extends V> entry : entries) {
-            tree = tree.insert((Tuple2<K, V>) entry);
-        }
-        return tree.isEmpty() ? empty(keyComparator) : new TreeMap<>(tree);
     }
 
     /**

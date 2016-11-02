@@ -55,11 +55,9 @@ public class TreeMapTest extends AbstractSortedMapTest {
         return TreeMap.collector();
     }
 
-    @SuppressWarnings("varargs")
-    @SafeVarargs
     @Override
-    protected final <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
-        return TreeMap.ofEntries(nullsFirst(), entries);
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V> t1, Tuple2<? extends K, ? extends V> t2, Tuple2<? extends K, ? extends V> t3) {
+        return TreeMap.ofEntries(nullsFirst(), t1, t2, t3);
     }
 
     @SuppressWarnings("varargs")

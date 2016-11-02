@@ -53,6 +53,7 @@ def generateMainClasses(): Unit = {
       val PredicateType = im.getType("java.util.function.Predicate")
       val SupplierType = im.getType("java.util.function.Supplier")
       val IteratorType = im.getType("javaslang.collection.Iterator")
+      val Tuple2Type = im.getType("javaslang.Tuple2")
       val EitherType = im.getType("javaslang.control.Either")
       val FutureType = im.getType("javaslang.concurrent.Future")
       val CheckedSupplierType = im.getType("javaslang.control.Try.CheckedSupplier")
@@ -271,20 +272,6 @@ def generateMainClasses(): Unit = {
            */
           public static <K, V> $mapType<K, V> $name() {
               return $mapType.empty();
-          }
-
-          /$javadoc
-           * Alias for {@link $mapType#ofEntries(Tuple2...)}
-           *
-           * @param <K>     The key type.
-           * @param <V>     The value type.
-           * @param entries Map entries.
-           * @return A new {@link $mapType} instance containing the given entries
-           */
-          @SuppressWarnings("varargs")
-          @SafeVarargs
-          public static <K, V> $mapType<K, V> $name(Tuple2<? extends K, ? extends V>... entries) {
-              return $mapType.ofEntries(entries);
           }
 
           /$javadoc
@@ -692,49 +679,6 @@ def generateMainClasses(): Unit = {
           }
 
           /$javadoc
-           * Alias for {@link $TreeMapType#of(Comparator, Object, Object)}
-           *
-           * @param <K>           The key type.
-           * @param <V>           The value type.
-           * @param keyComparator The comparator used to sort the entries by their key
-           * @param key           A singleton map key.
-           * @param value         A singleton map value.
-           * @return A new {@link $TreeMapType} instance containing the given entry
-           */
-          public static <K, V> $TreeMapType<K, V> SortedMap(Comparator<? super K> keyComparator, K key, V value) {
-              return $TreeMapType.of(keyComparator, key, value);
-          }
-
-          /$javadoc
-           * Alias for {@link $TreeMapType#ofEntries(Tuple2...)}
-           *
-           * @param <K>     The key type.
-           * @param <V>     The value type.
-           * @param entries Map entries.
-           * @return A new {@link $TreeMapType} instance containing the given entries
-           */
-          @SuppressWarnings("varargs")
-          @SafeVarargs
-          public static <K extends Comparable<? super K>, V> $TreeMapType<K, V> SortedMap(Tuple2<? extends K, ? extends V>... entries) {
-              return $TreeMapType.ofEntries(entries);
-          }
-
-          /$javadoc
-           * Alias for {@link $TreeMapType#ofEntries($JavaComparatorType, Tuple2...)}
-           *
-           * @param <K>           The key type.
-           * @param <V>           The value type.
-           * @param keyComparator The comparator used to sort the entries by their key
-           * @param entries       Map entries.
-           * @return A new {@link $TreeMapType} instance containing the given entry
-           */
-          @SuppressWarnings("varargs")
-          @SafeVarargs
-          public static <K, V> $TreeMapType<K, V> SortedMap($JavaComparatorType<? super K> keyComparator, Tuple2<? extends K, ? extends V>... entries) {
-              return $TreeMapType.ofEntries(keyComparator, entries);
-          }
-
-          /$javadoc
            * Alias for {@link $TreeMapType#ofAll($JavaMapType)}
            *
            * @param <K> The key type.
@@ -748,6 +692,19 @@ def generateMainClasses(): Unit = {
 
           ${(1 to VARARGS).gen(i => {
             xs"""
+              /$javadoc
+               * Alias for {@link $TreeMapType#of($JavaComparatorType, ${(1 to i).gen(j => "Object, Object")(", ")})}
+               *
+               * @param <K> The key type.
+               * @param <V> The value type.
+               * @param keyComparator The comparator used to sort the entries by their key
+               ${(1 to i).gen(j => s"* @param k$j  The key${if (i > 1) s" of the ${j.ordinal} pair" else ""}\n* @param v$j  The value${if (i > 1) s" of the ${j.ordinal} pair" else ""}\n")}
+               * @return A new {@link $TreeMapType} instance containing the given entries
+               */
+              public static <K, V> $TreeMapType<K, V> SortedMap($JavaComparatorType<? super K> keyComparator, ${(1 to i).gen(j => xs"K k$j, V v$j")(", ")}) {
+                  return $TreeMapType.of(keyComparator, ${(1 to i).gen(j => xs"k$j, v$j")(", ")});
+              }
+
               /$javadoc
                * Alias for {@link $TreeMapType#of(${(1 to i).gen(j => "Object, Object")(", ")})}
                *
@@ -2586,13 +2543,7 @@ def generateTestClasses(): Unit = {
         xs"""
           ${genMediumAliasTest(s"Empty${func}", func, "")}
 
-          ${genMediumAliasTest(s"${func}FromSingle", func, "1, '1'")}
-
-          ${genMediumAliasTest(s"${func}FromTuples", func, "Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3')")}
-
           ${genMediumAliasTest(s"${func}FromMap", func, s"$JavaCollectionsType.singletonMap(1, '1')")}
-
-          ${genMediumAliasTest(s"${func}FromPairs", func, "1, '1', 2, '2', 3, '3'")}
 
           ${(1 to VARARGS).gen(i => {
             xs"""
@@ -2712,8 +2663,6 @@ def generateTestClasses(): Unit = {
           ${genMediumAliasTest("EmptySortedMapFromComparator", "SortedMap", "Integer::compareTo")}
 
           ${genMediumAliasTest("SortedMapFromSingleAndComparator", "SortedMap", s"($JavaComparatorType<Integer>)Integer::compareTo, 1, '1'")}
-
-          ${genMediumAliasTest("SortedMapFromTuplesAndComparator", "SortedMap", s"($JavaComparatorType<Integer>)Integer::compareTo, Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3')")}
         """
       }
 

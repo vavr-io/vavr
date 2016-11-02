@@ -33,11 +33,9 @@ public class LinkedHashMapTest extends AbstractMapTest {
         return LinkedHashMap.<Integer, T> collector();
     }
 
-    @SuppressWarnings("varargs")
-    @SafeVarargs
     @Override
-    protected final <K extends Comparable<? super K>, V> LinkedHashMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
-        return LinkedHashMap.ofEntries(entries);
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V> t1, Tuple2<? extends K, ? extends V> t2, Tuple2<? extends K, ? extends V> t3) {
+        return LinkedHashMap.ofEntries(t1, t2, t3);
     }
 
     @SuppressWarnings("varargs")

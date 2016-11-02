@@ -136,8 +136,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     protected abstract <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector();
 
-    @SuppressWarnings("unchecked")
-    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries);
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V> t1, Tuple2<? extends K, ? extends V> t2, Tuple2<? extends K, ? extends V> t3);
 
     @SuppressWarnings("unchecked")
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries);
@@ -355,8 +354,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Map<String, String> actual = testee
                 .flatMap((k, v) -> List.of(Tuple.of(String.valueOf(k), String.valueOf(v)),
                                            Tuple.of(String.valueOf(k * 10), String.valueOf(v * 10))));
-        final Map<String, String> expected = mapOfTuples(Tuple.of("1", "11"), Tuple.of("10", "110"), Tuple.of("2", "22"),
-                                                         Tuple.of("20", "220"), Tuple.of("3", "33"), Tuple.of("30", "330"));
+        final Map<String, String> expected = mapOfTuples(Tuple.of("1", "11"), Tuple.of("10", "110"), Tuple.of("2", "22"))
+                .merge(mapOfTuples(Tuple.of("20", "220"), Tuple.of("3", "33"), Tuple.of("30", "330")));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -886,13 +885,6 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldFillTheSeqWith0ElementsWhenNIsNegative() {
         assertThat(mapFill(-1, () -> new Tuple2<>(1, 1))).isEqualTo(empty());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void mapOfTuplesShouldReturnTheSingletonEmpty() {
-        if (!emptyMapShouldBeSingleton()) { return; }
-        assertThat(mapOfTuples()).isSameAs(emptyMap());
     }
 
     @SuppressWarnings("unchecked")
