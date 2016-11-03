@@ -3,15 +3,17 @@ package javaslang.collection;
 import javaslang.JmhRunner;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
-import scala.compat.java8.JFunction;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
-import static javaslang.JmhRunner.*;
+import static javaslang.JmhRunner.create;
+import static javaslang.JmhRunner.getRandomValues;
 import static javaslang.collection.Collections.areEqual;
-import static scala.collection.JavaConversions.*;
+import static scala.collection.JavaConverters.asJavaCollection;
+import static scala.collection.JavaConverters.asScalaBuffer;
 
 public class ListBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
@@ -539,7 +541,7 @@ public class ListBenchmark {
 
         @Benchmark
         public Object scala_persistent() {
-            return scalaPersistent.groupBy(JFunction.func(Integer::bitCount));
+            return scalaPersistent.groupBy(Integer::bitCount);
         }
 
         @Benchmark

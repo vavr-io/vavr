@@ -6,8 +6,6 @@ import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import scala.collection.generic.CanBuildFrom;
-import scala.compat.java8.functionConverterImpls.FromJavaFunction;
-import scala.compat.java8.functionConverterImpls.FromJavaPredicate;
 
 import java.util.Objects;
 import java.util.Random;
@@ -20,7 +18,6 @@ import static javaslang.JmhRunner.*;
 import static javaslang.collection.Collections.areEqual;
 import static scala.collection.JavaConversions.asJavaCollection;
 import static scala.collection.JavaConversions.asScalaBuffer;
-import static scala.compat.java8.JFunction.func;
 
 @SuppressWarnings({ "ALL", "unchecked", "rawtypes" })
 public class VectorBenchmark {
@@ -520,7 +517,7 @@ public class VectorBenchmark {
 
         @Benchmark
         public Object scala_persistent() {
-            final scala.collection.immutable.Vector<Integer> values = (scala.collection.immutable.Vector<Integer>) scalaPersistent.map(new FromJavaFunction<>(Map::mapper), canBuildFrom);
+            final scala.collection.immutable.Vector<Integer> values = (scala.collection.immutable.Vector<Integer>) scalaPersistent.map(Map::mapper, canBuildFrom);
             assert areEqual(asJavaCollection(values), Array.of(ELEMENTS).map(Map::mapper));
             return values;
         }
@@ -559,7 +556,7 @@ public class VectorBenchmark {
 
         @Benchmark
         public Object scala_persistent() {
-            final scala.collection.immutable.Vector<Integer> someValues = (scala.collection.immutable.Vector<Integer>) scalaPersistent.filter(new FromJavaPredicate<>(Filter::isOdd));
+            final scala.collection.immutable.Vector<Integer> someValues = (scala.collection.immutable.Vector<Integer>) scalaPersistent.filter(Filter::isOdd);
             assert areEqual(asJavaCollection(someValues), Array.of(ELEMENTS).filter(Filter::isOdd));
             return someValues;
         }
@@ -807,7 +804,7 @@ public class VectorBenchmark {
         public Object java_mutable() { return javaMutable.stream().collect(groupingBy(Integer::bitCount)); }
 
         @Benchmark
-        public Object scala_persistent() { return scalaPersistent.groupBy(func(Integer::bitCount)); }
+        public Object scala_persistent() { return scalaPersistent.groupBy(Integer::bitCount); }
 
         @Benchmark
         public Object slang_persistent() { return slangPersistent.groupBy(Integer::bitCount); }
