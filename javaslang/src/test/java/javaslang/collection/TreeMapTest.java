@@ -60,11 +60,9 @@ public class TreeMapTest extends AbstractSortedMapTest {
         return TreeMap.ofEntries(nullsFirst(), t1, t2, t3);
     }
 
-    @SuppressWarnings("varargs")
-    @SafeVarargs
     @Override
-    protected final <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        return TreeMap.ofEntries(nullsFirst(), entries);
+    protected final <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e3) {
+        return TreeMap.ofEntries(nullsFirst(), e1, e2, e3);
     }
 
     @Override

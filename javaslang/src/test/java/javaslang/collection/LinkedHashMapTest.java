@@ -38,11 +38,9 @@ public class LinkedHashMapTest extends AbstractMapTest {
         return LinkedHashMap.ofEntries(t1, t2, t3);
     }
 
-    @SuppressWarnings("varargs")
-    @SafeVarargs
     @Override
-    protected final <K extends Comparable<? super K>, V> LinkedHashMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        return LinkedHashMap.ofEntries(entries);
+    protected final <K extends Comparable<? super K>, V> LinkedHashMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e3) {
+        return LinkedHashMap.ofEntries(e1, e2, e3);
     }
 
     @Override

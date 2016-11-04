@@ -94,6 +94,18 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
      * @param <K> The key type
      * @param <V> The value type
      * @param e1  The 1st entry
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> ofEntries(Tuple2<? extends K, ? extends V> e1) {
+        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(e1._1, e1._2));
+    }
+
+    /**
+     * Creates a {@code HashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
      * @param e2  The 2nd entry
      * @return A new Map containing the given entries
      */
@@ -404,21 +416,168 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     }
 
     /**
-     * Creates a HashMap of the given entries.
+     * Creates a {@code HashMap} of the given entries.
      *
-     * @param entries Map entries
-     * @param <K>     The key type
-     * @param <V>     The value type
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
      * @return A new Map containing the given entries
      */
-    @SafeVarargs
-    public static <K, V> HashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        Objects.requireNonNull(entries, "entries is null");
-        HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
-        for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
-            trie = trie.put(entry.getKey(), entry.getValue());
-        }
-        return wrap(trie);
+    public static <K, V> HashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1) {
+        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(e1.getKey(), e1.getValue()));
+    }
+
+    /**
+     * Creates a {@code HashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2) {
+        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(e1.getKey(), e1.getValue()).put(e2.getKey(), e2.getValue()));
+    }
+
+    /**
+     * Creates a {@code HashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3) {
+        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(e1.getKey(), e1.getValue()).put(e2.getKey(), e2.getValue()).put(e3.getKey(), e3.getValue()));
+    }
+
+    /**
+     * Creates a {@code HashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3, java.util.Map.Entry<? extends K, ? extends V> e4) {
+        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(e1.getKey(), e1.getValue()).put(e2.getKey(), e2.getValue()).put(e3.getKey(), e3.getValue()).put(e4.getKey(), e4.getValue()));
+    }
+
+    /**
+     * Creates a {@code HashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3, java.util.Map.Entry<? extends K, ? extends V> e4, java.util.Map.Entry<? extends K, ? extends V> e5) {
+        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(e1.getKey(), e1.getValue()).put(e2.getKey(), e2.getValue()).put(e3.getKey(), e3.getValue()).put(e4.getKey(), e4.getValue()).put(e5.getKey(), e5.getValue()));
+    }
+
+    /**
+     * Creates a {@code HashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3, java.util.Map.Entry<? extends K, ? extends V> e4, java.util.Map.Entry<? extends K, ? extends V> e5, java.util.Map.Entry<? extends K, ? extends V> e6) {
+        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(e1.getKey(), e1.getValue()).put(e2.getKey(), e2.getValue()).put(e3.getKey(), e3.getValue()).put(e4.getKey(), e4.getValue()).put(e5.getKey(), e5.getValue()).put(e6.getKey(), e6.getValue()));
+    }
+
+    /**
+     * Creates a {@code HashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3, java.util.Map.Entry<? extends K, ? extends V> e4, java.util.Map.Entry<? extends K, ? extends V> e5, java.util.Map.Entry<? extends K, ? extends V> e6, java.util.Map.Entry<? extends K, ? extends V> e7) {
+        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(e1.getKey(), e1.getValue()).put(e2.getKey(), e2.getValue()).put(e3.getKey(), e3.getValue()).put(e4.getKey(), e4.getValue()).put(e5.getKey(), e5.getValue()).put(e6.getKey(), e6.getValue()).put(e7.getKey(), e7.getValue()));
+    }
+
+    /**
+     * Creates a {@code HashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @param e8  The 8th entry
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3, java.util.Map.Entry<? extends K, ? extends V> e4, java.util.Map.Entry<? extends K, ? extends V> e5, java.util.Map.Entry<? extends K, ? extends V> e6, java.util.Map.Entry<? extends K, ? extends V> e7, java.util.Map.Entry<? extends K, ? extends V> e8) {
+        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(e1.getKey(), e1.getValue()).put(e2.getKey(), e2.getValue()).put(e3.getKey(), e3.getValue()).put(e4.getKey(), e4.getValue()).put(e5.getKey(), e5.getValue()).put(e6.getKey(), e6.getValue()).put(e7.getKey(), e7.getValue()).put(e8.getKey(), e8.getValue()));
+    }
+
+    /**
+     * Creates a {@code HashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @param e8  The 8th entry
+     * @param e9  The 9th entry
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3, java.util.Map.Entry<? extends K, ? extends V> e4, java.util.Map.Entry<? extends K, ? extends V> e5, java.util.Map.Entry<? extends K, ? extends V> e6, java.util.Map.Entry<? extends K, ? extends V> e7, java.util.Map.Entry<? extends K, ? extends V> e8, java.util.Map.Entry<? extends K, ? extends V> e9) {
+        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(e1.getKey(), e1.getValue()).put(e2.getKey(), e2.getValue()).put(e3.getKey(), e3.getValue()).put(e4.getKey(), e4.getValue()).put(e5.getKey(), e5.getValue()).put(e6.getKey(), e6.getValue()).put(e7.getKey(), e7.getValue()).put(e8.getKey(), e8.getValue()).put(e9.getKey(), e9.getValue()));
+    }
+
+    /**
+     * Creates a {@code HashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @param e8  The 8th entry
+     * @param e9  The 9th entry
+     * @param e10 The 10th entry
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3, java.util.Map.Entry<? extends K, ? extends V> e4, java.util.Map.Entry<? extends K, ? extends V> e5, java.util.Map.Entry<? extends K, ? extends V> e6, java.util.Map.Entry<? extends K, ? extends V> e7, java.util.Map.Entry<? extends K, ? extends V> e8, java.util.Map.Entry<? extends K, ? extends V> e9, java.util.Map.Entry<? extends K, ? extends V> e10) {
+        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(e1.getKey(), e1.getValue()).put(e2.getKey(), e2.getValue()).put(e3.getKey(), e3.getValue()).put(e4.getKey(), e4.getValue()).put(e5.getKey(), e5.getValue()).put(e6.getKey(), e6.getValue()).put(e7.getKey(), e7.getValue()).put(e8.getKey(), e8.getValue()).put(e9.getKey(), e9.getValue()).put(e10.getKey(), e10.getValue()));
     }
 
     /**

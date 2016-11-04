@@ -2441,7 +2441,7 @@ def generateTestClasses(): Unit = {
   genTupleTests()
 
   /**
-   * Generator of Function tests
+   * Generator of API tests
    */
   def genAPITests(): Unit = {
 
@@ -2462,6 +2462,7 @@ def generateTestClasses(): Unit = {
       val JavaStreamType = im.getType("java.util.stream.Stream")
       val JavaComparatorType = im.getType("java.util.Comparator")
       val JavaCollectionsType = im.getType("java.util.Collections")
+      val JavaMapEntryType = im.getType("java.util.AbstractMap.SimpleEntry")
 
       val d = "$";
 
@@ -2539,7 +2540,7 @@ def generateTestClasses(): Unit = {
         """
       }
 
-      def genMapTests(func: String): String = {
+      def genMapTests(func: String, mapImpl: String): String = {
         xs"""
           ${genMediumAliasTest(s"Empty${func}", func, "")}
 
@@ -2551,6 +2552,18 @@ def generateTestClasses(): Unit = {
               public void shouldCreate${func}From${i}Pairs() {
                 ${MapType}<Integer, Integer> map = ${func}(${(1 to i).gen(j => s"$j, ${j*2}")(", ")});
                 ${(1 to i).gen(j => s"assertThat(map.getOrElse($j, 0)).isEqualTo(${j*2});")("\n")}
+              }
+
+              @$test
+              public void shouldCreate${func}From${i}Tuples() {
+                ${MapType}<Integer, Integer> map = ${mapImpl}.ofEntries(${(1 to i).gen(j => s"Tuple.of($j, ${j * 2})")(", ")});
+                ${(1 to i).gen(j => s"assertThat(map.getOrElse($j, 0)).isEqualTo(${j * 2});")("\n")}
+              }
+
+              @$test
+                public void shouldCreate${func}From${i}Entry() {
+                ${MapType}<Integer, Integer> map = ${mapImpl}.ofEntries(${(1 to i).gen(j => s"new $JavaMapEntryType<>($j, ${j * 2})")(", ")});
+                ${(1 to i).gen(j => s"assertThat(map.getOrElse($j, 0)).isEqualTo(${j * 2});")("\n")}
               }
             """
           })("\n\n")}
@@ -2657,9 +2670,9 @@ def generateTestClasses(): Unit = {
           ${genSortedTraversableTests("SortedSet")}
           ${genSortedTraversableTests("PriorityQueue")}
 
-          ${genMapTests("LinkedMap")}
-          ${genMapTests("Map")}
-          ${genMapTests("SortedMap")}
+          ${genMapTests("LinkedMap", im.getType("javaslang.collection.LinkedHashMap"))}
+          ${genMapTests("Map", im.getType("javaslang.collection.HashMap"))}
+          ${genMapTests("SortedMap", im.getType("javaslang.collection.TreeMap"))}
           ${genMediumAliasTest("EmptySortedMapFromComparator", "SortedMap", "Integer::compareTo")}
 
           ${genMediumAliasTest("SortedMapFromSingleAndComparator", "SortedMap", s"($JavaComparatorType<Integer>)Integer::compareTo, 1, '1'")}

@@ -138,8 +138,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V> t1, Tuple2<? extends K, ? extends V> t2, Tuple2<? extends K, ? extends V> t3);
 
-    @SuppressWarnings("unchecked")
-    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries);
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e3);
 
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value);
 
@@ -885,13 +884,6 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldFillTheSeqWith0ElementsWhenNIsNegative() {
         assertThat(mapFill(-1, () -> new Tuple2<>(1, 1))).isEqualTo(empty());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void mapOfEntriesShouldReturnTheSingletonEmpty() {
-        if (!emptyMapShouldBeSingleton()) { return; }
-        assertThat(mapOfEntries()).isSameAs(emptyMap());
     }
 
     @Test

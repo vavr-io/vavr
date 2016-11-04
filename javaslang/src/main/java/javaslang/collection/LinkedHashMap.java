@@ -97,6 +97,21 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
      * @param <K> The key type
      * @param <V> The value type
      * @param e1  The 1st entry
+     * @return A new Map containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> LinkedHashMap<K, V> ofEntries(Tuple2<? extends K, ? extends V> e1) {
+        final HashMap<K, V> map = HashMap.ofEntries(e1);
+        final Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>) e1);
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a {@code LinkedHashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
      * @param e2  The 2nd entry
      * @return A new Map containing the given entries
      */
@@ -453,24 +468,203 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
         return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
     }
 
+    private static <K, V> Tuple2<K, V> t(java.util.Map.Entry<? extends K, ? extends V> e) {
+        return Tuple.of(e.getKey(), e.getValue());
+    }
+
     /**
-     * Creates a LinkedHashMap of the given entries.
+     * Creates a {@code LinkedHashMap} of the given entries.
      *
-     * @param entries Map entries
-     * @param <K>     The key type
-     * @param <V>     The value type
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
      * @return A new Map containing the given entries
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> LinkedHashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        HashMap<K, V> map = HashMap.empty();
-        Queue<Tuple2<K, V>> list = Queue.empty();
-        for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
-            final Tuple2<K, V> tuple = Tuple.of(entry.getKey(), entry.getValue());
-            map = map.put(tuple);
-            list = list.append(tuple);
-        }
-        return wrap(list, map);
+    public static <K, V> LinkedHashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1) {
+        final HashMap<K, V> map = HashMap.ofEntries(e1);
+        final Queue<Tuple2<K, V>> list = Queue.of(t(e1));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a {@code LinkedHashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @return A new Map containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> LinkedHashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2) {
+        final HashMap<K, V> map = HashMap.ofEntries(e1, e2);
+        final Queue<Tuple2<K, V>> list = Queue.of(t(e1), t(e2));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a {@code LinkedHashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @return A new Map containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> LinkedHashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3) {
+        final HashMap<K, V> map = HashMap.ofEntries(e1, e2, e3);
+        final Queue<Tuple2<K, V>> list = Queue.of(t(e1), t(e2), t(e3));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a {@code LinkedHashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @return A new Map containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> LinkedHashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3, java.util.Map.Entry<? extends K, ? extends V> e4) {
+        final HashMap<K, V> map = HashMap.ofEntries(e1, e2, e3, e4);
+        final Queue<Tuple2<K, V>> list = Queue.of(t(e1), t(e2), t(e3), t(e4));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a {@code LinkedHashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @return A new Map containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> LinkedHashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3, java.util.Map.Entry<? extends K, ? extends V> e4, java.util.Map.Entry<? extends K, ? extends V> e5) {
+        final HashMap<K, V> map = HashMap.ofEntries(e1, e2, e3, e4, e5);
+        final Queue<Tuple2<K, V>> list = Queue.of(t(e1), t(e2), t(e3), t(e4), t(e5));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a {@code LinkedHashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @return A new Map containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> LinkedHashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3, java.util.Map.Entry<? extends K, ? extends V> e4, java.util.Map.Entry<? extends K, ? extends V> e5, java.util.Map.Entry<? extends K, ? extends V> e6) {
+        final HashMap<K, V> map = HashMap.ofEntries(e1, e2, e3, e4, e5, e6);
+        final Queue<Tuple2<K, V>> list = Queue.of(t(e1), t(e2), t(e3), t(e4), t(e5), t(e6));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a {@code LinkedHashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @return A new Map containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> LinkedHashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3, java.util.Map.Entry<? extends K, ? extends V> e4, java.util.Map.Entry<? extends K, ? extends V> e5, java.util.Map.Entry<? extends K, ? extends V> e6, java.util.Map.Entry<? extends K, ? extends V> e7) {
+        final HashMap<K, V> map = HashMap.ofEntries(e1, e2, e3, e4, e5, e6, e7);
+        final Queue<Tuple2<K, V>> list = Queue.of(t(e1), t(e2), t(e3), t(e4), t(e5), t(e6), t(e7));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a {@code LinkedHashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @param e8  The 8th entry
+     * @return A new Map containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> LinkedHashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3, java.util.Map.Entry<? extends K, ? extends V> e4, java.util.Map.Entry<? extends K, ? extends V> e5, java.util.Map.Entry<? extends K, ? extends V> e6, java.util.Map.Entry<? extends K, ? extends V> e7, java.util.Map.Entry<? extends K, ? extends V> e8) {
+        final HashMap<K, V> map = HashMap.ofEntries(e1, e2, e3, e4, e5, e6, e7, e8);
+        final Queue<Tuple2<K, V>> list = Queue.of(t(e1), t(e2), t(e3), t(e4), t(e5), t(e6), t(e7), t(e8));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a {@code LinkedHashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @param e8  The 8th entry
+     * @param e9  The 9th entry
+     * @return A new Map containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> LinkedHashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3, java.util.Map.Entry<? extends K, ? extends V> e4, java.util.Map.Entry<? extends K, ? extends V> e5, java.util.Map.Entry<? extends K, ? extends V> e6, java.util.Map.Entry<? extends K, ? extends V> e7, java.util.Map.Entry<? extends K, ? extends V> e8, java.util.Map.Entry<? extends K, ? extends V> e9) {
+        final HashMap<K, V> map = HashMap.ofEntries(e1, e2, e3, e4, e5, e6, e7, e8, e9);
+        final Queue<Tuple2<K, V>> list = Queue.of(t(e1), t(e2), t(e3), t(e4), t(e5), t(e6), t(e7), t(e8), t(e9));
+        return new LinkedHashMap<>(list, map);
+    }
+
+    /**
+     * Creates a {@code LinkedHashMap} of the given entries.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param e1  The 1st entry
+     * @param e2  The 2nd entry
+     * @param e3  The 3rd entry
+     * @param e4  The 4th entry
+     * @param e5  The 5th entry
+     * @param e6  The 6th entry
+     * @param e7  The 7th entry
+     * @param e8  The 8th entry
+     * @param e9  The 9th entry
+     * @param e10 The 10th entry
+     * @return A new Map containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> LinkedHashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e3, java.util.Map.Entry<? extends K, ? extends V> e4, java.util.Map.Entry<? extends K, ? extends V> e5, java.util.Map.Entry<? extends K, ? extends V> e6, java.util.Map.Entry<? extends K, ? extends V> e7, java.util.Map.Entry<? extends K, ? extends V> e8, java.util.Map.Entry<? extends K, ? extends V> e9, java.util.Map.Entry<? extends K, ? extends V> e10) {
+        final HashMap<K, V> map = HashMap.ofEntries(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10);
+        final Queue<Tuple2<K, V>> list = Queue.of(t(e1), t(e2), t(e3), t(e4), t(e5), t(e6), t(e7), t(e8), t(e9), t(e10));
+        return new LinkedHashMap<>(list, map);
     }
 
     /**
