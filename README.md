@@ -31,7 +31,7 @@ See [User Guide](http://docs.javaslang.io)
 
 ### Benchmarks
 
-Currently only basic microbenchmarks are available. To run:
+Currently, only basic microbenchmarks are available. To run:
 
 ```bash
 mvn clean test -P benchmark -pl javaslang-benchmark

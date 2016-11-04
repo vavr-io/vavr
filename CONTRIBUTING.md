@@ -1,6 +1,6 @@
 # How to Contribute
 
-Javaslang needs to be compiled with **jdk 1.8.0_40** at minimum, which fixes many type inference bugs of the java compiler.
+Javaslang needs to be compiled with **jdk 1.8.0_40** at a minimum, which fixes many type inference bugs of the java compiler.
 
 [Fork](https://help.github.com/articles/fork-a-repo) the GitHub, send a [pull request](https://help.github.com/articles/using-pull-requests) and keep your fork in [sync](https://help.github.com/articles/syncing-a-fork/) with the upstream repository.
 
@@ -18,7 +18,7 @@ The IDEA settings include:
 
 ## Coding Conventions
 
-Just a few notes here. In general it is good to look at existing code to get a clear picture.
+Just a few notes here. In general, it is good to look at existing code to get a clear picture.
 
 ### Javadoc
 
@@ -41,7 +41,7 @@ Just a few notes here. In general it is good to look at existing code to get a c
 
 * There is only one first-level package: javaslang.
 * The maximum package depth is two.
-* Package names are denoted in singular.
+* Package names are denoted in the singular.
 * Packages are sliced by domain (no util or tool packages).
 * Package private classes are used in order to hide non-public API.
 * Inner classes are preferred over package private classes in case of one-to-one dependencies.
@@ -254,9 +254,9 @@ git cherry-pick a741cf1
 
 #### Steps to bugfix and perform a release
 
-Given a release 1.2.2 we create a bugfix release as follows.
+Given a release 1.2.2, we create a bugfix release as follows.
 
-First we clone the repository. We work on origin instead of a fork (this requires admin rights).
+First, we clone the repository. We work on origin instead of a fork (this requires admin rights).
 
 ```bash
 git clone https://github.com/javaslang/javaslang.git javaslang-1.2.3
@@ -275,7 +275,7 @@ Then we create the new snapshot version.
 mvn versions:set -DnewVersion=1.2.3-SNAPSHOT
 ```
 
-Now the changes can be performed to the repository. After that we test the changes.
+Now the changes can be performed to the repository. After that, we test the changes.
 
 ```bash
 mvn clean test
@@ -289,7 +289,7 @@ git add <files>
 git commit -a -m "fixes #<issue>"
 ```
 
-The we perform the release as usual:
+Then we perform the release as usual:
 
 ```bash
 mvn release:clean
