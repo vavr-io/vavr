@@ -36,29 +36,29 @@ public class HashMapTest extends AbstractMapTest {
         return HashMap.<Integer, T> collector();
     }
 
-    @SuppressWarnings("varargs")
-    @SafeVarargs
     @Override
-    protected final <K extends Comparable<? super K>, V> HashMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
-        return HashMap.ofEntries(entries);
-    }
-
-    @SuppressWarnings("varargs")
-    @SafeVarargs
-    @Override
-    protected final <K extends Comparable<? super K>, V> HashMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        return HashMap.ofEntries(entries);
+    protected final <K extends Comparable<? super K>, V> HashMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V> t1, Tuple2<? extends K, ? extends V> t2, Tuple2<? extends K, ? extends V> t3) {
+        return HashMap.ofEntries(t1, t2, t3);
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOfPairs(Object... pairs) {
-        return HashMap.of(pairs);
+    protected final <K extends Comparable<? super K>, V> HashMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e3) {
+        return HashMap.ofEntries(e1, e2, e3);
     }
-
 
     @Override
     protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOf(K key, V value) {
         return HashMap.of(key, value);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2) {
+        return HashMap.of(k1, v1, k2, v2);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return HashMap.of(k1, v1, k2, v2, k3, v3);
     }
 
     @Override

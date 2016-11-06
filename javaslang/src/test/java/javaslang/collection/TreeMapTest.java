@@ -55,28 +55,29 @@ public class TreeMapTest extends AbstractSortedMapTest {
         return TreeMap.collector();
     }
 
-    @SuppressWarnings("varargs")
-    @SafeVarargs
     @Override
-    protected final <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
-        return TreeMap.ofEntries(nullsFirst(), entries);
-    }
-
-    @SuppressWarnings("varargs")
-    @SafeVarargs
-    @Override
-    protected final <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        return TreeMap.ofEntries(nullsFirst(), entries);
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V> t1, Tuple2<? extends K, ? extends V> t2, Tuple2<? extends K, ? extends V> t3) {
+        return TreeMap.ofEntries(nullsFirst(), t1, t2, t3);
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfPairs(Object... pairs) {
-        return TreeMap.of(nullsFirst(), pairs);
+    protected final <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e3) {
+        return TreeMap.ofEntries(nullsFirst(), e1, e2, e3);
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K key, V value) {
         return TreeMap.of(nullsFirst(), key, value);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2) {
+        return TreeMap.of(nullsFirst(), k1, v1, k2, v2);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return TreeMap.of(nullsFirst(), k1, v1, k2, v2, k3, v3);
     }
 
     @Override

@@ -33,28 +33,29 @@ public class LinkedHashMapTest extends AbstractMapTest {
         return LinkedHashMap.<Integer, T> collector();
     }
 
-    @SuppressWarnings("varargs")
-    @SafeVarargs
     @Override
-    protected final <K extends Comparable<? super K>, V> LinkedHashMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
-        return LinkedHashMap.ofEntries(entries);
-    }
-
-    @SuppressWarnings("varargs")
-    @SafeVarargs
-    @Override
-    protected final <K extends Comparable<? super K>, V> LinkedHashMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        return LinkedHashMap.ofEntries(entries);
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V> t1, Tuple2<? extends K, ? extends V> t2, Tuple2<? extends K, ? extends V> t3) {
+        return LinkedHashMap.ofEntries(t1, t2, t3);
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> LinkedHashMap<K, V> mapOfPairs(Object... pairs) {
-        return LinkedHashMap.of(pairs);
+    protected final <K extends Comparable<? super K>, V> LinkedHashMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e3) {
+        return LinkedHashMap.ofEntries(e1, e2, e3);
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> LinkedHashMap<K, V> mapOf(K key, V value) {
         return LinkedHashMap.of(key, value);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2) {
+        return LinkedHashMap.of(k1, v1, k2, v2);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return LinkedHashMap.of(k1, v1, k2, v2, k3, v3);
     }
 
     @Override

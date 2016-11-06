@@ -136,15 +136,15 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     protected abstract <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector();
 
-    @SuppressWarnings("unchecked")
-    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries);
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V> t1, Tuple2<? extends K, ? extends V> t2, Tuple2<? extends K, ? extends V> t3);
 
-    @SuppressWarnings("unchecked")
-    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries);
-
-    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfPairs(Object... pairs);
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V> e2, java.util.Map.Entry<? extends K, ? extends V> e1, java.util.Map.Entry<? extends K, ? extends V> e3);
 
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value);
+
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2);
+
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3);
 
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f);
 
@@ -282,13 +282,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldConstructFromPairs() {
-        final Map<String, Integer> map = mapOfPairs("1", 1, "2", 2, "3", 3);
+        final Map<String, Integer> map = mapOf("1", 1, "2", 2, "3", 3);
         assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldFailConstructFromOddPairsLen() {
-        mapOfPairs("1", 1, "2", 2, 3);
     }
 
     // -- toString
@@ -303,7 +298,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldConvertToJavaMap() {
-        final Map<String, Integer> javaslang = mapOfPairs("1", 1, "2", 2, "3", 3);
+        final Map<String, Integer> javaslang = mapOf("1", 1, "2", 2, "3", 3);
         final java.util.Map<String, Integer> java = javaEmptyMap();
         java.put("1", 1);
         java.put("2", 2);
@@ -358,8 +353,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Map<String, String> actual = testee
                 .flatMap((k, v) -> List.of(Tuple.of(String.valueOf(k), String.valueOf(v)),
                                            Tuple.of(String.valueOf(k * 10), String.valueOf(v * 10))));
-        final Map<String, String> expected = mapOfTuples(Tuple.of("1", "11"), Tuple.of("10", "110"), Tuple.of("2", "22"),
-                                                         Tuple.of("20", "220"), Tuple.of("3", "33"), Tuple.of("30", "330"));
+        final Map<String, String> expected = mapOfTuples(Tuple.of("1", "11"), Tuple.of("10", "110"), Tuple.of("2", "22"))
+                .merge(mapOfTuples(Tuple.of("20", "220"), Tuple.of("3", "33"), Tuple.of("30", "330")));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -520,8 +515,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldPutNullKeyIntoMapThatContainsNullKey() {
-        final Map<Integer, String> map = mapOfPairs(1, "a", null, "b", 2, "c");
-        assertThat(map.put(null, "!")).isEqualTo(mapOfPairs(1, "a", null, "!", 2, "c"));
+        final Map<Integer, String> map = mapOf(1, "a", null, "b", 2, "c");
+        assertThat(map.put(null, "!")).isEqualTo(mapOf(1, "a", null, "!", 2, "c"));
     }
 
     // -- remove
@@ -535,8 +530,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldRemoveFromMapThatContainsFirstEntryHavingNullKey() {
-        final Map<Integer, String> map = mapOfPairs(null, "a", 1, "b", 2, "c");
-        assertThat(map.remove(1)).isEqualTo(mapOfPairs(null, "a", 2, "c"));
+        final Map<Integer, String> map = mapOf(null, "a", 1, "b", 2, "c");
+        assertThat(map.remove(1)).isEqualTo(mapOf(null, "a", 2, "c"));
     }
 
     // -- removeAll
@@ -889,26 +884,6 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldFillTheSeqWith0ElementsWhenNIsNegative() {
         assertThat(mapFill(-1, () -> new Tuple2<>(1, 1))).isEqualTo(empty());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void mapOfTuplesShouldReturnTheSingletonEmpty() {
-        if (!emptyMapShouldBeSingleton()) { return; }
-        assertThat(mapOfTuples()).isSameAs(emptyMap());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void mapOfEntriesShouldReturnTheSingletonEmpty() {
-        if (!emptyMapShouldBeSingleton()) { return; }
-        assertThat(mapOfEntries()).isSameAs(emptyMap());
-    }
-
-    @Test
-    public void mapOfPairsShouldReturnTheSingletonEmpty() {
-        if (!emptyMapShouldBeSingleton()) { return; }
-        assertThat(mapOfPairs()).isSameAs(emptyMap());
     }
 
     @Test
