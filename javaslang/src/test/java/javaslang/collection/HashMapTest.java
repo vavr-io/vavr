@@ -51,14 +51,18 @@ public class HashMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOfPairs(Object... pairs) {
-        return HashMap.of(pairs);
-    }
-
-
-    @Override
     protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOf(K key, V value) {
         return HashMap.of(key, value);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2) {
+        return HashMap.of(k1, v1, k2, v2);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return HashMap.of(k1, v1, k2, v2, k3, v3);
     }
 
     @Override
