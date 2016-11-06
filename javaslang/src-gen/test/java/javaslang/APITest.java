@@ -732,106 +732,106 @@ public class APITest {
     @Test
     public void shouldCreateLinkedMapFrom1Pairs() {
       Map<Integer, Integer> map = LinkedMap(1, 2);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
+      assertThat(map.apply(1)).isEqualTo(2);
     }
 
     @Test
     public void shouldCreateLinkedMapFrom2Pairs() {
       Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
     }
 
     @Test
     public void shouldCreateLinkedMapFrom3Pairs() {
       Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
     }
 
     @Test
     public void shouldCreateLinkedMapFrom4Pairs() {
       Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
     }
 
     @Test
     public void shouldCreateLinkedMapFrom5Pairs() {
       Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
     }
 
     @Test
     public void shouldCreateLinkedMapFrom6Pairs() {
       Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
-      assertThat(map.getOrElse(6, 0)).isEqualTo(12);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
+      assertThat(map.apply(6)).isEqualTo(12);
     }
 
     @Test
     public void shouldCreateLinkedMapFrom7Pairs() {
       Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
-      assertThat(map.getOrElse(6, 0)).isEqualTo(12);
-      assertThat(map.getOrElse(7, 0)).isEqualTo(14);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
+      assertThat(map.apply(6)).isEqualTo(12);
+      assertThat(map.apply(7)).isEqualTo(14);
     }
 
     @Test
     public void shouldCreateLinkedMapFrom8Pairs() {
       Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
-      assertThat(map.getOrElse(6, 0)).isEqualTo(12);
-      assertThat(map.getOrElse(7, 0)).isEqualTo(14);
-      assertThat(map.getOrElse(8, 0)).isEqualTo(16);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
+      assertThat(map.apply(6)).isEqualTo(12);
+      assertThat(map.apply(7)).isEqualTo(14);
+      assertThat(map.apply(8)).isEqualTo(16);
     }
 
     @Test
     public void shouldCreateLinkedMapFrom9Pairs() {
       Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
-      assertThat(map.getOrElse(6, 0)).isEqualTo(12);
-      assertThat(map.getOrElse(7, 0)).isEqualTo(14);
-      assertThat(map.getOrElse(8, 0)).isEqualTo(16);
-      assertThat(map.getOrElse(9, 0)).isEqualTo(18);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
+      assertThat(map.apply(6)).isEqualTo(12);
+      assertThat(map.apply(7)).isEqualTo(14);
+      assertThat(map.apply(8)).isEqualTo(16);
+      assertThat(map.apply(9)).isEqualTo(18);
     }
 
     @Test
     public void shouldCreateLinkedMapFrom10Pairs() {
       Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18, 10, 20);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
-      assertThat(map.getOrElse(6, 0)).isEqualTo(12);
-      assertThat(map.getOrElse(7, 0)).isEqualTo(14);
-      assertThat(map.getOrElse(8, 0)).isEqualTo(16);
-      assertThat(map.getOrElse(9, 0)).isEqualTo(18);
-      assertThat(map.getOrElse(10, 0)).isEqualTo(20);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
+      assertThat(map.apply(6)).isEqualTo(12);
+      assertThat(map.apply(7)).isEqualTo(14);
+      assertThat(map.apply(8)).isEqualTo(16);
+      assertThat(map.apply(9)).isEqualTo(18);
+      assertThat(map.apply(10)).isEqualTo(20);
     }
 
     @Test
@@ -862,106 +862,106 @@ public class APITest {
     @Test
     public void shouldCreateMapFrom1Pairs() {
       Map<Integer, Integer> map = Map(1, 2);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
+      assertThat(map.apply(1)).isEqualTo(2);
     }
 
     @Test
     public void shouldCreateMapFrom2Pairs() {
       Map<Integer, Integer> map = Map(1, 2, 2, 4);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
     }
 
     @Test
     public void shouldCreateMapFrom3Pairs() {
       Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
     }
 
     @Test
     public void shouldCreateMapFrom4Pairs() {
       Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
     }
 
     @Test
     public void shouldCreateMapFrom5Pairs() {
       Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
     }
 
     @Test
     public void shouldCreateMapFrom6Pairs() {
       Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
-      assertThat(map.getOrElse(6, 0)).isEqualTo(12);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
+      assertThat(map.apply(6)).isEqualTo(12);
     }
 
     @Test
     public void shouldCreateMapFrom7Pairs() {
       Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
-      assertThat(map.getOrElse(6, 0)).isEqualTo(12);
-      assertThat(map.getOrElse(7, 0)).isEqualTo(14);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
+      assertThat(map.apply(6)).isEqualTo(12);
+      assertThat(map.apply(7)).isEqualTo(14);
     }
 
     @Test
     public void shouldCreateMapFrom8Pairs() {
       Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
-      assertThat(map.getOrElse(6, 0)).isEqualTo(12);
-      assertThat(map.getOrElse(7, 0)).isEqualTo(14);
-      assertThat(map.getOrElse(8, 0)).isEqualTo(16);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
+      assertThat(map.apply(6)).isEqualTo(12);
+      assertThat(map.apply(7)).isEqualTo(14);
+      assertThat(map.apply(8)).isEqualTo(16);
     }
 
     @Test
     public void shouldCreateMapFrom9Pairs() {
       Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
-      assertThat(map.getOrElse(6, 0)).isEqualTo(12);
-      assertThat(map.getOrElse(7, 0)).isEqualTo(14);
-      assertThat(map.getOrElse(8, 0)).isEqualTo(16);
-      assertThat(map.getOrElse(9, 0)).isEqualTo(18);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
+      assertThat(map.apply(6)).isEqualTo(12);
+      assertThat(map.apply(7)).isEqualTo(14);
+      assertThat(map.apply(8)).isEqualTo(16);
+      assertThat(map.apply(9)).isEqualTo(18);
     }
 
     @Test
     public void shouldCreateMapFrom10Pairs() {
       Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18, 10, 20);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
-      assertThat(map.getOrElse(6, 0)).isEqualTo(12);
-      assertThat(map.getOrElse(7, 0)).isEqualTo(14);
-      assertThat(map.getOrElse(8, 0)).isEqualTo(16);
-      assertThat(map.getOrElse(9, 0)).isEqualTo(18);
-      assertThat(map.getOrElse(10, 0)).isEqualTo(20);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
+      assertThat(map.apply(6)).isEqualTo(12);
+      assertThat(map.apply(7)).isEqualTo(14);
+      assertThat(map.apply(8)).isEqualTo(16);
+      assertThat(map.apply(9)).isEqualTo(18);
+      assertThat(map.apply(10)).isEqualTo(20);
     }
 
     @Test
@@ -992,106 +992,106 @@ public class APITest {
     @Test
     public void shouldCreateSortedMapFrom1Pairs() {
       Map<Integer, Integer> map = SortedMap(1, 2);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
+      assertThat(map.apply(1)).isEqualTo(2);
     }
 
     @Test
     public void shouldCreateSortedMapFrom2Pairs() {
       Map<Integer, Integer> map = SortedMap(1, 2, 2, 4);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
     }
 
     @Test
     public void shouldCreateSortedMapFrom3Pairs() {
       Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
     }
 
     @Test
     public void shouldCreateSortedMapFrom4Pairs() {
       Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
     }
 
     @Test
     public void shouldCreateSortedMapFrom5Pairs() {
       Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
     }
 
     @Test
     public void shouldCreateSortedMapFrom6Pairs() {
       Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
-      assertThat(map.getOrElse(6, 0)).isEqualTo(12);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
+      assertThat(map.apply(6)).isEqualTo(12);
     }
 
     @Test
     public void shouldCreateSortedMapFrom7Pairs() {
       Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
-      assertThat(map.getOrElse(6, 0)).isEqualTo(12);
-      assertThat(map.getOrElse(7, 0)).isEqualTo(14);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
+      assertThat(map.apply(6)).isEqualTo(12);
+      assertThat(map.apply(7)).isEqualTo(14);
     }
 
     @Test
     public void shouldCreateSortedMapFrom8Pairs() {
       Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
-      assertThat(map.getOrElse(6, 0)).isEqualTo(12);
-      assertThat(map.getOrElse(7, 0)).isEqualTo(14);
-      assertThat(map.getOrElse(8, 0)).isEqualTo(16);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
+      assertThat(map.apply(6)).isEqualTo(12);
+      assertThat(map.apply(7)).isEqualTo(14);
+      assertThat(map.apply(8)).isEqualTo(16);
     }
 
     @Test
     public void shouldCreateSortedMapFrom9Pairs() {
       Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
-      assertThat(map.getOrElse(6, 0)).isEqualTo(12);
-      assertThat(map.getOrElse(7, 0)).isEqualTo(14);
-      assertThat(map.getOrElse(8, 0)).isEqualTo(16);
-      assertThat(map.getOrElse(9, 0)).isEqualTo(18);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
+      assertThat(map.apply(6)).isEqualTo(12);
+      assertThat(map.apply(7)).isEqualTo(14);
+      assertThat(map.apply(8)).isEqualTo(16);
+      assertThat(map.apply(9)).isEqualTo(18);
     }
 
     @Test
     public void shouldCreateSortedMapFrom10Pairs() {
       Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18, 10, 20);
-      assertThat(map.getOrElse(1, 0)).isEqualTo(2);
-      assertThat(map.getOrElse(2, 0)).isEqualTo(4);
-      assertThat(map.getOrElse(3, 0)).isEqualTo(6);
-      assertThat(map.getOrElse(4, 0)).isEqualTo(8);
-      assertThat(map.getOrElse(5, 0)).isEqualTo(10);
-      assertThat(map.getOrElse(6, 0)).isEqualTo(12);
-      assertThat(map.getOrElse(7, 0)).isEqualTo(14);
-      assertThat(map.getOrElse(8, 0)).isEqualTo(16);
-      assertThat(map.getOrElse(9, 0)).isEqualTo(18);
-      assertThat(map.getOrElse(10, 0)).isEqualTo(20);
+      assertThat(map.apply(1)).isEqualTo(2);
+      assertThat(map.apply(2)).isEqualTo(4);
+      assertThat(map.apply(3)).isEqualTo(6);
+      assertThat(map.apply(4)).isEqualTo(8);
+      assertThat(map.apply(5)).isEqualTo(10);
+      assertThat(map.apply(6)).isEqualTo(12);
+      assertThat(map.apply(7)).isEqualTo(14);
+      assertThat(map.apply(8)).isEqualTo(16);
+      assertThat(map.apply(9)).isEqualTo(18);
+      assertThat(map.apply(10)).isEqualTo(20);
     }
 
     @Test

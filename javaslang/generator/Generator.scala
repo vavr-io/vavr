@@ -2599,7 +2599,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldCreate${func}From${i}Pairs() {
                 ${MapType}<Integer, Integer> map = ${func}(${(1 to i).gen(j => s"$j, ${j*2}")(", ")});
-                ${(1 to i).gen(j => s"assertThat(map.getOrElse($j, 0)).isEqualTo(${j*2});")("\n")}
+                ${(1 to i).gen(j => s"assertThat(map.apply($j)).isEqualTo(${j*2});")("\n")}
               }
             """
           })("\n\n")}

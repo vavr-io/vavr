@@ -176,7 +176,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param <K> The key type
      * @param <V> The value type
@@ -187,7 +187,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param <K> The key type
      * @param <V> The value type
@@ -198,7 +198,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param <K> The key type
      * @param <V> The value type
@@ -209,7 +209,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param <K> The key type
      * @param <V> The value type
@@ -220,7 +220,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param <K> The key type
      * @param <V> The value type
@@ -231,7 +231,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param <K> The key type
      * @param <V> The value type
@@ -242,7 +242,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param <K> The key type
      * @param <V> The value type
@@ -253,7 +253,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param <K> The key type
      * @param <V> The value type
@@ -264,7 +264,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param <K> The key type
      * @param <V> The value type
@@ -290,7 +290,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
@@ -302,7 +302,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
@@ -314,7 +314,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
@@ -326,7 +326,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
@@ -338,7 +338,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
@@ -350,7 +350,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
@@ -362,7 +362,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
@@ -374,7 +374,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
@@ -386,7 +386,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Creates a HashMap of the given list of key-value pairs.
+     * Creates a {@code TreeMap} of the given list of key-value pairs.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param <K> The key type
