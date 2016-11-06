@@ -298,7 +298,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * @return A new Map containing the given entries
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2) {
-        return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2);
+        return of(keyComparator, k1, v1).put(k2, v2);
     }
 
     /**
@@ -310,7 +310,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * @return A new Map containing the given entries
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3) {
-        return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3);
+        return of(keyComparator, k1, v1, k2, v2).put(k3, v3);
     }
 
     /**
@@ -322,7 +322,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * @return A new Map containing the given entries
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
-        return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3).put(k4, v4);
+        return of(keyComparator, k1, v1, k2, v2, k3, v3).put(k4, v4);
     }
 
     /**
@@ -334,7 +334,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * @return A new Map containing the given entries
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
-        return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3).put(k4, v4).put(k5, v5);
+        return of(keyComparator, k1, v1, k2, v2, k3, v3, k4, v4).put(k5, v5);
     }
 
     /**
@@ -346,7 +346,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * @return A new Map containing the given entries
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
-        return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3).put(k4, v4).put(k5, v5).put(k6, v6);
+        return of(keyComparator, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5).put(k6, v6);
     }
 
     /**
@@ -358,7 +358,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * @return A new Map containing the given entries
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
-        return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3).put(k4, v4).put(k5, v5).put(k6, v6).put(k7, v7);
+        return of(keyComparator, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6).put(k7, v7);
     }
 
     /**
@@ -370,7 +370,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * @return A new Map containing the given entries
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8) {
-        return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3).put(k4, v4).put(k5, v5).put(k6, v6).put(k7, v7).put(k8, v8);
+        return of(keyComparator, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7).put(k8, v8);
     }
 
     /**
@@ -382,7 +382,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * @return A new Map containing the given entries
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9) {
-        return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3).put(k4, v4).put(k5, v5).put(k6, v6).put(k7, v7).put(k8, v8).put(k9, v9);
+        return of(keyComparator, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8).put(k9, v9);
     }
 
     /**
@@ -394,7 +394,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * @return A new Map containing the given entries
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10) {
-        return TreeMap.<K, V> empty(keyComparator).put(k1, v1).put(k2, v2).put(k3, v3).put(k4, v4).put(k5, v5).put(k6, v6).put(k7, v7).put(k8, v8).put(k9, v9).put(k10, v10);
+        return of(keyComparator, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9).put(k10, v10);
     }
 
     /**
