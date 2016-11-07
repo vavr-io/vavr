@@ -415,7 +415,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     @Override
     default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, Stream.empty(), Stream::append, Function.identity());
+        return iterator().scanLeft(zero, operation).toStream();
     }
 
     @Override
@@ -455,7 +455,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
 
     default <U> Seq<U> traverse(BiFunction<K, V, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(Stream.empty(), (acc, entry) -> acc.append(mapper.apply(entry._1, entry._2)));
+        return Stream.narrow(iterator().map(entry -> mapper.apply(entry._1, entry._2)).toStream());
     }
 
     default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends T1, ? extends T2>> unzipper) {
