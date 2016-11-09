@@ -71,7 +71,7 @@ Note: The maven build currently needs to be started from the javaslang root dir
         <assertj.core.version>3.5.2</assertj.core.version>
         <eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
         <java.version>1.8</java.version>
-        <jmh.version>1.15</jmh.version>
+        <jmh.version>1.16</jmh.version>
         <junit.version>4.12</junit.version>
         <gwt.version>2.8.0</gwt.version>
         <maven.build-helper.version>1.12</maven.build-helper.version>
@@ -104,11 +104,6 @@ Note: The maven build currently needs to be started from the javaslang root dir
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>${assertj.core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openjdk.jmh</groupId>
-                <artifactId>jmh-core</artifactId>
-                <version>${jmh.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjdk.jmh</groupId>
