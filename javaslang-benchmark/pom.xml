@@ -29,9 +29,9 @@
         </dependency>
         <dependency>
             <groupId>org.scalaz</groupId>
-            <artifactId>scalaz-core_2.12.0-RC2</artifactId>
+            <artifactId>scalaz-core_2.12</artifactId>
             <version>7.3.0-M6</version>
-            <!--contains scala-library 2.12.0-RC2-->
+            <!--contains scala-library 2.12.0-->
         </dependency>
         <dependency>
             <groupId>org.clojure</groupId>
@@ -66,11 +66,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openjdk.jmh</groupId>
-            <artifactId>jmh-core</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

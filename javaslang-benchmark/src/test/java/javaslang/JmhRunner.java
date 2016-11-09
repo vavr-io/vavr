@@ -110,7 +110,7 @@ public class JmhRunner {
                      Any GC during testing will destroy the iteration (i.e. introduce unreliable noise in the measurement), which should get ignored as an outlier */
                     .jvmArgsAppend("-XX:+UseG1GC", "-Xss100m", "-Xms4g", "-Xmx4g", "-XX:MaxGCPauseMillis=1000", "-XX:+UnlockExperimentalVMOptions", "-XX:G1NewSizePercent=100", "-XX:G1MaxNewSizePercent=100", assertions.vmArg);
 
-            final String includePattern = includeNames.mkString("\\..*?(", "|", ")_");
+            final String includePattern = includeNames.mkString("\\..*?\\b(", "|", ")_");
             classNames.forEach(name -> builder.include(name + includePattern));
 
             if (printInlining == PrintInlining.ENABLE) {
