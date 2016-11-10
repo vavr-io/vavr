@@ -160,7 +160,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     @SuppressWarnings("unchecked")
     abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries);
 
-    abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapOfPairs(Object... pairs);
+    abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapOfPairs(K k1, V v1, K k, V v2, K k3, V v3);
 
     abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapOf(K key, V value);
 
@@ -285,11 +285,6 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     public void shouldConstructFromPairs() {
         Multimap<String, Integer> map = mapOfPairs("1", 1, "2", 2, "3", 3);
         assertThat(map).isEqualTo(this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldFailConstructFromOddPairsLen() {
-        mapOfPairs("1", 1, "2", 2, 3);
     }
 
     // -- toString

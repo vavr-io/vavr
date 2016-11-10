@@ -138,41 +138,251 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
             return ofEntries(keyComparator, Collections.fill(n, (Supplier<? extends Tuple2<K, V2>>) s));
         }
 
+        /**
+         * Creates a TreeMultimap of the given key-value pair.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new Multimap containing the given entries
+         */
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K key, V2 value) {
             return of((Comparator<? super K> & Serializable) K::compareTo, key, value);
         }
 
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new Multimap containing the given entries
+         */
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2) {
+            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new Multimap containing the given entries
+         */
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3) {
+            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new Multimap containing the given entries
+         */
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4) {
+            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3, k4, v4);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new Multimap containing the given entries
+         */
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5) {
+            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new Multimap containing the given entries
+         */
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6) {
+            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new Multimap containing the given entries
+         */
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7) {
+            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new Multimap containing the given entries
+         */
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7, K k8, V2 v8) {
+            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new Multimap containing the given entries
+         */
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7, K k8, V2 v8, K k9, V2 v9) {
+            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new Multimap containing the given entries
+         */
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7, K k8, V2 v8, K k9, V2 v9, K k10, V2 v10) {
+            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9, k10, v10);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new Multimap containing the given entries
+         */
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(Tuple2<? extends K, ? extends V2> entry) {
             return of((Comparator<? super K> & Serializable) K::compareTo, entry);
         }
 
+        /**
+         * Creates a TreeMultimap of the given key-value pair.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @return A new Multimap containing the given entries
+         */
         public <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, K key, V2 value) {
             final TreeMultimap<K, V2> e = empty(keyComparator);
             return e.put(key, value);
         }
 
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @return A new Multimap containing the given entries
+         */
+        public <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, K k1, V2 v1, K k2, V2 v2) {
+            return of(keyComparator, k1, v1).put(k2, v2);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @return A new Multimap containing the given entries
+         */
+        public <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, K k1, V2 v1, K k2, V2 v2, K k3, V2 v3) {
+            return of(keyComparator, k1, v1, k2, v2).put(k3, v3);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @return A new Multimap containing the given entries
+         */
+        public <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4) {
+            return of(keyComparator, k1, v1, k2, v2, k3, v3).put(k4, v4);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @return A new Multimap containing the given entries
+         */
+        public <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5) {
+            return of(keyComparator, k1, v1, k2, v2, k3, v3, k4, v4).put(k5, v5);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @return A new Multimap containing the given entries
+         */
+        public <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6) {
+            return of(keyComparator, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5).put(k6, v6);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @return A new Multimap containing the given entries
+         */
+        public <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7) {
+            return of(keyComparator, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6).put(k7, v7);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @return A new Multimap containing the given entries
+         */
+        public <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7, K k8, V2 v8) {
+            return of(keyComparator, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7).put(k8, v8);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @return A new Multimap containing the given entries
+         */
+        public <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7, K k8, V2 v8, K k9, V2 v9) {
+            return of(keyComparator, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8).put(k9, v9);
+        }
+
+        /**
+         * Creates a TreeMultimap of the given list of key-value pairs.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @return A new Multimap containing the given entries
+         */
+        public <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7, K k8, V2 v8, K k9, V2 v9, K k10, V2 v10) {
+            return of(keyComparator, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9).put(k10, v10);
+        }
+
         public <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V2> entry) {
             final TreeMultimap<K, V2> e = empty(keyComparator);
             return e.put(entry._1, entry._2);
-        }
-
-        @SuppressWarnings("unchecked")
-        public final <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(Object... pairs) {
-            return of((Comparator<? super K> & Serializable) K::compareTo, pairs);
-        }
-
-        @SuppressWarnings("unchecked")
-        public final <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, Object... pairs) {
-            Objects.requireNonNull(keyComparator, "keyComparator is null");
-            Objects.requireNonNull(pairs, "pairs is null");
-            if ((pairs.length & 1) != 0) {
-                throw new IllegalArgumentException("Odd length of key-value pairs list");
-            }
-            TreeMultimap<K, V2> result = empty(keyComparator);
-            for (int i = 0; i < pairs.length; i += 2) {
-                result = result.put((K) pairs[i], (V2) pairs[i + 1]);
-            }
-            return result;
         }
 
         public <K extends Comparable<? super K>, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, TreeMultimap<K, V2>> collector() {
