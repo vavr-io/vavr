@@ -345,6 +345,14 @@ public interface Either<L, R> extends Value<R> {
         return this;
     }
 
+    default Either<L, R> peekLeft(Consumer<? super L> action) {
+        Objects.requireNonNull(action, "action is null");
+        if (isLeft()) {
+            action.accept(getLeft());
+        }
+        return this;
+    }
+
     // -- Object.*
 
     @Override
