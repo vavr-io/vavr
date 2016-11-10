@@ -2352,7 +2352,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(Object, Object)}
+     * Alias for {@link TreeMap#of(Comparable, Object)}
      *
      * @param <K> The key type.
      * @param <V> The value type.
@@ -2365,7 +2365,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(Object, Object, Object, Object)}
+     * Alias for {@link TreeMap#of(Comparable, Object, Comparable, Object)}
      *
      * @param <K> The key type.
      * @param <V> The value type.
@@ -2380,7 +2380,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object)}
+     * Alias for {@link TreeMap#of(Comparable, Object, Comparable, Object, Comparable, Object)}
      *
      * @param <K> The key type.
      * @param <V> The value type.
@@ -2397,7 +2397,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object, Object, Object)}
+     * Alias for {@link TreeMap#of(Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object)}
      *
      * @param <K> The key type.
      * @param <V> The value type.
@@ -2416,7 +2416,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
+     * Alias for {@link TreeMap#of(Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object)}
      *
      * @param <K> The key type.
      * @param <V> The value type.
@@ -2437,7 +2437,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
+     * Alias for {@link TreeMap#of(Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object)}
      *
      * @param <K> The key type.
      * @param <V> The value type.
@@ -2460,7 +2460,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
+     * Alias for {@link TreeMap#of(Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object)}
      *
      * @param <K> The key type.
      * @param <V> The value type.
@@ -2485,7 +2485,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
+     * Alias for {@link TreeMap#of(Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object)}
      *
      * @param <K> The key type.
      * @param <V> The value type.
@@ -2512,7 +2512,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
+     * Alias for {@link TreeMap#of(Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object)}
      *
      * @param <K> The key type.
      * @param <V> The value type.
@@ -2541,7 +2541,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link TreeMap#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
+     * Alias for {@link TreeMap#of(Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object, Comparable, Object)}
      *
      * @param <K> The key type.
      * @param <V> The value type.

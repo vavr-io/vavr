@@ -749,7 +749,7 @@ def generateMainClasses(): Unit = {
           ${(1 to VARARGS).gen(i => {
             xs"""
               /$javadoc
-               * Alias for {@link $TreeMapType#of(${(1 to i).gen(j => "Object, Object")(", ")})}
+               * Alias for {@link $TreeMapType#of(${(1 to i).gen(j => s"${if (TreeMapType.equals("TreeMap")) s"Comparable" else s"Object"}, Object")(", ")})}
                *
                * @param <K> The key type.
                * @param <V> The value type.
