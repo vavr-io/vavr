@@ -543,7 +543,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
 
     default <U> Seq<U> traverse(BiFunction<K, V, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(List.empty(), (acc, entry) -> acc.append(mapper.apply(entry._1, entry._2)));
+        return foldLeft(Vector.empty(), (acc, entry) -> acc.append(mapper.apply(entry._1, entry._2)));
     }
 
     default Tuple2<Seq<K>, Seq<V>> unzip() {
