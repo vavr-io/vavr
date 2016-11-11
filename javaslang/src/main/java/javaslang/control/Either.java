@@ -240,7 +240,7 @@ public interface Either<L, R> extends Value<R> {
     }
 
     /**
-     * Maps this right-biased Either.
+     * Maps the right value of this Either, if present.
      *
      * @param mapper A mapper
      * @param <U>    Component type of the mapped right value
@@ -259,7 +259,7 @@ public interface Either<L, R> extends Value<R> {
     }
 
     /**
-     * Maps this right-biased Either.
+     * Maps the left value of this Either, if present.
      *
      * @param leftMapper A mapper
      * @param <U>        Component type of the mapped right value
