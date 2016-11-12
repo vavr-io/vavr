@@ -8,6 +8,7 @@
 import Generator._
 import JavaGenerator._
 
+import collection.immutable.ListMap
 import scala.language.implicitConversions
 
 val N = 8
@@ -2267,8 +2268,7 @@ def generateMainClasses(): Unit = {
     */
   def genArrayTypes(): Unit = {
 
-    val types = Map(
-      "Object" -> "Object",
+    val types = ListMap(
       "boolean" -> "Boolean",
       "byte" -> "Byte",
       "char" -> "Character",
@@ -2276,10 +2276,14 @@ def generateMainClasses(): Unit = {
       "float" -> "Float",
       "int" -> "Integer",
       "long" -> "Long",
-      "short" -> "Short"
+      "short" -> "Short",
+      "Object" -> "Object" // fallback
     ) // note: there is no void[] in Java
 
     genJavaslangFile("javaslang.collection", "ArrayType")((im: ImportManager, packageName: String, className: String) => xs"""
+      import javaslang.Tuple2;
+      import java.util.Collection;
+
       /**
        * Helper to replace reflective array access.
        *
@@ -2287,7 +2291,6 @@ def generateMainClasses(): Unit = {
        * @since 2.1.0
        */
       interface ArrayType<T> {
-
           @SuppressWarnings("unchecked")
           static <T> ArrayType<T> obj() { return (ArrayType<T>) ObjectArrayType.INSTANCE; }
 
@@ -2296,33 +2299,16 @@ def generateMainClasses(): Unit = {
           T getAt(Object array, int index);
 
           Object empty();
-          void setAt(Object array, int index, Object value);
+          void setAt(Object array, int index, T value) throws ClassCastException;
           Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size);
 
           @SuppressWarnings("unchecked")
           static <T> ArrayType<T> of(Object array) { return of((Class<T>) array.getClass().getComponentType()); }
           @SuppressWarnings("unchecked")
           static <T> ArrayType<T> of(Class<T> type) {
-              if (!type.isPrimitive()) {
-                  return (ArrayType<T>) obj();
-              } else if (boolean.class == type) {
-                  return (ArrayType<T>) BooleanArrayType.INSTANCE;
-              } else if (byte.class == type) {
-                  return (ArrayType<T>) ByteArrayType.INSTANCE;
-              } else if (char.class == type) {
-                  return (ArrayType<T>) CharArrayType.INSTANCE;
-              } else if (double.class == type) {
-                  return (ArrayType<T>) DoubleArrayType.INSTANCE;
-              } else if (float.class == type) {
-                  return (ArrayType<T>) FloatArrayType.INSTANCE;
-              } else if (int.class == type) {
-                  return (ArrayType<T>) IntArrayType.INSTANCE;
-              } else if (long.class == type) {
-                  return (ArrayType<T>) LongArrayType.INSTANCE;
-              } else if (short.class == type) {
-                  return (ArrayType<T>) ShortArrayType.INSTANCE;
-              } else {
-                  throw new IllegalArgumentException("Unknown type: " + type);
+              ${types.keys.toSeq.gen(arrayType =>
+                  s"""${if (arrayType == types.keys.last) "} else" else s"${if (arrayType == types.keys.head) "if" else "} else if"} ($arrayType.class == type)"} {
+                     |    return (ArrayType<T>) ${arrayType.capitalize + className}.INSTANCE;""".stripMargin)("\n")}
               }
           }
 
@@ -2391,41 +2377,29 @@ def generateMainClasses(): Unit = {
           }
 
           @SuppressWarnings("unchecked")
+          static <T> Object[] asArray(Iterable<? extends T> iterable) {
+              if (iterable instanceof Collection<?>) {
+                  final Collection<? extends T> collection = (Collection<? extends T>) iterable;
+                  return collection.toArray();
+              } else {
+                  final Tuple2<Iterable<? extends T>, Integer> iterableAndSize = Collections.withSize(iterable);
+                  return asArray(iterableAndSize._1.iterator(), iterableAndSize._2);
+              }
+          }
+
+          @SuppressWarnings("unchecked")
           static <T> T asPrimitives(Class<?> primitiveClass, Iterable<?> values) {
               final Object[] array = Array.ofAll(values).toJavaArray();
-              assert (array.length == 0) || (primitiveClass == primitiveType(array[0])) && !primitiveClass.isArray();
+              assert (array.length == 0) || !primitiveClass.isArray();
               final ArrayType<T> type = of((Class<T>) primitiveClass);
               final Object results = type.newInstance(array.length);
               for (int i = 0; i < array.length; i++) {
-                  type.setAt(results, i, array[i]);
+                  type.setAt(results, i, (T) array[i]);
               }
               return (T) results;
           }
 
-          static <T> Class<?> primitiveType(T element) {
-              final Class<?> wrapper = (element == null) ? Object.class : element.getClass();
-              if (wrapper == Boolean.class) {
-                  return boolean.class;
-              } else if (wrapper == Byte.class) {
-                  return byte.class;
-              } else if (wrapper == Character.class) {
-                  return char.class;
-              } else if (wrapper == Double.class) {
-                  return double.class;
-              } else if (wrapper == Float.class) {
-                  return float.class;
-              } else if (wrapper == Integer.class) {
-                  return int.class;
-              } else if (wrapper == Long.class) {
-                  return long.class;
-              } else if (wrapper == Short.class) {
-                  return short.class;
-              } else {
-                  return wrapper;
-              }
-          }
-
-          ${types.keys.toSeq.sorted.gen(arrayType =>
+          ${types.keys.toSeq.gen(arrayType =>
             genArrayType(arrayType)(im, packageName, arrayType.capitalize + className)
           )("\n\n")}
       }
@@ -2433,7 +2407,7 @@ def generateMainClasses(): Unit = {
 
     def genArrayType(arrayType: String)(im: ImportManager, packageName: String, className: String): String = {
       val wrapperType = types(arrayType)
-      val cast = if (wrapperType != "Object") s" ($wrapperType)" else ""
+      val isPrimitive = arrayType != "Object"
 
       xs"""
         final class $className implements ArrayType<$wrapperType>, ${im.getType("java.io.Serializable")} {
@@ -2456,7 +2430,15 @@ def generateMainClasses(): Unit = {
             public $wrapperType getAt(Object array, int index) { return cast(array)[index]; }
 
             @Override
-            public void setAt(Object array, int index, Object value) { cast(array)[index] =$cast value; }
+            public void setAt(Object array, int index, $wrapperType value) ${if (isPrimitive) "throws ClassCastException " else ""}{
+                ${if (isPrimitive)
+                """if (value == null) {
+                  |    throw new ClassCastException();
+                  |} else {
+                  |    cast(array)[index] = value;
+                  |}""".stripMargin
+              else "cast(array)[index] = value;" }
+            }
 
             @Override
             public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {

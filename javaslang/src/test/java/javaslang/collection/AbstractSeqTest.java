@@ -5,7 +5,9 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Function1;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.Option;
 import org.junit.Test;
 
@@ -592,8 +594,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldInsertBehindOfElement() {
-        final Seq<Integer> actual = of(4).insert(1, 1);
-        final Seq<Integer> expected = of(4, 1);
+        final Seq<Integer> actual = of(4).insert(1, 5);
+        final Seq<Integer> expected = of(4, 5);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -622,7 +624,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     // -- insertAll
 
     @Test
-    public void shouldInserAlltIntoNil() {
+    public void shouldInsertAllIntoNil() {
         final Seq<Integer> actual = this.<Integer> empty().insertAll(0, of(1, 2, 3));
         final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
@@ -701,7 +703,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldFullyIterateNonNilStartingAtIndex() {
         int actual = -1;
-        for (final Iterator<Integer> iter = of(1, 2, 3).iterator(1); iter.hasNext(); ) {
+        for (Iterator<Integer> iter = of(1, 2, 3).iterator(1); iter.hasNext(); ) {
             actual = iter.next();
         }
         assertThat(actual).isEqualTo(3);
@@ -922,9 +924,13 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldPrependAllNonNilToNonNil() {
-        final Seq<Integer> actual = of(4, 5, 6).prependAll(of(1, 2, 3));
-        final Seq<Integer> expected = of(1, 2, 3, 4, 5, 6);
-        assertThat(actual).isEqualTo(expected);
+        final Seq<Integer> expected = range(0, 100);
+
+        final Seq<Integer> actualFirstPartLarger = range(90, 100).prependAll(range(0, 90));
+        assertThat(actualFirstPartLarger).isEqualTo(expected);
+
+        final Seq<Integer> actualSecondPartLarger = range(10, 100).prependAll(range(0, 10));
+        assertThat(actualSecondPartLarger).isEqualTo(expected);
     }
 
     // -- remove
@@ -1081,7 +1087,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
             assertThat(of(1, 2, 3).removeAll(ignore -> true)).isEmpty();
             assertThat(of(1, 2, 3).removeAll(ignore -> false)).isEqualTo(of(1, 2, 3));
         } else {
-            Seq<Integer> seq = of(1, 2, 3);
+            final Seq<Integer> seq = of(1, 2, 3);
             assertThat(seq.removeAll(ignore -> false)).isSameAs(seq);
         }
     }

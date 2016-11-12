@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.util.ArrayList;
@@ -14,6 +15,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import static javaslang.API.List;
+import static javaslang.API.Tuple;
 
 /**
  * Internal class, containing helpers.
@@ -123,7 +127,7 @@ final class Collections {
                                                                                U zero, BiFunction<? super T, ? super U, ? extends U> operation,
                                                                                C cumulativeResult, BiFunction<C, U, C> combiner,
                                                                                Function<C, R> finisher) {
-        final Iterator<? extends T> reversedElements = seq(elements).reverseIterator(); // TODO a List will be reversed too many times this way
+        final Iterator<? extends T> reversedElements = reverseIterator(elements);
         return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), cumulativeResult, combiner, finisher);
     }
 
@@ -186,12 +190,45 @@ final class Collections {
         return tabulate(n, ignored -> supplier.get());
     }
 
-    @SuppressWarnings("unchecked")
-    static <T> Seq<T> seq(Iterable<? extends T> iterable) {
-        if (iterable instanceof Seq) {
-            return (Seq<T>) iterable;
+    static <T> Tuple2<Iterable<? extends T>, Integer> withSize(Iterable<? extends T> iterable) {
+        if (iterable instanceof Collection) {
+            return Tuple(iterable, ((Collection<?>) iterable).size());
+        } else if (iterable instanceof Traversable && isTraversableAgain(iterable)) {
+            return Tuple(iterable, ((Traversable<?>) iterable).size());
         } else {
-            return List.ofAll(iterable);
+            return withSize(List(iterable));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T> boolean isTraversableAgain(Iterable<? extends T> iterable) {
+        if (iterable instanceof Collection) {
+            return true;
+        } else if (iterable instanceof Traversable) {
+            final Traversable<T> traversable = (Traversable<T>) iterable;
+            return traversable.isTraversableAgain();
+        } else {
+            return false;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T> Iterator<? extends T> reverseIterator(Iterable<? extends T> iterable) {
+        if (iterable instanceof java.util.List) {
+            final java.util.List<T> list = (java.util.List<T>) iterable;
+            return new Iterator<T>() {
+                java.util.ListIterator<T> delegate = list.listIterator(list.size());
+
+                @Override
+                public boolean hasNext() { return delegate.hasPrevious(); }
+
+                @Override
+                public T next() { return delegate.previous(); }
+            };
+        } else {
+            final Seq<? extends T> result = (iterable instanceof Seq) ? (Seq<T>) iterable
+                                                                      : Vector.ofAll(iterable);
+            return result.reverseIterator();
         }
     }
 }

@@ -11,9 +11,12 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static java.util.function.Function.identity;
+import static javaslang.API.Vector;
 import static javaslang.collection.ArrayType.obj;
-import static javaslang.collection.ArrayType.primitiveType;
-import static javaslang.collection.NodeModifier.*;
+import static javaslang.collection.Collections.isTraversableAgain;
+import static javaslang.collection.Collections.reverseIterator;
+import static javaslang.collection.NodeModifier.COPY_NODE;
+import static javaslang.collection.NodeModifier.IDENTITY;
 
 /**
  * A `bit-mapped trie` is a very wide and shallow tree (for integer indices the depth will be `≤6`).
@@ -55,6 +58,7 @@ final class BitMappedTrie<T> implements Serializable {
         this.length = length;
         this.depthShift = depthShift;
 
+        assert offset >= 0;
         assert length <= treeSize(BRANCHING_FACTOR, depthShift);
         assert (EMPTY == null) || ((length > 0) && (ArrayType.of(array).lengthOf(array) > 0));
     }
@@ -81,83 +85,118 @@ final class BitMappedTrie<T> implements Serializable {
 
     private BitMappedTrie<T> boxed() { return map(identity()); }
 
-    BitMappedTrie<T> prepend(T leading) {
-        if (cannotAdd(leading)) {
-            return boxed().prepend(leading);
-        } else {
-            final int newSize = length() + 1;
-            if (length() == 0) {
-                return new BitMappedTrie<>(type, type.asArray(leading), offset, newSize, depthShift);
-            } else {
-                Object array = this.array;
-                int shift = depthShift, offset = this.offset;
-                if (isFullLeft()) {
-                    array = obj().copyUpdate(obj().empty(), BRANCHING_FACTOR - 1, array);
-                    shift += BRANCHING_BASE;
-                    offset = treeSize(BRANCHING_FACTOR - 1, shift);
-                }
-
-                offset -= 1;
-                array = modifyLeaf(array, shift, offset, COPY_NODE, updateLeafWith(type, leading));
-                return new BitMappedTrie<>(type, array, offset, newSize, shift);
-            }
+    BitMappedTrie<T> prependAll(Iterable<? extends T> iterable) {
+        if (!isTraversableAgain(iterable)) {
+            iterable = Vector(iterable);
         }
+
+        try {
+            return prepend(reverseIterator(iterable));
+        } catch (ClassCastException ignored) {
+            return boxed().prepend(reverseIterator(iterable));
+        }
+    }
+    private BitMappedTrie<T> prepend(java.util.Iterator<? extends T> iterator) {
+        BitMappedTrie<T> result = this;
+        while (iterator.hasNext()) {
+            Object array = result.array;
+            int shift = result.depthShift, offset = result.offset;
+            if (result.isFullLeft()) {
+                array = obj().copyUpdate(obj().empty(), BRANCHING_FACTOR - 1, array);
+                shift += BRANCHING_BASE;
+                offset = treeSize(BRANCHING_FACTOR - 1, shift);
+            }
+
+            final MutableInt delta = new MutableInt(0);
+            array = result.modifyLeaf(array, shift, offset - 1, COPY_NODE, prependToLeaf(iterator, delta));
+            result = new BitMappedTrie<>(type, array, offset - delta.val, result.length + delta.val, shift);
+        }
+        return result;
     }
     private boolean isFullLeft() { return offset == 0; }
-
-    BitMappedTrie<T> append(T trailing) {
-        if (cannotAdd(trailing)) {
-            return boxed().append(trailing);
-        } else {
-            final int newSize = length() + 1;
-            if (length() == 0) {
-                return new BitMappedTrie<>(type, type.asArray(trailing), offset, newSize, depthShift);
-            } else {
-                Object array = this.array;
-                int shift = depthShift;
-                if (isFullRight(newSize)) {
-                    array = obj().asArray(array);
-                    shift += BRANCHING_BASE;
-                }
-
-                array = modifyLeaf(array, shift, offset + length(), COPY_NODE, updateLeafWith(type, trailing));
-                return new BitMappedTrie<>(type, array, offset, newSize, shift);
+    private NodeModifier prependToLeaf(java.util.Iterator<? extends T> iterator, MutableInt delta) {
+        return (array, index) -> {
+            final Object copy = type.copy(array, BRANCHING_FACTOR);
+            for (; iterator.hasNext() && index >= 0; index--) {
+                type.setAt(copy, index, iterator.next());
+                delta.val++;
             }
+            return copy;
+        };
+    }
+
+    BitMappedTrie<T> appendAll(Iterable<? extends T> iterable) {
+        if (!isTraversableAgain(iterable)) {
+            iterable = Vector(iterable);
+        }
+
+        try {
+            return append(iterable.iterator());
+        } catch (ClassCastException ignored) {
+            return boxed().append(iterable.iterator());
         }
     }
-    private boolean isFullRight(int newSize) { return (offset + newSize) > treeSize(BRANCHING_FACTOR, depthShift); }
+    private BitMappedTrie<T> append(java.util.Iterator<? extends T> iterator) {
+        BitMappedTrie<T> result = this;
+        while (iterator.hasNext()) {
+            Object array = result.array;
+            int shift = result.depthShift;
+            if (result.isFullRight()) {
+                array = obj().asArray(array);
+                shift += BRANCHING_BASE;
+            }
+
+            final MutableInt delta = new MutableInt(0);
+            array = result.modifyLeaf(array, shift, result.offset + result.length, COPY_NODE, appendToLeaf(iterator, delta));
+            result = new BitMappedTrie<>(type, array, result.offset, result.length + delta.val, shift);
+        }
+        return result;
+
+    }
+    private boolean isFullRight() { return (offset + length + 1) > treeSize(BRANCHING_FACTOR, depthShift); }
+    private NodeModifier appendToLeaf(java.util.Iterator<? extends T> iterator, MutableInt delta) {
+        return (array, index) -> {
+            final Object copy = type.copy(array, BRANCHING_FACTOR);
+            for (int length = type.lengthOf(copy); iterator.hasNext() && index < length; index++) {
+                type.setAt(copy, index, iterator.next());
+                delta.val++;
+            }
+            return copy;
+        };
+    }
 
     BitMappedTrie<T> update(int index, T element) {
-        if (cannotAdd(element)) {
-            return boxed().update(index, element);
-        } else {
+        try {
             final Object root = modifyLeaf(array, depthShift, offset + index, COPY_NODE, updateLeafWith(type, element));
-            return new BitMappedTrie<>(type, root, offset, length(), depthShift);
+            return new BitMappedTrie<>(type, root, offset, length, depthShift);
+        } catch (ClassCastException ignored) {
+            return boxed().update(index, element);
         }
     }
+    private NodeModifier updateLeafWith(ArrayType<T> type, T element) { return (a, i) -> type.copyUpdate(a, i, element); }
 
     BitMappedTrie<T> drop(int n) {
         if (n <= 0) {
             return this;
-        } else if (n >= length()) {
+        } else if (n >= length) {
             return empty();
         } else {
             final int index = offset + n;
             final Object root = arePointingToSameLeaf(0, n)
                                 ? array
                                 : modifyLeaf(array, depthShift, index, obj()::copyDrop, IDENTITY);
-            return collapsed(type, root, index, length() - n, depthShift);
+            return collapsed(type, root, index, length - n, depthShift);
         }
     }
 
     BitMappedTrie<T> take(int n) {
-        if (n >= length()) {
+        if (n >= length) {
             return this;
         } else if (n <= 0) {
             return empty();
         } else {
             final int index = n - 1;
-            final Object root = arePointingToSameLeaf(index, length() - 1)
+            final Object root = arePointingToSameLeaf(index, length - 1)
                                 ? array
                                 : modifyLeaf(array, depthShift, offset + index, obj()::copyTake, IDENTITY);
             return collapsed(type, root, offset, n, depthShift);
@@ -203,7 +242,8 @@ final class BitMappedTrie<T> implements Serializable {
                 array = newNode;
             }
 
-            obj().setAt(array, previousIndex, leaf.apply(obj().getAt(array, previousIndex), lastDigit(index)));
+            final Object newLeaf = leaf.apply(obj().getAt(array, previousIndex), lastDigit(index));
+            obj().setAt(array, previousIndex, newLeaf);
             return root;
         }
     }
@@ -236,7 +276,7 @@ final class BitMappedTrie<T> implements Serializable {
 
     Iterator<T> iterator() {
         return new Iterator<T>() {
-            private final int globalLength = BitMappedTrie.this.length();
+            private final int globalLength = BitMappedTrie.this.length;
             private int globalIndex = 0;
 
             private int index = lastDigit(offset);
@@ -296,7 +336,7 @@ final class BitMappedTrie<T> implements Serializable {
             return index;
         });
 
-        return (length() == length)
+        return (this.length == length)
                ? this
                : BitMappedTrie.ofAll(type.copyRange(results, 0, length));
     }
@@ -315,15 +355,13 @@ final class BitMappedTrie<T> implements Serializable {
         return BitMappedTrie.ofAll(results);
     }
 
-    int length()                         { return length; }
-    private boolean cannotAdd(T element) { return (type != obj()) && (type.type() != primitiveType(element)); }
+    int length() { return length; }
 }
 
 @FunctionalInterface
 interface NodeModifier {
     Object apply(Object array, int index);
 
-    static <T> NodeModifier updateLeafWith(ArrayType<T> type, T element) { return (a, i) -> type.copyUpdate(a, i, element); }
     NodeModifier COPY_NODE = (o, i) -> obj().copy(o, i + 1);
     NodeModifier IDENTITY = (o, i) -> o;
 }
@@ -331,4 +369,9 @@ interface NodeModifier {
 @FunctionalInterface
 interface LeafVisitor<T> {
     int visit(int index, T leaf, int start, int end);
+}
+
+class MutableInt {
+    int val;
+    MutableInt(int val) { this.val = val; }
 }
