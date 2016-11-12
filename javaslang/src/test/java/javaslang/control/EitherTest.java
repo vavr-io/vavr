@@ -164,6 +164,21 @@ public class EitherTest extends AbstractValueTest {
         assertThat(either.flatMap(v -> Either.right("ok"))).isSameAs(either);
     }
 
+    // -- peekLeft
+
+    @Test
+    public void shouldPeekLeftNil() {
+        assertThat(empty().peekLeft(t -> {})).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldPeekLeftNonNil() {
+        final int[] effect = { 0 };
+        final Either<Integer, ?> actual = Either.left(1).peekLeft(i -> effect[0] = i);
+        assertThat(actual).isEqualTo(Either.left(1));
+        assertThat(effect[0]).isEqualTo(1);
+    }
+
     // equals
 
     @Test
