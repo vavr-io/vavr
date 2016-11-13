@@ -74,8 +74,12 @@ import java.util.stream.StreamSupport;
  * Type conversion:
  *
  * <ul>
+ * <li>{@link #collect(Collector)}</li>
+ * <li>{@link #collect(Supplier, BiConsumer, BiConsumer)}</li>
  * <li>{@link #toArray()}</li>
  * <li>{@link #toCharSeq()}</li>
+ * <li>{@link #toInvalid(Object)}</li>
+ * <li>{@link #toInvalid(Supplier)}</li>
  * <li>{@link #toJavaArray()}</li>
  * <li>{@link #toJavaArray(Class)}</li>
  * <li>{@link #toJavaCollection(Function)}</li>
@@ -85,6 +89,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toJavaMap(Supplier, Function)}</li>
  * <li>{@link #toJavaMap(Supplier, Function, Function)} </li>
  * <li>{@link #toJavaOptional()}</li>
+ * <li>{@link #toJavaParallelStream()}</li>
  * <li>{@link #toJavaSet()}</li>
  * <li>{@link #toJavaSet(Function)}</li>
  * <li>{@link #toJavaStream()}</li>
@@ -115,6 +120,8 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toTree()}</li>
  * <li>{@link #toTry()}</li>
  * <li>{@link #toTry(Supplier)}</li>
+ * <li>{@link #toValid(Object)}</li>
+ * <li>{@link #toValid(Supplier)}</li>
  * <li>{@link #toVector()}</li>
  * </ul>
  *
