@@ -240,7 +240,21 @@ public interface Either<L, R> extends Value<R> {
     }
 
     /**
-     * Maps the right value of this Either, if present.
+     * Maps the value of this Either if it is a Right, performs no operation if this is a Left.
+     *
+     * <pre><code>
+     * import static javaslang.API.*;
+     *
+     * class Example {{
+     *
+     *     // = Right("A")
+     *     Right("a").map(String::toUpperCase);
+     *
+     *     // = Left(1)
+     *     Left(1).map(String::toUpperCase);
+     *
+     * }}
+     * </code></pre>
      *
      * @param mapper A mapper
      * @param <U>    Component type of the mapped right value
@@ -259,7 +273,21 @@ public interface Either<L, R> extends Value<R> {
     }
 
     /**
-     * Maps the left value of this Either, if present.
+     * Maps the value of this Either if it is a Left, performs no operation if this is a Right.
+     *
+     * <pre><code>
+     * import static javaslang.API.*;
+     *
+     * class Example {{
+     *
+     *     // = Left(2)
+     *     Left(1).mapLeft(i -> i + 1);
+     *
+     *     // = Right("a")
+     *     Right("a").mapLeft(i -> i + 1);
+     *
+     * }}
+     * </code></pre>
      *
      * @param leftMapper A mapper
      * @param <U>        Component type of the mapped right value
