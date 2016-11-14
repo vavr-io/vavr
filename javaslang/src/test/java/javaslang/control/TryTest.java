@@ -456,6 +456,18 @@ public class TryTest extends AbstractValueTest {
         assertThat(failure().toEither(() -> "test").isLeft()).isTrue();
     }
 
+    // -- toValidation
+
+    @Test
+    public void shouldConvertFailureToValidationLeft() {
+        assertThat(failure().toValidation("test").isInvalid()).isTrue();
+    }
+
+    @Test
+    public void shouldConvertFailureToValidationLeftSupplier() {
+        assertThat(failure().toValidation(() -> "test").isInvalid()).isTrue();
+    }
+
     // -- toJavaOptional
 
     @Test

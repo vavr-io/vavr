@@ -125,6 +125,8 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toTry(Supplier)}</li>
  * <li>{@link #toValid(Object)}</li>
  * <li>{@link #toValid(Supplier)}</li>
+ * <li>{@link #toValidation(Object)}</li>
+ * <li>{@link #toValidation(Supplier)}</li>
  * <li>{@link #toVector()}</li>
  * </ul>
  *
@@ -896,6 +898,35 @@ public interface Value<T> extends Iterable<T> {
             return isEmpty() ? Left(leftSupplier.get()) : Right(get());
         }
      }
+
+    /**
+     * Converts this to an {@link Validation}.
+     *
+     * @param invalid An invalid value for the {@link Validation}
+     * @return A new {@link Validation}.
+     */
+    default <L> Validation<L, T> toValidation(L invalid) {
+        if (this instanceof Validation) {
+            return ((Validation<?, T>) this).leftMap(ignored -> invalid);
+        } else {
+            return isEmpty() ? Invalid(invalid) : Valid(get());
+        }
+    }
+
+    /**
+     * Converts this to an {@link Validation}.
+     *
+     * @param invalidSupplier A {@link Supplier} for the invalid value for the {@link Validation}
+     * @return A new {@link Validation}.
+     */
+    default <L> Validation<L, T> toValidation(Supplier<? extends L> invalidSupplier) {
+        Objects.requireNonNull(invalidSupplier, "invalidSupplier is null");
+        if (this instanceof Validation) {
+            return ((Validation<?, T>) this).leftMap(ignored -> invalidSupplier.get());
+        } else {
+            return isEmpty() ? Invalid(invalidSupplier.get()) : Valid(get());
+        }
+    }
 
     /**
      * Converts this to a {@link Queue}.

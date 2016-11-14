@@ -381,6 +381,23 @@ public class OptionTest extends AbstractValueTest {
         assertThat(None().toEither(() -> "bad")).isEqualTo(Left("bad"));
     }
 
+    // -- toValidation
+
+    @Test
+    public void shouldMakeValidOnSomeToValidation() {
+        assertThat(Some(5).toValidation("bad")).isEqualTo(Valid(5));
+    }
+
+    @Test
+    public void shouldMakeLeftOnNoneToValidation() {
+        assertThat(None().toValidation("bad")).isEqualTo(Invalid("bad"));
+    }
+
+    @Test
+    public void shouldMakeLeftOnNoneToValidationSupplier() {
+        assertThat(None().toValidation(() -> "bad")).isEqualTo(Invalid("bad"));
+    }
+
     // -- peek
 
     @Test

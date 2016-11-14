@@ -362,6 +362,13 @@ public abstract class AbstractValueTest {
     }
 
     @Test
+    public void shouldConvertToValidation() {
+        assertThat(empty().toValidation("test")).isEqualTo(Invalid("test"));
+        assertThat(empty().toValidation(() -> "test")).isEqualTo(Invalid("test"));
+        assertThat(of(1).toValidation("test")).isEqualTo(Valid(1));
+    }
+
+    @Test
     public void shouldConvertToQueue() {
         final Value<Integer> value = of(1, 2, 3);
         final Queue<Integer> queue = value.toQueue();
