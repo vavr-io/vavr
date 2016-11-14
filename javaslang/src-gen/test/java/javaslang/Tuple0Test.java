@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.Objects;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
+import javaslang.collection.Stream;
 import org.junit.Test;
 
 public class Tuple0Test {

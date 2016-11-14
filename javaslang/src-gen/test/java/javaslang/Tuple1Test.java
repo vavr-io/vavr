@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.Objects;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
+import javaslang.collection.Stream;
 import org.junit.Test;
 
 public class Tuple1Test {
@@ -79,6 +80,13 @@ public class Tuple1Test {
       final Function1<Object, Object> f1 = Function1.identity();
       final Tuple1<Object> actual = tuple.map(f1);
       assertThat(actual).isEqualTo(tuple);
+    }
+
+    @Test
+    public void shouldReturnTuple1OfSequence1() {
+      final Seq<Tuple1<Integer>> iterable = List.of(Tuple.of(2));
+      final Tuple1<Seq<Integer>> expected = Tuple.of(Stream.of(2));
+      assertThat(Tuple.sequence1(iterable)).isEqualTo(expected);
     }
 
     @Test

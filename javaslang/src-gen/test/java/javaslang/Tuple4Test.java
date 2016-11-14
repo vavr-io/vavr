@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.Objects;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
+import javaslang.collection.Stream;
 import org.junit.Test;
 
 public class Tuple4Test {
@@ -145,6 +146,20 @@ public class Tuple4Test {
       final Function1<Object, Object> f4 = Function1.identity();
       final Tuple4<Object, Object, Object, Object> actual = tuple.map(f1, f2, f3, f4);
       assertThat(actual).isEqualTo(tuple);
+    }
+
+    @Test
+    public void shouldReturnTuple4OfSequence4() {
+      final Seq<Tuple4<Integer, Integer, Integer, Integer>> iterable = List.of(Tuple.of(2, 3, 4, 5), Tuple.of(4, 5, 6, 7), Tuple.of(6, 7, 8, 9), Tuple.of(8, 9, 10, 11));
+      final Tuple4<Seq<Integer>, Seq<Integer>, Seq<Integer>, Seq<Integer>> expected = Tuple.of(Stream.of(2, 4, 6, 8), Stream.of(3, 5, 7, 9), Stream.of(4, 6, 8, 10), Stream.of(5, 7, 9, 11));
+      assertThat(Tuple.sequence4(iterable)).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReturnTuple4OfSequence1() {
+      final Seq<Tuple4<Integer, Integer, Integer, Integer>> iterable = List.of(Tuple.of(1, 2, 3, 4));
+      final Tuple4<Seq<Integer>, Seq<Integer>, Seq<Integer>, Seq<Integer>> expected = Tuple.of(Stream.of(1), Stream.of(2), Stream.of(3), Stream.of(4));
+      assertThat(Tuple.sequence4(iterable)).isEqualTo(expected);
     }
 
     @Test

@@ -3218,6 +3218,7 @@ def generateTestClasses(): Unit = {
         val test = im.getType("org.junit.Test")
         val seq = im.getType("javaslang.collection.Seq")
         val list = im.getType("javaslang.collection.List")
+        val stream = im.getType("javaslang.collection.Stream")
         val comparator = im.getType("java.util.Comparator")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
         val generics = if (i == 0) "" else s"<${(1 to i).gen(j => s"Object")(", ")}>"
@@ -3321,6 +3322,22 @@ def generateTestClasses(): Unit = {
                   ${(1 to i).gen(j => xs"""final Function1<Object, Object> f$j = Function1.identity();""")("\n")}
                   final Tuple$i$generics actual = tuple.map(${(1 to i).gen(j => s"f$j")(", ")});
                   $assertThat(actual).isEqualTo(tuple);
+                }
+
+                @$test
+                public void shouldReturnTuple${i}OfSequence$i() {
+                  final $seq<Tuple$i<${(1 to i).gen(j => xs"Integer")(", ")}>> iterable = $list.of(${(1 to i).gen(j => xs"Tuple.of(${(1 to i).gen(k => xs"${k+2*j-1}")(", ")})")(", ")});
+                  final Tuple$i<${(1 to i).gen(j => xs"$seq<Integer>")(", ")}> expected = Tuple.of(${(1 to i).gen(j => xs"$stream.of(${(1 to i).gen(k => xs"${2*k+j-1}")(", ")})")(", ")});
+                  $assertThat(Tuple.sequence$i(iterable)).isEqualTo(expected);
+                }
+              """)}
+
+              ${(i > 1).gen(xs"""
+                @$test
+                public void shouldReturnTuple${i}OfSequence1() {
+                  final $seq<Tuple$i<${(1 to i).gen(j => xs"Integer")(", ")}>> iterable = $list.of(Tuple.of(${(1 to i).gen(k => xs"$k")(", ")}));
+                  final Tuple$i<${(1 to i).gen(j => xs"$seq<Integer>")(", ")}> expected = Tuple.of(${(1 to i).gen(j => xs"$stream.of($j)")(", ")});
+                  $assertThat(Tuple.sequence$i(iterable)).isEqualTo(expected);
                 }
               """)}
 
