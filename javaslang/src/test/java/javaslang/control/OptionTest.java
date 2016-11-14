@@ -245,22 +245,6 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.of(1).isEmpty()).isFalse();
     }
 
-    // -- ifPresent
-
-    @Test
-    public void shouldConsumePresentValueOnWhenValueIsDefined() {
-        final int[] actual = new int[] { -1 };
-        Option.of(1).forEach(i -> actual[0] = i);
-        assertThat(actual[0]).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldNotConsumeAnythingOnIsDefinedWhenValueIsNotDefined() {
-        final int[] actual = new int[] { -1 };
-        Option.<Integer> none().forEach(i -> actual[0] = i);
-        assertThat(actual[0]).isEqualTo(-1);
-    }
-
     // -- filter
 
     @Test
