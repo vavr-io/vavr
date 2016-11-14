@@ -3218,7 +3218,7 @@ def generateTestClasses(): Unit = {
         val test = im.getType("org.junit.Test")
         val seq = im.getType("javaslang.collection.Seq")
         val list = im.getType("javaslang.collection.List")
-        val stream = im.getType("javaslang.collection.Stream")
+        val stream = if (i == 0) "" else im.getType("javaslang.collection.Stream")
         val comparator = im.getType("java.util.Comparator")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
         val generics = if (i == 0) "" else s"<${(1 to i).gen(j => s"Object")(", ")}>"
