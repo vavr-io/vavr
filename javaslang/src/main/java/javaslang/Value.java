@@ -10,6 +10,7 @@ import javaslang.control.Either;
 import javaslang.control.Option;
 import javaslang.control.Try;
 import javaslang.control.Validation;
+import static javaslang.API.*;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -78,6 +79,8 @@ import java.util.stream.StreamSupport;
  * <li>{@link #collect(Supplier, BiConsumer, BiConsumer)}</li>
  * <li>{@link #toArray()}</li>
  * <li>{@link #toCharSeq()}</li>
+ * <li>{@link #toEither(Object)}</li>
+ * <li>{@link #toEither(Supplier)}</li>
  * <li>{@link #toInvalid(Object)}</li>
  * <li>{@link #toInvalid(Supplier)}</li>
  * <li>{@link #toJavaArray()}</li>
@@ -864,6 +867,35 @@ public interface Value<T> extends Iterable<T> {
             return getOption();
         }
     }
+
+    /**
+     * Converts this to an {@link Either}.
+     *
+     * @param left A left value for the {@link Either}
+     * @return A new {@link Either}.
+     */
+    default <L> Either<L, T> toEither(L left) {
+        if (this instanceof Either) {
+            return ((Either<?, T>) this).mapLeft(ignored -> left);
+        } else {
+            return isEmpty() ? Left(left) : Right(get());
+        }
+    }
+
+    /**
+     * Converts this to an {@link Either}.
+     *
+     * @param leftSupplier A {@link Supplier} for the left value for the {@link Either}
+     * @return A new {@link Either}.
+     */
+    default <L> Either<L, T> toEither(Supplier<? extends L> leftSupplier) {
+        Objects.requireNonNull(leftSupplier, "leftSupplier is null");
+        if (this instanceof Either) {
+            return ((Either<?, T>) this).mapLeft(ignored -> leftSupplier.get());
+        } else {
+            return isEmpty() ? Left(leftSupplier.get()) : Right(get());
+        }
+     }
 
     /**
      * Converts this to a {@link Queue}.
