@@ -226,7 +226,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code elements} is null
      */
     default boolean containsAll(Iterable<? extends T> elements) {
-        HashSet<T> uniqueElements = HashSet.ofAll(elements);
+        final HashSet<T> uniqueElements = HashSet.ofAll(elements);
         return toSet().intersect(uniqueElements).size() == uniqueElements.size();
     }
 
@@ -626,11 +626,15 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     @SuppressWarnings("unchecked")
     default Option<T> max() {
-        final Traversable<T> ts = isTraversableAgain() ? this : toStream();
-        if (isEmpty() || !(ts.head() instanceof Comparable)) {
+        if (isEmpty()) {
             return Option.none();
         } else {
-            return ts.maxBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
+            final Traversable<T> ts = isTraversableAgain() ? this : toStream();
+            if (ts.head() instanceof Comparable) {
+                return ts.maxBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
+            } else {
+                return Option.none();
+            }
         }
     }
 
@@ -687,11 +691,15 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     @SuppressWarnings("unchecked")
     default Option<T> min() {
-        final Traversable<T> ts = isTraversableAgain() ? this : toStream();
-        if (isEmpty() || !(ts.head() instanceof Comparable)) {
+        if (isEmpty()) {
             return Option.none();
         } else {
-            return ts.minBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
+            final Traversable<T> ts = isTraversableAgain() ? this : toStream();
+            if (ts.head() instanceof Comparable) {
+                return ts.minBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
+            } else {
+                return Option.none();
+            }
         }
     }
 
@@ -854,7 +862,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * </code>
      * </pre>
      *
-     * @return a {@code Number} representing the sum of this elements
+     * @return a {@code Number} representing the product of this elements
      * @throws UnsupportedOperationException if this elements are not numeric
      */
     @SuppressWarnings("unchecked")

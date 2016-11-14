@@ -1013,6 +1013,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     // -- getOrElse
 
+    @Test
     public void shouldReturnDefaultValue() {
         final Map<String, String> map = mapOf("1", "a").put("2", "b");
         assertThat(map.getOrElse("3", "3")).isEqualTo("3");

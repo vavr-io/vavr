@@ -15,9 +15,19 @@ import java.util.*;
 import java.util.function.*;
 
 /**
- * An immutable {@code Map} interface.
- *
+ * A persistent (and therefore immutable) {@code Map} interface.
  * <p>
+ * A {@code Map} overrides the numeric operations {@link #average()}, {@link #min}, {@link #max}, {@link #product()} and {@link #sum()}
+ * such that they operate on the {@code Map} values.
+ * <p>
+ * Example:
+ *
+ * <pre><code>
+ * Map("a", 1,
+ *     "b", 2,
+ *     "c", 3).sum(); // = 6
+ * </code></pre>
+ *
  * Basic operations:
  *
  * <ul>
@@ -134,6 +144,17 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     }
 
     /**
+     * Calculates the <em>average</em> of this {@code Map} values, assuming that the values are numeric.
+     *
+     * @return {@code None()} if this {@code Map} is empty, otherwise {@code Some(Double)}.
+     * @throws UnsupportedOperationException if the values are not numeric
+     */
+    @Override
+    default Option<Double> average() {
+        return iterator().map(Tuple2::_2).average();
+    }
+
+    /**
      * Maps this {@code Map} to a new {@code Map} with different component type by applying a function to its elements.
      *
      * @param <K2>        key's component type of the map result
@@ -155,7 +176,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * attempts to compute its value using the given mapping
      * function and enters it into this map.
      *
-     * @param key key whose presence in this map is to be tested
+     * @param key             key whose presence in this map is to be tested
      * @param mappingFunction mapping function
      * @return the {@link Tuple2} of current or modified map and existing or computed value associated with the specified key
      */
@@ -165,7 +186,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * If the value for the specified key is present, attempts to
      * compute a new mapping given the key and its current mapped value.
      *
-     * @param key key whose presence in this map is to be tested
+     * @param key               key whose presence in this map is to be tested
      * @param remappingFunction remapping function
      * @return the {@link Tuple2} of current or modified map and the {@code Some} of the value associated
      * with the specified key, or {@code None} if none
@@ -387,6 +408,26 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     <V2> Map<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper);
 
     /**
+     * Calculates the <em>maximum</em> of this {@code Map} values using the natural {@code Comparator} of the values, if exists.
+     *
+     * @return {@code Some(maximum)} of this elements or {@code None} if this is empty or no {@code Comparator} is applicable
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    default Option<Tuple2<K, V>> max() {
+        if (isEmpty()) {
+            return Option.none();
+        } else {
+            if (head()._2 instanceof Comparable) {
+                final Comparator<Tuple2<K, V>> comparator = (e1, e2) -> ((Comparable<V>) e1._2).compareTo(e2._2);
+                return iterator().maxBy(comparator);
+            } else {
+                return Option.none();
+            }
+        }
+    }
+
+    /**
      * Creates a new map which by merging the entries of {@code this} map and {@code that} map.
      * <p>
      * If collisions occur, the value of {@code this} map is taken.
@@ -411,6 +452,37 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * @throws NullPointerException if that map or the given collision resolution function is null
      */
     <U extends V> Map<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution);
+
+    /**
+     * Calculates the <em>minimum</em> of this {@code Map} values using the natural {@code Comparator} of the values, if exists.
+     *
+     * @return {@code Some(minimum)} of this elements or {@code None} if this is empty or no {@code Comparator} is applicable
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    default Option<Tuple2<K, V>> min() {
+        if (isEmpty()) {
+            return Option.none();
+        } else {
+            if (head()._2 instanceof Comparator) {
+                final Comparator<Tuple2<K, V>> comparator = (e1, e2) -> ((Comparable<V>) e1._2).compareTo(e2._2);
+                return iterator().minBy(comparator);
+            } else {
+                return Option.none();
+            }
+        }
+    }
+
+    /**
+     * Calculates the <em>product</em> of this {@code Map} values, assuming that the values are numeric.
+     *
+     * @return a {@code Number} representing the product of this {@code Map} values
+     * @throws UnsupportedOperationException if the values are not numeric
+     */
+    @Override
+    default Number product() {
+        return iterator().map(t -> t._2).product();
+    }
 
     /**
      * Associates the specified value with the specified key in this map.
@@ -518,6 +590,17 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     @Override
     default Spliterator<Tuple2<K, V>> spliterator() {
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
+    }
+
+    /**
+     * Calculates the <em>sum</em> of this {@code Map} values, assuming that the values are numeric.
+     *
+     * @return a {@code Number} representing the sum of this {@code Map} values
+     * @throws UnsupportedOperationException if the values are not numeric
+     */
+    @Override
+    default Number sum() {
+        return iterator().map(t -> t._2).sum();
     }
 
     /**
@@ -682,7 +765,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
 
     @Override
     Map<K, V> scan(Tuple2<K, V> zero,
-                   BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
+            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
 
     @Override
     Iterator<? extends Map<K, V>> sliding(int size);
