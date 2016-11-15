@@ -569,6 +569,21 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     }
 
     @Override
+    public HashMap<K, V> replaceValue(K key, V value) {
+        return Maps.replaceValue(this, key, value);
+    }
+
+    @Override
+    public HashMap<K, V> replace(K key, V oldValue, V newValue) {
+        return Maps.replace(this, key, oldValue, newValue);
+    }
+
+    @Override
+    public HashMap<K, V> replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
+        return Maps.replaceAll(this, function);
+    }
+
+    @Override
     public HashMap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
