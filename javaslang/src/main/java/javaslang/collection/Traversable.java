@@ -945,7 +945,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      *
      * @param currentElement An element to be substituted.
      * @param newElement     A replacement for currentElement.
-     * @return a Traversable containing all elements of this where the first occurrence of currentElement is replaced with newELement.
+     * @return a Traversable containing all elements of this where the first occurrence of currentElement is replaced with newElement.
      */
     Traversable<T> replace(T currentElement, T newElement);
 
@@ -954,7 +954,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      *
      * @param currentElement An element to be substituted.
      * @param newElement     A replacement for currentElement.
-     * @return a Traversable containing all elements of this where all occurrences of currentElement are replaced with newELement.
+     * @return a Traversable containing all elements of this where all occurrences of currentElement are replaced with newElement.
      */
     Traversable<T> replaceAll(T currentElement, T newElement);
 
