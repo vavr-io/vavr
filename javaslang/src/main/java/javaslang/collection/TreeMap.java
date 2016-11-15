@@ -1086,7 +1086,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     public TreeMap<K, V> scan(
             Tuple2<K, V> zero,
             BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
-        return Maps.scan(this, this::emptyInstance, zero, operation);
+        return Maps.scan(this, zero, operation, this::createFromEntries);
     }
 
     @Override

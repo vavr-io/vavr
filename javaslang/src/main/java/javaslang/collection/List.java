@@ -1176,13 +1176,13 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, empty(), List::prepend, List::reverse);
+        return Collections.scanLeft(this, zero, operation, Iterator::toList);
     }
 
     @Override
     default <U> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, empty(), List::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, Iterator::toList);
     }
 
     @Override

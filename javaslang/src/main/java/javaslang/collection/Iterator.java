@@ -1772,7 +1772,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (isEmpty()) {
             return of(zero);
         } else {
-            return Collections.scanRight(this, zero, operation, Stream.empty(), Stream::prepend, Stream::iterator);
+            return Collections.scanRight(this, zero, operation, Function.identity());
         }
     }
 

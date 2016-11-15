@@ -438,19 +438,20 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
 
     @Override
     public PriorityQueue<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-        return Collections.scanLeft(this, zero, operation, empty(comparator), PriorityQueue::enqueue, Function.identity());
+        return Collections.scanLeft(this, zero, operation, it -> ofAll(comparator, it));
     }
 
     @Override
     public <U> PriorityQueue<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, empty(naturalComparator()), PriorityQueue::enqueue, Function.identity());
+
+        return Collections.scanLeft(this, zero, operation, it -> ofAll(naturalComparator(), it));
     }
 
     @Override
     public <U> PriorityQueue<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, empty(naturalComparator()), PriorityQueue::enqueue, Function.identity());
+        return Collections.scanRight(this, zero, operation, it -> ofAll(naturalComparator(), it));
     }
 
     @Override
