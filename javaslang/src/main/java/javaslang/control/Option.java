@@ -330,6 +330,22 @@ public interface Option<T> extends Value<T> {
         return f.apply(this);
     }
 
+    /**
+     * Returns the result of applying {@code f} to this Option's value if the Option is nonempty.
+     * Otherwise, evaluates expression {@code ifEmpty}.
+     *
+     * @param ifEmpty the expression to evaluate if Option is empty (None)
+     * @param f       the function to apply if Option is nonempty (Some)
+     * @param <U>     Type of folding result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code ifEmpty} or {@code f} is null
+     */
+    default <U> U fold(Supplier<? extends U> ifEmpty, Function<? super T, ? extends U> f) {
+        Objects.requireNonNull(ifEmpty, "ifEmpty is null");
+        Objects.requireNonNull(f, "f is null");
+        return this.isEmpty() ? ifEmpty.get() : f.apply(this.get());
+    }
+
     @Override
     default Iterator<T> iterator() {
         return isEmpty() ? Iterator.empty() : Iterator.of(get());

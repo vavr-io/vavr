@@ -509,4 +509,24 @@ public class OptionTest extends AbstractValueTest {
         final Object none = Serializables.deserialize(Serializables.serialize(Option.none()));
         assertThat(none == Option.none()).isTrue();
     }
+
+    @Test
+    public void shouldApplyFoldFunctionIfOptionIsNonEmpty() {
+        Option<String> opt = Option.some("Hello");
+        String result = opt.fold(
+            () -> "Bad result!",
+            (value) -> value + " Javaslang!"
+        );
+        assertThat(result).isEqualToIgnoringCase("Hello Javaslang!");
+    }
+
+    @Test
+    public void shouldEvaluateFoldExpressionIfOptionIsEmpty() {
+        Option<String> opt = Option.none();
+        String result = opt.fold(
+                () -> "Hello Javaslang!",
+                (value) -> value + " Bad Result!"
+        );
+        assertThat(result).isEqualToIgnoringCase("Hello Javaslang!");
+    }
 }
