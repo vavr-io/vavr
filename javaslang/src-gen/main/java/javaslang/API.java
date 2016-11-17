@@ -788,7 +788,6 @@ public final class API {
      * @return A new {@link Future} instance.
      * @throws NullPointerException if computation is null.
      */
-    @GwtIncompatible
     public static <T> Future<T> Future(CheckedSupplier<? extends T> computation) {
         return Future.of(computation);
     }
@@ -802,7 +801,6 @@ public final class API {
      * @return A new {@link Future} instance.
      * @throws NullPointerException if one of executorService or computation is null.
      */
-    @GwtIncompatible
     public static <T> Future<T> Future(ExecutorService executorService, CheckedSupplier<? extends T> computation) {
         return Future.of(executorService, computation);
     }
@@ -814,7 +812,6 @@ public final class API {
      * @param result The result.
      * @return A succeeded {@link Future}.
      */
-    @GwtIncompatible
     public static <T> Future<T> Future(T result) {
         return Future.successful(result);
     }
@@ -828,7 +825,6 @@ public final class API {
      * @return A succeeded {@link Future}.
      * @throws NullPointerException if executorService is null
      */
-    @GwtIncompatible
     public static <T> Future<T> Future(ExecutorService executorService, T result) {
         return Future.successful(executorService, result);
     }
@@ -841,7 +837,6 @@ public final class API {
      * @return A failed {@link Future}.
      * @throws NullPointerException if exception is null
      */
-    @GwtIncompatible
     public static <T> Future<T> Future(Throwable exception) {
         return Future.failed(exception);
     }
@@ -855,7 +850,6 @@ public final class API {
      * @return A failed {@link Future}.
      * @throws NullPointerException if executorService or exception is null
      */
-    @GwtIncompatible
     public static <T> Future<T> Future(ExecutorService executorService, Throwable exception) {
         return Future.failed(executorService, exception);
     }
