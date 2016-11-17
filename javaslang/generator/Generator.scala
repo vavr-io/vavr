@@ -437,7 +437,6 @@ def generateMainClasses(): Unit = {
            * @return A new {@link $FutureType} instance.
            * @throws NullPointerException if computation is null.
            */
-          @GwtIncompatible
           public static <T> $FutureType<T> Future($CheckedSupplierType<? extends T> computation) {
               return $FutureType.of(computation);
           }
@@ -451,7 +450,6 @@ def generateMainClasses(): Unit = {
            * @return A new {@link $FutureType} instance.
            * @throws NullPointerException if one of executorService or computation is null.
            */
-          @GwtIncompatible
           public static <T> $FutureType<T> Future($ExecutorServiceType executorService, $CheckedSupplierType<? extends T> computation) {
               return $FutureType.of(executorService, computation);
           }
@@ -463,7 +461,6 @@ def generateMainClasses(): Unit = {
            * @param result The result.
            * @return A succeeded {@link $FutureType}.
            */
-          @GwtIncompatible
           public static <T> $FutureType<T> Future(T result) {
               return $FutureType.successful(result);
           }
@@ -477,7 +474,6 @@ def generateMainClasses(): Unit = {
            * @return A succeeded {@link $FutureType}.
            * @throws NullPointerException if executorService is null
            */
-          @GwtIncompatible
           public static <T> $FutureType<T> Future($ExecutorServiceType executorService, T result) {
               return $FutureType.successful(executorService, result);
           }
@@ -490,7 +486,6 @@ def generateMainClasses(): Unit = {
            * @return A failed {@link $FutureType}.
            * @throws NullPointerException if exception is null
            */
-          @GwtIncompatible
           public static <T> $FutureType<T> Future(Throwable exception) {
               return $FutureType.failed(exception);
           }
@@ -504,7 +499,6 @@ def generateMainClasses(): Unit = {
            * @return A failed {@link $FutureType}.
            * @throws NullPointerException if executorService or exception is null
            */
-          @GwtIncompatible
           public static <T> $FutureType<T> Future($ExecutorServiceType executorService, Throwable exception) {
               return $FutureType.failed(executorService, exception);
           }
