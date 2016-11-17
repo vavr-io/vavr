@@ -1011,6 +1011,51 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(map.get("3")).isEqualTo(Option.none());
     }
 
+    @Test
+    public void shouldReturnSameInstanceIfReplacingCurrentValueWithNonExistingKey() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+        final Map<Integer, String> actual = map.replaceValue(3, "?");
+        assertThat(actual).isSameAs(map);
+    }
+
+    @Test
+    public void shouldReplaceCurrentValueForExistingKey() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+        final Map<Integer, String> actual = map.replaceValue(2, "c");
+        final Map<Integer, String> expected = mapOf(1, "a", 2, "c");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReplaceCurrentValueForExistingKeyAndEqualOldValue() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+        final Map<Integer, String> actual = map.replace(2, "b", "c");
+        final Map<Integer, String> expected = mapOf(1, "a", 2, "c");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReturnSameInstanceForExistingKeyAndNonEqualOldValue() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+        final Map<Integer, String> actual = map.replace(2, "d", "c");
+        assertThat(actual).isSameAs(map);
+    }
+
+    @Test
+    public void shouldReturnSameInstanceIfReplacingCurrentValueWithOldValueWithNonExistingKey() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+        final Map<Integer, String> actual = map.replace(3, "?", "!");
+        assertThat(actual).isSameAs(map);
+    }
+
+    @Test
+    public void shouldReplaceAllValuesWithFunctionResult() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+        final Map<Integer, String> actual = map.replaceAll((integer, s) -> s + integer);
+        final Map<Integer, String> expected = mapOf(1, "a1", 2, "b2");
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- getOrElse
 
     public void shouldReturnDefaultValue() {

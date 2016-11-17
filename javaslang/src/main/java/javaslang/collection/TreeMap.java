@@ -863,6 +863,21 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     @Override
+    public TreeMap<K, V> replaceValue(K key, V value) {
+        return Maps.replaceValue(this, key, value);
+    }
+
+    @Override
+    public TreeMap<K, V> replace(K key, V oldValue, V newValue) {
+        return Maps.replace(this, key, oldValue, newValue);
+    }
+
+    @Override
+    public TreeMap<K, V> replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
+        return Maps.replaceAll(this, function);
+    }
+
+    @Override
     public TreeMap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements) {
         Objects.requireNonNull(elements, "elements is null");
         RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(entries.comparator());
