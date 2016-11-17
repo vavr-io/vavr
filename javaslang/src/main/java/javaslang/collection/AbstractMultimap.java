@@ -15,6 +15,8 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.*;
 
+import static javaslang.API.Tuple;
+
 /**
  * An {@link Multimap} implementation (not intended to be public).
  *
@@ -375,6 +377,24 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @Override
     public M replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         return replace(currentElement, newElement);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public M replaceValue(K key, V value) {
+        return (M) (containsKey(key) ? remove(key).put(key, value) : this);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public M replace(K key, V oldValue, V newValue) {
+        return (M) (contains(Tuple(key, oldValue)) ? remove(key, oldValue).put(key, newValue) : this);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public M replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
+        return (M) map((k, v) -> Tuple(k, function.apply(k, v)));
     }
 
     @SuppressWarnings("unchecked")

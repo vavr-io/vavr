@@ -585,6 +585,33 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     @Override
     Multimap<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
 
+    /**
+     * Replaces the entry for the specified key only if it is currently mapped to some value.
+     *
+     * @param key the key of the element to be substituted
+     * @param value the new value to be associated with the key
+     * @return a new map containing key mapped to value if key was contained before. The old map otherwise
+     */
+    Multimap<K, V> replaceValue(K key, V value);
+
+    /**
+     * Replaces the entry with the specified key and oldValue.
+     *
+     * @param key the key of the element to be substituted
+     * @param oldValue the expected current value associated with the key
+     * @param newValue the new value to be associated with the key
+     * @return a new map containing key mapped to newValue if key was contained before and oldValue was associated with the key. The old map otherwise.
+     */
+    Multimap<K, V> replace(K key, V oldValue, V newValue);
+
+    /**
+     * Replaces each entry's values with the result of invoking the given function on that each tuple until all entries have been processed or the function throws an exception.
+     *
+     * @param function function transforming key and current value to a new value
+     * @return a new map with the same keySet but transformed values
+     */
+    Multimap<K, V> replaceAll(BiFunction<? super K, ? super V, ? extends V> function);
+
     @Override
     Multimap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements);
 
