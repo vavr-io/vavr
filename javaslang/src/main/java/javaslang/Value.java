@@ -907,7 +907,7 @@ public interface Value<T> extends Iterable<T> {
      */
     default <L> Validation<L, T> toValidation(L invalid) {
         if (this instanceof Validation) {
-            return ((Validation<?, T>) this).leftMap(ignored -> invalid);
+            return ((Validation<?, T>) this).mapError(ignored -> invalid);
         } else {
             return isEmpty() ? Invalid(invalid) : Valid(get());
         }
@@ -922,7 +922,7 @@ public interface Value<T> extends Iterable<T> {
     default <L> Validation<L, T> toValidation(Supplier<? extends L> invalidSupplier) {
         Objects.requireNonNull(invalidSupplier, "invalidSupplier is null");
         if (this instanceof Validation) {
-            return ((Validation<?, T>) this).leftMap(ignored -> invalidSupplier.get());
+            return ((Validation<?, T>) this).mapError(ignored -> invalidSupplier.get());
         } else {
             return isEmpty() ? Invalid(invalidSupplier.get()) : Valid(get());
         }
