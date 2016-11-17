@@ -354,13 +354,13 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldRecognizeNotContainedKeyValuePair() {
-        final TreeMap<String, Integer> testee = TreeMap.of(Tuple.of("one", 1));
+        final Multimap<String, Integer> testee = mapOf("one", 1);
         assertThat(testee.contains(Tuple.of("one", 0))).isFalse();
     }
 
     @Test
     public void shouldRecognizeContainedKeyValuePair() {
-        final TreeMap<String, Integer> testee = TreeMap.of(Tuple.of("one", 1));
+        final Multimap<String, Integer> testee = mapOf("one", 1);
         assertThat(testee.contains(Tuple.of("one", 1))).isTrue();
     }
 

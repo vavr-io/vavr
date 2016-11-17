@@ -147,7 +147,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
 
     @Override
     default boolean contains(Tuple2<K, V> element) {
-        return get(element._1).map(v -> Objects.equals(v, element._2)).getOrElse(false);
+        return get(element._1).map(v -> v.contains(element._2)).getOrElse(false);
     }
 
     /**

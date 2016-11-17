@@ -323,7 +323,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         } else if (that.isEmpty()) {
             return (M) this;
         } else {
-            return that.foldLeft((M) this, (map, entry) -> !map.contains((Tuple2<K, V>) entry) ? (M) map.put(entry) : map);
+            return that.foldLeft((M) this, (map, entry) -> (M) map.put(entry));
         }
     }
 

@@ -240,13 +240,14 @@ final class Maps {
         return replace(map, currentElement, newElement);
     }
 
+    @SuppressWarnings("unchecked")
     static <K, V, M extends Map<K, V>> M replaceValue(M map, K key, V value) {
-        return map.containsKey(key) ? put(map, Tuple(key, value)) :  map;
+        return map.containsKey(key) ? (M) map.put(key, value) :  map;
     }
 
-
+    @SuppressWarnings("unchecked")
     static <K, V, M extends Map<K, V>> M replace(M map, K key, V oldValue, V newValue) {
-        return map.contains(Tuple(key, oldValue)) ? put(map, Tuple(key, newValue)) : map;
+        return map.contains(Tuple(key, oldValue)) ? (M) map.put(key, newValue) : map;
     }
 
     @SuppressWarnings("unchecked")
