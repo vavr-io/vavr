@@ -28,9 +28,6 @@ import static javaslang.API.Tuple;
  */
 abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multimap<K, V> {
 
-    interface SerializableSupplier<T> extends Supplier<T>, Serializable {
-    }
-
     private static final long serialVersionUID = 1L;
 
     protected final Map<K, Traversable<V>> back;
@@ -508,5 +505,8 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
             javaMap.computeIfAbsent(t._1, k -> javaContainerSupplier.get()).add(t._2);
         }
         return javaMap;
+    }
+
+    interface SerializableSupplier<T> extends Supplier<T>, Serializable {
     }
 }
