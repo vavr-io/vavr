@@ -221,7 +221,7 @@ final class Collections {
         } else if (iterable instanceof Seq) {
             return ((Seq<T>) iterable).reverseIterator();
         } else {
-            return Iterator.ofAll(iterable).foldLeft(List.<T> empty(), List::prepend).iterator();
+            return Iterator.ofAll(iterable).foldLeft(List.<T>empty(), List::prepend).iterator();
         }
     }
 }

@@ -779,7 +779,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     @Override
     public TreeSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, it -> TreeSet.ofAll(comparator(), it) );
+        return Collections.scanLeft(this, zero, operation, it -> TreeSet.ofAll(comparator(), it));
     }
 
     @Override
