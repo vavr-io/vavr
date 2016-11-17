@@ -493,11 +493,11 @@ public interface Validation<E, T> extends Value<T> {
     }
 
     /**
-     * Whereas map only performs a mapping on a valid Validation, and leftMap performs a mapping on an invalid
+     * Whereas map only performs a mapping on a valid Validation, and mapError performs a mapping on an invalid
      * Validation, bimap allows you to provide mapping actions for both, and will give you the result based
      * on what type of Validation this is. Without this, you would have to do something like:
      *
-     * validation.map(...).leftMap(...);
+     * validation.map(...).mapError(...);
      *
      * @param <E2>        type of the mapping result if this is an invalid
      * @param <T2>        type of the mapping result if this is a valid
@@ -522,12 +522,27 @@ public interface Validation<E, T> extends Value<T> {
      * Applies a function f to the error of this Validation if this is an Invalid. Otherwise does nothing
      * if this is a Valid.
      *
+     * @deprecated  replaced by {@link #mapError()}
      * @param <U> type of the error resulting from the mapping
      * @param f   a function that maps the error in this Invalid
      * @return an instance of Validation&lt;U,T&gt;
      * @throws NullPointerException if mapping operation f is null
      */
+    @Deprecated
     default <U> Validation<U, T> leftMap(Function<? super E, ? extends U> f) {
+        return mapError(f);
+    }
+
+    /**
+     * Applies a function f to the error of this Validation if this is an Invalid. Otherwise does nothing
+     * if this is a Valid.
+     *
+     * @param <U> type of the error resulting from the mapping
+     * @param f   a function that maps the error in this Invalid
+     * @return an instance of Validation&lt;U,T&gt;
+     * @throws NullPointerException if mapping operation f is null
+     */
+    default <U> Validation<U, T> mapError(Function<? super E, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         if (isInvalid()) {
             E error = this.getError();
