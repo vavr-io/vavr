@@ -803,7 +803,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public IndexedSeq<Character> scan(Character zero, BiFunction<? super Character, ? super Character, ? extends Character> operation) {
-        return scanLeft(zero, operation);
+        return Collections.scanLeft(this, zero, operation, Iterator::toCharSeq);
     }
 
     @Override

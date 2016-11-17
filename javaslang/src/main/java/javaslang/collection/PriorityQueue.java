@@ -444,7 +444,6 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     @Override
     public <U> PriorityQueue<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-
         return Collections.scanLeft(this, zero, operation, it -> ofAll(naturalComparator(), it));
     }
 
