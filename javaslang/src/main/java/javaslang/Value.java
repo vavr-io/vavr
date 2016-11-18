@@ -880,6 +880,7 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Either}.
      *
      * @param left A left value for the {@link Either}
+     * @param <L> Either left component type
      * @return A new {@link Either}.
      */
     default <L> Either<L, T> toEither(L left) {
@@ -894,6 +895,7 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Either}.
      *
      * @param leftSupplier A {@link Supplier} for the left value for the {@link Either}
+     * @param <L> Validation error component type
      * @return A new {@link Either}.
      */
     default <L> Either<L, T> toEither(Supplier<? extends L> leftSupplier) {
@@ -909,6 +911,7 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Validation}.
      *
      * @param invalid An invalid value for the {@link Validation}
+     * @param <L> Validation error component type
      * @return A new {@link Validation}.
      */
     default <L> Validation<L, T> toValidation(L invalid) {
@@ -923,6 +926,7 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Validation}.
      *
      * @param invalidSupplier A {@link Supplier} for the invalid value for the {@link Validation}
+     * @param <L> Validation error component type
      * @return A new {@link Validation}.
      */
     default <L> Validation<L, T> toValidation(Supplier<? extends L> invalidSupplier) {

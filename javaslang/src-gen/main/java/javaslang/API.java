@@ -781,7 +781,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link Future#of(CheckedSupplier)}
+     * Alias for {@link Future#of(Try.CheckedSupplier)}
      *
      * @param <T>         Type of the computation result.
      * @param computation A computation.
@@ -793,7 +793,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link Future#of(ExecutorService, CheckedSupplier)}
+     * Alias for {@link Future#of(ExecutorService, Try.CheckedSupplier)}
      *
      * @param <T>             Type of the computation result.
      * @param executorService An executor service.

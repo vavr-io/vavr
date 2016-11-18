@@ -522,7 +522,7 @@ public interface Validation<E, T> extends Value<T> {
      * Applies a function f to the error of this Validation if this is an Invalid. Otherwise does nothing
      * if this is a Valid.
      *
-     * @deprecated  replaced by {@link #mapError()}
+     * @deprecated  replaced by {@link #mapError(Function)}
      * @param <U> type of the error resulting from the mapping
      * @param f   a function that maps the error in this Invalid
      * @return an instance of Validation&lt;U,T&gt;
