@@ -239,7 +239,8 @@ public abstract class AbstractValueTest {
     public void shouldConvertToCharSeq() {
         final Value<Integer> value = of(1, 2, 3);
         final CharSeq charSeq = value.toCharSeq();
-        assertThat(charSeq).isEqualTo(CharSeq.of(value.toString()));
+        final CharSeq expected = CharSeq.of(of(1, 2, 3).iterator().mkString());
+        assertThat(charSeq).isEqualTo(expected);
     }
 
     @Test
