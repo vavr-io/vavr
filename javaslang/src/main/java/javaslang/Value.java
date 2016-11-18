@@ -498,7 +498,13 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link CharSeq}.
      */
     default CharSeq toCharSeq() {
-        return CharSeq.of(toString());
+        if (this instanceof CharSeq) {
+            return (CharSeq) this;
+        } if (isEmpty()) {
+            return CharSeq.empty();
+        } else {
+            return CharSeq.of(iterator().mkString());
+        }
     }
 
     /**
