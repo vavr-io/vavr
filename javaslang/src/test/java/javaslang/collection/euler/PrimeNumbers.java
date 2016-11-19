@@ -11,18 +11,18 @@ import javaslang.collection.Set;
 import javaslang.collection.Stream;
 import javaslang.collection.TreeSet;
 
-public final class PrimeNumbers {
+final class PrimeNumbers {
 
-    private static Set<Integer> PRIMES_2_000_000 = Sieve.fillSieve.apply(2_000_000, TreeSet.empty());
+    private static final Set<Integer> PRIMES_2_000_000 = Sieve.fillSieve(2_000_000, TreeSet.empty());
 
     private PrimeNumbers() {
     }
 
-    public static Stream<Integer> primes() {
+    static Stream<Integer> primes() {
         return Stream.ofAll(PRIMES_2_000_000);
     }
 
-    public static HashMap<Long, Long> factorization(long num) {
+    static HashMap<Long, Long> factorization(long num) {
         if (num == 1) {
             return HashMap.empty();
         } else {
@@ -33,7 +33,7 @@ public final class PrimeNumbers {
         }
     }
 
-    public static Stream<Long> primeFactors(long num) {
+    static Stream<Long> primeFactors(long num) {
         return Stream.rangeClosed(2L, (int) Math.sqrt(num))
                 .find(d -> num % d == 0)
                 .map(d -> Stream.cons(d, () -> primeFactors(num / d)))

@@ -12,6 +12,7 @@ import org.junit.Test;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -28,33 +29,6 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     private enum E {
         V1, V2, V3
-    }
-
-    private static class Mapper<T> implements Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        private final java.util.Map<Integer, T> fromIntMap = new java.util.HashMap<>();
-        private final java.util.Map<T, Integer> toIntMap = new java.util.HashMap<>();
-        private int nextValue = 0;
-
-        synchronized T fromInt(Integer i) {
-            if (i < nextValue) {
-                return fromIntMap.get(i);
-            } else {
-                throw new RuntimeException();
-            }
-        }
-
-        synchronized Integer toInt(T value) {
-            Integer i = toIntMap.get(value);
-            if (i == null) {
-                i = nextValue++;
-                toIntMap.put(value, i);
-                fromIntMap.put(i, value);
-            }
-            return i;
-        }
     }
 
     @Override
@@ -122,6 +96,12 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     @Override
     protected <T> BitSet<T> of(T element) {
+        return this.<T> bsBuilder().of(element);
+    }
+
+    @Override
+    protected <T> BitSet<T> of(Comparator<? super T> comparator, T element) {
+        // comparator is not used
         return this.<T> bsBuilder().of(element);
     }
 
@@ -522,6 +502,35 @@ public class BitSetTest extends AbstractSortedSetTest {
             assertThat(set).isEqualTo(TreeSet.of(3));
         } else {
             assertThat(set).isEqualTo(TreeSet.of(0, 1, 3, 7, 15));
+        }
+    }
+
+    // -- classes
+
+    private static class Mapper<T> implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final java.util.Map<Integer, T> fromIntMap = new java.util.HashMap<>();
+        private final java.util.Map<T, Integer> toIntMap = new java.util.HashMap<>();
+        private int nextValue = 0;
+
+        synchronized T fromInt(Integer i) {
+            if (i < nextValue) {
+                return fromIntMap.get(i);
+            } else {
+                throw new RuntimeException();
+            }
+        }
+
+        synchronized Integer toInt(T value) {
+            Integer i = toIntMap.get(value);
+            if (i == null) {
+                i = nextValue++;
+                toIntMap.put(value, i);
+                fromIntMap.put(i, value);
+            }
+            return i;
         }
     }
 }

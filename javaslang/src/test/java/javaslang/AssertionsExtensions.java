@@ -5,6 +5,8 @@
  */
 package javaslang;
 
+import org.assertj.core.api.Assertions;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -26,20 +28,12 @@ public final class AssertionsExtensions {
         }
 
         public void isNotInstantiable() {
+            final Constructor<?> cons;
             try {
-                final Constructor<?> cons = clazz.getDeclaredConstructor();
-                cons.setAccessible(true);
-                cons.newInstance();
-            } catch (InvocationTargetException x) {
-                final String exception = ((x.getCause() == null) ? x : x.getCause()).getClass().getSimpleName();
-                final String actualMessage = (x.getCause() == null) ? x.getMessage() : x.getCause().getMessage();
-                final String expectedMessage = clazz.getName() + " is not intended to be instantiated.";
-                if (!expectedMessage.equals(actualMessage)) {
-                    throw new AssertionError(String.format("Expected AssertionError(\"%s\") but was %s(\"%s\")",
-                            expectedMessage, exception, actualMessage));
-                }
-            } catch (Exception x) {
-                throw new RuntimeException("Error instantiating " + clazz.getName(), x);
+                cons = clazz.getDeclaredConstructor();
+                Assertions.assertThat(cons.isAccessible()).isFalse();
+            } catch (NoSuchMethodException e) {
+                throw new AssertionError("no default constructor found");
             }
         }
     }

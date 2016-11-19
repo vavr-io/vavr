@@ -6,18 +6,17 @@
 package javaslang.collection;
 
 import javaslang.Value;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.*;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
+import static javaslang.TestComparators.toStringComparator;
 import static javaslang.collection.Comparators.naturalComparator;
 
 public class TreeSetTest extends AbstractSortedSetTest {
@@ -29,7 +28,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Override
     protected <T> TreeSet<T> empty() {
-        return TreeSet.empty(toStringComparator());
+        return TreeSet.empty(naturalComparator());
     }
 
     @Override
@@ -39,40 +38,29 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Override
     protected <T> TreeSet<T> of(T element) {
-        return TreeSet.of(toStringComparator(), element);
+        return TreeSet.of(naturalComparator(), element);
+    }
+
+    @Override
+    protected <T> TreeSet<T> of(Comparator<? super T> comparator, T element) {
+        return TreeSet.of(comparator, element);
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
     protected final <T> TreeSet<T> of(T... elements) {
-        boolean allLongs = true;
-        boolean allNumbers = true;
-        for (T element : elements) {
-            if (!(element instanceof Number)) {
-                allNumbers = false;
-            }
-            if (!(element instanceof Long)) {
-                allLongs = false;
-            }
-        }
-        if (allLongs) {
-            return TreeSet.ofAll(toLongComparator(), Iterator.of(elements));
-        } else if (allNumbers) {
-            return TreeSet.ofAll(toDoubleComparator(), Iterator.of(elements));
-        } else {
-            return TreeSet.ofAll(toStringComparator(), Iterator.of(elements));
-        }
+        return TreeSet.<T> of(naturalComparator(), elements);
     }
 
     @Override
     protected <T> TreeSet<T> ofAll(Iterable<? extends T> elements) {
-        return TreeSet.ofAll(toStringComparator(), elements);
+        return TreeSet.ofAll(naturalComparator(), elements);
     }
 
     @Override
     protected <T> TreeSet<T> ofJavaStream(Stream<? extends T> javaStream) {
-        return TreeSet.ofAll(toStringComparator(), javaStream);
+        return TreeSet.ofAll(naturalComparator(), javaStream);
     }
 
     @Override
@@ -117,12 +105,12 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Override
     protected <T> TreeSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
-        return TreeSet.tabulate(toStringComparator(), n, f);
+        return TreeSet.tabulate(naturalComparator(), n, f);
     }
 
     @Override
     protected <T> TreeSet<T> fill(int n, Supplier<? extends T> s) {
-        return TreeSet.fill(toStringComparator(), n, s);
+        return TreeSet.fill(naturalComparator(), n, s);
     }
 
     @Override
@@ -144,7 +132,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Test
     public void shouldNarrowTreeSet() {
-        final TreeSet<Double> doubles = of(1.0d);
+        final TreeSet<Double> doubles = TreeSet.of(toStringComparator(), 1.0d);
         final TreeSet<Number> numbers = TreeSet.narrow(doubles);
         final int actual = numbers.add(new BigDecimal("2.0")).sum().intValue();
         assertThat(actual).isEqualTo(3);
@@ -170,26 +158,6 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     private static Comparator<Integer> inverseIntComparator() {
         return (i1, i2) -> Integer.compare(i2, i1);
-    }
-
-    static Comparator<Object> toStringComparator() {
-        return (Comparator<Object> & Serializable) (o1, o2) -> String.valueOf(o1).compareTo(String.valueOf(o2));
-    }
-
-    private static <T> Comparator<T> toDoubleComparator() {
-        return (Comparator<T> & Serializable) (o1, o2) -> {
-            Double n1 = ((Number) o1).doubleValue();
-            Double n2 = ((Number) o2).doubleValue();
-            return n1.compareTo(n2);
-        };
-    }
-
-    private static <T> Comparator<T> toLongComparator() {
-        return (Comparator<T> & Serializable) (o1, o2) -> {
-            Long n1 = ((Number) o1).longValue();
-            Long n2 = ((Number) o2).longValue();
-            return n1.compareTo(n2);
-        };
     }
 
     @Override
@@ -287,4 +255,5 @@ public class TreeSetTest extends AbstractSortedSetTest {
         Value<Integer> value = TreeSet.of(Comparators.naturalComparator().reversed(), 1, 2, 3);
         assertThat(value.toSortedSet().mkString(",")).isEqualTo("3,2,1");
     }
+
 }
