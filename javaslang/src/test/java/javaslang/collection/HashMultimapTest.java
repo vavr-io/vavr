@@ -11,6 +11,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static javaslang.collection.Comparators.naturalComparator;
+
 public class HashMultimapTest extends AbstractMultimapTest {
 
     @Override
@@ -31,7 +33,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
             case SET:
                 return HashMultimap.withSet().empty();
             case SORTED_SET:
-                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).empty();
+                return HashMultimap.withSortedSet(naturalComparator()).empty();
         }
         throw new RuntimeException();
     }
@@ -44,7 +46,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
             case SET:
                 return HashMultimap.withSet().collector();
             case SORTED_SET:
-                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).collector();
+                return HashMultimap.withSortedSet(naturalComparator()).collector();
         }
         throw new RuntimeException();
     }
@@ -59,7 +61,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
             case SET:
                 return HashMultimap.withSet().ofEntries(entries);
             case SORTED_SET:
-                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).ofEntries(entries);
+                return HashMultimap.withSortedSet(naturalComparator()).ofEntries(entries);
         }
         throw new RuntimeException();
     }
@@ -74,7 +76,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
             case SET:
                 return HashMultimap.withSet().ofEntries(entries);
             case SORTED_SET:
-                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).ofEntries(entries);
+                return HashMultimap.withSortedSet(naturalComparator()).ofEntries(entries);
         }
         throw new RuntimeException();
     }
@@ -87,7 +89,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
             case SET:
                 return HashMultimap.withSet().of(k1, v1, k2, v2, k3, v3);
             case SORTED_SET:
-                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).of(k1, v1, k2, v2, k3, v3);
+                return HashMultimap.withSortedSet(naturalComparator()).of(k1, v1, k2, v2, k3, v3);
         }
         throw new RuntimeException();
     }
@@ -105,7 +107,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
             case SET:
                 return HashMultimap.withSet().tabulate(n, f);
             case SORTED_SET:
-                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).tabulate(n, f);
+                return HashMultimap.withSortedSet(naturalComparator()).tabulate(n, f);
         }
         throw new RuntimeException();
     }
@@ -118,7 +120,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
             case SET:
                 return HashMultimap.withSet().fill(n, s);
             case SORTED_SET:
-                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).fill(n, s);
+                return HashMultimap.withSortedSet(naturalComparator()).fill(n, s);
         }
         throw new RuntimeException();
     }

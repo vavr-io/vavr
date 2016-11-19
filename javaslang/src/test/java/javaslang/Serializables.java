@@ -11,11 +11,7 @@ import java.lang.reflect.Method;
 
 public final class Serializables {
 
-    /**
-     * This class is not intended to be instantiated.
-     */
     private Serializables() {
-        throw new AssertionError(Serializables.class.getName() + " is not intended to be instantiated.");
     }
 
     /**

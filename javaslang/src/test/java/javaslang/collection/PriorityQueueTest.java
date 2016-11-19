@@ -6,18 +6,18 @@
 package javaslang.collection;
 
 import javaslang.Tuple;
-import javaslang.Value;
-import javaslang.collection.Comparators.SerializableComparator;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.function.*;
-import java.util.stream.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.bitCount;
 import static java.util.stream.Collectors.toList;
+import static javaslang.TestComparators.toStringComparator;
 import static javaslang.collection.Comparators.naturalComparator;
 
 public class PriorityQueueTest extends AbstractTraversableTest {
@@ -30,28 +30,28 @@ public class PriorityQueueTest extends AbstractTraversableTest {
 
     @Override
     protected <T> PriorityQueue<T> empty() {
-        return PriorityQueue.empty(toStringComparator());
+        return PriorityQueue.empty(naturalComparator());
     }
 
     @Override
     protected <T> PriorityQueue<T> of(T element) {
-        return PriorityQueue.ofAll(toStringComparator(), List.of(element));
+        return PriorityQueue.ofAll(naturalComparator(), List.of(element));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     protected final <T> PriorityQueue<T> of(T... elements) {
-        return PriorityQueue.ofAll(toStringComparator(), List.of(elements));
+        return PriorityQueue.ofAll(naturalComparator(), List.of(elements));
     }
 
     @Override
     protected <T> PriorityQueue<T> ofAll(Iterable<? extends T> elements) {
-        return PriorityQueue.ofAll(toStringComparator(), elements);
+        return PriorityQueue.ofAll(naturalComparator(), elements);
     }
 
     @Override
     protected <T> Traversable<T> ofJavaStream(Stream<? extends T> javaStream) {
-        return PriorityQueue.ofAll(toStringComparator(), javaStream);
+        return PriorityQueue.ofAll(naturalComparator(), javaStream);
     }
 
     @Override
@@ -124,10 +124,6 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         return true;
     }
 
-    private static SerializableComparator<Object> toStringComparator() {
-        return (o1, o2) -> String.valueOf(o1).compareTo(String.valueOf(o2));
-    }
-
     private static Comparator<Integer> composedComparator() {
         final Comparator<Integer> bitCountComparator = (o1, o2) -> Integer.compare(bitCount(o1), bitCount(o2));
         return bitCountComparator.thenComparing(naturalComparator());
@@ -150,11 +146,17 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         // The empty PriorityQueue encapsulates a comparator and therefore cannot be a singleton
     }
 
+    @Test
+    public void shouldScanWithNonComparable() {
+        // makes no sense because sorted sets contain ordered elements
+    }
+
     // -- static narrow
 
+    @SuppressWarnings("unchecked")
     @Test
-    public void shouldNarrowQueue() {
-        final PriorityQueue<Double> doubles = of(1.0d);
+    public final void shouldNarrowPriorityQueue() {
+        final PriorityQueue<Double> doubles = PriorityQueue.of(toStringComparator(), 1.0d);
         final PriorityQueue<Number> numbers = PriorityQueue.narrow(doubles);
         final int actual = numbers.enqueue(new BigDecimal("2.0")).sum().intValue();
         assertThat(actual).isEqualTo(3);
@@ -176,8 +178,7 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         final PriorityQueue<Integer> source = of(3, 1, 4, 1, 5);
         final PriorityQueue<Integer> target = of(9, 2, 6, 5, 3);
         assertThat(source.merge(target)).isEqualTo(of(3, 1, 4, 1, 5, 9, 2, 6, 5, 3));
-
-        assertThat(PriorityQueue.of(3).merge(PriorityQueue.of(toStringComparator(), 1))).isEqualTo(of(3, 1));
+        assertThat(PriorityQueue.of(3).merge(PriorityQueue.of(1))).isEqualTo(of(3, 1));
     }
 
     // -- distinct

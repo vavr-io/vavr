@@ -5,12 +5,11 @@
  */
 package javaslang.collection.euler;
 
-import org.junit.Test;
-
 import javaslang.collection.CharSeq;
 import javaslang.collection.Stream;
-import static javaslang.collection.euler.Utils.memoizedFactorial;
+import org.junit.Test;
 
+import static javaslang.collection.euler.Utils.MEMOIZED_FACTORIAL;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler34Test {
@@ -44,7 +43,7 @@ public class Euler34Test {
     private static int sumOfDigitFactorial(int num) {
         return CharSeq.of(Integer.toString(num))
                 .map(c -> Character.digit(c, 10))
-                .map(memoizedFactorial)
+                .map(MEMOIZED_FACTORIAL)
                 .sum().intValue();
     }
 }

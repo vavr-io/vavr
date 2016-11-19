@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -34,7 +33,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
             case SET:
                 return TreeMultimap.withSet().empty();
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).empty();
+                return TreeMultimap.withSortedSet(naturalComparator()).empty();
         }
         throw new RuntimeException();
     }
@@ -47,7 +46,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
             case SET:
                 return TreeMultimap.withSet().collector();
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).collector();
+                return TreeMultimap.withSortedSet(naturalComparator()).collector();
         }
         throw new RuntimeException();
     }
@@ -62,7 +61,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
             case SET:
                 return TreeMultimap.withSet().ofEntries(entries);
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).ofEntries(entries);
+                return TreeMultimap.withSortedSet(naturalComparator()).ofEntries(entries);
         }
         throw new RuntimeException();
     }
@@ -77,7 +76,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
             case SET:
                 return TreeMultimap.withSet().ofEntries(entries);
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).ofEntries(entries);
+                return TreeMultimap.withSortedSet(naturalComparator()).ofEntries(entries);
         }
         throw new RuntimeException();
     }
@@ -90,7 +89,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
             case SET:
                 return TreeMultimap.withSet().of(k1, v1, k2, v2, k3, v3);
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).of(k1, v1, k2, v2, k3, v3);
+                return TreeMultimap.withSortedSet(naturalComparator()).of(k1, v1, k2, v2, k3, v3);
         }
         throw new RuntimeException();
     }
@@ -108,7 +107,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
             case SET:
                 return TreeMultimap.withSet().tabulate(n, f);
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).tabulate(n, f);
+                return TreeMultimap.withSortedSet(naturalComparator()).tabulate(n, f);
         }
         throw new RuntimeException();
     }
@@ -121,7 +120,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
             case SET:
                 return TreeMultimap.withSet().fill(n, s);
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).fill(n, s);
+                return TreeMultimap.withSortedSet(naturalComparator()).fill(n, s);
         }
         throw new RuntimeException();
     }

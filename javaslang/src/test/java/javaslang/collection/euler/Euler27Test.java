@@ -5,19 +5,12 @@
  */
 package javaslang.collection.euler;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import static javaslang.API.For;
-import javaslang.Function1;
 import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.collection.CharSeq;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 import org.junit.Test;
 
-import javaslang.control.Option;
-
+import static javaslang.API.For;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -70,7 +63,7 @@ public class Euler27Test {
     private static int numberOfConsecutivePrimesProducedByFormulaWithCoefficients(int a, int b) {
         return Stream.from(0L)
                 .map(n -> (long) Math.pow(n, 2) + a * n + b)
-                .takeWhile(Utils.memoizedIsPrime::apply)
+                .takeWhile(Utils.MEMOIZED_IS_PRIME::apply)
                 .length();
     }
 }
