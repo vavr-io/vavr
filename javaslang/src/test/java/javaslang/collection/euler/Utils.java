@@ -14,7 +14,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.Scanner;
 
-public final class Utils {
+final class Utils {
 
     private Utils() {
     }
@@ -23,7 +23,7 @@ public final class Utils {
         return Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2));
     }
 
-    public static BigInteger factorial(int n) {
+    static BigInteger factorial(int n) {
         return Stream.rangeClosed(1, n).map(BigInteger::valueOf).fold(BigInteger.ONE, BigInteger::multiply);
     }
 
@@ -52,7 +52,7 @@ public final class Utils {
         }
     }
 
-    public static File file(String fileName) {
+    static File file(String fileName) {
         final URL resource = Utils.class.getClassLoader().getResource(fileName);
         if (resource == null) {
             throw new RuntimeException("resource not found");
@@ -60,15 +60,15 @@ public final class Utils {
         return new File(resource.getFile());
     }
 
-    public static String reverse(String s) {
+    static String reverse(String s) {
         return new StringBuilder(s).reverse().toString();
     }
 
-    public static boolean isPalindrome(String val) {
+    static boolean isPalindrome(String val) {
         return val.equals(reverse(val));
     }
 
-    public static boolean isPalindrome(int val) {
+    static boolean isPalindrome(int val) {
         return isPalindrome(Long.toString(val));
     }
 }
