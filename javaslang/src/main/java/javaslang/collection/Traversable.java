@@ -617,15 +617,16 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
     /**
-     * Calculates the maximum of this elements according to the underlying element {@code Comparator} if exists,
-     * or the natural order of elements.
+     * Calculates the maximum of this elements according to their natural order.
      *
-     * @return {@code Some(maximum)} of this elements or {@code None} if this is empty or no {@code Comparator} is applicable
+     * @return {@code Some(maximum)} of this elements or {@code None} if this is empty
+     * @throws NullPointerException if an element is null
+     * @throws ClassCastException if the elements do not have a natural order, i.e. they do not implement Comparable
      */
     @SuppressWarnings("unchecked")
     default Option<T> max() {
         final Traversable<T> ts = isTraversableAgain() ? this : toStream();
-        if (isEmpty() || !(ts.head() instanceof Comparable)) {
+        if (isEmpty()) {
             return Option.none();
         } else {
             return ts.maxBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
@@ -678,15 +679,16 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
-     * Calculates the minimum of this elements according to the underlying element {@code Comparator} if exists,
-     * or the natural order of elements.
+     * Calculates the minimum of this elements according to their natural order.
      *
-     * @return {@code Some(minimum)} of this elements or {@code None} if this is empty or no {@code Comparator} is applicable
+     * @return {@code Some(minimum)} of this elements or {@code None} if this is empty
+     * @throws NullPointerException if an element is null
+     * @throws ClassCastException if the elements do not have a natural order, i.e. they do not implement Comparable
      */
     @SuppressWarnings("unchecked")
     default Option<T> min() {
         final Traversable<T> ts = isTraversableAgain() ? this : toStream();
-        if (isEmpty() || !(ts.head() instanceof Comparable)) {
+        if (isEmpty()) {
             return Option.none();
         } else {
             return ts.minBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
