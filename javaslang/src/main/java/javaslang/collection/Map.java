@@ -280,7 +280,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     /**
      * Returns the value associated with a key, or a default value if the key is not contained in the map.
      *
-     * @param key          the key
+     * @param key the key
      * @param defaultValue a default value
      * @return the value associated with key if it exists, otherwise the default value.
      */
