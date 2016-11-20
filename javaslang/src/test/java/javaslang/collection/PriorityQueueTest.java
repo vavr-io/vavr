@@ -155,7 +155,7 @@ public class PriorityQueueTest extends AbstractTraversableTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public final void shouldNarrowPriorityQueue() {
+    public void shouldNarrowPriorityQueue() {
         final PriorityQueue<Double> doubles = PriorityQueue.of(toStringComparator(), 1.0d);
         final PriorityQueue<Number> numbers = PriorityQueue.narrow(doubles);
         final int actual = numbers.enqueue(new BigDecimal("2.0")).sum().intValue();

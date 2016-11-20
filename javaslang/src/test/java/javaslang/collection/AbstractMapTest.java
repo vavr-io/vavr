@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collector;
 
 import static java.util.Arrays.asList;
+import static javaslang.API.Some;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 
@@ -1054,6 +1055,30 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Map<Integer, String> actual = map.replaceAll((integer, s) -> s + integer);
         final Map<Integer, String> expected = mapOf(1, "a1", 2, "b2");
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldGetValueOfNullKeyWhenPutFirstHavingTwoEntries() {
+        final Map<Integer, String> map = mapOf(null, "a", 2, "b");
+        assertThat(map.get(null)).isEqualTo(Some("a"));
+    }
+
+    @Test
+    public void shouldGetValueOfNullKeyWhenPutLastHavingTwoEntries() {
+        final Map<Integer, String> map = mapOf(1, "a", null, "b");
+        assertThat(map.get(null)).isEqualTo(Some("b"));
+    }
+
+    @Test
+    public void shouldGetAPresentNullValueWhenPutFirstHavingTwoEntries() {
+        final Map<Integer, String> map = mapOf(1, null, 2, "b");
+        assertThat(map.get(1)).isEqualTo(Some(null));
+    }
+
+    @Test
+    public void shouldGetAPresentNullValueWhenPutLastHavingTwoEntries() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, null);
+        assertThat(map.get(2)).isEqualTo(Some(null));
     }
 
     // -- getOrElse
