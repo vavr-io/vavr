@@ -17,3 +17,6 @@ bin
 
 # -- Java
 hs_err_pid*
+
+# -- Emacs
+.#*

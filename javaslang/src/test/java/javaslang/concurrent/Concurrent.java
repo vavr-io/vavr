@@ -13,16 +13,19 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.fail;
 
-interface Concurrent {
+final class Concurrent {
 
-    Random RND = new Random();
+    private static final Random RND = new Random();
 
     // Max wait time for results = WAIT_MILLIS * WAIT_COUNT (however, most probably it will take only WAIT_MILLIS * 1)
-    long WAIT_MILLIS = 50;
-    int WAIT_COUNT = 100;
+    private static final long WAIT_MILLIS = 50;
+    private static final int WAIT_COUNT = 100;
 
     // Max sleep time to delay computation
-    int SLEEP_MAX_MILLIS = 150;
+    private static final int SLEEP_MAX_MILLIS = 150;
+
+    private Concurrent() {
+    }
 
     /**
      * Frequently checking if something happened by testing a condition.

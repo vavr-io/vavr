@@ -5,14 +5,12 @@
  */
 package javaslang.collection.euler;
 
-import org.junit.Test;
-
 import javaslang.collection.CharSeq;
 import javaslang.collection.List;
+import org.junit.Test;
 
 import static javaslang.API.*;
 import static javaslang.collection.euler.PrimeNumbers.primes;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler37Test {
@@ -56,7 +54,7 @@ public class Euler37Test {
                             .flatMap(i -> List.of(primeSeq.drop(i), primeSeq.dropRight(i)))
                             .map(CharSeq::mkString)
                             .map(Long::valueOf)
-                            .forAll(Utils.memoizedIsPrime::apply);
+                            .forAll(Utils.MEMOIZED_IS_PRIME::apply);
                 }),
                 Case($(), false)
         );

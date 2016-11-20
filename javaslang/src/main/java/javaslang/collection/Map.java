@@ -280,7 +280,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     /**
      * Returns the value associated with a key, or a default value if the key is not contained in the map.
      *
-     * @param key          the key
+     * @param key the key
      * @param defaultValue a default value
      * @return the value associated with key if it exists, otherwise the default value.
      */
@@ -543,7 +543,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
 
     default <U> Seq<U> traverse(BiFunction<K, V, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return iterator().<U> map(entry -> mapper.apply(entry._1, entry._2)).toStream();
+        return foldLeft(Vector.empty(), (acc, entry) -> acc.append(mapper.apply(entry._1, entry._2)));
     }
 
     default Tuple2<Seq<K>, Seq<V>> unzip() {
@@ -673,6 +673,33 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
 
     @Override
     Map<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
+
+    /**
+     * Replaces the entry for the specified key only if it is currently mapped to some value.
+     *
+     * @param key the key of the element to be substituted.
+     * @param value the new value to be associated with the key
+     * @return a new map containing key mapped to value if key was contained before. The old map otherwise.
+     */
+    Map<K, V> replaceValue(K key, V value);
+
+    /**
+     * Replaces the entry for the specified key only if currently mapped to the specified value.
+     *
+     * @param key the key of the element to be substituted.
+     * @param oldValue the expected current value that the key is currently mapped to
+     * @param newValue the new value to be associated with the key
+     * @return a new map containing key mapped to newValue if key was contained before and oldValue matched. The old map otherwise.
+     */
+    Map<K, V> replace(K key, V oldValue, V newValue);
+
+    /**
+     * Replaces each entry's value with the result of invoking the given function on that entry until all entries have been processed or the function throws an exception.
+     *
+     * @param function function transforming key and current value to a new value
+     * @return a new map with the same keySet but transformed values.
+     */
+    Map<K, V> replaceAll(BiFunction<? super K, ? super V, ? extends V> function);
 
     @Override
     Map<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);

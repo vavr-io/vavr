@@ -10,6 +10,7 @@ import javaslang.control.Either;
 import javaslang.control.Option;
 import javaslang.control.Try;
 import javaslang.control.Validation;
+import static javaslang.API.*;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -74,8 +75,14 @@ import java.util.stream.StreamSupport;
  * Type conversion:
  *
  * <ul>
+ * <li>{@link #collect(Collector)}</li>
+ * <li>{@link #collect(Supplier, BiConsumer, BiConsumer)}</li>
  * <li>{@link #toArray()}</li>
  * <li>{@link #toCharSeq()}</li>
+ * <li>{@link #toEither(Object)}</li>
+ * <li>{@link #toEither(Supplier)}</li>
+ * <li>{@link #toInvalid(Object)}</li>
+ * <li>{@link #toInvalid(Supplier)}</li>
  * <li>{@link #toJavaArray()}</li>
  * <li>{@link #toJavaArray(Class)}</li>
  * <li>{@link #toJavaCollection(Function)}</li>
@@ -85,6 +92,7 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toJavaMap(Supplier, Function)}</li>
  * <li>{@link #toJavaMap(Supplier, Function, Function)} </li>
  * <li>{@link #toJavaOptional()}</li>
+ * <li>{@link #toJavaParallelStream()}</li>
  * <li>{@link #toJavaSet()}</li>
  * <li>{@link #toJavaSet(Function)}</li>
  * <li>{@link #toJavaStream()}</li>
@@ -115,6 +123,10 @@ import java.util.stream.StreamSupport;
  * <li>{@link #toTree()}</li>
  * <li>{@link #toTry()}</li>
  * <li>{@link #toTry(Supplier)}</li>
+ * <li>{@link #toValid(Object)}</li>
+ * <li>{@link #toValid(Supplier)}</li>
+ * <li>{@link #toValidation(Object)}</li>
+ * <li>{@link #toValidation(Supplier)}</li>
  * <li>{@link #toVector()}</li>
  * </ul>
  *
@@ -486,7 +498,13 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link CharSeq}.
      */
     default CharSeq toCharSeq() {
-        return CharSeq.of(toString());
+        if (this instanceof CharSeq) {
+            return (CharSeq) this;
+        } if (isEmpty()) {
+            return CharSeq.empty();
+        } else {
+            return CharSeq.of(iterator().mkString());
+        }
     }
 
     /**
@@ -855,6 +873,68 @@ public interface Value<T> extends Iterable<T> {
             return (Option<T>) this;
         } else {
             return getOption();
+        }
+    }
+
+    /**
+     * Converts this to an {@link Either}.
+     *
+     * @param left A left value for the {@link Either}
+     * @param <L> Either left component type
+     * @return A new {@link Either}.
+     */
+    default <L> Either<L, T> toEither(L left) {
+        if (this instanceof Either) {
+            return ((Either<?, T>) this).mapLeft(ignored -> left);
+        } else {
+            return isEmpty() ? Left(left) : Right(get());
+        }
+    }
+
+    /**
+     * Converts this to an {@link Either}.
+     *
+     * @param leftSupplier A {@link Supplier} for the left value for the {@link Either}
+     * @param <L> Validation error component type
+     * @return A new {@link Either}.
+     */
+    default <L> Either<L, T> toEither(Supplier<? extends L> leftSupplier) {
+        Objects.requireNonNull(leftSupplier, "leftSupplier is null");
+        if (this instanceof Either) {
+            return ((Either<?, T>) this).mapLeft(ignored -> leftSupplier.get());
+        } else {
+            return isEmpty() ? Left(leftSupplier.get()) : Right(get());
+        }
+     }
+
+    /**
+     * Converts this to an {@link Validation}.
+     *
+     * @param invalid An invalid value for the {@link Validation}
+     * @param <L> Validation error component type
+     * @return A new {@link Validation}.
+     */
+    default <L> Validation<L, T> toValidation(L invalid) {
+        if (this instanceof Validation) {
+            return ((Validation<?, T>) this).mapError(ignored -> invalid);
+        } else {
+            return isEmpty() ? Invalid(invalid) : Valid(get());
+        }
+    }
+
+    /**
+     * Converts this to an {@link Validation}.
+     *
+     * @param invalidSupplier A {@link Supplier} for the invalid value for the {@link Validation}
+     * @param <L> Validation error component type
+     * @return A new {@link Validation}.
+     */
+    default <L> Validation<L, T> toValidation(Supplier<? extends L> invalidSupplier) {
+        Objects.requireNonNull(invalidSupplier, "invalidSupplier is null");
+        if (this instanceof Validation) {
+            return ((Validation<?, T>) this).mapError(ignored -> invalidSupplier.get());
+        } else {
+            return isEmpty() ? Invalid(invalidSupplier.get()) : Valid(get());
         }
     }
 

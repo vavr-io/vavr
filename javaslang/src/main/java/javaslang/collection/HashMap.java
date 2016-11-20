@@ -121,22 +121,208 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
-     * @param pairs A list of key-value pairs
-     * @param <K>   The key type
-     * @param <V>   The value type
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param <K> The key type
+     * @param <V> The value type
      * @return A new Map containing the given entries
      */
-    @SuppressWarnings("unchecked")
-    public static <K, V> HashMap<K, V> of(Object... pairs) {
-        Objects.requireNonNull(pairs, "pairs is null");
-        if ((pairs.length & 1) != 0) {
-            throw new IllegalArgumentException("Odd length of key-value pairs list");
-        }
-        HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
-        for (int i = 0; i < pairs.length; i += 2) {
-            trie = trie.put((K) pairs[i], (V) pairs[i + 1]);
-        }
-        return wrap(trie);
+    public static <K, V> HashMap<K, V> of(K k1, V v1, K k2, V v2) {
+        return of(k1, v1).put(k2, v2);
+    }
+
+    /**
+     * Creates a HashMap of the given list of key-value pairs.
+     *
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return of(k1, v1, k2, v2).put(k3, v3);
+    }
+
+    /**
+     * Creates a HashMap of the given list of key-value pairs.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
+     * @param k4 a key for the map
+     * @param v4 the value for k4
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+        return of(k1, v1, k2, v2, k3, v3).put(k4, v4);
+    }
+
+    /**
+     * Creates a HashMap of the given list of key-value pairs.
+     *
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
+     * @param k4 a key for the map
+     * @param v4 the value for k4
+     * @param k5 a key for the map
+     * @param v5 the value for k5
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
+        return of(k1, v1, k2, v2, k3, v3, k4, v4).put(k5, v5);
+    }
+
+    /**
+     * Creates a HashMap of the given list of key-value pairs.
+     *
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
+     * @param k4 a key for the map
+     * @param v4 the value for k4
+     * @param k5 a key for the map
+     * @param v5 the value for k5
+     * @param k6 a key for the map
+     * @param v6 the value for k6
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
+        return of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5).put(k6, v6);
+    }
+
+    /**
+     * Creates a HashMap of the given list of key-value pairs.
+     *
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
+     * @param k4 a key for the map
+     * @param v4 the value for k4
+     * @param k5 a key for the map
+     * @param v5 the value for k5
+     * @param k6 a key for the map
+     * @param v6 the value for k6
+     * @param k7 a key for the map
+     * @param v7 the value for k7
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
+        return of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6).put(k7, v7);
+    }
+
+    /**
+     * Creates a HashMap of the given list of key-value pairs.
+     *
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
+     * @param k4 a key for the map
+     * @param v4 the value for k4
+     * @param k5 a key for the map
+     * @param v5 the value for k5
+     * @param k6 a key for the map
+     * @param v6 the value for k6
+     * @param k7 a key for the map
+     * @param v7 the value for k7
+     * @param k8 a key for the map
+     * @param v8 the value for k8
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8) {
+        return of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7).put(k8, v8);
+    }
+
+    /**
+     * Creates a HashMap of the given list of key-value pairs.
+     *
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
+     * @param k4 a key for the map
+     * @param v4 the value for k4
+     * @param k5 a key for the map
+     * @param v5 the value for k5
+     * @param k6 a key for the map
+     * @param v6 the value for k6
+     * @param k7 a key for the map
+     * @param v7 the value for k7
+     * @param k8 a key for the map
+     * @param v8 the value for k8
+     * @param k9 a key for the map
+     * @param v9 the value for k9
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9) {
+        return of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8).put(k9, v9);
+    }
+
+    /**
+     * Creates a HashMap of the given list of key-value pairs.
+     *
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
+     * @param k4 a key for the map
+     * @param v4 the value for k4
+     * @param k5 a key for the map
+     * @param v5 the value for k5
+     * @param k6 a key for the map
+     * @param v6 the value for k6
+     * @param k7 a key for the map
+     * @param v7 the value for k7
+     * @param k8 a key for the map
+     * @param v8 the value for k8
+     * @param k9 a key for the map
+     * @param v9 the value for k9
+     * @param k10 a key for the map
+     * @param v10 the value for k10
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map containing the given entries
+     */
+    public static <K, V> HashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10) {
+        return of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9).put(k10, v10);
     }
 
     /**
@@ -488,6 +674,21 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     @Override
     public HashMap<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         return Maps.replaceAll(this, currentElement, newElement);
+    }
+
+    @Override
+    public HashMap<K, V> replaceValue(K key, V value) {
+        return Maps.replaceValue(this, key, value);
+    }
+
+    @Override
+    public HashMap<K, V> replace(K key, V oldValue, V newValue) {
+        return Maps.replace(this, key, oldValue, newValue);
+    }
+
+    @Override
+    public HashMap<K, V> replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
+        return Maps.replaceAll(this, function);
     }
 
     @Override

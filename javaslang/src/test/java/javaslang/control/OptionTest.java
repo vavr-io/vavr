@@ -8,6 +8,7 @@ package javaslang.control;
 import javaslang.*;
 import javaslang.collection.Seq;
 import org.junit.Test;
+import static javaslang.API.*;
 
 import java.util.*;
 import java.util.function.*;
@@ -244,22 +245,6 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.of(1).isEmpty()).isFalse();
     }
 
-    // -- ifPresent
-
-    @Test
-    public void shouldConsumePresentValueOnWhenValueIsDefined() {
-        final int[] actual = new int[] { -1 };
-        Option.of(1).forEach(i -> actual[0] = i);
-        assertThat(actual[0]).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldNotConsumeAnythingOnIsDefinedWhenValueIsNotDefined() {
-        final int[] actual = new int[] { -1 };
-        Option.<Integer> none().forEach(i -> actual[0] = i);
-        assertThat(actual[0]).isEqualTo(-1);
-    }
-
     // -- filter
 
     @Test
@@ -361,6 +346,40 @@ public class OptionTest extends AbstractValueTest {
         final int[] actual = new int[] { -1 };
         Option.<Integer> none().forEach(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(-1);
+    }
+
+    // -- toEither
+
+    @Test
+    public void shouldMakeRightOnSomeToEither() {
+        assertThat(Some(5).toEither("bad")).isEqualTo(Right(5));
+    }
+
+    @Test
+    public void shouldMakeLeftOnNoneToEither() {
+        assertThat(None().toEither("bad")).isEqualTo(Left("bad"));
+    }
+
+    @Test
+    public void shouldMakeLeftOnNoneToEitherSupplier() {
+        assertThat(None().toEither(() -> "bad")).isEqualTo(Left("bad"));
+    }
+
+    // -- toValidation
+
+    @Test
+    public void shouldMakeValidOnSomeToValidation() {
+        assertThat(Some(5).toValidation("bad")).isEqualTo(Valid(5));
+    }
+
+    @Test
+    public void shouldMakeLeftOnNoneToValidation() {
+        assertThat(None().toValidation("bad")).isEqualTo(Invalid("bad"));
+    }
+
+    @Test
+    public void shouldMakeLeftOnNoneToValidationSupplier() {
+        assertThat(None().toValidation(() -> "bad")).isEqualTo(Invalid("bad"));
     }
 
     // -- peek

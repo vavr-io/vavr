@@ -27,6 +27,7 @@ import javaslang.control.Try;
 import javaslang.control.Validation;
 import org.assertj.core.api.*;
 import org.junit.Test;
+import static javaslang.API.*;
 
 import java.util.*;
 import java.util.Collections;
@@ -239,7 +240,8 @@ public abstract class AbstractValueTest {
     public void shouldConvertToCharSeq() {
         final Value<Integer> value = of(1, 2, 3);
         final CharSeq charSeq = value.toCharSeq();
-        assertThat(charSeq).isEqualTo(CharSeq.of(value.toString()));
+        final CharSeq expected = CharSeq.of(of(1, 2, 3).iterator().mkString());
+        assertThat(charSeq).isEqualTo(expected);
     }
 
     @Test
@@ -351,6 +353,20 @@ public abstract class AbstractValueTest {
     public void shouldConvertToOption() {
         assertThat(empty().toOption()).isSameAs(Option.none());
         assertThat(of(1).toOption()).isEqualTo(Option.of(1));
+    }
+
+    @Test
+    public void shouldConvertToEither() {
+        assertThat(empty().toEither("test")).isEqualTo(Left("test"));
+        assertThat(empty().toEither(() -> "test")).isEqualTo(Left("test"));
+        assertThat(of(1).toEither("test")).isEqualTo(Right(1));
+    }
+
+    @Test
+    public void shouldConvertToValidation() {
+        assertThat(empty().toValidation("test")).isEqualTo(Invalid("test"));
+        assertThat(empty().toValidation(() -> "test")).isEqualTo(Invalid("test"));
+        assertThat(of(1).toValidation("test")).isEqualTo(Valid(1));
     }
 
     @Test
@@ -758,7 +774,7 @@ public abstract class AbstractValueTest {
             assertThat(List.ofAll(s1::iterator)).isEqualTo(List.ofAll(s2::iterator));
         }
     }
-    
+
     // toLeft / toRight
 
     @Test

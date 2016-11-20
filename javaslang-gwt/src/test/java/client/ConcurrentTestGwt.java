@@ -5,16 +5,33 @@
  */
 package client;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.junit.client.GWTTestCase;
 import javaslang.collection.List;
 import javaslang.concurrent.Future;
 import javaslang.concurrent.Promise;
 
+import java.util.concurrent.Executors;
+
+import static javaslang.API.Future;
+
 public class ConcurrentTestGwt extends GWTTestCase {
 
     @Override public String getModuleName()  {
         return "TestModule";
+    }
+
+    public void testCreateFailFuture() {
+        final Future<Void> failed = Future(new RuntimeException("ooops"));
+        assertTrue(failed.isFailure());
+        Throwable t = failed.getValue().get().getCause();
+        assertEquals(t.getClass(), RuntimeException.class);
+        assertEquals(t.getMessage(), "ooops");
+    }
+
+    public void testCreateSuccessFuture() {
+        final Future<String> success = Future(Executors.newCachedThreadPool(), () -> "hehehe");
+        assertTrue(success.isSuccess());
+        assertEquals(success.get(), "hehehe");
     }
 
     public void testFutureSuccess() {

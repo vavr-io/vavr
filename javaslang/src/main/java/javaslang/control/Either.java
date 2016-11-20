@@ -240,7 +240,21 @@ public interface Either<L, R> extends Value<R> {
     }
 
     /**
-     * Maps this right-biased Either.
+     * Maps the value of this Either if it is a Right, performs no operation if this is a Left.
+     *
+     * <pre><code>
+     * import static javaslang.API.*;
+     *
+     * class Example {{
+     *
+     *     // = Right("A")
+     *     Right("a").map(String::toUpperCase);
+     *
+     *     // = Left(1)
+     *     Left(1).map(String::toUpperCase);
+     *
+     * }}
+     * </code></pre>
      *
      * @param mapper A mapper
      * @param <U>    Component type of the mapped right value
@@ -259,7 +273,21 @@ public interface Either<L, R> extends Value<R> {
     }
 
     /**
-     * Maps this right-biased Either.
+     * Maps the value of this Either if it is a Left, performs no operation if this is a Right.
+     *
+     * <pre>{@code
+     * import static javaslang.API.*;
+     *
+     * class Example {
+     *
+     *     // = Left(2)
+     *     Left(1).mapLeft(i -> i + 1);
+     *
+     *     // = Right("a")
+     *     Right("a").mapLeft(i -> i + 1);
+     *
+     * }
+     * }</pre>
      *
      * @param leftMapper A mapper
      * @param <U>        Component type of the mapped right value
@@ -341,6 +369,14 @@ public interface Either<L, R> extends Value<R> {
         Objects.requireNonNull(action, "action is null");
         if (isRight()) {
             action.accept(get());
+        }
+        return this;
+    }
+
+    default Either<L, R> peekLeft(Consumer<? super L> action) {
+        Objects.requireNonNull(action, "action is null");
+        if (isLeft()) {
+            action.accept(getLeft());
         }
         return this;
     }

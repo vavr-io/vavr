@@ -192,11 +192,25 @@ public class VectorTest extends AbstractIndexedSeqTest {
         assertThat(actual).isEqualTo(3);
     }
 
+    // -- primitives
+
     @Test
-    public void shouldNarrowPrimitives() {
-        final Vector<Object> object = Vector.narrow(range(0, 2));
-        Vector<Object> actual = object.append("String");
-        assertThat(actual).isEqualTo(of(0, 1, "String"));
+    public void shouldAddNullToPrimitiveVector() {
+        final Vector<Integer> primitives = rangeClosed(0, 2);
+
+        assertThat(primitives.append(null)).isEqualTo(of(0, 1, 2, null));
+        assertThat(primitives.prepend(null)).isEqualTo(of(null, 0, 1, 2));
+        assertThat(primitives.update(1, null)).isEqualTo(of(0, null, 2));
+    }
+
+    @Test
+    public void shouldAddObjectToPrimitiveVector() {
+        final String object = "String";
+        final Vector<Object> primitives = Vector.narrow(rangeClosed(0, 2));
+
+        assertThat(primitives.append(object)).isEqualTo(of(0, 1, 2, object));
+        assertThat(primitives.prepend(object)).isEqualTo(of(object, 0, 1, 2));
+        assertThat(primitives.update(1, object)).isEqualTo(of(0, object, 2));
     }
 
     // -- transform()

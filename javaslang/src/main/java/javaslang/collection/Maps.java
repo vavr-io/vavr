@@ -13,6 +13,8 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.*;
 
+import static javaslang.API.Tuple;
+
 /**
  * Implementations of common {@code Map} functions (not intended to be public).
  *
@@ -236,6 +238,21 @@ final class Maps {
 
     static <K, V, M extends Map<K, V>> M replaceAll(M map, Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         return replace(map, currentElement, newElement);
+    }
+
+    @SuppressWarnings("unchecked")
+    static <K, V, M extends Map<K, V>> M replaceValue(M map, K key, V value) {
+        return map.containsKey(key) ? (M) map.put(key, value) :  map;
+    }
+
+    @SuppressWarnings("unchecked")
+    static <K, V, M extends Map<K, V>> M replace(M map, K key, V oldValue, V newValue) {
+        return map.contains(Tuple(key, oldValue)) ? (M) map.put(key, newValue) : map;
+    }
+
+    @SuppressWarnings("unchecked")
+    static <K, V, M extends Map<K, V>> M replaceAll(M map, BiFunction<? super K, ? super V, ? extends V> function) {
+        return (M) map.map((k, v) -> Tuple(k, function.apply(k, v)));
     }
 
     static <K, V, M extends Map<K, V>> M scan(
