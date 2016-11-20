@@ -7,7 +7,6 @@ package javaslang;
 
 import javaslang.collection.Iterator;
 import javaslang.collection.Seq;
-import javaslang.collection.Stream;
 import javaslang.collection.Vector;
 import javaslang.control.Option;
 

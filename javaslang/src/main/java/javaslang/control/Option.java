@@ -8,7 +8,6 @@ package javaslang.control;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.Seq;
-import javaslang.collection.Stream;
 import javaslang.collection.Vector;
 
 import java.io.Serializable;
