@@ -20,6 +20,53 @@ import java.util.function.Predicate;
 
 /**
  * An immutable {@code Set} interface.
+ * <p>
+ * CAUTION: The Javaslang {@code Set} implementations generally support {@code null} elements. However {@code SortedSet}
+ * implementations require an element {@code Comparator}, which may not support {@code null} elements.
+ * <p>
+ * Examples:
+ *
+ * <pre>{@code Set<?> addNull(Set<?> set) {
+ *
+ *     // CAUTION: Do not expect a Set to accept null values in general!
+ *     return set.add(null);
+ *
+ * }
+ *
+ * void test() {
+ *
+ *     // ok
+ *     addNull(HashSet.of(1));
+ *
+ *     // ok
+ *     addNull(TreeSet.of(nullsFirst(naturalOrder()), 1));
+ *
+ *     // ok
+ *     addNull(TreeSet.empty());
+ *
+ *     // throws NPE!
+ *     addNull(TreeSet.of(1));
+ *
+ * }}</pre>
+ *
+ * <p>
+ * Basic operations:
+ *
+ * <ul>
+ * <li>{@link #add(Object)}</li>
+ * <li>{@link #addAll(Iterable)}</li>
+ * <li>{@link #diff(Set)}</li>
+ * <li>{@link #intersect(Set)}</li>
+ * <li>{@link #remove(Object)}</li>
+ * <li>{@link #removeAll(Iterable)}</li>
+ * <li>{@link #union(Set)}</li>
+ * </ul>
+ *
+ * Conversion:
+ *
+ * <ul>
+ * <li>{@link #toJavaSet()}</li>
+ * </ul>
  *
  * @param <T> Component type
  * @author Daniel Dietrich, Ruslan Sennov

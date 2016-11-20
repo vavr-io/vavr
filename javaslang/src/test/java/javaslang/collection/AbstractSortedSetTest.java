@@ -16,6 +16,12 @@ import static javaslang.TestComparators.toStringComparator;
 public abstract class AbstractSortedSetTest extends AbstractSetTest {
 
     @Override
+    abstract protected <T> SortedSet<T> empty();
+
+    @Override
+    abstract protected <T> SortedSet<T> emptyWithNull();
+
+    @Override
     abstract protected <T> SortedSet<T> of(T element);
 
     abstract protected <T> SortedSet<T> of(Comparator<? super T> comparator, T element);
