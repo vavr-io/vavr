@@ -5,12 +5,10 @@
  */
 package javaslang.collection;
 
-
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import org.junit.Test;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,8 +18,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static javaslang.API.*;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
+import static javaslang.collection.Comparators.naturalComparator;
 
 public class TreeMapTest extends AbstractSortedMapTest {
 
@@ -37,7 +37,7 @@ public class TreeMapTest extends AbstractSortedMapTest {
 
     @Override
     protected <T1 extends Comparable<? super T1>, T2> TreeMap<T1, T2> emptyMap() {
-        return TreeMap.empty(nullsFirst());
+        return TreeMap.empty();
     }
 
     @Override
@@ -59,39 +59,48 @@ public class TreeMapTest extends AbstractSortedMapTest {
     @SafeVarargs
     @Override
     protected final <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
-        return TreeMap.ofEntries(nullsFirst(), entries);
+        return TreeMap.ofEntries(entries);
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
     protected final <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        return TreeMap.ofEntries(nullsFirst(), entries);
+        return TreeMap.ofEntries(entries);
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K key, V value) {
-        return TreeMap.of(nullsFirst(), key, value);
+        return TreeMap.of(key, value);
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2) {
-        return TreeMap.of(nullsFirst(), k1, v1, k2, v2);
+        return TreeMap.of(k1, v1, k2, v2);
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3) {
-        return TreeMap.of(nullsFirst(), k1, v1, k2, v2, k3, v3);
+        return TreeMap.of(k1, v1, k2, v2, k3, v3);
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
-        return TreeMap.tabulate(nullsFirst(), n, f);
+        return TreeMap.tabulate(n, f);
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
-        return TreeMap.fill(nullsFirst(), n, s);
+        return TreeMap.fill(n, s);
+    }
+
+    // -- static factories
+
+    @Test
+    public void shouldCreateOfEntries() {
+        final List<Tuple2<Integer, String>> entries = List(Tuple(1, "a"), Tuple(2, "b"));
+        final TreeMap<Integer, String> map = TreeMap.ofEntries(naturalComparator(), entries);
+        assertThat(map.toList()).isEqualTo(entries);
     }
 
     // -- static narrow
@@ -149,29 +158,37 @@ public class TreeMapTest extends AbstractSortedMapTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- obsolete tests
+    // -- flatMap
 
-    @Override
-    public void shouldPreserveSingletonInstanceOnDeserialization() {
-        // The empty TreeMap encapsulates a comparator and therefore cannot be a singleton
+    @Test
+    public void shouldReturnATreeMapWithCorrectComparatorWhenFlatMappingToEmpty() {
+
+        final TreeMap<Integer, String> testee = TreeMap.of(Comparator.naturalOrder(), 1, "1", 2, "2");
+        assertThat(testee.head()).isEqualTo(Tuple(1, "1"));
+
+        final TreeMap<Integer, String> actual = testee.flatMap(Comparator.reverseOrder(), (k, v) -> List.empty());
+        assertThat(actual).isEmpty();
+
+        final TreeMap<Integer, String> actualSorted = actual.put(1, "1").put(2, "2");
+        assertThat(actualSorted.head()).isEqualTo(Tuple(2, "2"));
     }
 
     // -- map
 
     @Test
     public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndPredictableOrder() {
-        final Map<Integer, String> actual = TreeMap
-                .of(3, "3").put(1, "1").put(2, "2")
+        final TreeMap<Integer, String> actual = TreeMap
+                .of(3, "3", 1, "1", 2, "2")
                 .mapKeys(Integer::toHexString).mapKeys(String::length);
-        final Map<Integer, String> expected = TreeMap.of(1, "3");
+        final TreeMap<Integer, String> expected = TreeMap.of(1, "3");
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- helpers
+    // -- obsolete tests
 
-    // A comparator that allows null to be inserted into a TreeMap
-    private static <K extends Comparable<? super K>> Comparator<K> nullsFirst() {
-        return Comparator.nullsFirst((Comparator<K> & Serializable) K::compareTo);
+    @Override
+    public void shouldPreserveSingletonInstanceOnDeserialization() {
+        // The empty TreeMap encapsulates a comparator and therefore cannot be a singleton
     }
 
 }
