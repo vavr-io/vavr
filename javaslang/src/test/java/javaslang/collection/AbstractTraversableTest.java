@@ -910,12 +910,12 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNPEWhenMaxOfNullAndInt() {
-        System.out.println(of(null, 1).max());
+        of(null, 1).max();
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNPEWhenMaxOfIntAndNull() {
-        System.out.println(of(1, null).max());
+        of(1, null).max();
     }
 
     // -- maxBy(Comparator)
@@ -1041,7 +1041,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNPEWhenMinOfIntAndNull() {
-        System.out.println(of(1, null).min());
+        of(1, null).min();
     }
 
     // -- minBy(Comparator)

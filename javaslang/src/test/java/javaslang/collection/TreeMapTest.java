@@ -139,11 +139,19 @@ public class TreeMapTest extends AbstractSortedMapTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- obsolete tests
+    // -- flatMap
 
-    @Override
-    public void shouldPreserveSingletonInstanceOnDeserialization() {
-        // The empty TreeMap encapsulates a comparator and therefore cannot be a singleton
+    @Test
+    public void shouldReturnATreeMapWithCorrectComparatorWhenFlatMappingToEmpty() {
+
+        final TreeMap<Integer, String> testee = TreeMap.of(Comparator.naturalOrder(), 1, "1", 2, "2");
+        assertThat(testee.head()).isEqualTo(Tuple.of(1, "1"));
+
+        final TreeMap<Integer, String> actual = testee.flatMap(Comparator.reverseOrder(), (k, v) -> List.empty());
+        assertThat(actual).isEmpty();
+
+        final TreeMap<Integer, String> actualSorted = actual.put(1, "1").put(2, "2");
+        assertThat(actualSorted.head()).isEqualTo(Tuple.of(2, "2"));
     }
 
     @Override
@@ -160,6 +168,11 @@ public class TreeMapTest extends AbstractSortedMapTest {
 
     private static Comparator<Object> toStringComparator() { // moveup
         return (Comparator<Object> & Serializable) (o1, o2) -> String.valueOf(o1).compareTo(String.valueOf(o2));
+    }
+
+    @Override
+    public void shouldPreserveSingletonInstanceOnDeserialization() {
+        // The empty TreeMap encapsulates a comparator and therefore cannot be a singleton
     }
 
 }
