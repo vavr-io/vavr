@@ -19,6 +19,15 @@ import java.util.function.Predicate;
 /**
  * An immutable {@code SortedSet} interface.
  *
+ * <p>
+ * Specific SortedSet operations:
+ *
+ * <ul>
+ * <li>{@link #comparator()}</li>
+ * <li>{@link #flatMap(Comparator, Function)}</li>
+ * <li>{@link #map(Comparator, Function)}</li>
+ * </ul>
+ *
  * @param <T> Component type
  * @author Daniel Dietrich
  * @since 2.0.0

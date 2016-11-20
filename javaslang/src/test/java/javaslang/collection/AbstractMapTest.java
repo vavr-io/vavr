@@ -139,9 +139,13 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value);
 
-    abstract protected <K, V> Map<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f);
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2);
 
-    abstract protected <K, V> Map<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s);
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2, K k3, V v3);
+
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f);
+
+    abstract protected <K extends Comparable<? super K>, V> Map<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s);
 
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
@@ -431,8 +435,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldPutNullKeyIntoMapThatContainsNullKey() {
-        final Map<Integer, String> map = mapOfPairs(1, "a", null, "b", 2, "c");
-        assertThat(map.put(null, "!")).isEqualTo(mapOfPairs(1, "a", null, "!", 2, "c"));
+        final Map<Integer, String> map = mapOfNullKey(1, "a", null, "b", 2, "c");
+        assertThat(map.put(null, "!")).isEqualTo(mapOfNullKey(1, "a", null, "!", 2, "c"));
     }
 
     // -- remove
@@ -446,8 +450,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldRemoveFromMapThatContainsFirstEntryHavingNullKey() {
-        final Map<Integer, String> map = mapOfPairs(null, "a", 1, "b", 2, "c");
-        assertThat(map.remove(1)).isEqualTo(mapOfPairs(null, "a", 2, "c"));
+        final Map<Integer, String> map = mapOfNullKey(null, "a", 1, "b", 2, "c");
+        assertThat(map.remove(1)).isEqualTo(mapOfNullKey(null, "a", 2, "c"));
     }
 
     // -- removeAll
@@ -717,7 +721,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldTabulateTheSeq() {
         Function<Number, Tuple2<Long, Float>> f = i -> new Tuple2<>(i.longValue(), i.floatValue());
-        Map<Number, Number> map = mapTabulate(3, f);
+        Map<Long, Float> map = mapTabulate(3, f);
         assertThat(map).isEqualTo(mapOfTuples(new Tuple2<>(0l, 0f), new Tuple2<>(1l, 1f), new Tuple2<>(2l, 2f)));
     }
 
@@ -726,7 +730,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldTabulateTheSeqCallingTheFunctionInTheRightOrder() {
         java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 0, 1, 1, 2, 2));
         Function<Integer, Tuple2<Long, Float>> f = i -> new Tuple2<>(ints.remove().longValue(), ints.remove().floatValue());
-        Map<Number, Number> map = mapTabulate(3, f);
+        Map<Long, Float> map = mapTabulate(3, f);
         assertThat(map).isEqualTo(mapOfTuples(new Tuple2<>(0l, 0f), new Tuple2<>(1l, 1f), new Tuple2<>(2l, 2f)));
     }
 
@@ -745,7 +749,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldFillTheSeqCallingTheSupplierInTheRightOrder() {
         java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(Arrays.asList(0, 0, 1, 1, 2, 2));
         Supplier<Tuple2<Long, Float>> s = () -> new Tuple2<>(ints.remove().longValue(), ints.remove().floatValue());
-        Map<Number, Number> actual = mapFill(3, s);
+        Map<Long, Float> actual = mapFill(3, s);
         assertThat(actual).isEqualTo(mapOfTuples(new Tuple2<>(0l, 0f), new Tuple2<>(1l, 1f), new Tuple2<>(2l, 2f)));
     }
 

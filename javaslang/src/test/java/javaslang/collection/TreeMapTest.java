@@ -14,11 +14,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static java.util.Comparator.nullsFirst;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 import static javaslang.collection.Comparators.naturalComparator;
@@ -75,13 +75,39 @@ public class TreeMapTest extends AbstractSortedMapTest {
     }
 
     @Override
-    protected <K, V> TreeMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
-        return TreeMap.tabulate(toStringComparator(), n, f);
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2) {
+        return TreeMap.of(nullsFirst(naturalComparator()), k1, v1, k2, v2);
     }
 
     @Override
-    protected <K, V> TreeMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
-        return TreeMap.fill(toStringComparator(), n, s);
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return TreeMap.of(nullsFirst(naturalComparator()), k1, v1, k2, v2, k3, v3);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+        return TreeMap.tabulate(n, f);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+        return TreeMap.fill(n, s);
+    }
+
+    // -- static factories
+
+    @Test
+    public void shouldCreateOfEntriesUsingNoComparator() {
+        final List<Tuple2<Integer, String>> entries = List.of(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        final TreeMap<Integer, String> map = TreeMap.ofEntries(entries);
+        assertThat(map.toList()).isEqualTo(entries);
+    }
+
+    @Test
+    public void shouldCreateOfEntriesUsingNaturalComparator() {
+        final List<Tuple2<Integer, String>> entries = List.of(Tuple.of(1, "a"), Tuple.of(2, "b"));
+        final TreeMap<Integer, String> map = TreeMap.ofEntries(naturalComparator(), entries);
+        assertThat(map.toList()).isEqualTo(entries);
     }
 
     // -- static narrow
@@ -117,7 +143,7 @@ public class TreeMapTest extends AbstractSortedMapTest {
 
     @Test
     public void shouldWrapMap() {
-        final java.util.Map<Integer, Integer> source = new HashMap<>();
+        final java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
         source.put(1, 2);
         source.put(3, 4);
         assertThat(TreeMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));

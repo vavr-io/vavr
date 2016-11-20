@@ -28,7 +28,7 @@ public class HashMapTest extends AbstractMapTest {
 
     @Override
     protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
-        return HashMap.<Integer, T> collector();
+        return HashMap.collector();
     }
 
     @SuppressWarnings("varargs")
@@ -50,19 +50,28 @@ public class HashMapTest extends AbstractMapTest {
         return HashMap.of(pairs);
     }
 
-
     @Override
     protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOf(K key, V value) {
         return HashMap.of(key, value);
     }
 
     @Override
-    protected <K, V> HashMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOfNullKey(K k1, V v1, K k2, V v2) {
+        return HashMap.of(k1, v1, k2, v2);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOfNullKey(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return HashMap.of(k1, v1, k2, v2, k3, v3);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         return HashMap.tabulate(n, f);
     }
 
     @Override
-    protected <K, V> HashMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
         return HashMap.fill(n, s);
     }
 
@@ -78,7 +87,7 @@ public class HashMapTest extends AbstractMapTest {
 
     @Test
     public void shouldWrapMap() {
-        java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
+        final java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
         source.put(1, 2);
         source.put(3, 4);
         assertThat(HashMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
