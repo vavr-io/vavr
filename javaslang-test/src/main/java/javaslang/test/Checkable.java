@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  * @since 1.2.0
  */
 @FunctionalInterface
-public interface Checkable {
+public interface Checkable<T> {
 
     /**
      * A thread-safe, equally distributed random number generator.
@@ -41,7 +41,7 @@ public interface Checkable {
      * @param tries                 A non-negative number of tries to falsify the given property.
      * @return A {@linkplain CheckResult}
      */
-    CheckResult check(Random randomNumberGenerator, int size, int tries);
+    CheckResult<T> check(Random randomNumberGenerator, int size, int tries);
 
     /**
      * Checks this property using the default random number generator {@link #RNG}.
@@ -50,7 +50,7 @@ public interface Checkable {
      * @param tries A non-negative number of tries to falsify the given property.
      * @return A {@linkplain CheckResult}
      */
-    default CheckResult check(int size, int tries) {
+    default CheckResult<T> check(int size, int tries) {
         if (tries < 0) {
             throw new IllegalArgumentException("tries < 0");
         }
@@ -63,7 +63,7 @@ public interface Checkable {
      *
      * @return A {@linkplain CheckResult}
      */
-    default CheckResult check() {
+    default CheckResult<T> check() {
         return check(RNG.get(), DEFAULT_SIZE, DEFAULT_TRIES);
     }
 
@@ -75,9 +75,9 @@ public interface Checkable {
      * @param checkable A Checkable
      * @return A new Checkable
      */
-    default Checkable and(Checkable checkable) {
+    default Checkable<T> and(Checkable<T> checkable) {
         return (rng, size, tries) -> {
-            final CheckResult result = check(rng, size, tries);
+            final CheckResult<T> result = check(rng, size, tries);
             if (result.isSatisfied()) {
                 return checkable.check(rng, size, tries);
             } else {
@@ -94,9 +94,9 @@ public interface Checkable {
      * @param checkable A Checkable
      * @return A new Checkable
      */
-    default Checkable or(Checkable checkable) {
+    default Checkable<T> or(Checkable<T> checkable) {
         return (rng, size, tries) -> {
-            final CheckResult result = check(rng, size, tries);
+            final CheckResult<T> result = check(rng, size, tries);
             if (result.isSatisfied()) {
                 return result;
             } else {

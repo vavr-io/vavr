@@ -32,6 +32,8 @@ def generateMainClasses(): Unit = {
   val javadoc = "**"
 
   genPropertyChecks()
+  genArbitraryTuple()
+  genShrinkTuple()
 
   /**
    * Generator of javaslang.test.Property
@@ -71,60 +73,6 @@ def generateMainClasses(): Unit = {
               return new Property(name);
           }
 
-          private static void logSatisfied(String name, int tries, long millis, boolean exhausted) {
-              if (exhausted) {
-                  log(String.format("%s: Exhausted after %s tests in %s ms.", name, tries, millis));
-              } else {
-                  log(String.format("%s: OK, passed %s tests in %s ms.", name, tries, millis));
-              }
-          }
-
-          private static void logFalsified(String name, int currentTry, long millis) {
-              log(String.format("%s: Falsified after %s passed tests in %s ms.", name, currentTry - 1, millis));
-          }
-
-          private static void logErroneous(String name, int currentTry, long millis, String errorMessage) {
-              log(String.format("%s: Errored after %s passed tests in %s ms with message: %s", name, Math.max(0, currentTry - 1), millis, errorMessage));
-          }
-
-          private static void log(String msg) {
-              System.out.println(msg);
-          }
-
-          /**
-           * Creates an Error caused by an exception when obtaining a generator.
-           *
-           * @param position The position of the argument within the argument list of the property, starting with 1.
-           * @param size     The size hint passed to the {@linkplain Arbitrary} which caused the error.
-           * @param cause    The error which occurred when the {@linkplain Arbitrary} tried to obtain the generator {@linkplain Gen}.
-           * @return a new Error instance.
-           */
-          private static Error arbitraryError(int position, int size, Throwable cause) {
-              return new Error(String.format("Arbitrary %s of size %s: %s", position, size, cause.getMessage()), cause);
-          }
-
-          /**
-           * Creates an Error caused by an exception when generating a value.
-           *
-           * @param position The position of the argument within the argument list of the property, starting with 1.
-           * @param size     The size hint of the arbitrary which called the generator {@linkplain Gen} which caused the error.
-           * @param cause    The error which occurred when the {@linkplain Gen} tried to generate a random value.
-           * @return a new Error instance.
-           */
-          private static Error genError(int position, int size, Throwable cause) {
-              return new Error(String.format("Gen %s of size %s: %s", position, size, cause.getMessage()), cause);
-          }
-
-          /**
-           * Creates an Error caused by an exception when testing a Predicate.
-           *
-           * @param cause The error which occurred when applying the {@linkplain java.util.function.Predicate}.
-           * @return a new Error instance.
-           */
-          private static Error predicateError(Throwable cause) {
-              return new Error("Applying predicate: " + cause.getMessage(), cause);
-          }
-
           ${(1 to N).gen(i => {
               val generics = (1 to i).gen(j => s"T$j")(", ")
               val parameters = (1 to i).gen(j => s"a$j")(", ")
@@ -138,15 +86,14 @@ def generateMainClasses(): Unit = {
                    * @return a new {@code ForAll$i} instance of $i variables
                    */
                   public <$generics> ForAll$i<$generics> forAll($parametersDecl) {
-                      return new ForAll$i<>(name, $parameters);
+                      return new ForAll$i<>(name, ArbitraryTuple.of($parameters));
                   }
               """
           })("\n\n")}
 
           ${(1 to N).gen(i => {
               val generics = (1 to i).gen(j => s"T$j")(", ")
-              val params = (name: String) => (1 to i).gen(j => s"$name$j")(", ")
-              val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
+              val tupleGeneric = s"Tuple$i<$generics>"
               xs"""
                   /$javadoc
                    * Represents a logical for all quantor.
@@ -158,15 +105,11 @@ def generateMainClasses(): Unit = {
                   public static class ForAll$i<$generics> {
 
                       private final String name;
-                      ${(1 to i).gen(j => xs"""
-                          private final Arbitrary<T$j> a$j;
-                      """)("\n")}
+                      private final Arbitrary<$tupleGeneric> arbitrary;
 
-                      ForAll$i(String name, $parametersDecl) {
+                      ForAll$i(String name, Arbitrary<$tupleGeneric> arbitrary) {
                           this.name = name;
-                          ${(1 to i).gen(j => xs"""
-                              this.a$j = a$j;
-                          """)("\n")}
+                          this.arbitrary = arbitrary;
                       }
 
                       /$javadoc
@@ -176,8 +119,8 @@ def generateMainClasses(): Unit = {
                        * @return a new {@code Property$i} of $i variables.
                        */
                       public Property$i<$generics> suchThat(${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate) {
-                          final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Condition> proposition = (${params("t")}) -> new Condition(true, predicate.apply(${params("t")}));
-                          return new Property$i<>(name, ${params("a")}, proposition);
+                          final ${im.getType(s"javaslang.CheckedFunction1")}<$tupleGeneric, Condition> proposition = (t) -> new Condition(true, predicate.tupled().apply(t));
+                          return new Property$i<>(name, proposition, arbitrary, Shrink.empty());
                       }
                   }
               """
@@ -186,15 +129,11 @@ def generateMainClasses(): Unit = {
           ${(1 to N).gen(i => {
 
               val checkedFunctionType = im.getType(s"javaslang.CheckedFunction$i")
-              val optionType = im.getType("javaslang.control.Option")
-              val randomType = im.getType("java.util.Random")
-              val tryType = im.getType("javaslang.control.Try")
-              val nonFatalType = im.getType("javaslang.control.Try.NonFatalException")
-              val tupleType = im.getType(s"javaslang.Tuple")
-
               val generics = (1 to i).gen(j => s"T$j")(", ")
+              val tupleGeneric = s"Tuple$i<$generics>"
+
               val params = (paramName: String) => (1 to i).gen(j => s"$paramName$j")(", ")
-              val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
+              val parametersShrinks = (1 to i).gen(j => s"Shrink<T$j> s$j")(", ")
 
               xs"""
                   /$javadoc
@@ -203,20 +142,10 @@ def generateMainClasses(): Unit = {
                    * @author Daniel Dietrich
                    * @since 1.2.0
                    */
-                  public static class Property$i<$generics> implements Checkable {
+                  public static class Property$i<$generics> extends PropertyCheck<$tupleGeneric> {
 
-                      private final String name;
-                      ${(1 to i).gen(j => xs"""
-                          private final Arbitrary<T$j> a$j;
-                      """)("\n")}
-                      private final $checkedFunctionType<$generics, Condition> predicate;
-
-                      Property$i(String name, $parametersDecl, $checkedFunctionType<$generics, Condition> predicate) {
-                          this.name = name;
-                          ${(1 to i).gen(j => xs"""
-                              this.a$j = a$j;
-                          """)("\n")}
-                          this.predicate = predicate;
+                      Property$i(String name, CheckedFunction1<$tupleGeneric, Condition> predicate, Arbitrary<$tupleGeneric> arbitrary, Shrink<$tupleGeneric> shrink) {
+                          super(name, arbitrary, predicate, shrink);
                       }
 
                       /$javadoc
@@ -225,59 +154,20 @@ def generateMainClasses(): Unit = {
                        * @param postcondition The postcondition of this implication
                        * @return A new Checkable implication
                        */
-                      public Checkable implies($checkedFunctionType<$generics, Boolean> postcondition) {
-                          final $checkedFunctionType<$generics, Condition> implication = (${params("t")}) -> {
-                              final Condition precondition = predicate.apply(${params("t")});
+                      public Checkable<$tupleGeneric> implies($checkedFunctionType<$generics, Boolean> postcondition) {
+                          final CheckedFunction1<$tupleGeneric, Condition> implication = (t) -> {
+                              final Condition precondition = predicate.apply(t);
                               if (precondition.isFalse()) {
                                   return Condition.EX_FALSO_QUODLIBET;
                               } else {
-                                  return new Condition(true, postcondition.apply(${params("t")}));
+                                  return new Condition(true, postcondition.tupled().apply(t));
                               }
                           };
-                          return new Property$i<>(name, ${params("a")}, implication);
+                          return new Property$i<>(name, implication, arbitrary, shrink);
                       }
 
-                      @Override
-                      public CheckResult check($randomType random, int size, int tries) {
-                          ${im.getType("java.util.Objects")}.requireNonNull(random, "random is null");
-                          if (tries < 0) {
-                              throw new IllegalArgumentException("tries < 0");
-                          }
-                          final long startTime = System.currentTimeMillis();
-                          try {
-                              ${(1 to i).gen(j => {
-                                  s"""final Gen<T$j> gen$j = $tryType.of(() -> a$j.apply(size)).recover(x -> { throw arbitraryError($j, size, x); }).get();"""
-                              })("\n")}
-                              boolean exhausted = true;
-                              for (int i = 1; i <= tries; i++) {
-                                  try {
-                                      ${(1 to i).gen(j => {
-                                        s"""final T$j val$j = $tryType.of(() -> gen$j.apply(random)).recover(x -> { throw genError($j, size, x); }).get();"""
-                                      })("\n")}
-                                      try {
-                                          final Condition condition = $tryType.of(() -> predicate.apply(${(1 to i).gen(j => s"val$j")(", ")})).recover(x -> { throw predicateError(x); }).get();
-                                          if (condition.precondition) {
-                                              exhausted = false;
-                                              if (!condition.postcondition) {
-                                                  logFalsified(name, i, System.currentTimeMillis() - startTime);
-                                                  return new CheckResult.Falsified(name, i, $tupleType.of(${(1 to i).gen(j => s"val$j")(", ")}));
-                                              }
-                                          }
-                                      } catch($nonFatalType nonFatal) {
-                                          logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                                          return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), $optionType.some($tupleType.of(${(1 to i).gen(j => s"val$j")(", ")})));
-                                      }
-                                  } catch($nonFatalType nonFatal) {
-                                      logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                                      return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), $optionType.none());
-                                  }
-                              }
-                              logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
-                              return new CheckResult.Satisfied(name, tries, exhausted);
-                          } catch($nonFatalType nonFatal) {
-                              logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                              return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), $optionType.none());
-                          }
+                      public Property$i<$generics> shrinking($parametersShrinks) {
+                          return new Property$i<>(name, predicate, arbitrary, ShrinkTuple.of(${params("s")}));
                       }
                   }
               """
@@ -306,6 +196,62 @@ def generateMainClasses(): Unit = {
       }
     """
   }
+
+  def genArbitraryTuple(): Unit = {
+    genJavaslangFile("javaslang.test", "ArbitraryTuple")(genArbitrary)
+    def genArbitrary(im: ImportManager, packageName: String, className: String): String = xs"""
+    public class ArbitraryTuple {
+        ${(1 to N).gen(i => {
+          val generics = (1 to i).gen(j => s"T$j")(", ")
+          val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
+          xs"""
+              /$javadoc
+               * Generates an arbitrary tuple of $i given variables
+               *
+               ${(1 to i).gen(j => s"* @param a$j ${j.ordinal} variable of this tuple")("\n")}
+               ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} variable type of this tuple")("\n")}
+               * @return A new generator
+               */
+              public static <$generics> Arbitrary<${im.getType(s"javaslang.Tuple$i")}<$generics>> of($parametersDecl) {
+                  return size -> random -> Tuple.of(
+                          ${(1 to i).gen(j => s"a$j.apply(size).apply(random)")(",\n")});
+              }
+          """
+        })("\n\n")}
+    }
+    """
+  }
+
+  def genShrinkTuple(): Unit = {
+    genJavaslangFile("javaslang.test", "ShrinkTuple")(genShrink)
+    def genShrink(im: ImportManager, packageName: String, className: String): String = xs"""
+    public class ShrinkTuple {
+        ${(1 to N).gen(i => {
+            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val parametersT = (1 to i).gen(j => s"t$j")(", ")
+            val parametersDecl = (1 to i).gen(j => s"Shrink<T$j> s$j")(", ")
+            val a: Int => String = k => (1 to i).gen(j => if (j == k) "a" else s"t$j")(", ")
+            xs"""
+                /$javadoc
+                 * Generates a shrink for tuple of $i given shrinks
+                 *
+                 ${(1 to i).gen(j => s"* @param s$j ${j.ordinal} shrink of this tuple")("\n")}
+                 ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} type of this tuple")("\n")}
+                 * @return A new generator
+                 */
+                public static <$generics> Shrink<${im.getType(s"javaslang.Tuple$i")}<$generics>> of($parametersDecl) {
+                    return t -> t.apply(($parametersT) -> concat(${im.getType(s"javaslang.collection.Stream")}.of(
+                            ${(1 to i).gen(j => s"s$j.apply(t$j).map(a -> Tuple.of(${a(j)}))")(",\n")})));
+                }
+            """
+        })("\n\n")}
+
+        private static <T> Stream<T> concat(Stream<Stream<T>> streams) {
+            return streams.foldLeft(Stream.empty(), Stream::appendAll);
+        }
+    }
+    """
+  }
 }
 
 /**
@@ -314,237 +260,12 @@ def generateMainClasses(): Unit = {
 def generateTestClasses(): Unit = {
 
   genPropertyCheckTests()
+  genShrinkArbitraryTupleTest()
 
   /**
     * Generator of Property-check tests
    */
   def genPropertyCheckTests(): Unit = {
-    genJavaslangFile("javaslang.test", "PropertyTest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
-
-      // main classes
-      val list = im.getType("javaslang.collection.List")
-      val predicate = im.getType("javaslang.CheckedFunction1")
-      val random = im.getType("java.util.Random")
-      val tuple = im.getType("javaslang.Tuple")
-
-      // test classes
-      val test = im.getType("org.junit.Test")
-      val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
-      val woops  = "yay! (this is a negative test)"
-
-      xs"""
-        public class $className {
-
-            static <T> $predicate<T, Boolean> tautology() {
-                return any -> true;
-            }
-
-            static <T> $predicate<T, Boolean> falsum() {
-                return any -> false;
-            }
-
-            static final Arbitrary<Object> OBJECTS = Gen.of(null).arbitrary();
-
-            @$test(expected = NullPointerException.class)
-            public void shouldThrowWhenPropertyNameIsNull() {
-                Property.def(null);
-            }
-
-            @$test(expected = IllegalArgumentException.class)
-            public void shouldThrowWhenPropertyNameIsEmpty() {
-                Property.def("");
-            }
-
-            // -- Property.check methods
-
-            @$test
-            public void shouldCheckUsingDefaultConfiguration() {
-                final CheckResult result = Property.def("test").forAll(OBJECTS).suchThat(tautology()).check();
-                $assertThat(result.isSatisfied()).isTrue();
-                $assertThat(result.isExhausted()).isFalse();
-            }
-
-            @$test
-            public void shouldCheckGivenSizeAndTries() {
-                final CheckResult result = Property.def("test").forAll(OBJECTS).suchThat(tautology()).check(0, 0);
-                $assertThat(result.isSatisfied()).isTrue();
-                $assertThat(result.isExhausted()).isTrue();
-            }
-
-            @$test(expected = IllegalArgumentException.class)
-            public void shouldThrowOnCheckGivenNegativeTries() {
-                Property.def("test").forAll(OBJECTS).suchThat(tautology()).check(0, -1);
-            }
-
-            @$test
-            public void shouldCheckGivenRandomAndSizeAndTries() {
-                final CheckResult result = Property.def("test").forAll(OBJECTS).suchThat(tautology()).check(new $random(), 0, 0);
-                $assertThat(result.isSatisfied()).isTrue();
-                $assertThat(result.isExhausted()).isTrue();
-            }
-
-            // -- satisfaction
-
-            @$test
-            public void shouldCheckPythagoras() {
-
-                final Arbitrary<Double> real = n -> Gen.choose(0, (double) n).filter(d -> d > .0d);
-
-                // (∀a,b ∈ ℝ+ ∃c ∈ ℝ+ : a²+b²=c²) ≡ (∀a,b ∈ ℝ+ : √(a²+b²) ∈ ℝ+)
-                final Checkable property = Property.def("test").forAll(real, real).suchThat((a, b) -> Math.sqrt(a * a + b * b) > .0d);
-                final CheckResult result = property.check();
-
-                $assertThat(result.isSatisfied()).isTrue();
-                $assertThat(result.isExhausted()).isFalse();
-            }
-
-            @$test
-            public void shouldCheckZipAndThenUnzipIsIdempotentForListsOfSameLength() {
-                // ∀is,ss: length(is) = length(ss) → unzip(zip(is, ss)) = (is, ss)
-                final Arbitrary<$list<Integer>> ints = Arbitrary.list(size -> Gen.choose(0, size));
-                final Arbitrary<$list<String>> strings = Arbitrary.list(
-                        Arbitrary.string(
-                            Gen.frequency(
-                                Tuple.of(1, Gen.choose('A', 'Z')),
-                                Tuple.of(1, Gen.choose('a', 'z')),
-                                Tuple.of(1, Gen.choose('0', '9'))
-                            )));
-                final CheckResult result = Property.def("test")
-                        .forAll(ints, strings)
-                        .suchThat((is, ss) -> is.length() == ss.length())
-                        .implies((is, ss) -> is.zip(ss).unzip(t -> t).equals($tuple.of(is, ss)))
-                        .check();
-                $assertThat(result.isSatisfied()).isTrue();
-                $assertThat(result.isExhausted()).isFalse();
-            }
-
-            // -- exhausting
-
-            @$test
-            public void shouldRecognizeExhaustedParameters() {
-                final CheckResult result = Property.def("test").forAll(OBJECTS).suchThat(falsum()).implies(tautology()).check();
-                $assertThat(result.isSatisfied()).isTrue();
-                $assertThat(result.isExhausted()).isTrue();
-            }
-
-            // -- falsification
-
-            @$test
-            public void shouldFalsifyFalseProperty() {
-                final Arbitrary<Integer> ones = n -> random -> 1;
-                final CheckResult result = Property.def("test").forAll(ones).suchThat(one -> one == 2).check();
-                $assertThat(result.isFalsified()).isTrue();
-                $assertThat(result.isExhausted()).isFalse();
-                $assertThat(result.count()).isEqualTo(1);
-            }
-
-            // -- error detection
-
-            @$test
-            public void shouldRecognizeArbitraryError() {
-                final Arbitrary<?> arbitrary = n -> { throw new RuntimeException("$woops"); };
-                final CheckResult result = Property.def("test").forAll(arbitrary).suchThat(tautology()).check();
-                $assertThat(result.isErroneous()).isTrue();
-                $assertThat(result.isExhausted()).isFalse();
-                $assertThat(result.count()).isEqualTo(0);
-                $assertThat(result.sample().isEmpty()).isTrue();
-            }
-
-            @$test
-            public void shouldRecognizeGenError() {
-                final Arbitrary<?> arbitrary = Gen.fail("$woops").arbitrary();
-                final CheckResult result = Property.def("test").forAll(arbitrary).suchThat(tautology()).check();
-                $assertThat(result.isErroneous()).isTrue();
-                $assertThat(result.isExhausted()).isFalse();
-                $assertThat(result.count()).isEqualTo(1);
-                $assertThat(result.sample().isEmpty()).isTrue();
-            }
-
-            @$test
-            public void shouldRecognizePropertyError() {
-                final Arbitrary<Integer> a1 = n -> random -> 1;
-                final Arbitrary<Integer> a2 = n -> random -> 2;
-                final CheckResult result = Property.def("test").forAll(a1, a2).suchThat((a, b) -> {
-                    throw new RuntimeException("$woops");
-                }).check();
-                $assertThat(result.isErroneous()).isTrue();
-                $assertThat(result.isExhausted()).isFalse();
-                $assertThat(result.count()).isEqualTo(1);
-                $assertThat(result.sample().isDefined()).isTrue();
-                $assertThat(result.sample().get()).isEqualTo(Tuple.of(1, 2));
-            }
-
-            // -- Property.and tests
-
-            @$test
-            public void shouldCheckAndCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsTrue() {
-                final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
-                final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
-                final CheckResult result = p1.and(p2).check();
-                $assertThat(result.isSatisfied()).isTrue();
-            }
-
-            @$test
-            public void shouldCheckAndCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsFalse() {
-                final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
-                final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
-                final CheckResult result = p1.and(p2).check();
-                $assertThat(result.isSatisfied()).isFalse();
-            }
-
-            @$test
-            public void shouldCheckAndCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsTrue() {
-                final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
-                final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
-                final CheckResult result = p1.and(p2).check();
-                $assertThat(result.isSatisfied()).isFalse();
-            }
-
-            @$test
-            public void shouldCheckAndCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsFalse() {
-                final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
-                final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
-                final CheckResult result = p1.and(p2).check();
-                $assertThat(result.isSatisfied()).isFalse();
-            }
-
-            // -- Property.or tests
-
-            @$test
-            public void shouldCheckOrCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsTrue() {
-                final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
-                final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
-                final CheckResult result = p1.or(p2).check();
-                $assertThat(result.isSatisfied()).isTrue();
-            }
-
-            @$test
-            public void shouldCheckOrCombinationWhereFirstPropertyIsTrueAndSecondPropertyIsFalse() {
-                final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
-                final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
-                final CheckResult result = p1.or(p2).check();
-                $assertThat(result.isSatisfied()).isTrue();
-            }
-
-            @$test
-            public void shouldCheckOrCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsTrue() {
-                final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
-                final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(tautology());
-                final CheckResult result = p1.or(p2).check();
-                $assertThat(result.isSatisfied()).isTrue();
-            }
-
-            @$test
-            public void shouldCheckOrCombinationWhereFirstPropertyIsFalseAndSecondPropertyIsFalse() {
-                final Checkable p1 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
-                final Checkable p2 = Property.def("test").forAll(OBJECTS).suchThat(falsum());
-                final CheckResult result = p1.or(p2).check();
-                $assertThat(result.isSatisfied()).isFalse();
-            }
-        }
-      """
-    })
-
     for (i <- 1 to N) {
       genJavaslangFile("javaslang.test", s"PropertyCheck${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
@@ -581,7 +302,7 @@ def generateTestClasses(): Unit = {
               public void shouldCheckTrueProperty$i() {
                   final Property.ForAll$i<$generics> forAll = Property.def("test").forAll($arbitraries);
                   final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> true;
-                  final CheckResult result = forAll.suchThat(predicate).check();
+                  final CheckResult<?> result = forAll.suchThat(predicate).check();
                   $assertThat(result.isSatisfied()).isTrue();
                   $assertThat(result.isExhausted()).isFalse();
               }
@@ -590,7 +311,7 @@ def generateTestClasses(): Unit = {
               public void shouldCheckFalseProperty$i() {
                   final Property.ForAll$i<$generics> forAll = Property.def("test").forAll($arbitraries);
                   final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> false;
-                  final CheckResult result = forAll.suchThat(predicate).check();
+                  final CheckResult<?> result = forAll.suchThat(predicate).check();
                   $assertThat(result.isFalsified()).isTrue();
               }
 
@@ -598,7 +319,7 @@ def generateTestClasses(): Unit = {
               public void shouldCheckErroneousProperty$i() {
                   final Property.ForAll$i<$generics> forAll = Property.def("test").forAll($arbitraries);
                   final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> { throw new RuntimeException("$woops"); };
-                  final CheckResult result = forAll.suchThat(predicate).check();
+                  final CheckResult<?> result = forAll.suchThat(predicate).check();
                   $assertThat(result.isErroneous()).isTrue();
               }
 
@@ -607,7 +328,7 @@ def generateTestClasses(): Unit = {
                   final Property.ForAll$i<$generics> forAll = Property.def("test").forAll($arbitraries);
                   final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p1 = ($args) -> true;
                   final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p2 = ($args) -> true;
-                  final CheckResult result = forAll.suchThat(p1).implies(p2).check();
+                  final CheckResult<?> result = forAll.suchThat(p1).implies(p2).check();
                   $assertThat(result.isSatisfied()).isTrue();
                   $assertThat(result.isExhausted()).isFalse();
               }
@@ -617,7 +338,7 @@ def generateTestClasses(): Unit = {
                   final Property.ForAll$i<$generics> forAll = Property.def("test").forAll($arbitraries);
                   final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p1 = ($args) -> false;
                   final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p2 = ($args) -> true;
-                  final CheckResult result = forAll.suchThat(p1).implies(p2).check();
+                  final CheckResult<?> result = forAll.suchThat(p1).implies(p2).check();
                   $assertThat(result.isSatisfied()).isTrue();
                   $assertThat(result.isExhausted()).isTrue();
               }
@@ -633,7 +354,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldReturnErroneousProperty${i}CheckResultIfGenFails() {
                   final Arbitrary<Object> failingGen = Gen.fail("$woops").arbitrary();
-                  final CheckResult result = Property.def("test")
+                  final CheckResult<?> result = Property.def("test")
                       .forAll(failingGen${(i > 1).gen(s", $arbitrariesMinus1")})
                       .suchThat(($args) -> true)
                       .check();
@@ -643,7 +364,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldReturnErroneousProperty${i}CheckResultIfArbitraryFails() {
                   final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("$woops"); };
-                  final CheckResult result = Property.def("test")
+                  final CheckResult<?> result = Property.def("test")
                       .forAll(failingArbitrary${(i > 1).gen(s", $arbitrariesMinus1")})
                       .suchThat(($args) -> true)
                       .check();
@@ -653,6 +374,44 @@ def generateTestClasses(): Unit = {
          """
       })
     }
+  }
+
+  def genShrinkArbitraryTupleTest(): Unit = {
+    genJavaslangFile("javaslang.test", "ShrinkArbitraryTupleTest", baseDir = TARGET_TEST)(genShrinkTest)
+    def genShrinkTest(im: ImportManager, packageName: String, className: String): String = xs"""
+    public class ShrinkArbitraryTupleTest {
+        ${(1 to N).gen(i => {
+        val generics = (1 to i).gen(j => s"Integer")(", ")
+        val tuple = im.getType(s"javaslang.Tuple$i<$generics>")
+        val test = im.getType("org.junit.Test")
+        xs"""
+        @$test
+        public void shouldShrinkArbitraryTuple$i() throws Exception {
+            final Shrink<$tuple> shrink = ShrinkTuple.of(
+                            ${(1 to i).gen(j => s"Shrink.integer()")(",\n")});
+
+            final Arbitrary<$tuple> tuples = ArbitraryTuple.of(
+                            ${(1 to i).gen(j => s"Arbitrary.integer().filter(i -> i > 0)")(",\n")});
+
+            Property.def("tuple$i: Not contains initial value")
+                    .forAll(tuples.map(tuple -> Tuple.of(tuple, shrink.apply(tuple))))
+                    .suchThat(pair((tuple, shrinks) -> !shrinks.contains(tuple)))
+                    .check()
+                    .assertIsSatisfied();
+
+            Property.def("tuple$i: Shrinks each component")
+                    .forAll(tuples.map(shrink::apply))
+                    .suchThat(shrinks ->
+                            ${(1 to i).gen(j => s"shrinks.exists(t -> t._$j == 0)")(" &&\n")})
+                    .check()
+                    .assertIsSatisfied();
+        }"""})("\n\n")}
+
+        private static <L, R> CheckedFunction1<Tuple2<L, R>, Boolean> pair(${im.getType("java.util.function.BiPredicate")}<L, R> predicate) {
+            return t -> predicate.test(t._1, t._2);
+        }
+    }
+    """
   }
 }
 
