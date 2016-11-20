@@ -141,8 +141,8 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
         /**
          * Creates a TreeMultimap of the given key-value pair.
          *
-         * @param key           A singleton map key.
-         * @param value         A singleton map value.
+         * @param key A singleton map key.
+         * @param value A singleton map value.
          * @param <K> The key type
          * @param <V2> The value type
          * @return A new Multimap containing the given entries
