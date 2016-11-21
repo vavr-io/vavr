@@ -175,6 +175,7 @@ Note: Detailed information about performing a release can be found in the SCM se
 * Commits do not mix change sets of different domains/purpose.
 * Commit messages provide enough detail to extract a changelog for a new release.
 
+
 ### Branching Model
 
 We following a simple git workflow/branching model:
@@ -204,6 +205,28 @@ release v2.1.0 - - - - - - + - - - X - - - + 2.1.1-SNAPSHOT
                   PR x---->|               |
                           ...             ...
 ```
+
+## Versioning
+
+We follow the [Semantic Versioning](http://semver.org) scheme.
+
+### Backward compatibility
+
+We distinguish between 3 kinds of (backwward-)compatibilty:
+
+1. **Source** - Source compatibility concerns translating Java source code into class files.
+2. **Binary** - Binary compatibility is [defined](http://java.sun.com/docs/books/jls/third_edition/html/binaryComp.html#13.2) in The Java Language Specification as preserving the ability to link without error.
+3. **Behavioral** - Behavioral compatibility includes the semantics of the code that is executed at runtime.
+
+_Source: [OpenJDK Developers Guide v0.777, Kinds of Compatibility](http://cr.openjdk.java.net/~darcy/OpenJdkDevGuide/OpenJdkDevelopersGuide.v0.777.html#compatibility)_
+
+We currently check for API changes (which may affect the binary compatibility) using the maven-bundle-plugin:
+
+```bash
+mvn package org.apache.felix:maven-bundle-plugin:baseline -DcomparisonVersion=2.0.1 -DskipTests
+```
+
+In the example above we check API changes between the current branch and the _2.0.1_ tag. In most cases the tag should be the latest official release. 
 
 ### Major release
 
