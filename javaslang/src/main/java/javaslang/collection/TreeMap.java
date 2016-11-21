@@ -145,18 +145,12 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * @return A new Map containing the given entries
      */
     @SuppressWarnings("unchecked")
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Object... pairs) {
-        return of((Comparator<? super K> & Serializable) K::compareTo, pairs);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, Object... pairs) {
-        Objects.requireNonNull(keyComparator, "keyComparator is null");
+    public static <K, V> TreeMap<K, V> of(Object... pairs) {
         Objects.requireNonNull(pairs, "pairs is null");
         if ((pairs.length & 1) != 0) {
             throw new IllegalArgumentException("Odd length of key-value pairs list");
         }
-        RedBlackTree<Tuple2<K, V>> result = RedBlackTree.empty(EntryComparator.of(keyComparator));
+        RedBlackTree<Tuple2<K, V>> result = RedBlackTree.empty(EntryComparator.of(naturalComparator()));
         for (int i = 0; i < pairs.length; i += 2) {
             result = result.insert(Tuple.of((K) pairs[i], (V) pairs[i + 1]));
         }
@@ -174,20 +168,6 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
         Objects.requireNonNull(map, "map is null");
         return createFromMap(EntryComparator.natural(), map);
-    }
-
-    /**
-     * Returns a {@code TreeMap}, from a source java.util.Map.
-     *
-     * @param keyComparator The comparator used to sort the entries by their key.
-     * @param map           A map entry.
-     * @param <K>           The key type
-     * @param <V>           The value type
-     * @return A new Map containing the given map
-     */
-    public static <K, V> TreeMap<K, V> ofAll(Comparator<? super K> keyComparator, java.util.Map<? extends K, ? extends V> map) {
-        Objects.requireNonNull(map, "map is null");
-        return createFromMap(EntryComparator.of(keyComparator), map);
     }
 
     /**

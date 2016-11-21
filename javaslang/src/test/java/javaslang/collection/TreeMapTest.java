@@ -66,7 +66,7 @@ public class TreeMapTest extends AbstractSortedMapTest {
 
     @Override
     protected <K, V> TreeMap<K, V> mapOfPairs(Object... pairs) {
-        return TreeMap.of(naturalComparator(), pairs);
+        return TreeMap.of(pairs);
     }
 
     @Override
@@ -170,7 +170,7 @@ public class TreeMapTest extends AbstractSortedMapTest {
     @Test
     public void shouldReturnATreeMapWithCorrectComparatorWhenFlatMappingToEmpty() {
 
-        final TreeMap<Integer, String> testee = TreeMap.of(Comparator.naturalOrder(), 1, "1", 2, "2");
+        final TreeMap<Integer, String> testee = TreeMap.of(1, "1", 2, "2");
         assertThat(testee.head()).isEqualTo(Tuple.of(1, "1"));
 
         final TreeMap<Integer, String> actual = testee.flatMap(Comparator.reverseOrder(), (k, v) -> List.empty());
