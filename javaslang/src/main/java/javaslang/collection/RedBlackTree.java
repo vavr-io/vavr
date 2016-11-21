@@ -12,6 +12,7 @@ import javaslang.control.Option;
 import java.io.Serializable;
 import java.util.*;
 
+import static javaslang.collection.Comparators.naturalComparator;
 import static javaslang.collection.RedBlackTree.Color.*;
 
 /**
@@ -30,7 +31,7 @@ import static javaslang.collection.RedBlackTree.Color.*;
 interface RedBlackTree<T> extends Iterable<T> {
 
     static <T extends Comparable<? super T>> RedBlackTree<T> empty() {
-        return new Empty<>((Comparator<? super T> & Serializable) T::compareTo);
+        return new Empty<>(naturalComparator());
     }
 
     static <T> RedBlackTree<T> empty(Comparator<? super T> comparator) {
@@ -39,7 +40,7 @@ interface RedBlackTree<T> extends Iterable<T> {
     }
 
     static <T extends Comparable<? super T>> RedBlackTree<T> of(T value) {
-        return of((Comparator<? super T> & Serializable) T::compareTo, value);
+        return of(naturalComparator(), value);
     }
 
     static <T> RedBlackTree<T> of(Comparator<? super T> comparator, T value) {
@@ -52,7 +53,7 @@ interface RedBlackTree<T> extends Iterable<T> {
     @SafeVarargs
     static <T extends Comparable<? super T>> RedBlackTree<T> of(T... values) {
         Objects.requireNonNull(values, "values is null");
-        return of((Comparator<? super T> & Serializable) T::compareTo, values);
+        return of(Comparators.<T> naturalComparator(), values);
     }
 
     @SafeVarargs
@@ -68,7 +69,7 @@ interface RedBlackTree<T> extends Iterable<T> {
 
     static <T extends Comparable<? super T>> RedBlackTree<T> ofAll(Iterable<? extends T> values) {
         Objects.requireNonNull(values, "values is null");
-        return ofAll(Comparators.naturalComparator(), values);
+        return ofAll(naturalComparator(), values);
     }
 
     @SuppressWarnings("unchecked")

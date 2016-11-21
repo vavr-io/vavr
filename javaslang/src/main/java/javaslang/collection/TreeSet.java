@@ -49,7 +49,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
      * @return A javaslang.collection.List Collector.
      */
     public static <T extends Comparable<? super T>> Collector<T, ArrayList<T>, TreeSet<T>> collector() {
-        return collector((Comparator<? super T> & Serializable) T::compareTo);
+        return collector(naturalComparator());
     }
 
     /**
@@ -151,7 +151,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
      */
     public static <T extends Comparable<? super T>> TreeSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return tabulate((Comparator<? super T> & Serializable) T::compareTo, n, f);
+        return tabulate(naturalComparator(), n, f);
     }
 
     /**
@@ -182,7 +182,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
      */
     public static <T extends Comparable<? super T>> TreeSet<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return fill((Comparator<? super T> & Serializable) T::compareTo, n, s);
+        return fill(naturalComparator(), n, s);
     }
 
     @SuppressWarnings("unchecked")

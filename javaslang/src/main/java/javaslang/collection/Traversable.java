@@ -631,7 +631,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
         if (isEmpty()) {
             return Option.none();
         } else {
-            return ts.maxBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
+            return ts.maxBy(Comparators.naturalComparator());
         }
     }
 
@@ -693,7 +693,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
         if (isEmpty()) {
             return Option.none();
         } else {
-            return ts.minBy((o1, o2) -> ((Comparable<T>) o1).compareTo(o2));
+            return ts.minBy(Comparators.naturalComparator());
         }
     }
 

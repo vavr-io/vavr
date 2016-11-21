@@ -299,8 +299,8 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldConvertToJavaMap() {
-        Multimap<String, Integer> javaslang = mapOfPairs("1", 1, "2", 2, "3", 3);
-        java.util.Map<String, java.util.Collection<Integer>> java = javaEmptyMap();
+        final Multimap<String, Integer> javaslang = mapOfPairs("1", 1, "2", 2, "3", 3);
+        final java.util.Map<String, java.util.Collection<Integer>> java = javaEmptyMap();
         java.put("1", javaListOf(1));
         java.put("2", javaListOf(2));
         java.put("3", javaListOf(3));
@@ -308,7 +308,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     }
 
     private java.util.Collection<Integer> javaListOf(Integer i) {
-        java.util.Collection<Integer> list;
+        final java.util.Collection<Integer> list;
         switch (containerType) {
             case SEQ:
                 list = new ArrayList<>();

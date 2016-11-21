@@ -149,6 +149,10 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3);
 
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2);
+
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2, K k3, V v3);
+
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f);
 
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s);
@@ -518,8 +522,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldPutNullKeyIntoMapThatContainsNullKey() {
-        final Map<Integer, String> map = mapOf(1, "a", null, "b", 2, "c");
-        assertThat(map.put(null, "!")).isEqualTo(mapOf(1, "a", null, "!", 2, "c"));
+        final Map<Integer, String> map = mapOfNullKey(1, "a", null, "b", 2, "c");
+        assertThat(map.put(null, "!")).isEqualTo(mapOfNullKey(1, "a", null, "!", 2, "c"));
     }
 
     // -- remove
@@ -533,8 +537,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldRemoveFromMapThatContainsFirstEntryHavingNullKey() {
-        final Map<Integer, String> map = mapOf(null, "a", 1, "b", 2, "c");
-        assertThat(map.remove(1)).isEqualTo(mapOf(null, "a", 2, "c"));
+        final Map<Integer, String> map = mapOfNullKey(null, "a", 1, "b", 2, "c");
+        assertThat(map.remove(1)).isEqualTo(mapOfNullKey(null, "a", 2, "c"));
     }
 
     // -- removeAll
@@ -1059,13 +1063,13 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldGetValueOfNullKeyWhenPutFirstHavingTwoEntries() {
-        final Map<Integer, String> map = mapOf(null, "a", 2, "b");
+        final Map<Integer, String> map = mapOfNullKey(null, "a", 2, "b");
         assertThat(map.get(null)).isEqualTo(Some("a"));
     }
 
     @Test
     public void shouldGetValueOfNullKeyWhenPutLastHavingTwoEntries() {
-        final Map<Integer, String> map = mapOf(1, "a", null, "b");
+        final Map<Integer, String> map = mapOfNullKey(1, "a", null, "b");
         assertThat(map.get(null)).isEqualTo(Some("b"));
     }
 

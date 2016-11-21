@@ -16,6 +16,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
+import static java.util.Comparator.nullsFirst;
 import static javaslang.TestComparators.toStringComparator;
 import static javaslang.collection.Comparators.naturalComparator;
 
@@ -29,6 +30,11 @@ public class TreeSetTest extends AbstractSortedSetTest {
     @Override
     protected <T> TreeSet<T> empty() {
         return TreeSet.empty(naturalComparator());
+    }
+
+    @Override
+    protected <T> TreeSet<T> emptyWithNull() {
+        return TreeSet.empty(nullsFirst(naturalComparator()));
     }
 
     @Override
@@ -142,7 +148,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Test
     public void shouldKeepComparator() {
-        List<?> list = TreeSet.empty(inverseIntComparator()).addAll(TreeSet.of(1, 2, 3)).toList();
+        final List<?> list = TreeSet.empty(inverseIntComparator()).addAll(TreeSet.of(1, 2, 3)).toList();
         assertThat(list).isEqualTo(List.of(3, 2, 1));
     }
 
@@ -150,7 +156,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Test
     public void shouldTransform() {
-        String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        final String transformed = of(42).transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("42");
     }
 
@@ -234,25 +240,25 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Test
     public void shouldReturnSelfOnConvertToSortedSet() {
-        Value<Integer> value = of(1, 2, 3);
+        final Value<Integer> value = of(1, 2, 3);
         assertThat(value.toSortedSet()).isSameAs(value);
     }
 
     @Test
     public void shouldReturnSelfOnConvertToSortedSetWithSameComparator() {
-        TreeSet<Integer> value = of(1, 2, 3);
+        final TreeSet<Integer> value = of(1, 2, 3);
         assertThat(value.toSortedSet(value.comparator())).isSameAs(value);
     }
 
     @Test
     public void shouldNotReturnSelfOnConvertToSortedSetWithDifferentComparator() {
-        Value<Integer> value = of(1, 2, 3);
+        final Value<Integer> value = of(1, 2, 3);
         assertThat(value.toSortedSet(Integer::compareTo)).isNotSameAs(value);
     }
 
     @Test
     public void shouldPreserveComparatorOnConvertToSortedSetWithoutDistinctComparator() {
-        Value<Integer> value = TreeSet.of(Comparators.naturalComparator().reversed(), 1, 2, 3);
+        final Value<Integer> value = TreeSet.of(Comparators.naturalComparator().reversed(), 1, 2, 3);
         assertThat(value.toSortedSet().mkString(",")).isEqualTo("3,2,1");
     }
 

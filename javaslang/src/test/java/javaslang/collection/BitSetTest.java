@@ -90,6 +90,11 @@ public class BitSetTest extends AbstractSortedSetTest {
     }
 
     @Override
+    protected <T> BitSet<T> emptyWithNull() {
+        return empty();
+    }
+
+    @Override
     protected boolean emptyShouldBeSingleton() {
         return false;
     }

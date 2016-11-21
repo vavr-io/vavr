@@ -17,6 +17,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static javaslang.collection.Comparators.naturalComparator;
+
 /**
  * An {@link HashMap}-based implementation of {@link Multimap}
  *
@@ -56,7 +58,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
         }
 
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> empty() {
-            return empty((Comparator<? super K> & Serializable) K::compareTo);
+            return empty(naturalComparator());
         }
 
         public <K, V2 extends V> TreeMultimap<K, V2> empty(Comparator<? super K> keyComparator) {
@@ -65,7 +67,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
         }
 
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V2>> entries) {
-            return ofEntries((Comparator<? super K> & Serializable) K::compareTo, entries);
+            return ofEntries(naturalComparator(), entries);
         }
 
         public <K, V2 extends V> TreeMultimap<K, V2> ofEntries(Comparator<? super K> keyComparator, Iterable<? extends Tuple2<? extends K, ? extends V2>> entries) {
@@ -81,7 +83,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
         public final <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> ofEntries(Tuple2<? extends K, ? extends V2>... entries) {
-            return ofEntries((Comparator<? super K> & Serializable) K::compareTo, entries);
+            return ofEntries(naturalComparator(), entries);
         }
 
         @SuppressWarnings({ "unchecked", "varargs" })
@@ -99,7 +101,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
         public final <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> ofEntries(java.util.Map.Entry<? extends K, ? extends V2>... entries) {
-            return ofEntries((Comparator<? super K> & Serializable) K::compareTo, entries);
+            return ofEntries(naturalComparator(), entries);
         }
 
         @SuppressWarnings({ "unchecked", "varargs" })
@@ -116,7 +118,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
 
         @SuppressWarnings("unchecked")
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V2>> f) {
-            return tabulate((Comparator<? super K> & Serializable) K::compareTo, n, f);
+            return tabulate(naturalComparator(), n, f);
         }
 
         @SuppressWarnings("unchecked")
@@ -128,7 +130,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
 
         @SuppressWarnings("unchecked")
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V2>> s) {
-            return fill((Comparator<? super K> & Serializable) K::compareTo, n, s);
+            return fill(naturalComparator(), n, s);
         }
 
         @SuppressWarnings("unchecked")
@@ -148,7 +150,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          * @return A new Multimap containing the given entries
          */
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K key, V2 value) {
-            return of((Comparator<? super K> & Serializable) K::compareTo, key, value);
+            return of(naturalComparator(), key, value);
         }
 
         /**
@@ -163,7 +165,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          * @return A new Multimap containing the given entries
          */
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2) {
-            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2);
+            return of(naturalComparator(), k1, v1, k2, v2);
         }
 
         /**
@@ -180,7 +182,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          * @return A new Multimap containing the given entries
          */
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3) {
-            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3);
+            return of(naturalComparator(), k1, v1, k2, v2, k3, v3);
         }
 
         /**
@@ -199,7 +201,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          * @return A new Multimap containing the given entries
          */
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4) {
-            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3, k4, v4);
+            return of(naturalComparator(), k1, v1, k2, v2, k3, v3, k4, v4);
         }
 
         /**
@@ -220,7 +222,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          * @return A new Multimap containing the given entries
          */
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5) {
-            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5);
+            return of(naturalComparator(), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5);
         }
 
         /**
@@ -243,7 +245,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          * @return A new Multimap containing the given entries
          */
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6) {
-            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6);
+            return of(naturalComparator(), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6);
         }
 
         /**
@@ -268,7 +270,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          * @return A new Multimap containing the given entries
          */
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7) {
-            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7);
+            return of(naturalComparator(), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7);
         }
 
         /**
@@ -295,7 +297,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          * @return A new Multimap containing the given entries
          */
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7, K k8, V2 v8) {
-            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8);
+            return of(naturalComparator(), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8);
         }
 
         /**
@@ -324,7 +326,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          * @return A new Multimap containing the given entries
          */
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7, K k8, V2 v8, K k9, V2 v9) {
-            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9);
+            return of(naturalComparator(), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9);
         }
 
         /**
@@ -355,7 +357,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          * @return A new Multimap containing the given entries
          */
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(K k1, V2 v1, K k2, V2 v2, K k3, V2 v3, K k4, V2 v4, K k5, V2 v5, K k6, V2 v6, K k7, V2 v7, K k8, V2 v8, K k9, V2 v9, K k10, V2 v10) {
-            return of((Comparator<? super K> & Serializable) K::compareTo, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9, k10, v10);
+            return of(naturalComparator(), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9, k10, v10);
         }
 
         /**
@@ -363,10 +365,11 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          *
          * @param <K> The key type
          * @param <V2> The value type
-         * @return A new Multimap containing the given entries
+         * @param entry The key-value pair used to form a new TreeMultimap.
+         * @return A new Multimap containing the given entry
          */
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> of(Tuple2<? extends K, ? extends V2> entry) {
-            return of((Comparator<? super K> & Serializable) K::compareTo, entry);
+            return of(naturalComparator(), entry);
         }
 
         /**
@@ -377,7 +380,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          * @param value A singleton map value.
          * @param <K> The key type
          * @param <V2> The value type
-         * @return A new Multimap containing the given entries
+         * @return A new Multimap containing the given entry
          */
         public <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, K key, V2 value) {
             final TreeMultimap<K, V2> e = empty(keyComparator);
@@ -606,7 +609,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
         }
 
         public <K extends Comparable<? super K>, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, TreeMultimap<K, V2>> collector() {
-            return collector((Comparator<? super K> & Serializable) K::compareTo);
+            return collector(naturalComparator());
         }
 
         public <K, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, TreeMultimap<K, V2>> collector(Comparator<? super K> keyComparator) {
@@ -643,7 +646,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
 
     @Override
     protected <K2, V2> Map<K2, V2> emptyMapSupplier() {
-        return TreeMap.empty(Comparators.naturalComparator());
+        return TreeMap.empty(naturalComparator());
     }
 
     @SuppressWarnings("unchecked")
