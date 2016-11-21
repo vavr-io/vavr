@@ -120,7 +120,7 @@ final class Collections {
     static <T, U, R extends Traversable<U>> R scanRight(Traversable<? extends T> traversable,
                                                         U zero, BiFunction<? super T, ? super U, ? extends U> operation, Function<Iterator<U>, R> finisher) {
 
-        final Iterator<? extends T> reversedElements = reverseIterator(traversable.iterator());
+        final Iterator<? extends T> reversedElements = reverseIterator(traversable);
         return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), us -> finisher.apply(reverseIterator(us)));
     }
 
@@ -221,7 +221,7 @@ final class Collections {
         } else if (iterable instanceof Seq) {
             return ((Seq<T>) iterable).reverseIterator();
         } else {
-            return Iterator.ofAll(iterable).foldLeft(List.<T>empty(), List::prepend).iterator();
+            return List.<T>empty().pushAll(iterable).iterator();
         }
     }
 }

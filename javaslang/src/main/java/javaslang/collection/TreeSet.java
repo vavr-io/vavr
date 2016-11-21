@@ -779,7 +779,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     @Override
     public TreeSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, it -> TreeSet.ofAll(comparator(), it));
+        return Collections.scanLeft(this, zero, operation, iter -> TreeSet.ofAll(comparator(), iter));
     }
 
     @Override
@@ -787,7 +787,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
         Objects.requireNonNull(operation, "operation is null");
         if (zero instanceof Comparable) {
             final Comparator<U> comparator = naturalComparator();
-            return Collections.scanLeft(this, zero, operation, it -> TreeSet.ofAll(comparator, it));
+            return Collections.scanLeft(this, zero, operation, iter -> TreeSet.ofAll(comparator, iter));
         } else {
             return Collections.scanLeft(this, zero, operation, HashSet::ofAll);
         }
@@ -798,7 +798,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
         Objects.requireNonNull(operation, "operation is null");
         if (zero instanceof Comparable) {
             final Comparator<U> comparator = naturalComparator();
-            return Collections.scanRight(this, zero, operation, it -> TreeSet.ofAll(comparator, it));
+            return Collections.scanRight(this, zero, operation, iter -> TreeSet.ofAll(comparator, iter));
         } else {
             return Collections.scanRight(this, zero, operation, HashSet::ofAll);
         }
