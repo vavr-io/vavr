@@ -9,6 +9,7 @@ import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
+import javaslang.collection.Vector;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -72,15 +73,14 @@ public interface Try<T> extends Value<T> {
      */
     static <T> Try<Seq<T>> sequence(Iterable<? extends Try<? extends T>> values) {
         Objects.requireNonNull(values, "values is null");
-        List<T> list = List.empty();
+        Vector<T> vector = Vector.empty();
         for (Try<? extends T> value : values) {
             if (value.isFailure()) {
                 return Try.failure(value.getCause());
             }
-            list = list.prepend(value.get());
+            vector = vector.append(value.get());
         }
-
-        return Try.success(list.reverse());
+        return Try.success(vector);
     }
 
     /**

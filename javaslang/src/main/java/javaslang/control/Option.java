@@ -7,12 +7,17 @@ package javaslang.control;
 
 import javaslang.Value;
 import javaslang.collection.Iterator;
-import javaslang.collection.List;
-import javaslang.collection.*;
+import javaslang.collection.Seq;
+import javaslang.collection.Vector;
 
 import java.io.Serializable;
-import java.util.*;
-import java.util.function.*;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -54,14 +59,14 @@ public interface Option<T> extends Value<T> {
      */
     static <T> Option<Seq<T>> sequence(Iterable<? extends Option<? extends T>> values) {
         Objects.requireNonNull(values, "values is null");
-        List<T> list = List.empty();
+        Vector<T> vector = Vector.empty();
         for (Option<? extends T> value : values) {
             if (value.isEmpty()) {
                 return Option.none();
             }
-            list = list.prepend(value.get());
+            vector = vector.append(value.get());
         }
-        return Option.some(list.reverse());
+        return Option.some(vector);
     }
 
     /**
