@@ -282,10 +282,10 @@ public interface Either<L, R> extends Value<R> {
      * class Example {{
      *
      *     // = Left(2)
-     *     Left(1).mapLeft(i -> i + 1);
+     *     Left(1).mapLeft(i -&gt; i + 1);
      *
      *     // = Right("a")
-     *     Right("a").mapLeft(i -> i + 1);
+     *     Right("a").mapLeft(i -&gt; i + 1);
      *
      * }}
      * </code></pre>

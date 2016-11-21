@@ -49,7 +49,7 @@ import java.util.stream.Collector;
  * </pre>
  * <p>
  * Factory method applications:
- * <p>
+ *
  * <pre>
  * <code>
  * Stream&lt;Integer&gt;       s1 = Stream.of(1);
@@ -68,7 +68,7 @@ import java.util.stream.Collector;
  * </pre>
  * <p>
  * Example: Generating prime numbers
- * <p>
+ *
  * <pre>
  * <code>
  * // = Stream(2L, 3L, 5L, 7L, ...)
@@ -244,7 +244,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
     /**
      * Creates a Stream of the given elements.
-     * <p>
+     *
      * <pre><code>  Stream.of(1, 2, 3, 4)
      * = Nil.instance().prepend(4).prepend(3).prepend(2).prepend(1)
      * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))</code></pre>

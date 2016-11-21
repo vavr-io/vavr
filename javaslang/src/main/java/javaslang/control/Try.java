@@ -132,7 +132,7 @@ public interface Try<T> extends Value<T> {
      * Passes the result to the given {@code consumer} if this is a {@code Success}.
      * <p>
      * The main use case is chaining checked functions using method references:
-     * <p>
+     *
      * <pre>
      * <code>
      * Try.of(() -&gt; 100)
@@ -177,7 +177,7 @@ public interface Try<T> extends Value<T> {
      * Runs the given runnable if this is a {@code Success}, otherwise returns this {@code Failure}.
      * <p>
      * The main use case is chaining runnables using method references:
-     * <p>
+     *
      * <pre>
      * <code>
      * Try.run(A::methodRef).andThen(B::methodRef).andThen(C::methodRef);
@@ -185,7 +185,7 @@ public interface Try<T> extends Value<T> {
      * </pre>
      * <p>
      * Please note that these lines are semantically the same:
-     * <p>
+     *
      * <pre>
      * <code>
      * Try.run(this::doStuff)
@@ -382,7 +382,7 @@ public interface Try<T> extends Value<T> {
      * {@code Failure} of type R with the original exception.
      * <p>
      * The main use case is chaining checked functions using method references:
-     * <p>
+     *
      * <pre>
      * <code>
      * Try.of(() -&gt; 0)
