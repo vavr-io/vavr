@@ -212,12 +212,12 @@ public interface Gen<T> {
      */
     static <T> Gen<T> choose(Iterable<T> values) {
         Objects.requireNonNull(values, "values is null");
-        final Stream<T> stream = Stream.ofAll(values);
-        if (stream.isEmpty()) {
+        final Iterator<T> iterator = Iterator.ofAll(values);
+        if (!iterator.hasNext()) {
             throw new IllegalArgumentException("Empty iterable");
         }
         @SuppressWarnings("unchecked")
-        final T[] array = stream.toJavaArray((Class<T>) stream.head().getClass());
+        final T[] array = (T[]) iterator.toJavaArray();
         return choose(array);
     }
 
