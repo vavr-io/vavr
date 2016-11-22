@@ -180,7 +180,7 @@ public class GenTest {
     }
 
     @Test
-    public void shouldChooseFromIterableWithInstancesOfGenericInterface(){
+    public void shouldChooseFromIterableWithInstancesOfGenericInterface() {
         List<Supplier<String>> i = List.of(() -> "test", () -> "test");
 
         Supplier<String> supplier = Gen.choose(i).apply(RANDOM);
