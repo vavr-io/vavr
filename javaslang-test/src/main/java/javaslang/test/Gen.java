@@ -15,7 +15,6 @@ import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * Generators are the building blocks for providing arbitrary objects.
@@ -60,7 +59,8 @@ public interface Gen<T> {
     }
 
     static <T> Gen<T> of(T seed, Function<? super T, ? extends T> next) {
-        final Iterator<T> iterator = Stream.iterate(seed, next).iterator();
+        Objects.requireNonNull(next, "next is null");
+        final Iterator<T> iterator = Iterator.iterate(seed, next);
         return ignored -> iterator.next();
     }
 
@@ -167,9 +167,9 @@ public interface Gen<T> {
      * @param characters array with the characters to choose from
      * @return A new array generator
      */
-    static Gen<Character> choose(char[] characters) {
+    static Gen<Character> choose(char... characters) {
         Objects.requireNonNull(characters, "characters is null");
-        Character[] validCharacters = List.ofAll(characters).toJavaArray(Character.class);
+        final Character[] validCharacters = List.ofAll(characters).toJavaArray(Character.class);
         return choose(validCharacters);
     }
 
@@ -275,21 +275,18 @@ public interface Gen<T> {
      */
     static <T> Gen<T> frequency(Iterable<Tuple2<Integer, Gen<T>>> generators) {
         Objects.requireNonNull(generators, "generators is null");
-        final Stream<Tuple2<Integer, Gen<T>>> stream = Stream.ofAll(generators);
-        if (stream.isEmpty()) {
+        final Iterator<Tuple2<Integer, Gen<T>>> iter = Iterator.ofAll(generators);
+        if (!iter.hasNext()) {
             throw new IllegalArgumentException("generators is empty");
         }
-        final class Frequency {
-            Gen<T> gen(int n, Stream<Tuple2<Integer, Gen<T>>> stream) {
-                final int k = stream.head()._1;
-                if (k < 0) {
-                    throw new IllegalArgumentException("negative frequency: " + k);
-                }
-                return (n <= k) ? stream.head()._2 : gen(n - k, stream.tail());
+        final int size = iter.map(t -> {
+            final int frequency = t._1;
+            if (frequency < 0) {
+                throw new IllegalArgumentException("negative frequency: " + frequency);
             }
-        }
-        final int size = stream.map(t -> t._1).sum().intValue();
-        return choose(1, size).flatMap(n -> new Frequency().gen(n, stream));
+            return frequency;
+        }).sum().intValue();
+        return choose(1, size).flatMap(n -> GenModule.frequency(n, generators.iterator()));
     }
 
   /**
@@ -299,15 +296,7 @@ public interface Gen<T> {
    * @return A new T generator
    */
     default Gen<T> intersperse(Gen<T> other) {
-        Supplier<Gen<T>> iter = new Supplier<Gen<T>>() {
-            boolean genSwitch = false;
-
-            @Override
-            public Gen<T> get() {
-                genSwitch = !genSwitch;
-                return genSwitch ? Gen.this : other;
-            }
-        };
+        final Iterator<Gen<T>> iter = Iterator.continually(this).intersperse(other);
         return random -> iter.get().apply(random);
     }
 
@@ -423,4 +412,28 @@ public interface Gen<T> {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
+}
+
+interface GenModule {
+
+    /**
+     * Chooses a Gen according to the given frequencies.
+     *
+     * @param n    a random value between 0 and sum(frequencies) - 1
+     * @param iter a non-empty Iterator of (frequency, Gen) pairs
+     * @param <T>  type of generated values
+     * @return A value generator, choosen according to the given frequencies and the underlying n
+     */
+    static <T> Gen<T> frequency(int n, java.util.Iterator<Tuple2<Integer, Gen<T>>> iter) {
+        do {
+            final Tuple2<Integer, Gen<T>> freqGen = iter.next();
+            final int k = freqGen._1;
+            if (n <= k) {
+                return freqGen._2;
+            } else {
+                n = n - k;
+            }
+        } while(true);
+    }
+
 }
