@@ -9,7 +9,10 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
- * <strong>INTERNAL API - This class is subject to change.</strong>
+ * INTERNAL: Common {@code Comparator} related functions (not intended to be public).
+ *
+ * @author Daniel Dietrich
+ * @since 2.0.0
  */
 final class Comparators {
 

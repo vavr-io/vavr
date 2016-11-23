@@ -960,13 +960,11 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
 
     @Override
     public <U> Queue<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
         return Collections.scanLeft(this, zero, operation, Iterator::toQueue);
     }
 
     @Override
     public <U> Queue<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
         return Collections.scanRight(this, zero, operation, Iterator::toQueue);
     }
 

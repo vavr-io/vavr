@@ -404,7 +404,6 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @SuppressWarnings("unchecked")
     @Override
     public M scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
-        Objects.requireNonNull(operation, "operation is null");
         return (M) Collections.scanLeft(this, zero, operation, this::createFromEntries);
     }
 

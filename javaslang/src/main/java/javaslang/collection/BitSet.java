@@ -721,7 +721,6 @@ interface BitSetModule {
 
         @Override
         public BitSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-            Objects.requireNonNull(operation, "operation is null");
             return Collections.scanLeft(this, zero, operation, this::createFromAll);
         }
 
