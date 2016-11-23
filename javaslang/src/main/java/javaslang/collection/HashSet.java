@@ -716,16 +716,13 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     @Override
     public <U> HashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
-            c.add(u);
-            return c;
-        }, HashSet::ofAll);
+        return Collections.scanLeft(this, zero, operation, HashSet::ofAll);
     }
 
     @Override
     public <U> HashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, HashSet.empty(), HashSet::add, Function.identity());
+        return Collections.scanRight(this, zero, operation, HashSet::ofAll);
     }
 
     @Override

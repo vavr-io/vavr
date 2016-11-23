@@ -110,25 +110,18 @@ final class Collections {
         return hashCode;
     }
 
-    static <T, U, C extends Iterable<U>, R extends Traversable<U>> R scanLeft(Iterable<? extends T> elements,
-                                                                              U zero, BiFunction<? super U, ? super T, ? extends U> operation,
-                                                                              C cumulativeResult, BiFunction<C, U, C> combiner,
-                                                                              Function<C, R> finisher) {
-        U acc = zero;
-        cumulativeResult = combiner.apply(cumulativeResult, acc);
-        for (T a : elements) {
-            acc = operation.apply(acc, a);
-            cumulativeResult = combiner.apply(cumulativeResult, acc);
-        }
-        return finisher.apply(cumulativeResult);
+    static <T, U, R extends Traversable<U>> R scanLeft(Traversable<? extends T> traversable,
+                                                       U zero, BiFunction<? super U, ? super T, ? extends U> operation, Function<Iterator<U>, R> finisher) {
+
+        final Iterator<U> iterator = traversable.iterator().scanLeft(zero, operation);
+        return finisher.apply(iterator);
     }
 
-    static <T, U, C extends Iterable<U>, R extends Traversable<U>> R scanRight(Iterable<? extends T> elements,
-                                                                               U zero, BiFunction<? super T, ? super U, ? extends U> operation,
-                                                                               C cumulativeResult, BiFunction<C, U, C> combiner,
-                                                                               Function<C, R> finisher) {
-        final Iterator<? extends T> reversedElements = reverseIterator(elements);
-        return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), cumulativeResult, combiner, finisher);
+    static <T, U, R extends Traversable<U>> R scanRight(Traversable<? extends T> traversable,
+                                                        U zero, BiFunction<? super T, ? super U, ? extends U> operation, Function<Iterator<U>, R> finisher) {
+
+        final Iterator<? extends T> reversedElements = reverseIterator(traversable);
+        return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), us -> finisher.apply(reverseIterator(us)));
     }
 
     @SuppressWarnings("unchecked")
@@ -137,7 +130,7 @@ final class Collections {
             return Iterator.empty();
         }
         return Iterator.range(0, power)
-                       .foldLeft(Iterator.of(empty), (product, ignored) -> product.flatMap(el -> seq.map(t -> (S) el.append(t))));
+                .foldLeft(Iterator.of(empty), (product, ignored) -> product.flatMap(el -> seq.map(t -> (S) el.append(t))));
     }
 
     static <C extends Traversable<T>, T> C tabulate(int n, Function<? super Integer, ? extends T> f, C empty, Function<T[], C> of) {
@@ -213,7 +206,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <T> Iterator<? extends T> reverseIterator(Iterable<? extends T> iterable) {
+    static <T> Iterator<T> reverseIterator(Iterable<T> iterable) {
         if (iterable instanceof java.util.List) {
             final java.util.List<T> list = (java.util.List<T>) iterable;
             return new Iterator<T>() {
@@ -225,10 +218,10 @@ final class Collections {
                 @Override
                 public T next() { return delegate.previous(); }
             };
+        } else if (iterable instanceof Seq) {
+            return ((Seq<T>) iterable).reverseIterator();
         } else {
-            final Seq<? extends T> result = (iterable instanceof Seq) ? (Seq<T>) iterable
-                                                                      : Vector.ofAll(iterable);
-            return result.reverseIterator();
+            return List.<T>empty().pushAll(iterable).iterator();
         }
     }
 }

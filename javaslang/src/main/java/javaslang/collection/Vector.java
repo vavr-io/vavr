@@ -923,13 +923,13 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public <U> Vector<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, empty(), Vector::append, Function.identity());
+        return Collections.scanLeft(this, zero, operation, Iterator::toVector);
     }
 
     @Override
     public <U> Vector<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, empty(), Vector::prepend, Function.identity());
+        return  Collections.scanRight(this, zero, operation, Iterator::toVector);
     }
 
     @Override

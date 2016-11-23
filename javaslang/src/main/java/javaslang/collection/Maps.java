@@ -255,11 +255,12 @@ final class Maps {
         return (M) map.map((k, v) -> Tuple(k, function.apply(k, v)));
     }
 
-    static <K, V, M extends Map<K, V>> M scan(
-            M map, Supplier<M> emptySupplier, Tuple2<K, V> zero,
-            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
+    @SuppressWarnings("unchecked")
+    static <K, V, M extends Map<K, V>> M scan(M map, Tuple2<K, V> zero,
+                                              BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation,
+                                              Function<Iterator<Tuple2<K, V>>, Traversable<Tuple2<K, V>>> finisher) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(map, zero, operation, emptySupplier.get(), Maps::put, Function.identity());
+        return (M) Collections.scanLeft(map, zero, operation, finisher);
     }
 
     static <K, V, M extends Map<K, V>> Iterator<M> sliding(M map, OfEntries<K, V, M> ofEntries, int size) {

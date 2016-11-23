@@ -503,13 +503,13 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     @Override
     default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return iterator().scanLeft(zero, operation).toStream();
+        return Collections.scanLeft(this, zero, operation, Iterator::toVector);
     }
 
     @Override
     default <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, Stream.empty(), Stream::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, Iterator::toVector);
     }
 
     @Override
