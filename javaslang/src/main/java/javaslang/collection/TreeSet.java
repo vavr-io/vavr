@@ -778,13 +778,11 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     @Override
     public TreeSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-        Objects.requireNonNull(operation, "operation is null");
         return Collections.scanLeft(this, zero, operation, iter -> TreeSet.ofAll(comparator(), iter));
     }
 
     @Override
     public <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
         if (zero instanceof Comparable) {
             final Comparator<U> comparator = naturalComparator();
             return Collections.scanLeft(this, zero, operation, iter -> TreeSet.ofAll(comparator, iter));
@@ -795,7 +793,6 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     @Override
     public <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
         if (zero instanceof Comparable) {
             final Comparator<U> comparator = naturalComparator();
             return Collections.scanRight(this, zero, operation, iter -> TreeSet.ofAll(comparator, iter));

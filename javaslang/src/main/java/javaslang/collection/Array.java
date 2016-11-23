@@ -1051,13 +1051,11 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public <U> Array<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
         return Collections.scanLeft(this, zero, operation, Array::ofAll);
     }
 
     @Override
     public <U> Array<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
         return Collections.scanRight(this, zero, operation, Array::ofAll);
     }
 

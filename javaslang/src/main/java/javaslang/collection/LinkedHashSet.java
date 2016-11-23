@@ -714,13 +714,11 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
 
     @Override
     public <U> LinkedHashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
         return Collections.scanLeft(this, zero, operation, LinkedHashSet::ofAll);
     }
 
     @Override
     public <U> LinkedHashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
         return Collections.scanRight(this, zero, operation, LinkedHashSet::ofAll);
     }
 
