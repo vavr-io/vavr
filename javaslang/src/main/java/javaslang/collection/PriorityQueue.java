@@ -25,7 +25,7 @@ import static javaslang.collection.PriorityQueueBase.*;
  * @author Pap Lőrinc
  * @since 2.1.0
  */
-public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> implements Serializable, Kind1<PriorityQueue<T>, T> {
+public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> implements Serializable, Kind1<PriorityQueue<?>, T> {
 
     private static final long serialVersionUID = 1L;
 
