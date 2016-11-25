@@ -151,6 +151,9 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                                                                                Function<? super T, ? extends K> keyMapper,
                                                                                Function<? super T, ? extends V> valueMapper);
 
+    protected abstract <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(java.util.stream.Stream<? extends T> stream,
+                                                                               Function<? super T, Tuple2<? extends K, ? extends V>> f);
+
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2);
 
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2, K k3, V v3);
@@ -279,6 +282,13 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldConstructFromJavaStream() {
         final java.util.stream.Stream<Integer> javaStream = java.util.stream.Stream.of(1, 2, 3);
         final Map<String, Integer> map = mapOf(javaStream, String::valueOf, Function.identity());
+        assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
+    }
+
+    @Test
+    public void shouldConstructFromJavaStreamEntries() {
+        final java.util.stream.Stream<Integer> javaStream = java.util.stream.Stream.of(1, 2, 3);
+        final Map<String, Integer> map = mapOf(javaStream, i -> Tuple.of(String.valueOf(i), i));
         assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
     }
 

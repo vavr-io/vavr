@@ -71,6 +71,11 @@ public class HashMapTest extends AbstractMapTest {
         return HashMap.ofAll(stream, keyMapper, valueMapper);
     }
 
+    @Override
+    protected <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(Stream<? extends T> stream, Function<? super T, Tuple2<? extends K, ? extends V>> f) {
+        return HashMap.ofAll(stream, f);
+    }
+
     protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOfNullKey(K k1, V v1, K k2, V v2) {
         return mapOf(k1, v1, k2, v2);
     }

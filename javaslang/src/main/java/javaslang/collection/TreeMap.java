@@ -150,7 +150,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     /**
-     * Returns a {@code HashMap}, from entries mapped from stream.
+     * Returns a {@code TreeMap}, from entries mapped from stream.
      *
      * @param stream the source stream
      * @param keyMapper the key mapper
@@ -163,14 +163,11 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     public static <T, K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(java.util.stream.Stream<? extends T> stream,
                                                                               Function<? super T, ? extends K> keyMapper,
                                                                               Function<? super T, ? extends V> valueMapper) {
-        Objects.requireNonNull(stream, "stream is null");
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
         return Maps.ofStream(TreeMap.<K, V>empty(), stream, keyMapper, valueMapper);
     }
 
     /**
-     * Returns a {@code HashMap}, from entries mapped from stream.
+     * Returns a {@code TreeMap}, from entries mapped from stream.
      *
      * @param stream the source stream
      * @param keyMapper the key mapper
@@ -184,10 +181,38 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
                                                 java.util.stream.Stream<? extends T> stream,
                                                 Function<? super T, ? extends K> keyMapper,
                                                 Function<? super T, ? extends V> valueMapper) {
-        Objects.requireNonNull(stream, "stream is null");
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
         return Maps.ofStream(empty(keyComparator), stream, keyMapper, valueMapper);
+    }
+
+    /**
+     * Returns a {@code TreeMap}, from entries mapped from stream.
+     *
+     * @param stream the source stream
+     * @param entryMapper the entry mapper
+     * @param <T> The stream type
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map
+     */
+    public static <T, K extends Comparable<? super K>, V> TreeMap<K, V> ofAll(java.util.stream.Stream<? extends T> stream,
+                                                                              Function<? super T, Tuple2<? extends K, ? extends V>> entryMapper) {
+        return Maps.ofStream(TreeMap.<K, V>empty(), stream, entryMapper);
+    }
+
+    /**
+     * Returns a {@code TreeMap}, from entries mapped from stream.
+     *
+     * @param stream the source stream
+     * @param entryMapper the entry mapper
+     * @param <T> The stream type
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map
+     */
+    public static <T, K, V> TreeMap<K, V> ofAll(Comparator<? super K> keyComparator,
+                                                java.util.stream.Stream<? extends T> stream,
+                                                Function<? super T, Tuple2<? extends K, ? extends V>> entryMapper) {
+        return Maps.ofStream(empty(keyComparator), stream, entryMapper);
     }
 
     /**

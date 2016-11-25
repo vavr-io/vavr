@@ -55,7 +55,18 @@ final class Maps {
     static <T, K, V, M extends Map<K, V>> M ofStream(M map, java.util.stream.Stream<? extends T> stream,
                                                      Function<? super T, ? extends K> keyMapper,
                                                      Function<? super T, ? extends V> valueMapper) {
+        Objects.requireNonNull(stream, "stream is null");
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
         return Stream.ofAll(stream).foldLeft(map, (m, el) -> (M) m.put(keyMapper.apply(el), valueMapper.apply(el)));
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T, K, V, M extends Map<K, V>> M ofStream(M map, java.util.stream.Stream<? extends T> stream,
+                                                     Function<? super T, Tuple2<? extends K, ? extends V>> entryMapper) {
+        Objects.requireNonNull(stream, "stream is null");
+        Objects.requireNonNull(entryMapper, "entryMapper is null");
+        return Stream.ofAll(stream).foldLeft(map, (m, el) -> (M) m.put(entryMapper.apply(el)));
     }
 
     static <K, V, M extends Map<K, V>> M distinct(M map) {

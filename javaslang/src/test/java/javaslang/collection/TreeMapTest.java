@@ -101,6 +101,11 @@ public class TreeMapTest extends AbstractSortedMapTest {
     }
 
     @Override
+    protected <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(Stream<? extends T> stream, Function<? super T, Tuple2<? extends K, ? extends V>> f) {
+        return TreeMap.ofAll(stream, f);
+    }
+
+    @Override
     protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         return TreeMap.tabulate(n, f);
     }
