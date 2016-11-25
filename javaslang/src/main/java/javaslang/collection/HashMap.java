@@ -106,6 +106,26 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     }
 
     /**
+     * Returns a {@code HashMap}, from entries mapped from stream.
+     *
+     * @param stream the source stream
+     * @param keyMapper the key mapper
+     * @param valueMapper the value mapper
+     * @param <T> The stream type
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map
+     */
+    public static <T, K, V> HashMap<K, V> ofAll(java.util.stream.Stream<? extends T> stream,
+                                                Function<? super T, ? extends K> keyMapper,
+                                                Function<? super T, ? extends V> valueMapper) {
+        Objects.requireNonNull(stream, "stream is null");
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return Maps.ofStream(empty(), stream, keyMapper, valueMapper);
+    }
+
+    /**
      * Returns a singleton {@code HashMap}, i.e. a {@code HashMap} of one element.
      *
      * @param key   A singleton map key.

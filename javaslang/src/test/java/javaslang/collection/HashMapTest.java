@@ -12,7 +12,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collector;
+import java.util.stream.*;
+import java.util.stream.Stream;
 
 public class HashMapTest extends AbstractMapTest {
 
@@ -63,6 +64,11 @@ public class HashMapTest extends AbstractMapTest {
     @Override
     protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3) {
         return HashMap.of(k1, v1, k2, v2, k3, v3);
+    }
+
+    @Override
+    protected <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(Stream<? extends T> stream, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        return HashMap.ofAll(stream, keyMapper, valueMapper);
     }
 
     @Override

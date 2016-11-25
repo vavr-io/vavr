@@ -46,6 +46,13 @@ final class Maps {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    static <T, K, V, M extends Map<K, V>> M ofStream(M map, java.util.stream.Stream<? extends T> stream,
+                                                     Function<? super T, ? extends K> keyMapper,
+                                                     Function<? super T, ? extends V> valueMapper) {
+        return Stream.ofAll(stream).foldLeft(map, (m, el) -> (M) m.put(keyMapper.apply(el), valueMapper.apply(el)));
+    }
+
     static <K, V, M extends Map<K, V>> M distinct(M map) {
         return map;
     }
