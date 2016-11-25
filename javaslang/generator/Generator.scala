@@ -430,7 +430,7 @@ def generateMainClasses(): Unit = {
           }
 
           /$javadoc
-           * Alias for {@link $FutureType#of($CheckedSupplierType)}
+           * Alias for {@link $FutureType#of($TryType.$CheckedSupplierType)}
            *
            * @param <T>         Type of the computation result.
            * @param computation A computation.
@@ -442,7 +442,7 @@ def generateMainClasses(): Unit = {
           }
 
           /$javadoc
-           * Alias for {@link $FutureType#of($ExecutorServiceType, $CheckedSupplierType)}
+           * Alias for {@link $FutureType#of($ExecutorServiceType, $TryType.$CheckedSupplierType)}
            *
            * @param <T>             Type of the computation result.
            * @param executorService An executor service.

@@ -299,8 +299,8 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldConvertToJavaMap() {
-        Multimap<String, Integer> javaslang = mapOfPairs("1", 1, "2", 2, "3", 3);
-        java.util.Map<String, java.util.Collection<Integer>> java = javaEmptyMap();
+        final Multimap<String, Integer> javaslang = mapOfPairs("1", 1, "2", 2, "3", 3);
+        final java.util.Map<String, java.util.Collection<Integer>> java = javaEmptyMap();
         java.put("1", javaListOf(1));
         java.put("2", javaListOf(2));
         java.put("3", javaListOf(3));
@@ -308,7 +308,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     }
 
     private java.util.Collection<Integer> javaListOf(Integer i) {
-        java.util.Collection<Integer> list;
+        final java.util.Collection<Integer> list;
         switch (containerType) {
             case SEQ:
                 list = new ArrayList<>();
@@ -354,13 +354,13 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldRecognizeNotContainedKeyValuePair() {
-        final TreeMap<String, Integer> testee = TreeMap.of(Tuple.of("one", 1));
+        final Multimap<String, Integer> testee = mapOf("one", 1);
         assertThat(testee.contains(Tuple.of("one", 0))).isFalse();
     }
 
     @Test
     public void shouldRecognizeContainedKeyValuePair() {
-        final TreeMap<String, Integer> testee = TreeMap.of(Tuple.of("one", 1));
+        final Multimap<String, Integer> testee = mapOf("one", 1);
         assertThat(testee.contains(Tuple.of("one", 1))).isTrue();
     }
 
@@ -507,6 +507,73 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(src.removeAll(List.of(1, 3))).isEqualTo(emptyInt().put(2, 'b'));
         assertThat(src.removeAll(List.of(33))).isSameAs(src);
         assertThat(src.removeAll(List.empty())).isSameAs(src);
+    }
+
+    // -- replaceValue
+
+    @Test
+    public void shouldReturnSameInstanceIfReplacingCurrentValueWithNonExistingKey() {
+        final Multimap<Integer, String> map = mapOf(1, "a").put(2, "b");
+        final Multimap<Integer, String> actual = map.replaceValue(3, "?");
+        assertThat(actual).isSameAs(map);
+    }
+
+    @Test
+    public void shouldReplaceCurrentValueForExistingKey() {
+        final Multimap<Integer, String> map = mapOf(1, "a").put(2, "b");
+        final Multimap<Integer, String> actual = map.replaceValue(2, "c");
+        final Multimap<Integer, String> expected = mapOf(1, "a").put(2, "c");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReplaceValuesWithNewValueForExistingKey() {
+        final Multimap<Integer, String> map = mapOf(1, "a").put(2, "b").put(2, "c");
+        final Multimap<Integer, String> actual = map.replaceValue(2, "c");
+        final Multimap<Integer, String> expected = mapOf(1, "a").put(2, "c");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // - replace
+
+    @Test
+    public void shouldReplaceCurrentValueForExistingKeyAndEqualOldValue() {
+        final Multimap<Integer, String> map = mapOf(1, "a").put(2, "b");
+        final Multimap<Integer, String> actual = map.replace(2, "b", "c");
+        final Multimap<Integer, String> expected = mapOf(1, "a").put(2, "c");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReplaceCurrentValueForKeyWithMultipleValuesAndEqualOldValue() {
+        final Multimap<Integer, String> map = mapOf(1, "a").put(2, "b").put(2, "d");
+        final Multimap<Integer, String> actual = map.replace(2, "b", "c");
+        final Multimap<Integer, String> expected = mapOf(1, "a").put(2, "c").put(2, "d");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReturnSameInstanceForExistingKeyAndNonEqualOldValue() {
+        final Multimap<Integer, String> map = mapOf(1, "a").put(2, "b");
+        final Multimap<Integer, String> actual = map.replace(2, "d", "c");
+        assertThat(actual).isSameAs(map);
+    }
+
+    @Test
+    public void shouldReturnSameInstanceIfReplacingCurrentValueWithOldValueWithNonExistingKey() {
+        final Multimap<Integer, String> map = mapOf(1, "a").put(2, "b");
+        final Multimap<Integer, String> actual = map.replace(3, "?", "!");
+        assertThat(actual).isSameAs(map);
+    }
+
+    // - replaceAll
+
+    @Test
+    public void shouldReplaceAllValuesWithFunctionResult() {
+        final Multimap<Integer, String> map = mapOf(1, "a").put(2, "b").put(2, "c");
+        final Multimap<Integer, String> actual = map.replaceAll((integer, s) -> s + integer);
+        final Multimap<Integer, String> expected = mapOf(1, "a1").put(2, "b2").put(2, "c2");
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- transform
@@ -869,4 +936,21 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         final Multimap<String, String> map = mapOf("1", "a").put("2", "b");
         assertThat(map.getOrElse("3", List.of("3"))).isEqualTo(List.of("3"));
     }
+
+    // -- disabled super tests
+
+    @Override
+    @Test
+    public void shouldCreateSeqOfSeqUsingCons() {
+        // this Traversable test is not suited for Multimaps:
+        //   javaslang.collection.List$Nil cannot be cast to java.lang.Comparable
+    }
+
+    @Override
+    @Test
+    public void shouldConvertToJavaArrayWithTypeHintPrimitiveVoid() {
+        // this Value test is not suited for Multimaps:
+        //   java.lang.NullPointerException at javaslang.collection.Comparators.lambda$naturalComparator
+    }
+
 }

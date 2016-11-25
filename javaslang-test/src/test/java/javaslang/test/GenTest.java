@@ -179,6 +179,14 @@ public class GenTest {
         assertForAll(() -> Gen.choose(i).apply(RANDOM), c -> c == 1);
     }
 
+    @Test
+    public void shouldChooseFromIterableWithInstancesOfGenericInterface() {
+        List<Supplier<String>> i = List.of(() -> "test", () -> "test");
+
+        Supplier<String> supplier = Gen.choose(i).apply(RANDOM);
+
+        assertThat(supplier.get()).isEqualTo("test");
+    }
 
     @Test(expected = RuntimeException.class)
     public void shouldFailOnEmptyIterable() throws Exception {

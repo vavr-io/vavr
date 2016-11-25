@@ -6,8 +6,6 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -22,7 +20,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
-    <T1, T2> Map<T1, T2> javaEmptyMap() {
+    <T1, T2> java.util.Map<T1, T2> javaEmptyMap() {
         return new java.util.TreeMap<>();
     }
 
@@ -34,7 +32,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
             case SET:
                 return TreeMultimap.withSet().empty();
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).empty();
+                return TreeMultimap.withSortedSet(naturalComparator()).empty();
         }
         throw new RuntimeException();
     }
@@ -47,7 +45,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
             case SET:
                 return TreeMultimap.withSet().collector();
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).collector();
+                return TreeMultimap.withSortedSet(naturalComparator()).collector();
         }
         throw new RuntimeException();
     }
@@ -62,7 +60,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
             case SET:
                 return TreeMultimap.withSet().ofEntries(entries);
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).ofEntries(entries);
+                return TreeMultimap.withSortedSet(naturalComparator()).ofEntries(entries);
         }
         throw new RuntimeException();
     }
@@ -70,14 +68,14 @@ public class TreeMultimapTest extends AbstractMultimapTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K extends Comparable<K>, V> Multimap<K, V> mapOfEntries(Map.Entry<? extends K, ? extends V>... entries) {
+    protected final <K extends Comparable<K>, V> Multimap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         switch (containerType) {
             case SEQ:
                 return TreeMultimap.withSeq().ofEntries(entries);
             case SET:
                 return TreeMultimap.withSet().ofEntries(entries);
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).ofEntries(entries);
+                return TreeMultimap.withSortedSet(naturalComparator()).ofEntries(entries);
         }
         throw new RuntimeException();
     }
@@ -90,7 +88,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
             case SET:
                 return TreeMultimap.withSet().of(k1, v1, k2, v2, k3, v3);
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).of(k1, v1, k2, v2, k3, v3);
+                return TreeMultimap.withSortedSet(naturalComparator()).of(k1, v1, k2, v2, k3, v3);
         }
         throw new RuntimeException();
     }
@@ -108,7 +106,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
             case SET:
                 return TreeMultimap.withSet().tabulate(n, f);
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).tabulate(n, f);
+                return TreeMultimap.withSortedSet(naturalComparator()).tabulate(n, f);
         }
         throw new RuntimeException();
     }
@@ -121,21 +119,21 @@ public class TreeMultimapTest extends AbstractMultimapTest {
             case SET:
                 return TreeMultimap.withSet().fill(n, s);
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(TreeSetTest.toStringComparator()).fill(n, s);
+                return TreeMultimap.withSortedSet(naturalComparator()).fill(n, s);
         }
         throw new RuntimeException();
     }
 
     @Test
     public void shouldCreateSortedMapFrom2Pairs() {
-        Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4);
+        final Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
     }
 
     @Test
     public void shouldCreateSortedMapFrom3Pairs() {
-        Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6);
+        final Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));
@@ -143,7 +141,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldCreateSortedMapFrom4Pairs() {
-        Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8);
+        final Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));
@@ -152,7 +150,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldCreateSortedMapFrom5Pairs() {
-        Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10);
+        final Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));
@@ -162,7 +160,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldCreateSortedMapFrom6Pairs() {
-        Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12);
+        final Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));
@@ -173,7 +171,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldCreateSortedMapFrom7Pairs() {
-        Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14);
+        final Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));
@@ -185,7 +183,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldCreateSortedMapFrom8Pairs() {
-        Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16);
+        final Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));
@@ -198,7 +196,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldCreateSortedMapFrom9Pairs() {
-        Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18);
+        final Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));
@@ -212,7 +210,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldCreateSortedMapFrom10Pairs() {
-        Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18, 10, 20);
+        final Multimap<Integer, Integer> map = TreeMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18, 10, 20);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));

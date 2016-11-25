@@ -7,21 +7,26 @@ package javaslang.collection.euler;
 
 import javaslang.Function2;
 import javaslang.Function3;
-import javaslang.collection.*;
+import javaslang.collection.List;
+import javaslang.collection.Set;
+import javaslang.collection.Stream;
 import javaslang.control.Option;
 
-public class Sieve {
+final class Sieve {
 
-    final static List<Function2<Integer, Integer, Option<Integer>>> rules = List.of(
+    private Sieve() {
+    }
+
+    private final static List<Function2<Integer, Integer, Option<Integer>>> RULES = List.of(
             (x, y) -> Option.of((4 * x * x) + (y * y)).filter(n -> n % 12 == 1 || n % 12 == 5),
             (x, y) -> Option.of((3 * x * x) + (y * y)).filter(n -> n % 12 == 7),
             (x, y) -> Option.of((3 * x * x) - (y * y)).filter(n -> x > y && n % 12 == 11)
     );
 
-    final static List<Function3<Set<Integer>, Integer, Integer, Set<Integer>>> steps = List.of(
+    private final static List<Function3<Set<Integer>, Integer, Integer, Set<Integer>>> STEPS = List.of(
             (sieve, limit, root) -> Stream.rangeClosed(1, root).crossProduct()
                     .foldLeft(sieve, (xs, xy) ->
-                            rules.foldLeft(xs, (ss, r) -> r.apply(xy._1, xy._2)
+                            RULES.foldLeft(xs, (ss, r) -> r.apply(xy._1, xy._2)
                                     .filter(p -> p < limit)
                                     .map(p -> ss.contains(p) ? ss.remove(p) : ss.add(p))
                                     .getOrElse(ss)
@@ -34,21 +39,10 @@ public class Sieve {
                     )
     );
 
-    final static Function2<Integer, Set<Integer>, Set<Integer>> fillSieve = (limit, empty) ->
-            steps.foldLeft(empty.add(2).add(3), (s, step) ->
-                    step.apply(s, limit, (int) Math.ceil(Math.sqrt(limit)))
-            );
-
-    final static int BENCH_LIMIT = 2_000_000;
-
-    public static void main(String[] args) {
-        long t = System.currentTimeMillis();
-        fillSieve.apply(BENCH_LIMIT, HashSet.empty());
-        System.out.println("HashSet: " + (System.currentTimeMillis() - t) + "ms");
-
-        t = System.currentTimeMillis();
-        fillSieve.apply(BENCH_LIMIT, TreeSet.empty());
-        System.out.println("TreeSet: " + (System.currentTimeMillis() - t) + "ms");
+    static Set<Integer> fillSieve(int limit, Set<Integer> empty) {
+        return STEPS.foldLeft(empty.add(2).add(3), (s, step) ->
+                step.apply(s, limit, (int) Math.ceil(Math.sqrt(limit)))
+        );
     }
 
 }

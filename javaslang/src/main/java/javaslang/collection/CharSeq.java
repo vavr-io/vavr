@@ -802,20 +802,18 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public IndexedSeq<Character> scan(Character zero, BiFunction<? super Character, ? super Character, ? extends Character> operation) {
-        return scanLeft(zero, operation);
+    public CharSeq scan(Character zero, BiFunction<? super Character, ? super Character, ? extends Character> operation) {
+        return Collections.scanLeft(this, zero, operation, Iterator::toCharSeq);
     }
 
     @Override
     public <U> IndexedSeq<U> scanLeft(U zero, BiFunction<? super U, ? super Character, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, Vector.empty(), Vector::append, Function.identity());
+        return Collections.scanLeft(this, zero, operation, Iterator::toVector);
     }
 
     @Override
     public <U> IndexedSeq<U> scanRight(U zero, BiFunction<? super Character, ? super U, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, Vector.empty(), Vector::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, Iterator::toVector);
     }
 
     @Override

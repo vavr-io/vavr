@@ -6,10 +6,11 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+
+import static javaslang.collection.Comparators.naturalComparator;
 
 public class HashMultimapTest extends AbstractMultimapTest {
 
@@ -19,7 +20,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
-    <T1, T2> Map<T1, T2> javaEmptyMap() {
+    <T1, T2> java.util.Map<T1, T2> javaEmptyMap() {
         return new java.util.HashMap<>();
     }
 
@@ -31,7 +32,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
             case SET:
                 return HashMultimap.withSet().empty();
             case SORTED_SET:
-                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).empty();
+                return HashMultimap.withSortedSet(naturalComparator()).empty();
         }
         throw new RuntimeException();
     }
@@ -44,7 +45,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
             case SET:
                 return HashMultimap.withSet().collector();
             case SORTED_SET:
-                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).collector();
+                return HashMultimap.withSortedSet(naturalComparator()).collector();
         }
         throw new RuntimeException();
     }
@@ -59,7 +60,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
             case SET:
                 return HashMultimap.withSet().ofEntries(entries);
             case SORTED_SET:
-                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).ofEntries(entries);
+                return HashMultimap.withSortedSet(naturalComparator()).ofEntries(entries);
         }
         throw new RuntimeException();
     }
@@ -67,14 +68,14 @@ public class HashMultimapTest extends AbstractMultimapTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K extends Comparable<K>, V> Multimap<K, V> mapOfEntries(Map.Entry<? extends K, ? extends V>... entries) {
+    protected final <K extends Comparable<K>, V> Multimap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         switch (containerType) {
             case SEQ:
                 return HashMultimap.withSeq().ofEntries(entries);
             case SET:
                 return HashMultimap.withSet().ofEntries(entries);
             case SORTED_SET:
-                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).ofEntries(entries);
+                return HashMultimap.withSortedSet(naturalComparator()).ofEntries(entries);
         }
         throw new RuntimeException();
     }
@@ -87,7 +88,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
             case SET:
                 return HashMultimap.withSet().of(k1, v1, k2, v2, k3, v3);
             case SORTED_SET:
-                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).of(k1, v1, k2, v2, k3, v3);
+                return HashMultimap.withSortedSet(naturalComparator()).of(k1, v1, k2, v2, k3, v3);
         }
         throw new RuntimeException();
     }
@@ -105,7 +106,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
             case SET:
                 return HashMultimap.withSet().tabulate(n, f);
             case SORTED_SET:
-                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).tabulate(n, f);
+                return HashMultimap.withSortedSet(naturalComparator()).tabulate(n, f);
         }
         throw new RuntimeException();
     }
@@ -118,21 +119,21 @@ public class HashMultimapTest extends AbstractMultimapTest {
             case SET:
                 return HashMultimap.withSet().fill(n, s);
             case SORTED_SET:
-                return HashMultimap.withSortedSet(TreeSetTest.toStringComparator()).fill(n, s);
+                return HashMultimap.withSortedSet(naturalComparator()).fill(n, s);
         }
         throw new RuntimeException();
     }
 
     @Test
     public void shouldCreateSortedMapFrom2Pairs() {
-        Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4);
+        final Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
     }
 
     @Test
     public void shouldCreateSortedMapFrom3Pairs() {
-        Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6);
+        final Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));
@@ -140,7 +141,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldCreateSortedMapFrom4Pairs() {
-        Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8);
+        final Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));
@@ -149,7 +150,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldCreateSortedMapFrom5Pairs() {
-        Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10);
+        final Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));
@@ -159,7 +160,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldCreateSortedMapFrom6Pairs() {
-        Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12);
+        final Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));
@@ -170,7 +171,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldCreateSortedMapFrom7Pairs() {
-        Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14);
+        final Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));
@@ -182,7 +183,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldCreateSortedMapFrom8Pairs() {
-        Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16);
+        final Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));
@@ -195,7 +196,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldCreateSortedMapFrom9Pairs() {
-        Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18);
+        final Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));
@@ -209,7 +210,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldCreateSortedMapFrom10Pairs() {
-        Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18, 10, 20);
+        final Multimap<Integer, Integer> map = HashMultimap.withSeq().of(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18, 10, 20);
         Assertions.assertThat(map.apply(1)).isEqualTo(List.of(2));
         Assertions.assertThat(map.apply(2)).isEqualTo(List.of(4));
         Assertions.assertThat(map.apply(3)).isEqualTo(List.of(6));
@@ -226,7 +227,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldNarrowMap() {
-        final HashMultimap<Integer, Number> int2doubleMap = (HashMultimap<Integer, Number>) this.<Integer, Number>emptyMap().put(1, 1.0d);
+        final HashMultimap<Integer, Number> int2doubleMap = (HashMultimap<Integer, Number>) this.<Integer, Number> emptyMap().put(1, 1.0d);
         final HashMultimap<Number, Number> number2numberMap = HashMultimap.narrow(int2doubleMap);
         final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
         assertThat(actual).isEqualTo(3);

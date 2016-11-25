@@ -469,18 +469,12 @@ public interface BitSet<T> extends SortedSet<T> {
 
     @Override
     default <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return Collections.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
-            c.add(u);
-            return c;
-        }, HashSet::ofAll);
+        return Collections.scanLeft(this, zero, operation, HashSet::ofAll);
     }
 
     @Override
     default <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return Collections.scanRight(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
-            c.add(u);
-            return c;
-        }, HashSet::ofAll);
+        return Collections.scanRight(this, zero, operation, HashSet::ofAll);
     }
 
     @Override
@@ -727,11 +721,7 @@ interface BitSetModule {
 
         @Override
         public BitSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-            Objects.requireNonNull(operation, "operation is null");
-            return Collections.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (arr, t) -> {
-                arr.add(t);
-                return arr;
-            }, this::createFromAll);
+            return Collections.scanLeft(this, zero, operation, this::createFromAll);
         }
 
         @Override

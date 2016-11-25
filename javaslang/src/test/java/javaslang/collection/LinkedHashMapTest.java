@@ -31,7 +31,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
 
     @Override
     protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
-        return LinkedHashMap.<Integer, T> collector();
+        return LinkedHashMap.collector();
     }
 
     @SuppressWarnings("varargs")
@@ -68,6 +68,15 @@ public class LinkedHashMapTest extends AbstractMapTest {
         return LinkedHashMap.ofAll(stream, keyMapper, valueMapper);
     }
 
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2) {
+        return mapOf(k1, v1, k2, v2);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return mapOf(k1, v1, k2, v2, k3, v3);
+    }
+
     @Override
     protected <K extends Comparable<? super K>, V> LinkedHashMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         return LinkedHashMap.tabulate(n, f);
@@ -80,13 +89,13 @@ public class LinkedHashMapTest extends AbstractMapTest {
 
     @Test
     public void shouldKeepOrder() {
-        List<Character> actual = LinkedHashMap.<Integer, Character> empty().put(3, 'a').put(2, 'b').put(1, 'c').foldLeft(List.empty(), (s, t) -> s.append(t._2));
+        final List<Character> actual = LinkedHashMap.<Integer, Character> empty().put(3, 'a').put(2, 'b').put(1, 'c').foldLeft(List.empty(), (s, t) -> s.append(t._2));
         Assertions.assertThat(actual).isEqualTo(List.of('a', 'b', 'c'));
     }
 
     @Test
     public void shouldKeepValuesOrder() {
-        List<Character> actual = LinkedHashMap.<Integer, Character> empty().put(3, 'a').put(2, 'b').put(1, 'c').values().foldLeft(List.empty(), List::append);
+        final List<Character> actual = LinkedHashMap.<Integer, Character> empty().put(3, 'a').put(2, 'b').put(1, 'c').values().foldLeft(List.empty(), List::append);
         Assertions.assertThat(actual).isEqualTo(List.of('a', 'b', 'c'));
     }
 
@@ -104,7 +113,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
 
     @Test
     public void shouldWrapMap() {
-        java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
+        final java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
         source.put(1, 2);
         source.put(3, 4);
         assertThat(LinkedHashMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
@@ -214,10 +223,9 @@ public class LinkedHashMapTest extends AbstractMapTest {
 
     @Test
     public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndPredictableOrder() {
-        Map<Integer, String> actual = LinkedHashMap
-                .of(3, "3").put(1, "1").put(2, "2")
+        final Map<Integer, String> actual = LinkedHashMap.of(3, "3").put(1, "1").put(2, "2")
                 .mapKeys(Integer::toHexString).mapKeys(String::length);
-        Map<Integer, String> expected = LinkedHashMap.of(1, "2");
+        final Map<Integer, String> expected = LinkedHashMap.of(1, "2");
         assertThat(actual).isEqualTo(expected);
     }
 

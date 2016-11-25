@@ -51,10 +51,10 @@ public interface Foldable<T> {
      *
      * Example:
      *
-     * <pre><code>
+     * <pre> {@code
      * // = 6
      * Set(1, 2, 3).fold(0, (a, b) -> a + b);
-     * </code></pre>
+     * } </pre>
      *
      * @param zero    A zero element to start with.
      * @param combine A function which combines elements.
@@ -71,10 +71,10 @@ public interface Foldable<T> {
      * <p>
      * Example:
      *
-     * <pre><code>
+     * <pre> {@code
      * // = "cba!"
      * List("a", "b", "c").foldLeft("!", (xs, x) -> x + xs)
-     * </code></pre>
+     * } </pre>
      *
      * @param <U>     the type to fold over
      * @param zero    A zero element to start with.
@@ -89,10 +89,10 @@ public interface Foldable<T> {
      * <p>
      * Example:
      *
-     * <pre><code>
+     * <pre> {@code
      * // = "!cba"
      * List("a", "b", "c").foldRight("!", (x, xs) -> xs + x)
-     * </code></pre>
+     * } </pre>
      *
      * @param <U>     the type of the folded value
      * @param zero    A zero element to start with.

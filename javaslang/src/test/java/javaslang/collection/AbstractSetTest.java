@@ -14,6 +14,8 @@ public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
     @Override
     abstract protected <T> Set<T> empty();
 
+    abstract protected <T> Set<T> emptyWithNull();
+
     @Override
     abstract protected <T> Set<T> of(T element);
 
@@ -76,6 +78,20 @@ public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3).removeAll(of(5))).isEqualTo(of(1, 2, 3));
         assertThat(empty().removeAll(of(5))).isEqualTo(empty());
     }
+
+    // -- add
+
+    @Test
+    public void shouldAddNullAndNonNull() {
+        assertThat(emptyWithNull().add(null).add(1)).contains(null, 1);
+    }
+
+    @Test
+    public void shouldAddNonNullAndNull() {
+        assertThat(emptyWithNull().add(1).add(null)).contains(null, 1);
+    }
+
+    // -- map
 
     @Test
     public void shouldMapDistinctElementsToOneElement() {

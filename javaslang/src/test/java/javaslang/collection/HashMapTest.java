@@ -28,13 +28,13 @@ public class HashMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <T1 extends Comparable<? super T1>, T2> Map<T1, T2> emptyMap() {
+    protected <T1 extends Comparable<? super T1>, T2> HashMap<T1, T2> emptyMap() {
         return HashMap.empty();
     }
 
     @Override
     protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
-        return HashMap.<Integer, T> collector();
+        return HashMap.collector();
     }
 
     @SuppressWarnings("varargs")
@@ -57,18 +57,27 @@ public class HashMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2) {
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOf(K k1, V v1, K k2, V v2) {
         return HashMap.of(k1, v1, k2, v2);
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3) {
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3) {
         return HashMap.of(k1, v1, k2, v2, k3, v3);
     }
 
     @Override
     protected <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(Stream<? extends T> stream, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         return HashMap.ofAll(stream, keyMapper, valueMapper);
+    }
+
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOfNullKey(K k1, V v1, K k2, V v2) {
+        return mapOf(k1, v1, k2, v2);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOfNullKey(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return mapOf(k1, v1, k2, v2, k3, v3);
     }
 
     @Override
@@ -93,7 +102,7 @@ public class HashMapTest extends AbstractMapTest {
 
     @Test
     public void shouldWrapMap() {
-        java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
+        final java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
         source.put(1, 2);
         source.put(3, 4);
         assertThat(HashMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));

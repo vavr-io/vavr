@@ -51,14 +51,14 @@ public class LazyTest {
     public void shouldSequenceEmpty() {
         final List<Lazy<Integer>> testee = List.empty();
         final Lazy<Seq<Integer>> sequence = Lazy.sequence(testee);
-        assertThat(sequence.get()).isEqualTo(List.empty());
+        assertThat(sequence.get()).isEqualTo(Vector.empty());
     }
 
     @Test
     public void shouldSequenceNonEmptyLazy() {
         final List<Lazy<Integer>> testee = List.of(1, 2, 3).map(i -> Lazy.of(() -> i));
         final Lazy<Seq<Integer>> sequence = Lazy.sequence(testee);
-        assertThat(sequence.get()).isEqualTo(List.of(1, 2, 3));
+        assertThat(sequence.get()).isEqualTo(Vector.of(1, 2, 3));
     }
 
     @Test

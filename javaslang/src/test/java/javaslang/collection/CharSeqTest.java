@@ -2747,8 +2747,8 @@ public class CharSeqTest {
     @Test
     public void shouldScan() {
         final CharSeq seq = of('1');
-        final IndexedSeq<Character> result = seq.scan('0', (c1, c2) -> (char) (c1 + c2));
-        assertThat(result).isEqualTo(Vector.of('0', 'a'));
+        final CharSeq result = seq.scan('0', (c1, c2) -> (char) (c1 + c2));
+        assertThat(result.mkString()).isEqualTo(Vector.of('0', 'a').mkString());
     }
 
     @Test

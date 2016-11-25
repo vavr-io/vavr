@@ -141,6 +141,10 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -152,6 +156,12 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -165,6 +175,14 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
      *
      * @param <K> The key type
      * @param <V> The value type
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
+     * @param k4 a key for the map
+     * @param v4 the value for k4
      * @return A new Map containing the given entries
      */
     public static <K, V> HashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
@@ -174,6 +192,16 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
+     * @param k4 a key for the map
+     * @param v4 the value for k4
+     * @param k5 a key for the map
+     * @param v5 the value for k5
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -185,6 +213,18 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
+     * @param k4 a key for the map
+     * @param v4 the value for k4
+     * @param k5 a key for the map
+     * @param v5 the value for k5
+     * @param k6 a key for the map
+     * @param v6 the value for k6
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -196,6 +236,20 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
+     * @param k4 a key for the map
+     * @param v4 the value for k4
+     * @param k5 a key for the map
+     * @param v5 the value for k5
+     * @param k6 a key for the map
+     * @param v6 the value for k6
+     * @param k7 a key for the map
+     * @param v7 the value for k7
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -207,6 +261,22 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
+     * @param k4 a key for the map
+     * @param v4 the value for k4
+     * @param k5 a key for the map
+     * @param v5 the value for k5
+     * @param k6 a key for the map
+     * @param v6 the value for k6
+     * @param k7 a key for the map
+     * @param v7 the value for k7
+     * @param k8 a key for the map
+     * @param v8 the value for k8
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -218,6 +288,24 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
+     * @param k4 a key for the map
+     * @param v4 the value for k4
+     * @param k5 a key for the map
+     * @param v5 the value for k5
+     * @param k6 a key for the map
+     * @param v6 the value for k6
+     * @param k7 a key for the map
+     * @param v7 the value for k7
+     * @param k8 a key for the map
+     * @param v8 the value for k8
+     * @param k9 a key for the map
+     * @param v9 the value for k9
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -229,6 +317,26 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     /**
      * Creates a HashMap of the given list of key-value pairs.
      *
+     * @param k1 a key for the map
+     * @param v1 the value for k1
+     * @param k2 a key for the map
+     * @param v2 the value for k2
+     * @param k3 a key for the map
+     * @param v3 the value for k3
+     * @param k4 a key for the map
+     * @param v4 the value for k4
+     * @param k5 a key for the map
+     * @param v5 the value for k5
+     * @param k6 a key for the map
+     * @param v6 the value for k6
+     * @param k7 a key for the map
+     * @param v7 the value for k7
+     * @param k8 a key for the map
+     * @param v8 the value for k8
+     * @param k9 a key for the map
+     * @param v9 the value for k9
+     * @param k10 a key for the map
+     * @param v10 the value for k10
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -589,6 +697,21 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     }
 
     @Override
+    public HashMap<K, V> replaceValue(K key, V value) {
+        return Maps.replaceValue(this, key, value);
+    }
+
+    @Override
+    public HashMap<K, V> replace(K key, V oldValue, V newValue) {
+        return Maps.replace(this, key, oldValue, newValue);
+    }
+
+    @Override
+    public HashMap<K, V> replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
+        return Maps.replaceAll(this, function);
+    }
+
+    @Override
     public HashMap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
@@ -604,7 +727,7 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     public HashMap<K, V> scan(
             Tuple2<K, V> zero,
             BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
-        return Maps.scan(this, HashMap::empty, zero, operation);
+        return Maps.scan(this, zero, operation, this::createFromEntries);
     }
 
     @Override

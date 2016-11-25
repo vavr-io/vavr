@@ -15,6 +15,8 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.*;
 
+import static javaslang.API.Tuple;
+
 /**
  * An {@link Multimap} implementation (not intended to be public).
  *
@@ -25,9 +27,6 @@ import java.util.function.*;
  * @since 2.1.0
  */
 abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multimap<K, V> {
-
-    interface SerializableSupplier<T> extends Supplier<T>, Serializable {
-    }
 
     private static final long serialVersionUID = 1L;
 
@@ -323,7 +322,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         } else if (that.isEmpty()) {
             return (M) this;
         } else {
-            return that.foldLeft((M) this, (map, entry) -> !map.contains((Tuple2<K, V>) entry) ? (M) map.put(entry) : map);
+            return that.foldLeft((M) this, (map, entry) -> (M) map.put(entry));
         }
     }
 
@@ -379,6 +378,24 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @SuppressWarnings("unchecked")
     @Override
+    public M replaceValue(K key, V value) {
+        return (M) (containsKey(key) ? remove(key).put(key, value) : this);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public M replace(K key, V oldValue, V newValue) {
+        return (M) (contains(Tuple(key, oldValue)) ? remove(key, oldValue).put(key, newValue) : this);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public M replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
+        return (M) map((k, v) -> Tuple(k, function.apply(k, v)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public M retainAll(Iterable<? extends Tuple2<K, V>> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return (M) createFromEntries(back.flatMap(t -> t._2.map(v -> Tuple.of(t._1, v))).retainAll(elements));
@@ -387,8 +404,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @SuppressWarnings("unchecked")
     @Override
     public M scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return (M) Collections.scanLeft(this, zero, operation, Queue.empty(), Queue::append, this::createFromEntries);
+        return (M) Collections.scanLeft(this, zero, operation, this::createFromEntries);
     }
 
     @Override
@@ -488,5 +504,8 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
             javaMap.computeIfAbsent(t._1, k -> javaContainerSupplier.get()).add(t._2);
         }
         return javaMap;
+    }
+
+    interface SerializableSupplier<T> extends Supplier<T>, Serializable {
     }
 }

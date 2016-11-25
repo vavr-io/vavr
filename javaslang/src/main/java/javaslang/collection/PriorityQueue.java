@@ -9,8 +9,7 @@ import javaslang.Kind1;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
-import javaslang.collection.Comparators.SerializableComparator;
-import javaslang.collection.PriorityQueue.PriorityQueueBase.*;
+import javaslang.collection.PriorityQueueBase.*;
 
 import java.io.Serializable;
 import java.util.*;
@@ -18,27 +17,30 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 import static javaslang.collection.Comparators.naturalComparator;
-import static javaslang.collection.PriorityQueue.PriorityQueueBase.*;
+import static javaslang.collection.PriorityQueueBase.*;
 
 /**
+ * A PriorityQueue.
+ *
  * @author Pap Lőrinc
  * @since 2.1.0
  */
 public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> implements Serializable, Kind1<PriorityQueue<T>, T> {
+
     private static final long serialVersionUID = 1L;
 
-    private final SerializableComparator<? super T> comparator;
+    private final Comparator<? super T> comparator;
     private final Seq<Node<T>> forest;
     private final int size;
 
-    private PriorityQueue(SerializableComparator<? super T> comparator, Seq<Node<T>> forest, int size) {
+    private PriorityQueue(Comparator<? super T> comparator, Seq<Node<T>> forest, int size) {
         this.comparator = comparator;
         this.forest = forest;
         this.size = size;
     }
 
     private PriorityQueue<T> with(Seq<Node<T>> forest, int size) {
-        return new PriorityQueue<>(this.comparator, forest, size);
+        return new PriorityQueue<>(comparator, forest, size);
     }
 
     /**
@@ -126,7 +128,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     }
 
     public static <T> PriorityQueue<T> empty(Comparator<? super T> comparator) {
-        return new PriorityQueue<>(SerializableComparator.of(comparator), List.empty(), 0);
+        return new PriorityQueue<>(comparator, List.empty(), 0);
     }
 
     /**
@@ -186,15 +188,13 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     public static <T> PriorityQueue<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
 
-        final SerializableComparator<? super T> serializableComparator = SerializableComparator.of(comparator);
-
         int size = 0;
         Seq<Node<T>> forest = List.empty();
         for (T value : elements) {
-            forest = insert(serializableComparator, value, forest);
+            forest = insert(comparator, value, forest);
             size++;
         }
-        return new PriorityQueue<>(serializableComparator, forest, size);
+        return new PriorityQueue<>(comparator, forest, size);
     }
 
     public static <T extends Comparable<T>> PriorityQueue<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
@@ -438,19 +438,17 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
 
     @Override
     public PriorityQueue<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-        return Collections.scanLeft(this, zero, operation, empty(comparator), PriorityQueue::enqueue, Function.identity());
+        return Collections.scanLeft(this, zero, operation, it -> ofAll(comparator, it));
     }
 
     @Override
     public <U> PriorityQueue<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, empty(naturalComparator()), PriorityQueue::enqueue, Function.identity());
+        return Collections.scanLeft(this, zero, operation, it -> ofAll(naturalComparator(), it));
     }
 
     @Override
     public <U> PriorityQueue<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, empty(naturalComparator()), PriorityQueue::enqueue, Function.identity());
+        return Collections.scanRight(this, zero, operation, it -> ofAll(naturalComparator(), it));
     }
 
     @Override
@@ -544,210 +542,214 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
         return o == this || o instanceof PriorityQueue && Collections.areEqual(this, (Iterable) o);
     }
 
-    protected static class PriorityQueueBase {
-        /* Based on http://www.brics.dk/RS/96/37/BRICS-RS-96-37.pdf */
-        protected static class Node<T> implements Serializable {
-            private static final long serialVersionUID = 1L;
+}
 
-            protected final T root;
-            protected final int rank;
-            protected final Seq<Node<T>> children;
+final class PriorityQueueBase {
 
-            private Node(T root, int rank, Seq<Node<T>> children) {
-                this.root = root;
-                this.rank = rank;
-                this.children = children;
-
-                assert children.forAll(c -> c.rank < this.rank);
-            }
-
-            protected static <T> Node<T> of(T value, int rank, Seq<Node<T>> children) {
-                return new Node<>(value, rank, children);
-            }
-
-            /*
-             * fun link (t1 as Node (x1,r1,c1), t2 as Node (x2,r2,c2)) = (∗ r1 = r2 ∗)
-             * *  if Elem.leq (x1,x2) then Node (x1,r1+1,t2 :: c1)
-             * *  else                     Node (x2,r2+1,t1 :: c2
-             */
-            protected Node<T> link(SerializableComparator<? super T> comparator, Node<T> tree) {
-                assert rank == tree.rank;
-
-                return comparator.isLessOrEqual(this.root, tree.root)
-                        ? of(this.root, this.rank + 1, tree.appendTo(this.children))
-                        : of(tree.root, tree.rank + 1, this.appendTo(tree.children));
-            }
-
-            /*
-             * fun skewLink (t0 as Node (x0,r0, _), t1 as Node (x1,r1,c1), t2 as Node (x2,r2,c2)) =
-             * *  if Elem.leq (x1,x0) andalso Elem.leq (x1,x2) then      Node (x1,r1+1,t0 :: t2 :: c1)
-             * *  else if Elem.leq (x2,x0) andalso Elem.leq (x2,x1) then Node (x2,r2+1,t0 :: t1 :: c2)
-             * *  else                                                   Node (x0,r1+1,[t1, t2])
-             */
-            protected Node<T> skewLink(SerializableComparator<? super T> comparator, Node<T> left, Node<T> right) {
-                assert rank == 0 && left.rank == right.rank;
-
-                if (comparator.isLessOrEqual(left.root, root) && comparator.isLessOrEqual(left.root, right.root)) {
-                    return of(left.root, left.rank + 1, appendTo(right.appendTo(left.children)));
-                } else if (comparator.isLessOrEqual(right.root, root)) {
-                    assert comparator.isLessOrEqual(right.root, left.root);
-                    return of(right.root, right.rank + 1, appendTo(left.appendTo(right.children)));
-                } else {
-                    assert children.isEmpty();
-                    return of(root, left.rank + 1, List.of(left, right));
-                }
-            }
-
-            protected Seq<Node<T>> appendTo(Seq<Node<T>> forest) {
-                return forest.prepend(this);
-            }
-
-            @Override
-            public String toString() {
-                return "Node(" + root + ", " + rank + ", " + children + ')';
-            }
-        }
-
-        /**
-         * fun deleteMin [] = raise EMPTY
-         * * | deleteMin ts =
-         * *     val (Node (x,r,c), ts) = getMin ts
-         * *     val (ts',xs') = split ([],[],c)
-         * *     in fold insert xs' (meld (ts, ts')) end
-         **/
-        static <T> Tuple2<T, Seq<Node<T>>> deleteMin(SerializableComparator<? super T> comparator, Seq<Node<T>> forest) {
-            if (forest.isEmpty()) {
-                throw new NoSuchElementException();
-            } else {
+    /**
+     * fun deleteMin [] = raise EMPTY
+     * * | deleteMin ts =
+     * *     val (Node (x,r,c), ts) = getMin ts
+     * *     val (ts',xs') = split ([],[],c)
+     * *     in fold insert xs' (meld (ts, ts')) end
+     **/
+    static <T> Tuple2<T, Seq<Node<T>>> deleteMin(Comparator<? super T> comparator, Seq<Node<T>> forest) {
+        if (forest.isEmpty()) {
+            throw new NoSuchElementException();
+        } else {
                 /* get the minimum tree and the rest of the forest */
-                final Node<T> minTree = findMin(comparator, forest);
-                final Seq<Node<T>> forestTail = (minTree == forest.head()) ? forest.tail() : forest.remove(minTree);
+            final Node<T> minTree = findMin(comparator, forest);
+            final Seq<Node<T>> forestTail = (minTree == forest.head()) ? forest.tail() : forest.remove(minTree);
 
-                final Seq<Node<T>> newForest = rebuild(comparator, minTree.children);
-                return Tuple.of(minTree.root, meld(comparator, newForest, forestTail));
-            }
-        }
-
-        /**
-         * Separate the rank 0 trees from the rest, rebuild the 0 rank ones and merge them back
-         * <p>
-         * fun split (ts,xs,[]) = (ts, xs)
-         * * | split (ts,xs,t :: c) =
-         * *     if rank t = 0 then split (ts,root t :: xs,c)
-         * *     else               split (t :: ts,xs,c)
-         */
-        static <T> Seq<Node<T>> rebuild(SerializableComparator<? super T> comparator, Seq<Node<T>> forest) {
-            Seq<Node<T>> nonZeroRank = List.empty(), zeroRank = List.empty();
-            for (; !forest.isEmpty(); forest = forest.tail()) {
-                final Node<T> initialForestHead = forest.head();
-                if (initialForestHead.rank == 0) {
-                    zeroRank = insert(comparator, initialForestHead.root, zeroRank);
-                } else {
-                    nonZeroRank = initialForestHead.appendTo(nonZeroRank);
-                }
-            }
-            return meld(comparator, nonZeroRank, zeroRank);
-        }
-
-        /**
-         * fun insert (x, ts as t1 :: t2 :: rest) =
-         * *     if rank t1 = rank t2 then skewLink(Node(x,0,[]),t1,t2) :: rest
-         * *     else                      Node (x,0,[]) :: ts
-         * * | insert (x, ts) =            Node (x,0,[]) :: ts
-         **/
-        static <T> Seq<Node<T>> insert(SerializableComparator<? super T> comparator, T element, Seq<Node<T>> forest) {
-            final Node<T> tree = Node.of(element, 0, List.empty());
-            if (forest.size() >= 2) {
-                final Seq<Node<T>> tail = forest.tail();
-                final Node<T> t1 = forest.head(), t2 = tail.head();
-                if (t1.rank == t2.rank) {
-                    return tree.skewLink(comparator, t1, t2).appendTo(tail.tail());
-                }
-            }
-            return tree.appendTo(forest);
-        }
-
-        /** fun meld (ts, ts') = meldUniq (uniqify ts, uniqify ts') */
-        static <T> Seq<Node<T>> meld(SerializableComparator<? super T> comparator, Seq<Node<T>> source, Seq<Node<T>> target) {
-            return meldUnique(comparator, uniqify(comparator, source), uniqify(comparator, target));
-        }
-
-        /**
-         * fun uniqify [] = []
-         * *  | uniqify (t :: ts) = ins (t, ts) (∗ eliminate initial duplicate ∗)
-         **/
-        static <T> Seq<Node<T>> uniqify(SerializableComparator<? super T> comparator, Seq<Node<T>> forest) {
-            return forest.isEmpty()
-                   ? forest
-                   : ins(comparator, forest.head(), forest.tail());
-        }
-
-        /**
-         * fun ins (t, []) = [t]
-         * * | ins (t, t' :: ts) = (∗ rank t ≤ rank t' ∗)
-         * *     if rank t < rank t' then t :: t' :: ts
-         * *     else                     ins (link (t, t'), ts)
-         */
-        static <T> Seq<Node<T>> ins(SerializableComparator<? super T> comparator, Node<T> tree, Seq<Node<T>> forest) {
-            while (!forest.isEmpty() && tree.rank == forest.head().rank) {
-                tree = tree.link(comparator, forest.head());
-                forest = forest.tail();
-            }
-            return tree.appendTo(forest);
-        }
-
-        /**
-         * fun meldUniq ([], ts) = ts
-         * *  | meldUniq (ts, []) = ts
-         * *  | meldUniq (t1 :: ts1, t2 :: ts2) =
-         * *      if rank t1 < rank t2 then      t1 :: meldUniq (ts1, t2 :: ts2)
-         * *      else if rank t2 < rank t1 then t2 :: meldUniq (t1 :: ts1, ts2)
-         * *      else                           ins (link (t1, t2), meldUniq (ts1, ts2))
-         **/
-        static <T> Seq<Node<T>> meldUnique(SerializableComparator<? super T> comparator, Seq<Node<T>> forest1, Seq<Node<T>> forest2) {
-            if (forest1.isEmpty()) {
-                return forest2;
-            } else if (forest2.isEmpty()) {
-                return forest1;
-            } else {
-                final Node<T> tree1 = forest1.head(), tree2 = forest2.head();
-
-                if (tree1.rank == tree2.rank) {
-                    final Node<T> tree = tree1.link(comparator, tree2);
-                    final Seq<Node<T>> forest = meldUnique(comparator, forest1.tail(), forest2.tail());
-                    return ins(comparator, tree, forest);
-                } else {
-                    if (tree1.rank < tree2.rank) {
-                        final Seq<Node<T>> forest = meldUnique(comparator, forest1.tail(), forest2);
-                        assert forest.isEmpty() || tree1.rank < forest.head().rank;
-                        return tree1.appendTo(forest);
-                    } else {
-                        final Seq<Node<T>> forest = meldUnique(comparator, forest1, forest2.tail());
-                        assert forest.isEmpty() || tree2.rank < forest.head().rank;
-                        return tree2.appendTo(forest);
-                    }
-                }
-            }
-        }
-
-        /**
-         * Find the minimum root in the forest
-         * <p>
-         * fun findMin [] = raise EMPTY
-         * * | findMin [t] = root t
-         * * | findMin (t :: ts) =
-         * *     let val x = findMin ts
-         * *     in if Elem.leq (root t, x) then root t else x end
-         */
-        static <T> Node<T> findMin(SerializableComparator<? super T> comparator, Seq<Node<T>> forest) {
-            final Iterator<Node<T>> iterator = forest.iterator();
-            Node<T> min = iterator.next();
-            for (Node<T> node : iterator) {
-                if (comparator.isLess(node.root, min.root)) {
-                    min = node;
-                }
-            }
-            return min;
+            final Seq<Node<T>> newForest = rebuild(comparator, minTree.children);
+            return Tuple.of(minTree.root, meld(comparator, newForest, forestTail));
         }
     }
+
+    /**
+     * fun insert (x, ts as t1 :: t2 :: rest) =
+     * *     if rank t1 = rank t2 then skewLink(Node(x,0,[]),t1,t2) :: rest
+     * *     else                      Node (x,0,[]) :: ts
+     * * | insert (x, ts) =            Node (x,0,[]) :: ts
+     **/
+    static <T> Seq<Node<T>> insert(Comparator<? super T> comparator, T element, Seq<Node<T>> forest) {
+        final Node<T> tree = Node.of(element, 0, List.empty());
+        if (forest.size() >= 2) {
+            final Seq<Node<T>> tail = forest.tail();
+            final Node<T> t1 = forest.head(), t2 = tail.head();
+            if (t1.rank == t2.rank) {
+                return tree.skewLink(comparator, t1, t2).appendTo(tail.tail());
+            }
+        }
+        return tree.appendTo(forest);
+    }
+
+    /** fun meld (ts, ts') = meldUniq (uniqify ts, uniqify ts') */
+    static <T> Seq<Node<T>> meld(Comparator<? super T> comparator, Seq<Node<T>> source, Seq<Node<T>> target) {
+        return meldUnique(comparator, uniqify(comparator, source), uniqify(comparator, target));
+    }
+
+    /**
+     * Find the minimum root in the forest
+     * <p>
+     * fun findMin [] = raise EMPTY
+     * * | findMin [t] = root t
+     * * | findMin (t :: ts) =
+     * *     let val x = findMin ts
+     * *     in if Elem.leq (root t, x) then root t else x end
+     */
+    static <T> Node<T> findMin(Comparator<? super T> comparator, Seq<Node<T>> forest) {
+        final Iterator<Node<T>> iterator = forest.iterator();
+        Node<T> min = iterator.next();
+        for (Node<T> node : iterator) {
+            if (comparator.compare(node.root, min.root) < 0) {
+                min = node;
+            }
+        }
+        return min;
+    }
+
+    /**
+     * Separate the rank 0 trees from the rest, rebuild the 0 rank ones and merge them back
+     * <p>
+     * fun split (ts,xs,[]) = (ts, xs)
+     * * | split (ts,xs,t :: c) =
+     * *     if rank t = 0 then split (ts,root t :: xs,c)
+     * *     else               split (t :: ts,xs,c)
+     */
+    private static <T> Seq<Node<T>> rebuild(Comparator<? super T> comparator, Seq<Node<T>> forest) {
+        Seq<Node<T>> nonZeroRank = List.empty(), zeroRank = List.empty();
+        for (; !forest.isEmpty(); forest = forest.tail()) {
+            final Node<T> initialForestHead = forest.head();
+            if (initialForestHead.rank == 0) {
+                zeroRank = insert(comparator, initialForestHead.root, zeroRank);
+            } else {
+                nonZeroRank = initialForestHead.appendTo(nonZeroRank);
+            }
+        }
+        return meld(comparator, nonZeroRank, zeroRank);
+    }
+
+    /**
+     * fun uniqify [] = []
+     * *  | uniqify (t :: ts) = ins (t, ts) (∗ eliminate initial duplicate ∗)
+     **/
+    private static <T> Seq<Node<T>> uniqify(Comparator<? super T> comparator, Seq<Node<T>> forest) {
+        return forest.isEmpty()
+               ? forest
+               : ins(comparator, forest.head(), forest.tail());
+    }
+
+    /**
+     * fun ins (t, []) = [t]
+     * * | ins (t, t' :: ts) = (∗ rank t ≤ rank t' ∗)
+     * *     if rank t < rank t' then t :: t' :: ts
+     * *     else                     ins (link (t, t'), ts)
+     */
+    private static <T> Seq<Node<T>> ins(Comparator<? super T> comparator, Node<T> tree, Seq<Node<T>> forest) {
+        while (!forest.isEmpty() && tree.rank == forest.head().rank) {
+            tree = tree.link(comparator, forest.head());
+            forest = forest.tail();
+        }
+        return tree.appendTo(forest);
+    }
+
+    /**
+     * fun meldUniq ([], ts) = ts
+     * *  | meldUniq (ts, []) = ts
+     * *  | meldUniq (t1 :: ts1, t2 :: ts2) =
+     * *      if rank t1 < rank t2 then      t1 :: meldUniq (ts1, t2 :: ts2)
+     * *      else if rank t2 < rank t1 then t2 :: meldUniq (t1 :: ts1, ts2)
+     * *      else                           ins (link (t1, t2), meldUniq (ts1, ts2))
+     **/
+    private static <T> Seq<Node<T>> meldUnique(Comparator<? super T> comparator, Seq<Node<T>> forest1, Seq<Node<T>> forest2) {
+        if (forest1.isEmpty()) {
+            return forest2;
+        } else if (forest2.isEmpty()) {
+            return forest1;
+        } else {
+            final Node<T> tree1 = forest1.head(), tree2 = forest2.head();
+
+            if (tree1.rank == tree2.rank) {
+                final Node<T> tree = tree1.link(comparator, tree2);
+                final Seq<Node<T>> forest = meldUnique(comparator, forest1.tail(), forest2.tail());
+                return ins(comparator, tree, forest);
+            } else {
+                if (tree1.rank < tree2.rank) {
+                    final Seq<Node<T>> forest = meldUnique(comparator, forest1.tail(), forest2);
+                    assert forest.isEmpty() || tree1.rank < forest.head().rank;
+                    return tree1.appendTo(forest);
+                } else {
+                    final Seq<Node<T>> forest = meldUnique(comparator, forest1, forest2.tail());
+                    assert forest.isEmpty() || tree2.rank < forest.head().rank;
+                    return tree2.appendTo(forest);
+                }
+            }
+        }
+    }
+
+    /* Based on http://www.brics.dk/RS/96/37/BRICS-RS-96-37.pdf */
+    static final class Node<T> implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        final T root;
+        final int rank;
+        final Seq<Node<T>> children;
+
+        private Node(T root, int rank, Seq<Node<T>> children) {
+            this.root = root;
+            this.rank = rank;
+            this.children = children;
+
+            assert children.forAll(c -> c.rank < this.rank);
+        }
+
+        static <T> Node<T> of(T value, int rank, Seq<Node<T>> children) {
+            return new Node<>(value, rank, children);
+        }
+
+        /*
+         * fun link (t1 as Node (x1,r1,c1), t2 as Node (x2,r2,c2)) = (∗ r1 = r2 ∗)
+         * *  if Elem.leq (x1,x2) then Node (x1,r1+1,t2 :: c1)
+         * *  else                     Node (x2,r2+1,t1 :: c2
+         */
+        Node<T> link(Comparator<? super T> comparator, Node<T> tree) {
+            assert rank == tree.rank;
+
+            return comparator.compare(this.root, tree.root) <= 0
+                   ? of(this.root, this.rank + 1, tree.appendTo(this.children))
+                   : of(tree.root, tree.rank + 1, this.appendTo(tree.children));
+        }
+
+        /*
+         * fun skewLink (t0 as Node (x0,r0, _), t1 as Node (x1,r1,c1), t2 as Node (x2,r2,c2)) =
+         * *  if Elem.leq (x1,x0) andalso Elem.leq (x1,x2) then      Node (x1,r1+1,t0 :: t2 :: c1)
+         * *  else if Elem.leq (x2,x0) andalso Elem.leq (x2,x1) then Node (x2,r2+1,t0 :: t1 :: c2)
+         * *  else                                                   Node (x0,r1+1,[t1, t2])
+         */
+        Node<T> skewLink(Comparator<? super T> comparator, Node<T> left, Node<T> right) {
+            assert rank == 0 && left.rank == right.rank;
+
+            if (comparator.compare(left.root, root) <= 0 && comparator.compare(left.root, right.root) <= 0) {
+                return of(left.root, left.rank + 1, appendTo(right.appendTo(left.children)));
+            } else if (comparator.compare(right.root, root) <= 0) {
+                assert comparator.compare(right.root, left.root) <= 0;
+                return of(right.root, right.rank + 1, appendTo(left.appendTo(right.children)));
+            } else {
+                assert children.isEmpty();
+                return of(root, left.rank + 1, List.of(left, right));
+            }
+        }
+
+        Seq<Node<T>> appendTo(Seq<Node<T>> forest) {
+            return forest.prepend(this);
+        }
+
+        @Override
+        public String toString() {
+            return "Node(" + root + ", " + rank + ", " + children + ')';
+        }
+    }
+
 }

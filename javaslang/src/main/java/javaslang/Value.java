@@ -498,7 +498,13 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link CharSeq}.
      */
     default CharSeq toCharSeq() {
-        return CharSeq.of(toString());
+        if (this instanceof CharSeq) {
+            return (CharSeq) this;
+        } if (isEmpty()) {
+            return CharSeq.empty();
+        } else {
+            return CharSeq.of(iterator().mkString());
+        }
     }
 
     /**
@@ -874,6 +880,7 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Either}.
      *
      * @param left A left value for the {@link Either}
+     * @param <L> Either left component type
      * @return A new {@link Either}.
      */
     default <L> Either<L, T> toEither(L left) {
@@ -888,6 +895,7 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Either}.
      *
      * @param leftSupplier A {@link Supplier} for the left value for the {@link Either}
+     * @param <L> Validation error component type
      * @return A new {@link Either}.
      */
     default <L> Either<L, T> toEither(Supplier<? extends L> leftSupplier) {
@@ -903,11 +911,12 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Validation}.
      *
      * @param invalid An invalid value for the {@link Validation}
+     * @param <L> Validation error component type
      * @return A new {@link Validation}.
      */
     default <L> Validation<L, T> toValidation(L invalid) {
         if (this instanceof Validation) {
-            return ((Validation<?, T>) this).leftMap(ignored -> invalid);
+            return ((Validation<?, T>) this).mapError(ignored -> invalid);
         } else {
             return isEmpty() ? Invalid(invalid) : Valid(get());
         }
@@ -917,12 +926,13 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Validation}.
      *
      * @param invalidSupplier A {@link Supplier} for the invalid value for the {@link Validation}
+     * @param <L> Validation error component type
      * @return A new {@link Validation}.
      */
     default <L> Validation<L, T> toValidation(Supplier<? extends L> invalidSupplier) {
         Objects.requireNonNull(invalidSupplier, "invalidSupplier is null");
         if (this instanceof Validation) {
-            return ((Validation<?, T>) this).leftMap(ignored -> invalidSupplier.get());
+            return ((Validation<?, T>) this).mapError(ignored -> invalidSupplier.get());
         } else {
             return isEmpty() ? Invalid(invalidSupplier.get()) : Valid(get());
         }

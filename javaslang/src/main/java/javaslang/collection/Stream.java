@@ -1240,16 +1240,14 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
     @Override
     default <U> Stream<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
         // lazily streams the elements of an iterator
-        return Stream.ofAll(iterator().scanLeft(zero, operation));
+        return Collections.scanLeft(this, zero, operation, Iterator::toStream);
     }
 
     // not lazy!
     @Override
     default <U> Stream<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, Stream.empty(), Stream::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, Iterator::toStream);
     }
 
     @Override

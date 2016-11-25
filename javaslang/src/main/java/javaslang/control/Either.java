@@ -275,10 +275,10 @@ public interface Either<L, R> extends Value<R> {
     /**
      * Maps the value of this Either if it is a Left, performs no operation if this is a Right.
      *
-     * <pre><code>
+     * <pre>{@code
      * import static javaslang.API.*;
      *
-     * class Example {{
+     * class Example {
      *
      *     // = Left(2)
      *     Left(1).mapLeft(i -> i + 1);
@@ -286,8 +286,8 @@ public interface Either<L, R> extends Value<R> {
      *     // = Right("a")
      *     Right("a").mapLeft(i -> i + 1);
      *
-     * }}
-     * </code></pre>
+     * }
+     * }</pre>
      *
      * @param leftMapper A mapper
      * @param <U>        Component type of the mapped right value

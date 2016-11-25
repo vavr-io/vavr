@@ -49,7 +49,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
      * @return A javaslang.collection.List Collector.
      */
     public static <T extends Comparable<? super T>> Collector<T, ArrayList<T>, TreeSet<T>> collector() {
-        return collector((Comparator<? super T> & Serializable) T::compareTo);
+        return collector(naturalComparator());
     }
 
     /**
@@ -151,7 +151,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
      */
     public static <T extends Comparable<? super T>> TreeSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return tabulate((Comparator<? super T> & Serializable) T::compareTo, n, f);
+        return tabulate(naturalComparator(), n, f);
     }
 
     /**
@@ -182,7 +182,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
      */
     public static <T extends Comparable<? super T>> TreeSet<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return fill((Comparator<? super T> & Serializable) T::compareTo, n, s);
+        return fill(naturalComparator(), n, s);
     }
 
     @SuppressWarnings("unchecked")
@@ -778,35 +778,26 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     @Override
     public TreeSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, TreeSet.empty(comparator()), TreeSet::add, Function.identity());
+        return Collections.scanLeft(this, zero, operation, iter -> TreeSet.ofAll(comparator(), iter));
     }
 
     @Override
     public <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
         if (zero instanceof Comparable) {
             final Comparator<U> comparator = naturalComparator();
-            return Collections.scanLeft(this, zero, operation, TreeSet.empty(comparator), TreeSet::add, Function.identity());
+            return Collections.scanLeft(this, zero, operation, iter -> TreeSet.ofAll(comparator, iter));
         } else {
-            return Collections.scanLeft(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
-                c.add(u);
-                return c;
-            }, HashSet::ofAll);
+            return Collections.scanLeft(this, zero, operation, HashSet::ofAll);
         }
     }
 
     @Override
     public <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
         if (zero instanceof Comparable) {
             final Comparator<U> comparator = naturalComparator();
-            return Collections.scanRight(this, zero, operation, TreeSet.empty(comparator), TreeSet::add, Function.identity());
+            return Collections.scanRight(this, zero, operation, iter -> TreeSet.ofAll(comparator, iter));
         } else {
-            return Collections.scanRight(this, zero, operation, new java.util.ArrayList<>(), (c, u) -> {
-                c.add(u);
-                return c;
-            }, HashSet::ofAll);
+            return Collections.scanRight(this, zero, operation, HashSet::ofAll);
         }
     }
 

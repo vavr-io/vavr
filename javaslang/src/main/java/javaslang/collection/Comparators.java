@@ -9,7 +9,10 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
- * <strong>INTERNAL API - This class is subject to change.</strong>
+ * INTERNAL: Common {@code Comparator} related functions (not intended to be public).
+ *
+ * @author Daniel Dietrich
+ * @since 2.0.0
  */
 final class Comparators {
 
@@ -17,7 +20,7 @@ final class Comparators {
     }
 
     /**
-     * Returns the natural comparator for type U, i.e. treating it as {@code Comparable<? super U>}.
+     * Returns the natural comparator for type U, i.e. treating it as {@code Comparable<U>}.
      * The returned comparator is also {@code java.io.Serializable}.
      * <p>
      * Please note that this will lead to runtime exceptions, if U is not Comparable.
@@ -26,57 +29,40 @@ final class Comparators {
      * @return The natural Comparator of type U
      */
     @SuppressWarnings("unchecked")
-    static <U> SerializableComparator<U> naturalComparator() {
-        return (o1, o2) -> ((Comparable<U>) o1).compareTo(o2);
+    static <U> Comparator<U> naturalComparator() {
+        return NaturalComparator.instance();
+    }
+
+}
+
+final class NaturalComparator<T> implements Comparator<T>, Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private static final NaturalComparator<?> INSTANCE = new NaturalComparator<>();
+
+    private NaturalComparator() {
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T> NaturalComparator<T> instance() {
+        return (NaturalComparator<T>) INSTANCE;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public int compare(T o1, T o2) {
+        return ((Comparable<T>) o1).compareTo(o2);
     }
 
     /**
-     * Needed for serialization of sortable collections which internally need a comparator.
-     * <p>
-     * In general the comparator may be
-     * <ul>
-     * <li>a concrete class</li>
-     * <li>a lambda</li>
-     * <li>a method reference</li>
-     * </ul>
+     * Instance control for object serialization.
      *
-     * @param <T> the type of objects that may be compared by this comparator
+     * @return The singleton instance of NaturalComparator.
+     * @see java.io.Serializable
      */
-    @FunctionalInterface
-    interface SerializableComparator<T> extends Comparator<T>, Serializable {
-        long serialVersionUID = 1L;
-
-        @SuppressWarnings("TrivialMethodReference")
-        static <T> SerializableComparator<T> of(Comparator<T> comparator) {
-            if (comparator instanceof SerializableComparator) {
-                return ((SerializableComparator<T>) comparator);
-            } else {
-                return comparator::compare;
-            }
-        }
-
-        default boolean isLess(T o1, T o2) {
-            return compare(o1, o2) < 0;
-        }
-
-        default boolean isLessOrEqual(T o1, T o2) {
-            return compare(o1, o2) <= 0;
-        }
-
-        default boolean isEqual(T o1, T o2) {
-            return compare(o1, o2) == 0;
-        }
-
-        default boolean isNotEqual(T o1, T o2) {
-            return compare(o1, o2) != 0;
-        }
-
-        default boolean isGreaterOrEqual(T o1, T o2) {
-            return compare(o1, o2) >= 0;
-        }
-
-        default boolean isGreater(T o1, T o2) {
-            return compare(o1, o2) > 0;
-        }
+    private Object readResolve() {
+        return INSTANCE;
     }
+
 }

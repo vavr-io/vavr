@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collector;
 
 import static java.util.Arrays.asList;
+import static javaslang.API.Some;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 
@@ -149,6 +150,10 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     protected abstract <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(java.util.stream.Stream<? extends T> stream,
                                                                                Function<? super T, ? extends K> keyMapper,
                                                                                Function<? super T, ? extends V> valueMapper);
+
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2);
+
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2, K k3, V v3);
 
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f);
 
@@ -526,8 +531,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldPutNullKeyIntoMapThatContainsNullKey() {
-        final Map<Integer, String> map = mapOf(1, "a", null, "b", 2, "c");
-        assertThat(map.put(null, "!")).isEqualTo(mapOf(1, "a", null, "!", 2, "c"));
+        final Map<Integer, String> map = mapOfNullKey(1, "a", null, "b", 2, "c");
+        assertThat(map.put(null, "!")).isEqualTo(mapOfNullKey(1, "a", null, "!", 2, "c"));
     }
 
     // -- remove
@@ -541,8 +546,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldRemoveFromMapThatContainsFirstEntryHavingNullKey() {
-        final Map<Integer, String> map = mapOf(null, "a", 1, "b", 2, "c");
-        assertThat(map.remove(1)).isEqualTo(mapOf(null, "a", 2, "c"));
+        final Map<Integer, String> map = mapOfNullKey(null, "a", 1, "b", 2, "c");
+        assertThat(map.remove(1)).isEqualTo(mapOfNullKey(null, "a", 2, "c"));
     }
 
     // -- removeAll
@@ -1018,6 +1023,75 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldReturnNoneWhenAccessingAbsentKeysInAMapWithNulls() {
         final Map<String, String> map = mapOf("1", "a").put("2", null);
         assertThat(map.get("3")).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldReturnSameInstanceIfReplacingCurrentValueWithNonExistingKey() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+        final Map<Integer, String> actual = map.replaceValue(3, "?");
+        assertThat(actual).isSameAs(map);
+    }
+
+    @Test
+    public void shouldReplaceCurrentValueForExistingKey() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+        final Map<Integer, String> actual = map.replaceValue(2, "c");
+        final Map<Integer, String> expected = mapOf(1, "a", 2, "c");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReplaceCurrentValueForExistingKeyAndEqualOldValue() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+        final Map<Integer, String> actual = map.replace(2, "b", "c");
+        final Map<Integer, String> expected = mapOf(1, "a", 2, "c");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReturnSameInstanceForExistingKeyAndNonEqualOldValue() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+        final Map<Integer, String> actual = map.replace(2, "d", "c");
+        assertThat(actual).isSameAs(map);
+    }
+
+    @Test
+    public void shouldReturnSameInstanceIfReplacingCurrentValueWithOldValueWithNonExistingKey() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+        final Map<Integer, String> actual = map.replace(3, "?", "!");
+        assertThat(actual).isSameAs(map);
+    }
+
+    @Test
+    public void shouldReplaceAllValuesWithFunctionResult() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b");
+        final Map<Integer, String> actual = map.replaceAll((integer, s) -> s + integer);
+        final Map<Integer, String> expected = mapOf(1, "a1", 2, "b2");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldGetValueOfNullKeyWhenPutFirstHavingTwoEntries() {
+        final Map<Integer, String> map = mapOfNullKey(null, "a", 2, "b");
+        assertThat(map.get(null)).isEqualTo(Some("a"));
+    }
+
+    @Test
+    public void shouldGetValueOfNullKeyWhenPutLastHavingTwoEntries() {
+        final Map<Integer, String> map = mapOfNullKey(1, "a", null, "b");
+        assertThat(map.get(null)).isEqualTo(Some("b"));
+    }
+
+    @Test
+    public void shouldGetAPresentNullValueWhenPutFirstHavingTwoEntries() {
+        final Map<Integer, String> map = mapOf(1, null, 2, "b");
+        assertThat(map.get(1)).isEqualTo(Some(null));
+    }
+
+    @Test
+    public void shouldGetAPresentNullValueWhenPutLastHavingTwoEntries() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, null);
+        assertThat(map.get(2)).isEqualTo(Some(null));
     }
 
     // -- getOrElse

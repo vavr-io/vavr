@@ -13,13 +13,18 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.*;
 
+import static javaslang.API.Tuple;
+
 /**
- * Implementations of common {@code Map} functions (not intended to be public).
+ * INTERNAL: Common {@code Map} functions (not intended to be public).
  *
  * @author Ruslan Sennov, Daniel Dietrich
  * @since 2.0.0
  */
 final class Maps {
+
+    private Maps() {
+    }
 
     @SuppressWarnings("unchecked")
     static <K, V, M extends Map<K, V>> Tuple2<V, M> computeIfAbsent(M map, K key, Function<? super K, ? extends V> mappingFunction) {
@@ -235,21 +240,36 @@ final class Maps {
     }
 
     @SuppressWarnings("unchecked")
+    static <K, V, M extends Map<K, V>> M replace(M map, K key, V oldValue, V newValue) {
+        return map.contains(Tuple(key, oldValue)) ? (M) map.put(key, newValue) : map;
+    }
+
+    @SuppressWarnings("unchecked")
     static <K, V, M extends Map<K, V>> M replace(M map, Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         Objects.requireNonNull(currentElement, "currentElement is null");
         Objects.requireNonNull(newElement, "newElement is null");
         return (M) (map.containsKey(currentElement._1) ? map.remove(currentElement._1).put(newElement) : map);
     }
 
+    @SuppressWarnings("unchecked")
+    static <K, V, M extends Map<K, V>> M replaceAll(M map, BiFunction<? super K, ? super V, ? extends V> function) {
+        return (M) map.map((k, v) -> Tuple(k, function.apply(k, v)));
+    }
+
     static <K, V, M extends Map<K, V>> M replaceAll(M map, Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
         return replace(map, currentElement, newElement);
     }
 
-    static <K, V, M extends Map<K, V>> M scan(
-            M map, Supplier<M> emptySupplier, Tuple2<K, V> zero,
-            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(map, zero, operation, emptySupplier.get(), Maps::put, Function.identity());
+    @SuppressWarnings("unchecked")
+    static <K, V, M extends Map<K, V>> M replaceValue(M map, K key, V value) {
+        return map.containsKey(key) ? (M) map.put(key, value) :  map;
+    }
+
+    @SuppressWarnings("unchecked")
+    static <K, V, M extends Map<K, V>> M scan(M map, Tuple2<K, V> zero,
+                                              BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation,
+                                              Function<Iterator<Tuple2<K, V>>, Traversable<Tuple2<K, V>>> finisher) {
+        return (M) Collections.scanLeft(map, zero, operation, finisher);
     }
 
     static <K, V, M extends Map<K, V>> Iterator<M> sliding(M map, OfEntries<K, V, M> ofEntries, int size) {

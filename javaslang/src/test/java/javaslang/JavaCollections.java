@@ -7,7 +7,10 @@ package javaslang;
 
 import java.util.*;
 
-public interface JavaCollections {
+public final class JavaCollections {
+
+    private JavaCollections() {
+    }
 
     @SuppressWarnings("unchecked")
     static <K, V> Map<K, V> javaMap(Object... pairs) {

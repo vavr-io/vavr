@@ -968,6 +968,16 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).max()).isEqualTo(Option.some(BigDecimal.ONE));
     }
 
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNPEWhenMaxOfNullAndInt() {
+        of(null, 1).max();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNPEWhenMaxOfIntAndNull() {
+        of(1, null).max();
+    }
+
     // -- maxBy(Comparator)
 
     @Test(expected = NullPointerException.class)
@@ -1082,6 +1092,16 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldComputeMinOfBigDecimal() {
         assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).min()).isEqualTo(Option.some(BigDecimal.ZERO));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNPEWhenMinOfNullAndInt() {
+        of(null, 1).min();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNPEWhenMinOfIntAndNull() {
+        of(1, null).min();
     }
 
     // -- minBy(Comparator)

@@ -93,6 +93,11 @@ public class HashSetTest extends AbstractSetTest {
     }
 
     @Override
+    protected <T> HashSet<T> emptyWithNull() {
+        return empty();
+    }
+
+    @Override
     protected <T> HashSet<T> of(T element) {
         return HashSet.of(element);
     }

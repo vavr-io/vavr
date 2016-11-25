@@ -531,14 +531,12 @@ public interface Tree<T> extends Traversable<T> {
 
     @Override
     default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanLeft(this, zero, operation, List.empty(), List::prepend, List::reverse);
+        return Collections.scanLeft(this, zero, operation, Iterator::toStream);
     }
 
     @Override
     default <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
-        return Collections.scanRight(this, zero, operation, List.empty(), List::prepend, Function.identity());
+        return Collections.scanRight(this, zero, operation, Iterator::toStream);
     }
 
     @Override

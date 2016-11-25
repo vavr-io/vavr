@@ -5,6 +5,8 @@
  */
 package javaslang.collection.euler;
 
+import javaslang.API;
+import javaslang.Function1;
 import javaslang.collection.Iterator;
 import javaslang.collection.Stream;
 
@@ -13,40 +15,40 @@ import java.io.FileNotFoundException;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.Scanner;
-import javaslang.API;
+
 import static javaslang.API.$;
 import static javaslang.API.Case;
-import javaslang.Function1;
 import static javaslang.collection.euler.PrimeNumbers.primes;
 
-public final class Utils {
+final class Utils {
 
     private Utils() {
     }
 
-    public static Stream<BigInteger> fibonacci() {
+    static final Function1<Integer, BigInteger> MEMOIZED_FACTORIAL = Function1.of(Utils::factorial).memoized();
+
+    static final Function1<Long, Boolean> MEMOIZED_IS_PRIME = Function1.of(Utils::isPrime).memoized();
+
+    static Stream<BigInteger> fibonacci() {
         return Stream.of(BigInteger.ZERO, BigInteger.ONE).appendSelf(self -> self.zip(self.tail()).map(t -> t._1.add(t._2)));
     }
 
-    public static BigInteger factorial(int n) {
+    static BigInteger factorial(int n) {
         return Stream.rangeClosed(1, n).map(BigInteger::valueOf).fold(BigInteger.ONE, BigInteger::multiply);
     }
 
-    public static final Function1<Integer, BigInteger> memoizedFactorial = Function1.of(Utils::factorial).memoized();
-
-    public static Stream<Long> factors(long number) {
+    static Stream<Long> factors(long number) {
         return Stream.rangeClosed(1, (long) Math.sqrt(number))
                 .filter(d -> number % d == 0)
                 .flatMap(d -> Stream.of(d, number / d))
                 .distinct();
     }
 
-    public static Stream<Long> divisors(long l) {
-        return factors(l)
-                .filter((d) -> d < l);
+    static Stream<Long> divisors(long l) {
+        return factors(l).filter((d) -> d < l);
     }
 
-    public static boolean isPrime(long val) {
+    static boolean isPrime(long val) {
         return API.Match(val).of(
                 Case($(n -> n < 2L), false),
                 Case($(2L), true),
@@ -57,9 +59,7 @@ public final class Utils {
         );
     }
 
-    public static final Function1<Long, Boolean> memoizedIsPrime = Function1.of(Utils::isPrime).memoized();
-
-    public static Stream<String> readLines(File file) {
+    static Stream<String> readLines(File file) {
         try {
             return Stream.ofAll(new Iterator<String>() {
 
@@ -84,7 +84,7 @@ public final class Utils {
         }
     }
 
-    public static File file(String fileName) {
+    static File file(String fileName) {
         final URL resource = Utils.class.getClassLoader().getResource(fileName);
         if (resource == null) {
             throw new RuntimeException("resource not found");
@@ -92,15 +92,15 @@ public final class Utils {
         return new File(resource.getFile());
     }
 
-    public static String reverse(String s) {
+    static String reverse(String s) {
         return new StringBuilder(s).reverse().toString();
     }
 
-    public static boolean isPalindrome(String val) {
+    static boolean isPalindrome(String val) {
         return val.equals(reverse(val));
     }
 
-    public static boolean isPalindrome(int val) {
+    static boolean isPalindrome(int val) {
         return isPalindrome(Long.toString(val));
     }
 }
