@@ -15,7 +15,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collector;
+import java.util.stream.*;
+import java.util.stream.Stream;
 
 import static java.util.Comparator.nullsFirst;
 import static javaslang.API.*;
@@ -92,6 +93,16 @@ public class TreeMapTest extends AbstractSortedMapTest {
     @Override
     protected <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2, K k3, V v3) {
         return TreeMap.of(nullsFirst(naturalComparator()), k1, v1, k2, v2, k3, v3);
+    }
+
+    @Override
+    protected <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(Stream<? extends T> stream, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        return TreeMap.ofAll(stream, keyMapper, valueMapper);
+    }
+
+    @Override
+    protected <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(Stream<? extends T> stream, Function<? super T, Tuple2<? extends K, ? extends V>> f) {
+        return TreeMap.ofAll(stream, f);
     }
 
     @Override

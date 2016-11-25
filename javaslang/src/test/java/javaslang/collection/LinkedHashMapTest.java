@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.Stream;
 
 public class LinkedHashMapTest extends AbstractMapTest {
 
@@ -63,6 +64,15 @@ public class LinkedHashMapTest extends AbstractMapTest {
     }
 
     @Override
+    protected <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(Stream<? extends T> stream, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        return LinkedHashMap.ofAll(stream, keyMapper, valueMapper);
+    }
+
+    @Override
+    protected <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(Stream<? extends T> stream, Function<? super T, Tuple2<? extends K, ? extends V>> f) {
+        return LinkedHashMap.ofAll(stream, f);
+    }
+
     protected <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2) {
         return mapOf(k1, v1, k2, v2);
     }

@@ -109,6 +109,38 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     }
 
     /**
+     * Returns a {@code LinkedHashMap}, from entries mapped from stream.
+     *
+     * @param stream the source stream
+     * @param entryMapper the entry mapper
+     * @param <T> The stream type
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map
+     */
+    public static <T, K, V> LinkedHashMap<K, V> ofAll(java.util.stream.Stream<? extends T> stream,
+                                                      Function<? super T, Tuple2<? extends K, ? extends V>> entryMapper) {
+        return Maps.ofStream(empty(), stream, entryMapper);
+    }
+
+    /**
+     * Returns a {@code LinkedHashMap}, from entries mapped from stream.
+     *
+     * @param stream the source stream
+     * @param keyMapper the key mapper
+     * @param valueMapper the value mapper
+     * @param <T> The stream type
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new Map
+     */
+    public static <T, K, V> LinkedHashMap<K, V> ofAll(java.util.stream.Stream<? extends T> stream,
+                                                      Function<? super T, ? extends K> keyMapper,
+                                                      Function<? super T, ? extends V> valueMapper) {
+        return Maps.ofStream(empty(), stream, keyMapper, valueMapper);
+    }
+
+    /**
      * Returns a singleton {@code LinkedHashMap}, i.e. a {@code LinkedHashMap} of one element.
      *
      * @param key   A singleton map key.

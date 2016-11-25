@@ -15,9 +15,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -149,6 +147,13 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3);
 
+    protected abstract <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(java.util.stream.Stream<? extends T> stream,
+                                                                               Function<? super T, ? extends K> keyMapper,
+                                                                               Function<? super T, ? extends V> valueMapper);
+
+    protected abstract <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(java.util.stream.Stream<? extends T> stream,
+                                                                               Function<? super T, Tuple2<? extends K, ? extends V>> f);
+
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2);
 
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2, K k3, V v3);
@@ -273,24 +278,38 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         return new java.util.AbstractMap.SimpleEntry<>(key, value);
     }
 
+    @Test
+    public void shouldConstructFromJavaStream() {
+        final java.util.stream.Stream<Integer> javaStream = java.util.stream.Stream.of(1, 2, 3);
+        final Map<String, Integer> map = mapOf(javaStream, String::valueOf, Function.identity());
+        assertThat(map).isEqualTo(this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3));
+    }
+
+    @Test
+    public void shouldConstructFromJavaStreamEntries() {
+        final java.util.stream.Stream<Integer> javaStream = java.util.stream.Stream.of(1, 2, 3);
+        final Map<String, Integer> map = mapOf(javaStream, i -> Tuple.of(String.valueOf(i), i));
+        assertThat(map).isEqualTo(this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3));
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void shouldConstructFromUtilEntries() {
         final Map<String, Integer> map = mapOfEntries(utilEntry("1", 1), utilEntry("2", 2), utilEntry("3", 3));
-        assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
+        assertThat(map).isEqualTo(this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldConstructFromEntries() {
         final Map<String, Integer> map = mapOfTuples(Map.entry("1", 1), Map.entry("2", 2), Map.entry("3", 3));
-        assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
+        assertThat(map).isEqualTo(this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3));
     }
 
     @Test
     public void shouldConstructFromPairs() {
         final Map<String, Integer> map = mapOf("1", 1, "2", 2, "3", 3);
-        assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
+        assertThat(map).isEqualTo(this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3));
     }
 
     // -- toString
