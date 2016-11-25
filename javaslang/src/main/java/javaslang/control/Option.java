@@ -5,6 +5,8 @@
  */
 package javaslang.control;
 
+import javaslang.API.Match.Pattern0;
+import javaslang.API.Match.Pattern1;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.Seq;
@@ -18,6 +20,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import static javaslang.API.println;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -94,10 +98,9 @@ public interface Option<T> extends Value<T> {
      * @param <T> component type
      * @return the single instance of {@code None}
      */
+    @SuppressWarnings("unchecked")
     static <T> Option<T> none() {
-        @SuppressWarnings("unchecked")
-        final None<T> none = (None<T>) None.INSTANCE;
-        return none;
+        return (None<T>) None.INSTANCE;
     }
 
     /**
@@ -358,7 +361,7 @@ public interface Option<T> extends Value<T> {
      * @author Daniel Dietrich
      * @since 1.0.0
      */
-    final class Some<T> implements Option<T>, Serializable {
+    final class Some<T> extends Pattern0<Some<T>> implements Option<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -389,6 +392,13 @@ public interface Option<T> extends Value<T> {
         }
 
         @Override
+        public Option<Some<T>> unapply(Object obj) {
+            // TODO
+            println(this + ".unapply(" + obj + ")");
+            return none();
+        }
+
+        @Override
         public boolean equals(Object obj) {
             return (obj == this) || (obj instanceof Some && Objects.equals(value, ((Some<?>) obj).value));
         }
@@ -416,7 +426,7 @@ public interface Option<T> extends Value<T> {
      * @author Daniel Dietrich
      * @since 1.0.0
      */
-    final class None<T> implements Option<T>, Serializable {
+    final class None<T> extends Pattern0<None<T>> implements Option<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -439,6 +449,13 @@ public interface Option<T> extends Value<T> {
         @Override
         public boolean isEmpty() {
             return true;
+        }
+
+        @Override
+        public Option<None<T>> unapply(Object obj) {
+            // TODO
+            println(this + ".unapply(" + obj + ")");
+            return none();
         }
 
         @Override

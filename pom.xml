@@ -38,8 +38,10 @@ Note: The maven build currently needs to be started from the javaslang root dir
     <description>Javaslang is a Java standard library extension built for Java 8 and above.</description>
     <modules>
         <module>javaslang</module>
+        <!-- temporarily disabled, see #1705
         <module>javaslang-gwt</module>
         <module>javaslang-gwt-example</module>
+        -->
         <module>javaslang-benchmark</module>
         <module>javaslang-match</module>
         <module>javaslang-pure</module>
