@@ -21,7 +21,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static javaslang.API.TODO;
+import static javaslang.API.println;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -88,7 +88,7 @@ public interface Option<T> extends Value<T> {
      * @param <T>   type of the value
      * @return {@code Some(value)}
      */
-    static <T> Some<T> some(T value) {
+    static <T> Option<T> some(T value) {
         return new Some<>(value);
     }
 
@@ -99,7 +99,7 @@ public interface Option<T> extends Value<T> {
      * @return the single instance of {@code None}
      */
     @SuppressWarnings("unchecked")
-    static <T> None<T> none() {
+    static <T> Option<T> none() {
         return (None<T>) None.INSTANCE;
     }
 
@@ -361,7 +361,7 @@ public interface Option<T> extends Value<T> {
      * @author Daniel Dietrich
      * @since 1.0.0
      */
-    final class Some<T> extends Pattern1<Some<? extends T>, T> implements Option<T>, Serializable {
+    final class Some<T> extends Pattern0<Some<T>> implements Option<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -392,9 +392,10 @@ public interface Option<T> extends Value<T> {
         }
 
         @Override
-        public Option<T> unapply(Some<? extends T> t) {
-            // Pattern1.of(Option.Some.class, p1, javaslang.$::Some);
-            return TODO("Some.unapply");
+        public Option<Some<T>> unapply(Object obj) {
+            // TODO
+            println(this + ".unapply(" + obj + ")");
+            return none();
         }
 
         @Override
@@ -425,7 +426,7 @@ public interface Option<T> extends Value<T> {
      * @author Daniel Dietrich
      * @since 1.0.0
      */
-    final class None<T> extends Pattern0<None<? extends T>> implements Option<T>, Serializable {
+    final class None<T> extends Pattern0<None<T>> implements Option<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -451,8 +452,10 @@ public interface Option<T> extends Value<T> {
         }
 
         @Override
-        public Option<None<? extends T>> unapply(None<? extends T> ts) {
-            return TODO("None.unapply");
+        public Option<None<T>> unapply(Object obj) {
+            // TODO
+            println(this + ".unapply(" + obj + ")");
+            return none();
         }
 
         @Override

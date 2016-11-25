@@ -526,24 +526,44 @@ def generateMainClasses(): Unit = {
           }
 
           /$javadoc
-           * Alias for {@link $OptionType#some(Object)}
+           * Matches {@code Some(value)} if {@code value} can be unapplied by the given pattern {@code p1}.
            *
-           * @param <T>   type of the value
-           * @param value A value
-           * @return {@link $OptionType.Some}
+           * @param <T> The component type of a Some.
+           * @param <_1> The type of the unapplied component
+           * @param p1 a Pattern that unapplies a value of a Some
+           * @return A new Pattern unapplies a Some and results in one value
            */
-          public static <T> $OptionType<T> Some(T value) {
-              return $OptionType.some(value);
+          public static <T, _1 extends T> Pattern1<Option.Some<T>, _1> Some(Pattern<_1, ?> p1) {
+              return Pattern1.of(Option.Some.class, p1, javaslang.$$::Some);
           }
 
           /$javadoc
-           * Alias for {@link $OptionType#none()}
+           * Returns a {@link $OptionType.Some} in contrast to {@link $OptionType#some(Object)},
+           * which returns {@link $OptionType}.
+           * <p>
+           * Some extends Pattern and therefore can be used for pattern matching.
+           *
+           * @param <T>   type of the value
+           * @param value A value
+           * @return A new instance of {@link $OptionType.Some}
+           */
+          @SuppressWarnings("unchecked")
+          public static <T> $OptionType.Some<T> Some(T value) {
+              return ($OptionType.Some<T>) $OptionType.some(value);
+          }
+
+          /$javadoc
+           * Returns a {@link $OptionType.None} in contrast to {@link $OptionType#none()},
+           * which returns {@link $OptionType}.
+           * <p>
+           * None extends Pattern and therefore can be used for pattern matching.
            *
            * @param <T> component type
            * @return the singleton instance of {@link $OptionType.None}
            */
-          public static <T> $OptionType<T> None() {
-              return $OptionType.none();
+          @SuppressWarnings("unchecked")
+          public static <T> $OptionType.None<T> None() {
+              return ($OptionType.None<T>) $OptionType.none();
           }
 
           /$javadoc
@@ -1034,9 +1054,10 @@ def generateMainClasses(): Unit = {
           @GwtIncompatible
           public static <T> Pattern0<T> $$(T prototype) {
               return new Pattern0<T>() {
+                  @SuppressWarnings("unchecked")
                   @Override
-                  public $OptionType<T> unapply(T obj) {
-                      return $Objects.equals(obj, prototype) ? $OptionType.some(obj) : $OptionType.none();
+                  public $OptionType<T> unapply(Object obj) {
+                      return $Objects.equals(obj, prototype) ? $OptionType.some((T) obj) : $OptionType.none();
                   }
               };
           }
@@ -1101,9 +1122,11 @@ def generateMainClasses(): Unit = {
           public static <T> Pattern0<T> $$($PredicateType<? super T> predicate) {
               $Objects.requireNonNull(predicate, "predicate is null");
               return new Pattern0<T>() {
+                  @SuppressWarnings("unchecked")
                   @Override
-                  public $OptionType<T> unapply(T obj) {
-                      return predicate.test(obj) ? $OptionType.some(obj) : $OptionType.none();
+                  public $OptionType<T> unapply(Object obj) {
+                      final T t = (T) obj;
+                      return predicate.test(t) ? $OptionType.some(t) : $OptionType.none();
                   }
               };
           }
@@ -1203,9 +1226,8 @@ def generateMainClasses(): Unit = {
                * @param <T> Class type that is matched by this pattern
                * @param <R> Type of the single or composite part this pattern decomposes
                */
-              // javac needs fqn's here
               public interface Pattern<T, R> {
-                  $OptionType<R> unapply(T t);
+                  $OptionType<R> unapply(Object obj);
               }
 
               // These can't be @FunctionalInterfaces because of ambiguities.
@@ -1218,9 +1240,10 @@ def generateMainClasses(): Unit = {
                   //           possible: `Pattern0<Some<String>> p = Pattern0.of(Some.class);`
                   public static <T> Pattern0<T> of(Class<? super T> type) {
                       return new Pattern0<T>() {
+                          @SuppressWarnings("unchecked")
                           @Override
-                          public $OptionType<T> unapply(T obj) {
-                              return (obj == null || !type.isAssignableFrom(obj.getClass())) ? $OptionType.none() : $OptionType.some(obj);
+                          public $OptionType<T> unapply(Object obj) {
+                              return (obj == null || !type.isAssignableFrom(obj.getClass())) ? $OptionType.none() : $OptionType.some((T) obj);
                           }
                       };
                   }
@@ -1243,14 +1266,14 @@ def generateMainClasses(): Unit = {
                           return new Pattern$i<T, $resultGenerics>() {
                               @SuppressWarnings("unchecked")
                               @Override
-                              public $OptionType<$resultType> unapply(T obj) {
+                              public $OptionType<$resultType> unapply(Object obj) {
                                   if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                                       return $OptionType.none();
                                   } else {
                                       ${if (i == 1) xs"""
-                                        return unapply.apply(obj).apply(u1 -> ((Pattern<U1, ?>) p1).unapply(u1).map(_1 -> (T1) u1));
+                                        return unapply.apply((T) obj).apply(u1 -> ((Pattern<U1, ?>) p1).unapply(u1).map(_1 -> (T1) u1));
                                       """ else xs"""
-                                        final Tuple$i<${(1 to i).gen(j => s"U$j")(", ")}> unapplied = unapply.apply(obj);
+                                        final Tuple$i<${(1 to i).gen(j => s"U$j")(", ")}> unapplied = unapply.apply((T) obj);
                                         return unapplied.apply((${(1 to i).gen(j => s"u$j")(", ")}) ->
                                                 ${(1 until i).gen(j => s"((Pattern<U$j, ?>) p$j).unapply(u$j).flatMap(_$j ->")("\n")}
                                                 ((Pattern<U$i, ?>) p$i).unapply(u$i).map(_$i -> ($resultType) unapplied)

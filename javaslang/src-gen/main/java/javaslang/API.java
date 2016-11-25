@@ -877,24 +877,44 @@ public final class API {
     }
 
     /**
-     * Alias for {@link Option#some(Object)}
+     * Matches {@code Some(value)} if {@code value} can be unapplied by the given pattern {@code p1}.
      *
-     * @param <T>   type of the value
-     * @param value A value
-     * @return {@link Option.Some}
+     * @param <T> The component type of a Some.
+     * @param <_1> The type of the unapplied component
+     * @param p1 a Pattern that unapplies a value of a Some
+     * @return A new Pattern unapplies a Some and results in one value
      */
-    public static <T> Option<T> Some(T value) {
-        return Option.some(value);
+    public static <T, _1 extends T> Pattern1<Option.Some<T>, _1> Some(Pattern<_1, ?> p1) {
+        return Pattern1.of(Option.Some.class, p1, javaslang.$::Some);
     }
 
     /**
-     * Alias for {@link Option#none()}
+     * Returns a {@link Option.Some} in contrast to {@link Option#some(Object)},
+     * which returns {@link Option}.
+     * <p>
+     * Some extends Pattern and therefore can be used for pattern matching.
+     *
+     * @param <T>   type of the value
+     * @param value A value
+     * @return A new instance of {@link Option.Some}
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Option.Some<T> Some(T value) {
+        return (Option.Some<T>) Option.some(value);
+    }
+
+    /**
+     * Returns a {@link Option.None} in contrast to {@link Option#none()},
+     * which returns {@link Option}.
+     * <p>
+     * None extends Pattern and therefore can be used for pattern matching.
      *
      * @param <T> component type
      * @return the singleton instance of {@link Option.None}
      */
-    public static <T> Option<T> None() {
-        return Option.none();
+    @SuppressWarnings("unchecked")
+    public static <T> Option.None<T> None() {
+        return (Option.None<T>) Option.none();
     }
 
     /**
@@ -3380,9 +3400,10 @@ public final class API {
     @GwtIncompatible
     public static <T> Pattern0<T> $(T prototype) {
         return new Pattern0<T>() {
+            @SuppressWarnings("unchecked")
             @Override
-            public Option<T> unapply(T obj) {
-                return Objects.equals(obj, prototype) ? Option.some(obj) : Option.none();
+            public Option<T> unapply(Object obj) {
+                return Objects.equals(obj, prototype) ? Option.some((T) obj) : Option.none();
             }
         };
     }
@@ -3447,9 +3468,11 @@ public final class API {
     public static <T> Pattern0<T> $(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return new Pattern0<T>() {
+            @SuppressWarnings("unchecked")
             @Override
-            public Option<T> unapply(T obj) {
-                return predicate.test(obj) ? Option.some(obj) : Option.none();
+            public Option<T> unapply(Object obj) {
+                final T t = (T) obj;
+                return predicate.test(t) ? Option.some(t) : Option.none();
             }
         };
     }
@@ -3646,9 +3669,8 @@ public final class API {
          * @param <T> Class type that is matched by this pattern
          * @param <R> Type of the single or composite part this pattern decomposes
          */
-        // javac needs fqn's here
         public interface Pattern<T, R> {
-            Option<R> unapply(T t);
+            Option<R> unapply(Object obj);
         }
 
         // These can't be @FunctionalInterfaces because of ambiguities.
@@ -3661,9 +3683,10 @@ public final class API {
             //           possible: `Pattern0<Some<String>> p = Pattern0.of(Some.class);`
             public static <T> Pattern0<T> of(Class<? super T> type) {
                 return new Pattern0<T>() {
+                    @SuppressWarnings("unchecked")
                     @Override
-                    public Option<T> unapply(T obj) {
-                        return (obj == null || !type.isAssignableFrom(obj.getClass())) ? Option.none() : Option.some(obj);
+                    public Option<T> unapply(Object obj) {
+                        return (obj == null || !type.isAssignableFrom(obj.getClass())) ? Option.none() : Option.some((T) obj);
                     }
                 };
             }
@@ -3678,11 +3701,11 @@ public final class API {
                 return new Pattern1<T, T1>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<T1> unapply(T obj) {
+                    public Option<T1> unapply(Object obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                             return Option.none();
                         } else {
-                            return unapply.apply(obj).apply(u1 -> ((Pattern<U1, ?>) p1).unapply(u1).map(_1 -> (T1) u1));
+                            return unapply.apply((T) obj).apply(u1 -> ((Pattern<U1, ?>) p1).unapply(u1).map(_1 -> (T1) u1));
                         }
                     }
                 };
@@ -3698,11 +3721,11 @@ public final class API {
                 return new Pattern2<T, T1, T2>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<Tuple2<T1, T2>> unapply(T obj) {
+                    public Option<Tuple2<T1, T2>> unapply(Object obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                             return Option.none();
                         } else {
-                            final Tuple2<U1, U2> unapplied = unapply.apply(obj);
+                            final Tuple2<U1, U2> unapplied = unapply.apply((T) obj);
                             return unapplied.apply((u1, u2) ->
                                     ((Pattern<U1, ?>) p1).unapply(u1).flatMap(_1 ->
                                     ((Pattern<U2, ?>) p2).unapply(u2).map(_2 -> (Tuple2<T1, T2>) unapplied)
@@ -3722,11 +3745,11 @@ public final class API {
                 return new Pattern3<T, T1, T2, T3>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<Tuple3<T1, T2, T3>> unapply(T obj) {
+                    public Option<Tuple3<T1, T2, T3>> unapply(Object obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                             return Option.none();
                         } else {
-                            final Tuple3<U1, U2, U3> unapplied = unapply.apply(obj);
+                            final Tuple3<U1, U2, U3> unapplied = unapply.apply((T) obj);
                             return unapplied.apply((u1, u2, u3) ->
                                     ((Pattern<U1, ?>) p1).unapply(u1).flatMap(_1 ->
                                     ((Pattern<U2, ?>) p2).unapply(u2).flatMap(_2 ->
@@ -3747,11 +3770,11 @@ public final class API {
                 return new Pattern4<T, T1, T2, T3, T4>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<Tuple4<T1, T2, T3, T4>> unapply(T obj) {
+                    public Option<Tuple4<T1, T2, T3, T4>> unapply(Object obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                             return Option.none();
                         } else {
-                            final Tuple4<U1, U2, U3, U4> unapplied = unapply.apply(obj);
+                            final Tuple4<U1, U2, U3, U4> unapplied = unapply.apply((T) obj);
                             return unapplied.apply((u1, u2, u3, u4) ->
                                     ((Pattern<U1, ?>) p1).unapply(u1).flatMap(_1 ->
                                     ((Pattern<U2, ?>) p2).unapply(u2).flatMap(_2 ->
@@ -3773,11 +3796,11 @@ public final class API {
                 return new Pattern5<T, T1, T2, T3, T4, T5>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<Tuple5<T1, T2, T3, T4, T5>> unapply(T obj) {
+                    public Option<Tuple5<T1, T2, T3, T4, T5>> unapply(Object obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                             return Option.none();
                         } else {
-                            final Tuple5<U1, U2, U3, U4, U5> unapplied = unapply.apply(obj);
+                            final Tuple5<U1, U2, U3, U4, U5> unapplied = unapply.apply((T) obj);
                             return unapplied.apply((u1, u2, u3, u4, u5) ->
                                     ((Pattern<U1, ?>) p1).unapply(u1).flatMap(_1 ->
                                     ((Pattern<U2, ?>) p2).unapply(u2).flatMap(_2 ->
@@ -3800,11 +3823,11 @@ public final class API {
                 return new Pattern6<T, T1, T2, T3, T4, T5, T6>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<Tuple6<T1, T2, T3, T4, T5, T6>> unapply(T obj) {
+                    public Option<Tuple6<T1, T2, T3, T4, T5, T6>> unapply(Object obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                             return Option.none();
                         } else {
-                            final Tuple6<U1, U2, U3, U4, U5, U6> unapplied = unapply.apply(obj);
+                            final Tuple6<U1, U2, U3, U4, U5, U6> unapplied = unapply.apply((T) obj);
                             return unapplied.apply((u1, u2, u3, u4, u5, u6) ->
                                     ((Pattern<U1, ?>) p1).unapply(u1).flatMap(_1 ->
                                     ((Pattern<U2, ?>) p2).unapply(u2).flatMap(_2 ->
@@ -3828,11 +3851,11 @@ public final class API {
                 return new Pattern7<T, T1, T2, T3, T4, T5, T6, T7>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> unapply(T obj) {
+                    public Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> unapply(Object obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                             return Option.none();
                         } else {
-                            final Tuple7<U1, U2, U3, U4, U5, U6, U7> unapplied = unapply.apply(obj);
+                            final Tuple7<U1, U2, U3, U4, U5, U6, U7> unapplied = unapply.apply((T) obj);
                             return unapplied.apply((u1, u2, u3, u4, u5, u6, u7) ->
                                     ((Pattern<U1, ?>) p1).unapply(u1).flatMap(_1 ->
                                     ((Pattern<U2, ?>) p2).unapply(u2).flatMap(_2 ->
@@ -3857,11 +3880,11 @@ public final class API {
                 return new Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> unapply(T obj) {
+                    public Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> unapply(Object obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
                             return Option.none();
                         } else {
-                            final Tuple8<U1, U2, U3, U4, U5, U6, U7, U8> unapplied = unapply.apply(obj);
+                            final Tuple8<U1, U2, U3, U4, U5, U6, U7, U8> unapplied = unapply.apply((T) obj);
                             return unapplied.apply((u1, u2, u3, u4, u5, u6, u7, u8) ->
                                     ((Pattern<U1, ?>) p1).unapply(u1).flatMap(_1 ->
                                     ((Pattern<U2, ?>) p2).unapply(u2).flatMap(_2 ->
