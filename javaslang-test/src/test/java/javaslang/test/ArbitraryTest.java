@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ArbitraryTest {
 
     // equally distributed random number generator
-    static final Random RANDOM = new Random();
+    private static final Random RANDOM = new Random();
 
     // -- apply
 
@@ -107,45 +107,35 @@ public class ArbitraryTest {
     @Test
     public void shouldCreateNonDistinctArbitrary() {
         final Gen<String> arbitrary = Arbitrary.string(Gen.choose('a', 'b')).apply(2);
-
-        Stream.range(0, 100)
-              .toList()
-              .map(i -> arbitrary.apply(RANDOM))
-              .groupBy(Function1.identity())
-              .forEach((key, value) -> assertThat(value.length())
-                  .describedAs(key)
-                  .isGreaterThan(1));
+        List.range(0, 1000)
+            .map(i -> arbitrary.apply(RANDOM))
+            .groupBy(Function1.identity())
+            .forEach((key, value) -> assertThat(value.length())
+                    .describedAs(key)
+                    .isGreaterThan(1));
     }
 
     @Test
     public void shouldCreateDistinctArbitrary() {
-
         final Gen<String> distinctArbitrary = Arbitrary.string(Gen.choose('a', 'b')).distinct().apply(100);
-
-        Stream.range(0, 10000)
-              .toList()
-              .map(i -> distinctArbitrary.apply(RANDOM))
-              .groupBy(Function1.identity())
-              .forEach((key, value) -> assertThat(value.length())
-                  .describedAs(key)
-                  .isEqualTo(1));
-
+        List.range(0, 1000)
+            .map(i -> distinctArbitrary.apply(RANDOM))
+            .groupBy(Function1.identity())
+            .forEach((key, value) -> assertThat(value.length())
+                    .describedAs(key)
+                    .isEqualTo(1));
     }
 
     @Test
     public void shouldCreateDistinctByArbitrary() {
-
         final Gen<String> distinctByArbitrary = Arbitrary.string(Gen.choose('a', 'b'))
                                                          .distinctBy(Comparator.naturalOrder()).apply(100);
-
-        Stream.range(0, 10000)
-              .toList()
-              .map(i -> distinctByArbitrary.apply(RANDOM))
-              .groupBy(Function1.identity())
-              .forEach((key, value) -> assertThat(value.length())
-                  .describedAs(key)
-                  .isEqualTo(1));
-
+        List.range(0, 10000)
+            .map(i -> distinctByArbitrary.apply(RANDOM))
+            .groupBy(Function1.identity())
+            .forEach((key, value) -> assertThat(value.length())
+                    .describedAs(key)
+                    .isEqualTo(1));
     }
 
     @Test
@@ -153,7 +143,6 @@ public class ArbitraryTest {
         final Gen<String> arbitrary = Arbitrary.of("test")
                                                .intersperse(Arbitrary.of("content"))
                                                .apply(10);
-
         for (int i = 0; i < 100; i++) {
             assertThat(arbitrary.apply(RANDOM)).isIn("test", "content");
         }
@@ -161,16 +150,13 @@ public class ArbitraryTest {
 
     @Test
     public void shouldCreateInterspersedFixedContentArbitraryWithConstantOrder() {
-
         final Gen<String> arbitrary = Arbitrary.of("test")
                                                .intersperse(Arbitrary.of("content"))
                                                .apply(10);
-
-        Iterator<Stream<String>> generatedStringPairss = Stream.range(0, 10)
-                                                               .map(i -> arbitrary.apply(RANDOM))
-                                                               .grouped(2);
-
-        for (Stream<String> stringPairs : generatedStringPairss) {
+        final Iterator<Stream<String>> generatedStringPairs = Stream.range(0, 10)
+                                                                    .map(i -> arbitrary.apply(RANDOM))
+                                                                    .grouped(2);
+        for (Stream<String> stringPairs : generatedStringPairs) {
             assertThat(stringPairs.mkString(",")).isEqualTo("test,content");
         }
 
@@ -181,7 +167,6 @@ public class ArbitraryTest {
         final Gen<String> arbitrary = Arbitrary.string(Gen.choose("test".toCharArray()))
                                                .filter(s -> !"".equals(s))
                                                .apply(1);
-
         for (int i = 0; i < 100; i++) {
             assertThat(arbitrary.apply(RANDOM)).isIn("t", "e", "s");
         }

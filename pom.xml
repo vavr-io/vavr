@@ -281,6 +281,16 @@ Note: The maven build currently needs to be started from the javaslang root dir
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven.surefire.version}</version>
+                    <configuration>
+                        <parallel>all</parallel>
+                        <threadCount>4</threadCount>
+                        <reuseForks>true</reuseForks>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
