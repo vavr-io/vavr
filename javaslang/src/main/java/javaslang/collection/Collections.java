@@ -166,6 +166,16 @@ final class Collections {
         return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), us -> finisher.apply(reverseIterator(us)));
     }
 
+    static <T, S extends Seq<T>> S shuffle(S source, Function<? super Iterable<T>, S> ofAll) {
+        if (source.length() <= 1) {
+            return source;
+        }
+
+        final java.util.List<T> list = source.toJavaList();
+        java.util.Collections.shuffle(list);
+        return ofAll.apply(list);
+    }
+
     static <T> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         if (n <= 0) {
@@ -213,5 +223,4 @@ final class Collections {
             return withSize(List(iterable));
         }
     }
-
 }

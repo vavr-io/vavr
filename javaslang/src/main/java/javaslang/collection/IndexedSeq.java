@@ -256,6 +256,9 @@ public interface IndexedSeq<T> extends Seq<T> {
     }
 
     @Override
+    IndexedSeq<T> shuffle();
+
+    @Override
     IndexedSeq<T> slice(int beginIndex, int endIndex);
 
     @Override

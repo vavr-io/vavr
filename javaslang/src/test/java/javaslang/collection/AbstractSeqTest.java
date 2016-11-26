@@ -1217,6 +1217,27 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(ofAll(of("a", "b", "c")).reverseIterator().toList()).isEqualTo(Iterator.of("c", "b", "a").toList());
     }
 
+    // -- shuffle
+
+    @Test
+    public void shouldShuffleEmpty() {
+        assertThat(empty().shuffle().isEmpty());
+    }
+
+    @Test
+    public void shouldShuffleHaveSameLength() {
+        assertThat(of(1, 2, 3).shuffle().size()).isEqualTo(of(1, 2, 3).size());
+    }
+
+    @Test
+    public void shouldShuffleHaveSameElements() {
+        Seq<Integer> shuffled = of(1, 2, 3).shuffle();
+        assertThat(shuffled.indexOf(1)).isNotEqualTo(-1);
+        assertThat(shuffled.indexOf(2)).isNotEqualTo(-1);
+        assertThat(shuffled.indexOf(3)).isNotEqualTo(-1);
+        assertThat(shuffled.indexOf(4)).isEqualTo(-1);
+    }
+
     // -- set
 
     @Test(expected = IndexOutOfBoundsException.class)

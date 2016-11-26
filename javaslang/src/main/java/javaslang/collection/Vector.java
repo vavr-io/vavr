@@ -930,6 +930,10 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         return  Collections.scanRight(this, zero, operation, Iterator::toVector);
     }
 
+    @Override public Vector<T> shuffle() {
+        return Collections.shuffle(this, Vector::ofAll);
+    }
+
     @Override
     public Vector<T> slice(int beginIndex, int endIndex) {
         if ((beginIndex >= endIndex) || (beginIndex >= size()) || isEmpty()) {
