@@ -563,7 +563,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Vector<T> append(T element) { return appendAll(Iterator.of(element)); }
+    public Vector<T> append(T element) { return appendAll(List.of(element)); }
 
     @Override
     public Vector<T> appendAll(Iterable<? extends T> iterable) {
@@ -818,7 +818,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Vector<T> prepend(T element) { return prependAll(Iterator.of(element)); }
+    public Vector<T> prepend(T element) { return prependAll(List.of(element)); }
 
     @Override
     public Vector<T> prependAll(Iterable<? extends T> iterable) {
