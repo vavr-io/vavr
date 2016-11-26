@@ -1674,37 +1674,49 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     // -- stderr
 
+    private final static Object STD_ERR_LOCK = new Object();
+
     @Test
     public void shouldWriteToStderr() {
-        of(1, 2, 3).stderr();
+        synchronized (STD_ERR_LOCK) {
+            of(1, 2, 3).stderr();
+        }
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldHandleStderrIOException() {
-        final PrintStream originalErr = System.err;
-        try (PrintStream failingPrintStream = failingPrintStream()) {
-            System.setErr(failingPrintStream);
-            of(0).stderr();
-        } finally {
-            System.setErr(originalErr);
+        synchronized (STD_ERR_LOCK) {
+            final PrintStream originalErr = System.err;
+            try (PrintStream failingPrintStream = failingPrintStream()) {
+                System.setErr(failingPrintStream);
+                of(0).stderr();
+            } finally {
+                System.setErr(originalErr);
+            }
         }
     }
 
     // -- stdout
 
+    private final static Object STD_OUT_LOCK = new Object();
+
     @Test
     public void shouldWriteToStdout() {
-        of(1, 2, 3).stdout();
+        synchronized (STD_OUT_LOCK) {
+            of(1, 2, 3).stdout();
+        }
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldHandleStdoutIOException() {
-        final PrintStream originalOut = System.out;
-        try (PrintStream failingPrintStream = failingPrintStream()) {
-            System.setOut(failingPrintStream);
-            of(0).stdout();
-        } finally {
-            System.setOut(originalOut);
+        synchronized (STD_OUT_LOCK) {
+            final PrintStream originalOut = System.out;
+            try (PrintStream failingPrintStream = failingPrintStream()) {
+                System.setOut(failingPrintStream);
+                of(0).stdout();
+            } finally {
+                System.setOut(originalOut);
+            }
         }
     }
 
