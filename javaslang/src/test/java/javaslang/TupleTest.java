@@ -8,6 +8,7 @@ package javaslang;
 import javaslang.collection.List;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.AbstractMap;
 import java.util.Objects;
 
@@ -126,6 +127,13 @@ public class TupleTest {
         assertThat(tuple1().equals(tuple1())).isTrue();
     }
 
+    @Test
+    public void shouldNarrowTuple1() {
+        final Tuple1<Double> wideTuple = Tuple.of(1.0d);
+        final Tuple1<Number> narrowTuple = Tuple.narrow(wideTuple);
+        assertThat(narrowTuple._1()).isEqualTo(1.0d);
+    }
+
     // -- Tuple2
 
     @Test
@@ -180,6 +188,14 @@ public class TupleTest {
         assertThat(Tuple.of(1, 1).compareTo(Tuple.of(1, 2))).isEqualTo(-1);
     }
 
+    @Test
+    public void shouldNarrowTuple2() {
+        final Tuple2<String, Double> wideTuple = Tuple.of("test", 1.0d);
+        final Tuple2<CharSequence, Number> narrowTuple = Tuple.narrow(wideTuple);
+        assertThat(narrowTuple._1()).isEqualTo("test");
+        assertThat(narrowTuple._2()).isEqualTo(1.0d);
+    }
+
     // -- Tuple3
 
     @Test
@@ -217,6 +233,15 @@ public class TupleTest {
     @Test
     public void shouldTuple3EqualTuple3() {
         assertThat(tuple3().equals(tuple3())).isTrue();
+    }
+
+    @Test
+    public void shouldNarrowTuple3() {
+        final Tuple3<String, Double, Float> wideTuple = Tuple.of("zero", 1.0D, 2.0F);
+        final Tuple3<CharSequence, Number, Number> narrowTuple = Tuple.narrow(wideTuple);
+        assertThat(narrowTuple._1()).isEqualTo("zero");
+        assertThat(narrowTuple._2()).isEqualTo(1.0D);
+        assertThat(narrowTuple._3()).isEqualTo(2.0F);
     }
 
     // -- Tuple4
@@ -258,6 +283,16 @@ public class TupleTest {
         assertThat(tuple4().equals(tuple4())).isTrue();
     }
 
+    @Test
+    public void shouldNarrowTuple4() {
+        final Tuple4<String, Double, Float, Integer> wideTuple = Tuple.of("zero", 1.0D, 2.0F, 3);
+        final Tuple4<CharSequence, Number, Number, Number> narrowTuple = Tuple.narrow(wideTuple);
+        assertThat(narrowTuple._1()).isEqualTo("zero");
+        assertThat(narrowTuple._2()).isEqualTo(1.0D);
+        assertThat(narrowTuple._3()).isEqualTo(2.0F);
+        assertThat(narrowTuple._4()).isEqualTo(3);
+    }
+
     // -- Tuple5
 
     @Test
@@ -295,6 +330,17 @@ public class TupleTest {
     @Test
     public void shouldTuple5EqualTuple5() {
         assertThat(tuple5().equals(tuple5())).isTrue();
+    }
+
+    @Test
+    public void shouldNarrowTuple5() {
+        final Tuple5<String, Double, Float, Integer, Long> wideTuple = Tuple.of("zero", 1.0D, 2.0F, 3, 4L);
+        final Tuple5<CharSequence, Number, Number, Number, Number> narrowTuple = Tuple.narrow(wideTuple);
+        assertThat(narrowTuple._1()).isEqualTo("zero");
+        assertThat(narrowTuple._2()).isEqualTo(1.0D);
+        assertThat(narrowTuple._3()).isEqualTo(2.0F);
+        assertThat(narrowTuple._4()).isEqualTo(3);
+        assertThat(narrowTuple._5()).isEqualTo(4L);
     }
 
     // -- Tuple6
@@ -335,6 +381,124 @@ public class TupleTest {
     public void shouldTuple6EqualTuple6() {
         assertThat(tuple6().equals(tuple6())).isTrue();
     }
+
+    @Test
+    public void shouldNarrowTuple6() {
+        final Tuple6<String, Double, Float, Integer, Long, Byte> wideTuple = Tuple.of("zero", 1.0D, 2.0F, 3, 4L, new Byte("5"));
+        final Tuple6<CharSequence, Number, Number, Number, Number, Number> narrowTuple = Tuple.narrow(wideTuple);
+        assertThat(narrowTuple._1()).isEqualTo("zero");
+        assertThat(narrowTuple._2()).isEqualTo(1.0D);
+        assertThat(narrowTuple._3()).isEqualTo(2.0F);
+        assertThat(narrowTuple._4()).isEqualTo(3);
+        assertThat(narrowTuple._5()).isEqualTo(4L);
+        assertThat(narrowTuple._6()).isEqualTo(new Byte("5"));
+    }
+
+    // -- Tuple7
+
+    @Test
+    public void shouldCreateTuple7() {
+        assertThat(tuple7().toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7)");
+    }
+
+    @Test
+    public void shouldHashTuple7() {
+        final Tuple7<?, ?, ?, ?, ?, ?, ?> t = tuple7();
+        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1, t._2, t._3, t._4, t._5, t._6, t._7));
+    }
+
+    @Test
+    public void shouldReturnCorrectArityOfTuple7() {
+        assertThat(tuple7().arity()).isEqualTo(7);
+    }
+
+    @Test
+    public void shouldEqualSameTuple7Instances() {
+        final Tuple7<?, ?, ?, ?, ?, ?, ?> t = tuple7();
+        assertThat(t.equals(t)).isTrue();
+    }
+
+    @Test
+    public void shouldNotTuple7EqualsNull() {
+        assertThat(tuple7().equals(null)).isFalse();
+    }
+
+    @Test
+    public void shouldNotTuple7EqualsObject() {
+        assertThat(tuple7().equals(new Object())).isFalse();
+    }
+
+    @Test
+    public void shouldTuple7EqualTuple7() {
+        assertThat(tuple7().equals(tuple7())).isTrue();
+    }
+
+    @Test
+    public void shouldNarrowTuple7() {
+        final Tuple7<String, Double, Float, Integer, Long, Byte, Short> wideTuple = Tuple.of("zero", 1.0D, 2.0F, 3, 4L, new Byte("5"), new Short("6"));
+        final Tuple7<CharSequence, Number, Number, Number, Number, Number, Number> narrowTuple = Tuple.narrow(wideTuple);
+        assertThat(narrowTuple._1()).isEqualTo("zero");
+        assertThat(narrowTuple._2()).isEqualTo(1.0D);
+        assertThat(narrowTuple._3()).isEqualTo(2.0F);
+        assertThat(narrowTuple._4()).isEqualTo(3);
+        assertThat(narrowTuple._5()).isEqualTo(4L);
+        assertThat(narrowTuple._6()).isEqualTo(new Byte("5"));
+        assertThat(narrowTuple._7()).isEqualTo(new Short("6"));
+    }
+
+    // -- Tuple8
+
+    @Test
+    public void shouldCreateTuple8() {
+        assertThat(tuple8().toString()).isEqualTo("(1, 2, 3, 4, 5, 6, 7, 8)");
+    }
+
+    @Test
+    public void shouldHashTuple8() {
+        final Tuple8<?, ?, ?, ?, ?, ?, ?, ?> t = tuple8();
+        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8));
+    }
+
+    @Test
+    public void shouldReturnCorrectArityOfTuple8() {
+        assertThat(tuple8().arity()).isEqualTo(8);
+    }
+
+    @Test
+    public void shouldEqualSameTuple8Instances() {
+        final Tuple8<?, ?, ?, ?, ?, ?, ?, ?> t = tuple8();
+        assertThat(t.equals(t)).isTrue();
+    }
+
+    @Test
+    public void shouldNotTuple8EqualsNull() {
+        assertThat(tuple8().equals(null)).isFalse();
+    }
+
+    @Test
+    public void shouldNotTuple8EqualsObject() {
+        assertThat(tuple8().equals(new Object())).isFalse();
+    }
+
+    @Test
+    public void shouldTuple8EqualTuple8() {
+        assertThat(tuple8().equals(tuple8())).isTrue();
+    }
+
+    @Test
+    public void shouldNarrowTuple8() {
+        final Tuple8<String, Double, Float, Integer, Long, Byte, Short, BigDecimal> wideTuple = Tuple.of("zero", 1.0D, 2.0F, 3, 4L, new Byte("5"), new Short("6"), new BigDecimal(7));
+        final Tuple8<CharSequence, Number, Number, Number, Number, Number, Number, Number> narrowTuple = Tuple.narrow(wideTuple);
+        assertThat(narrowTuple._1()).isEqualTo("zero");
+        assertThat(narrowTuple._2()).isEqualTo(1.0D);
+        assertThat(narrowTuple._3()).isEqualTo(2.0F);
+        assertThat(narrowTuple._4()).isEqualTo(3);
+        assertThat(narrowTuple._5()).isEqualTo(4L);
+        assertThat(narrowTuple._6()).isEqualTo(new Byte("5"));
+        assertThat(narrowTuple._7()).isEqualTo(new Short("6"));
+        assertThat(narrowTuple._8()).isEqualTo(new BigDecimal(7));
+    }
+
 
     // -- nested tuples
 
@@ -406,5 +570,13 @@ public class TupleTest {
 
     private Tuple6<?, ?, ?, ?, ?, ?> tuple6() {
         return Tuple.of(1, 2, 3, 4, 5, 6);
+    }
+
+    private Tuple7<?, ?, ?, ?, ?, ?, ?> tuple7() {
+        return Tuple.of(1, 2, 3, 4, 5, 6, 7);
+    }
+
+    private Tuple8<?, ?, ?, ?, ?, ?, ?, ?> tuple8() {
+        return Tuple.of(1, 2, 3, 4, 5, 6, 7, 8);
     }
 }
