@@ -497,7 +497,6 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     // -- toSortedSet
 
-
     @Override
     @Test
     public void shouldConvertToSortedSetWithoutComparatorOnComparable() {
@@ -507,6 +506,33 @@ public class BitSetTest extends AbstractSortedSetTest {
             assertThat(set).isEqualTo(TreeSet.of(3));
         } else {
             assertThat(set).isEqualTo(TreeSet.of(0, 1, 3, 7, 15));
+        }
+    }
+
+    // -- toPriorityQueue
+
+    @Test
+    @Override
+    public void shouldConvertToPriorityQueueUsingImplicitComparator() {
+        final Value<Integer> value = BitSet.of(1, 3, 2);
+        final PriorityQueue<Integer> queue = value.toPriorityQueue();
+        if (value.isSingleValued()) {
+            assertThat(queue).isEqualTo(PriorityQueue.of(1));
+        } else {
+            assertThat(queue).isEqualTo(PriorityQueue.of(1, 2, 3));
+        }
+    }
+
+    @Test
+    @Override
+    public void shouldConvertToPriorityQueueUsingExplicitComparator() {
+        final Comparator<Integer> comparator = Comparator.naturalOrder();
+        final Value<Integer> value = BitSet.of(1, 3, 2);
+        final PriorityQueue<Integer> queue = value.toPriorityQueue(comparator);
+        if (value.isSingleValued()) {
+            assertThat(queue).isEqualTo(PriorityQueue.of(comparator, 1));
+        } else {
+            assertThat(queue).isEqualTo(PriorityQueue.of(comparator, 1, 2, 3));
         }
     }
 

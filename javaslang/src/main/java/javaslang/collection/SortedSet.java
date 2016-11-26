@@ -32,7 +32,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface SortedSet<T> extends Set<T> {
+public interface SortedSet<T> extends Set<T>, Ordered<T> {
 
     long serialVersionUID = 1L;
 
@@ -51,13 +51,6 @@ public interface SortedSet<T> extends Set<T> {
     static <T> SortedSet<T> narrow(SortedSet<? extends T> sortedSet) {
         return (SortedSet<T>) sortedSet;
     }
-
-    /**
-     * Returns the underlying comparator which defines the order of the elements contained in this set.
-     *
-     * @return This set's comparator.
-     */
-    Comparator<T> comparator();
 
     /**
      * Same as {@link #flatMap(Function)} but using a specific comparator for values of the codomain of the given
@@ -133,6 +126,11 @@ public interface SortedSet<T> extends Set<T> {
 
     @Override
     SortedSet<T> intersect(Set<? extends T> elements);
+
+    @Override
+    default boolean isOrdered() {
+        return true;
+    }
 
     @Override
     default T last() {

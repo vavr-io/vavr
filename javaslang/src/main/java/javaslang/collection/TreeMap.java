@@ -1354,6 +1354,11 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
         return isEmpty() ? this : new TreeMap<>(entries.emptyInstance());
     }
 
+    @Override
+    public Comparator<K> comparator() {
+        return ((EntryComparator<K, V>) entries.comparator()).keyComparator();
+    }
+
     // -- internal types
 
     private interface EntryComparator<K, V> extends Comparator<Tuple2<K, V>>, Serializable {

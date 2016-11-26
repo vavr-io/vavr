@@ -25,7 +25,7 @@ import static javaslang.collection.PriorityQueueBase.*;
  * @author Pap Lőrinc
  * @since 2.1.0
  */
-public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> implements Serializable, Kind1<PriorityQueue<T>, T> {
+public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> implements Serializable, Ordered<T>, Kind1<PriorityQueue<T>, T> {
 
     private static final long serialVersionUID = 1L;
 
@@ -115,6 +115,11 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     @Override
     public boolean isEmpty() {
         return size == 0;
+    }
+
+    @Override
+    public boolean isOrdered() {
+        return true;
     }
 
     /**
@@ -542,6 +547,11 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
         return o == this || o instanceof PriorityQueue && Collections.areEqual(this, (Iterable) o);
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public Comparator<T> comparator() {
+        return (Comparator<T>) comparator;
+    }
 }
 
 final class PriorityQueueBase {
