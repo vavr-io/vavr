@@ -16,7 +16,6 @@ import java.util.stream.Collector;
 
 import static javaslang.collection.ArrayType.asArray;
 import static javaslang.collection.Collections.areEqual;
-import static javaslang.collection.Collections.withSize;
 
 /**
  * Vector is the default Seq implementation that provides effectively constant time access to any element.
@@ -657,19 +656,20 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public T get(int index) {
-        if ((index < 0) || (index >= length())) {
-            throw new IndexOutOfBoundsException("get(" + index + ")");
-        } else {
+        if (isValid(index)) {
             return trie.get(index);
+        } else {
+            throw new IndexOutOfBoundsException("get(" + index + ")");
         }
     }
+    private boolean isValid(int index) { return (index >= 0) && (index < length()); }
 
     @Override
     public T head() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("head of empty Vector");
-        } else {
+        if (nonEmpty()) {
             return get(0);
+        } else {
+            throw new NoSuchElementException("head of empty Vector");
         }
     }
 
@@ -694,10 +694,10 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> init() {
-        if (isEmpty()) {
-            throw new UnsupportedOperationException("init of empty Vector");
-        } else {
+        if (nonEmpty()) {
             return dropRight(1);
+        } else {
+            throw new UnsupportedOperationException("init of empty Vector");
         }
     }
 
@@ -709,14 +709,14 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> insertAll(int index, Iterable<? extends T> elements) {
-        if ((index < 0) || (index > length())) {
-            throw new IndexOutOfBoundsException("insert(" + index + ", e) on Vector of length " + length());
-        } else {
+        if ((index >= 0) && (index <= length())) {
             final Vector<T> begin = take(index).appendAll(elements);
             final Vector<T> end = drop(index);
             return (begin.size() > end.size())
-                   ? begin.appendAll(end)
-                   : end.prependAll(begin);
+                    ? begin.appendAll(end)
+                    : end.prependAll(begin);
+        } else {
+            throw new IndexOutOfBoundsException("insert(" + index + ", e) on Vector of length " + length());
         }
     }
 
@@ -866,12 +866,14 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> removeAt(int index) {
-        if ((index < 0) || (index >= length())) {
-            throw new IndexOutOfBoundsException("removeAt(" + index + ")");
-        } else {
+        if (isValid(index)) {
             final Vector<T> begin = take(index);
             final Vector<T> end = drop(index + 1);
-            return begin.appendAll(end);
+            return (begin.size() > end.size())
+                    ? begin.appendAll(end)
+                    : end.prependAll(begin);
+        } else {
+            throw new IndexOutOfBoundsException("removeAt(" + index + ")");
         }
     }
 
@@ -1018,28 +1020,28 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> subSequence(int beginIndex) {
-        if ((beginIndex < 0) || (beginIndex > length())) {
-            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
-        } else {
+        if ((beginIndex >= 0) && (beginIndex <= length())) {
             return drop(beginIndex);
+        } else {
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
         }
     }
 
     @Override
     public Vector<T> subSequence(int beginIndex, int endIndex) {
-        if ((beginIndex < 0) || (beginIndex > endIndex) || (endIndex > length())) {
-            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on Vector of size " + length());
-        } else {
+        if ((beginIndex >= 0) && (beginIndex <= endIndex) && (endIndex <= length())) {
             return slice(beginIndex, endIndex);
+        } else {
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on Vector of size " + length());
         }
     }
 
     @Override
     public Vector<T> tail() {
-        if (isEmpty()) {
-            throw new UnsupportedOperationException("tail of empty Vector");
-        } else {
+        if (nonEmpty()) {
             return drop(1);
+        } else {
+            throw new UnsupportedOperationException("tail of empty Vector");
         }
     }
 
@@ -1120,10 +1122,10 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> update(int index, T element) {
-        if ((index < 0) || (index >= length())) {
-            throw new IndexOutOfBoundsException("update(" + index + ")");
-        } else {
+        if (isValid(index)) {
             return wrap(trie.update(index, element));
+        } else {
+            throw new IndexOutOfBoundsException("update(" + index + ")");
         }
     }
 

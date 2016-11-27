@@ -267,13 +267,16 @@ final class BitMappedTrie<T> implements Serializable {
         } else if (depthShift == BRANCHING_BASE) {
             return obj().getAt(array, firstDigit(offset + index, depthShift));
         } else {
-            index += offset;
-            Object leaf = obj().getAt(array, firstDigit(index, depthShift));
-            for (int shift = depthShift - BRANCHING_BASE; shift > 0; shift -= BRANCHING_BASE) {
-                leaf = obj().getAt(leaf, digit(index, shift));
-            }
-            return leaf;
+            return getLeafGeneral(index);
         }
+    }
+    private Object getLeafGeneral(int index) {
+        index += offset;
+        Object leaf = obj().getAt(array, firstDigit(index, depthShift));
+        for (int shift = depthShift - BRANCHING_BASE; shift > 0; shift -= BRANCHING_BASE) {
+            leaf = obj().getAt(leaf, digit(index, shift));
+        }
+        return leaf;
     }
 
     Iterator<T> iterator() {
