@@ -5,7 +5,6 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
 import javaslang.control.Option;
 
 import java.util.ArrayList;
@@ -16,8 +15,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import static javaslang.API.Array;
 import static javaslang.API.List;
-import static javaslang.API.Tuple;
+import static javaslang.collection.ArrayType.asArray;
 
 /**
  * Internal class, containing helpers.
@@ -135,21 +135,28 @@ final class Collections {
 
     static <T> Iterator<T> reverseIterator(Iterable<T> iterable) {
         if (iterable instanceof java.util.List) {
-            final java.util.List<T> list = (java.util.List<T>) iterable;
-            return new Iterator<T>() {
-                final java.util.ListIterator<T> delegate = list.listIterator(list.size());
-
-                @Override
-                public boolean hasNext() { return delegate.hasPrevious(); }
-
-                @Override
-                public T next() { return delegate.previous(); }
-            };
+            return reverseListIterator((java.util.List<T>) iterable);
         } else if (iterable instanceof Seq) {
             return ((Seq<T>) iterable).reverseIterator();
         } else {
-            return List.<T> empty().pushAll(iterable).iterator();
+            return List.<T>empty().pushAll(iterable).iterator();
         }
+    }
+
+    private static <T> Iterator<T> reverseListIterator(java.util.List<T> list) {
+        return new Iterator<T>() {
+            private final java.util.ListIterator<T> delegate = list.listIterator(list.size());
+
+            @Override
+            public boolean hasNext() {
+                return delegate.hasPrevious();
+            }
+
+            @Override
+            public T next() {
+                return delegate.previous();
+            }
+        };
     }
 
     static <T, U, R extends Traversable<U>> R scanLeft(Traversable<? extends T> source,
@@ -204,14 +211,39 @@ final class Collections {
         }
     }
 
-    static <T> Tuple2<Iterable<? extends T>, Integer> withSize(Iterable<? extends T> iterable) {
-        if (iterable instanceof Collection) {
-            return Tuple(iterable, ((Collection<?>) iterable).size());
-        } else if (iterable instanceof Traversable && isTraversableAgain(iterable)) {
-            return Tuple(iterable, ((Traversable<?>) iterable).size());
-        } else {
-            return withSize(List(iterable));
+    static class IterableWithSize<T> {
+        private final Iterable<? extends T> iterable;
+        private final int size;
+
+        IterableWithSize(Iterable<? extends T> iterable, int size) { this.iterable = iterable; this.size = size; }
+
+        java.util.Iterator<? extends T> iterator() {
+            return iterable.iterator();
+        }
+
+        java.util.Iterator<? extends T> reverseIterator() {
+            return Collections.reverseIterator(iterable);
+        }
+
+        int size() {
+            return size;
+        }
+
+        @SuppressWarnings("unchecked")
+        T[] toArray() {
+            return (T[]) asArray(iterator(), size());
         }
     }
 
+    @SuppressWarnings("unchecked")
+    static <T> IterableWithSize<T> withSize(Iterable<? extends T> iterable) {
+        if (iterable instanceof Collection) {
+            return new IterableWithSize<>(iterable, ((Collection<?>) iterable).size());
+        } else if (isTraversableAgain(iterable)) {
+            return new IterableWithSize<>(iterable, ((Traversable<?>) iterable).size());
+        } else {
+            final List<? extends T> list = List(iterable);
+            return new IterableWithSize<>(list, list.size());
+        }
+    }
 }

@@ -16,6 +16,7 @@ import java.util.stream.Collector;
 
 import static javaslang.collection.ArrayType.asArray;
 import static javaslang.collection.Collections.areEqual;
+import static javaslang.collection.Collections.withSize;
 
 /**
  * Vector is the default Seq implementation that provides effectively constant time access to any element.
@@ -568,8 +569,9 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public Vector<T> appendAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
-        return isEmpty() ? ofAll(iterable)
-                         : wrap(trie.appendAll(iterable));
+        return isEmpty()
+                ? ofAll(iterable)
+                : new Vector<>(trie.appendAll(iterable));
     }
 
     @Override
@@ -823,8 +825,9 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public Vector<T> prependAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
-        return isEmpty() ? ofAll(iterable)
-                         : wrap(trie.prependAll(iterable));
+        return isEmpty()
+                ? ofAll(iterable)
+                : new Vector<>(trie.prependAll(iterable));
     }
 
     @Override

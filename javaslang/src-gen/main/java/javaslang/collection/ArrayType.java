@@ -10,8 +10,6 @@ package javaslang.collection;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.io.Serializable;
-
-import javaslang.Tuple2;
 import java.util.Collection;
 
 /**
@@ -127,8 +125,7 @@ interface ArrayType<T> {
             final Collection<? extends T> collection = (Collection<? extends T>) iterable;
             return collection.toArray();
         } else {
-            final Tuple2<Iterable<? extends T>, Integer> iterableAndSize = Collections.withSize(iterable);
-            return asArray(iterableAndSize._1.iterator(), iterableAndSize._2);
+            return Collections.withSize(iterable).toArray();
         }
     }
 
